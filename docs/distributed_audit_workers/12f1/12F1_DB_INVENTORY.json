@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "production_existing": {
+    "sqlite_files": [],
+    "open_sqlite_fds": [],
+    "workers_db_exists": false,
+    "auditmanager_state_kind": "filesystem_json_and_project_trees",
+    "existing_project_db_migrations_required": false
+  },
+  "workers_db": {
+    "kind": "separate SQLite database",
+    "canonical_path": "/home/coder/projects/PDF-proverka/backend/app/data/distributed_workers/workers.db",
+    "canonical_initializer": "backend.app.services.distributed_workers.database.ensure_ready",
+    "schema_version": 11,
+    "migration_versions": [1,2,3,4,5,6,7,8,9,10,11],
+    "journal_mode": "WAL",
+    "synchronous": "NORMAL",
+    "busy_timeout_ms": 5000,
+    "foreign_keys": true,
+    "application_write_serialization": "threading.Lock + BEGIN IMMEDIATE",
+    "initial_reference_size_bytes": 397312,
+    "initial_reference_table_count": 27,
+    "test_or_isolated_state_imported": false,
+    "production_created": false
+  },
+  "permission_risk": {
+    "current_process_umask": "0002",
+    "current_app_data_mode": "0775",
+    "unsafe_for_new_workers_db": true,
+    "required_phase_b_umask": "0077"
+  }
+}

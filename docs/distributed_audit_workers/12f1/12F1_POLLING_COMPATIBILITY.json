@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "reference_contract": {
+    "status": "PASS",
+    "register_http": 201,
+    "approve_http": 200,
+    "claim_http": 200,
+    "heartbeat_http": 200,
+    "jobs_next_no_job_http": 204,
+    "job_count": 0,
+    "provider_inference": 0
+  },
+  "production_physical": {
+    "status": "FAIL_PRE_EXISTING_ENDPOINT",
+    "agent_pid": 1575036,
+    "agent_process_active": true,
+    "agent_center_state": "center_unreachable",
+    "configured_host": "conviction-medicaid-coupled-tricks.trycloudflare.com",
+    "configured_host_resolves_from_center": false,
+    "configured_host_resolves_from_worker": false,
+    "current_cloudflared_host": "sas-nam-nurses-produce.trycloudflare.com",
+    "current_cloudflared_health_http": 200,
+    "hosts_match": false
+  },
+  "center_only_restart_can_restore_current_agent": false,
+  "required_resolution": "Provide a stable production HTTPS dispatcher and separately authorize updating/restarting the polling Agent, or restore the exact configured hostname without touching forbidden infrastructure.",
+  "overall": "BLOCKED"
+}

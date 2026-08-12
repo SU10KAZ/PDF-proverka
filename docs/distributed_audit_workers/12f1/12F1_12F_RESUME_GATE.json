@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "12f_resume_allowed": false,
+  "phase_b_executed": false,
+  "conditions": {
+    "production_backend_exact_candidate": false,
+    "health_pass": true,
+    "existing_api_pass": false,
+    "distributed_router_pass": false,
+    "workers_db_pass": false,
+    "polling_worker_reconnected": false,
+    "worker_idle_state_visible": false,
+    "transport_ownership_visible": false,
+    "event_ack_state_visible": false,
+    "scheduler_canary_fence_available": false,
+    "no_unexpected_jobs": true,
+    "production_integrity_pass": true
+  },
+  "note": "This gate can only be evaluated after an separately authorized and successful Phase B."
+}

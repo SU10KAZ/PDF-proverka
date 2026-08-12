@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "production_declared_commit": "9168c3930c5e87e918f62c3812e19a8f924a3ade",
+  "production_branch": "feature/block-vector-graphs",
+  "production_tree_at_commit": "fa1362246e02747c060818eb0db70a7de76346b1",
+  "final_12e_commit": "73486e7af4f193d2f6efd73c5bf069c14bfbf764",
+  "final_12e_tree": "de4022e3fc7000cc2b538991af662dd32a51e390",
+  "12f_evidence_commit": "dc2cfb92ec4f910e7f49dbb905dc36a6553d5080",
+  "12f_tree": "080f1875c63b2cf6f2f0e58403630146dbd0fe66",
+  "12f_branch": "feat/distributed-audit-workers-production-canary",
+  "12f_commit_is_docs_only": true,
+  "runtime_12e_to_12f_changed": false,
+  "production_vs_12e_commits": {"production_only": 11, "12e_only": 207},
+  "production_worktree": {
+    "clean": false,
+    "tracked_runtime_changes": 23,
+    "untracked_runtime_files": 20,
+    "tracked_runtime_diff_sha256": "4d943f4ec654f122d334afd1984dfb17b8ee2943ed3a61c456e692e0d6837be7",
+    "untracked_runtime_manifest_sha256": "a9d4232a4ab056def40ef7fe2ee36a8dbe749bc87b8ce14251b291d1ebf7f739",
+    "status_sha256": "921f971c5c9d6408e49c1e7b5651881ac833f24b108edf94b50fe41728d41ed0",
+    "runtime_files_changed_after_backend_start": 4
+  },
+  "backend_pid_chronology": {
+    "initial_pid": 1931160,
+    "initial_started_at": "2026-08-12T16:28:23+03:00",
+    "final_pid": 1959493,
+    "final_started_at": "2026-08-12T17:16:15+03:00",
+    "restart_initiated_by_12f1": false,
+    "runtime_files_changed_after_final_pid_start": 0
+  },
+  "exact_running_release_immutable": false,
+  "reason": "The initial process had runtime modules changed after its start. A later independent restart loaded the unchanged dirty disk state, but that state is still neither committed nor packaged as an immutable release and can change again."
+}

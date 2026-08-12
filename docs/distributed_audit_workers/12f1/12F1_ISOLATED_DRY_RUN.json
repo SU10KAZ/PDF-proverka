@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "status": "PASS_REFERENCE_RUNTIME_ONLY",
+  "reference_commit": "dc2cfb92ec4f910e7f49dbb905dc36a6553d5080",
+  "runtime_equivalent": "73486e7af4f193d2f6efd73c5bf069c14bfbf764",
+  "binds": ["127.0.0.1:18081", "127.0.0.1:18082"],
+  "production_data_used": false,
+  "production_db_mutated": false,
+  "dotenv_disabled": true,
+  "isolated_roots": "/tmp/12f1_dryrun and /tmp/12f1_startup",
+  "startup_to_health_seconds": 1.9927319310372695,
+  "clean_shutdown": true,
+  "http": {
+    "health": 200,
+    "unauthenticated_admin": 401,
+    "portal_login": 200,
+    "core_disciplines": 200,
+    "core_projects": 200,
+    "distributed_status": 200,
+    "distributed_admin_list": 200,
+    "polling_register": 201,
+    "admin_approve": 200,
+    "polling_claim": 200,
+    "polling_heartbeat": 200,
+    "polling_jobs_next_no_job": 204,
+    "remote_audit_targets": 200
+  },
+  "status_surface": {
+    "enabled": true,
+    "admin_api_available": true,
+    "portal_auth_enabled": true,
+    "roles_configured": true,
+    "config_error": null
+  },
+  "scheduler": {
+    "distributed_audit_execution_enabled": false,
+    "auto_dispatch_enabled": false,
+    "jobs_created": 0,
+    "jobs_leased": 0
+  },
+  "database": {
+    "canonical_initialization_seconds": 0.006006593001075089,
+    "integrity_check": "ok",
+    "journal_mode": "wal",
+    "schema_version": 11,
+    "table_count": 27,
+    "logical_jobs": 0,
+    "worker_events": 0
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "temporary_processes_stopped": true,
+  "qualification": "This proves the final 12E runtime itself, not a production-integrated candidate."
+}

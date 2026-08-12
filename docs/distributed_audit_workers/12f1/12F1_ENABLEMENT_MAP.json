@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "components": [
+    {
+      "component": "runtime release",
+      "current": "9168c393 plus non-reproducible mutable runtime delta",
+      "required": "one immutable integration of current supported AuditManager behavior plus all 12A-12E runtime",
+      "ready": false
+    },
+    {
+      "component": "feature gate",
+      "current": "DISTRIBUTED_WORKERS_ENABLED absent/default false",
+      "required": "DISTRIBUTED_WORKERS_ENABLED=true in restart-stable production config",
+      "ready": false
+    },
+    {
+      "component": "router registration",
+      "current": "worker routers absent in production main.py",
+      "required": "12E main.py conditional worker/admin/bootstrap routers",
+      "ready_in_12e_reference": true
+    },
+    {
+      "component": "persistence",
+      "current": "no distributed data dir or workers.db",
+      "required": "database.ensure_ready() canonical schema 0 -> 11 under restricted umask",
+      "ready_in_12e_reference": true
+    },
+    {
+      "component": "worker registry / Event ACK / ownership",
+      "current": "not available",
+      "required": "27-table schema v11 repositories and services",
+      "ready_in_12e_reference": true
+    },
+    {
+      "component": "scheduler fence",
+      "current": "distributed subsystem absent",
+      "required": "DISTRIBUTED_AUDIT_EXECUTION_ENABLED=false and manual-only assignment",
+      "ready_in_12e_reference": true
+    },
+    {
+      "component": "admin authorization",
+      "current": "portal auth configured, distributed roles absent",
+      "required": "operator-approved mapping of existing portal subjects to viewer/operator/admin roles",
+      "ready": false
+    },
+    {
+      "component": "bootstrap authentication",
+      "current": "secret absent",
+      "required": "new production-only secret generated outside Git and stored mode 0600",
+      "ready": false
+    },
+    {
+      "component": "polling compatibility",
+      "current": "Agent process active but dispatcher DNS is stale",
+      "required": "stable reachable HTTPS dispatcher plus unchanged v1 polling contract",
+      "contract_ready_in_12e_reference": true,
+      "physical_ready": false
+    },
+    {
+      "component": "Gateway dependencies",
+      "current": "no production Gateway",
+      "required": "schema v11 DB/repositories available; Gateway stays stopped in 12F.1",
+      "ready_in_12e_reference": true
+    }
+  ],
+  "enablement_ready": false
+}

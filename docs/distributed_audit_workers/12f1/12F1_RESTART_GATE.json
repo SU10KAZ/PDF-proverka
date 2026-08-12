@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "ready_for_operator_restart": false,
+  "hard_conditions": {
+    "candidate_immutable": false,
+    "candidate_tests_pass": false,
+    "migration_safe": true,
+    "backup_plan_ready": false,
+    "rollback_release_ready": false,
+    "rollback_db_ready": true,
+    "existing_routes_pass": false,
+    "distributed_routes_pass": false,
+    "polling_compatibility_pass": false,
+    "scheduler_default_safe": true,
+    "production_config_ready": false,
+    "secrets_preserved": true,
+    "operator_restart_authorization": false
+  },
+  "reference_only": {
+    "reference_tests_pass": true,
+    "reference_existing_routes_pass": true,
+    "reference_distributed_routes_pass": true,
+    "reference_polling_contract_pass": true,
+    "reference_scheduler_safe": true
+  },
+  "blockers": [
+    "Production runtime is not immutable: the initial PID diverged from disk, and the independently restarted final PID now runs an unchanged but still uncommitted/unpackaged dirty snapshot.",
+    "No reviewed integration of the 11 production-only commits and the operator-owned production worktree delta with 12A-12E exists.",
+    "No immutable known-good rollback release or supervised backend launcher exists.",
+    "Distributed portal role assignment and production bootstrap secret are unresolved; live env mode/umask are unsafe.",
+    "Physical polling Agent dispatcher hostname is stale and differs from the current pre-existing cloudflared URL."
+  ],
+  "production_restart_performed": false,
+  "production_deploy_performed": false
+}

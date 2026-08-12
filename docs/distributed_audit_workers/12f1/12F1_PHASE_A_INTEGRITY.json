@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "verified_at": "2026-08-12T17:24:33+03:00",
+  "production_backend": {
+    "initial_pid": 1931160,
+    "final_pid": 1959493,
+    "final_started_at": "2026-08-12T17:16:15+03:00",
+    "final_health_http": 200,
+    "bind": "127.0.0.1:8081",
+    "signalled_by_12f1": false,
+    "restarted_by_12f1": false,
+    "pid_change_classification": "independent_external_or_watchdog_restart"
+  },
+  "isolated_phase_a": {
+    "temporary_ports": [18081, 18082],
+    "temporary_processes_stopped": true,
+    "temporary_listeners_absent": true,
+    "production_data_used": false
+  },
+  "network": {
+    "listener_8443": false,
+    "listener_9443": false,
+    "ufw_changed": false,
+    "source_scoped_8443_rule_preserved": true,
+    "ssh_forwarding_used": false,
+    "runtime_tunnel_created": false
+  },
+  "production_cloudflared": {
+    "pid": 1263127,
+    "target": "127.0.0.1:8081",
+    "modified_by_12f1": false
+  },
+  "worker": {
+    "polling_agent_pid": 1575036,
+    "polling_agent_active": true,
+    "polling_agent_signalled_by_12f1": false,
+    "executor_pid": 1384880,
+    "executor_active": true,
+    "executor_signalled_by_12f1": false,
+    "transport": "POLLING_UNCHANGED",
+    "active_execution_attempts": 0,
+    "running_process_rows": 0
+  },
+  "production_workers_db_created": false,
+  "production_config_changed": false,
+  "production_deploy_performed": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}
