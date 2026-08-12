@@ -208,10 +208,10 @@ def test_step0_database_migrates_without_data_loss(tmp_path):
     schema.apply_pragmas(conn)
     assert schema.current_version(conn) == 2
 
-    # 7 — миграция этапа 11 (учётные записи подписок, состояния провайдеров,
-    # история квот). Число закреплено намеренно: новая миграция обязана быть
-    # проверена на СТАРОЙ базе, а не просто «подтянуть» ожидание теста.
-    assert schema.migrate(conn) == schema.SCHEMA_VERSION == 8
+    # Тест начинается со старой v2 базы и обязан дойти до КАЖДОЙ актуальной
+    # миграции. Конкретный номер схемы меняется при аддитивных стадиях 12B-D;
+    # закреплять здесь старое v8 означало бы ложно падать до проверки данных.
+    assert schema.migrate(conn) == schema.SCHEMA_VERSION
 
     logical = conn.execute(
         "SELECT * FROM logical_jobs WHERE job_id = ?", (job_id,)
@@ -252,8 +252,8 @@ def test_migration_is_idempotent(tmp_path):
     conn.row_factory = sqlite3.Row
     schema.apply_pragmas(conn)
     schema.migrate(conn)
-    assert schema.migrate(conn) == 8
-    assert schema.migrate(conn) == 8
+    assert schema.migrate(conn) == schema.SCHEMA_VERSION
+    assert schema.migrate(conn) == schema.SCHEMA_VERSION
     assert conn.execute("SELECT COUNT(*) FROM job_attempts").fetchone()[0] == 1
     assert conn.execute("SELECT COUNT(*) FROM logical_jobs").fetchone()[0] == 1
     conn.close()
