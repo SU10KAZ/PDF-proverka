@@ -27,8 +27,9 @@ handling of a missing CA bundle.
 
 ## Physical second attempt
 
-- UFW persisted rules: 8443 and temporary 9443 are both restricted to source
-  `176.12.77.31`; there is no global-source allow for either port.
+- During the physical run, UFW rules for 8443 and temporary 9443 were both
+  restricted to source `176.12.77.31`; there was no global-source allow for
+  either port.
 - Direct `.31 -> 176.12.77.128:8443`: **PASS**.
 - Server TLS: TLS 1.3, trusted CA, exact IP SAN, serverAuth EKU: **PASS**.
 - Client auth: valid certificate accepted; absent and untrusted certificates
@@ -62,6 +63,10 @@ Agent PID `1575036` and Executor PID `1384880` were not restarted. Temporary
 tokens, revoked-A recovery key and duplicate staging key were removed; current
 B remains Worker-local mode 0600 and is not revoked.
 
-The exact temporary `.31 -> TCP/9443` UFW rule could not be deleted because
-sudo requires interactive authentication. With no 9443 listener it is inert,
-but operator removal remains the sole cleanup item.
+The operator subsequently removed the exact temporary `.31 -> TCP/9443` UFW
+rule. Persisted IPv4 rules returned byte-for-byte to the post-8443/pre-9443
+baseline; 8443 remains source-scoped to `.31`, 9443 is absent, and neither
+port has a listener. A pre-existing `cloudflared` process targeting production
+`127.0.0.1:8081` remains present; it was untouched and not used by 12D, but it
+prevents certification of the separate explicit `cloudflared absent`
+final-state predicate.

@@ -1,18 +1,22 @@
 {
-  "captured_at": "2026-08-12T09:22:47+03:00",
+  "captured_at_center": "2026-08-12T09:54:43+03:00",
+  "captured_at_worker": "2026-08-12T09:52:21+03:00",
   "production_backend_127_0_0_1_8081": {
     "touched_or_restarted": false,
     "pid_before_after": 277145,
-    "state": "LISTENING"
+    "state": "ACTIVE_LISTENING",
+    "api_info_http_status": 200
   },
   "production_database_used_for_12d1": false,
-  "original_polling_agent": {
+  "original_polling_agent_on_176_12_77_31": {
     "state": "active",
-    "pid": 1575036
+    "pid": 1575036,
+    "touched_or_restarted": false
   },
-  "original_executor": {
+  "original_executor_on_176_12_77_31": {
     "state": "active",
-    "pid": 1384880
+    "pid": 1384880,
+    "touched_or_restarted": false
   },
   "isolated_agent_final": "stopped",
   "isolated_executor_final": "stopped",
@@ -31,12 +35,20 @@
   "claude_calls": 0,
   "codex_calls": 0,
   "openrouter_calls": 0,
-  "tunnel_added": false,
-  "ssh_forwarding_added": false,
-  "preexisting_unrelated_cloudflared_modified_or_used": false,
+  "tunnel_used_by_12d": false,
+  "ssh_forwarding": "ABSENT",
+  "insecure_gateway": "ABSENT",
+  "cloudflared": {
+    "state": "PRESENT_PREEXISTING",
+    "pid": 1263127,
+    "command": "/home/coder/.local/bin/cloudflared tunnel --url http://127.0.0.1:8081 --protocol http2 --no-autoupdate --metrics 127.0.0.1:20251",
+    "local_metrics_listener": "127.0.0.1:20251",
+    "modified_or_used_by_12d": false,
+    "explicit_absence_requirement_met": false
+  },
   "worker_inbound_runtime_listener_added": false,
   "current_certificate_b_private_key": "preserved on Worker, mode 0600",
   "temporary_tokens_and_revoked_a_backup": "removed",
-  "temporary_9443_ufw_rule_cleanup": "OPERATOR_ACTION_REQUIRED_NO_LISTENER",
-  "verdict": "PASS_WITH_INERT_FIREWALL_CLEANUP_ITEM"
+  "temporary_9443_ufw_rule_cleanup": "COMPLETE",
+  "verdict": "PARTIAL_EXPLICIT_CLOUDFLARED_ABSENCE_NOT_MET"
 }

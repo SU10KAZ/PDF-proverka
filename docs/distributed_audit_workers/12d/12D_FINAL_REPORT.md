@@ -12,27 +12,36 @@ source-scoped UFW allow, the second attempt passed direct TCP, server TLS,
 mTLS, real grpcio bidi, Hello, heartbeat, zero-inference HTTPS E2E, live
 reconnect, new-key rotation, old-certificate revocation and negative identity.
 
-One cleanup-only item prevents an unconditional overall PASS: the temporary
-source-scoped `.31 -> TCP/9443` rule is still persisted because sudo requires
-interactive authentication. The isolated 9443 listener is stopped, so the
-rule currently exposes no service. No physical security proof needs rerun after
-the operator removes that exact rule.
+The operator completed the final firewall cleanup. The temporary source-scoped
+`.31 -> TCP/9443` rule is absent, the persisted IPv4 rules are byte-for-byte
+back at the captured post-8443/pre-9443 baseline, and neither 8443 nor 9443 has
+a listener.
+
+One independently pre-existing production condition prevents the requested
+conditional overall PASS: `cloudflared` is currently running as PID `1263127`
+with `--url http://127.0.0.1:8081` and local metrics on `127.0.0.1:20251`.
+It was not created, modified, used or stopped by 12D, and no Cloudflare path
+participated in the proof. Nevertheless, the explicit final requirement
+"cloudflared absent" is false, so the report does not claim that all requested
+final-state assertions were confirmed.
 
 ## Required verdicts
 
-- **A. 12D OVERALL: PARTIAL — technical/physical acceptance PASS; one inert
-  operator firewall-cleanup item remains.**
+- **A. 12D OVERALL: PARTIAL — technical/physical acceptance and firewall
+  cleanup PASS; explicit `cloudflared absent` final-state predicate is not met.**
 - **B. MTLS CONTROL CHANNEL: PASS.**
 - **C. CERTIFICATE LIFECYCLE: PASS.**
-- **D. DIRECT `.31 -> CENTER :8443`: PROVEN.**
-- **E. PHYSICAL REAL GRPCIO: PROVEN.**
-- **F. ZERO-INFERENCE PHYSICAL E2E: PASS.**
-- **G. SECURE RECONNECT: PASS.**
-- **H. PHYSICAL KEY/CERT ROTATION: PASS.**
-- **I. PHYSICAL REVOCATION: PASS.**
-- **J. TUNNEL USED: NO.**
-- **K. TUNNEL REQUIRED FOR TESTED `.31 -> .128` PATH: NO.**
-- **L. PRODUCTION CUTOVER: NOT_DONE.**
+- **D. LINUX KEY STORAGE: PASS.**
+- **E. WINDOWS DPAPI: IMPLEMENTED_NOT_PHYSICALLY_PROVEN.**
+- **F. DIRECT `.31 -> CENTER :8443`: PROVEN.**
+- **G. PHYSICAL REAL GRPCIO: PROVEN.**
+- **H. ZERO-INFERENCE E2E: PASS.**
+- **I. SECURE RECONNECT: PASS.**
+- **J. PHYSICAL ROTATION: PASS.**
+- **K. PHYSICAL REVOCATION: PASS.**
+- **L. TUNNEL USED: NO.**
+- **M. TUNNEL REQUIRED FOR TESTED `.31 -> .128` PATH: NO.**
+- **N. PRODUCTION CUTOVER: NOT_DONE.**
 
 ## Evidence summary
 
@@ -82,13 +91,26 @@ combined suite now passes 186/186.
 - Provider auth: unchanged; real audit: not run.
 - Isolated Agent/Executor/API/issuer/Gateway: stopped.
 - Final listeners on 8443/9443: none.
-- `UFW_RULE_8443_FINAL_STATE = PRESENT` (source `.31` only).
-- `UFW_RULE_9443_FINAL_STATE = PRESENT_INERT_PENDING_OPERATOR_REMOVAL`.
+- `UFW_RULE_8443_FINAL_STATE = PRESENT` (source `.31` only; no
+  `0.0.0.0/0` source allow).
+- `UFW_RULE_9443_FINAL_STATE = ABSENT`.
+- Other persisted IPv4 rules: unchanged from the captured
+  post-8443/pre-9443 baseline (identical SHA-256
+  `cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff`).
+- SSH forwarding: absent. Insecure Gateway: absent.
+- Pre-existing `cloudflared`: present, PID `1263127`, targeting production
+  `127.0.0.1:8081`; untouched and not used by 12D.
+- `sudo -n ufw status numbered` could not render runtime numbering because
+  sudo requires interactive authentication. UFW is active/enabled; persisted
+  rules and host listener state were read directly.
 - Push: NO. Merge: NO. Production cutover: NO. Proceed to 12E: NO.
 
-Operator cleanup command:
+## Required chronology
 
-```bash
-sudo ufw delete allow proto tcp from 176.12.77.31 to any port 9443
-sudo ufw status numbered
-```
+- **FIRST ATTEMPT:** Center UFW blocked TCP/8443 (`PORT_BLOCKED`).
+- **OPERATOR ACTION:** added source-scoped allow
+  `176.12.77.31 -> TCP/8443`.
+- **PHYSICAL COMPLETION:** direct TCP + TLS + mTLS + real grpcio +
+  zero-inference E2E + reconnect + rotation + revocation = PASS.
+- **FINAL CLEANUP:** temporary TCP/9443 rule removed; temporary listeners
+  stopped.

@@ -1,34 +1,40 @@
 {
   "technology": "ufw (active, nftables backend)",
+  "captured_at": "2026-08-12T09:54:43+03:00",
   "runtime_status_numbered_readable": false,
-  "runtime_status_reason": "interactive sudo authentication required",
+  "runtime_status_reason": "sudo -n ufw status numbered: interactive authentication required",
+  "verification_basis": [
+    "ufw service active and enabled",
+    "readable persisted /etc/ufw/user.rules",
+    "persisted IPv4 rules restored byte-for-byte to the captured post-8443/pre-9443 baseline",
+    "host ss -lntp"
+  ],
   "persisted_rules_path": "/etc/ufw/user.rules",
   "persisted_rules_readable": true,
   "chronology": {
-    "first_attempt_rule_8443_present": false,
-    "first_attempt_result": "PORT_BLOCKED",
-    "operator_added_8443": "allow TCP/8443 only from 176.12.77.31",
-    "operator_added_9443": "temporary allow TCP/9443 only from 176.12.77.31"
+    "first_attempt": "Center UFW blocked TCP/8443 (PORT_BLOCKED)",
+    "operator_action": "added source-scoped allow 176.12.77.31 -> TCP/8443",
+    "physical_completion": "direct TCP + TLS + mTLS + real grpcio + zero-inference E2E + reconnect + rotation + revocation = PASS",
+    "final_cleanup": "temporary TCP/9443 rule removed; temporary listeners stopped"
   },
-  "persisted_rules_mtime_after_operator_actions": "2026-08-12T09:00:03.335303960+03:00",
-  "persisted_rules_sha256_after_operator_actions": "70164962dd289fbd250ca8b09e7dbffae91f247727fee5584dc113ca5608f4f3",
+  "persisted_rules_mtime_final": "2026-08-12T09:47:03.079077012+03:00",
+  "persisted_rules_sha256_final": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+  "persisted_rules_sha256_post_8443_pre_9443_baseline": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+  "persisted_ipv6_rules_sha256_final": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
   "allow_8443": {
     "source": "176.12.77.31",
     "protocol": "tcp",
     "destination_port": 8443,
     "global_0_0_0_0_source_allow": false,
-    "final_rule_state": "PRESENT"
+    "final_rule_state": "PRESENT_SOURCE_SCOPED"
   },
   "allow_9443": {
-    "source": "176.12.77.31",
-    "protocol": "tcp",
-    "destination_port": 9443,
-    "global_0_0_0_0_source_allow": false,
-    "final_rule_state": "PRESENT_INERT_OPERATOR_REMOVAL_REQUIRED",
-    "automatic_removal_result": "FAILED_INTERACTIVE_SUDO_REQUIRED"
+    "final_rule_state": "ABSENT",
+    "global_0_0_0_0_source_allow": false
   },
   "final_8443_listener": false,
   "final_9443_listener": false,
-  "unrelated_rules_changed_by_codex": false,
-  "verdict": "PARTIAL_TEMP_9443_RULE_CLEANUP_ONLY"
+  "unrelated_ipv4_rules_changed_since_post_8443_pre_9443_baseline": false,
+  "unrelated_ipv6_rules_changed": false,
+  "verdict": "PASS"
 }
