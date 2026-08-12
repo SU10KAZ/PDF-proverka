@@ -11,7 +11,7 @@ import time
 from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from backend.app.core.config import (
     BLOCK_BATCH_MODE_FINDINGS_ONLY,
@@ -237,6 +237,9 @@ def _current_object_id_or_none() -> Optional[str]:
         return None
 
 
+from backend.app.pipeline.stage_result import StageResult as _StageResult
+
+
 class BatchResumeBlockedError(RuntimeError):
     """Resume очереди временно недоступен — текущий проект ещё выполняется.
 
@@ -261,6 +264,40 @@ BATCH_PRECROP_WINDOW = max(1, int(os.environ.get("BATCH_PRECROP_WINDOW", "6")))
 # ускорение. Читается на каждый запуск очереди, поэтому меняется без рестарта.
 BATCH_MAX_PARALLEL_DEFAULT = 1
 BATCH_MAX_PARALLEL_CAP = 8
+
+# Результат-заглушка для центрального этапа, пропущенного в процессе удалённой
+# ноги аудита (см. PipelineManager._central_stage_blocked). success=True — потому
+# что «не выполнялся здесь» это не ошибка этапа: Excel собирается на центре
+# после приёма результата, и предупреждать оператора не о чем.
+_SKIPPED_CENTRAL_STAGE = _StageResult(success=True, data={"skipped": "central_only"})
+
+
+def _stage01_model_spends_paid_api(model: str | None) -> bool:
+    """Пойдёт ли Stage 01 с этой моделью в ПЛАТНЫЙ HTTP-провайдер.
+
+    Смысл различения. Пре-флайт гейт `paid_api_guard` устроен так, что при
+    `PAID_API_ENABLED=false` он блокирует ЛЮБОЙ вызов, не глядя на модель
+    (`_assert_basic` → `paid_api_disabled`). Для ноги, которая ходит в
+    OpenRouter, это правильно. Для конфигурации, где Stage 01 целиком идёт
+    через CLI (`claude-*` / `codex/*`) и платного API не касается вовсе, — это
+    ложное срабатывание: денег такой прогон не тратит, а этап падает.
+
+    Практическое следствие, из-за которого функция и появилась: удалённая нога
+    аудита ОБЯЗАНА гасить платный API (`remote_audit_runner.enforce_fake_providers`),
+    иначе подделка двух CLI ничего не закрывает. С прежней безусловной проверкой
+    удалённый прогон падал на Stage 01 всегда.
+
+    Прод не меняется: там `block_batch = ensemble/gpt-codex`, у него есть
+    GPT-нога через OpenRouter, значит функция вернёт True и гейт отработает как
+    прежде. Неизвестная модель тоже считается платной — сторона ошибки выбрана
+    в пользу защиты кошелька.
+    """
+    raw = str(model or "").strip()
+    if not raw:
+        return True
+    if raw.startswith("claude-") or raw.startswith("codex/"):
+        return False
+    return True
 
 
 def batch_max_parallel() -> int:
@@ -565,6 +602,17 @@ class PipelineManager:
         for cur in self._current_batch_item_pids():
             if has_live_processes(cur):
                 return True
+        # Удалённое исполнение: локальных сигналов у него нет ПО ОПРЕДЕЛЕНИЮ —
+        # ни дочерних процессов, ни своего таска. Считать такой элемент
+        # мёртвым только потому, что на центре нечего наблюдать, — это ровно
+        # тот дефект, из-за которого resume стирал 03_findings.json.
+        #
+        # Только `running`: `interrupted` — это ИМЕННО то, что resume обязан
+        # подхватить (backend вернёт существующий handle, второго задания не
+        # появится). Считать его «живым» значило бы навсегда запретить resume
+        # очереди после рестарта центра.
+        if self._remote_items(statuses=("running",)):
+            return True
         return False
 
     def _protected_pids(self) -> set[str]:
@@ -580,6 +628,11 @@ class PipelineManager:
             # При параллельной обработке выполняющихся проектов несколько —
             # защищаем все, иначе соседние слоты снимаются как зомби.
             protected.update(self._current_batch_item_pids())
+        # Удалённые задания защищены ВСЕГДА, независимо от живости batch-worker:
+        # локальных признаков работы у них нет и быть не может, а «нет
+        # признаков» ≠ «остановлено» (E-07, E-08). Решение об их судьбе
+        # принимает backend через liveness(), а не таймаут heartbeat.
+        protected.update(self._remote_items())
         return protected
 
     def get_batch_diagnostics(self) -> dict:
@@ -677,6 +730,19 @@ class PipelineManager:
         """Удалить историю очереди (файл + in-memory, только если не running)."""
         if self._batch_queue and self._batch_queue.status == "running":
             raise RuntimeError("Нельзя очистить работающую очередь")
+        # После рестарта центра статус очереди — `interrupted`, а не `running`,
+        # поэтому проверки выше недостаточно: `batch_queue.json` хранит
+        # ЕДИНСТВЕННУЮ ссылку на живую удалённую попытку (`execution_handle`).
+        # Удалив его, оператор потерял бы результат идущего на VPS аудита, а
+        # повторный запуск упёрся бы в «уже есть активное задание».
+        live_remote = self._remote_items(statuses=("running", "interrupted"))
+        if live_remote:
+            names = ", ".join(sorted(live_remote))
+            raise RuntimeError(
+                "Нельзя очистить историю: есть удалённые исполнения, которые "
+                f"продолжаются на воркере ({names}). Сначала дождитесь их или "
+                "остановите."
+            )
         self._batch_queue = None
         try:
             if BATCH_QUEUE_FILE.exists():
@@ -1184,10 +1250,16 @@ class PipelineManager:
         now = datetime.now()
         # pid, которые нельзя трогать пока жив batch-worker / есть живые процессы.
         protected = self._protected_pids()
+        remote = self._remote_items()
         zombies = []
         for pid, job in list(self.active_jobs.items()):
             if pid in protected:
                 continue  # живой worker / текущий проект — не зомби
+            if pid in remote:
+                # Дублирующая защита к `_protected_pids`. Держим её здесь
+                # отдельно намеренно: если кто-то однажды изменит состав
+                # protected, remote-задание не должно молча стать зомби.
+                continue
             # __BATCH__ судим по живости таска, а не по heartbeat (его нет).
             if pid == "__BATCH__":
                 if not self._batch_worker_alive():
@@ -1333,6 +1405,26 @@ class PipelineManager:
         Для pending — удаляет item из очереди (без убийства, т.к. ничего не
         запущено).
         """
+        # Удалённое исполнение отменяется АДРЕСНО: командой воркеру, а не
+        # убийством локальных процессов, которых на центре нет. Маршрутизация
+        # идёт до всего остального — `kill_all_processes` для remote-задания
+        # ничего не убьёт, но снимет job с учёта и создаст видимость отмены.
+        #
+        # Условие «нет локального job'а» обязательно: один и тот же проект
+        # может иметь ЛОКАЛЬНО выполняющуюся версию и удалённый элемент другой
+        # версии (дубли запрещены только по паре проект+версия). Без проверки
+        # «Остановить» на живом локальном аудите помечало бы отменённым
+        # удалённый элемент и возвращало True — локальный аудит продолжался бы,
+        # а оператор видел «отменено».
+        local_job = self.active_jobs.get(project_id)
+        if local_job is None or local_job.status != JobStatus.RUNNING:
+            remote_item = self._remote_items(
+                statuses=("pending", "running", "interrupted"),
+                require_handle=False,
+            ).get(project_id)
+            if remote_item is not None:
+                return await self._cancel_remote_item(remote_item)
+
         job = self.active_jobs.get(project_id)
         if job:
             job.status = JobStatus.CANCELLED
@@ -1373,6 +1465,37 @@ class PipelineManager:
                     await self._broadcast_batch_progress(self._batch_queue)
                     return True
         return False
+
+    async def _cancel_remote_item(self, item: "BatchQueueItem") -> bool:
+        """Отменить удалённое исполнение через его backend.
+
+        Локальные артефакты и уже собранные результаты при этом НЕ удаляются:
+        отмена — это просьба остановиться, а не приказ уничтожить работу.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        handle = execution_registry.handle_from_item(item)
+        if handle is None:
+            # Задание ещё не создано на стороне подсистемы — отменять нечего,
+            # достаточно снять элемент с очереди.
+            item.status = "cancelled"
+            item.error = "Остановлено пользователем до отправки на воркер"
+            item.finished_at = time.time()
+            self._persist_queue()
+            return True
+        backend = execution_registry.select_backend(self, item)
+        ok = await backend.cancel(handle, reason="отмена оператором из очереди")
+        await ws_manager.broadcast_to_project(
+            item.project_id,
+            WSMessage.log(
+                item.project_id,
+                "Запрошена отмена удалённого аудита. Если VPS сейчас офлайн, "
+                "команда доставится после восстановления связи — мгновенная "
+                "остановка не гарантируется.",
+                "warn",
+            ),
+        )
+        return ok
 
     def _cleanup(self, project_id: str):
         self._stop_heartbeat(project_id)
@@ -2027,6 +2150,21 @@ class PipelineManager:
         except Exception:
             pass  # сводка не должна ломать финализацию
 
+    def _central_stage_blocked(self, stage: str) -> bool:
+        """Запрещён ли `stage` в этом процессе (удалённая нога аудита).
+
+        На центре всегда False. True — только внутри процесса
+        `remote_audit_runner`, где четыре центральных этапа выполняться не
+        должны: норм-базы там нет, `decisions_log.json`/`paid_cost.json`
+        принадлежат центру, а Excel собирается по финальным данным центра.
+        """
+        try:
+            from backend.app.pipeline.execution.registry import central_stages_disabled
+
+            return central_stages_disabled()
+        except Exception:                  # noqa: BLE001 — гейт не должен ронять конвейер
+            return False
+
     async def _run_debt_control(self, job: AuditJob) -> None:
         """«Контроль долгов»: согласованные замечания прошлой версии не теряются.
 
@@ -2037,6 +2175,11 @@ class PipelineManager:
         decision_carryover: добавленные MIG-замечания тут же получают вердикт
         «согласовано» переносом.
         """
+        if self._central_stage_blocked("debt_control"):
+            await self._log(
+                job, "Контроль долгов пропущен: этап выполняется на центре", "info",
+            )
+            return
         try:
             from backend.app.pipeline.stages.debt_control.runner import (
                 run_debt_control_stage,
@@ -2070,6 +2213,11 @@ class PipelineManager:
         _output/decision_carryover_report.json. Сервис внутри синхронный (claude -p),
         поэтому запускается через asyncio.to_thread внутри stage runner-а.
         """
+        if self._central_stage_blocked("decision_carryover"):
+            await self._log(
+                job, "Перенос вердиктов пропущен: этап выполняется на центре", "info",
+            )
+            return
         try:
             from backend.app.pipeline.stages.decision_carryover.runner import (
                 run_decision_carryover_stage,
@@ -2299,6 +2447,15 @@ class PipelineManager:
         # Stage 01 block analysis идёт в OpenRouter напрямую и
         # тратит реальные деньги. Блокируем только если глобальный kill-switch
         # PAID_API_ENABLED=false или превышен daily limit.
+        #
+        # Модель берётся по ключу `block_batch` — по нему её резолвит САМ Stage 01
+        # (`block_analysis/runner.py: ui_model = get_stage_model("block_batch")`).
+        # Ключа `block_analysis` в `STAGE_MODEL_CONFIG` нет вовсе, поэтому прежний
+        # вызов всегда получал литеральный фолбэк `openai/gpt-5.4` и проверял
+        # модель, которая могла не иметь отношения к прогону. На проде это было
+        # незаметно (`PAID_API_ENABLED=true`), а на удалённой ноге с поддельными
+        # провайдерами — фатально: `enforce_fake_providers` намеренно гасит
+        # платный API, и этап падал ВСЕГДА, ещё до первого блока.
         try:
             from backend.app.services.llm.paid_api_guard import (
                 PaidApiBlockedError,
@@ -2306,15 +2463,27 @@ class PipelineManager:
                 assert_paid_api_allowed,
             )
             from backend.app.core.config import get_stage_model
-            stage01_model = get_stage_model("block_analysis") or "openai/gpt-5.4"
-            assert_paid_api_allowed(PaidApiContext(
-                source="manager.stage01.orchestrator",
-                model=stage01_model,
-                project_id=pid,
-                version_id=getattr(job, "version_id", None) or "",
-                stage="block_analysis",
-                job_id=getattr(job, "job_id", "") or "",
-            ))
+            from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+                provider_bridge_active,
+            )
+            stage01_model = get_stage_model("block_batch") or "openai/gpt-5.4"
+            # Мост воркера (11F) перекрывает конфигурацию: модель задаёт
+            # локальная политика воркера, а транспортом служит ProviderAdapter,
+            # который в платный HTTP не ходит вовсе. Проверять здесь строку из
+            # `stage_models.json` значило бы валить удалённый прогон по модели,
+            # которая на нём не применяется, — ровно тот класс ложного
+            # срабатывания, ради которого написана `_stage01_model_spends_paid_api`.
+            if provider_bridge_active():
+                pass
+            elif _stage01_model_spends_paid_api(stage01_model):
+                assert_paid_api_allowed(PaidApiContext(
+                    source="manager.stage01.orchestrator",
+                    model=stage01_model,
+                    project_id=pid,
+                    version_id=getattr(job, "version_id", None) or "",
+                    stage="block_analysis",
+                    job_id=getattr(job, "job_id", "") or "",
+                ))
         except PaidApiBlockedError as _e:
             await self._log(
                 job,
@@ -2691,8 +2860,17 @@ class PipelineManager:
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         version_id = getattr(job, "version_id", None) or "v1"
         project_key = self._safe_backup_name(job.project_id)
+        # Корень `comparison/` берётся из настраиваемого пути, а НЕ из BASE_DIR.
+        # Прежняя привязка к корню кода была единственной записью конвейера
+        # вне всех `AUDIT_*`-корней: на воркере снимок уезжал в каталог
+        # УСТАНОВЛЕННОГО КОДА (блокер Б-4 отчёта 07). Путь сюда идёт из
+        # `_dispatch_action`, то есть ровно тем маршрутом, которым работает
+        # удалённая нога. На центре поведение не меняется: без `COMPARISON_ROOT`
+        # функция возвращает тот же `ROOT_DIR / "comparison"`.
+        from backend.app.services.stage_comparison.paths import comparison_root_path
+
         backup_dir = (
-            BASE_DIR / "comparison" / "classic_codex_ab" / "backups" /
+            comparison_root_path() / "classic_codex_ab" / "backups" /
             project_key / f"{version_id}_{action}_{timestamp}"
         )
         backup_dir.mkdir(parents=True, exist_ok=True)
@@ -3909,7 +4087,11 @@ class PipelineManager:
             job.status = JobStatus.RUNNING
             print(f"[{pid}:resume] ═══ ЭТАП 7: Excel ═══")
             from backend.app.pipeline.stages.report.runner import run_excel_report as _run_excel
-            _xls_result = await _run_excel(self._make_stage_context(job))
+            _xls_result = (
+                await _run_excel(self._make_stage_context(job))
+                if not self._central_stage_blocked("excel")
+                else _SKIPPED_CENTRAL_STAGE
+            )
             if not _xls_result.success:
                 # Excel-ошибка не прерывает pipeline: аудит считается завершённым,
                 # но pipeline_log уже содержит excel:error для диагностики.
@@ -4748,6 +4930,14 @@ class PipelineManager:
         Оркестраторная логика (job.stage, job.status, heartbeat, cleanup)
         остаётся здесь. Бизнес-логика верификации норм — в runner.
         """
+        if self._central_stage_blocked("norm_verify"):
+            # Норм-базы и norms-MCP на воркере нет; попытка «проверить нормы»
+            # там кончилась бы либо падением, либо цитатами по памяти модели —
+            # второе хуже невыполненного этапа.
+            await self._log(
+                job, "Верификация норм пропущена: этап выполняется на центре", "info",
+            )
+            return
         pid = job.project_id
         try:
             job.stage = AuditStage.NORM_VERIFY
@@ -4871,6 +5061,56 @@ class PipelineManager:
     # Legacy aliases
     start_standard_audit = start_audit
     start_pro_audit = start_audit
+
+    async def start_remote_audit(
+        self,
+        project_id: str,
+        *,
+        worker_id: str,
+        version_id: Optional[str] = None,
+        action: str = "full",
+        actor: str = "",
+    ) -> AuditJob:
+        """Запустить аудит проекта на выбранном ОПЕРАТОРОМ audit-worker.
+
+        Только одиночный запуск. Групповая очередь остаётся локальной: смешивать
+        автоматическую диспетчеризацию с удалённым исполнением на этом этапе
+        нельзя — автовыбора воркера нет, а «раскидать батч по VPS» без него
+        означает раскидать всё на один и тот же.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        allowed, reason = execution_registry.remote_execution_available()
+        if not allowed:
+            raise RuntimeError(reason)
+        if not worker_id:
+            raise RuntimeError(
+                "Удалённый запуск требует явно выбранного воркера: "
+                "автоматического выбора на этом этапе нет"
+            )
+        if self.is_project_in_active_batch(project_id):
+            raise RuntimeError(
+                f"Проект {project_id} участвует в активной групповой очереди. "
+                "Групповая очередь исполняется локально; дождитесь её завершения "
+                "или уберите проект из очереди."
+            )
+        self._assert_stage_model_config_ready()
+        from backend.app.core import config as _config
+
+        return await self._enqueue_single(
+            project_id,
+            action=action,
+            version_id=version_id,
+            execution_mode="remote_worker",
+            worker_id=worker_id,
+            execution_profile=getattr(
+                _config, "REMOTE_AUDIT_PROFILE", "remote_audit_pilot_v1"
+            ),
+            # Кто отправил проект на чужой VPS — это ровно то, что должно
+            # попасть в `logical_jobs.created_by` и в журнал переходов. Без
+            # передачи там оставалось «operator:unknown».
+            extra_params={"remote_actor": actor or "unknown"},
+        )
 
     async def _run_block_retry(
         self,
@@ -5319,7 +5559,11 @@ class PipelineManager:
             job.status = JobStatus.RUNNING
             print(f"[{pid}] ═══ ЭТАП 8: Excel ═══")
             from backend.app.pipeline.stages.report.runner import run_excel_report as _run_excel
-            _xls_result = await _run_excel(self._make_stage_context(job))
+            _xls_result = (
+                await _run_excel(self._make_stage_context(job))
+                if not self._central_stage_blocked("excel")
+                else _SKIPPED_CENTRAL_STAGE
+            )
             if not _xls_result.success:
                 await self._log(job, f"Excel-отчёт не создан: {_xls_result.error}", "warn")
 
@@ -5532,6 +5776,12 @@ class PipelineManager:
             action = item.action or queue.action
             if action == "optimization":
                 continue  # оптимизация не нуждается в кропе
+            # Удалённое исполнение кропает у себя, из своего пакета. Кропить его
+            # ещё и здесь — это лишний CPU центра и, что важнее, запись в дерево
+            # версии параллельно со сборкой исходного пакета: содержимое пакета
+            # стало бы невоспроизводимым.
+            if (item.execution_mode or "local") != "local":
+                continue
             # Ищем result.json в папке ВЕРСИИ, а не в V1-root.
             root_dir = resolve_project_dir(item.project_id)
             try:
@@ -5630,6 +5880,19 @@ class PipelineManager:
             # «Выполняется» при мёртвом воркере.
             for _it in queue.items:
                 if _it.status == "running":
+                    if (_it.execution_mode or "local") != "local":
+                        # Удалённая работа НЕ прекратилась от того, что упал
+                        # worker очереди на центре: процесс на VPS живёт своей
+                        # жизнью. Пометить `failed` значило бы снять защиту от
+                        # cleanup_zombies и подтолкнуть оператора к локальному
+                        # перезапуску поверх идущего удалённого прогона.
+                        _it.status = "interrupted"
+                        if not _it.error:
+                            _it.error = (
+                                f"Воркер очереди упал ({e}); удалённое исполнение "
+                                "продолжается на VPS — элемент подхватится resume"
+                            )
+                        continue
                     _it.status = "failed"
                     if not _it.error:
                         _it.error = f"Сбой воркера очереди: {e}"
@@ -5874,8 +6137,15 @@ class PipelineManager:
                             "Элемент был прерван рестартом — продолжаю с места обрыва",
                             "info",
                         )
-                    await self._dispatch_action(
-                        item, job, default_action=queue.action,
+                    # ЕДИНСТВЕННАЯ точка врезки ExecutionBackend. Выбор
+                    # происходит ДО фактического вызова `_dispatch_action`, и
+                    # для локального режима вся ветка сводится к тому же
+                    # вызову с теми же аргументами (LocalExecutionBackend.run).
+                    # Удалённый backend `_dispatch_action` не зовёт вовсе —
+                    # это инвариант E-02.
+                    await self._execute_item(
+                        item, job,
+                        default_action=queue.action,
                         action_override=_action_override,
                     )
 
@@ -5915,6 +6185,26 @@ class PipelineManager:
                     # CancelledError — BaseException, обычным `except Exception`
                     # он не ловится: без этой ветки item навсегда остался бы
                     # 'running' (фантом в UI и невозможность resume).
+                    if (item.execution_mode or "local") != "local":
+                        # Смерть корутины слота на центре ничего не отменяет на
+                        # VPS. Штатная отмена удалённого элемента идёт другим
+                        # путём (`cancel` → `_cancel_remote_item` → команда
+                        # воркеру) ДО того, как таск будет снят. Значит сюда мы
+                        # попали не по воле оператора — и «cancelled» было бы
+                        # ложью, снимающей защиту от cleanup_zombies.
+                        item.status = "interrupted"
+                        item.error = (
+                            "Слот очереди снят на центре; удалённое исполнение "
+                            "продолжается на VPS"
+                        )
+                        await ws_manager.broadcast_global(
+                            WSMessage.log(
+                                "__BATCH__",
+                                f"  … {pid}: слот снят, удалённое исполнение живо",
+                                "warn",
+                            )
+                        )
+                        continue
                     item.status = "cancelled"
                     item.error = "Остановлено пользователем"
                     if job is not None:
@@ -5992,6 +6282,356 @@ class PipelineManager:
             await ws_manager.broadcast_global(
                 WSMessage.log("__BATCH__", f"✗ Слот очереди упал: {e}", "error")
             )
+
+    # ─── Выбор способа исполнения ──────────────────────────────────────
+    async def _execute_item(
+        self,
+        item: BatchQueueItem,
+        job: AuditJob,
+        *,
+        default_action: str = "full",
+        action_override: Optional[str] = None,
+    ) -> None:
+        """Исполнить элемент очереди выбранным backend'ом.
+
+        Локально это ровно прежний `_dispatch_action` — обёртка не добавляет
+        ни одного шага. Удалённо — durable-задание в подсистеме воркеров,
+        которое переживает рестарт центра и подхватывается по сохранённой
+        ссылке `item.execution_handle`.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+        from backend.app.pipeline.execution.contracts import (
+            ExecutionContext,
+            ExecutionMode,
+        )
+
+        mode = execution_registry.item_execution_mode(item)
+        if mode is ExecutionMode.LOCAL:
+            # Быстрый путь без единого нового объекта: поведение прежнее.
+            await self._dispatch_action(
+                item, job, default_action=default_action,
+                action_override=action_override,
+            )
+            return
+
+        backend = execution_registry.select_backend(self, item)
+        request = execution_registry.build_request(
+            item, job, default_action=default_action, action_override=action_override,
+        )
+        ctx = ExecutionContext(
+            item=item, job=job,
+            default_action=default_action, action_override=action_override,
+            extra={"actor": (item.extra_params or {}).get("remote_actor") or "unknown"},
+        )
+        result = await backend.run(request, ctx)
+        handle = execution_registry.handle_from_item(item)
+        if result.cancelled:
+            job.status = JobStatus.CANCELLED
+        elif result.success:
+            await self._run_central_tail_after_remote(job, result, handle=handle)
+        else:
+            job.status = JobStatus.FAILED
+            job.error_message = result.error or job.error_message
+        job.completed_at = datetime.now().isoformat()
+
+    async def _run_central_tail_after_remote(
+        self, job: AuditJob, result: Any, *, handle: Any = None
+    ) -> None:
+        """Обёртка заморозки маршрута. Тело хвоста — в `_central_tail_body`.
+
+        До 11J хвост брал модели из ТЕКУЩЕЙ глобальной таблицы центра
+        (`get_stage_model`), то есть оператор, переключивший пресет между
+        приёмом результата воркера и нормативным этапом, менял провайдера
+        привязки пунктов уже идущего задания (KI-11I-3).
+
+        План берётся из нагрузки задания — тот же объект, что уехал на воркер,
+        — и привязывается к ЗАДАЧЕ, а не к процессу: центр исполняет несколько
+        проектов в одном процессе, и процессный держатель затирал бы соседей.
+        Привязка охватывает ВЕСЬ хвост, включая ранние выходы: `bind_plan` —
+        контекстный менеджер, и `return` изнутри снимает её так же корректно,
+        как обычное завершение.
+        """
+        from backend.app.pipeline.execution import registry as _exec_registry
+        from backend.app.services.audit_routing import active_plan as _active_plan
+
+        plan = await asyncio.to_thread(_exec_registry.frozen_routing_plan, handle)
+        if plan is not None:
+            await self._log(
+                job,
+                "FROZEN_ROUTING_PLAN FOUND: центральный хвост идёт по плану "
+                f"{plan.preset_id!r} ({plan.plan_hash()[:19]}…) — смена пресета "
+                "на него уже не влияет",
+                "info",
+            )
+        else:
+            # Отрицательный случай логируется НАРАВНЕ с положительным. Иначе
+            # «хвост пошёл по плану» и «плана не нашлось, пошли по живой
+            # конфигурации» выглядят в журнале одинаково — то есть главное
+            # утверждение этапа нельзя проверить по прогону.
+            await self._log(
+                job,
+                "FROZEN_ROUTING_PLAN NOT_FOUND legacy_contract_v0: "
+                "центральный хвост идёт по ТЕКУЩЕЙ конфигурации центра",
+                "warn",
+            )
+        with _active_plan.bind_plan(plan):
+            await self._central_tail_body(job, result, handle=handle)
+
+    async def _central_tail_body(
+        self, job: AuditJob, result: Any, *, handle: Any = None
+    ) -> None:
+        """Достроить аудит на центре после приёма результата с воркера.
+
+        Воркер выполняет только этапы профиля; нормативный этап, контроль
+        долгов, перенос вердиктов и Excel остаются здесь — именно это обещано
+        оператору в UI и в ответе API. Без этого блока проект помечался
+        «аудит завершён» вообще без `norm_checks.json`, то есть обещание было
+        ложным.
+
+        Порядок повторяет хвост `_run_ocr_pipeline` дословно, включая
+        `PIPELINE_NORMS_AFTER_MERGE_ENABLED`: своей второй версии порядка
+        этапов здесь нет и быть не должно.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        # Чтение оси идёт в поток: под ним синхронный sqlite, а блокировка
+        # event loop в этом проекте кончается тем, что вотчдог считает бэкенд
+        # мёртвым и снимает его вместе с живым аудитом.
+        state_now = await asyncio.to_thread(
+            execution_registry.central_handoff_state, handle
+        )
+        if state_now == "completed":
+            # Рестарт центра ПОСЛЕ завершённого хвоста. Импорт идемпотентен сам
+            # по себе, а нормативный этап и Excel — нет: они стоят денег и
+            # перезаписывают финальные артефакты. Второй COMPLETED-переход не
+            # выполняется, элемент очереди просто закрывается.
+            await self._log(
+                job, "Центральный хвост уже выполнен ранее — повтор не требуется",
+                "info",
+            )
+            job.status = JobStatus.COMPLETED
+            return
+        await self._log(job, "Результат воркера принят — центральные этапы", "info")
+        await self._handoff_advance(handle, "central_resume_running")
+        # Артефакты приехали в версию проекта, а run dir этого job'а пуст:
+        # без засева норм-этап ответил бы «03_findings.json не найден».
+        try:
+            await self._seed_run_dir_from_latest(job, reason="Приём результата воркера")
+        except Exception as exc:                       # noqa: BLE001 — засев fail-soft
+            await self._log(job, f"Засев run dir не выполнен: {exc}", "warn")
+
+        # Источник истины о том, с какого этапа продолжать, — ЦЕНТРАЛЬНЫЙ
+        # детектор. `resume_hint` из пакета остаётся подсказкой воркера: он
+        # считал её на СВОЁМ дереве, до нормализации путей и до применения на
+        # центре, и доверять ей означало бы позволить воркеру назначать себе
+        # следующий этап.
+        detected = await asyncio.to_thread(self._detect_central_resume_stage, job)
+        # Именно `resume_hint` — то, что посчитал ВОРКЕР и привёз в манифесте.
+        # `result.resume_stage` заполняет сам центр (импортёр), и сверка с ним
+        # была бы сверкой центра с самим собой: расхождение недостижимо, а
+        # предупреждение — мёртвым.
+        hint = getattr(result, "resume_hint", None)
+        if detected:
+            await self._log(
+                job, f"Центральный детектор возобновления: {detected}", "info",
+            )
+            await self._handoff_advance(
+                handle, "central_resume_running", resume_stage=detected,
+            )
+        if hint and detected and str(hint) != str(detected):
+            # Расхождение не аварийное: подсказка считалась на другом дереве.
+            # Но оно ОБЯЗАНО быть видимым — иначе «воркер сказал одно, центр
+            # сделал другое» разбирается только по логам двух машин.
+            await self._log(
+                job,
+                f"Подсказка воркера ({hint}) не совпала с центральным "
+                f"детектором ({detected}); выполняется решение центра",
+                "warn",
+            )
+
+        # Детерминированная точка остановки стенда РОВНО на границе
+        # «воркер / центр»: результат принят и применён, следующий этап
+        # определён, ни один центральный этап ещё не выполнялся. Этап 11G
+        # обязан останавливаться именно здесь — доказывается граница, а не
+        # центральный хвост, и `norm_verify` тратил бы модель на то, что к
+        # предмету этапа отношения не имеет.
+        #
+        # Вне стенда переменная не задана и вызов не делает ничего.
+        from backend.app.pipeline.execution import registry as _exec_registry
+
+        await asyncio.to_thread(
+            _exec_registry.handoff_test_pause,
+            "before_central_tail",
+            detail={
+                "project_id": job.project_id,
+                "resume_stage": detected,
+                "handle": getattr(handle, "attempt_id", None),
+            },
+        )
+
+        norms_after_merge = self._norms_after_merge_enabled()
+        if not norms_after_merge:
+            await self._run_norm_verification(job, standalone=False, wait_before_fix=None)
+            if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                await self._handoff_advance(
+                    handle, "failed",
+                    detail={"stage": "norm_verify", "error": job.error_message},
+                )
+                return
+
+        await self._run_debt_control(job)
+        if norms_after_merge:
+            await self._run_norm_verification(job, standalone=False, wait_before_fix=None)
+            if job.status in (JobStatus.CANCELLED, JobStatus.FAILED):
+                await self._handoff_advance(
+                    handle, "failed",
+                    detail={"stage": "norm_verify", "error": job.error_message},
+                )
+                return
+        await self._run_decision_carryover(job)
+
+        self._reset_job_progress(job)
+        job.stage = AuditStage.EXCEL
+        job.status = JobStatus.RUNNING
+        from backend.app.pipeline.stages.report.runner import run_excel_report as _run_excel
+        _xls = await _run_excel(self._make_stage_context(job))
+        if not _xls.success:
+            await self._log(job, f"Excel-отчёт не создан: {_xls.error}", "warn")
+
+        job.status = JobStatus.COMPLETED
+        self._promote_completed_audit_v2(job)
+        # COMPLETED ставится ровно один раз и ТОЛЬКО здесь — после
+        # нормативного этапа, контроля долгов, переноса вердиктов и Excel.
+        #
+        # Но не по факту «дошли до этой строки»: при `standalone=False`
+        # провалившаяся верификация норм НЕ ставит job'у FAILED (статус общего
+        # job'а мутировать нельзя — его делят critic и оптимизация), она только
+        # пишет в лог. Хвост доезжал до конца, ось получала `completed`, и
+        # гейт рестарта после этого навсегда запрещал повтор — по аудиту без
+        # `norm_checks.json`. Признаком завершённости считается артефакт, а не
+        # достигнутая строка кода.
+        produced = await asyncio.to_thread(self._central_tail_artifacts, job)
+        # Обязателен `norm_checks.json` — ради него хвост и существует. Судьба
+        # второго файла фиксируется в детали, но незавершённым хвост не делает:
+        # новых ложных `failed` этап не вводит.
+        missing = [name for name in ("norm_checks.json",) if not produced.get(name)]
+        detail = {"final_stage": "excel", "excel_ok": bool(_xls.success),
+                  "central_artifacts": produced}
+        if missing:
+            await self._log(
+                job,
+                "Центральные артефакты не созданы: " + ", ".join(missing)
+                + " — хвост помечен как незавершённый и может быть повторён",
+                "warn",
+            )
+            await self._handoff_advance(
+                handle, "failed", detail=dict(detail, missing_artifacts=missing),
+            )
+            return
+        await self._handoff_advance(handle, "completed", detail=detail)
+
+    def _central_tail_artifacts(self, job: AuditJob) -> dict[str, bool]:
+        """Какие артефакты центрального хвоста реально появились на диске.
+
+        Список именно центральный: это ровно то, чего у результата воркера
+        быть не может, и ровно то, ради чего хвост выполняется.
+        """
+        names = ("norm_checks.json", "03a_norms_verified.json")
+        try:
+            _root, project_dir, output_dir = self._resolve_job_paths(job)
+        except Exception:                     # noqa: BLE001 — проверка не блокер
+            return {name: True for name in names}
+        latest_dir = project_dir / "03_analysis" / "latest"
+        return {
+            name: (output_dir / name).is_file() or (latest_dir / name).is_file()
+            for name in names
+        }
+
+    def _detect_central_resume_stage(self, job: AuditJob) -> Optional[str]:
+        """Спросить СУЩЕСТВУЮЩИЙ детектор, с какого этапа продолжать.
+
+        Своей логики «какой этап следующий» здесь нет: она уже написана и
+        используется локальным конвейером. Отдельный вызов нужен потому, что
+        подсказку в пакете считал ВОРКЕР — на своём дереве и до применения
+        результата на центре.
+        """
+        try:
+            from backend.app.pipeline.resume_detector import detect_resume_stage
+
+            info = detect_resume_stage(job.project_id, version_id=job.version_id)
+            return info.get("stage") if isinstance(info, dict) else None
+        except Exception:                          # noqa: BLE001 — детектор не блокер
+            return None
+
+    async def _handoff_advance(
+        self,
+        handle: Any,
+        state: str,
+        *,
+        detail: Optional[dict] = None,
+        resume_stage: Optional[str] = None,
+    ) -> None:
+        """Отметить этап центрального хвоста через абстракцию исполнения.
+
+        Менеджер не знает ни одной детали подсистемы воркеров — это машинно
+        проверяемая граница, — поэтому отметка идёт тем же путём, что и всё
+        остальное удалённое: через `backend.app.pipeline.execution`.
+
+        Запись синхронная и идёт в sqlite, поэтому выполняется в потоке:
+        блокировка event loop в этом проекте заканчивается тем, что вотчдог
+        признаёт бэкенд мёртвым и снимает его вместе с живым аудитом (ADR-007).
+        """
+        if handle is None:
+            return
+        from backend.app.pipeline.execution import registry as execution_registry
+
+        await asyncio.to_thread(
+            execution_registry.note_central_handoff,
+            handle, state, detail=detail, resume_stage=resume_stage,
+        )
+
+    def _remote_items(
+        self,
+        statuses: tuple[str, ...] = ("running", "interrupted"),
+        *,
+        require_handle: bool = True,
+    ) -> dict[str, "BatchQueueItem"]:
+        """Элементы очереди с ЖИВЫМ удалённым исполнением, по project_id.
+
+        Нужны там, где локальные сигналы живости неприменимы по определению:
+        у remote-задания на центре нет ни дочерних процессов, ни своего
+        asyncio-таска, и судить о нём прежними правилами нельзя (§10.2
+        первого аудита — самый опасный класс дефекта всей затеи).
+
+        Два условия здесь важны оба:
+
+        * `statuses` по умолчанию НЕ содержит `pending`. Элемент, который ещё
+          не начинали, живой работой не является, а зачисление его в живые
+          парализовало бы очередь целиком: `_has_live_project_audit` вечно
+          отвечал бы «выполняется», resume падал бы с 409, а
+          `_ensure_batch_worker` возвращал очередь без worker'а — и любой
+          следующий локальный запуск молча не исполнялся бы никогда;
+        * при `require_handle=True` требуется `execution_handle`: без него на
+          стороне подсистемы ничего не создано, защищать нечего. Отмена
+          вызывает с `require_handle=False` — снять с очереди ещё не
+          отправленный элемент тоже нужно.
+        """
+        from backend.app.pipeline.execution import registry as execution_registry
+        from backend.app.pipeline.execution.contracts import ExecutionMode
+
+        queue = self._batch_queue
+        if queue is None:
+            return {}
+        return {
+            it.project_id: it
+            for it in queue.items
+            if it.status in statuses
+            and execution_registry.item_execution_mode(it) is ExecutionMode.REMOTE_WORKER
+            and (
+                not require_handle
+                or execution_registry.handle_from_item(it) is not None
+            )
+        }
 
     # ─── Единый dispatcher action'ов ───────────────────────────────────
     async def _dispatch_action(
@@ -6312,6 +6952,9 @@ class PipelineManager:
         retry_stage: Optional[str] = None,
         extra_params: Optional[dict] = None,
         version_id: Optional[str] = None,
+        execution_mode: str = "local",
+        worker_id: Optional[str] = None,
+        execution_profile: Optional[str] = None,
     ) -> AuditJob:
         """Поставить single-project задачу в общую очередь.
 
@@ -6367,6 +7010,31 @@ class PipelineManager:
                             f"Проект {project_id} ({effective_vid}) уже в очереди"
                         )
 
+            # Удалённые элементы проверяются НЕЗАВИСИМО от статуса очереди и
+            # включая `interrupted`. После рестарта центра очередь имеет статус
+            # `interrupted`, дедуп выше не работал, и повторное нажатие
+            # «Отправить на воркер» создавало ВТОРОЕ логическое задание — то
+            # есть второй полный платный аудит того же проекта (уникальный
+            # индекс не спасает: первая попытка к тому моменту уже completed).
+            if self._batch_queue:
+                from backend.app.pipeline.execution import registry as _exec_registry
+                from backend.app.pipeline.execution.contracts import (
+                    ExecutionMode as _ExecMode,
+                )
+                for it in self._batch_queue.items:
+                    same_version = (it.version_id or "v1") == (effective_vid or "v1")
+                    if (
+                        it.project_id == project_id
+                        and same_version
+                        and it.status in ("pending", "running", "interrupted")
+                        and _exec_registry.item_execution_mode(it) is _ExecMode.REMOTE_WORKER
+                    ):
+                        raise RuntimeError(
+                            f"Для {project_id} ({effective_vid}) уже есть удалённое "
+                            f"исполнение в состоянии «{it.status}». Дождитесь его "
+                            "завершения или остановите его."
+                        )
+
             job_id = str(uuid4())
             item = BatchQueueItem(
                 project_id=project_id,
@@ -6376,6 +7044,9 @@ class PipelineManager:
                 extra_params=extra_params or {},
                 status="pending",
                 job_id=job_id,
+                execution_mode=execution_mode,
+                worker_id=worker_id,
+                execution_profile=execution_profile,
             )
 
             queue = self._ensure_batch_worker(action_for_label=action)

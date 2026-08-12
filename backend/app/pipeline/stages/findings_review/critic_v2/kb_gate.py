@@ -158,8 +158,12 @@ def _call_claude_cli(prompt: str, model: str, timeout: int = 180) -> str:
         "--max-turns", "1",
     ]
 
-    # Run from /tmp/sonnet_clean to avoid loading project CLAUDE.md / hooks / memory
-    clean_cwd = "/tmp/sonnet_clean"
+    # Запуск вне репозитория, чтобы не подгружались project CLAUDE.md / hooks /
+    # memory. Корень вычисляется (TMPDIR-aware), а не задан литералом: на
+    # воркере общий `/tmp` — это запись мимо каталога попытки.
+    from backend.app.core.config import clean_cli_cwd_root
+
+    clean_cwd = clean_cli_cwd_root()
     os.makedirs(clean_cwd, exist_ok=True)
 
     clean_env = {k: v for k, v in os.environ.items() if k in (

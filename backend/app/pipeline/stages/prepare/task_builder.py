@@ -25,7 +25,7 @@ from backend.app.pipeline.stages.optimization.prescan import build_optimization_
 logger = logging.getLogger(__name__)
 
 from backend.app.core.config import (
-    BASE_DIR, PROJECTS_DIR,
+    BASE_DIR, PROJECTS_DIR, PROMPTS_DIR,
     NORM_VERIFY_TASK_TEMPLATE, NORM_FIX_TASK_TEMPLATE, NORM_REQUOTE_TASK_TEMPLATE,
     OPTIMIZATION_NORM_FIX_TASK_TEMPLATE,
     OPTIMIZATION_TASK_TEMPLATE,
@@ -97,16 +97,50 @@ def _version_output_dir(project_id: str) -> Path:
 
 
 def _version_project_dir(project_id: str) -> Path:
-    """version_dir активной версии (parent of _output)."""
+    """version_dir активной версии.
+
+    Формула «родитель `_output`» верна ТОЛЬКО для V1/legacy, где выход лежит
+    прямо в корне версии. В раскладке V2 выход живёт на два-три уровня глубже
+    (`<версия>/03_analysis/latest` или `.../runs/<job>`), и её родитель — это
+    `03_analysis`, а не корень версии.
+
+    Пока область видимости привязана (`bind_audit_scope`), разницы не видно:
+    берётся явный `version_dir`. Но два потребителя зовут резолвер ВНЕ привязки
+    — текстовый пре-скан (`stages/text_analysis/runner.py`, после возврата
+    раннера) и «страж отсутствия» (`stages/findings_verify/runner.py`,
+    отдельный этап). Оба получали путь `<версия>/03_analysis/<имя>.md`, файла
+    там нет, и оба тихо уходили в безопасный режим: пре-скан пропускался,
+    страж не понижал ни одного подтверждённо-ложного «нет».
+
+    Дефект предсуществующий и не связан с воркерами: в журналах центра он
+    воспроизводится на 55 проектах (288 непроверенных кандидатов). Поэтому
+    fallback теперь спрашивает у резолвера версий настоящий корень версии и
+    только в последнюю очередь возвращается к прежней формуле.
+    """
     env_version_dir = audit_scope.get_version_dir()
     if env_version_dir:
         return Path(env_version_dir)
+
+    from backend.app.services.common import version_service
+    try:
+        ctx = version_service.resolve_project_version_context(project_id)
+        version_dir = ctx.get("version_dir")
+        if version_dir:
+            return Path(version_dir)
+    except Exception:  # noqa: BLE001 — резолвер версий не обязан знать project_id
+        pass
     return _version_output_dir(project_id).parent
 
 
 # ─── Dual-language templates (RU/EN) ───
 
-_EN_DIR = BASE_DIR / "prompts" / "pipeline" / "en"
+# Якорь — PROMPTS_DIR, а не BASE_DIR. На центре это тот же путь
+# (`DATA_DIR` по умолчанию равен `ROOT_DIR`), поэтому поведение не меняется. На
+# воркере разница решающая: `AUDIT_PROMPTS_DIR` указывает на СНИМОК промптов из
+# пакета, чей хэш центр сверяет. С прежним якорем текст, уходящий в модель,
+# брался из установленного кода воркера — то есть `verify_snapshot` рапортовал
+# о совпадении промптов, которого не было.
+_EN_DIR = PROMPTS_DIR / "pipeline" / "en"
 _SYNC_FILE = _EN_DIR / "_sync.json"
 
 # Полный маппинг ВСЕХ шаблонов (включая critic/corrector/norm)
@@ -378,9 +412,17 @@ def _get_block_analysis_example(project_info: dict, project_id: str) -> str:
 
 
 def _inject_discipline(template: str, project_info: dict) -> str:
-    """Инъекция дисциплинарного контента в шаблон."""
-    section = (project_info or {}).get("section", "EOM")
-    profile = discipline_service.load_discipline(section)
+    """Инъекция дисциплинарного контента в шаблон.
+
+    Умолчания `"EOM"` здесь нет намеренно. Оно означало, что проект без
+    заполненного `section` — а таких приезжает с портала достаточно —
+    аудировался ролью, чек-листом и нормативным справочником электрики, и
+    отличить такой прогон от настоящего ЭОМ по артефактам было нельзя. Ответ
+    даёт `discipline_identity`: он либо называет дисциплину, либо честно
+    отвечает «не опознана», и тогда в шаблон уезжает НЕЙТРАЛЬНЫЙ профиль.
+    """
+    section = (project_info or {}).get("section")
+    profile = discipline_service.load_discipline(section) if section else None
     return discipline_service.inject_discipline(template, profile)
 
 

@@ -129,6 +129,16 @@ class BatchQueueItem(BaseModel):
     # worker батча идёт по позиционному индексу, и удаление сдвинуло бы
     # оставшиеся pending — часть проектов была бы молча пропущена.
     hidden: bool = False
+    # ─── Где исполняется (этап ExecutionBackend) ────────────────────────────
+    # Все поля с дефолтами: старый batch_queue.json читается без изменений и
+    # трактуется как локальное исполнение. Элемент, записанный прошлой версией,
+    # не может внезапно оказаться удалённым.
+    execution_mode: str = "local"          # local | remote_worker
+    worker_id: Optional[str] = None        # audit-worker, выбранный ОПЕРАТОРОМ
+    execution_profile: Optional[str] = None
+    # Ссылка на удалённое исполнение: переживает рестарт центра и позволяет
+    # подхватить работу вместо повторного запуска (E-05, E-06).
+    execution_handle: dict = {}
 
 
 class BatchQueueStatus(BaseModel):

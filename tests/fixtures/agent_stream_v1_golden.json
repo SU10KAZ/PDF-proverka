@@ -1,0 +1,59 @@
+{
+  "agent_hello": {
+    "worker_id": "w-test-12a",
+    "worker_instance_id": "instance-12a",
+    "supported_protocol_versions": [1],
+    "worker_software_version": "12a.test",
+    "execution_revision": "rev-test",
+    "connection_epoch": 7,
+    "connection_nonce": "nonce-test"
+  },
+  "center_hello": {
+    "accepted_protocol_version": 1,
+    "connection_id": "connection-test",
+    "max_control_message_bytes": 1048576,
+    "max_events_per_batch": 256,
+    "max_unacked_event_window": 1024
+  },
+  "job_offer": {
+    "job_id": "job-test",
+    "attempt_id": "attempt-test",
+    "attempt_number": 2,
+    "assignment_generation": 3,
+    "assigned_worker_id": "w-test-12a",
+    "project_id": "project-test",
+    "job_type": "test_pipeline_v1",
+    "event_start_sequence": 1
+  },
+  "heartbeat": {
+    "worker_id": "w-test-12a",
+    "connection_id": "connection-test",
+    "active_slots": 2,
+    "max_slots": 2,
+    "accepting_jobs": false
+  },
+  "event_batch": {
+    "worker_id": "w-test-12a",
+    "job_id": "job-test",
+    "attempt_id": "attempt-test",
+    "first_sequence": 41,
+    "sequences": [41, 42]
+  },
+  "cancel": {
+    "command_id": "command-test",
+    "job_id": "job-test",
+    "attempt_id": "attempt-test"
+  },
+  "result_ready": {
+    "job_id": "job-test",
+    "attempt_id": "attempt-test",
+    "transfer_id": "upload-test",
+    "result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "result_ack": {
+    "job_id": "job-test",
+    "attempt_id": "attempt-test",
+    "result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "validation_status": "accepted"
+  }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аудит-воркеры</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Неблокирующая загрузка шрифтов (как в index.html): render-blocking
+         Google Fonts при недоступности подвешивает отрисовку. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+          media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+    <link rel="stylesheet" href="/static/css/audit-workers.css?v={{css_version}}">
+</head>
+<body>
+<div class="shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Этап 3.5 — усиление вертикального среза</p>
+            <h1>Аудит-воркеры</h1>
+            <p class="lead">
+                Сторонние VPS, выполняющие задания платформы. На этом этапе доступен
+                только безопасный тестовый прогон <code>test_pipeline_v1</code>:
+                реальный аудит, Claude Code, Codex и нормативный этап не подключены.
+            </p>
+        </div>
+        <div class="topbar-actions">
+            <label class="checkbox">
+                <input type="checkbox" id="autoRefresh" checked>
+                <span>Автообновление</span>
+            </label>
+            <button id="refreshBtn" class="btn btn--primary">Обновить</button>
+        </div>
+    </header>
+
+    <!-- Подсистема выключена: честное сообщение вместо пустого экрана -->
+    <section id="disabledBanner" class="banner banner--muted" hidden>
+        <strong>Функция отключена.</strong>
+        <span id="disabledReason"></span>
+        <p class="hint">
+            Включается переменной <code>DISTRIBUTED_WORKERS_ENABLED=true</code> и требует
+            заданного <code>DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET</code>.
+            См. <code>docs/distributed_audit_workers/03_step0_implementation.md</code>.
+        </p>
+    </section>
+
+    <section id="configError" class="banner banner--error" hidden></section>
+
+    <!-- Права текущего пользователя. Экран НЕ является границей безопасности:
+         сервер проверяет право на каждом запросе независимо от того, что здесь
+         нарисовано. Блок нужен, чтобы человек понимал, почему кнопки нет. -->
+    <section id="permsBanner" class="banner banner--muted" hidden></section>
+
+    <main id="content" hidden>
+        <section class="summary" id="summary"></section>
+
+        <!-- Зона 0: заявки на регистрацию. Показывается только когда они есть:
+             до одобрения оператором воркер не получает токен и не работает. -->
+        <section class="block block--pending" id="pendingBlock" hidden>
+            <h2>Ожидают одобрения</h2>
+            <p class="hint">
+                Заявка приходит с bootstrap-secret и даёт только одноразовый
+                claim-secret. Токен выдаётся исключительно после одобрения.
+            </p>
+            <div id="pending" class="cards"></div>
+        </section>
+
+        <!-- Зона 1: карточки VPS -->
+        <section class="block">
+            <h2>Подключённые VPS</h2>
+            <div id="workers" class="cards"></div>
+            <p id="workersEmpty" class="hint" hidden>
+                Ни один воркер ещё не зарегистрировался. Установите агент на VPS и
+                выполните <code>python -m audit_worker register --bootstrap-secret …</code>.
+            </p>
+        </section>
+
+        <!-- Зона 1б: учётные записи подписок (этап 11).
+             Отдельно от карточек VPS намеренно: одна подписка может обслуживать
+             несколько VPS, и её лимит — ОДИН ресурс. Складывать остатки двух
+             машин нельзя, поэтому и показываются они не на машинах. -->
+        <section class="block" id="accountsBlock">
+            <h2>Учётные записи подписок</h2>
+            <p class="hint" id="accountsHint"></p>
+            <div id="accounts" class="cards"></div>
+            <p id="accountsEmpty" class="hint" hidden>
+                Учётных записей нет. Они появляются, когда воркер сообщает
+                <code>account_group_id</code> либо когда оператор привязывает
+                провайдера воркера к группе вручную.
+            </p>
+        </section>
+
+        <!-- Зона 2: задания -->
+        <section class="block">
+            <h2>Задания</h2>
+            <div id="jobs" class="jobs"></div>
+            <p id="jobsEmpty" class="hint" hidden>Заданий пока нет.</p>
+        </section>
+
+        <!-- Зона 3: выдача тестового задания -->
+        <section class="block" id="createBlock">
+            <h2>Отправить тестовое задание</h2>
+            <form id="createForm" class="form-grid">
+                <label>Воркер
+                    <select id="jobWorker" class="input" required></select>
+                </label>
+                <label>Код проекта
+                    <!-- Кириллица, пробелы, кавычки и «/» допустимы: реальные
+                         коды выглядят как «13АВ/РД-АР3-К7». В файловый путь
+                         этот код не попадает никогда. -->
+                    <input id="jobProject" class="input" value="test-project"
+                           maxlength="200" required>
+                </label>
+                <label>Метка
+                    <input id="jobLabel" class="input" value="smoke"
+                           pattern="[A-Za-z0-9._\-]+" required>
+                </label>
+                <label>Шагов
+                    <input id="jobSteps" class="input" type="number" value="5" min="1" max="100">
+                </label>
+                <label>Секунд на шаг
+                    <input id="jobStepSeconds" class="input" type="number" value="0.5"
+                           min="0" max="10" step="0.1">
+                </label>
+                <label>Размер результата, байт
+                    <input id="jobResultBytes" class="input" type="number" value="4096"
+                           min="0" max="8388608">
+                </label>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn--primary">Отправить</button>
+                    <span id="createHint" class="hint"></span>
+                </div>
+            </form>
+            <p class="hint">
+                В задание уходят только эти скаляры. Команда, argv, пути и переменные
+                окружения не передаются — воркер строит запуск сам.
+            </p>
+        </section>
+
+        <!-- Зона 3б: ручной запуск РЕАЛЬНОГО аудита на выбранном воркере.
+             Автоматического выбора воркера нет намеренно (§3.2 задания этапа
+             ExecutionBackend): пока нет ни квот подписок, ни модели «у кого
+             скоро сгорит лимит», выбор делает человек. -->
+        <section class="block" id="remoteAuditBlock" hidden>
+            <h2>Отправить РЕАЛЬНЫЙ аудит на воркер</h2>
+            <p class="hint" id="remoteAuditInfo"></p>
+            <form id="remoteAuditForm" class="form-grid">
+                <label>Воркер
+                    <select id="remoteAuditWorker" class="input" required></select>
+                </label>
+                <label>Код проекта
+                    <input id="remoteAuditProject" class="input" maxlength="300" required>
+                </label>
+                <label>Версия
+                    <input id="remoteAuditVersion" class="input" maxlength="64"
+                           placeholder="например v002">
+                </label>
+                <label>Действие
+                    <select id="remoteAuditAction" class="input">
+                        <option value="full">полный аудит</option>
+                        <!-- «audit» на платформе тоже включает оптимизацию
+                             (_run_ocr_pipeline с include_optimization по
+                             умолчанию); подпись «без оптимизации» была бы
+                             неправдой. -->
+                        <option value="audit">аудит (действие audit)</option>
+                        <option value="resume">продолжить с места обрыва</option>
+                    </select>
+                </label>
+                <div class="form-actions">
+                    <button type="submit" id="remoteAuditSubmit"
+                            class="btn btn--danger">Отправить на воркер</button>
+                    <span id="remoteAuditHint" class="hint"></span>
+                </div>
+            </form>
+            <p class="hint">
+                Пакет проекта собирается центром при старте элемента очереди и
+                уходит на воркер целиком. Нормативный этап, перенос вердиктов и
+                финальная сборка выполняются ТОЛЬКО на центре. Одновременно на
+                одном воркере выполняется не более одного реального аудита;
+                тестовые задания с ним не смешиваются.
+            </p>
+        </section>
+
+        <!-- Зона 4: история попыток выбранного задания.
+             Строится безопасными DOM-API (textContent), а не innerHTML:
+             сюда попадают данные с полу-доверенного воркера. -->
+        <section class="block" id="attemptsBlock" hidden>
+            <h2>История попыток <span id="attemptsJobId" class="mono"></span></h2>
+            <p class="hint" id="attemptsJobTitle"></p>
+            <div id="attempts" class="attempts"></div>
+        </section>
+
+        <!-- Зона 5: журнал операторских действий (только чтение, только admin) -->
+        <section class="block" id="actionsBlock" hidden>
+            <h2>Журнал операторских действий</h2>
+            <p class="hint">
+                Журнал неизменяемый: эндпоинта удаления записей нет ни в API,
+                ни в интерфейсе.
+            </p>
+            <div id="adminActions" class="actions-log"></div>
+        </section>
+
+        <!-- Зона 6: логи выбранного задания -->
+        <section class="block" id="logsBlock" hidden>
+            <h2>Логи задания <span id="logsJobId" class="mono"></span></h2>
+            <pre id="logs" class="logs"></pre>
+        </section>
+    </main>
+</div>
+<script src="/static/js/audit-workers.js?v={{js_version}}"></script>
+</body>
+</html>

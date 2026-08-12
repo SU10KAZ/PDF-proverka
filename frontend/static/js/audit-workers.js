@@ -1,0 +1,1571 @@
+/* Экран «Аудит-воркеры» (этапы 0 и 3.5).
+ *
+ * Самодостаточная страница по образцу model-control.js: без бандлера и без
+ * правок 19-тысячестрочного app.js — так экран не может сломать основной SPA.
+ *
+ * Правила отображения, взятые из техпроекта:
+ *   * состояние СВЯЗИ и состояние ИСПОЛНЕНИЯ показываются раздельно; молчание
+ *     воркера никогда не рисуется как ошибка задания;
+ *   * агент и исполнитель показываются ОТДЕЛЬНО: «агент онлайн» ещё не значит,
+ *     что VPS способен работать;
+ *   * процент прогресса рисуется ТОЛЬКО при percent_reliable, иначе —
+ *     неопределённый индикатор, длительность и последний лог;
+ *   * при потере связи метрики ресурсов сереют с отметкой времени, но НЕ
+ *     обнуляются (обнулить = соврать), а свободные слоты обнуляются, потому
+ *     что назначать вслепую нельзя;
+ *   * результат без подтверждения приёма помечается retention_unconfirmed;
+ *   * результат устаревшей попытки подписывается явно и никогда не выдаётся
+ *     за актуальный.
+ *
+ * Безопасность разметки. Данные приходят с ПОЛУ-ДОВЕРЕННОГО воркера и от
+ * оператора (причины, заметки). Карточки и списки строятся DOM-API
+ * (createElement + textContent), а не склейкой строк: один забытый esc() в
+ * шаблоне давал исполнение чужого скрипта в аутентифицированной сессии
+ * оператора — с доступом к ротации токена.
+ */
+(() => {
+  'use strict';
+
+  const REFRESH_MS = 5000;
+  const $ = (id) => document.getElementById(id);
+
+  const state = {
+    enabled: false, timer: null, workers: [], jobs: [],
+    logsJobId: null, attemptsJobId: null,
+    // Права приходят С СЕРВЕРА на каждый цикл обновления и нигде не хранятся
+    // между сессиями. localStorage тут нет намеренно: правка локального
+    // хранилища не должна давать ни одной кнопки, а тем более права.
+    perms: { canView: false, canOperate: false, canAdmin: false,
+             subject: null, role: null, authenticated: false, diagnostics: null },
+    // Готовность воркеров к РЕАЛЬНОМУ аудиту: worker_id → отчёт совместимости.
+    // Считает центр; экран его только показывает.
+    auditTargets: {},
+    auditRemote: { enabled: false, reason: '', profile: '', revision: null },
+    // Провайдеры (этап 11): worker_id → массив состояний Claude/Codex,
+    // и отдельно учётные записи подписок. Всё приходит с сервера; экран
+    // ничего не вычисляет сам, кроме форматирования.
+    workerProviders: {},
+    providerAccounts: [],
+    providerMeta: { lowThresholdPct: null, autoDispatch: false },
+    // Отдельный признак: ответила ли ручка провайдеров. Без него отказ
+    // сервера выглядел на КАЖДОЙ карточке как «воркер не сообщал о
+    // провайдерах» — утверждение о воркере, которого никто не спрашивал.
+    providersLoaded: false,
+    providerAccountKinds: [],
+  };
+
+  const PERM = {
+    view: 'distributed_workers.view',
+    operate: 'distributed_workers.operate',
+    admin: 'distributed_workers.admin',
+  };
+
+  const DENIED_HINT = 'Недостаточно прав для этого действия';
+
+  // Подтверждающие фразы обязаны совпадать с attempt_service на центре.
+  const CONFIRM = {
+    cancel: 'ОТМЕНИТЬ',
+    markLost: 'ПОПЫТКА ПОТЕРЯНА',
+    newAttempt: 'НОВАЯ ПОПЫТКА',
+    deleteData: 'УДАЛИТЬ ДАННЫЕ',
+  };
+
+  // ─── Безопасное построение DOM ─────────────────────────────────────────────
+  function el(tag, options = {}, children = []) {
+    const node = document.createElement(tag);
+    if (options.className) node.className = options.className;
+    if (options.title) node.title = String(options.title);
+    // ВСЕГДА textContent: разметку из данных не собираем.
+    if (options.text !== undefined && options.text !== null) {
+      node.textContent = String(options.text);
+    }
+    if (options.dataset) {
+      Object.entries(options.dataset).forEach(([k, v]) => {
+        node.dataset[k] = String(v);
+      });
+    }
+    if (options.attrs) {
+      Object.entries(options.attrs).forEach(([k, v]) => node.setAttribute(k, String(v)));
+    }
+    (Array.isArray(children) ? children : [children])
+      .filter(Boolean)
+      .forEach((child) => node.appendChild(child));
+    return node;
+  }
+
+  const text = (value) => document.createTextNode(String(value ?? ''));
+
+  function kv(label, value, extraClass) {
+    return el('div', { className: extraClass || '' }, [
+      el('dt', { text: label }),
+      el('dd', { text: value }),
+    ]);
+  }
+
+  /** Кнопка опасного действия. Без права — отключена и объясняет почему.
+   *
+   * Отключённая кнопка НИЧЕГО не защищает: сервер проверяет право сам и
+   * ответит 403 на прямой HTTP-запрос. Она нужна только чтобы человек не
+   * гадал, куда делось действие.
+   */
+  function actionButton(options, allowed) {
+    const node = el('button', {
+      className: options.className || 'btn btn--small',
+      text: options.text,
+      dataset: allowed ? (options.dataset || {}) : {},
+      title: allowed ? (options.title || '') : DENIED_HINT,
+    });
+    if (!allowed) {
+      node.disabled = true;
+      node.classList.add('btn--denied');
+    }
+    return node;
+  }
+
+  function replaceChildren(container, nodes) {
+    container.textContent = '';
+    (Array.isArray(nodes) ? nodes : [nodes]).filter(Boolean)
+      .forEach((n) => container.appendChild(n));
+  }
+
+  // ─── Форматирование ────────────────────────────────────────────────────────
+  function humanAge(seconds) {
+    if (seconds === null || seconds === undefined) return '—';
+    const s = Math.max(0, Math.round(seconds));
+    if (s < 60) return `${s} с назад`;
+    if (s < 3600) return `${Math.round(s / 60)} мин назад`;
+    return `${Math.round(s / 3600)} ч назад`;
+  }
+
+  function humanDuration(seconds) {
+    if (!seconds && seconds !== 0) return '—';
+    const s = Math.round(seconds);
+    if (s < 60) return `${s} с`;
+    if (s < 3600) return `${Math.floor(s / 60)} мин ${s % 60} с`;
+    return `${Math.floor(s / 3600)} ч ${Math.floor((s % 3600) / 60)} мин`;
+  }
+
+  // Данные ресурсов приходят с ПОЛУ-ДОВЕРЕННОГО воркера. Не число — значит не
+  // показываем: число здесь единственный осмысленный тип.
+  function num(value, fallback = '—') {
+    return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+  }
+
+  function humanBytes(bytes) {
+    if (typeof bytes !== 'number' || !Number.isFinite(bytes)) return '—';
+    if (bytes < 1024) return `${bytes} Б`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} МБ`;
+    return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} ГБ`;
+  }
+
+  function humanStamp(epochSeconds) {
+    if (!epochSeconds) return '—';
+    return new Date(epochSeconds * 1000).toLocaleString('ru-RU');
+  }
+
+  const CONNECTION_LABEL = {
+    online: '● онлайн', stale: '● связь нестабильна',
+    offline: '● связь потеряна', reconnecting: '● догоняет события',
+  };
+
+  const EXECUTOR_LABEL = {
+    online: '● исполнитель работает',
+    stale: '● исполнитель молчит',
+    offline: '● исполнитель остановлен',
+    interrupted: '● исполнитель прерван',
+    unknown: '● исполнитель неизвестен',
+  };
+
+  const DISK_LABEL = {
+    ok: 'диск в норме', warning: 'мало места', critical: 'критически мало места',
+    unknown: 'нет данных о диске',
+  };
+
+  // ─── HTTP ──────────────────────────────────────────────────────────────────
+  function idempotencyKey() {
+    // Ключ на КЛИК: повтор того же запроса (двойной клик, ретрай) не должен
+    // выполнять действие второй раз.
+    const rnd = (window.crypto && window.crypto.randomUUID)
+      ? window.crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    return `ui-${rnd}`;
+  }
+
+  async function api(path, options) {
+    const response = await fetch(path, options);
+    let body = null;
+    try { body = await response.json(); } catch (_) { body = null; }
+    if (!response.ok) {
+      const detail = body && body.detail ? body.detail : `HTTP ${response.status}`;
+      throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
+    }
+    return body;
+  }
+
+  /** Опасное операторское действие: заголовок намерения + ключ идемпотентности. */
+  async function dangerousPost(path, body) {
+    return api(path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Вместе с SameSite=lax у портальной cookie это и есть CSRF-защита:
+        // межсайтовый простой запрос такого заголовка не поставит.
+        'X-Requested-With': 'audit-workers',
+        'Idempotency-Key': idempotencyKey(),
+      },
+      body: JSON.stringify(body || {}),
+    });
+  }
+
+  /**
+   * Изменение ручных полей учётной записи (PUT, право `operate`).
+   *
+   * Заголовок намерения ставится тот же, что и на POST-действиях: CSRF-рубеж
+   * не зависит от метода. Ключа идемпотентности здесь нет намеренно — PUT
+   * идемпотентен по определению, повтор даёт то же состояние.
+   */
+  async function putAccount(accountId, body) {
+    return api(`/api/workers/providers/accounts/${encodeURIComponent(accountId)}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'audit-workers',
+      },
+      body: JSON.stringify(body || {}),
+    });
+  }
+
+  /**
+   * Простой диалог правки учётной записи.
+   *
+   * Даты вводятся в формате `ГГГГ-ММ-ДД ЧЧ:ММ` и переводятся в unix-время
+   * браузером — то есть в ЛОКАЛЬНОЙ зоне пользователя. Именно поэтому рядом
+   * отдельно хранится `reset_timezone`: считать зону по браузеру означало бы
+   * молча приписать оператору чужой часовой пояс.
+   */
+  async function editAccount(accountId) {
+    const account = state.providerAccounts.find((a) => a.account_id === accountId);
+    if (!account) return;
+    const name = window.prompt('Название учётной записи:', account.display_name || '');
+    if (name === null) return;
+    const resetRaw = window.prompt(
+      'Ручная дата сброса лимита (ГГГГ-ММ-ДД ЧЧ:ММ).\n'
+      + 'Пустая строка — оставить как есть. Слово «нет» — стереть.',
+      account.manual_next_reset_at ? localStamp(account.manual_next_reset_at) : '');
+    if (resetRaw === null) return;
+    const daysRaw = window.prompt(
+      'Пороги предупреждения в днях через запятую:',
+      (account.warning_days || []).join(', '));
+    if (daysRaw === null) return;
+    const notes = window.prompt('Заметки:', account.notes || '');
+    if (notes === null) return;
+    // Тип учётной записи — комплаенс-решение оператора, и без него запись
+    // остаётся в состоянии review_required. Раньше задать его с экрана было
+    // нельзя вовсе, хотя чек-лист готовности к первому реальному аудиту
+    // требует именно этого.
+    const kinds = state.providerAccountKinds.length
+      ? state.providerAccountKinds
+      : ['subscription_personal', 'subscription_team', 'subscription_enterprise',
+         'commercial_api', 'unknown'];
+    const kindRaw = window.prompt(
+      `Тип учётной записи (${kinds.join(' / ')}).\nПусто — не трогать.`,
+      account.account_kind || '');
+    if (kindRaw === null) return;
+    // Три состояния, а не два. `confirm` умеет только «да/нет», и «Отмена»
+    // молча снимала бы отметку у оператора, зашедшего поправить заметку, —
+    // а это единственный источник предупреждения о сгорающем лимите, когда
+    // остаток объективно неизвестен. API «не трогать» поддерживает
+    // (exclude_unset), диалог обязан уметь то же самое.
+    const unusedRaw = window.prompt(
+      'Отметка «лимит почти не использован»:\n'
+      + '  да  — включить (предупреждение о сгорающем лимите будет работать '
+      + 'даже при неизвестном остатке)\n'
+      + '  нет — выключить\n'
+      + '  пусто — не трогать',
+      account.operator_marked_unused ? 'да' : 'нет');
+    if (unusedRaw === null) return;
+
+    const body = { display_name: name.trim(), notes };
+    const unusedText = unusedRaw.trim().toLowerCase();
+    if (unusedText === 'да' || unusedText === 'yes') body.operator_marked_unused = true;
+    else if (unusedText === 'нет' || unusedText === 'no') body.operator_marked_unused = false;
+    const trimmed = resetRaw.trim().toLowerCase();
+    if (trimmed === 'нет' || trimmed === 'no') {
+      body.clear_manual_reset = true;
+    } else if (resetRaw.trim()) {
+      const parsed = Date.parse(resetRaw.trim().replace(' ', 'T'));
+      if (Number.isNaN(parsed)) {
+        window.alert('Дата не разобрана. Ожидается ГГГГ-ММ-ДД ЧЧ:ММ.');
+        return;
+      }
+      body.manual_next_reset_at = parsed / 1000;
+      body.reset_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+    }
+    const days = daysRaw.split(',').map((x) => parseInt(x.trim(), 10)).filter((x) => x > 0);
+    if (days.length) body.warning_days = days;
+    const kind = kindRaw.trim();
+    if (kind) {
+      if (!kinds.includes(kind)) {
+        window.alert(`Неизвестный тип. Допустимы: ${kinds.join(', ')}`);
+        return;
+      }
+      body.account_kind = kind;
+    }
+    await putAccount(accountId, body);
+    await refresh();
+  }
+
+  /** Диалог опасного действия: причина + подтверждающая фраза. */
+  function askConfirmation(title, warning, phrase) {
+    const reason = window.prompt(`${title}\n\n${warning}\n\nПричина (обязательно):`, '');
+    if (reason === null || !reason.trim()) return null;
+    const typed = window.prompt(
+      `Для подтверждения введите ровно: ${phrase}`, '');
+    if (typed === null || typed.trim() !== phrase) {
+      if (typed !== null) window.alert('Подтверждающая фраза не совпала — действие отменено.');
+      return null;
+    }
+    return { reason: reason.trim(), confirmation: phrase };
+  }
+
+  // ─── Карточка VPS ──────────────────────────────────────────────────────────
+  /**
+   * Панель ручного запуска реального аудита.
+   *
+   * Разметка строится только DOM-API: createElement + textContent. Сборка
+   * HTML из строк здесь запрещена и проверяется тестом: в панель попадают коды
+   * проектов и имена воркеров, то есть данные из чужого источника.
+   */
+  function renderRemoteAuditPanel() {
+    const block = $('remoteAuditBlock');
+    if (!block) return;
+    const info = $('remoteAuditInfo');
+    const select = $('remoteAuditWorker');
+    const submit = $('remoteAuditSubmit');
+    if (!info || !select || !submit) return;
+
+    if (!state.auditRemote.enabled) {
+      block.hidden = false;
+      info.textContent = state.auditRemote.reason
+        || 'Удалённое исполнение аудита выключено.';
+      replaceChildren(select, []);
+      select.disabled = true;
+      submit.disabled = true;
+      submit.title = state.auditRemote.reason || '';
+      return;
+    }
+    block.hidden = false;
+    const compatible = Object.values(state.auditTargets)
+      .filter((target) => target && target.compatible);
+    info.textContent = [
+      `Профиль ${state.auditRemote.profile}.`,
+      'Нормативный этап и финальная сборка выполняются на ЦЕНТРЕ.',
+      state.auditRemote.revision
+        ? `Ревизия центра: ${state.auditRemote.revision}.`
+        : 'Ревизия центра не задана — удалённый запуск запрещён.',
+      'Аудит занимает воркер целиком: одновременно не более одного.',
+    ].join(' ');
+
+    replaceChildren(select, compatible.map((target) => el('option', {
+      value: target.worker_id,
+      text: `${target.display_name || target.worker_id}`
+        + ` · ${target.provider_mode === 'real' ? 'НАСТОЯЩИЕ модели' : 'поддельные модели'}`
+        + ` · слот ${target.audit_slot_label}`,
+    })));
+    const canLaunch = state.perms.canOperate && compatible.length > 0;
+    select.disabled = compatible.length === 0;
+    submit.disabled = !canLaunch;
+    submit.title = state.perms.canOperate
+      ? (compatible.length ? '' : 'Нет ни одного совместимого воркера')
+      : DENIED_HINT;
+  }
+
+  /** Строка про реальный аудит: capability, режим провайдеров, слот. */
+  function remoteAuditLine(worker) {
+    const caps = worker.capabilities || {};
+    const jobTypes = Array.isArray(caps.job_types) ? caps.job_types : [];
+    const supported = jobTypes.indexOf('audit_pipeline_v1') !== -1;
+    if (!supported) {
+      return 'не поддерживается этой сборкой воркера '
+        + '(AUDIT_WORKER_AUDIT_PIPELINE_ENABLED=false)';
+    }
+    const real = caps.real_llm_enabled === true;
+    const target = state.auditTargets[worker.worker_id] || null;
+    const parts = [
+      'поддерживается',
+      real
+        ? '· провайдеры: НАСТОЯЩИЕ Claude/Codex'
+        : '· провайдеры: поддельные (тестовый режим)',
+      `· слот аудита ${target ? target.audit_slot_label : `0/${1}`}`,
+    ];
+    if (caps.pipeline_revision) {
+      parts.push(`· ревизия ${String(caps.pipeline_revision)}`);
+    }
+    // СПОСОБНОСТИ — то, что центр заказывает у воркера с этапа 11G. Точной
+    // модели здесь нет и быть не может: она принадлежит машине, и центру её
+    // не показывают. Оператору нужно ровно это: «умеет ли воркер то, что
+    // задание попросит», — иначе отказ «локальная политика не покрывает
+    // способность» виден только в тексте ошибки запуска.
+    const offered = caps.provider_capabilities;
+    if (offered && typeof offered === 'object') {
+      const line = Object.keys(offered)
+        .sort()
+        .map((name) => `${PROVIDER_LABEL[name] || name}: `
+          + (Array.isArray(offered[name]) ? offered[name].join(', ') : '—'))
+        .join('; ');
+      if (line) parts.push(`· способности ${line}`);
+      else parts.push('· способности НЕ объявлены (нет локальной политики моделей)');
+    } else if (real) {
+      parts.push('· способности НЕ объявлены (нет локальной политики моделей)');
+    }
+    if (caps.provider_auto_grant_enabled === true) {
+      parts.push(`· авторазрешение до ${Number(caps.provider_max_inferences_per_job) || 0}`
+        + ' обращений на задание');
+    }
+    if (target && !target.compatible) {
+      const reasons = (target.reasons || [])
+        .map((r) => r && r.message)
+        .filter(Boolean)
+        .join('; ');
+      parts.push(`· НЕ готов: ${reasons}`);
+    }
+    return parts.join(' ');
+  }
+
+  function remoteAuditWarning(worker) {
+    const target = state.auditTargets[worker.worker_id] || null;
+    if (target && !target.compatible) return true;
+    const caps = worker.capabilities || {};
+    return caps.real_llm_enabled === true;
+  }
+
+  // ─── Провайдеры (этап 11) ──────────────────────────────────────────────────
+  const PROVIDER_LABEL = { claude: 'Claude', codex: 'Codex' };
+
+  const INSTALL_LABEL = {
+    installed: 'установлен', missing: 'НЕ установлен', broken: 'повреждён',
+  };
+
+  const AUTH_LABEL = {
+    logged_in: 'вход выполнен', logged_out: 'вход НЕ выполнен',
+    expired: 'вход истёк', unknown: 'неизвестно', error: 'ошибка',
+  };
+
+  // Две РАЗНЫЕ оси, которые легко перепутать: `auth_state` отвечает «вошли
+  // ли», `auth_mode` — «чьей учётной записью». Формулировки выбраны так,
+  // чтобы ambient нельзя было прочитать как «воркер завёл себе аккаунт».
+  const AUTH_MODE_LABEL = {
+    ambient_user: 'личная учётная запись пользователя VPS',
+    isolated_provider_home: 'отдельный каталог воркера',
+    unavailable: 'учётных данных здесь нет (решение оператора)',
+  };
+
+  const QUOTA_LABEL = {
+    ready: 'готов', low: 'мало осталось', limited: 'лимит исчерпан',
+    cooldown: 'ожидание', auth_required: 'нужна авторизация',
+    unknown: 'неизвестно', stale: 'устарело', error: 'ошибка',
+    policy_blocked: 'запрещено политикой',
+  };
+
+  const SOURCE_LABEL = {
+    official_structured_api: 'официальный structured API',
+    official_app_server_rpc: 'официальный app-server (JSON-RPC)',
+    official_machine_readable: 'официальный машиночитаемый статус',
+    official_documented_text: 'документированный текстовый вывод',
+    observed_rate_limit_response: 'наблюдённый отказ по лимиту',
+    local_usage_statistics: 'собственная статистика вызовов',
+    operator_manual: 'ручной ввод оператора',
+    unavailable: 'официального источника нет',
+  };
+
+  const CONFIDENCE_LABEL = {
+    high: 'высокая', medium: 'средняя', low: 'низкая', none: 'нет',
+  };
+
+  const STABILITY_LABEL = {
+    stable: 'стабильный контракт',
+    experimental: '⚠ экспериментальный контракт',
+    undocumented: '⚠ недокументированный',
+    not_applicable: '',
+  };
+
+  /**
+   * Остаток лимита текстом.
+   *
+   * Ключевое правило §21 задания: неизвестный остаток пишется словом
+   * «неизвестен». Ни «0 %», ни «100 %», ни прочерк — они читаются как
+   * измеренные значения и по ним принимают решения.
+   */
+  function remainingText(pct) {
+    if (pct === null || pct === undefined || Number.isNaN(Number(pct))) {
+      return 'неизвестен';
+    }
+    return `${Number(pct).toFixed(0)}%`;
+  }
+
+  /**
+   * Метка «ГГГГ-ММ-ДД ЧЧ:ММ» в ЛОКАЛЬНОЙ зоне браузера.
+   *
+   * Не `toISOString()`: он даёт UTC, а обратный разбор идёт `Date.parse` по
+   * локальному времени. Пара «подставили UTC — прочитали локально» сдвигала
+   * ручную дату на смещение зоны при КАЖДОМ открытии диалога, даже когда
+   * оператор поле не трогал: в Москве — на три часа назад каждый раз.
+   */
+  function localStamp(epochSeconds) {
+    const d = new Date(Number(epochSeconds) * 1000);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+         + ` ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function daysText(days) {
+    if (days === null || days === undefined) return '—';
+    const value = Number(days);
+    if (Number.isNaN(value)) return '—';
+    if (value < 0) return 'прошёл';
+    if (value < 1) return `${Math.max(1, Math.round(value * 24))} ч`;
+    return `${Math.floor(value)} дн.`;
+  }
+
+  function providerRows(workerId) {
+    if (!state.providersLoaded) {
+      // Утверждать что-либо о воркере, когда не ответил СЕРВЕР, нельзя: это
+      // ровно тот выдуманный факт, которого этот экран избегает.
+      return [el('p', { className: 'warn',
+        text: 'Состояние провайдеров не получено: запрос к центру не выполнен. '
+            + 'Это не значит, что воркер молчит.' })];
+    }
+    const items = state.workerProviders[workerId] || [];
+    if (!items.length) {
+      return [el('p', { className: 'hint',
+        text: 'Воркер ещё не сообщал о провайдерах (нужна версия агента с этапом 11).' })];
+    }
+    return items.map((item) => {
+      const quota = item.quota || {};
+      const installed = item.installation_status === 'installed';
+      const authOk = item.auth_state === 'logged_in';
+      const parts = [
+        el('span', { className: 'mono', text: PROVIDER_LABEL[item.provider] || item.provider }),
+        el('span', {
+          className: installed ? '' : 'warn',
+          text: `${INSTALL_LABEL[item.installation_status] || item.installation_status}`
+              + (item.cli_version ? ` ${item.cli_version}` : ''),
+        }),
+        el('span', {
+          className: authOk ? '' : 'warn',
+          text: AUTH_LABEL[item.auth_state] || item.auth_state,
+        }),
+        el('span', {
+          className: quota.quota_state === 'limited' ? 'warn' : '',
+          text: `лимит: ${QUOTA_LABEL[quota.quota_state] || quota.quota_state || 'неизвестно'}`
+              + ` · остаток ${remainingText(quota.estimated_remaining_pct)}`,
+        }),
+        el('span', { className: 'hint',
+          text: `источник: ${SOURCE_LABEL[quota.source] || quota.source || '—'}`
+              + ` · достоверность: ${CONFIDENCE_LABEL[quota.confidence] || quota.confidence || '—'}`
+              + ` · проверка: ${item.observed_at ? humanStamp(item.observed_at) : '—'}` }),
+      ];
+      const stability = STABILITY_LABEL[quota.source_stability];
+      if (stability) parts.push(el('span', { className: 'hint', text: stability }));
+      // Режим авторизации читается из capability, а не с верхнего уровня:
+      // санитайзер центра собирает верхний уровень перечислением полей и
+      // новый ключ отбрасывает, а capability_json сохраняется целиком.
+      // Показывать это обязательно: без режима «вошли» и «не вошли» выглядят
+      // одинаково независимо от того, ЧЬИ учётные данные при этом работают.
+      const capability = item.capability || {};
+      const authMode = capability.auth_mode;
+      if (authMode) {
+        parts.push(el('span', {
+          className: authMode === 'unavailable' ? 'hint' : '',
+          text: `авторизация: ${AUTH_MODE_LABEL[authMode] || authMode}`,
+        }));
+      }
+      // Остаток разрешений на РЕАЛЬНЫЙ контрольный запрос. Ноль — норма и
+      // потому не предупреждение; ненулевой остаток означает, что воркер
+      // прямо сейчас способен потратить настоящий запрос подписки, и это
+      // оператор обязан видеть, не заходя на машину.
+      const grant = capability.inference_probe_grant_remaining;
+      if (typeof grant === 'number' && grant > 0) {
+        parts.push(el('span', { className: 'warn',
+          text: `⚠ разрешено контрольных запросов к модели: ${grant}` }));
+      }
+      if (item.stale) {
+        parts.push(el('span', { className: 'warn',
+          text: '⚠ снимок устарел — показаны последние известные значения, не текущие' }));
+      }
+      if (item.account_group_id) {
+        parts.push(el('span', { className: 'hint',
+          text: `учётная запись: ${item.account_group_id}` }));
+      }
+      if (item.credential_insecure) {
+        parts.push(el('span', { className: 'warn',
+          text: `⚠ файл учётных данных читается не только владельцем (${item.credential_mode || '?'})` }));
+      }
+      if (item.detail) parts.push(el('span', { className: 'hint', text: item.detail }));
+      return el('li', { className: 'provider-row' }, parts);
+    });
+  }
+
+  function renderAccount(account) {
+    const rec = account.reconciliation || {};
+    const unused = account.reset_soon_unused || {};
+    const rows = [
+      kv('Провайдер', PROVIDER_LABEL[account.provider] || account.provider),
+      kv('Группа (account_group_id)', account.account_group_id),
+      kv('Состояние', QUOTA_LABEL[account.quota_state] || account.quota_state,
+         account.quota_state === 'limited' ? 'kv-critical' : ''),
+      // Слово «неизвестен» — не заглушка, а значимый ответ: выдуманный процент
+      // на этом экране опаснее пустого места.
+      kv('Остаток', remainingText(account.observed_remaining_pct)),
+      kv('Источник', SOURCE_LABEL[account.quota_source] || account.quota_source || '—'),
+      kv('Достоверность',
+         CONFIDENCE_LABEL[account.quota_confidence] || account.quota_confidence || '—'),
+      kv('Наблюдаемый сброс', account.observed_next_reset_at
+        ? `${humanStamp(account.observed_next_reset_at)} (через ${daysText(account.days_to_observed_reset)})`
+        : 'неизвестен'),
+      kv('Ручной сброс', account.manual_next_reset_at
+        ? `${humanStamp(account.manual_next_reset_at)} (через ${daysText(account.days_to_manual_reset)})`
+          + (account.reset_timezone ? ` · ${account.reset_timezone}` : '')
+        : 'не задан'),
+      kv('Пороги предупреждения', (account.warning_days || []).join(' / ') + ' дн.'),
+      kv('Привязанные VPS', (account.attached_worker_ids || []).length),
+      kv('Комплаенс', account.policy_state || '—',
+         account.policy_state === 'policy_blocked' ? 'kv-critical' : ''),
+    ];
+    const card = el('article', { className: 'card' }, [
+      el('header', { className: 'card-head' }, [
+        el('div', {}, [
+          el('h3', { text: account.display_name || account.account_group_id }),
+          el('p', { className: 'mono small', text: account.account_id }),
+        ]),
+      ]),
+      el('dl', { className: 'kv' }, rows),
+    ]);
+
+    // Одна подписка на двух VPS — ОДИН ресурс. Показываем это явно, чтобы
+    // никто не сложил два остатка глазами.
+    if ((account.attached_worker_ids || []).length > 1) {
+      card.appendChild(el('p', { className: 'hint',
+        text: 'Один лимит на несколько VPS: остатки НЕ складываются. '
+            + `Показан снимок воркера ${String(rec.chosen_worker_id || '—').slice(0, 8)} `
+            + '(правило: самый надёжный источник, затем самый свежий).' }));
+    }
+    if (account.reset_dates_disagree) {
+      card.appendChild(el('p', { className: 'warn',
+        text: '⚠ Ручная и наблюдаемая даты сброса расходятся. Показаны обе; '
+            + 'автоматика ручную дату не меняет.' }));
+    }
+    (account.warnings_triggered || []).forEach((w) => {
+      card.appendChild(el('p', { className: 'warn',
+        text: `⚠ До сброса ${daysText(w.days_left)} — сработал порог ${w.threshold_days} дн. `
+            + `(дата: ${w.source === 'manual' ? 'ручная' : 'наблюдаемая'})` }));
+    });
+    if (unused.active) {
+      card.appendChild(el('p', { className: 'warn',
+        text: `⚠ Лимит скоро сбросится неиспользованным: ${unused.reason}. `
+            + `Источник даты: ${unused.reset_source === 'manual' ? 'ручная' : 'наблюдаемая'}; `
+            + `источник остатка: ${unused.remaining_source === 'operator_manual'
+              ? 'отметка оператора' : 'наблюдение'}.` }));
+    } else if (unused.reason) {
+      card.appendChild(el('p', { className: 'hint', text: `Предупреждения нет: ${unused.reason}` }));
+    }
+    if (rec.stale) {
+      card.appendChild(el('p', { className: 'hint',
+        text: 'Снимок устарел — показаны последние известные значения, не текущие.' }));
+    }
+    if (account.notes) {
+      card.appendChild(el('p', { className: 'hint', text: account.notes }));
+    }
+    card.appendChild(el('footer', { className: 'card-actions' }, [
+      actionButton({ className: 'btn', text: 'Изменить',
+        dataset: { editAccount: account.account_id } }, state.perms.canOperate),
+    ]));
+    return card;
+  }
+
+  /** Короткая строка «провайдер → группа» для карточки VPS. */
+  function providerGroupsLine(workerId) {
+    const items = state.workerProviders[workerId] || [];
+    if (!items.length) return '—';
+    return items
+      .map((i) => `${PROVIDER_LABEL[i.provider] || i.provider}: `
+                + `${i.account_group_id || 'не привязан'}`)
+      .join(' · ');
+  }
+
+  /** Привязать провайдера воркера к общей учётной записи (право operate). */
+  async function bindProviderGroup(workerId) {
+    const provider = window.prompt(
+      'Какого провайдера привязать? claude или codex', 'codex');
+    if (provider === null) return;
+    const name = provider.trim().toLowerCase();
+    if (name !== 'claude' && name !== 'codex') {
+      window.alert('Допустимы только claude и codex.');
+      return;
+    }
+    const current = (state.workerProviders[workerId] || [])
+      .find((i) => i.provider === name);
+    const group = window.prompt(
+      'Идентификатор общей учётной записи (например claude-account-01).\n'
+      + 'Пустая строка — отвязать.\n\n'
+      + 'Внимание: две машины с ОДНОЙ группой считаются одним лимитом, '
+      + 'их остатки не складываются.',
+      (current && current.account_group_id) || '');
+    if (group === null) return;
+    await api(
+      `/api/workers/${encodeURIComponent(workerId)}`
+      + `/providers/${encodeURIComponent(name)}/account-group`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'audit-workers',
+        },
+        body: JSON.stringify({ account_group_id: group.trim() || null }),
+      });
+    await refresh();
+  }
+
+  function renderWorker(worker) {
+    const conn = worker.connection_status;
+    const offline = conn === 'offline';
+    const snapshot = worker.resource_snapshot || {};
+    const ram = snapshot.ram || {};
+    const cpu = snapshot.cpu || {};
+    const disk = snapshot.disk || {};
+    const slots = snapshot.slots || {};
+    const executor = worker.executor || { status: 'unknown' };
+    const diskReport = worker.disk || { level: 'unknown' };
+    const freeSlots = offline ? 0 : (worker.calculated_free_slots ?? 0);
+    const pending = worker.registration_status === 'pending';
+
+    const head = el('header', { className: 'card-head' }, [
+      el('div', {}, [
+        el('h3', { text: worker.display_name || worker.worker_id }),
+        el('p', { className: 'mono small', text: worker.worker_id }),
+      ]),
+      el('div', { className: 'card-status' }, [
+        el('span', { className: `status status--${conn}`,
+          text: `${CONNECTION_LABEL[conn] || conn}, ${humanAge(worker.seconds_since_seen)}` }),
+        // Отдельная строка про исполнителя: агент онлайн ≠ VPS работает.
+        el('span', {
+          className: `status status--exec status--exec-${executor.status}`,
+          text: EXECUTOR_LABEL[executor.status] || EXECUTOR_LABEL.unknown,
+          title: executor.executor_instance_id
+            ? `executor_instance_id: ${executor.executor_instance_id}`
+            : 'исполнитель ещё не отчитывался',
+        }),
+      ]),
+    ]);
+
+    const slotInfo = worker.slots || null;
+    const slotLine = slotInfo
+      ? `занято ${slotInfo.occupancy_label}`
+        + ` · центр насчитал свободных ${num(slotInfo.center_free_slots, 0)}`
+        + ` · воркер заявил ${num(slotInfo.worker_claimed_free_slots, 0)}`
+      : `свободно ${num(freeSlots, 0)} из ${num(worker.configured_max_slots, 1)}`;
+
+    const list = el('dl', { className: 'kv' }, [
+      kv('Регистрация', worker.registration_status),
+      kv('Состояние', worker.worker_state),
+      kv('Приём новых заданий', worker.intake_enabled
+        ? 'разрешён оператором'
+        : `остановлен${worker.intake_reason ? ` · ${worker.intake_reason}` : ''}`),
+      kv('Версия агента', worker.worker_version || '—'),
+      kv('Протокол', `v${num(worker.protocol_version, 1)}`),
+      kv('RAM', `${num(ram.available_gb)} / ${num(ram.total_gb)} ГБ`),
+      kv('CPU', `${num(cpu.cores)} ядер · LA5 ${num(cpu.la5)}`),
+      kv('Диск', `${num(disk.free_gb)} / ${num(disk.total_gb)} ГБ`),
+      kv('Слоты', slotLine,
+         slotInfo && slotInfo.slot_count_mismatch ? 'kv-critical' : ''),
+      kv('Лимит слотов', slotInfo
+        ? `${num(slotInfo.effective_limit, 1)} (ограничивает: ${slotInfo.limit_binding || '—'}`
+          + ` · доказанный максимум этапа ${num(slotInfo.max_verified_slots, 1)})`
+        : `${num(worker.configured_max_slots, 1)}`),
+      kv('Активных заданий', (worker.active_jobs || []).length),
+      // Реальный аудит — отдельная строка, а не «ещё один тип задания»: у него
+      // свой слот, свой лимит и свой режим провайдеров, и оператор обязан
+      // видеть разницу между «поддельные CLI» и «настоящая подписка».
+      kv('Реальный аудит', remoteAuditLine(worker),
+         remoteAuditWarning(worker) ? 'kv-critical' : ''),
+      kv('Учётные записи провайдеров', providerGroupsLine(worker.worker_id)),
+      kv('Исполнитель', [
+        EXECUTOR_LABEL[executor.status] || executor.status,
+        executor.last_heartbeat_at ? `· ${humanStamp(executor.last_heartbeat_at)}` : '',
+        `· процессов: ${num(executor.running_processes, 0)}`,
+        executor.ambiguous_processes ? `· неоднозначных: ${executor.ambiguous_processes}` : '',
+      ].filter(Boolean).join(' ')),
+      kv('Хранение', [
+        DISK_LABEL[diskReport.level] || DISK_LABEL.unknown,
+        `· свободно ${humanBytes(diskReport.free_bytes)}`,
+        `· кандидатов на очистку ${num(diskReport.cleanup_candidates, 0)}`,
+        `(${humanBytes(diskReport.cleanup_candidates_bytes)})`,
+        `· неподтверждённых ${humanBytes(diskReport.unconfirmed_results_bytes)}`,
+      ].join(' '), diskReport.level === 'critical' ? 'kv-critical' : ''),
+    ]);
+
+    const warnings = (worker.warnings || [])
+      .filter((w) => w && typeof w === 'object')
+      .map((w) => el('li', { className: 'warn', text: `⚠ ${w.message || w.code || ''}` }));
+
+    // Управление воркерами и токенами — административные действия (§9 задания).
+    const admin = state.perms.canAdmin;
+    const actions = pending
+      ? [
+        actionButton({ className: 'btn btn--primary', text: 'Одобрить',
+          dataset: { approve: worker.worker_id } }, admin),
+        actionButton({ className: 'btn btn--danger', text: 'Отклонить',
+          dataset: { reject: worker.worker_id } }, admin),
+      ]
+      : [
+        worker.intake_enabled
+          ? actionButton({ className: 'btn', text: 'Drain: не брать новые',
+            dataset: { drain: worker.worker_id } }, state.perms.canOperate)
+          : actionButton({ className: 'btn btn--primary', text: 'Разрешить intake',
+            dataset: { resumeIntake: worker.worker_id } }, state.perms.canOperate),
+        actionButton({ className: 'btn', text: 'Учётная запись провайдера',
+          dataset: { bindGroup: worker.worker_id } }, state.perms.canOperate),
+        actionButton({ className: 'btn', text: 'Отозвать',
+          dataset: { revoke: worker.worker_id } }, admin),
+      ];
+
+    const card = el('article', {
+      className: `card${offline ? ' card--offline' : ''}${pending ? ' card--pending' : ''}`,
+    }, [head, list]);
+
+    // Два активных проекта — ОТДЕЛЬНЫМИ строками: «активных заданий: 2» не
+    // говорит ни какие это проекты, ни сколько каждое идёт.
+    const active = (worker.active_jobs || []).filter((j) => j && typeof j === 'object');
+    if (active.length) {
+      card.appendChild(el('ul', { className: 'slot-jobs' }, active.map((job) => el(
+        'li', { className: 'slot-job' }, [
+          el('span', { className: 'mono small',
+            text: String(job.job_id || '').slice(0, 8) }),
+          el('span', { text: String(job.project_id || '—') }),
+          el('span', { className: 'hint',
+            text: `этап: ${job.stage || '—'} · событий: ${num(job.last_event_seq, 0)}`
+                + (job.started_at
+                  ? ` · идёт ${humanDuration((Date.now() / 1000) - job.started_at)}`
+                  : '') }),
+        ],
+      ))));
+    }
+    if (slotInfo && slotInfo.slot_count_mismatch) {
+      card.appendChild(el('p', { className: 'warn',
+        text: 'slot_count_mismatch: воркер заявляет больше свободных слотов, чем '
+            + 'насчитал центр. Используется меньшее — лишнее задание не выдаётся.' }));
+    }
+    if (slotInfo && slotInfo.unproven_warning) {
+      card.appendChild(el('p', { className: 'warn', text: `⚠ ${slotInfo.unproven_warning}` }));
+    }
+    (slotInfo ? slotInfo.notices || [] : []).forEach((notice) => {
+      card.appendChild(el('p', { className: 'hint', text: `⚠ ${notice}` }));
+    });
+    if (slotInfo && slotInfo.blocked_reason) {
+      card.appendChild(el('p', { className: 'warn',
+        text: `Новые задания не выдаются: ${slotInfo.blocked_reason}` }));
+    }
+
+    if (offline) {
+      card.appendChild(el('p', { className: 'hint',
+        text: 'Метрики — последние известные, на момент связи.' }));
+    }
+    if (executor.status !== 'online' && !pending) {
+      card.appendChild(el('p', { className: 'warn',
+        text: 'Локальный исполнитель не работает — новые задания выполняться не будут.' }));
+    }
+    if (diskReport.level === 'critical') {
+      card.appendChild(el('p', { className: 'warn',
+        text: 'Критически мало места: новые задания не выдаются. Текущие продолжают '
+            + 'работу, неподтверждённые результаты не удаляются.' }));
+    }
+    if (warnings.length) card.appendChild(el('ul', { className: 'warnings' }, warnings));
+    // Провайдеры — ОТДЕЛЬНЫЙ блок под карточкой. Их состояние не смешивается
+    // со статусом VPS: воркер остаётся online, даже когда провайдер сломан.
+    if (!pending) {
+      card.appendChild(el('h4', { className: 'card-subhead', text: 'Провайдеры моделей' }));
+      card.appendChild(el('ul', { className: 'providers' }, providerRows(worker.worker_id)));
+    }
+    card.appendChild(el('footer', { className: 'card-actions' }, actions));
+    return card;
+  }
+
+  // ─── Строка задания ────────────────────────────────────────────────────────
+  function renderProgress(progress) {
+    if (!progress) return null;
+    if (progress.percent_reliable && progress.percent !== null) {
+      const bar = el('div', { className: 'progress-bar' }, [el('span')]);
+      bar.firstChild.style.width = `${num(progress.percent, 0)}%`;
+      return el('div', { className: 'progress' }, [
+        bar,
+        el('span', { className: 'mono',
+          text: `${num(progress.processed)} / ${num(progress.total)} `
+              + `${progress.unit || ''} (${num(progress.percent)}%)` }),
+      ]);
+    }
+    return el('div', { className: 'progress' }, [
+      el('div', { className: 'progress-bar progress-bar--indeterminate' }, [el('span')]),
+      el('span', { className: 'hint',
+        text: `прогресс не оценивается · ${humanDuration(progress.elapsed_sec)} · `
+            + `операций: ${num(progress.completed_operations, 0)}` }),
+    ]);
+  }
+
+  function renderJob(job) {
+    const progress = job.progress || null;
+    const nodes = [];
+
+    nodes.push(el('header', {}, [
+      el('div', {}, [
+        el('strong', { text: job.project_display_name || job.project_id }),
+        el('span', { className: 'mono small',
+          text: `${String(job.job_id).slice(0, 8)} · попытка ${num(job.attempt_no, 1)}` }),
+      ]),
+      el('span', { className: 'badge', text: job.display_status || job.state }),
+    ]));
+
+    const bar = renderProgress(progress);
+    if (bar) nodes.push(bar);
+    if (progress && progress.eta_sec) {
+      nodes.push(el('p', { className: 'hint',
+        text: `осталось ~${humanDuration(progress.eta_sec)}` }));
+    }
+    if (progress && progress.last_significant_event) {
+      nodes.push(el('p', { className: 'hint',
+        text: `последнее: ${progress.last_significant_event}` }));
+    }
+    if (job.validated_at) {
+      nodes.push(el('dl', { className: 'kv kv--result' }, [
+        kv('SHA-256', job.result_package_hash || '—'),
+        kv('Размер', humanBytes(job.result_package_size)),
+        kv('Принят', humanStamp(job.validated_at)),
+        kv('Хранится до', humanStamp(job.retention_until)),
+      ]));
+    }
+    if (job.retention_unconfirmed) {
+      nodes.push(el('p', { className: 'warn',
+        text: `⚠ ${job.retention_warning || 'Центр не подтвердил приём'}` }));
+    }
+
+    const actions = [
+      el('button', { className: 'btn btn--small', text: 'Логи',
+        dataset: { logs: job.job_id } }),
+      el('button', { className: 'btn btn--small', text: 'Попытки',
+        dataset: { attempts: job.job_id } }),
+    ];
+    if (job.state === 'completed') {
+      const link = el('a', { className: 'btn btn--small', text: 'Скачать результат' });
+      link.href = `/api/workers/jobs/${encodeURIComponent(job.job_id)}/result`;
+      actions.push(link);
+    }
+    nodes.push(el('footer', { className: 'job-actions' }, actions));
+    return el('article', { className: `job job--${job.state}` }, nodes);
+  }
+
+  // ─── История попыток ───────────────────────────────────────────────────────
+  function renderAttempt(attempt, jobId) {
+    const disposition = attempt.attempt_disposition || 'active';
+    const nodes = [];
+
+    nodes.push(el('header', { className: 'attempt-head' }, [
+      el('div', {}, [
+        el('strong', { text: `Попытка №${num(attempt.attempt_number, 1)}` }),
+        el('span', { className: 'mono small', text: attempt.attempt_id }),
+      ]),
+      el('span', {
+        className: `badge badge--${disposition}`,
+        text: attempt.is_current
+          ? `текущая · ${attempt.disposition_label || disposition}`
+          : `устаревшая · ${attempt.disposition_label || disposition}`,
+      }),
+    ]));
+
+    nodes.push(el('dl', { className: 'kv' }, [
+      kv('VPS', attempt.assigned_worker_id || '—'),
+      kv('Состояние исполнения', attempt.display_status || attempt.state),
+      kv('Расположение', attempt.disposition_label || disposition),
+      kv('Начата', humanStamp(attempt.started_at || attempt.assigned_at)),
+      kv('Длительность', attempt.progress
+        ? humanDuration(attempt.progress.elapsed_sec) : '—'),
+      kv('Поколение назначения', num(attempt.assignment_generation, 1)),
+      kv('Результат', attempt.result_storage_class || 'none'),
+      kv('SHA-256', attempt.result_package_hash || '—'),
+      kv('Приём подтверждён', attempt.result_acknowledged ? 'да' : 'нет'),
+      kv('Хранится до', humanStamp(attempt.retention_until)),
+      kv('Удалено с воркера', attempt.deleted_from_worker ? 'да' : 'нет'),
+    ]));
+
+    if (attempt.retention_unconfirmed) {
+      nodes.push(el('p', { className: 'warn',
+        text: '⚠ Центр не подтвердил приём — автоматическое удаление запрещено.' }));
+    }
+    if (attempt.error && attempt.error.message) {
+      nodes.push(el('p', { className: 'warn', text: `Ошибка: ${attempt.error.message}` }));
+    }
+
+    if (attempt.superseded_result) {
+      const sr = attempt.superseded_result;
+      const link = el('a', { className: 'btn btn--small',
+        text: 'Скачать пакет устаревшей попытки' });
+      link.href = `/api/workers/jobs/${encodeURIComponent(jobId)}`
+        + `/attempts/${encodeURIComponent(attempt.attempt_id)}/result`;
+      nodes.push(el('div', { className: 'superseded' }, [
+        el('p', { className: 'warn',
+          text: '⚠ Не является актуальным результатом задания. '
+              + 'Результат устаревшей попытки — автоматически не используется.' }),
+        el('dl', { className: 'kv' }, [
+          kv('SHA-256', sr.sha256 || '—'),
+          kv('Размер', humanBytes(sr.size)),
+          kv('Сохранён', humanStamp(sr.stored_at)),
+        ]),
+        link,
+      ]));
+    }
+
+    (attempt.commands || []).forEach((command) => {
+      const result = command.result && typeof command.result === 'object'
+        ? (command.result.detail && command.result.detail.outcome)
+          || command.result.status || ''
+        : '';
+      nodes.push(el('p', { className: 'hint',
+        text: `Команда ${command.command_type}: ${command.status || '—'}`
+            + ` · создана ${humanStamp(command.created_at)}`
+            + ` · доставлена ${humanStamp(command.delivered_at)}`
+            + ` · подтверждена ${humanStamp(command.acknowledged_at)}`
+            + (result ? ` · результат: ${result}` : '') }));
+    });
+
+    (attempt.operator_actions || []).forEach((action) => {
+      nodes.push(el('p', { className: 'hint',
+        text: `${humanStamp(action.at)} — ${action.action_type} `
+            + `(${action.actor}): ${action.reason || ''}` }));
+    });
+
+    // Управление попытками — уровень operate. Наблюдатель видит те же строки,
+    // но кнопки у него отключены: право проверяет сервер, экран лишь честно
+    // показывает, что действие недоступно.
+    const canOperate = state.perms.canOperate;
+    const actions = [];
+    if (attempt.can_cancel) {
+      actions.push(actionButton({ className: 'btn btn--small btn--danger',
+        text: 'Отменить', dataset: { cancel: attempt.attempt_id, job: jobId } },
+        canOperate));
+    }
+    if (attempt.can_mark_lost) {
+      actions.push(actionButton({ className: 'btn btn--small btn--danger',
+        text: 'Признать попытку потерянной',
+        dataset: { marklost: attempt.attempt_id, job: jobId } }, canOperate));
+    }
+    if (!attempt.can_mark_lost) {
+      actions.push(actionButton({ className: 'btn btn--small',
+        text: 'Создать новую попытку',
+        dataset: { newattempt: attempt.attempt_id, job: jobId } }, canOperate));
+    }
+    if (attempt.result_acknowledged && !attempt.deleted_from_worker) {
+      actions.push(actionButton({ className: 'btn btn--small',
+        text: 'Запросить удаление данных с VPS',
+        dataset: { deletedata: attempt.attempt_id, job: jobId } }, canOperate));
+    }
+    if (actions.length) {
+      nodes.push(el('footer', { className: 'attempt-actions' }, actions));
+    }
+    return el('article', {
+      className: `attempt attempt--${disposition}${attempt.is_current ? ' attempt--current' : ''}`,
+    }, nodes);
+  }
+
+  async function loadAttempts(jobId) {
+    state.attemptsJobId = jobId;
+    $('attemptsBlock').hidden = false;
+    $('attemptsJobId').textContent = String(jobId).slice(0, 8);
+    try {
+      const data = await api(`/api/workers/jobs/${encodeURIComponent(jobId)}/attempts`);
+      const job = data.job || {};
+      $('attemptsJobTitle').textContent =
+        `${job.project_display_name || job.project_external_id || ''}`
+        + ` · сводно: ${job.overall_state || '—'}`;
+      replaceChildren(
+        $('attempts'),
+        (data.attempts || []).map((a) => renderAttempt(a, jobId)),
+      );
+      // Сводный журнал решений — административные сведения (§9). Наблюдателю
+      // и оператору сервер ответит 403, и дёргать его незачем.
+      if (state.perms.canAdmin) {
+        await loadAdminActions(jobId);
+      } else {
+        $('actionsBlock').hidden = true;
+      }
+    } catch (error) {
+      replaceChildren($('attempts'),
+        el('p', { className: 'warn', text: `Не удалось загрузить попытки: ${error.message}` }));
+    }
+  }
+
+  async function loadAdminActions(jobId) {
+    $('actionsBlock').hidden = false;
+    try {
+      const data = await api(
+        `/api/workers/admin-actions?job_id=${encodeURIComponent(jobId)}&limit=100`);
+      const rows = (data.actions || []).map((action) => el('div', { className: 'action-row' }, [
+        el('span', { className: 'mono small', text: humanStamp(action.created_at) }),
+        el('span', { className: 'badge', text: action.action_type }),
+        el('span', { text: action.actor_display_name || action.actor_id }),
+        el('span', { text: action.reason || '' }),
+        el('span', { className: 'mono small', text: action.result_status || '' }),
+      ]));
+      replaceChildren($('adminActions'),
+        rows.length ? rows : el('p', { className: 'hint', text: 'Действий пока не было.' }));
+    } catch (error) {
+      replaceChildren($('adminActions'),
+        el('p', { className: 'warn', text: `Журнал недоступен: ${error.message}` }));
+    }
+  }
+
+  // ─── Права текущего пользователя ───────────────────────────────────────────
+  const ROLE_LABEL = {
+    admin: 'администратор подсистемы',
+    operator: 'оператор заданий',
+    viewer: 'наблюдатель',
+  };
+
+  async function loadPermissions() {
+    let me = null;
+    try {
+      me = await api('/api/workers/me');
+    } catch (error) {
+      me = null;
+    }
+    const perms = new Set((me && me.permissions) || []);
+    state.perms = {
+      subject: me ? me.subject : null,
+      role: me ? me.role : null,
+      authenticated: !!(me && me.authenticated),
+      canView: perms.has(PERM.view),
+      canOperate: perms.has(PERM.operate),
+      canAdmin: perms.has(PERM.admin),
+      diagnostics: me ? me.diagnostics : null,
+    };
+    renderPermissionsBanner();
+    return state.perms;
+  }
+
+  function renderPermissionsBanner() {
+    const banner = $('permsBanner');
+    const p = state.perms;
+    const parts = [];
+    if (p.authenticated) {
+      parts.push(el('strong', { text: `Вы вошли как ${p.subject || '—'}` }));
+      parts.push(text(` · роль в подсистеме: ${ROLE_LABEL[p.role] || 'нет роли'}`));
+    } else {
+      parts.push(el('strong', { text: 'Сессия портала не найдена' }));
+    }
+    if (!p.canOperate) {
+      parts.push(el('p', { className: 'hint',
+        text: 'Управление заданиями недоступно: нужна роль оператора или '
+            + 'администратора. Экран работает только на просмотр.' }));
+    } else if (!p.canAdmin) {
+      parts.push(el('p', { className: 'hint',
+        text: 'Управление воркерами и токенами недоступно: это административные '
+            + 'действия.' }));
+    }
+    if (p.diagnostics) {
+      parts.push(el('p', { className: 'hint', text: p.diagnostics }));
+    }
+    replaceChildren(banner, parts);
+    banner.hidden = false;
+  }
+
+  // ─── Загрузка данных ───────────────────────────────────────────────────────
+  async function refresh() {
+    try {
+      const status = await api('/api/workers/status');
+      state.enabled = !!status.enabled;
+      $('disabledBanner').hidden = state.enabled;
+      $('content').hidden = !state.enabled;
+      if (!state.enabled) {
+        $('disabledReason').textContent = status.reason || '';
+        $('permsBanner').hidden = true;
+        return;
+      }
+      await loadPermissions();
+      // Форма выдачи задания — уровень operate. Кнопка отключается, но это
+      // косметика: сервер и так вернёт 403 на прямой POST.
+      const submit = $('createForm').querySelector('button[type="submit"]');
+      if (submit) {
+        submit.disabled = !state.perms.canOperate;
+        submit.title = state.perms.canOperate ? '' : DENIED_HINT;
+      }
+      if (status.config_error) {
+        $('configError').hidden = false;
+        $('configError').textContent = status.config_error;
+      } else {
+        $('configError').hidden = true;
+      }
+      if (!state.perms.canView) {
+        // Без права просмотра списки всё равно вернут 403 — не мигаем ошибкой,
+        // а честно говорим, чего не хватает.
+        replaceChildren($('workers'), []);
+        replaceChildren($('jobs'), []);
+        replaceChildren($('summary'), []);
+        return;
+      }
+
+      const [workersData, jobsData, auditData] = await Promise.all([
+        api('/api/workers'),
+        api('/api/workers/jobs/list?limit=50'),
+        // Готовность к реальному аудиту приходит отдельной ручкой: она читает
+        // ревизию кода и занятость слота аудита, которых нет в общем списке.
+        // Ошибка здесь не должна ронять экран — подсистема воркеров работает
+        // и без удалённого исполнения.
+        api('/api/workers/audit/targets').catch(() => null),
+      ]);
+      // Провайдеры приходят отдельной ручкой и НЕ роняют экран при ошибке:
+      // подсистема воркеров работает и без наблюдения за подписками.
+      const providersData = await api('/api/workers/providers/overview').catch(() => null);
+      state.providersLoaded = !!providersData;
+      state.workerProviders = (providersData && providersData.worker_providers) || {};
+      state.providerAccounts = (providersData && providersData.accounts) || [];
+      state.providerAccountKinds = (providersData && providersData.account_kinds) || [];
+      state.providerMeta = {
+        lowThresholdPct: providersData ? providersData.low_threshold_pct : null,
+        autoDispatch: !!(providersData && providersData.auto_dispatch_enabled),
+      };
+      state.workers = workersData.workers || [];
+      state.jobs = jobsData.jobs || [];
+      state.auditTargets = {};
+      if (auditData) {
+        (auditData.workers || []).forEach((target) => {
+          if (target && target.worker_id) {
+            state.auditTargets[target.worker_id] = target;
+          }
+        });
+        state.auditRemote = {
+          enabled: !!auditData.remote_execution_enabled,
+          reason: auditData.disabled_reason || '',
+          profile: auditData.profile || '',
+          revision: auditData.center_pipeline_revision || null,
+        };
+      }
+      renderRemoteAuditPanel();
+
+      const s = workersData.summary || {};
+      const summary = [
+        el('span', {}, [text('VPS: '), el('strong', { text: num(s.total, 0) })]),
+        el('span', {}, [text('онлайн: '), el('strong', { text: num(s.online, 0) })]),
+        // Свободные слоты — РАССЧИТАННЫЕ ЦЕНТРОМ. Сумма обещаний воркеров не то
+        // число, по которому назначают работу.
+        el('span', {}, [text('свободных слотов (расчёт центра): '),
+          el('strong', { text: num(s.free_slots, 0) })]),
+        el('span', {}, [text('активных заданий: '),
+          el('strong', { text: num(s.active_jobs, 0) })]),
+      ];
+      if (s.pending) {
+        summary.push(el('span', { className: 'warn' },
+          [text('ждут одобрения: '), el('strong', { text: num(s.pending, 0) })]));
+      }
+      if (s.slot_mismatch) {
+        summary.push(el('span', { className: 'warn' },
+          [text('расхождение по слотам: '),
+           el('strong', { text: num(s.slot_mismatch, 0) })]));
+      }
+      replaceChildren($('summary'), summary);
+
+      const pendingWorkers = state.workers.filter((w) => w.registration_status === 'pending');
+      const activeWorkers = state.workers.filter((w) => w.registration_status !== 'pending');
+      $('pendingBlock').hidden = pendingWorkers.length === 0;
+      replaceChildren($('pending'), pendingWorkers.map(renderWorker));
+      replaceChildren($('workers'), activeWorkers.map(renderWorker));
+      $('workersEmpty').hidden = activeWorkers.length > 0;
+      replaceChildren($('accounts'), state.providerAccounts.map(renderAccount));
+      $('accountsEmpty').hidden = state.providerAccounts.length > 0;
+      $('accountsHint').textContent = state.providerMeta.lowThresholdPct === null
+        ? 'Порог «мало осталось» не задан (DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT) — '
+          + 'состояние «мало» не вычисляется.'
+        : `Порог «мало осталось»: ${state.providerMeta.lowThresholdPct}%. `
+          + 'Автоматическая выдача заданий выключена.';
+
+      replaceChildren($('jobs'), state.jobs.map(renderJob));
+      $('jobsEmpty').hidden = state.jobs.length > 0;
+
+      const select = $('jobWorker');
+      const previous = select.value;
+      replaceChildren(select, state.workers
+        .filter((w) => w.registration_status === 'approved')
+        .map((w) => {
+          const info = w.slots || {};
+          const online = w.connection_status === 'online';
+          const free = num(info.center_free_slots, 0);
+          // Занятость НЕ запрещает создать задание: оно встанет в очередь и
+          // уйдёт в работу после освобождения слота. Прятать эту возможность
+          // за disabled значило бы расходиться с сервером, который её даёт.
+          const suffix = !online
+            ? ' — нет связи'
+            : (free > 0 ? ` — свободно ${free}` : ' — слотов нет, встанет в очередь');
+          const option = el('option', {
+            text: `${w.display_name || w.worker_id}${suffix}`,
+          });
+          option.value = w.worker_id;
+          option.disabled = !online;
+          return option;
+        }));
+      if (previous) select.value = previous;
+
+      if (state.logsJobId) await loadLogs(state.logsJobId);
+      if (state.attemptsJobId) await loadAttempts(state.attemptsJobId);
+    } catch (error) {
+      $('configError').hidden = false;
+      $('configError').textContent = `Не удалось обновить: ${error.message}`;
+    }
+  }
+
+  async function loadLogs(jobId) {
+    state.logsJobId = jobId;
+    $('logsBlock').hidden = false;
+    $('logsJobId').textContent = String(jobId).slice(0, 8);
+    try {
+      const data = await api(
+        `/api/workers/jobs/${encodeURIComponent(jobId)}/logs?limit=500`);
+      const lines = (data.lines || []).map(
+        (l) => `[${String(l.seq).padStart(4, '0')}] `
+             + `${String(l.level || '').toUpperCase()} ${l.message}`);
+      $('logs').textContent = lines.length ? lines.join('\n') : '(лога пока нет)';
+    } catch (error) {
+      $('logs').textContent = `Ошибка загрузки логов: ${error.message}`;
+    }
+  }
+
+  // ─── Операторские действия ─────────────────────────────────────────────────
+  async function doCancel(jobId, attemptId) {
+    const answer = askConfirmation(
+      'Отменить попытку?',
+      'Мгновенная остановка НЕ гарантируется. Если VPS сейчас офлайн, команда '
+      + 'будет доставлена после восстановления связи. Уже готовый результат '
+      + 'не уничтожается.',
+      CONFIRM.cancel);
+    if (!answer) return;
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}`
+      + `/attempts/${encodeURIComponent(attemptId)}/cancel`,
+      { reason: answer.reason, confirmation: answer.confirmation, grace_period_sec: 30 });
+    window.alert(result.message || 'Отмена запрошена.');
+  }
+
+  async function doMarkLost(jobId, attemptId) {
+    const worker = (state.workers || [])[0] || {};
+    const answer = askConfirmation(
+      'Признать попытку потерянной?',
+      'Удалённый процесс может продолжать работу. После создания новой попытки '
+      + 'результаты старой будут считаться устаревшими.\n'
+      + `Последняя связь с VPS: ${humanAge(worker.seconds_since_seen)}.`,
+      CONFIRM.markLost);
+    if (!answer) return;
+    const observed = window.prompt(
+      'Что наблюдалось на стороне VPS (необязательно)?', '') || '';
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}`
+      + `/attempts/${encodeURIComponent(attemptId)}/mark-lost`,
+      {
+        mandatory_reason: answer.reason,
+        typed_confirmation: answer.confirmation,
+        observed_worker_state: observed.slice(0, 200),
+        optional_operator_note: '',
+      });
+    window.alert(result.message || 'Попытка признана потерянной.');
+  }
+
+  async function doNewAttempt(jobId, sourceAttemptId) {
+    const workerId = $('jobWorker').value;
+    if (!workerId) {
+      window.alert('Выберите VPS в форме выдачи задания — новая попытка уйдёт на него.');
+      return;
+    }
+    const answer = askConfirmation(
+      `Создать новую попытку на ${workerId}?`,
+      'Старая попытка сохраняется целиком: её события, результат и журнал '
+      + 'остаются доступны. Автоматически её результат использован не будет.',
+      CONFIRM.newAttempt);
+    if (!answer) return;
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}/attempts`,
+      {
+        worker_id: workerId,
+        reason: answer.reason,
+        source_attempt_id: sourceAttemptId,
+        confirmation: answer.confirmation,
+      });
+    window.alert(`Создана попытка №${result.attempt_number}.`);
+  }
+
+  async function doRequestDeletion(jobId, attemptId) {
+    const answer = askConfirmation(
+      'Запросить удаление локальных данных попытки?',
+      'Удаляется только копия НА ВОРКЕРЕ. Центральная копия результата '
+      + 'остаётся. Неподтверждённый результат не удаляется даже этой командой.',
+      CONFIRM.deleteData);
+    if (!answer) return;
+    const result = await dangerousPost(
+      `/api/workers/jobs/${encodeURIComponent(jobId)}`
+      + `/attempts/${encodeURIComponent(attemptId)}/request-deletion`,
+      { reason: answer.reason, confirmation: answer.confirmation });
+    window.alert(result.message || 'Команда удаления поставлена в очередь.');
+  }
+
+  async function setWorkerIntake(workerId, enabled) {
+    const promptText = enabled
+      ? 'Причина разрешения новых заданий (будет записана в audit log):'
+      : 'Причина drain (идущие задания продолжат работу):';
+    const reason = window.prompt(promptText, enabled ? 'canary approved' : 'operator drain');
+    if (reason === null) return;
+    await dangerousPost(
+      `/api/workers/${encodeURIComponent(workerId)}/${enabled ? 'resume-intake' : 'drain'}`,
+      { reason: reason.trim() });
+    await refresh();
+  }
+
+  document.addEventListener('click', async (event) => {
+    const target = event.target;
+    if (!target || !target.closest) return;
+    const approve = target.closest('[data-approve]');
+    const reject = target.closest('[data-reject]');
+    const revoke = target.closest('[data-revoke]');
+    const drain = target.closest('[data-drain]');
+    const resumeIntake = target.closest('[data-resume-intake]');
+    const logs = target.closest('[data-logs]');
+    const attempts = target.closest('[data-attempts]');
+    const cancel = target.closest('[data-cancel]');
+    const markLost = target.closest('[data-marklost]');
+    const newAttempt = target.closest('[data-newattempt]');
+    const deleteData = target.closest('[data-deletedata]');
+    const accountEdit = target.closest('[data-edit-account]');
+    const bindGroup = target.closest('[data-bind-group]');
+    try {
+      if (accountEdit) {
+        await editAccount(accountEdit.dataset.editAccount);
+      } else if (bindGroup) {
+        await bindProviderGroup(bindGroup.dataset.bindGroup);
+      } else if (reject) {
+        if (!window.confirm('Отклонить заявку на регистрацию? Одноразовый '
+          + 'claim-secret будет погашен, воркер токен не получит.')) return;
+        await dangerousPost(
+          `/api/workers/${encodeURIComponent(reject.dataset.reject)}/reject`, {});
+        await refresh();
+      } else if (approve) {
+        await dangerousPost(
+          `/api/workers/${encodeURIComponent(approve.dataset.approve)}/approve`,
+          { configured_max_slots: 1 });
+        await refresh();
+      } else if (revoke) {
+        if (!window.confirm('Отозвать доступ воркера? Токен будет погашен, '
+          + 'новые задания выдаваться не будут.')) return;
+        await dangerousPost(
+          `/api/workers/${encodeURIComponent(revoke.dataset.revoke)}/revoke`, {});
+        await refresh();
+      } else if (drain) {
+        await setWorkerIntake(drain.dataset.drain, false);
+      } else if (resumeIntake) {
+        await setWorkerIntake(resumeIntake.dataset.resumeIntake, true);
+      } else if (logs) {
+        await loadLogs(logs.dataset.logs);
+      } else if (attempts) {
+        await loadAttempts(attempts.dataset.attempts);
+      } else if (cancel) {
+        await doCancel(cancel.dataset.job, cancel.dataset.cancel);
+        await refresh();
+      } else if (markLost) {
+        await doMarkLost(markLost.dataset.job, markLost.dataset.marklost);
+        await refresh();
+      } else if (newAttempt) {
+        await doNewAttempt(newAttempt.dataset.job, newAttempt.dataset.newattempt);
+        await refresh();
+      } else if (deleteData) {
+        await doRequestDeletion(deleteData.dataset.job, deleteData.dataset.deletedata);
+        await refresh();
+      }
+    } catch (error) {
+      window.alert(`Не удалось выполнить действие: ${error.message}`);
+    }
+  });
+
+  $('createForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    $('createHint').textContent = 'отправка…';
+    try {
+      const body = {
+        worker_id: $('jobWorker').value,
+        project_id: $('jobProject').value.trim(),
+        params: {
+          label: $('jobLabel').value.trim(),
+          steps: Number($('jobSteps').value),
+          step_seconds: Number($('jobStepSeconds').value),
+          result_bytes: Number($('jobResultBytes').value),
+        },
+      };
+      const created = await dangerousPost('/api/workers/jobs', body);
+      $('createHint').textContent = `создано: ${created.job.job_id.slice(0, 8)}`
+        + (created.will_wait_for_slot ? ` · ${created.queue_note || 'ждёт слот'}` : '');
+      await refresh();
+    } catch (error) {
+      $('createHint').textContent = `ошибка: ${error.message}`;
+    }
+  });
+
+  const remoteAuditForm = $('remoteAuditForm');
+  if (remoteAuditForm) {
+    remoteAuditForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const hint = $('remoteAuditHint');
+      const workerId = $('remoteAuditWorker').value;
+      const projectId = $('remoteAuditProject').value.trim();
+      const versionId = $('remoteAuditVersion').value.trim();
+      const target = state.auditTargets[workerId] || {};
+      // Подтверждение говорит правду о том, что произойдёт: где выполнится
+      // работа, какие провайдеры включены и что нормативный этап останется на
+      // центре. Без этого «отправить на воркер» — кнопка с неизвестным эффектом.
+      const warning = [
+        `Проект: ${projectId}${versionId ? ` (${versionId})` : ''}`,
+        `Воркер: ${target.display_name || workerId}`,
+        `Профиль: ${state.auditRemote.profile}`,
+        target.provider_mode === 'real'
+          ? 'ВНИМАНИЕ: на воркере включены НАСТОЯЩИЕ Claude/Codex — будет израсходована подписка.'
+          : 'Провайдеры поддельные: настоящие Claude/Codex вызваны не будут.',
+        'Нормативный этап и финальная сборка выполнятся на центре.',
+        'Пакет проекта соберётся при старте элемента очереди.',
+      ].join('\n');
+      if (!askConfirmation('Отправить аудит на воркер?', warning, 'ОТПРАВИТЬ')) {
+        hint.textContent = 'отменено оператором';
+        return;
+      }
+      hint.textContent = 'отправка…';
+      try {
+        const created = await dangerousPost('/api/workers/audit/launch', {
+          worker_id: workerId,
+          project_id: projectId,
+          version_id: versionId || null,
+          action: $('remoteAuditAction').value,
+        });
+        hint.textContent = `поставлено в очередь: ${created.notice || ''}`;
+        await refresh();
+      } catch (error) {
+        hint.textContent = `ошибка: ${error.message}`;
+      }
+    });
+  }
+
+  $('refreshBtn').addEventListener('click', refresh);
+  $('autoRefresh').addEventListener('change', (event) => {
+    if (event.target.checked) startTimer(); else stopTimer();
+  });
+
+  function startTimer() {
+    stopTimer();
+    state.timer = window.setInterval(refresh, REFRESH_MS);
+  }
+  function stopTimer() {
+    if (state.timer) window.clearInterval(state.timer);
+    state.timer = null;
+  }
+
+  refresh();
+  startTimer();
+})();

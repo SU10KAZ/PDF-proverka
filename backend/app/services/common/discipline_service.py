@@ -14,6 +14,33 @@ REGISTRY_FILE = DISCIPLINES_DIR / "_registry.json"
 
 logger = logging.getLogger(__name__)
 
+def _safe_profile_segment(name: str) -> bool:
+    """Годится ли строка как ОДИН сегмент пути внутри каталога дисциплин.
+
+    Не «латиница и цифры»: пользователь вправе завести раздел с кириллическим
+    кодом через `add_discipline`, и запрет сломал бы существующие установки.
+    Запрещается ровно то, что выводит из каталога: разделители, `.`/`..`,
+    управляющие символы и скрытые имена.
+    """
+    text = str(name or "")
+    if not text or len(text) > 40:
+        return False
+    if text in (".", ".."):
+        return False
+    if text[0] in ".~-" or text != text.strip():
+        return False
+    if any(ch in text for ch in "/\\\0:*?\"<>|"):
+        return False
+    return not any(ord(ch) < 32 or ord(ch) == 127 for ch in text)
+
+
+class DisciplineProfileMissing(FileNotFoundError):
+    """Профиль известной дисциплины отсутствует, а строгий режим включён."""
+
+
+class DisciplineProfileUnsafe(ValueError):
+    """Имя каталога профиля не является безопасным сегментом пути."""
+
 # Кэш загруженных профилей (дисциплины не меняются в рантайме)
 _profile_cache: dict[str, "DisciplineProfile"] = {}
 _registry_cache: Optional[dict] = None
@@ -61,41 +88,83 @@ def _resolve_profile_dir(code: str, disc_info: dict) -> Path:
 
     Priority: profile_dir from registry > code as folder name.
     This ensures portability: Cyrillic codes map to ASCII folder names.
+
+    Сегмент ПРОВЕРЯЕТСЯ, а не подставляется: `code` приходит из
+    `project_info.section`, то есть из пользовательских метаданных, и
+    непроверенное значение вида `../../..` выбирало бы файлы за пределами
+    каталога дисциплин (CH-02).
     """
-    profile_dir_name = disc_info.get("profile_dir", code)
+    profile_dir_name = str(disc_info.get("profile_dir") or code)
+    if not _safe_profile_segment(profile_dir_name):
+        raise DisciplineProfileUnsafe(
+            f"Имя каталога профиля {profile_dir_name!r} не является безопасным "
+            "сегментом пути — профиль не загружается"
+        )
     return DISCIPLINES_DIR / profile_dir_name
 
 
 def load_discipline(code: str) -> DisciplineProfile:
-    """Загрузить профиль дисциплины по коду. Кэширует результат."""
-    if code in _profile_cache:
-        return _profile_cache[code]
+    """Загрузить профиль дисциплины по коду. Кэширует результат.
+
+    **Код нормализуется ДО поиска каталога.** Каталоги профилей названы
+    латиницей (`AR`), а `project_info.section` реальных проектов сплошь и рядом
+    кириллический (`АР`) — совпадения по строке нет, каталога нет, и прежняя
+    версия молча возвращала профиль EOM. Нормализация выполняется закрытым
+    индексом алиасов реестра (`discipline_identity`), а не заменой символов.
+
+    **Строгий режим** (`AUDIT_DISCIPLINE_PROFILE_STRICT=1`) превращает оба
+    молчаливых исхода — «код не опознан» и «каталог профиля отсутствует» — в
+    исключение. Он всегда включён в процессе удалённой ноги аудита: там
+    подстановка EOM означала бы аудит чужим профилем на чужой машине, и увидеть
+    это можно было бы только в логе, оставшемся на VPS.
+    """
+    from backend.app.services.common import discipline_identity as _identity
+
+    strict = _identity.strict_profile_mode()
+    canonical = _identity.normalize_discipline_code(code)
+    if canonical is None:
+        if strict:
+            raise _identity.UnknownDisciplineError(code, _identity.known_codes())
+        logger.warning(
+            "Дисциплина %r не опознана — используется профиль EOM. "
+            "Известные коды: %s",
+            code, ", ".join(_identity.known_codes()),
+        )
+        canonical = "EOM"
+    if canonical in _profile_cache:
+        return _profile_cache[canonical]
 
     registry = _load_registry()
-    disc_info = registry.get("disciplines", {}).get(code, {})
+    disc_info = registry.get("disciplines", {}).get(canonical, {})
 
-    disc_dir = _resolve_profile_dir(code, disc_info)
+    disc_dir = _resolve_profile_dir(canonical, disc_info)
     if not disc_dir.exists():
+        if strict:
+            raise DisciplineProfileMissing(
+                f"Профиль дисциплины {canonical!r} не найден: {disc_dir}. "
+                "Строгий режим запрещает подстановку профиля EOM."
+            )
         # Fallback на EOM если профиль не найден
-        if code != "EOM":
+        if canonical != "EOM":
             logger.warning(
                 "Профиль дисциплины %r не найден (%s) — fallback на EOM. "
                 "Раздел будет аудирован профилем EOM, а не своим профилем.",
-                code, disc_dir,
+                canonical, disc_dir,
             )
             return load_discipline("EOM")
         # Если даже EOM нет — возвращаем пустой профиль
         logger.warning(
             "Профиль EOM не найден (%s) — возвращён ПУСТОЙ профиль для %r "
             "(аудит без ролевого профиля дисциплины).",
-            disc_dir, code,
+            disc_dir, canonical,
         )
         return DisciplineProfile(
-            code=code,
-            name=disc_info.get("name", code),
-            short_name=disc_info.get("short_name", code),
+            code=canonical,
+            name=disc_info.get("name", canonical),
+            short_name=disc_info.get("short_name", canonical),
             color=disc_info.get("color", "#666"),
         )
+    code = canonical
 
     # Прочитать config.json дисциплины
     config_path = disc_dir / "config.json"
@@ -206,7 +275,12 @@ def get_supported_disciplines() -> list[dict]:
     registry = _load_registry()
     result = []
     for code, disc in registry.get("disciplines", {}).items():
-        disc_dir = _resolve_profile_dir(code, disc)
+        try:
+            disc_dir = _resolve_profile_dir(code, disc)
+        except DisciplineProfileUnsafe:
+            # Небезопасное имя каталога не должно ронять список разделов в UI:
+            # у такой дисциплины просто нет профиля.
+            disc_dir = DISCIPLINES_DIR / "__unsafe__"
         result.append({
             "code": code,
             "name": disc.get("name", code),
@@ -225,8 +299,33 @@ def get_supported_codes() -> list[str]:
     return list(registry.get("disciplines", {}).keys())
 
 
-def inject_discipline(template: str, profile: DisciplineProfile) -> str:
-    """Заменить плейсхолдеры в шаблоне на содержимое профиля дисциплины."""
+#: Что подставляется вместо профиля, когда дисциплина не названа. Пустая
+#: строка не годится: шаблон тогда выглядит как «требований нет», и модель
+#: достраивает их сама. Текст ниже — единственный честный ответ.
+UNKNOWN_DISCIPLINE_NOTE = (
+    "Дисциплина проекта не определена. Профиль (роль, чек-лист, справочник "
+    "норм) не подставлен. Не додумывай требования отсутствующего раздела: "
+    "опирайся только на то, что есть в самом документе."
+)
+
+
+def inject_discipline(template: str, profile: Optional[DisciplineProfile]) -> str:
+    """Заменить плейсхолдеры в шаблоне на содержимое профиля дисциплины.
+
+    `profile=None` — законный случай: дисциплина не опознана. Раньше вызывающая
+    сторона в этой ситуации подставляла `"EOM"`, и проект без раздела молча
+    аудировался профилем электрики.
+    """
+    if profile is None:
+        for placeholder in (
+            "{DISCIPLINE_ROLE}", "{DISCIPLINE_CHECKLIST}",
+            "{DISCIPLINE_TRIAGE_TABLE}", "{DISCIPLINE_PROJECT_PARAMS}",
+            "{DISCIPLINE_TEXT_ANALYSIS}", "{DISCIPLINE_DRAWING_TYPES}",
+            "{DISCIPLINE_FINDING_CATEGORIES}", "{DISCIPLINE_COMPACT_STRATEGY}",
+            "{DISCIPLINE_PROJECT_PARAMS_JSON}",
+        ):
+            template = template.replace(placeholder, UNKNOWN_DISCIPLINE_NOTE)
+        return template.replace("{DISCIPLINE_NORMS_FILE}", "")
     replacements = {
         "{DISCIPLINE_ROLE}": profile.role,
         "{DISCIPLINE_CHECKLIST}": profile.checklist,
@@ -349,3 +448,8 @@ def invalidate_cache():
     global _profile_cache, _registry_cache
     _profile_cache.clear()
     _registry_cache = None
+    # Индекс алиасов строится из ТОГО ЖЕ реестра: оставить его горячим значило
+    # бы нормализовать код по составу дисциплин, которого больше нет.
+    from backend.app.services.common import discipline_identity as _identity
+
+    _identity.invalidate_cache()
