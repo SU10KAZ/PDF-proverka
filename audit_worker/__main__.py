@@ -280,6 +280,7 @@ def _cmd_status(args: argparse.Namespace) -> int:
         "version": __version__,
         "root": str(config.root),
         "dispatcher_url": config.dispatcher_url,
+        "data_plane_base_url": config.data_plane_base_url or config.dispatcher_url,
         "worker_id": state.get("worker_id"),
         "last_instance_id": state.get("last_instance_id"),
         "token_present": bool(store.read_token()),

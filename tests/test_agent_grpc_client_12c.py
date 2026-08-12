@@ -109,6 +109,53 @@ def test_b_grpc_config_is_explicit_and_local(tmp_path):
     assert config.grpc_max_receive_message_bytes == 1024 * 1024
 
 
+def test_b_data_plane_defaults_to_dispatcher_and_can_be_isolated(tmp_path, monkeypatch):
+    """Package bytes can use an isolated HTTPS origin without changing control."""
+    from audit_worker.agent import WorkerAgent
+    from audit_worker.config import load_config
+
+    monkeypatch.setenv("AUDIT_WORKER_DISPATCHER_URL", "https://control.example")
+    default = load_config(str(tmp_path / "default"))
+    assert default.data_plane_base_url is None
+
+    monkeypatch.setenv(
+        "AUDIT_WORKER_DATA_PLANE_BASE_URL", "https://data.example:9443/"
+    )
+    isolated = load_config(str(tmp_path / "isolated"))
+    assert isolated.data_plane_base_url == "https://data.example:9443"
+
+    isolated.ensure_dirs()
+    agent = WorkerAgent(
+        isolated,
+        {
+            "worker_id": "wrk_0123456789abcdef",
+            "instance_id": "inst_0123456789abcdef",
+            "token": "test-token",
+        },
+    )
+    try:
+        assert agent.client.base_url == "https://data.example:9443"
+    finally:
+        agent.shutdown()
+
+
+def test_b_external_data_plane_rejects_non_https(tmp_path):
+    from audit_worker.config import (
+        InsecureTransportError,
+        WorkerConfig,
+        validate_transport_security,
+    )
+
+    config = WorkerConfig(
+        dispatcher_url="https://control.example",
+        data_plane_base_url="http://data.example:9443",
+        root=tmp_path,
+        display_name="data-plane-security",
+    )
+    with pytest.raises(InsecureTransportError, match="DATA_PLANE_BASE_URL"):
+        validate_transport_security(config)
+
+
 def test_c_d_polling_and_grpc_are_single_owner_modes(tmp_path):
     assert _config(tmp_path).control_transport == "polling"
     assert _config(tmp_path, control_transport="grpc").control_transport == "grpc"

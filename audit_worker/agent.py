@@ -113,7 +113,7 @@ class WorkerAgent:
         self.certificate_renewal = None
 
         data_client = CenterClient(
-            config.dispatcher_url,
+            config.data_plane_base_url or config.dispatcher_url,
             token=self.token,
             worker_id=self.worker_id,
             instance_id=self.instance_id,

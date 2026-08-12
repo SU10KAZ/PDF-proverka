@@ -67,6 +67,9 @@ class WorkerConfig:
     dispatcher_url: str
     root: Path
     display_name: str
+    # HTTPS data plane may be exposed independently from registration/control.
+    # None preserves the production behavior: package traffic uses dispatcher_url.
+    data_plane_base_url: str | None = None
     heartbeat_interval_sec: float = 30.0
     poll_wait_sec: int = 25
     event_flush_interval_sec: float = 1.0
@@ -510,6 +513,12 @@ def load_config(
         root=root,
         display_name=os.environ.get("AUDIT_WORKER_NAME", "").strip()
         or f"{platform.node()}",
+        data_plane_base_url=(
+            os.environ.get("AUDIT_WORKER_DATA_PLANE_BASE_URL", "")
+            .strip()
+            .rstrip("/")
+            or None
+        ),
         heartbeat_interval_sec=_env_float("AUDIT_WORKER_HEARTBEAT_SEC", 30.0),
         poll_wait_sec=_env_int("AUDIT_WORKER_POLL_WAIT_SEC", 25),
         max_slots=_max_slots_from_env(),
@@ -741,13 +750,10 @@ class InsecureTransportError(SystemExit):
 LOCALHOST_HOSTS = {"localhost", "127.0.0.1", "::1", "[::1]"}
 
 
-def validate_transport_security(config: "WorkerConfig") -> None:
-    """Прод обязан быть HTTPS. HTTP допустим только к localhost и только с флагом.
-
-    Ошибка отображается явным текстом при старте, а не превращается в тихую
-    работу открытым текстом по сети.
-    """
-    parsed = urlparse(config.dispatcher_url)
+def _validate_https_base_url(
+    value: str, *, setting_name: str, allow_insecure_localhost: bool
+) -> None:
+    parsed = urlparse(value)
     scheme = (parsed.scheme or "").lower()
     host = (parsed.hostname or "").lower()
 
@@ -755,19 +761,34 @@ def validate_transport_security(config: "WorkerConfig") -> None:
         return
     if scheme != "http":
         raise InsecureTransportError(
-            f"AUDIT_WORKER_DISPATCHER_URL: ожидается https:// (получено {scheme or 'без схемы'}://)"
+            f"{setting_name}: ожидается https:// (получено {scheme or 'без схемы'}://)"
         )
     if host not in LOCALHOST_HOSTS:
         raise InsecureTransportError(
-            f"AUDIT_WORKER_DISPATCHER_URL={config.dispatcher_url}: HTTP запрещён для "
+            f"{setting_name}={value}: HTTP запрещён для "
             f"внешнего хоста {host!r}. Используйте https://. "
             "HTTP допустим только к localhost и только с "
             "AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST=true."
         )
-    if not config.allow_insecure_localhost:
+    if not allow_insecure_localhost:
         raise InsecureTransportError(
             "HTTP к localhost требует явного AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST=true "
             "(dev-режим). В проде используйте https://."
+        )
+
+
+def validate_transport_security(config: "WorkerConfig") -> None:
+    """Проверить HTTPS отдельно для dispatcher и настроенного data plane."""
+    _validate_https_base_url(
+        config.dispatcher_url,
+        setting_name="AUDIT_WORKER_DISPATCHER_URL",
+        allow_insecure_localhost=config.allow_insecure_localhost,
+    )
+    if config.data_plane_base_url:
+        _validate_https_base_url(
+            config.data_plane_base_url,
+            setting_name="AUDIT_WORKER_DATA_PLANE_BASE_URL",
+            allow_insecure_localhost=config.allow_insecure_localhost,
         )
 
 
