@@ -70,6 +70,22 @@ def _log(message: str) -> None:
     print(f"[audit-worker {time.strftime('%H:%M:%S')}] {message}", flush=True)
 
 
+def _heartbeat_reason_code(state: str) -> str:
+    """Translate legacy center-state names to 12E operational reason codes."""
+    normalized = str(state).lower()
+    if "dns" in normalized:
+        return "DNS_FAILED"
+    if "tls" in normalized:
+        return "TLS_FAILED"
+    if "auth" in normalized or "token" in normalized:
+        return "MTLS_AUTH_FAILED"
+    if "protocol" in normalized:
+        return "PROTOCOL_MISMATCH"
+    if "unreachable" in normalized or "offline" in normalized:
+        return "GRPC_UNAVAILABLE"
+    return "UNKNOWN"
+
+
 class WorkerAgent:
     def __init__(self, config: WorkerConfig, identity: dict[str, Any]):
         from audit_worker.config import validate_control_transport
@@ -192,12 +208,29 @@ class WorkerAgent:
         if state != self.center_state:
             _log(f"состояние связи с центром: {self.center_state} → {state}")
         self.center_state = state
+        try:
+            self.state_store.update_runtime_diagnostics(
+                last_heartbeat_error_reason=_heartbeat_reason_code(state),
+                gateway_status="unavailable",
+            )
+        except Exception:  # noqa: BLE001 - health reporting is best effort
+            pass
         _log(f"heartbeat не прошёл ({state}): {exc}")
 
     def _on_center_ok(self) -> None:
         if self.center_state != "online":
             _log(f"связь с центром восстановлена (было {self.center_state})")
         self.center_state = "online"
+
+    def _record_heartbeat_ok(self) -> None:
+        try:
+            self.state_store.update_runtime_diagnostics(
+                last_heartbeat_at=time.time(),
+                last_heartbeat_error_reason="",
+                gateway_status="ready",
+            )
+        except Exception:  # noqa: BLE001 - health reporting is best effort
+            pass
 
     # ─── Жизненный цикл ──────────────────────────────────────────────────────
     def run_forever(self, *, max_jobs: Optional[int] = None) -> None:
@@ -783,6 +816,7 @@ class WorkerAgent:
         }
 
     def _on_heartbeat_response(self, response: dict[str, Any]) -> None:
+        self._record_heartbeat_ok()
         for update in response.get("retention_updates", []):
             if update.get("retention_until") is None:
                 continue

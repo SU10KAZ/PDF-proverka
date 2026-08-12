@@ -19,6 +19,7 @@ import os
 import threading
 import time
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Optional
 import fcntl
@@ -69,18 +70,59 @@ class WorkerStateStore:
     def save(self, data: dict[str, Any]) -> None:
         atomic_write_json(self.state_path, data)
 
-    def reserve_connection_epoch(self) -> int:
-        """Durably reserve a strictly increasing epoch before opening a stream."""
+    @contextmanager
+    def _locked_state(self) -> Iterator[dict[str, Any]]:
+        """Serialize state-file read/modify/write operations across processes.
+
+        Connection epochs and operational diagnostics share one small state
+        document.  A separate lock prevents a diagnostic update from restoring
+        an old epoch (or an epoch reservation from dropping the latest
+        disconnect reason) when Agent lifecycle threads overlap.
+        """
         lock_path = self.state_path.with_name("worker_state.lock")
         lock_path.parent.mkdir(parents=True, exist_ok=True)
         with self._epoch_lock, lock_path.open("a+") as lock_file:
             fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
-            state = self.load()
+            try:
+                state = self.load()
+                yield state
+                self.save(state)
+            finally:
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+    def reserve_connection_epoch(self) -> int:
+        """Durably reserve a strictly increasing epoch before opening a stream."""
+        with self._locked_state() as state:
             epoch = int(state.get("connection_epoch") or 0) + 1
             state["connection_epoch"] = epoch
-            self.save(state)
-            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
         return epoch
+
+    def update_runtime_diagnostics(self, **fields: Any) -> dict[str, Any]:
+        """Persist only safe low-cardinality operational facts.
+
+        No tokens, certificate material, exception text or endpoint headers are
+        accepted here.  The snapshot is intentionally useful after the Agent
+        process has died, which is the moment its in-memory counters are gone.
+        """
+        allowed = {
+            "grpc_connection_state",
+            "last_connected_at",
+            "last_disconnect_at",
+            "last_disconnect_reason",
+            "worker_accepting_jobs",
+            "last_heartbeat_at",
+            "last_heartbeat_error_reason",
+            "gateway_status",
+        }
+        rejected = set(fields) - allowed
+        if rejected:
+            raise ValueError(f"unsupported runtime diagnostic fields: {sorted(rejected)}")
+        with self._locked_state() as state:
+            diagnostics = dict(state.get("runtime_diagnostics") or {})
+            diagnostics.update(fields)
+            diagnostics["updated_at"] = time.time()
+            state["runtime_diagnostics"] = diagnostics
+        return diagnostics
 
     def read_token(self) -> Optional[str]:
         if not self.token_path.is_file():

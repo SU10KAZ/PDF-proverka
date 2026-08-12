@@ -306,6 +306,21 @@ def _cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_doctor(args: argparse.Namespace) -> int:
+    """Read-only operational snapshot for cutover and incident response.
+
+    It intentionally performs no model inference, registration, transport
+    change or cleanup.  Network reachability is represented by the durable
+    runtime facts written by the Agent; this command remains usable while the
+    Gateway is unavailable.
+    """
+    from audit_worker.diagnostics import collect_worker_diagnostics
+
+    config = load_config(args.root, require_dispatcher=False)
+    print(json.dumps(collect_worker_diagnostics(config), ensure_ascii=False, indent=2))
+    return 0
+
+
 def _cmd_providers(args: argparse.Namespace) -> int:
     """Состояние провайдеров ЛОКАЛЬНО, без сети к центру.
 
@@ -543,6 +558,13 @@ def main(argv: list[str] | None = None) -> int:
     p_status = sub.add_parser("status", help="локальное состояние (без сети)")
     add_root(p_status)
     p_status.set_defaults(func=_cmd_status)
+
+    p_doctor = sub.add_parser(
+        "doctor",
+        help="безопасный operational snapshot: transport, attempts, outbox, cert, disk",
+    )
+    add_root(p_doctor)
+    p_doctor.set_defaults(func=_cmd_doctor)
 
     p_prov = sub.add_parser(
         "providers",

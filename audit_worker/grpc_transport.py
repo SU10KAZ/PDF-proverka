@@ -59,6 +59,33 @@ WORKER_METRIC_NAMES = (
 )
 
 
+def grpc_failure_reason_code(exc: BaseException) -> str:
+    """Map a stream failure to an operational reason without leaking text.
+
+    The machine-readable value is deliberately small and stable.  Raw gRPC
+    descriptions can contain infrastructure details and stay in local logs;
+    the durable operator snapshot records only a typed reason.
+    """
+    if isinstance(exc, FatalGrpcTransportError):
+        return "PROTOCOL_MISMATCH"
+    if isinstance(exc, grpc.RpcError):
+        code = exc.code()
+        if code in {grpc.StatusCode.UNAUTHENTICATED, grpc.StatusCode.PERMISSION_DENIED}:
+            return "MTLS_AUTH_FAILED"
+        if code is grpc.StatusCode.UNAVAILABLE:
+            return "GRPC_UNAVAILABLE"
+        if code is grpc.StatusCode.DEADLINE_EXCEEDED:
+            return "TCP_FAILED"
+    text = str(exc).upper()
+    if "CERTIFICATE" in text or "SSL" in text or "TLS" in text:
+        return "TLS_FAILED"
+    if "AUTH" in text:
+        return "MTLS_AUTH_FAILED"
+    if "UNAVAILABLE" in text or "STREAM ENDED" in text:
+        return "GRPC_UNAVAILABLE"
+    return "UNKNOWN"
+
+
 @dataclass
 class _Outbound:
     kind: str
@@ -114,6 +141,11 @@ class GrpcStreamControlTransport:
         self._connection_id = ""
         self._stream_sequence = 0
         self._center_stream_sequence = 0
+        # gRPC invokes the request iterator on a library-owned thread.  A
+        # channel close is asynchronous, so an iterator from the *previous*
+        # stream can briefly survive while the reconnect is already ready.
+        # It must never consume work intended for the new stream.
+        self._active_request_epoch: int | None = None
         self._sequence_lock = threading.Lock()
         self._assignments: dict[str, dict[str, Any]] = {}
         self._uploads: dict[str, dict[str, Any]] = {}
@@ -166,6 +198,16 @@ class GrpcStreamControlTransport:
             self._thread.join(timeout=10)
         self.data.set_control_context(connection_id=None)
         self.data.close()
+        self._record_runtime_state(
+            grpc_connection_state="stopped", gateway_status="stopped"
+        )
+
+    def _record_runtime_state(self, **fields: Any) -> None:
+        """Best-effort diagnostics must never interfere with recovery."""
+        try:
+            self.state_store.update_runtime_diagnostics(**fields)
+        except Exception:  # noqa: BLE001 - observability cannot stop jobs
+            return
 
     def _connection_loop(self) -> None:
         delays = backoff_delays(
@@ -179,6 +221,10 @@ class GrpcStreamControlTransport:
             if self._connection_attempts > 1:
                 self._metric("grpc_reconnects")
             epoch = self.state_store.reserve_connection_epoch()
+            self._record_runtime_state(
+                grpc_connection_state="connecting",
+                gateway_status="connecting",
+            )
             self._log(f"grpc connect attempt epoch={epoch}")
             self._ready.clear()
             self._connection_id = ""
@@ -187,6 +233,7 @@ class GrpcStreamControlTransport:
             with self._sequence_lock:
                 self._stream_sequence = 0
                 self._center_stream_sequence = 0
+                self._active_request_epoch = epoch
             try:
                 self._channel = self._open_channel()
                 grpc.channel_ready_future(self._channel).result(
@@ -210,20 +257,38 @@ class GrpcStreamControlTransport:
                     jitter=float(self.config.grpc_reconnect_jitter),
                 )
             except FatalGrpcTransportError as exc:
+                self._deactivate_request_epoch(epoch)
                 self._metric("protocol_errors")
                 self._log(
                     f"grpc protocol stop epoch={epoch} error={type(exc).__name__}"
                 )
                 self._fatal_error = exc
+                self._record_runtime_state(
+                    grpc_connection_state="fatal",
+                    gateway_status="fatal",
+                    last_disconnect_at=time.time(),
+                    last_disconnect_reason=grpc_failure_reason_code(exc),
+                )
                 self._fail_waiters(exc)
                 return
             except Exception as exc:  # noqa: BLE001 - reconnect is the contract
+                # This must happen *before* backoff.  grpcio owns the request
+                # iterator in another thread; leaving it active during the
+                # delay permits the dead stream to consume a newly queued
+                # EventBatch, leaving its waiter without any possible ACK.
+                self._deactivate_request_epoch(epoch)
                 if self.config.grpc_security_mode == "mtls" and not self._ready.is_set():
                     self._metric("mtls_handshake_failures")
                 if self._ready.is_set():
                     self._metric("grpc_disconnects")
                 self._log(
                     f"grpc disconnected epoch={epoch} error={type(exc).__name__}"
+                )
+                self._record_runtime_state(
+                    grpc_connection_state="disconnected",
+                    gateway_status="unavailable",
+                    last_disconnect_at=time.time(),
+                    last_disconnect_reason=grpc_failure_reason_code(exc),
                 )
                 self._fail_waiters(exc)
                 # Hello alone is not a stable connection: an accept/drop loop
@@ -244,6 +309,7 @@ class GrpcStreamControlTransport:
             finally:
                 self._ready.clear()
                 self.data.set_control_context(connection_id=None)
+                self._deactivate_request_epoch(epoch)
                 if self._channel is not None:
                     self._channel.close()
                     self._channel = None
@@ -291,9 +357,17 @@ class GrpcStreamControlTransport:
         yield self._envelope(
             "hello", self._hello(epoch), correlation_id="hello_" + uuid.uuid4().hex
         )
-        while not self._stop.is_set() and not self._ready.wait(0.1):
+        while (
+            not self._stop.is_set()
+            and self._is_active_request_epoch(epoch)
+            and not self._ready.wait(0.1)
+        ):
             pass
-        while not self._stop.is_set() and self._ready.is_set():
+        while (
+            not self._stop.is_set()
+            and self._is_active_request_epoch(epoch)
+            and self._ready.is_set()
+        ):
             try:
                 item = self._critical.get_nowait()
             except queue.Empty:
@@ -320,6 +394,18 @@ class GrpcStreamControlTransport:
                 continue
             self._wake.wait(0.25)
             self._wake.clear()
+
+    def _is_active_request_epoch(self, epoch: int) -> bool:
+        with self._sequence_lock:
+            return self._active_request_epoch == epoch
+
+    def _deactivate_request_epoch(self, epoch: int) -> None:
+        """Fence an old grpcio request-generator before reconnect backoff."""
+        with self._sequence_lock:
+            if self._active_request_epoch == epoch:
+                self._active_request_epoch = None
+        self._ready.clear()
+        self._wake.set()
 
     def _envelope(self, kind: str, payload: Any, *, correlation_id: str = ""):
         with self._sequence_lock:
@@ -455,6 +541,12 @@ class GrpcStreamControlTransport:
                 or (required_policy_sha and required_policy_sha != local_policy_sha)
             )
             self._accepting_jobs = revision_ok and policy_ok
+            self._record_runtime_state(
+                grpc_connection_state="connected",
+                gateway_status="ready",
+                last_connected_at=time.time(),
+                worker_accepting_jobs=self._accepting_jobs,
+            )
             for cursor in response.hello.resume_cursors:
                 events_dir = (
                     self.jobs.job_dir(cursor.job_id, cursor.attempt_id)
