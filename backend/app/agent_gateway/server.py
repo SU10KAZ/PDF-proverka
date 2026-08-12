@@ -126,15 +126,22 @@ class GatewayServer:
     async def stop(self, grace: float | None = None) -> None:
         if self.grpc_server is None:
             return
+        shutdown_grace = (
+            self.config.graceful_shutdown_sec if grace is None else max(0.0, grace)
+        )
         if self.config.health_enabled:
             await self.health_servicer.set("", health_pb2.HealthCheckResponse.NOT_SERVING)
             await self.health_servicer.set(
                 SERVICE_NAME, health_pb2.HealthCheckResponse.NOT_SERVING
             )
         await self.service.drain()
-        await self.grpc_server.stop(
-            self.config.graceful_shutdown_sec if grace is None else max(0.0, grace)
-        )
+        # Let Connect generators observe their closing events and execute
+        # durable disconnect/unregister cleanup before asking grpcio to force
+        # cancellation at the grace deadline.
+        await self.service.wait_drained(shutdown_grace)
+        server = self.grpc_server
+        await server.stop(shutdown_grace)
+        await server.wait_for_termination(timeout=max(1.0, shutdown_grace))
         self.grpc_server = None
         logger.info("agent-gateway stopped")
 

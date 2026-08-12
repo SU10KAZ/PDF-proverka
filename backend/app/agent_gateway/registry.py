@@ -79,3 +79,13 @@ class GatewayConnectionRegistry:
     async def count(self) -> int:
         async with self._lock:
             return len(self._sessions)
+
+    async def wait_empty(self, timeout: float) -> bool:
+        """Wait boundedly for stream handlers to run their unregister finally."""
+        deadline = asyncio.get_running_loop().time() + max(0.0, timeout)
+        while await self.count():
+            remaining = deadline - asyncio.get_running_loop().time()
+            if remaining <= 0:
+                return False
+            await asyncio.sleep(min(0.01, remaining))
+        return True

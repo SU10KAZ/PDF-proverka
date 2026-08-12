@@ -281,6 +281,7 @@ async def test_real_grpc_hello_over_mtls(identity, center):
     assert response.WhichOneof("payload") == "hello"
     assert server.metrics.snapshot()["mtls_handshakes_total"] == 1
     call.cancel(); await channel.close(); await server.stop()
+    assert await server.registry.count() == 0
 
 
 @pytest.mark.asyncio

@@ -653,3 +653,6 @@ class AgentStreamService(stream_grpc.AgentStreamServiceServicer):
     async def drain(self) -> None:
         self.draining = True
         await self.registry.drain()
+
+    async def wait_drained(self, timeout: float) -> bool:
+        return await self.registry.wait_empty(timeout)
