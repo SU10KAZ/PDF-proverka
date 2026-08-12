@@ -7,6 +7,7 @@ import os
 import sqlite3
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import grpc
@@ -901,6 +902,53 @@ async def test_c28_center_db_outage_is_typed_fail_closed_and_recovers(
     assert [event["sequence"] for event in events] == [1]
     assert await server.registry.count() == 1
     await reconnect.close()
+
+
+def test_c32_last_slot_race_accepts_exactly_one_of_twenty_contenders(gateway_env):
+    """C32: BEGIN IMMEDIATE serializes near-simultaneous last-slot claims."""
+    worker = make_worker(gateway_env, slots=1)
+    jobs = [make_job(gateway_env, worker["worker_id"]) for _ in range(20)]
+    connection_id = "c32-connection"
+    gateway_repository.accept_connection(
+        worker_id=worker["worker_id"],
+        instance_id=worker["instance_id"],
+        connection_id=connection_id,
+        connection_epoch=1,
+        protocol_version=1,
+        settings=gateway_env,
+    )
+
+    def contend(_index):
+        try:
+            return repositories.claim_next_job_for_worker(
+                worker["worker_id"],
+                limit_override=1,
+                worker_free_hint=1,
+                worker_busy_hint=0,
+                transport_mode="grpc_stream",
+                gateway_offer={
+                    "connection_id": connection_id,
+                    "expires_at": time.time() + 30,
+                },
+                settings=gateway_env,
+            )
+        except repositories.SlotLimitReached:
+            return None
+
+    with ThreadPoolExecutor(max_workers=20) as pool:
+        outcomes = list(pool.map(contend, range(20)))
+
+    accepted = [item for item in outcomes if item is not None]
+    assert len(accepted) == 1
+    states = [
+        repositories.get_attempt(job["attempt_id"], settings=gateway_env)["state"]
+        for job in jobs
+    ]
+    assert states.count("source_uploading") == 1
+    assert states.count("assigned") == 19
+    assert repositories.worker_slot_snapshot(
+        worker["worker_id"], settings=gateway_env
+    ).reserved == 1
 
 
 def test_bo_no_provider_inference_or_production_deploy_surface():

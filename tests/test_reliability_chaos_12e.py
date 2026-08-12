@@ -27,6 +27,7 @@ from audit_worker.grpc_transport import (
     GrpcStreamControlTransport,
     grpc_failure_reason_code,
 )
+from audit_worker import grpc_transport as grpc_transport_module
 from audit_worker.local_store import LocalJobStore, WorkerStateStore
 from audit_worker import uploader
 from audit_worker.uploader import UploadFailed, upload_result
@@ -192,6 +193,61 @@ def test_12e_stale_request_iterator_cannot_consume_reconnected_outbox_item(tmp_p
     assert transport._is_active_request_epoch(2)
     transport._deactivate_request_epoch(2)
     assert not transport._is_active_request_epoch(2)
+
+
+def test_c34_twelve_grpc_failures_never_fall_back_to_polling(tmp_path, monkeypatch):
+    """C34: repeated stream failure keeps one explicit gRPC owner."""
+    class DataPlane(_NullData):
+        polling_calls = 0
+
+        def next_job(self, *_args, **_kwargs):
+            self.polling_calls += 1
+            raise AssertionError("automatic polling fallback was invoked")
+
+    class FailedChannel:
+        def close(self):
+            return None
+
+    class FailedReady:
+        def __init__(self, transport):
+            self.transport = transport
+
+        def result(self, timeout):
+            if self.transport._connection_attempts >= 12:
+                self.transport._stop.set()
+            raise RuntimeError("simulated GRPC_UNAVAILABLE")
+
+    config = _config(tmp_path, transport="grpc")
+    config.grpc_reconnect_min_delay_sec = 0.0
+    config.grpc_reconnect_max_delay_sec = 0.0
+    config.grpc_reconnect_jitter = 0.0
+    data = DataPlane()
+    transport = GrpcStreamControlTransport(
+        target="localhost:12345",
+        data_client=data,
+        state_store=WorkerStateStore(config.state_path, config.token_path),
+        jobs=LocalJobStore(config.jobs_dir),
+        worker_id="wrk_0123456789abcdef",
+        instance_id="inst_0123456789abcdef",
+        config=config,
+        build_heartbeat=lambda: {"active_jobs": [], "providers": []},
+    )
+    monkeypatch.setattr(transport, "_open_channel", lambda: FailedChannel())
+    monkeypatch.setattr(
+        grpc_transport_module.grpc,
+        "channel_ready_future",
+        lambda _channel: FailedReady(transport),
+    )
+
+    transport._connection_loop()
+
+    assert transport._connection_attempts == 12
+    assert transport.metrics_snapshot()["grpc_connect_attempts"] == 12
+    assert transport.metrics_snapshot()["grpc_reconnects"] == 11
+    assert data.polling_calls == 0
+    state = transport.state_store.load()["runtime_diagnostics"]
+    assert state["grpc_connection_state"] == "disconnected"
+    assert state["last_disconnect_reason"] == "GRPC_UNAVAILABLE"
 
 
 def test_c14_interrupted_source_body_resumes_from_durable_part(tmp_path, monkeypatch):
