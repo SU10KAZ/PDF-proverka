@@ -480,35 +480,20 @@ def build_user_prompt(
     right_md: str,
     *,
     block_links: Optional[list[dict]] = None,
-    analysis_mode: Optional[str] = None,
 ) -> str:
     """Собрать user-prompt с фиксированными разделителями.
 
     `block_links` — если переданы, добавляются как anchors/focus (не как
     exclusive scope). См. `build_block_links_context`.
 
-    `analysis_mode` — `block_links` (default) или `concept_no_block_links`.
-    Влияет только на короткое напоминание для модели; основной prompt всегда
-    говорит «сравни весь документ».
     """
     intro = (
         "Сравни два enriched Markdown-файла (старая стадия ↔ новая стадия) "
         "по ВСЕМУ их содержимому и верни JSON по описанной в системном промпте схеме.\n"
+        "Если ниже есть тег <BLOCK_LINKS>, трактуй каждую пару как якорь "
+        "повышенного внимания, но сравнение идёт по ВСЕМУ документу.\n"
     )
-    if analysis_mode == "concept_no_block_links":
-        intro += (
-            "Режим: concept_no_block_links. Связи блоков не используются; "
-            "отсутствие связей — это НЕ ошибка.\n"
-        )
-    elif analysis_mode == "block_links":
-        intro += (
-            "Режим: block_links. Если ниже есть тег <BLOCK_LINKS>, "
-            "трактуй каждую пару как якорь повышенного внимания, "
-            "но сравнение идёт по ВСЕМУ документу.\n"
-        )
-    links_ctx = ""
-    if analysis_mode != "concept_no_block_links":
-        links_ctx = build_block_links_context(block_links)
+    links_ctx = build_block_links_context(block_links)
     synonyms_ctx = build_consumer_synonyms_context()
     return (
         intro
@@ -524,12 +509,10 @@ def build_prompts(
     right_md: str,
     *,
     block_links: Optional[list[dict]] = None,
-    analysis_mode: Optional[str] = None,
 ) -> tuple[str, str]:
     return SYSTEM_PROMPT, build_user_prompt(
         left_md, right_md,
         block_links=block_links,
-        analysis_mode=analysis_mode,
     )
 
 
@@ -1332,13 +1315,8 @@ def _run_enriched_comparison_impl(
 
         # Provider availability
         avail, reason = prov.check_availability()
-        # Load block_links + analysis_mode для построения prompt'а. Импорт
-        # внутри функции, чтобы избежать circular import (store ↔ enriched_comparison).
-        try:
-            from . import store as _store_mod
-            analysis_mode_val = _store_mod.get_pair_analysis_mode(session_id, pair_id)
-        except Exception:  # noqa: BLE001
-            analysis_mode_val = "block_links"
+        # Load block_links для построения prompt'а. Импорт внутри функции,
+        # чтобы избежать circular import (store ↔ enriched_comparison).
         try:
             from . import store as _store_mod  # noqa: F401
             block_links_payload = _store_mod._pair_links(session_id, pair_id)  # type: ignore[attr-defined]
@@ -1346,8 +1324,7 @@ def _run_enriched_comparison_impl(
             block_links_payload = []
         system_prompt, user_prompt = build_prompts(
             left_md, right_md,
-            block_links=block_links_payload if analysis_mode_val != "concept_no_block_links" else None,
-            analysis_mode=analysis_mode_val,
+            block_links=block_links_payload,
         )
         if not avail:
             prompt_file = _save_prompt(session_id, pair_id, system_prompt, user_prompt)

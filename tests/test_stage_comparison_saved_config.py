@@ -346,7 +346,7 @@ def test_set_pair_order_endpoint_404_on_unknown_session(tmp_path, monkeypatch):
 def _setup_full_session(tmp_path, monkeypatch, sid: str, pair_specs: list[dict]) -> str:
     """Создать сессию с pair.json'ами под allowlist root.
 
-    pair_specs = [{"id": "p1", "status": "matched", "analysis_mode": "block_links",
+    pair_specs = [{"id": "p1", "status": "matched",
                    "left_filename": "a.pdf", "right_filename": "b.pdf"}, ...]
     """
     monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison_root"))
@@ -380,8 +380,6 @@ def _setup_full_session(tmp_path, monkeypatch, sid: str, pair_specs: list[dict])
             "right": {"filename": spec.get("right_filename", "b.pdf"),
                       "pdf_path": str(stage_b / spec.get("right_filename", "b.pdf"))},
         }
-        if spec.get("analysis_mode"):
-            pair_payload["analysis_mode"] = spec["analysis_mode"]
         (pdir / "pair.json").write_text(_json.dumps(pair_payload), encoding="utf-8")
     return sid
 
@@ -406,15 +404,13 @@ def test_canonical_config_missing_returns_unsaved(tmp_path, monkeypatch):
 
 
 def test_save_canonical_persists_pairs_and_session_id(tmp_path, monkeypatch):
-    """POST /sessions/{sid}/save-canonical сохраняет pairs/режимы/session_id."""
+    """POST /sessions/{sid}/save-canonical сохраняет пары и session_id."""
     from fastapi.testclient import TestClient
     cfg_path = tmp_path / "saved_config.json"
     monkeypatch.setenv("STAGE_COMPARISON_SAVED_CONFIG_PATH", str(cfg_path))
     sid = _setup_full_session(tmp_path, monkeypatch, "sess_canon_save", [
-        {"id": "p1", "analysis_mode": "block_links",
-         "left_filename": "a1.pdf", "right_filename": "b1.pdf"},
-        {"id": "p2", "analysis_mode": "concept_no_block_links",
-         "left_filename": "a2.pdf", "right_filename": "b2.pdf"},
+        {"id": "p1", "left_filename": "a1.pdf", "right_filename": "b1.pdf"},
+        {"id": "p2", "left_filename": "a2.pdf", "right_filename": "b2.pdf"},
     ])
     app = _build_app_full()
     client = TestClient(app)
@@ -433,10 +429,7 @@ def test_save_canonical_persists_pairs_and_session_id(tmp_path, monkeypatch):
     assert len(pairs) == 2
     pair_ids = {p["pair_id"] for p in pairs}
     assert pair_ids == {"p1", "p2"}
-    p1 = next(p for p in pairs if p["pair_id"] == "p1")
-    assert p1["analysis_mode"] == "block_links"
-    p2 = next(p for p in pairs if p["pair_id"] == "p2")
-    assert p2["analysis_mode"] == "concept_no_block_links"
+    assert all("analysis_mode" not in p for p in pairs)
 
 
 def test_save_canonical_overwrites_previous(tmp_path, monkeypatch):
@@ -483,7 +476,7 @@ def test_canonical_open_returns_session_when_available(tmp_path, monkeypatch):
     cfg_path = tmp_path / "saved_config.json"
     monkeypatch.setenv("STAGE_COMPARISON_SAVED_CONFIG_PATH", str(cfg_path))
     sid = _setup_full_session(tmp_path, monkeypatch, "sess_open", [
-        {"id": "p1", "analysis_mode": "block_links"},
+        {"id": "p1"},
     ])
     app = _build_app_full()
     client = TestClient(app)
@@ -530,7 +523,7 @@ def test_canonical_config_stale_when_pairs_changed(tmp_path, monkeypatch):
     cfg_path = tmp_path / "saved_config.json"
     monkeypatch.setenv("STAGE_COMPARISON_SAVED_CONFIG_PATH", str(cfg_path))
     sid = _setup_full_session(tmp_path, monkeypatch, "sess_stale", [
-        {"id": "p1", "analysis_mode": "block_links"},
+        {"id": "p1"},
     ])
     app = _build_app_full()
     client = TestClient(app)
@@ -541,7 +534,7 @@ def test_canonical_config_stale_when_pairs_changed(tmp_path, monkeypatch):
     import json as _json
     pair_json = paths_mod.pair_json_path(sid, "p1")
     pdata = _json.loads(pair_json.read_text())
-    pdata["analysis_mode"] = "concept_no_block_links"
+    pdata["status"] = "disabled"
     pair_json.write_text(_json.dumps(pdata), encoding="utf-8")
 
     r = client.get("/api/stage-comparison/canonical-config/open")
@@ -574,7 +567,7 @@ def test_canonical_config_hash_stable_for_same_pairs(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import saved_config as sc
     pairs_a = [
         {"pair_id": "p1", "left_filename": "a.pdf", "right_filename": "b.pdf",
-         "disabled": False, "analysis_mode": "block_links", "order": 1,
+         "disabled": False, "order": 1,
          "manual_links_count": 0, "status": "matched"},
     ]
     pairs_b = [dict(p) for p in pairs_a]  # shallow copy

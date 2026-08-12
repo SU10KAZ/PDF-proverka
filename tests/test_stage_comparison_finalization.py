@@ -469,45 +469,56 @@ def test_compute_warnings_missing_md_and_disabled():
 
 def test_list_objects_finds_object_with_two_stages(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import objects
+    from backend.app.services.stage_comparison import stage_upload
 
-    root = tmp_path / "sources"
-    obj = root / "OBJ_42"
-    (obj / "stage_1").mkdir(parents=True)
-    (obj / "stage_2").mkdir(parents=True)
-    monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(root))
+    root = tmp_path / "projects_v2"
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(root))
+    platform_obj = {"id": "obj-42", "name": "42. Тест"}
+    monkeypatch.setattr(stage_upload.object_service, "list_objects", lambda: [platform_obj])
+    monkeypatch.setattr(stage_upload.object_service, "get_object_by_id", lambda _oid: platform_obj)
 
     out = objects.list_objects()
     assert out["count"] == 1
     item = out["items"][0]
-    assert item["id"] == "OBJ_42"
+    assert item["id"] == "obj-42"
     assert len(item["stages"]) == 2
     assert item["default_stage_a"]["name"] == "stage_1"
     assert item["default_stage_b"]["name"] == "stage_2"
-    assert item["default_stage_a"]["path"] == str(obj / "stage_1")
-    assert item["default_stage_b"]["path"] == str(obj / "stage_2")
+    expected = root / "objects" / "42_Test" / "comparison"
+    assert item["default_stage_a"]["path"] == str(expected / "stage_1")
+    assert item["default_stage_b"]["path"] == str(expected / "stage_2")
+    assert not expected.exists()  # GET списка не создаёт каталогов
 
 
-def test_list_objects_skips_object_with_one_stage(tmp_path, monkeypatch):
+def test_list_objects_keeps_platform_object_before_first_upload(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import objects
-    root = tmp_path / "sources"
-    (root / "BAD" / "stage_1").mkdir(parents=True)
-    monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(root))
-    assert objects.list_objects()["count"] == 0
+    from backend.app.services.stage_comparison import stage_upload
+
+    root = tmp_path / "projects_v2"
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(root))
+    platform_obj = {"id": "new", "name": "Новый объект"}
+    monkeypatch.setattr(stage_upload.object_service, "list_objects", lambda: [platform_obj])
+    monkeypatch.setattr(stage_upload.object_service, "get_object_by_id", lambda _oid: platform_obj)
+    item = objects.list_objects()["items"][0]
+    assert [stage["pdf_count"] for stage in item["stages"]] == [0, 0]
 
 
-def test_list_objects_sorts_stages_numerically(tmp_path, monkeypatch):
+def test_list_objects_uses_only_two_comparison_stages(tmp_path, monkeypatch):
     from backend.app.services.stage_comparison import objects
-    obj = tmp_path / "sources" / "OBJ"
-    for n in (10, 1, 2, 11):
-        (obj / f"stage_{n}").mkdir(parents=True)
-    monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(tmp_path / "sources"))
+    from backend.app.services.stage_comparison import stage_upload
+
+    root = tmp_path / "projects_v2"
+    monkeypatch.setenv("AUDIT_PROJECTS_V2_DIR", str(root))
+    platform_obj = {"id": "obj", "name": "OBJ"}
+    monkeypatch.setattr(stage_upload.object_service, "list_objects", lambda: [platform_obj])
+    monkeypatch.setattr(stage_upload.object_service, "get_object_by_id", lambda _oid: platform_obj)
+    extra = root / "objects" / "OBJ" / "comparison" / "stage_10"
+    extra.mkdir(parents=True)
     item = objects.list_objects()["items"][0]
     names = [s["name"] for s in item["stages"]]
-    # stage_1, stage_2, stage_10, stage_11 — натуральная сортировка
-    assert names == ["stage_1", "stage_2", "stage_10", "stage_11"]
-    # default_a — первая (stage_1), default_b — последняя (stage_11)
+    assert names == ["stage_1", "stage_2"]
     assert item["default_stage_a"]["name"] == "stage_1"
-    assert item["default_stage_b"]["name"] == "stage_11"
+    assert item["default_stage_b"]["name"] == "stage_2"
 
 
 # ─── Scanner: regression — папка с расширением .pdf не должна сканироваться

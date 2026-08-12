@@ -11,6 +11,7 @@
 
 mode:
   auto    — создано автоматически из количества страниц
+  uncertain — только совместный просмотр кандидатов; НЕ автоматическая пара
   manual  — изменено пользователем (включая insert/move)
   blank   — добавлен пустой лист (одна сторона null)
 
@@ -66,7 +67,7 @@ def _normalize_int_or_none(value: Any) -> int | None:
 
 def _normalize_mode(mode: Any) -> str:
     s = str(mode or "").strip().lower()
-    if s not in {"auto", "manual", "blank"}:
+    if s not in {"auto", "uncertain", "manual", "blank"}:
         return "manual"
     return s
 

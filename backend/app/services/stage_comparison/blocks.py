@@ -1,4 +1,4 @@
-"""Нормализация блоков из result.json + IoU-сопоставление."""
+"""Нормализация блоков из result.json для просмотра существующих связей."""
 from __future__ import annotations
 
 import json
@@ -234,112 +234,6 @@ def normalize_blocks_from_result_json(path: str | Path) -> tuple[list[dict], dic
     return blocks, {"pages_total": len(pages_meta), "pages": pages_meta}
 
 
-# ─── IoU auto-link ───────────────────────────────────────────────────────
-
-def _iou(a: list[float] | None, b: list[float] | None) -> float:
-    if not a or not b:
-        return 0.0
-    if len(a) != 4 or len(b) != 4:
-        return 0.0
-    ax0, ay0, ax1, ay1 = a
-    bx0, by0, bx1, by1 = b
-    if ax1 <= ax0 or ay1 <= ay0 or bx1 <= bx0 or by1 <= by0:
-        return 0.0
-    ix0 = max(ax0, bx0)
-    iy0 = max(ay0, by0)
-    ix1 = min(ax1, bx1)
-    iy1 = min(ay1, by1)
-    if ix1 <= ix0 or iy1 <= iy0:
-        return 0.0
-    inter = (ix1 - ix0) * (iy1 - iy0)
-    area_a = (ax1 - ax0) * (ay1 - ay0)
-    area_b = (bx1 - bx0) * (by1 - by0)
-    union = area_a + area_b - inter
-    if union <= 0:
-        return 0.0
-    return inter / union
-
-
-def auto_link_blocks(
-    left_blocks: list[dict],
-    right_blocks: list[dict],
-    *,
-    iou_threshold: float = 0.5,
-    alignment_items: list[dict] | None = None,
-) -> list[dict]:
-    """Жадное IoU-сопоставление блоков.
-
-    Если alignment_items передан, блок левой страницы L сопоставляется только
-    с блоками правой страницы R по карте (L→R, slot). Если карта не передана,
-    используется legacy-режим (одинаковые номера страниц).
-
-    Возвращает список:
-      {
-        "left_block_id", "right_block_id",
-        "method": "auto", "score",
-        "left_page", "right_page", "alignment_slot",
-        "page" (== left_page, обратная совместимость)
-      }
-    """
-    left_to_right_map: dict[int, int | None] = {}
-    left_to_slot: dict[int, int] = {}
-    if alignment_items:
-        for it in alignment_items:
-            lp = it.get("left_page")
-            rp = it.get("right_page")
-            slot = it.get("slot")
-            if lp is None:
-                continue
-            left_to_right_map[int(lp)] = (int(rp) if rp is not None else None)
-            if slot is not None:
-                left_to_slot[int(lp)] = int(slot)
-
-    right_by_page: dict[int, list[dict]] = {}
-    for rb in right_blocks:
-        right_by_page.setdefault(rb.get("page") or 1, []).append(rb)
-
-    candidates: list[tuple[int, int, str, str, float, int | None]] = []
-    for lb in left_blocks:
-        lp = lb.get("page") or 1
-        if alignment_items is not None:
-            if lp not in left_to_right_map:
-                continue
-            rp = left_to_right_map[lp]
-            if rp is None:
-                continue
-        else:
-            rp = lp
-        slot = left_to_slot.get(lp)
-        for rb in right_by_page.get(rp, []):
-            a = lb.get("bbox_norm") or lb.get("bbox")
-            b = rb.get("bbox_norm") or rb.get("bbox")
-            sc = _iou(a, b)
-            if sc >= iou_threshold:
-                candidates.append((lp, rp, lb["id"], rb["id"], sc, slot))
-
-    candidates.sort(key=lambda x: -x[4])
-    used_left: set[str] = set()
-    used_right: set[str] = set()
-    links: list[dict] = []
-    for lp, rp, lid, rid, sc, slot in candidates:
-        if lid in used_left or rid in used_right:
-            continue
-        used_left.add(lid)
-        used_right.add(rid)
-        links.append({
-            "left_block_id": lid,
-            "right_block_id": rid,
-            "method": "auto",
-            "score": round(sc, 4),
-            "left_page": lp,
-            "right_page": rp,
-            "alignment_slot": slot,
-            "page": lp,  # обратная совместимость с MVP
-        })
-    return links
-
-
 __all__ = [
     "normalize_blocks_from_result_json",
-    "auto_link_blocks",
 ]

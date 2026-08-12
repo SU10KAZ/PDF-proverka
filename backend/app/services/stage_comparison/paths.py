@@ -514,38 +514,6 @@ def reports_root(session_id: str) -> Path:
     return p
 
 
-def auto_match_dir(session_id: str) -> Path:
-    """`comparison/sessions/<sid>/page_alignment_auto_match/` — артефакты
-    пакетного авто-сопоставления листов по штампам."""
-    p = session_dir(session_id) / "page_alignment_auto_match"
-    p.mkdir(parents=True, exist_ok=True)
-    return p
-
-
-def auto_match_last_run_path(session_id: str) -> Path:
-    return auto_match_dir(session_id) / "last_run.json"
-
-
-def templates_root() -> Path:
-    """`comparison/templates/` — снимки конфигурации пар по identity ключу.
-
-    Используются разделом «Сравнение стадий», чтобы сохранять связи блоков
-    и карту страниц для конкретной пары PDF и автоматически применять их
-    при повторном создании сессии с теми же файлами.
-    """
-    p = comparison_root() / "templates"
-    p.mkdir(parents=True, exist_ok=True)
-    return p
-
-
-def pair_template_path(key: str) -> Path:
-    """Путь файла шаблона по детерминированному ключу (sha1)."""
-    safe = "".join(c for c in (key or "") if c.isalnum() or c in "-_")
-    if not safe:
-        raise ValueError("invalid template key")
-    return templates_root() / f"{safe}.json"
-
-
 def report_path(session_id: str, report_id: str) -> Path:
     """Полный путь файла отчёта. report_id — имя файла без manipulation."""
     safe = "".join(c for c in (report_id or "") if c.isalnum() or c in "-_.")
@@ -587,8 +555,6 @@ __all__ = [
     "page_alignment_path",
     "links_path",
     "graphic_diffs_path",
-    "templates_root",
-    "pair_template_path",
     "text_diff_cache_path",
     "text_llm_diff_path",
     "text_llm_prompt_path",

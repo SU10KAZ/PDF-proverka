@@ -6,8 +6,6 @@ MVP-набор endpoint'ов:
   • GET    /api/stage-comparison/sessions/{session_id}
   • GET    /api/stage-comparison/sessions/{session_id}/pairs/{pair_id}
   • GET    /api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/page-image
-  • POST   /api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/auto-link
-  • POST   /api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/links
   • DELETE /api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/links
   • GET    /api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/text-diff
   • GET    /api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/graphic-summary
@@ -28,7 +26,7 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
@@ -38,14 +36,9 @@ from backend.app.services.stage_comparison import text_llm as text_llm_mod, text
 from backend.app.services.stage_comparison import text_llm_provider as text_llm_provider_mod
 from backend.app.services.stage_comparison import text_llm_preflight as text_llm_preflight_mod
 from backend.app.services.stage_comparison import text_llm_flat as text_llm_flat_mod
-from backend.app.services.stage_comparison import pair_template as pair_template_mod
 from backend.app.services.stage_comparison import md_image_enrichment as md_enrichment_mod
 from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
-from backend.app.services.stage_comparison import pipeline_v2_entity_mapping_overrides as entity_mapping_overrides_mod
-from backend.app.services.stage_comparison import pipeline_v2_controlled_enforce_state as pipeline_v2_ce_state_mod
-from backend.app.services.stage_comparison import pipeline_v2_exclusion_review_overrides as excl_review_mod
 from backend.app.services.stage_comparison import pipeline_v2_run_jobs as pipeline_v2_run_jobs_mod
-from backend.app.services.stage_comparison import auto_match_jobs as auto_match_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
 from backend.app.services.stage_comparison import clear_analysis as clear_analysis_mod
 from backend.app.services.stage_comparison import opus_only as opus_only_mod
@@ -59,6 +52,7 @@ from backend.app.services.stage_comparison import v2_review as v2_review_mod
 from backend.app.services.stage_comparison import review_transfer as review_transfer_mod
 from backend.app.services.stage_comparison import paths as sc_paths_mod
 from backend.app.services.stage_comparison import saved_config as saved_config_mod
+from backend.app.services.stage_comparison import stage_upload as stage_upload_mod
 
 logger = logging.getLogger(__name__)
 
@@ -84,24 +78,9 @@ class CreateSessionRequest(BaseModel):
     stage_b_path: str = Field(..., description="Путь к папке второй стадии")
 
 
-class CreateLinkRequest(BaseModel):
-    left_block_id: str
-    right_block_id: str
-
-
 class DeleteLinkRequest(BaseModel):
     left_block_id: str
     right_block_id: str
-
-
-class AutoLinkRequest(BaseModel):
-    iou_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
-
-
-class SuggestByStampRequest(BaseModel):
-    # Доматчить семантически эквивалентные имена листов через Haiku поверх
-    # детерминированного штамп-матчинга. Fail-soft, ничего не применяет.
-    use_llm: bool = True
 
 
 class GraphicDiffRequest(BaseModel):
@@ -187,43 +166,6 @@ class DeletePairRequest(BaseModel):
     hard: bool = False
 
 
-class EntityMappingItem(BaseModel):
-    """Один ручной override выравнивания сущности (mark-only)."""
-    left_entity_label: Optional[str] = None
-    right_entity_label: Optional[str] = None
-    left_block_id: Optional[str] = None
-    right_block_id: Optional[str] = None
-    left_page_number: Optional[int] = None
-    right_page_number: Optional[int] = None
-    source_classification: Optional[str] = None
-    pair_key: Optional[str] = None
-    manual_decision: str
-    comment: Optional[str] = None
-
-
-class EntityMappingUpsertRequest(BaseModel):
-    mapping: EntityMappingItem
-    created_by: Optional[str] = None
-
-
-class ExclusionReviewDecisionItem(BaseModel):
-    """Одно решение оператора по exclusion preview item (mark-only)."""
-    exclusion_item_id: Optional[str] = None
-    left_block_id: Optional[str] = None
-    right_block_id: Optional[str] = None
-    left_entity_label: Optional[str] = None
-    right_entity_label: Optional[str] = None
-    preview_classification: Optional[str] = None
-    preview_severity: Optional[str] = None
-    operator_decision: str
-    comment: Optional[str] = None
-
-
-class ExclusionReviewUpsertRequest(BaseModel):
-    decision: ExclusionReviewDecisionItem
-    created_by: Optional[str] = None
-
-
 class GraphicDiffJobItem(BaseModel):
     pair_id: str
     left_block_id: str
@@ -274,6 +216,73 @@ async def list_comparison_objects():
     UI использует это для селекта вместо ручного ввода путей.
     """
     return objects_mod.list_objects()
+
+
+@router.post("/objects/{object_id}/stages/{stage_name}/upload")
+async def upload_stage_archive_endpoint(
+    object_id: str,
+    stage_name: str,
+    file: UploadFile = File(...),
+):
+    """Импортировать ZIP в stage_1/stage_2 выбранного platform object.
+
+    Архив сначала полностью проверяется и распаковывается во временную папку.
+    Документы становятся новыми версиями; состояние до импорта дополнительно
+    сохраняется в recoverable backup.
+    """
+    if stage_name not in stage_upload_mod.VALID_STAGES:
+        raise HTTPException(400, "Разрешены только stage_1 и stage_2")
+    try:
+        return await run_in_threadpool(
+            stage_upload_mod.replace_stage_from_zip,
+            object_id,
+            stage_name,
+            file.file,
+            file.filename,
+        )
+    except stage_upload_mod.StageUploadError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except OSError as exc:
+        logger.exception("stage archive upload failed: %s/%s", object_id, stage_name)
+        raise HTTPException(500, f"Не удалось сохранить архив стадии: {exc}") from exc
+
+
+@router.post("/objects/{object_id}/stages/{stage_name}/upload-folder")
+async def upload_stage_folder_endpoint(
+    object_id: str,
+    stage_name: str,
+    files: list[UploadFile] = File(...),
+    relative_paths: str = Form("[]"),
+    folder_name: str = Form(""),
+):
+    """Загрузить одним действием целую папку с компьютера пользователя."""
+    if stage_name not in stage_upload_mod.VALID_STAGES:
+        raise HTTPException(400, "Разрешены только stage_1 и stage_2")
+    if not files:
+        raise HTTPException(422, "Выбранная папка не содержит файлов")
+    try:
+        parsed_paths = json.loads(relative_paths or "[]")
+    except json.JSONDecodeError as exc:
+        raise HTTPException(422, "Некорректный список путей файлов") from exc
+    if not isinstance(parsed_paths, list) or len(parsed_paths) != len(files):
+        raise HTTPException(422, "Количество файлов и относительных путей не совпадает")
+    uploads = [
+        (upload.file, str(parsed_paths[index] or upload.filename or ""))
+        for index, upload in enumerate(files)
+    ]
+    try:
+        return await run_in_threadpool(
+            stage_upload_mod.replace_stage_from_folder,
+            object_id,
+            stage_name,
+            uploads,
+            folder_name,
+        )
+    except stage_upload_mod.StageUploadError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except OSError as exc:
+        logger.exception("stage folder upload failed: %s/%s", object_id, stage_name)
+        raise HTTPException(500, f"Не удалось сохранить папку стадии: {exc}") from exc
 
 
 # ─── Saved configuration ──────────────────────────────────────────────────
@@ -476,7 +485,6 @@ async def open_canonical_config():
                 "right_pdf_path": ((p.get("right") or {}).get("pdf_path") or None),
                 "disabled": str(p.get("status") or "") == "disabled",
                 "status": (p.get("status") or None),
-                "analysis_mode": (p.get("analysis_mode") or None),
                 "manual_links_count": len(p.get("links") or []),
                 "order": idx + 1,
             })
@@ -676,25 +684,6 @@ async def get_block_image(
 # ─── Block links ─────────────────────────────────────────────────────────
 
 
-@router.post("/sessions/{session_id}/pairs/{pair_id}/auto-link")
-async def auto_link(session_id: str, pair_id: str, req: AutoLinkRequest):
-    try:
-        return store.run_auto_link(session_id, pair_id, iou_threshold=req.iou_threshold)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/links")
-async def create_link(session_id: str, pair_id: str, req: CreateLinkRequest):
-    try:
-        link = store.add_manual_link(session_id, pair_id, req.left_block_id, req.right_block_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    return link
-
-
 @router.delete("/sessions/{session_id}/pairs/{pair_id}/links")
 async def remove_link(session_id: str, pair_id: str, req: DeleteLinkRequest):
     try:
@@ -702,56 +691,6 @@ async def remove_link(session_id: str, pair_id: str, req: DeleteLinkRequest):
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     return {"removed": removed}
-
-
-# ─── Pair config templates (auto-restore links + alignment) ─────────────
-
-
-@router.get("/sessions/{session_id}/pairs/{pair_id}/template-status")
-async def pair_template_status_endpoint(session_id: str, pair_id: str):
-    """Есть ли сохранённый шаблон для этой пары PDF и применён ли он сейчас."""
-    try:
-        return pair_template_mod.template_status(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/save-template")
-async def pair_template_save_endpoint(session_id: str, pair_id: str):
-    """Сохранить снимок links + page_alignment пары как шаблон по identity путей."""
-    try:
-        payload = pair_template_mod.save_template(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    # Не возвращаем тяжёлый links-payload — только метаданные.
-    return {
-        "ok": True,
-        "key": payload.get("key"),
-        "saved_at": payload.get("saved_at"),
-        "links_count": payload.get("links_count"),
-        "left_pdf_name": payload.get("left_pdf_name"),
-        "right_pdf_name": payload.get("right_pdf_name"),
-    }
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/apply-template")
-async def pair_template_apply_endpoint(session_id: str, pair_id: str):
-    """Найти шаблон по identity и применить (links + alignment перезаписываются)."""
-    try:
-        return pair_template_mod.apply_template(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/clear-template")
-async def pair_template_clear_endpoint(session_id: str, pair_id: str):
-    """Снять пометку 'применён шаблон' с пары (сами links и alignment сохраняются)."""
-    try:
-        return pair_template_mod.clear_applied_template(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
 
 
 # ─── Page alignment ──────────────────────────────────────────────────────
@@ -793,133 +732,95 @@ async def put_page_alignment(
     return payload
 
 
-@router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/suggest")
-async def suggest_alignment_endpoint(session_id: str, pair_id: str):
-    """Предложить новую карту страниц на основе page fingerprint'ов. Не применяет."""
-    try:
-        return store.suggest_alignment(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
+@router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-matching")
+async def run_sheet_matching_endpoint(session_id: str, pair_id: str):
+    """Консервативно сопоставить листы по PreparedDocument.
 
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/suggest-by-stamp")
-async def suggest_alignment_by_stamp_endpoint(
-    session_id: str, pair_id: str,
-    req: SuggestByStampRequest = SuggestByStampRequest(),
-):
-    """Предложить карту страниц по ИМЕНИ листа из штампа (MD).
-
-    Находит листы, уехавшие далеко между стадиями (схема ГРЩ стр.21 ↔ стр.56),
-    чего fingerprint-вариант `/suggest` не умеет. Ничего не применяет —
-    результат `suggested_items` пользователь подтверждает обычным PUT
-    `/page-alignment`.
-
-    `use_llm=true` (по умолчанию) добавляет Haiku-доматчинг семантически
-    эквивалентных имён листов поверх детерминированного результата (fail-soft).
-    Тяжёлый вызов (subprocess) выносим в thread, чтобы не блокировать event loop.
+    Никаких LLM, diff/overlay или связей блоков. Если карта уже изменена
+    пользователем, результат сохраняется для просмотра, но карта не трогается.
     """
     try:
-        return await run_in_threadpool(
-            store.suggest_alignment_by_stamp,
-            session_id, pair_id, use_llm=req.use_llm,
-        )
+        return store.run_sheet_matching(session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
-class AutoMatchApplyRequest(BaseModel):
-    # ИИ-доматчинг по умолчанию ВЫКЛ (не запускаем тяжёлый LLM без явного флага).
-    use_llm: bool = False
-    # Не перезаписывать ручное/применённое выравнивание, если уже есть.
-    overwrite_existing: bool = False
-    # dry_run=true → ничего не сохраняет, только preview-отчёт.
-    dry_run: bool = False
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/page-alignment/auto-match-apply")
-async def auto_match_apply_endpoint(
-    session_id: str, pair_id: str,
-    req: AutoMatchApplyRequest = AutoMatchApplyRequest(),
-):
-    """One-click авто-сопоставление листов ОДНОЙ пары.
-
-    Запускает детерминированный stamp-matching, АВТО-применяет надёжные пары
-    (exact/canonical/multipart/высокоуверенный fuzzy), сомнительные оставляет
-    в `needs_review`, несопоставленные — в `unmatched_*`, сохраняет результат в
-    `page_alignment.json` и возвращает подробный отчёт. Связи блоков не
-    удаляются (только stale/cross-page пометка). Qwen/Opus/pipeline НЕ
-    запускаются. `dry_run=true` → preview без сохранения.
-
-    Тяжёлая часть (file I/O, опц. LLM-доматчинг) вынесена в threadpool.
-    """
+@router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-identity")
+async def run_sheet_identity_endpoint(session_id: str, pair_id: str):
+    """Проверить принятые пары на идентичность без изменения карты и findings."""
     try:
-        return await run_in_threadpool(
-            store.auto_match_apply_pair,
-            session_id, pair_id,
-            use_llm=req.use_llm, overwrite_existing=req.overwrite_existing,
-            dry_run=req.dry_run,
-        )
+        return store.run_sheet_identity(session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
-    except Exception as exc:  # noqa: BLE001 — deterministic/fail-soft
-        raise HTTPException(500, f"auto-match-apply failed: {exc}") from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
-# ─── Пакетное авто-сопоставление листов по ВСЕЙ сессии ──────────────────────
-
-class AutoMatchRequest(BaseModel):
-    # Доматчить семантически эквивалентные имена через Haiku (fail-soft, опц.).
-    use_llm: bool = True
-    # По умолчанию НЕ перезаписывать ручное/применённое выравнивание.
-    overwrite_existing: bool = False
-    # auto_apply=true → применять безопасные пары; false → только предложить.
-    auto_apply: bool = True
-
-
-@router.post("/sessions/{session_id}/page-alignment/auto-match")
-async def auto_match_start_endpoint(session_id: str, req: AutoMatchRequest = AutoMatchRequest()):
-    """Запустить пакетное авто-сопоставление листов по штампам по ВСЕМ парам.
-
-    Безопасные пары (exact/canonical/multipart/высокоуверенный fuzzy/LLM)
-    применяются автоматически в `page_alignment`; рискованные остаются на
-    ручную проверку. Не блокирует event loop (фоновый asyncio task); прогресс
-    читается GET-эндпоинтом. Ручное выравнивание по умолчанию не затирается.
-    """
+@router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-alignment")
+async def run_sheet_alignment_endpoint(session_id: str, pair_id: str):
+    """Построить V3→V2 transform для принятых пар, без diff/findings."""
     try:
-        job = auto_match_jobs_mod.create_job(
-            session_id, use_llm=req.use_llm,
-            overwrite_existing=req.overwrite_existing, auto_apply=req.auto_apply,
-        )
+        return store.run_sheet_alignment(session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
-    if job.get("status") == "queued":
-        auto_match_jobs_mod.start_job_in_background(session_id, job["id"])
-    return auto_match_jobs_mod.get_job(session_id, job["id"]) or job
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
-@router.get("/sessions/{session_id}/page-alignment/auto-match/{job_id}")
-async def auto_match_progress_endpoint(session_id: str, job_id: str):
-    """Прогресс пакетного авто-сопоставления."""
-    job = auto_match_jobs_mod.get_job(session_id, job_id)
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return job
+@router.post("/sessions/{session_id}/pairs/{pair_id}/change-regions-pilot")
+async def run_change_regions_pilot_endpoint(session_id: str, pair_id: str):
+    """Запустить изолированный пилот 5Б для трёх aligned-пар."""
+    try:
+        return store.run_change_regions_pilot(session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
-@router.post("/sessions/{session_id}/page-alignment/auto-match/{job_id}/cancel")
-async def auto_match_cancel_endpoint(session_id: str, job_id: str):
-    job = auto_match_jobs_mod.cancel_job(session_id, job_id)
-    if job is None:
-        raise HTTPException(404, "Job не найден")
-    return job
+@router.post("/sessions/{session_id}/pairs/{pair_id}/change-regions-cleanup-pilot")
+async def run_change_regions_cleanup_pilot_endpoint(session_id: str, pair_id: str):
+    try:
+        return store.run_change_regions_cleanup_pilot(session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
-@router.get("/sessions/{session_id}/page-alignment/auto-match-last")
-async def auto_match_last_run_endpoint(session_id: str):
-    """Последний прогон (artifact + живой job, если есть) — для reload UI."""
-    last = auto_match_jobs_mod.read_last_run(session_id)
-    job = auto_match_jobs_mod.latest_job(session_id)
-    return {"last_run": last, "latest_job": job}
+@router.post("/sessions/{session_id}/pairs/{pair_id}/change-groups-pilot")
+async def run_change_groups_pilot_endpoint(session_id: str, pair_id: str):
+    """5Б.3: построить change groups поверх atomic regions трёх пилотов."""
+    try:
+        return store.run_change_groups_pilot(session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/change-detection")
+async def run_change_detection_endpoint(session_id: str, pair_id: str):
+    """5Б.4: цепочка canonical diff → atomic regions → groups для aligned."""
+    try:
+        return store.run_change_detection(session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/semantic-diff-pilot")
+async def run_semantic_diff_pilot_endpoint(session_id: str, pair_id: str):
+    """6А: 12 локальных «Было → Стало», без findings и влияния."""
+    try:
+        return await run_in_threadpool(store.run_semantic_diff_pilot, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
 # ─── Visual block equivalence recompute (Stage 3B, mark-only, flag-gated) ──
@@ -2508,42 +2409,6 @@ async def regroup_endpoint(session_id: str, req: RegroupRequest):
     }
 
 
-class SetAnalysisModeRequest(BaseModel):
-    mode: str = Field(..., pattern="^(block_links|concept_no_block_links)$")
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/analysis-mode")
-async def set_pair_analysis_mode_endpoint(
-    session_id: str, pair_id: str, req: SetAnalysisModeRequest,
-):
-    """Переключить analysis_mode пары.
-
-    `concept_no_block_links` — режим «Блоки без связей»: pipeline сравнивает
-    enriched MD целиком, не требуя связей блоков.
-    `block_links` — обычный режим с ожиданием связей блоков (default).
-    """
-    try:
-        meta = store.set_pair_analysis_mode(session_id, pair_id, req.mode)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(422, str(exc)) from exc
-    return {
-        "ok": True,
-        "pair_id": pair_id,
-        "analysis_mode": meta.get("analysis_mode"),
-        "analysis_mode_updated_at": meta.get("analysis_mode_updated_at"),
-    }
-
-
-@router.get("/sessions/{session_id}/pairs/{pair_id}/analysis-mode")
-async def get_pair_analysis_mode_endpoint(session_id: str, pair_id: str):
-    """Текущий analysis_mode пары (default `block_links`)."""
-    # KeyError мы маскировать не будем — старые пары без поля просто отдают default.
-    mode = store.get_pair_analysis_mode(session_id, pair_id)
-    return {"pair_id": pair_id, "analysis_mode": mode}
-
-
 @router.get("/enriched-compare-config")
 async def enriched_compare_config_endpoint():
     """Инфо-ручка для UI: включён ли Opus pipeline, какая модель, доступен ли CLI."""
@@ -2919,216 +2784,6 @@ async def get_pipeline_v2_grounding_detail_endpoint(
         raise HTTPException(400, str(exc)) from exc
 
 
-@router.get("/pipeline-v2/{session_id}/block-link-preview")
-async def get_pipeline_v2_block_link_preview_endpoint(
-        session_id: str, pair_id: Optional[str] = None):
-    """Read-only превью предложенных связей блоков Pipeline V2.
-
-    Отдаёт готовый block_link_preview_report.json либо собирает его
-    on-the-fly из артефактов dry-run (models + block_matching, опц. graphic /
-    visual gate). НИЧЕГО не запускает и не пишет; отсутствие артефактов —
-    обычный JSON {"status": "not_found"}, не 404.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_block_link_preview,
-            session_id, pair_id)
-    except ValueError as exc:
-        # невалидный session_id/pair_id (path traversal и т.п.)
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/entity-alignment-preview")
-async def get_pipeline_v2_entity_alignment_preview_endpoint(
-        session_id: str, pair_id: Optional[str] = None,
-        classification: str = "all", limit: int = 100, offset: int = 0):
-    """Read-only mapping-aware entity alignment preview Pipeline V2.
-
-    Классифицирует графические пары OLD↔NEW (same_entity_likely /
-    possible_rename / scope_reorganized / mismatch_likely /
-    link_validation_candidate) + unpaired-сущности. Отдаёт готовый
-    entity_alignment_preview_report.json либо собирает его on-the-fly из
-    артефактов dry-run (visual gate + descriptors + models, опц. matched /
-    grounding). НИЧЕГО не запускает, не пишет, не вызывает модели; отсутствие
-    отчёта — обычный JSON {"status":"not_found"}, битый — {"status":"error"},
-    не 500. Фильтр classification + пагинация (limit clamp ≤500) применяются к
-    pairs; summary/unpaired_entities отдаются целиком. Raw-текст не отдаётся.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_entity_alignment_preview,
-            session_id, pair_id, classification=classification,
-            limit=limit, offset=offset)
-    except ValueError as exc:
-        # невалидный session_id/pair_id (path traversal и т.п.)
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/link-validation")
-async def get_pipeline_v2_link_validation_endpoint(
-        session_id: str, pair_id: Optional[str] = None,
-        decision: str = "all", agreement: str = "all",
-        limit: int = 100, offset: int = 0):
-    """Read-only mark-only link validation report Pipeline V2.
-
-    Отдаёт готовый link_validation_report.json (vision-проверка manual mapping
-    пар: same/reorganized/different + agreement с ручным решением). Отсутствие
-    отчёта — обычный JSON {"status":"not_found"} (runner НЕ запускается), битый —
-    {"status":"error"}, не 404/500. НИЧЕГО не запускает, не пишет, не вызывает
-    модели. Фильтры decision/agreement + пагинация (limit clamp ≤500) к items;
-    summary целиком. Raw prompt/image не отдаются. Результат — НЕ grounded-факт
-    (use_as_grounded_fact / use_for_delta_explanation всегда false).
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_link_validation,
-            session_id, pair_id, decision=decision, agreement=agreement,
-            limit=limit, offset=offset)
-    except ValueError as exc:
-        # невалидный session_id/pair_id (path traversal и т.п.)
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/exclusion-preview-v2")
-async def get_pipeline_v2_exclusion_preview_endpoint(
-        session_id: str, pair_id: Optional[str] = None,
-        classification: str = "all", severity: str = "all",
-        limit: int = 100, offset: int = 0):
-    """Read-only mark-only Exclusion Preview v2 report Pipeline V2.
-
-    Отдаёт готовый exclusion_preview_v2_report.json. Не запускает модели.
-    Отсутствие отчёта — {"status":"not_found"} (runner НЕ запускается), битый —
-    {"status":"error"}, не 404/500. НИЧЕГО не пишет. Фильтры
-    classification/severity + пагинация (limit clamp ≤500). Mark-only:
-    auto_apply/enforce_allowed/use_as_grounded_fact=false на всех items.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_exclusion_preview,
-            session_id, pair_id,
-            classification=classification, severity=severity,
-            limit=limit, offset=offset)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/skip-readiness")
-async def get_pipeline_v2_skip_readiness_endpoint(
-        session_id: str, pair_id: Optional[str] = None,
-        readiness: str = "all",
-        limit: int = 100, offset: int = 0):
-    """Read-only mark-only Skip Readiness report Pipeline V2.
-
-    Отдаёт готовый skip_readiness_report.json. Не запускает модели, не пишет.
-    Отсутствие отчёта — {"status":"not_found"} (runner НЕ запускается), битый —
-    {"status":"error"}, не 404/500. Фильтр readiness + пагинация (limit clamp
-    ≤500). Mark-only: auto_apply/enforce_allowed/requires_explicit_operator_approval
-    форсируются на всех items. auto_enforce_enabled=false гарантировано.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_skip_readiness,
-            session_id, pair_id,
-            readiness=readiness,
-            limit=limit, offset=offset)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/controlled-enforce-preflight")
-async def get_pipeline_v2_controlled_enforce_preflight_endpoint(
-        session_id: str, pair_id: Optional[str] = None,
-        status: str = "all",
-        limit: int = 100, offset: int = 0):
-    """Read-only observe-only Controlled Enforce Preflight report Pipeline V2.
-
-    Отдаёт готовый controlled_enforce_preflight_report.json. Это НЕ enforce:
-    ничего не пропускает/исключает, не создаёт jobs, не вызывает модели, не
-    пишет на диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО не
-    строится), битый — {"status":"error"}, не 404/500. Фильтр status
-    (blocked|preflight_ok|no_eligible_items|all) + пагинация blocked_items
-    (limit clamp ≤500). Observe-only инварианты форсируются в ответе:
-    auto_apply=false, enforce_allowed=false, would_apply=false,
-    enforce_enabled=false. Raw/debug-поля не отдаются.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_controlled_enforce_preflight,
-            session_id, pair_id,
-            status=status,
-            limit=limit, offset=offset)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/controlled-enforce-dry-run")
-async def get_pipeline_v2_controlled_enforce_dry_run_endpoint(
-        session_id: str, pair_id: Optional[str] = None,
-        limit: int = 100, offset: int = 0):
-    """Read-only observe-only Controlled Enforce DRY-RUN / impact report Pipeline V2.
-
-    Отдаёт готовый controlled_enforce_dry_run_report.json. Это НЕ enforce и НЕ
-    real skip: показывает «что было бы пропущено» (would_skip_items +
-    logical_transitions), но ничего не применяет, не создаёт jobs, не вызывает
-    модели, не пишет на диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО
-    не строится), битый — {"status":"error"}, не 404/500. Пагинация
-    would_skip_items (limit clamp ≤500). Observe-only инварианты форсируются:
-    would_apply=false, enforce_enabled=false, per-item runtime_write_allowed=false,
-    enforce_allowed=false. Raw/debug-поля не отдаются.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_controlled_enforce_dry_run,
-            session_id, pair_id,
-            limit=limit, offset=offset)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/controlled-enforce-state")
-async def get_pipeline_v2_controlled_enforce_state_endpoint(
-        session_id: str, pair_id: Optional[str] = None):
-    """Read-only видимость active controlled_enforce_state.json пары.
-
-    Отдаёт активное controlled exclusion state (что первый controlled skip
-    пометил исключённым из будущего enrichment). Это НЕ enforce и НЕ изменение:
-    ничего не применяет, не создаёт jobs, не вызывает модели, **не меняет
-    state**, не пишет на диск. Отсутствие state'а — {"status":"not_found"}
-    (НИЧЕГО не строится), битый — {"status":"error"}, не 404/500. Raw/debug-поля
-    не отдаются. summary: active_exclusions / active_transitions /
-    active_block_pairs / scope_enrichment_only.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_controlled_enforce_state,
-            session_id, pair_id)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.post("/pipeline-v2/{session_id}/controlled-enforce-state/deactivate")
-async def post_pipeline_v2_controlled_enforce_state_deactivate_endpoint(
-        session_id: str, payload: dict, pair_id: str):
-    """Деактивировать active controlled enforce state (ручной rollback оператора).
-
-    Пишет ТОЛЬКО controlled_enforce_state.json: помечает записи run_id'а
-    ``active=false`` + audit (deactivated_at/by/comment) + запись в history.
-    Запись НЕ удаляется (обратимо). НЕ запускает jobs/models, НЕ меняет protected
-    reports / findings / block links / delta / grounded, НЕ трогает другие пары,
-    НЕ продолжает очередь. Требует точного
-    ``confirmation="DEACTIVATE_CONTROLLED_STATE"`` — иначе 422 без записи.
-    Неизвестный/уже неактивный run_id → 422 без записи. Нет state → not_found.
-    Возвращает updated summary.
-    """
-    art_dir = pipeline_v2_payload_mod.pipeline_v2_artifacts_dir(session_id, pair_id)
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_ce_state_mod.run_deactivate_controlled_enforce_state,
-            art_dir, payload)
-    except pipeline_v2_ce_state_mod.ControlledEnforceStateError as exc:
-        raise HTTPException(422, str(exc)) from exc
-
-
 # ─── Pipeline V2: controlled operator-triggered run («Запустить V2») ──────
 # State-changing: запускает существующий dry-run runner в фоновом job'е.
 # read-only ui-payload сервис этим НЕ затрагивается.
@@ -3214,148 +2869,3 @@ async def get_pipeline_v2_run_active_endpoint(
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
     return {"job": job}
-
-
-@router.get("/pipeline-v2/{session_id}/enrichment-selection-observe")
-async def get_pipeline_v2_enrichment_selection_observe_endpoint(
-        session_id: str, pair_id: Optional[str] = None):
-    """Read-only enrichment-selection observe plan под controlled state.
-
-    Отдаёт готовый controlled_enforce_enrichment_selection_observe_report.json:
-    какой enrichment-selection список ушёл бы дальше, какие пары исключены active
-    controlled state, какие остались. Это observe-only: НЕ enforce, НЕ запускает
-    Qwen/jobs/models, **не меняет state**, не пересчитывает pipeline, не пишет на
-    диск. Отсутствие отчёта — {"status":"not_found"} (НИЧЕГО не строится), битый —
-    {"status":"error"}, не 404/500. Observe-инварианты (qwen_calls=0,
-    runtime_modified=false, protected_reports_modified=false) форсируются.
-    Raw/debug не отдаются.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_enrichment_selection_observe,
-            session_id, pair_id)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-# ─── Pipeline V2: ручные override'ы выравнивания сущностей (write) ──────────
-#
-# Отдельный обратимый artifact entity_mapping_overrides.json. Endpoints НИЧЕГО
-# не запускают (ни vision/Qwen/Opus/Claude, ни jobs), не меняют block links,
-# entity_alignment_preview, сравнения или findings. Пишут ТОЛЬКО overrides
-# целевой пары. Дисковое I/O — в threadpool (sync write в event loop блокирует).
-
-
-@router.get("/pipeline-v2/{session_id}/entity-mapping-overrides")
-async def get_pipeline_v2_entity_mapping_overrides_endpoint(
-        session_id: str, pair_id: str):
-    """Read-only текущие ручные override'ы выравнивания сущностей пары.
-
-    Нет файла → пустой ok-результат (mappings=[]). Битый файл → status=error,
-    не 500. НИЧЕГО не запускает/не пишет.
-    """
-    try:
-        return await run_in_threadpool(
-            entity_mapping_overrides_mod.read_entity_mapping_overrides,
-            session_id, pair_id)
-    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.put("/pipeline-v2/{session_id}/entity-mapping-overrides")
-async def put_pipeline_v2_entity_mapping_overrides_endpoint(
-        session_id: str, req: EntityMappingUpsertRequest, pair_id: str):
-    """Создать/обновить один ручной override (upsert, идемпотентно).
-
-    Пишет ТОЛЬКО entity_mapping_overrides.json целевой пары. НЕ запускает
-    vision/Qwen/Opus/Claude, НЕ применяет block links, НЕ создаёт замечаний,
-    НЕ продолжает очередь. Возвращает {ok, override, created, summary}.
-    """
-    try:
-        result = await run_in_threadpool(
-            entity_mapping_overrides_mod.upsert_entity_mapping,
-            session_id, pair_id, req.mapping.model_dump(),
-            created_by=req.created_by)
-    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
-        raise HTTPException(422, str(exc)) from exc
-    return {"ok": True, **result}
-
-
-@router.delete("/pipeline-v2/{session_id}/entity-mapping-overrides/{mapping_id}")
-async def delete_pipeline_v2_entity_mapping_overrides_endpoint(
-        session_id: str, mapping_id: str, pair_id: str,
-        created_by: Optional[str] = None):
-    """Удалить один override по mapping_id (обратимо — overrides отдельный artifact)."""
-    try:
-        result = await run_in_threadpool(
-            entity_mapping_overrides_mod.delete_entity_mapping,
-            session_id, pair_id, mapping_id, created_by=created_by)
-    except entity_mapping_overrides_mod.EntityMappingValidationError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    return {"ok": True, **result}
-
-
-# ─── Pipeline V2: решения оператора по Exclusion Preview v2 (write) ──────────
-#
-# Отдельный обратимый artifact exclusion_review_overrides.json. Endpoints НИЧЕГО
-# не запускают (ни Qwen/Opus/Claude/jobs), не меняют block links, не меняют
-# exclusion_preview_v2_report.json, не создают замечаний. Пишут ТОЛЬКО overrides
-# целевой пары. mark-only layer: решение сохраняется для будущего enforce.
-
-
-@router.get("/pipeline-v2/{session_id}/exclusion-review-overrides")
-async def get_pipeline_v2_exclusion_review_overrides_endpoint(
-        session_id: str, pair_id: str):
-    """Read-only текущие решения оператора по Exclusion Preview v2.
-
-    Нет файла → пустой ok-результат (decisions=[]). Битый файл → status=error,
-    не 500. НИЧЕГО не запускает/не пишет. mark-only: decisions не применяются
-    автоматически.
-    """
-    try:
-        data = await run_in_threadpool(
-            excl_review_mod.read_exclusion_review_overrides,
-            session_id, pair_id)
-    except excl_review_mod.ExclusionReviewValidationError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    data["summary"] = excl_review_mod.summarize_decisions(data)
-    return data
-
-
-@router.put("/pipeline-v2/{session_id}/exclusion-review-overrides")
-async def put_pipeline_v2_exclusion_review_overrides_endpoint(
-        session_id: str, req: ExclusionReviewUpsertRequest, pair_id: str):
-    """Создать/обновить одно решение оператора (upsert, идемпотентно).
-
-    Пишет ТОЛЬКО exclusion_review_overrides.json целевой пары. НЕ запускает
-    Qwen/Opus/Claude, НЕ применяет block links, НЕ создаёт замечаний,
-    НЕ продолжает очередь, НЕ меняет exclusion_preview_v2_report.json.
-    mark-only: решение будет учтено в будущем контролируемом enforce/skip,
-    который здесь НЕ реализован. Возвращает {ok, decision, created, summary}.
-    """
-    try:
-        result = await run_in_threadpool(
-            excl_review_mod.upsert_exclusion_review_decision,
-            session_id, pair_id, req.decision.model_dump(),
-            created_by=req.created_by)
-    except excl_review_mod.ExclusionReviewValidationError as exc:
-        raise HTTPException(422, str(exc)) from exc
-    return {"ok": True, **result}
-
-
-@router.delete("/pipeline-v2/{session_id}/exclusion-review-overrides/{decision_id}")
-async def delete_pipeline_v2_exclusion_review_overrides_endpoint(
-        session_id: str, decision_id: str, pair_id: str,
-        created_by: Optional[str] = None):
-    """Удалить одно решение оператора по decision_id (обратимо).
-
-    Возвращает {ok, deleted, summary}. Несуществующий decision_id → deleted=false,
-    не 404. НЕ запускает модели/jobs.
-    """
-    try:
-        result = await run_in_threadpool(
-            excl_review_mod.delete_exclusion_review_decision,
-            session_id, pair_id, decision_id, created_by=created_by)
-    except excl_review_mod.ExclusionReviewValidationError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    return {"ok": True, **result}
