@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "status": "NOT_STARTED_BLOCKED",
+  "production_baseline_commit": null,
+  "candidate_branch_created": false,
+  "runtime_conflict_count": 0,
+  "resolved_conflict_count": 0,
+  "unresolved_conflict_count": null,
+  "note": "Zero is not a PASS count: integration was correctly not attempted after baseline equivalence failed."
+}

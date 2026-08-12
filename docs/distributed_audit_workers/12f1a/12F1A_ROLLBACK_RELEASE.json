@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "status": "NOT_BUILT_BLOCKED",
+  "release_id": null,
+  "git_commit": null,
+  "tree_hash": null,
+  "bundle_sha256": null,
+  "dependency_hash": null,
+  "immutable": false,
+  "blocking_gate": "12F1A_BASELINE_EQUIVALENCE",
+  "reason": "A rollback release cannot truthfully represent current production while two loaded source modules have unknown pre-edit bytes."
+}

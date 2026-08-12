@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "status": "FAIL",
+  "production_baseline_commit": null,
+  "running_backend_pid": 1968811,
+  "running_backend_started_at": "2026-08-12T17:31:06+03:00",
+  "disk_snapshot_at": "2026-08-12T18:04:34+03:00",
+  "unexplained_runtime_source_diffs": 2,
+  "unresolved_operator_source_changes": 4,
+  "loaded_modules_overwritten_after_start": [
+    "backend/app/api/routers/stage_comparison.py",
+    "backend/app/services/stage_comparison/store.py"
+  ],
+  "new_unproven_source_after_start": [
+    "backend/app/services/stage_comparison/semantic_diff.py",
+    "backend/tests/test_semantic_diff.py"
+  ],
+  "old_source_recoverable_from_git": false,
+  "old_store_source_available": false,
+  "production_worktree_quiescent_at_final_check": false,
+  "post_forensic_drift_path": "backend/app/services/stage_comparison/semantic_diff.py",
+  "hard_gate_expected": 0,
+  "hard_gate_pass": false,
+  "production_worktree_modified_by_12f1a": false
+}

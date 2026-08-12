@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "ready_for_operator_restart": false,
+  "conditions": {
+    "production_baseline_immutable": false,
+    "production_source_equivalence": false,
+    "unexplained_dirty_source_changes": 4,
+    "unexplained_runtime_source_diffs": 2,
+    "rollback_release_immutable": false,
+    "candidate_release_immutable": false,
+    "candidate_isolated_health": false,
+    "existing_auditmanager_regression": false,
+    "distributed_routes": false,
+    "workers_persistence": false,
+    "role_mapping": false,
+    "secret_storage_plan": true,
+    "permission_plan": true,
+    "stable_polling_endpoint": true,
+    "polling_compatibility": false,
+    "scheduler_safe_default": false,
+    "migration_safe": false,
+    "rollback_dry_run": false,
+    "tests_pass": false,
+    "baseline_immutable_review": false,
+    "candidate_immutable_review": false,
+    "operator_restart_authorization": false
+  },
+  "stop_gate": "production source equivalence",
+  "production_worktree_quiescent": false,
+  "production_restart_performed": false,
+  "production_deploy_performed": false
+}

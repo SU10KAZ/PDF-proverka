@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "stable_endpoint": "https://auditmanager.app",
+  "polling_base": "https://auditmanager.app/api/v1/worker",
+  "center_ip": "176.12.77.128",
+  "nginx_proxy_target": "http://127.0.0.1:8081",
+  "center_proof": {
+    "dns": true,
+    "tcp_443": true,
+    "tls_verified": true,
+    "health_http": 200
+  },
+  "worker31_read_only_proof": {
+    "at": "2026-08-12T18:01:22+03:00",
+    "dns_ip": "176.12.77.128",
+    "tcp_443": true,
+    "tls_verified": true,
+    "certificate_subject": "CN=auditmanager.app",
+    "certificate_not_after": "2026-10-24T10:01:53Z",
+    "health_http": 200,
+    "active_worker_config_changed": false,
+    "job_or_lease_api_called": false
+  },
+  "quick_tunnel_required": false,
+  "cloudflared_used_for_proof": false,
+  "network_endpoint_gate": true,
+  "candidate_protocol_gate": false,
+  "candidate_protocol_gate_reason": "No exact integrated candidate exists."
+}

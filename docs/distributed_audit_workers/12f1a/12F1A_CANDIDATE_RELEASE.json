@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "status": "NOT_BUILT_BLOCKED",
+  "release_id": null,
+  "git_commit": null,
+  "tree_hash": null,
+  "bundle_sha256": null,
+  "dependency_hash": null,
+  "config_schema_version": null,
+  "db_schema_version": null,
+  "proto_descriptor_hash": null,
+  "immutable": false,
+  "blocking_gate": "production baseline equivalence"
+}

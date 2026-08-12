@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "status": "POLICY_PARTIAL_OPERATOR_DECISION_REQUIRED",
+  "auth_sources": {
+    "human": "signed portal HMAC cookie; server-side subject lists",
+    "machine": "one-time bootstrap/claim followed by worker bearer and mTLS identity"
+  },
+  "roles": {
+    "viewer": ["distributed_workers.view"],
+    "operator": ["distributed_workers.view", "distributed_workers.operate"],
+    "admin": ["distributed_workers.view", "distributed_workers.operate", "distributed_workers.admin"]
+  },
+  "production_portal_subject_count": 6,
+  "production_subject_assignments": null,
+  "anonymous_admin": false,
+  "default_admin": false,
+  "allow_all": false,
+  "worker_can_call_human_admin_api": false,
+  "explicit_worker_drain_route_present": false,
+  "ready": false,
+  "operator_decisions": [
+    "Map each production portal subject to viewer/operator/admin or no distributed role.",
+    "Decide whether an explicit human drain operation is a product requirement and, if so, its role."
+  ]
+}
