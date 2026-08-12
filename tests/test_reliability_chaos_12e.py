@@ -11,6 +11,11 @@ import json
 import threading
 from pathlib import Path
 
+import httpx
+
+from audit_worker import agent as agent_module
+from audit_worker.agent import WorkerAgent
+from audit_worker.client import CenterClient
 from audit_worker.__main__ import main
 from audit_worker.config import WorkerConfig
 from audit_worker.diagnostics import collect_worker_diagnostics
@@ -178,3 +183,83 @@ def test_12e_stale_request_iterator_cannot_consume_reconnected_outbox_item(tmp_p
     assert transport._is_active_request_epoch(2)
     transport._deactivate_request_epoch(2)
     assert not transport._is_active_request_epoch(2)
+
+
+def test_c14_interrupted_source_body_resumes_from_durable_part(tmp_path, monkeypatch):
+    boundary = 1024 * 1024
+    payload = b"a" * boundary + b"def"
+    requests: list[httpx.Request] = []
+
+    class BrokenBody(httpx.SyncByteStream):
+        def __iter__(self):
+            yield payload[:boundary]
+            raise httpx.ReadError("simulated mid-source reset")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        if len(requests) == 1:
+            return httpx.Response(200, stream=BrokenBody(), request=request)
+        assert request.headers["range"] == f"bytes={boundary}-"
+        return httpx.Response(
+            206,
+            content=payload[boundary:],
+            headers={
+                "Content-Range": f"bytes {boundary}-{len(payload) - 1}/{len(payload)}"
+            },
+            request=request,
+        )
+
+    client = CenterClient(
+        "https://center.invalid",
+        transport=httpx.MockTransport(handler),
+    )
+
+    class Jobs:
+        updates: list[dict] = []
+
+        def update(self, _job_id, _attempt_id, **fields):
+            self.updates.append(fields)
+
+    class Outbox:
+        events: list[tuple[str, dict]] = []
+
+        def append(self, event_type, event):
+            self.events.append((event_type, event))
+
+    worker = WorkerAgent.__new__(WorkerAgent)
+    worker.client = client
+    worker.jobs = Jobs()
+    worker._stop = threading.Event()
+    monkeypatch.setattr(agent_module, "backoff_delays", lambda: iter((0.0,)))
+    monkeypatch.setattr(
+        agent_module.package_io,
+        "verify_and_unpack",
+        lambda **_kwargs: {
+            "files": 1,
+            "bytes": len(payload),
+            "manifest": {"manifest_version": 1},
+        },
+    )
+    job_dir = tmp_path / "job"
+    context = {
+        "job_id": "job_0123456789abcdef",
+        "attempt_id": "att_0123456789abcdef",
+        "execution_token": "token",
+        "outbox": Outbox(),
+    }
+    assignment = {
+        "job_type": "test_pipeline_v1",
+        "package": {
+            "package_id": "pkg_0123456789abcdef",
+            "compression": "gzip",
+            "sha256": "a" * 64,
+        },
+    }
+
+    worker._download_and_verify(assignment, context, job_dir)
+
+    archive = job_dir / "source" / "pkg_0123456789abcdef.tar.gz"
+    assert archive.read_bytes() == payload
+    assert len(requests) == 2
+    assert worker.jobs.updates[-1]["local_state"] == "verified"
+    assert context["outbox"].events[-1][0] == "source_verified"

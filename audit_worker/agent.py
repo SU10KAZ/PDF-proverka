@@ -27,6 +27,8 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
+import httpx
+
 from audit_worker import (
     PROTOCOL_VERSION,
     __version__,
@@ -1053,12 +1055,36 @@ class WorkerAgent:
 
         self.jobs.update(job_id, attempt_id, local_state="downloading")
         ctx["stage"] = "download"
-        self.client.download_source(
-            job_id,
-            dest,
-            ctx["execution_token"],
-            attempt_id=ctx["attempt_id"],
-        )
+        # ``CenterClient.download_source`` deliberately preserves ``.part``
+        # and sends Range on the next invocation.  A single invocation here
+        # made that resumability unreachable after a mid-body TCP/TLS reset:
+        # the generic job handler marked the attempt failed instead.  Keep the
+        # attempt in its pre-dispatch state and retry only transport failures;
+        # HTTP/auth/hash failures still fail closed and are never masked.
+        delays = backoff_delays()
+        while True:
+            try:
+                self.client.download_source(
+                    job_id,
+                    dest,
+                    ctx["execution_token"],
+                    attempt_id=ctx["attempt_id"],
+                )
+                break
+            except (httpx.TransportError, OSError) as exc:
+                if self._stop.is_set():
+                    raise UploadDeferred(
+                        "Agent stopped while source download was awaiting resume"
+                    ) from exc
+                delay = next(delays)
+                _log(
+                    f"задание {job_id[:8]}: source transfer interrupted; "
+                    f"resume через {delay:.1f} с"
+                )
+                if self._stop.wait(delay):
+                    raise UploadDeferred(
+                        "Agent stopped while source download was awaiting resume"
+                    ) from exc
 
         try:
             info = package_io.verify_and_unpack(
