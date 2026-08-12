@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 import stat
+import threading
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -15,7 +16,10 @@ from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 
-from audit_worker.certificate_renewal import WorkerCertificateRotator
+from audit_worker.certificate_renewal import (
+    AutomaticCertificateRenewal,
+    WorkerCertificateRotator,
+)
 from audit_worker.config import InsecureTransportError, WorkerConfig, validate_control_transport
 from audit_worker.key_store import (
     KeyStoreError,
@@ -263,6 +267,33 @@ def test_worker_mtls_config_fail_closed(identity, tmp_path):
     ).control_transport == "polling"
 
 
+def test_agent_wires_automatic_renewal_and_scheduler_is_bounded(tmp_path):
+    source = Path("audit_worker/agent.py").read_text(encoding="utf-8")
+    assert "self.certificate_renewal.start()" in source
+    assert "self.certificate_renewal.stop()" in source
+    called = threading.Event()
+
+    class FakeRotator:
+        def renew_if_due(self):
+            called.set()
+            return {
+                "phase": "not_due", "renew_at": time.time() + 3600,
+                "not_after": time.time() + 7200, "serial": "1",
+            }
+
+    cfg = WorkerConfig(
+        dispatcher_url="https://center.invalid", root=tmp_path,
+        display_name="worker", grpc_reconnect_max_delay_sec=30,
+    )
+    scheduler = AutomaticCertificateRenewal(
+        config=cfg, worker_id="wrk_test", log=lambda _message: None,
+        rotator=FakeRotator(),
+    )
+    scheduler.start()
+    assert called.wait(2)
+    scheduler.stop()
+
+
 @pytest.mark.asyncio
 async def test_real_grpc_hello_over_mtls(identity, center):
     pki, worker, _, _, _, _, _ = identity
@@ -435,14 +466,23 @@ async def test_new_key_rotation_over_authenticated_mtls(identity, center, tmp_pa
         grpc_key_store_dir=store.root, grpc_server_identity="127.0.0.1",
         grpc_connect_timeout_sec=5,
     )
+    rotator = WorkerCertificateRotator(config=cfg, worker_id=worker["worker_id"])
     result = await asyncio.to_thread(
-        WorkerCertificateRotator(config=cfg, worker_id=worker["worker_id"]).renew
+        rotator.renew_if_due, now=float(row["not_after"]) - 5 * 86400
     )
     assert result["phase"] == "active"
     assert result["old_serial"] == row["serial_hex"]
     assert result["new_serial"] != row["serial_hex"]
     assert registry.by_serial(row["serial_hex"])["status"] == "REPLACED"
     assert registry.by_serial(result["new_serial"])["status"] == "ACTIVE"
+    first_new_serial = result["new_serial"]
+    first_new = registry.by_serial(first_new_serial)
+    second = await asyncio.to_thread(
+        rotator.renew_if_due, now=float(first_new["not_after"]) - 5 * 86400
+    )
+    assert second["new_serial"] != first_new_serial
+    assert registry.by_serial(first_new_serial)["status"] == "REPLACED"
+    assert registry.by_serial(second["new_serial"])["status"] == "ACTIVE"
     await server.stop()
 
 

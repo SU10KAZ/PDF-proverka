@@ -52,6 +52,13 @@ backend/app/data/stage_comparison_saved_config.json
 webapp/server.pid
 .claude/*.lock
 
+# === 12D runtime PKI / Worker machine identity (never source artifacts) ===
+**/machine-identity/
+**/client-key.pem
+**/server-key.pem
+**/root-key.pem
+**/issuer-key.pem
+
 # === Excel reports (generated) ===
 audit_report_*.xlsx
 ~$*.xlsx

@@ -110,6 +110,7 @@ class WorkerAgent:
             log=_log,
         )
         self._provider_thread: Optional[threading.Thread] = None
+        self.certificate_renewal = None
 
         data_client = CenterClient(
             config.dispatcher_url,
@@ -134,6 +135,12 @@ class WorkerAgent:
                 build_heartbeat=self._heartbeat_payload,
                 log=_log,
             )
+            if config.grpc_security_mode == "mtls":
+                from audit_worker.certificate_renewal import AutomaticCertificateRenewal
+
+                self.certificate_renewal = AutomaticCertificateRenewal(
+                    config=config, worker_id=self.worker_id, log=_log
+                )
         else:
             self.client = data_client
         self.poller = JobPullClient(self.client, wait_sec=config.poll_wait_sec)
@@ -206,6 +213,8 @@ class WorkerAgent:
         self._start_sender()
         self._start_command_poller()
         self._start_provider_poller()
+        if self.certificate_renewal is not None:
+            self.certificate_renewal.start()
         _log(
             f"агент запущен: worker_id={self.worker_id}, "
             f"центр={self.config.dispatcher_url}, слотов={self._max_slots}"
@@ -345,6 +354,8 @@ class WorkerAgent:
 
     def shutdown(self) -> None:
         self._stop.set()
+        if self.certificate_renewal is not None:
+            self.certificate_renewal.stop()
         self.heartbeat.stop()
         for thread in (self._sender_thread, self._command_thread):
             if thread is not None:

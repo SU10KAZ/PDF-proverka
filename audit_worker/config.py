@@ -795,6 +795,10 @@ def validate_control_transport(config: "WorkerConfig") -> None:
         )
     if not 0.0 <= config.grpc_reconnect_jitter <= 1.0:
         raise InsecureTransportError("gRPC reconnect jitter должен быть в диапазоне 0..1")
+    if config.grpc_renew_before_sec <= 0:
+        raise InsecureTransportError("gRPC renew-before должен быть положительным")
+    if not 0.0 <= config.grpc_renew_jitter <= 1.0:
+        raise InsecureTransportError("gRPC renewal jitter должен быть в диапазоне 0..1")
     if min(
         config.grpc_max_send_message_bytes,
         config.grpc_max_receive_message_bytes,

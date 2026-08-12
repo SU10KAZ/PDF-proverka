@@ -1,6 +1,8 @@
 """Resumable new-key Worker certificate rotation over current mTLS."""
 from __future__ import annotations
 
+import hashlib
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -31,6 +33,37 @@ class WorkerCertificateRotator:
         self.current_store = platform_key_store(
             self.identity_root, config.grpc_key_store_backend
         )
+
+    def renew_if_due(self, *, now: float | None = None) -> dict:
+        """Rotate automatically inside the configured, serial-jittered window."""
+        current = load_identity(
+            key_store=self.current_store,
+            certificate_path=self.config.grpc_client_certificate_path,
+            trust_bundle_path=self.config.grpc_ca_bundle_path,
+            worker_id=self.worker_id,
+        )
+        current_time = time.time() if now is None else float(now)
+        base_window = float(self.config.grpc_renew_before_sec)
+        jitter = float(self.config.grpc_renew_jitter)
+        fraction = int.from_bytes(
+            hashlib.sha256(current.serial_hex.encode("ascii")).digest()[:8], "big"
+        ) / float(2**64 - 1)
+        renew_window = base_window * (1.0 + jitter * (2.0 * fraction - 1.0))
+        renew_at = current.not_after - max(60.0, renew_window)
+        if current_time < renew_at:
+            return {
+                "phase": "not_due", "serial": current.serial_hex,
+                "not_after": current.not_after, "renew_at": renew_at,
+            }
+        state = read_json(self.state_path, {}) or {}
+        if (
+            state.get("phase") == "active"
+            and state.get("new_serial") == current.serial_hex
+        ):
+            # A completed prior transaction remains an idempotency result for
+            # renew(), but a newly due leaf starts a fresh durable request.
+            atomic_write_json(self.state_path, {})
+        return self.renew()
 
     def renew(self) -> dict:
         current = load_identity(
@@ -162,3 +195,50 @@ class WorkerCertificateRotator:
             certificate_chain=identity.certificate_chain_pem,
         )
         return grpc.secure_channel(self.config.grpc_target, credentials)
+
+
+class AutomaticCertificateRenewal:
+    """Agent-owned scheduler; certificate work never blocks heartbeat paths."""
+
+    def __init__(self, *, config, worker_id: str, log=print, rotator=None) -> None:
+        self.config = config
+        self.log = log
+        self.rotator = rotator or WorkerCertificateRotator(
+            config=config, worker_id=worker_id
+        )
+        self._stop = threading.Event()
+        self._thread: threading.Thread | None = None
+
+    def start(self) -> None:
+        if self._thread is None:
+            self._thread = threading.Thread(
+                target=self._loop, name="certificate-renewal", daemon=True
+            )
+            self._thread.start()
+
+    def stop(self) -> None:
+        self._stop.set()
+        if self._thread is not None:
+            self._thread.join(timeout=10)
+
+    def _loop(self) -> None:
+        delay = 0.0
+        while not self._stop.wait(delay):
+            try:
+                result = self.rotator.renew_if_due()
+                if result.get("phase") == "not_due":
+                    delay = max(
+                        60.0,
+                        min(3600.0, float(result["renew_at"]) - time.time()),
+                    )
+                else:
+                    delay = 60.0
+            except Exception as exc:  # noqa: BLE001 - bounded retry is required
+                self.log(
+                    "certificate renewal deferred "
+                    f"error={type(exc).__name__}"
+                )
+                delay = max(
+                    60.0,
+                    min(900.0, float(self.config.grpc_reconnect_max_delay_sec) * 4),
+                )
