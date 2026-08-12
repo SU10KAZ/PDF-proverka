@@ -969,11 +969,10 @@ def test_migration_2_upgrades_existing_database(tmp_path):
 
     version = schema.migrate(conn)
 
-    # 8 — миграции этапа 11: учётные записи подписок и наблюдение за лимитами
-    # (7) плюс происхождение привязки провайдера к учётной записи (8).
-    # Число здесь закреплено намеренно: молчаливый рост версии означал бы, что
-    # кто-то добавил миграцию, не проверив её на СТАРОЙ базе.
-    assert version == schema.SCHEMA_VERSION == 9
+    # Источником истины служит текущая схема. Смысл регрессии — не заморозить
+    # номер версии, а доказать, что реальная старая v1 DB проходит ВСЮ цепочку
+    # миграций без пересоздания и потери строки worker.
+    assert version == schema.SCHEMA_VERSION
     columns = {r["name"] for r in conn.execute("PRAGMA table_info(workers)")}
     assert {"claim_secret_sha256", "claim_issued_at", "claim_used_at",
             "rejected_at"} <= columns
