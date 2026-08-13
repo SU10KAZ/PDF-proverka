@@ -280,6 +280,19 @@ body {
   color: var(--teal);
   border-color: var(--teal-border);
 }
+.nav-sub-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.nav-sub-badges .nav-sub-badge { margin-left: 0; }
+.nav-sub-badge--expert-unchecked,
+.nav-sub-item.active .nav-sub-badge--expert-unchecked {
+  background: var(--card-bg);
+  color: var(--red);
+  border-color: var(--red);
+}
 
 /* ══════════════════════════════════════════════════════════════
    MAIN AREA

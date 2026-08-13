@@ -3418,6 +3418,22 @@ const app = createApp({
                 && p.optimization_review_status === 'complete';
         }
 
+        // Счётчик в sidebar строго привязан к двум видимым галочкам карточки.
+        // Общий expert_review_status здесь не fallback: проект перестаёт быть
+        // «непроверенным» только когда complete стоит у обоих раздельных статусов.
+        function hasBothExpertChecks(p) {
+            return !!p
+                && p.findings_review_status === 'complete'
+                && p.optimization_review_status === 'complete';
+        }
+
+        function expertUncheckedCount(items) {
+            return (items || []).reduce(
+                (count, p) => count + (hasBothExpertChecks(p) ? 0 : 1),
+                0,
+            );
+        }
+
         // Порядок карточек в разделе: 0 — проверенные экспертом, 1 — обработанные
         // (аудит прошёл, вердиктов ещё нет), 2 — те, на которых аудит не запускался.
         function projectOrderRank(p) {
@@ -11323,6 +11339,9 @@ const app = createApp({
                         body: JSON.stringify({ status: 'open', summary: '' }),
                     }).catch(() => {});
                 }
+                // Сразу пересчитать две галочки и sidebar-индикатор, не дожидаясь
+                // перехода на другую страницу или фонового обновления.
+                await refreshProjects();
                 alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
             } catch (e) {
                 console.error('Submit expert review error:', e);
@@ -17302,6 +17321,7 @@ const app = createApp({
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             toggleUnanalyzedSelection, isUnanalyzedSelected,
+            expertUncheckedCount,
             sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,

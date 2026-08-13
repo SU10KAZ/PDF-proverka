@@ -64,7 +64,13 @@
                          :class="{active: currentView === 'dashboard' && sidebarFilterSection === '__all__'}">
                         <div class="nav-sub-dot"></div>
                         Все разделы
-                        <span class="nav-sub-badge">{{ projects.length }}</span>
+                        <span class="nav-sub-badges">
+                            <span class="nav-sub-badge nav-sub-badge--expert-unchecked"
+                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Проект убирается из счётчика только после обеих галочек'">
+                                {{ expertUncheckedCount(projects) }}
+                            </span>
+                            <span class="nav-sub-badge" :title="'Всего проектов: ' + projects.length">{{ projects.length }}</span>
+                        </span>
                     </div>
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
                          class="nav-sub-item"
@@ -72,7 +78,13 @@
                          :class="{active: (currentView === 'dashboard' || currentView === 'section-optimization') && sidebarFilterSection === code}">
                         <div class="nav-sub-dot" :style="{background: getDisciplineColor(code), opacity: 1}"></div>
                         {{ code }}
-                        <span class="nav-sub-badge">{{ items.length }}</span>
+                        <span class="nav-sub-badges">
+                            <span class="nav-sub-badge nav-sub-badge--expert-unchecked"
+                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(items) + '. Проект убирается из счётчика только после обеих галочек'">
+                                {{ expertUncheckedCount(items) }}
+                            </span>
+                            <span class="nav-sub-badge" :title="'Всего проектов: ' + items.length">{{ items.length }}</span>
+                        </span>
                     </div>
                 </div>
                 <div class="nav-item" :class="{active: currentView === 'queue'}" @click="navigate('/queue')">
