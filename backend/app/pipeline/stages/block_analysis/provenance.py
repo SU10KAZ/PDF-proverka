@@ -36,6 +36,24 @@ def detector_for_model(model: str | None) -> str:
         return "gpt_openrouter"
     if value.startswith("claude-"):
         return "claude"
+    # Провайдерский слой воркера (11F). Строку задаёт не конфигурация, а
+    # локальная политика воркера, и до `stage_models.json` ей дела нет. Без
+    # этой ветки она проваливалась в терминальный `openrouter` ниже — то есть
+    # КАЖДОЕ графическое замечание, найденное на воркере по подписке, навсегда
+    # получало провенанс платного HTTP-провайдера, которого там не было вовсе.
+    if value.startswith("provider/"):
+        # Ноги ПЛАНА МАРШРУТИЗАЦИИ (11I) размечаются по провайдеру действия, а
+        # не по строке модели: строки на воркере нет вовсе, её выбирает
+        # локальная политика. Отображение повторяет центральное дословно —
+        # включая то, что обе codex-ноги делят одно пространство ссылок
+        # (известное ограничение судьи, KI-11I-1).
+        if ":openrouter:" in value:
+            return "gpt_openrouter"
+        if ":codex:" in value:
+            return "codex"
+        if ":claude:" in value:
+            return "claude"
+        return "worker_provider"
     if value:
         return "openrouter"
     return "unknown"

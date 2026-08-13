@@ -1,0 +1,31 @@
+[Unit]
+Description=Audit worker immutable agent release %i
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=audit-worker
+Group=audit-worker
+WorkingDirectory=/opt/audit-worker/releases/%i/app
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=AUDIT_WORKER_ROOT=/var/lib/audit-worker
+Environment=AUDIT_WORKER_DISPATCHER_URL=https://auditmanager.app
+Environment=AUDIT_WORKER_MAX_SLOTS=1
+EnvironmentFile=-/etc/audit-worker/agent.env
+ExecStart=/opt/audit-worker/releases/%i/venv/bin/python -m audit_worker agent
+Restart=always
+RestartSec=5s
+KillMode=process
+TimeoutStopSec=30s
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/audit-worker/releases/%i
+ReadWritePaths=/var/lib/audit-worker
+
+[Install]
+WantedBy=multi-user.target

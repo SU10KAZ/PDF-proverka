@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Optional, Sequence
 
-from backend.app.core.config import ROOT_DIR, resolve_codex_model
+from backend.app.core.config import ROOT_DIR, codex_workdir, resolve_codex_model
 from backend.app.models.usage import CLIResult, LLMResult
 from backend.app.services.common.process_runner import run_command
 from backend.app.services.llm.llm_runner import _try_parse_json_content
@@ -631,7 +631,7 @@ async def run_codex_exec(
         *_tool_config_args(allowed_tools),
         *image_args,
         "-C",
-        str(ROOT_DIR),
+        codex_workdir(),
         "-o",
         str(out_file),
         "-",
@@ -763,7 +763,7 @@ async def run_codex_json_messages(
         *schema_args,
         *image_args,
         "-C",
-        str(ROOT_DIR),
+        codex_workdir(),
         "-o",
         str(out_file),
         "-",

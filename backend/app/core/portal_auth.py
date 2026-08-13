@@ -50,6 +50,13 @@ EXEMPT_PATHS = frozenset(
     }
 )
 
+# Префиксы, живущие в СВОЁМ контуре аутентификации, а не в портальном.
+#   /api/v1/worker/ — машинный API распределённых audit-worker: bearer-токен
+#   воркера (services/distributed_workers/auth.py). Портальная cookie здесь не
+#   работает и не должна: контуры разделены намеренно (техпроект §20.2).
+#   Если подсистема выключена — роутер не зарегистрирован, и путь просто 404.
+EXEMPT_PREFIXES: tuple[str, ...] = ("/api/v1/worker/",)
+
 # Фиксированный dummy-хеш: verify против него при неизвестном логине, чтобы
 # время ответа не выдавало, существует пользователь или нет.
 _DUMMY_HASH = pbkdf2_sha256.hash("portal-auth-dummy-password")
@@ -248,7 +255,7 @@ def request_username(request: Request, settings: PortalSettings) -> str | None:
 
 
 def is_path_exempt(path: str) -> bool:
-    return path in EXEMPT_PATHS
+    return path in EXEMPT_PATHS or path.startswith(EXEMPT_PREFIXES)
 
 
 # ─── Middleware ───────────────────────────────────────────────────────────────

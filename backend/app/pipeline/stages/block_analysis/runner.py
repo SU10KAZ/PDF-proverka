@@ -38,6 +38,9 @@ from backend.app.services.storage.stage_artifacts import (
     resolve_existing,
 )
 from backend.app.pipeline.stage_result import StageResult
+from backend.app.pipeline.stages.block_analysis.provider_transport import (
+    PROVIDER_BLOCK_MODEL_ID,
+)
 from backend.app.services.common.project_service import resolve_project_dir
 from backend.app.services.common import audit_scope
 
@@ -621,7 +624,24 @@ async def run_block_analysis_findings_only(
         CODEX_STAGE_MODEL_ID,
         STAGE02_DUAL_MODEL_ID,
     }
-    if ui_model in findings_only_compatible:
+    # Мост воркера (этап 11F). Когда он активен, модель выбирает ЛОКАЛЬНАЯ
+    # политика воркера по способности, а не `stage_models.json`: строка отсюда
+    # в argv не попадает вовсе. Поэтому и сверять её со списком совместимости
+    # нечего — а главное, нельзя молча подменять на `openai/gpt-5.4`, как ниже:
+    # на воркере это означало бы уход в платный OpenRouter мимо провайдерского
+    # слоя, то есть ровно тот тихий обход, ради запрета которого мост и писался.
+    from backend.app.pipeline.stages.block_analysis.gemma_findings_only import (
+        provider_bridge_active as _provider_bridge_active,
+    )
+
+    provider_mode = _provider_bridge_active()
+    if provider_mode:
+        model = PROVIDER_BLOCK_MODEL_ID
+        await ctx.log(
+            "  · мост провайдеров активен: модель задаёт локальная политика "
+            f"воркера, конфигурация block_batch={ui_model} не применяется",
+        )
+    elif ui_model in findings_only_compatible:
         model = ui_model
     else:
         model = DEFAULT_MODEL
@@ -634,9 +654,26 @@ async def run_block_analysis_findings_only(
 
     # ── Smoke-limits via env (опционально, не активны в production) ──
     smoke = _read_stage02_smoke_env()
+    # Параллельность блоков. Считается по ЧИСЛУ ОДНОВРЕМЕННЫХ ПОДПРОЦЕССОВ, а
+    # не по числу блоков: каждая нога ансамбля — отдельный запуск CLI.
+    #
+    # До 11I мост схлопывал ансамбль в одну ногу, и провайдерский режим брал
+    # общий потолок 3. Ансамбль по плану даёт три ноги на блок, то есть при том
+    # же потолке на машине оказалось бы девять одновременных CLI провайдера —
+    # втрое больше, чем центр позволяет себе при таком же составе ног.
+    # Провайдерский режим приравнивается к codex-режиму: там потолок и задан
+    # под ансамбль (`AUDIT_STAGE02_CODEX_PARALLELISM`).
+    _plan_ensemble = False
+    if provider_mode:
+        try:
+            from backend.app.services.audit_routing import active_plan as _ap
+
+            _plan_ensemble = len(_ap.block_detector_legs()) > 1
+        except Exception:                            # noqa: BLE001 — fail-soft
+            _plan_ensemble = False
     detector_default_parallelism = (
         STAGE01_CODEX_PARALLELISM
-        if model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID}
+        if (model in {CODEX_STAGE_MODEL_ID, STAGE02_DUAL_MODEL_ID} or _plan_ensemble)
         else DEFAULT_PARALLELISM
     )
     parallelism = smoke.get("max_parallel", detector_default_parallelism)
@@ -876,6 +913,24 @@ async def run_block_analysis_findings_only(
         error = f"Все {summary['blocks_failed']} блоков упали"
         ctx.update_pipeline_log("block_analysis", "error", error=error)
         return StageResult.fail(f"Stage 01 ({BLOCK_BATCH_MODE_FINDINGS_ONLY}): все блоки упали")
+
+    # В провайдерском режиме потеря ЛЮБОГО блока — отказ этапа, а не «частичный
+    # успех». Строже, чем на центре, и намеренно.
+    #
+    # На центре ансамбль из нескольких ног и повторов делает частичную потерю
+    # статистическим шумом. Здесь нога одна, и типичная причина отказа —
+    # исчерпанный потолок вызовов попытки: тогда первые блоки проходят, а все
+    # остальные возвращают `ok=False`. Этап отчитался бы успехом, аудит доехал
+    # бы до конца, и разница «40 блоков» против «6 блоков» не была бы видна ни
+    # по одному артефакту, кроме числа в сообщении.
+    if provider_mode and summary["blocks_failed"] > 0:
+        error = (
+            f"провайдерский режим: {summary['blocks_failed']} из "
+            f"{summary['blocks_failed'] + summary['blocks_ok']} блоков не "
+            "проанализированы. Частичный визуальный аудит не выдаётся за полный"
+        )
+        ctx.update_pipeline_log("block_analysis", "error", error=error)
+        return StageResult.fail(f"Stage 01: {error}")
 
     msg = (
         f"OK ({summary['blocks_ok']}/{summary['blocks_total']} блоков, "

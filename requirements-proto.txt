@@ -1,0 +1,6 @@
+# Development-only toolchain for contracts/agent_stream/v1.
+# Not included by requirements.txt or requirements-worker.txt; 12A adds no
+# gRPC/protobuf dependency to the running Center or Audit Worker.
+grpcio-tools==1.82.1
+grpcio==1.82.1
+protobuf==7.35.1

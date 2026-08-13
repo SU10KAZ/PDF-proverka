@@ -278,15 +278,24 @@ def _read_findings_merge_blocks(project_id: str, *, force_compact: bool = False)
 
 def _read_norms_reference(project_info: dict) -> str:
     """Прочитать нормативную базу дисциплины (norms_reference.md) inline."""
-    try:
-        from backend.app.services.common.discipline_service import load_discipline
-        section = (project_info or {}).get("section", "EOM")
-        profile = load_discipline(section)
-        norms_path = profile.norms_reference_path if profile else None
-        if norms_path and Path(norms_path).exists():
-            return Path(norms_path).read_text(encoding="utf-8")
-    except Exception:
-        pass
+    from backend.app.services.common import discipline_identity as _identity
+    from backend.app.services.common.discipline_service import load_discipline
+
+    section = (project_info or {}).get("section")
+    if section:
+        try:
+            profile = load_discipline(section)
+            norms_path = profile.norms_reference_path if profile else None
+            if norms_path and Path(norms_path).exists():
+                return Path(norms_path).read_text(encoding="utf-8")
+        except _identity.DisciplineError:
+            # Строгий режим сказал «дисциплина не та / профиля нет». Проглотить
+            # это здесь означало бы аудировать раздел общим справочником и не
+            # оставить следа: широкий `except` вокруг всего блока ровно так и
+            # работал, обесценивая строгий режим целиком.
+            raise
+        except OSError as exc:
+            logger.warning("Справочник норм дисциплины не прочитан: %s", exc)
     # Fallback: общий norms_reference.md
     from backend.app.core.config import BASE_DIR
     fallback = Path(BASE_DIR) / "norms_reference.md"
