@@ -1,0 +1,34 @@
+{
+  "schema": "auditmanager.12f1e.security_tests.v1",
+  "exact_final_release_commit": "775f66b78eb5674ab1251c76f00d84bbddb9fb8b",
+  "suite": "tests/test_identity_reenrollment_12f1e.py",
+  "collected": 34,
+  "passed": 34,
+  "failed": 0,
+  "skipped": 0,
+  "explicit_negative_security_cases": 26,
+  "required_matrix_A_to_AQ": "COVERED",
+  "crash_fault_seams": [
+    "before_worker_insert",
+    "after_worker_insert",
+    "after_runtime_token_insert"
+  ],
+  "results": {
+    "generic_id_center_generated": true,
+    "admin_exact_pair_authorization": true,
+    "viewer_operator_machine_denied": true,
+    "exact_pair_preserved": true,
+    "wrong_pair_token_expired_consumed_revoked_rejected": true,
+    "worker_instance_conflicts_fail_closed": true,
+    "empty_registry_no_bypass": true,
+    "hash_only_secrets": true,
+    "transaction_rollback": true,
+    "duplicate_and_lost_response_safe": true,
+    "audit_events_typed_and_secret_free": true,
+    "polling_heartbeat_authenticated": true,
+    "migration_fresh_and_populated": true,
+    "worker_cli_old_token_not_read": true,
+    "machine_capacity_not_authority": true,
+    "durable_rate_limit": true
+  }
+}

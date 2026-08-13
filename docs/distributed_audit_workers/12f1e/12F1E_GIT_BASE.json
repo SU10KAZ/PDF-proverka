@@ -1,0 +1,35 @@
+{
+  "schema": "auditmanager.12f1e.git_base.v1",
+  "captured_at": "2026-08-13T12:24:00+03:00",
+  "working_worktree": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-production-canary",
+  "working_branch": "feat/distributed-audit-workers-production-canary",
+  "start_commit": "4171f0856311329e636b1a7de8ce71917c9efb2f",
+  "implementation_commit": "fcdc8628d6b7524ccbd61968b87ca5ad5024054c",
+  "requested_runtime_base": "4767d0bf83fcb99ee69267d94324495b92954b41",
+  "requested_runtime_tree": "c3c51e6033f0641bf9068ef769a916e7a36c72f1",
+  "actual_runtime_base_at_finalization": "f6ca2ca932db52ba0d5166ae3816fc1dc1d9b682",
+  "actual_runtime_parent": "4767d0bf83fcb99ee69267d94324495b92954b41",
+  "actual_runtime_delta": "four frontend-only files; no overlap with 12F.1E",
+  "final_patch_commit": "775f66b78eb5674ab1251c76f00d84bbddb9fb8b",
+  "final_patch_tree": "9f01d55607d98f4630f6554bd9d1db5f2898585b",
+  "worktrees": {
+    "main": "/home/coder/projects/PDF-proverka",
+    "canary": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-production-canary",
+    "final_candidate": "/home/coder/projects/PDF-proverka/.claude/worktrees/final-production-candidate"
+  },
+  "main_status_preflight": {
+    "entries": 94,
+    "sha256": "3535e0bea11408be170da35dcd119851fb185e0181cbb66f41959f0af9e57d12"
+  },
+  "main_status_final": {
+    "entries": 106,
+    "sha256": "4e8c70e8e1139a6cf4ea79f38e202a1760bc4910292efd49d50e21678d226414"
+  },
+  "main_modified_by_12f1e": false,
+  "main_globally_quiescent_during_12f1e": false,
+  "final_candidate_status_entries": 0,
+  "final_candidate_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "final_candidate_modified_by_12f1e": false,
+  "push": false,
+  "merge": false
+}

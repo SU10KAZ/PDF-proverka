@@ -1,0 +1,44 @@
+{
+  "schema": "auditmanager.12f1e.production_integrity.v1",
+  "checked_at": "2026-08-13T12:19:43+03:00",
+  "actions_by_12f1e": {
+    "production_deploy": false,
+    "backend_restart_or_signal": false,
+    "production_db_write_or_migration": false,
+    "production_authorization_or_token_creation": false,
+    "worker_31_network_access": false,
+    "worker_31_change_or_restart": false,
+    "gateway_8443_started": false,
+    "real_audit_started": false,
+    "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+    "nginx_caddy_cloudflared_ufw_change": false
+  },
+  "start_observation": {
+    "backend_pid": 2214574,
+    "release": "4767d0bf83fcb99ee69267d94324495b92954b41",
+    "cwd": "/home/coder/auditmanager/releases/candidate-4767d0bf/app",
+    "last_known_health_http": 200
+  },
+  "external_change_detected": {
+    "at": "2026-08-13T12:17:38+03:00",
+    "new_backend_pid": 2276564,
+    "new_release": "f6ca2ca932db52ba0d5166ae3816fc1dc1d9b682",
+    "new_cwd": "/home/coder/auditmanager/releases/ui-f6ca2ca9/app",
+    "release_parent": "4767d0bf83fcb99ee69267d94324495b92954b41",
+    "release_delta": "frontend-only, four files",
+    "health_http_after": 200,
+    "listener_8081_after": "127.0.0.1:8081",
+    "attributed_to_12f1e": false
+  },
+  "distributed_db": {
+    "path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "size": 397312,
+    "mode": "0600",
+    "mtime": "2026-08-13T09:36:54.494824806+03:00",
+    "sha256": "1e6afd75ec5d7d0d74ab9f8e85fa5c77c9d0c2263b230672864173154b23b34b",
+    "mtime_predates_12f1e": true,
+    "last_proven_counts_12f1d": {"workers": 0, "tokens": 0, "bootstrap_sessions": 0},
+    "mutated_by_12f1e": false
+  },
+  "verdict": "NO_12F1E_MUTATION_BUT_EXTERNAL_PRODUCTION_CUTOVER_DETECTED"
+}

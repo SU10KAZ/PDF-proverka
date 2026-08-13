@@ -1,0 +1,16 @@
+{
+  "schema": "auditmanager.12f1e.empty_registry_e2e.v1",
+  "environment": "isolated temporary SQLite + in-process ASGI",
+  "production_used": false,
+  "exact_worker_id": "wrk_19c87718",
+  "exact_instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+  "authorization_created_by_admin": true,
+  "exact_identity_created": true,
+  "new_runtime_token_authenticated": true,
+  "transport_ownership": "polling",
+  "authorization_status_after": "CONSUMED",
+  "replay_minted_second_credential": false,
+  "generic_registration_remained_random": true,
+  "unauthorized_empty_registry_bypass": false,
+  "verdict": "PASS"
+}
