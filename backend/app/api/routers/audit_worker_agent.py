@@ -36,6 +36,8 @@ from backend.app.models.distributed_workers import (
     EventBatchResponse,
     HeartbeatRequest,
     HeartbeatResponse,
+    IdentityReenrollmentCompleteRequest,
+    IdentityReenrollmentCompleteResponse,
     JobAssignment,
     JobState,
     JobType,
@@ -64,6 +66,7 @@ from backend.app.services.distributed_workers import (
     event_service,
     gateway_repository,
     job_service,
+    identity_reenrollment,
     package_service,
     provider_accounts,
     rate_limit,
@@ -346,6 +349,79 @@ async def register(
         chunk_size_bytes=settings.upload_chunk_bytes,
         protocol_version=settings.protocol_version,
         message=message,
+    )
+
+
+@router.post(
+    "/identity-reenrollment",
+    response_model=IdentityReenrollmentCompleteResponse,
+)
+async def complete_identity_reenrollment(
+    payload: IdentityReenrollmentCompleteRequest,
+    request: Request,
+    authorization: Optional[str] = Header(default=None),
+    idempotency_key: Optional[str] = Header(default=None, alias="Idempotency-Key"),
+) -> IdentityReenrollmentCompleteResponse:
+    """Complete a separate admin-authorized exact-pair enrollment operation."""
+    settings = _settings()
+    # Use the existing durable registration limiter before token validation.
+    # Responses are deliberately uniform across token/pair/status failures.
+    decision = await database.run_db(
+        rate_limit.check_and_consume,
+        source_ip=(request.client.host if request.client else None),
+        instance_id=payload.instance_id,
+        settings=settings,
+    )
+    if not decision.allowed:
+        raise HTTPException(
+            status_code=429,
+            detail=decision.message,
+            headers={"Retry-After": str(decision.retry_after_sec)},
+        )
+    if payload.protocol_version != settings.protocol_version:
+        raise HTTPException(
+            status_code=426,
+            detail="Несовместимая версия протокола re-enrollment.",
+        )
+    try:
+        result = await database.run_db(
+            identity_reenrollment.complete_identity_reenrollment,
+            authorization_id=payload.authorization_id,
+            provided_token=_bearer(authorization),
+            worker_id=payload.worker_id,
+            instance_id=payload.instance_id,
+            display_name_hint=payload.display_name_hint,
+            worker_version=payload.worker_version,
+            protocol_version=payload.protocol_version,
+            pipeline_revision=payload.pipeline_revision,
+            capabilities=payload.capabilities.model_dump(),
+            configured_max_slots=payload.configured_max_slots_hint,
+            idempotency_key=idempotency_key or "",
+            request_id=request.headers.get("X-Request-Id"),
+            settings=settings,
+        )
+    except identity_reenrollment.ReenrollmentRejected as exc:
+        logger.info(
+            "identity re-enrollment rejected authorization_id=%s reason=%s",
+            payload.authorization_id,
+            exc.reason.value,
+        )
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "error": "IDENTITY_REENROLLMENT_REJECTED",
+                "message": "Authorization, token, identity pair, or state rejected.",
+            },
+        ) from exc
+    return IdentityReenrollmentCompleteResponse(
+        worker_id=result.worker["worker_id"],
+        instance_id=result.worker["instance_id"],
+        registration_status=RegistrationStatus(result.worker["registration_status"]),
+        transport_mode="polling",
+        reason_code=result.reason.value,
+        credential_issued=result.credential_issued,
+        recovery_required=result.recovery_required,
+        worker_token=result.runtime_token,
     )
 
 

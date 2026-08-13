@@ -238,3 +238,71 @@ def try_claim(config: WorkerConfig, state: dict[str, Any]) -> Optional[dict[str,
     state["claim_status"] = "claimed"
     store.save(state)
     return {**state, "token": response["worker_token"]}
+
+
+def complete_identity_reenrollment(
+    config: WorkerConfig,
+    *,
+    authorization_id: str,
+    authorization_token: str,
+) -> dict[str, Any]:
+    """Rebuild the locally stored exact identity in a fresh Center registry.
+
+    The historical IDs come only from the existing local state; this command
+    intentionally has no ``--worker-id`` option.  The old runtime token is not
+    read or sent.  It remains in place until a first successful response has
+    returned a new credential, then the secret file is atomically replaced.
+    """
+    store = WorkerStateStore(config.state_path, config.token_path)
+    state = store.load()
+    worker_id = str(state.get("worker_id") or "").strip()
+    instance_id = str(
+        state.get("last_instance_id") or state.get("instance_id") or ""
+    ).strip()
+    if not worker_id or not instance_id:
+        raise RegistrationRequired(
+            "Локальная historical identity неполна: нужны worker_id и last_instance_id."
+        )
+    payload = {
+        "authorization_id": authorization_id,
+        "worker_id": worker_id,
+        "instance_id": instance_id,
+        "display_name_hint": config.display_name or platform.node(),
+        "worker_version": __version__,
+        "protocol_version": PROTOCOL_VERSION,
+        "pipeline_revision": config.pipeline_revision,
+        "capabilities": config.capabilities(),
+        "configured_max_slots_hint": config.max_slots,
+    }
+    with CenterClient(
+        config.dispatcher_url,
+        instance_id=instance_id,
+        timeout=config.request_timeout_sec,
+        verify=config.verify_tls,
+        transport=config.transport,
+    ) as client:
+        response = client.complete_identity_reenrollment(
+            payload,
+            authorization_token=authorization_token,
+            idempotency_key=f"identity-reenrollment:{authorization_id}",
+        )
+
+    new_token = response.get("worker_token")
+    if new_token:
+        store.write_token(new_token)
+        state["registration_status"] = response.get("registration_status")
+        state["identity_reenrollment_status"] = "completed"
+        state["identity_reenrollment_authorization_id"] = authorization_id
+        store.save(state)
+    else:
+        state["identity_reenrollment_status"] = "credential_recovery_required"
+        state["identity_reenrollment_authorization_id"] = authorization_id
+        store.save(state)
+    return {
+        "worker_id": response.get("worker_id", worker_id),
+        "instance_id": response.get("instance_id", instance_id),
+        "registration_status": response.get("registration_status"),
+        "credential_stored": bool(new_token),
+        "recovery_required": bool(response.get("recovery_required")),
+        "reason_code": response.get("reason_code"),
+    }

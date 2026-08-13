@@ -37,7 +37,11 @@ from audit_worker import __version__
 from audit_worker.client import CenterError
 from audit_worker.config import load_config
 from audit_worker.local_store import LocalJobStore, WorkerStateStore
-from audit_worker.registration import RegistrationRequired, ensure_registered
+from audit_worker.registration import (
+    RegistrationRequired,
+    complete_identity_reenrollment,
+    ensure_registered,
+)
 
 
 def _bootstrap_secret(args: argparse.Namespace) -> str | None:
@@ -112,6 +116,34 @@ def _cmd_register(args: argparse.Namespace) -> int:
             "`python -m audit_worker register` уже БЕЗ --bootstrap-secret.",
             file=sys.stderr,
         )
+    return 0
+
+
+def _cmd_identity_reenroll(args: argparse.Namespace) -> int:
+    """Consume an admin authorization read from stdin; never expose it in ps."""
+    config = load_config(args.root)
+    config.ensure_dirs()
+    authorization_token = sys.stdin.readline().rstrip("\r\n")
+    if not authorization_token:
+        print("stdin не содержит identity re-enrollment token", file=sys.stderr)
+        return 2
+    try:
+        result = complete_identity_reenrollment(
+            config,
+            authorization_id=args.authorization_id,
+            authorization_token=authorization_token,
+        )
+    except (CenterError, RegistrationRequired) as exc:
+        print(f"Identity re-enrollment отклонён: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    if result.get("recovery_required"):
+        print(
+            "Center уже committed identity, но credential не может быть показан "
+            "повторно. Admin должен выполнить существующую rotate-token операцию.",
+            file=sys.stderr,
+        )
+        return 3
     return 0
 
 
@@ -518,6 +550,18 @@ def main(argv: list[str] | None = None) -> int:
         help="прочитать секрет одной строкой из stdin (для bootstrap; не виден в ps)",
     )
     p_reg.set_defaults(func=_cmd_register)
+
+    p_reenroll = sub.add_parser(
+        "identity-reenroll",
+        help="admin-authorized exact identity enrollment (token is read from stdin)",
+    )
+    add_root(p_reenroll)
+    p_reenroll.add_argument(
+        "--authorization-id",
+        required=True,
+        help="non-secret Center authorization identifier",
+    )
+    p_reenroll.set_defaults(func=_cmd_identity_reenroll)
 
     p_agent = sub.add_parser(
         "agent", help="сетевой агент (процессы аудита не запускает)"

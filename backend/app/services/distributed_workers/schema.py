@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 import time
 
-SCHEMA_VERSION = 11
+SCHEMA_VERSION = 13
 
 # Порядок PRAGMA важен: journal_mode должен быть выставлен до первой записи.
 PRAGMAS = (
@@ -1010,6 +1010,68 @@ CREATE INDEX IF NOT EXISTS ix_worker_certificate_events_time
     ON worker_certificate_security_events(occurred_at DESC);
 """
 
+# Migration 12 (12F.1B): operator-owned worker intake gate.  It is deliberately
+# separate from worker_state: heartbeat is semi-trusted machine telemetry and
+# must never undo a human drain decision.  Existing and newly created workers
+# start drained (0); only an authenticated operator/admin can enable intake.
+_MIGRATION_12 = """
+ALTER TABLE workers ADD COLUMN intake_enabled INTEGER NOT NULL DEFAULT 0
+    CHECK(intake_enabled IN (0, 1));
+ALTER TABLE workers ADD COLUMN intake_updated_at REAL;
+ALTER TABLE workers ADD COLUMN intake_updated_by TEXT;
+ALTER TABLE workers ADD COLUMN intake_reason TEXT;
+"""
+
+# Migration 13 (12F.1E): an admin-created, exact worker+instance authorization
+# for rebuilding one historical identity in a new registry.  Both enrollment
+# and runtime credentials have hash-only storage.  The append-only event table
+# intentionally has no credential/hash columns, so audit export cannot leak
+# either secret by construction.
+_MIGRATION_13 = """
+CREATE TABLE IF NOT EXISTS worker_identity_reenrollment_authorizations (
+    authorization_id       TEXT PRIMARY KEY,
+    expected_worker_id     TEXT NOT NULL,
+    expected_instance_id   TEXT NOT NULL,
+    token_sha256           TEXT NOT NULL UNIQUE,
+    status                 TEXT NOT NULL CHECK(status IN
+        ('PENDING','CONSUMED','EXPIRED','REVOKED')),
+    created_by             TEXT NOT NULL,
+    created_at             REAL NOT NULL,
+    expires_at             REAL NOT NULL,
+    consumed_at            REAL,
+    revoked_at             REAL,
+    admin_idempotency_key  TEXT NOT NULL,
+    admin_request_sha256   TEXT NOT NULL,
+    completion_idempotency_key TEXT,
+    completion_request_sha256  TEXT,
+    runtime_token_id       TEXT REFERENCES worker_tokens(token_id),
+    UNIQUE(created_by, admin_idempotency_key)
+);
+CREATE INDEX IF NOT EXISTS ix_identity_reenrollment_pair_status
+    ON worker_identity_reenrollment_authorizations(
+        expected_worker_id, expected_instance_id, status, expires_at
+    );
+
+CREATE TABLE IF NOT EXISTS worker_identity_reenrollment_events (
+    event_id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    authorization_id TEXT,
+    event_type        TEXT NOT NULL CHECK(event_type IN
+        ('IDENTITY_REENROLLMENT_AUTH_CREATED',
+         'IDENTITY_REENROLLMENT_AUTH_REVOKED',
+         'IDENTITY_REENROLLMENT_COMPLETED',
+         'IDENTITY_REENROLLMENT_REJECTED')),
+    reason_code       TEXT NOT NULL,
+    worker_id         TEXT,
+    instance_id       TEXT,
+    actor             TEXT NOT NULL,
+    request_id        TEXT,
+    occurred_at       REAL NOT NULL,
+    detail_json       TEXT NOT NULL DEFAULT '{}'
+);
+CREATE INDEX IF NOT EXISTS ix_identity_reenrollment_events_time
+    ON worker_identity_reenrollment_events(occurred_at DESC);
+"""
+
 MIGRATIONS: dict[int, tuple[str, ...]] = {
     1: _statements(_MIGRATION_1),
     2: _statements(_MIGRATION_2),
@@ -1022,6 +1084,8 @@ MIGRATIONS: dict[int, tuple[str, ...]] = {
     9: _statements(_MIGRATION_9),
     10: _statements(_MIGRATION_10),
     11: _statements(_MIGRATION_11),
+    12: _statements(_MIGRATION_12),
+    13: _statements(_MIGRATION_13),
 }
 
 

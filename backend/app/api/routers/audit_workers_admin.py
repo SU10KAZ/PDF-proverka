@@ -28,6 +28,7 @@ from backend.app.models.distributed_workers import (
     CancelAttemptRequest,
     CreateAttemptRequest,
     CreateTestJobRequest,
+    IdentityReenrollmentAuthorizationCreateRequest,
     JobState,
     MarkAttemptLostRequest,
     RemoteAuditLaunchRequest,
@@ -49,6 +50,7 @@ from backend.app.services.distributed_workers import (
     repositories,
     slots,
     worker_registry,
+    identity_reenrollment,
 )
 from backend.app.services.distributed_workers.authorization import (
     Actor,
@@ -158,6 +160,112 @@ def _settings_or_404():
                    "(DISTRIBUTED_WORKERS_ENABLED=false).",
         )
     return settings
+
+
+@router.post("/identity-reenrollment/authorizations")
+async def create_identity_reenrollment_authorization(
+    payload: IdentityReenrollmentAuthorizationCreateRequest,
+    request: Request,
+    actor: Actor = Depends(require_admin),
+) -> dict[str, Any]:
+    """Admin-only, exact-pair, one-time authorization; token is shown once."""
+    settings = _settings_or_404()
+    idempotency_key = _require_operator_intent(request)
+    try:
+        result = await database.run_db(
+            identity_reenrollment.create_authorization,
+            expected_worker_id=payload.expected_worker_id,
+            expected_instance_id=payload.expected_instance_id,
+            ttl_sec=payload.ttl_sec,
+            created_by=actor.audit_id(),
+            idempotency_key=idempotency_key,
+            request_id=request.headers.get("X-Request-Id"),
+            settings=settings,
+        )
+    except identity_reenrollment.ReenrollmentRejected as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={"error": exc.reason.value, "message": "authorization rejected"},
+        ) from exc
+    authorization_row = result.authorization
+    _audit(
+        request,
+        "identity_reenrollment_authorization_created",
+        authorization_id=authorization_row["authorization_id"],
+        worker_id=authorization_row["expected_worker_id"],
+        instance_id=authorization_row["expected_instance_id"],
+        status=authorization_row["status"],
+        idempotent=result.idempotent,
+    )
+    await _record_admin_action(
+        request,
+        action_type="identity_reenrollment_authorization_created",
+        permission=authorization.PERM_ADMIN,
+        worker_id=authorization_row["expected_worker_id"],
+        settings=settings,
+        idempotency_key=idempotency_key,
+        requested_state={
+            "worker_id": authorization_row["expected_worker_id"],
+            "instance_id": authorization_row["expected_instance_id"],
+            "ttl_sec": payload.ttl_sec
+            if payload.ttl_sec is not None
+            else settings.identity_reenrollment_ttl_sec,
+        },
+        result={
+            "authorization_id": authorization_row["authorization_id"],
+            "status": authorization_row["status"],
+            "token_shown_once": result.authorization_token is not None,
+        },
+    )
+    return {
+        "authorization": authorization_row,
+        "authorization_token": result.authorization_token,
+        "idempotent": result.idempotent,
+        "token_recovery_required": result.token_recovery_required,
+    }
+
+
+@router.post(
+    "/identity-reenrollment/authorizations/{authorization_id}/revoke"
+)
+async def revoke_identity_reenrollment_authorization(
+    authorization_id: str,
+    request: Request,
+    actor: Actor = Depends(require_admin),
+) -> dict[str, Any]:
+    settings = _settings_or_404()
+    idempotency_key = _require_operator_intent(request)
+    try:
+        row = await database.run_db(
+            identity_reenrollment.revoke_authorization,
+            authorization_id=authorization_id,
+            actor=actor.audit_id(),
+            request_id=request.headers.get("X-Request-Id"),
+            settings=settings,
+        )
+    except identity_reenrollment.ReenrollmentRejected as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={"error": exc.reason.value, "message": "revocation rejected"},
+        ) from exc
+    _audit(
+        request,
+        "identity_reenrollment_authorization_revoked",
+        authorization_id=authorization_id,
+        worker_id=row["expected_worker_id"],
+        instance_id=row["expected_instance_id"],
+        status=row["status"],
+    )
+    await _record_admin_action(
+        request,
+        action_type="identity_reenrollment_authorization_revoked",
+        permission=authorization.PERM_ADMIN,
+        worker_id=row["expected_worker_id"],
+        settings=settings,
+        idempotency_key=idempotency_key,
+        result={"authorization_id": authorization_id, "status": row["status"]},
+    )
+    return {"authorization": row}
 
 
 def _audit(request: Request, action: str, **extra: Any) -> None:

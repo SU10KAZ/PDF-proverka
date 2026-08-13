@@ -1371,6 +1371,15 @@ DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP = _env_int(
     "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP", 30
 )
 
+# Identity-preserving re-enrollment is deliberately shorter-lived than an
+# operator portal session.  Five minutes is enough for the explicitly
+# coordinated hand-off to one installation, while keeping a copied token's
+# useful lifetime small.  The domain validates the effective value to the
+# documented 30..3600 second interval and fails closed outside it.
+DISTRIBUTED_WORKERS_IDENTITY_REENROLLMENT_TTL_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_IDENTITY_REENROLLMENT_TTL_SEC", 300
+)
+
 # ─── Provider auth & quota gate (этап 11) ────────────────────────────────────
 # Порог «мало осталось». Значение по умолчанию КОНСЕРВАТИВНОЕ и намеренно
 # высокое: 25 % пятичасового окна Codex — это уже мало для полного аудита
