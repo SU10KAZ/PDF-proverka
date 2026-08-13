@@ -823,6 +823,28 @@ async def run_semantic_diff_pilot_endpoint(session_id: str, pair_id: str):
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.post("/sessions/{session_id}/pairs/{pair_id}/semantic-diff-v6a1-pilot")
+async def run_semantic_diff_v6a1_pilot_endpoint(session_id: str, pair_id: str):
+    """6А.1: deterministic table/entity/number context, без LLM/findings."""
+    try:
+        return await run_in_threadpool(store.run_semantic_diff_v6a1_pilot, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/semantic-diff-v6a2-mass")
+async def run_semantic_diff_v6a2_mass_endpoint(session_id: str, pair_id: str):
+    """6А.2: массовый deterministic-анализ всех групп, без LLM/findings."""
+    try:
+        return await run_in_threadpool(store.run_semantic_diff_v6a2_mass, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 # ─── Visual block equivalence recompute (Stage 3B, mark-only, flag-gated) ──
 #
 # Recompute-only API поверх mark-only прекчека визуальной эквивалентности

@@ -43,6 +43,8 @@ from . import change_regions as change_regions_mod
 from . import change_groups as change_groups_mod
 from . import change_detection as change_detection_mod
 from . import semantic_diff as semantic_diff_mod
+from . import semantic_diff_v6a1 as semantic_diff_v6a1_mod
+from . import semantic_diff_v6a2 as semantic_diff_v6a2_mod
 
 logger = logging.getLogger(__name__)
 
@@ -911,6 +913,58 @@ def run_semantic_diff_pilot(session_id: str, pair_id: str) -> dict:
         )
         report["llm_provider"] = llm_provider
         json_path, md_path = semantic_diff_mod.write_report(destination, report)
+        return {"ok": True, "semantic_diff": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_semantic_diff_v6a1_pilot(session_id: str, pair_id: str) -> dict:
+    """Этап 6А.1: только deterministic evidence-first поверх тех же 12 групп."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_pdf = (pair.get("left") or {}).get("pdf_path")
+        right_pdf = (pair.get("right") or {}).get("pdf_path")
+        left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
+        right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
+        if comparison != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        detection = _read_json(comparison / "change_detection" / "change_detection.json")
+        old_semantic = _read_json(comparison / "semantic_diff_v6a" / "semantic_diff.json")
+        if not isinstance(detection, dict) or detection.get("kind") != "stage_comparison_change_detection_v5b4":
+            raise ValueError("change_detection_result_missing_run_stage_5b4_first")
+        if not isinstance(old_semantic, dict) or old_semantic.get("kind") != "stage_comparison_semantic_diff_v6a_pilot":
+            raise ValueError("semantic_diff_v6a_missing_run_stage_6a_first")
+        destination = comparison / "semantic_diff_v6a1"
+        report = semantic_diff_v6a1_mod.run_pilot(
+            left_pdf, right_pdf, left, right, detection, old_semantic, destination,
+        )
+        json_path, md_path = semantic_diff_v6a1_mod.write_report(destination, report)
+        return {"ok": True, "semantic_diff": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_semantic_diff_v6a2_mass(session_id: str, pair_id: str) -> dict:
+    """Этап 6А.2: все группы 5Б.4, строго неизменённой логикой 6А.1."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_pdf = (pair.get("left") or {}).get("pdf_path")
+        right_pdf = (pair.get("right") or {}).get("pdf_path")
+        left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
+        right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
+        if comparison != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        detection = _read_json(comparison / "change_detection" / "change_detection.json")
+        pilot = _read_json(comparison / "semantic_diff_v6a1" / "semantic_diff.json")
+        if not isinstance(detection, dict) or detection.get("kind") != "stage_comparison_change_detection_v5b4":
+            raise ValueError("change_detection_result_missing_run_stage_5b4_first")
+        if not isinstance(pilot, dict) or pilot.get("kind") != "stage_comparison_semantic_diff_v6a1_pilot":
+            raise ValueError("semantic_diff_v6a1_missing_run_stage_6a1_first")
+        destination = comparison / "semantic_diff_v6a2"
+        report = semantic_diff_v6a2_mod.run_mass(
+            left_pdf, right_pdf, left, right, detection, destination, pilot_v6a1=pilot,
+        )
+        json_path, md_path = semantic_diff_v6a2_mod.write_report(destination, report)
         return {"ok": True, "semantic_diff": report, "result_path": str(json_path), "report_path": str(md_path)}
 
 
