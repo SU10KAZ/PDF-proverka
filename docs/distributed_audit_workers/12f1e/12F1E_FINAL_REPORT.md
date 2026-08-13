@@ -15,17 +15,17 @@
   recovery to existing ADMIN rotation.
 - **Production mutation by 12F.1E: NONE.**
 - **Overall Phase A: PARTIAL.** Technical/security work is complete, but deploy
-  readiness is blocked by an external production cutover and concurrent main
-  worktree changes detected during the supposedly quiescent window.
+  readiness is blocked by two external production cutovers and concurrent main/
+  final-candidate changes detected during the supposedly quiescent window.
 
 ## Immutable release
 
 The implementation commit in the canary branch is `fcdc8628`. The final patch
-release is `auditmanager-12f1e-775f66b7`, commit
-`775f66b78eb5674ab1251c76f00d84bbddb9fb8b`, tree
-`9f01d55607d98f4630f6554bd9d1db5f2898585b`. Its direct parent is the actually
-active production UI commit `f6ca2ca9`, itself a direct child of requested
-candidate `4767d0bf`. The UI delta and 12F.1E have zero file overlap. The patch
+release is `auditmanager-12f1e-e6015d33`, commit
+`e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f`, tree
+`00e75c545eb314ff0bac82990b9ad5f11050e476`. Its direct parent is the actually
+active production UI commit `e2b98c3b`, whose ancestry leads through
+`6109dd92 → f6ca2ca9 → 4767d0bf`. The UI delta and 12F.1E have zero file overlap. The patch
 changes 11 files, adds schema migration 13, changes no dependency manifest and
 was not deployed, pushed or merged.
 
@@ -48,18 +48,19 @@ was not deployed, pushed or merged.
 
 No 12F.1E command signalled/restarted :8081, wrote production DB, contacted or
 changed Worker .31, started Gateway, or touched cloudflared/nginx/Caddy/UFW.
-Nevertheless an independent change occurred at `12:17:38 MSK`: production moved
-from PID `2214574` / `4767d0bf` to PID `2276564` / frontend-only direct child
-`f6ca2ca9`. The new backend returned HTTP 200. Production `workers.db` mtime
-remained `09:36:54`, predating this task.
+Nevertheless independent changes occurred at `12:17:38` and `12:29:02 MSK`:
+production moved from PID `2214574` / `4767d0bf`, through PID `2276564` /
+`f6ca2ca9`, to PID `2281536` / `e2b98c3b`. All intervening commits were
+frontend-only and the current backend returned HTTP 200. Production `workers.db`
+mtime remained `09:36:54`, predating this task.
 
 Main worktree status also changed externally from 94 to 106 entries. Since
 global production/main quiescence cannot be certified, the conservative gate is:
 
 `READY_FOR_REENROLLMENT_PATCH_DEPLOY = false`.
 
-The operator must first accept `f6ca2ca9` as the new authoritative baseline,
-confirm writers are zero/quiescent, review `775f66b7`, and then separately
+The operator must first accept `e2b98c3b` as the new authoritative baseline,
+confirm writers are zero/quiescent, review `e6015d33`, and then separately
 authorize deploy/restart. Only afterward may physical Worker re-enrollment be
 attempted. Phase B, production authorization creation, Worker URL/token changes,
 Gateway start, scheduler enablement and 12F canary are not performed here.

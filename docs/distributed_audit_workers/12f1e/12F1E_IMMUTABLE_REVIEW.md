@@ -1,9 +1,9 @@
 # 12F.1E immutable adversarial review
 
 Review target: exact commit
-`775f66b78eb5674ab1251c76f00d84bbddb9fb8b`, tree
-`9f01d55607d98f4630f6554bd9d1db5f2898585b`, parent actual production commit
-`f6ca2ca932db52ba0d5166ae3816fc1dc1d9b682`. The mutable canary worktree was
+`e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f`, tree
+`00e75c545eb314ff0bac82990b9ad5f11050e476`, parent actual production commit
+`e2b98c3b5b290f97257ddcb914e71a65289c26bb`. The mutable canary worktree was
 not the review target.
 
 1. **Arbitrary Worker-ID takeover — PASS.** Generic request has no ID field;
@@ -34,5 +34,5 @@ Main questions:
 - Can replay mint an uncontrolled second credential? **NO.**
 
 Security verdict: **PASS**. Deployment verdict is separate and remains
-**BLOCKED** because production/main baselines changed externally during the
+**BLOCKED** because production/main/final-candidate baselines changed externally during the
 review window and require an operator re-baseline decision.

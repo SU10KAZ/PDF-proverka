@@ -1,6 +1,6 @@
 {
   "schema": "auditmanager.12f1e.security_tests.v1",
-  "exact_final_release_commit": "775f66b78eb5674ab1251c76f00d84bbddb9fb8b",
+  "exact_final_release_commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
   "suite": "tests/test_identity_reenrollment_12f1e.py",
   "collected": 34,
   "passed": 34,

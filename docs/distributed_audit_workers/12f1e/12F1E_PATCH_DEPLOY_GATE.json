@@ -7,7 +7,8 @@
     "working_in_correct_canary_worktree": true,
     "main_production_worktree_untouched": false,
     "main_production_worktree_modified_by_12f1e": false,
-    "final_candidate_worktree_untouched": true,
+    "final_candidate_worktree_untouched": false,
+    "final_candidate_worktree_modified_by_12f1e": false,
     "generic_registration_not_weakened": true,
     "exact_pair_authorization_implemented": true,
     "worker_id_client_choice_not_possible": true,
@@ -37,9 +38,10 @@
     "operator_patch_deploy_authorization": false
   },
   "blockers": [
-    "Production changed externally during Phase A from 4767d0bf/PID 2214574 to direct-child frontend commit f6ca2ca9/PID 2276564.",
+    "Production changed externally twice during Phase A: 4767d0bf/PID 2214574 → f6ca2ca9/PID 2276564 → e2b98c3b/PID 2281536, through frontend-only commits.",
+    "The final-candidate branch advanced externally from 4767d0bf to e2b98c3b during the immutable review window.",
     "Main worktree status changed externally from 94 to 106 entries during the window, so global quiescence cannot be asserted.",
     "Operator has not authorized patch deployment; a fresh baseline acceptance is required before any deploy/restart."
   ],
-  "required_next_decision": "Operator must accept f6ca2ca9 as the new authoritative base and confirm writers are quiescent, then separately authorize deployment of 775f66b7."
+  "required_next_decision": "Operator must accept e2b98c3b as the new authoritative base and confirm writers are quiescent, then separately authorize deployment of e6015d33."
 }

@@ -28,9 +28,9 @@ used a real temporary uvicorn process and passed.
 
 The 200 baseline tests and 122 gRPC/chaos tests ran on patch tree
 `89dbea74280e...` based on 4767. The final tree adds only the independently
-deployed four frontend files from `f6ca2ca9`; an immutable diff proved every
+deployed frontend-only chain through `e2b98c3b`; an immutable diff proved every
 `audit_worker`, `backend`, and listed test blob identical. The 34 security tests,
-86 RBAC/prepipeline tests, and real-main startup were rerun on exact final commit
-`775f66b7`.
+and 86 RBAC/prepipeline tests were rerun on exact final commit `e6015d33`;
+the real-main startup passed on the preceding backend-identical exact patch.
 
 Provider calls: Claude/Codex/OpenRouter = `0/0/0`.
