@@ -1,0 +1,19 @@
+{
+  "schema": "auditmanager.12f1f.patch_ancestry.v1",
+  "baseline": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+  "baseline_tree": "e2d67c5c4b5b62b3921bff6443cbbe7d52f9a72a",
+  "patch": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "patch_parent": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+  "patch_tree": "00e75c545eb314ff0bac82990b9ad5f11050e476",
+  "parent_matches_authoritative_baseline": true,
+  "patch_already_based_on_authoritative_baseline": true,
+  "patch_rebase_required": false,
+  "new_patch_required": false,
+  "verification_commands": [
+    "git rev-parse e6015d33^",
+    "git rev-parse e6015d33^{tree}",
+    "git diff --stat e2b98c3b..e6015d33",
+    "git diff --name-status e2b98c3b..e6015d33"
+  ],
+  "verdict": "PASS"
+}

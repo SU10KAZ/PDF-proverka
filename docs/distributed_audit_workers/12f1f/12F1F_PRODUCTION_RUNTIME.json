@@ -1,0 +1,38 @@
+{
+  "schema": "auditmanager.12f1f.production_runtime.v1",
+  "captured_at": "2026-08-13T14:35:10+03:00",
+  "identity_basis": "running process + systemd user unit + current symlink + immutable manifest; branch HEAD is not trusted",
+  "backend": {
+    "unit": "auditmanager-backend.service",
+    "active_state": "active",
+    "sub_state": "running",
+    "pid": 2281536,
+    "started_at": "2026-08-13T12:29:03+03:00",
+    "n_restarts": 0,
+    "command": "/home/coder/auditmanager/current/venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+    "executable": "/opt/cpython-3.12/bin/python3.12",
+    "working_directory": "/home/coder/auditmanager/releases/ui-e2b98c3b/app",
+    "listener": "127.0.0.1:8081",
+    "api_info_http": 200
+  },
+  "release": {
+    "current_symlink_target": "/home/coder/auditmanager/releases/ui-e2b98c3b",
+    "release_id": "ui-e2b98c3b",
+    "commit": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "tree": "e2d67c5c4b5b62b3921bff6443cbbe7d52f9a72a",
+    "manifest_sha256": "4434bd3e63f8ec72b37682078e787d04d9d82f13845a01b771acee66bd5177d2",
+    "git_archive_tar_sha256": "b35d8bc3f6e04beb82b37e048454bf9482f4fce69984e8eb8be061c64c64e83d",
+    "dependency_freeze_sha256": "0f3b123e82b9ee78a20584dac911e2ce7bfb1f29d9b9cca0d06107aff781bd24",
+    "venv_canonical_tar_sha256": "6622538cbcd590182471318d362f0c959026f17b54dfab524c04821a943d0571",
+    "directory_mode": "0555",
+    "manifest_mode": "0444"
+  },
+  "config_schema": {
+    "DISTRIBUTED_WORKERS_ENABLED": true,
+    "DISTRIBUTED_AUDIT_EXECUTION_ENABLED": false,
+    "scheduler": "DISABLED"
+  },
+  "database_schema": 12,
+  "running_production_commit_identified": true,
+  "verdict": "PASS"
+}

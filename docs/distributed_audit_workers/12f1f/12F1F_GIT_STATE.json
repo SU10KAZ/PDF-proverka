@@ -1,0 +1,35 @@
+{
+  "schema": "auditmanager.12f1f.git_state.v1",
+  "captured_at": "2026-08-13T14:35:10+03:00",
+  "canary": {
+    "path": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-production-canary",
+    "branch": "feat/distributed-audit-workers-production-canary",
+    "head_before_evidence": "6e2413c0bc6923d7b7284008cb904805c7f8a0cd",
+    "status_before_evidence": "CLEAN",
+    "status_sha256_before_evidence": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "role": "12F.1F evidence worktree"
+  },
+  "final_production_candidate": {
+    "path": "/home/coder/projects/PDF-proverka/.claude/worktrees/final-production-candidate",
+    "branch": "feat/final-production-candidate",
+    "head": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "tree": "e2d67c5c4b5b62b3921bff6443cbbe7d52f9a72a",
+    "status": "CLEAN",
+    "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "access": "READ_ONLY"
+  },
+  "main_development_root": {
+    "path": "/home/coder/projects/PDF-proverka",
+    "branch": "feature/block-vector-graphs",
+    "head": "9168c3930c5e87e918f62c3812e19a8f924a3ade",
+    "status": "DIRTY_PREEXISTING_WIP",
+    "status_entries_final": 106,
+    "status_sha256_final": "361a2e9374f7b28ca8a3c954a2c2e0936f2eed65a886dbaa7c7dc141337bcb22",
+    "access": "READ_ONLY",
+    "used_to_identify_production": false
+  },
+  "worktree_count": 3,
+  "new_worktree_created": false,
+  "push": false,
+  "merge": false
+}

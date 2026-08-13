@@ -1,0 +1,84 @@
+{
+  "schema": "auditmanager.12f1f.production_integrity.v1",
+  "checked_at": "2026-08-13T14:35:10+03:00",
+  "center": {
+    "pid": 2281536,
+    "active": true,
+    "n_restarts": 0,
+    "release": "/home/coder/auditmanager/releases/ui-e2b98c3b",
+    "commit": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "listener": "127.0.0.1:8081",
+    "api_info_http": 200,
+    "restarted_or_signalled_by_12f1f": false
+  },
+  "distributed_db": {
+    "path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "schema": 12,
+    "workers": 0,
+    "tokens": 0,
+    "bootstrap_sessions": 0,
+    "size": 397312,
+    "mode": "0600",
+    "mtime": "2026-08-13T09:36:54.494824806+03:00",
+    "sha256": "1e6afd75ec5d7d0d74ab9f8e85fa5c77c9d0c2263b230672864173154b23b34b",
+    "mutated_by_12f1f": false
+  },
+  "scheduler": "DISABLED",
+  "worker_31": {
+    "host": "176.12.77.31",
+    "production_agent_contacted_by_12f1f": false,
+    "production_agent_restarted_or_signalled_by_12f1f": false,
+    "executor_restarted_or_signalled_by_12f1f": false,
+    "config_credentials_or_url_changed_by_12f1f": false,
+    "transport_changed_by_12f1f": false,
+    "last_known_transport": "POLLING"
+  },
+  "listeners_final": {
+    "8081": "127.0.0.1 LISTEN pid 2281536",
+    "8443": "ABSENT",
+    "9443": "ABSENT",
+    "18091": "ABSENT",
+    "18092": "ABSENT"
+  },
+  "gateway_started": false,
+  "firewall": {
+    "changed_by_12f1f": false,
+    "ipv4_rules_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ipv6_rules_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "matches_sealed_12D_12E_evidence": true,
+    "ufw_runtime_status_note": "sudo -n requires interactive authentication; persisted rule hashes and listeners were read-only verified"
+  },
+  "cloudflared": {
+    "pid": 1263127,
+    "started_at": "2026-08-11T19:52:01+03:00",
+    "target": "http://127.0.0.1:8081",
+    "changed_by_12f1f": false
+  },
+  "nginx": {
+    "pid": 57095,
+    "active": true,
+    "n_restarts": 0,
+    "started_at": "2026-08-05T11:37:17+03:00",
+    "changed_by_12f1f": false
+  },
+  "caddy": {
+    "installed_unit": false,
+    "active": false,
+    "changed_by_12f1f": false
+  },
+  "actions_by_12f1f": {
+    "production_deploy": false,
+    "backend_restart_or_signal": false,
+    "production_db_write_or_migration": false,
+    "production_authorization_or_token_creation": false,
+    "worker_31_network_access": false,
+    "worker_31_change_or_restart": false,
+    "gateway_start": false,
+    "real_audit_start": false,
+    "ufw_nginx_caddy_cloudflared_change": false,
+    "durable_inactive_patch_release_materialized": true
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "production_unchanged": true,
+  "verdict": "PASS"
+}

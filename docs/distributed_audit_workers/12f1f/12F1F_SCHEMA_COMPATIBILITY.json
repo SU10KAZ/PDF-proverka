@@ -1,0 +1,53 @@
+{
+  "schema": "auditmanager.12f1f.schema_compatibility.v1",
+  "baseline_schema_version": 12,
+  "patch_schema_version": 13,
+  "migration": "_MIGRATION_13",
+  "migration_type": "ADDITIVE",
+  "added_tables": [
+    "worker_identity_reenrollment_authorizations",
+    "worker_identity_reenrollment_events"
+  ],
+  "modified_existing_tables": [],
+  "destructive_statements": 0,
+  "live_production_db": {
+    "path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "opened": "READ_ONLY_URI_MODE",
+    "schema_before": 12,
+    "workers": 0,
+    "tokens": 0,
+    "bootstrap_sessions": 0,
+    "mutated": false,
+    "sha256_before_and_after": "1e6afd75ec5d7d0d74ab9f8e85fa5c77c9d0c2263b230672864173154b23b34b",
+    "mtime_before_and_after": "2026-08-13T09:36:54.494824806+03:00"
+  },
+  "production_snapshot_copy": {
+    "method": "sqlite read-only source connection plus sqlite backup API to /tmp",
+    "schema_before": 12,
+    "schema_after": 13,
+    "workers_before_after": [0, 0],
+    "tokens_before_after": [0, 0],
+    "authorizations_after": 0,
+    "verdict": "PASS"
+  },
+  "fresh_database": {
+    "test": "tests/test_identity_reenrollment_12f1e.py::test_schema_migration_fresh_database",
+    "schema_after": 13,
+    "verdict": "PASS"
+  },
+  "populated_v12_fixture": {
+    "test": "tests/test_identity_reenrollment_12f1e.py::test_schema_migration_populated_v12_database_is_additive",
+    "preexisting_worker_preserved": true,
+    "preexisting_instance_binding_preserved": true,
+    "schema_after": 13,
+    "verdict": "PASS"
+  },
+  "rollback_code_compatibility": {
+    "code_commit": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "code_schema_version": 12,
+    "opened_and_read_migrated_v13_copy": true,
+    "verdict": "PASS"
+  },
+  "production_db_migrated": false,
+  "verdict": "PASS"
+}

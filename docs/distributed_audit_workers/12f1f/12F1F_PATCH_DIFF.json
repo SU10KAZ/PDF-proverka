@@ -1,0 +1,31 @@
+{
+  "schema": "auditmanager.12f1f.patch_diff.v1",
+  "baseline": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+  "patch": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "changed_files_count": 11,
+  "insertions": 1797,
+  "deletions": 2,
+  "files": [
+    {"path": "audit_worker/__main__.py", "status": "M", "category": "REENROLLMENT_RUNTIME"},
+    {"path": "audit_worker/client.py", "status": "M", "category": "REENROLLMENT_RUNTIME"},
+    {"path": "audit_worker/registration.py", "status": "M", "category": "REENROLLMENT_RUNTIME"},
+    {"path": "backend/app/api/routers/audit_worker_agent.py", "status": "M", "category": "REENROLLMENT_RUNTIME"},
+    {"path": "backend/app/api/routers/audit_workers_admin.py", "status": "M", "category": "SECURITY/RBAC"},
+    {"path": "backend/app/core/config.py", "status": "M", "category": "REENROLLMENT_RUNTIME"},
+    {"path": "backend/app/models/distributed_workers.py", "status": "M", "category": "REENROLLMENT_RUNTIME"},
+    {"path": "backend/app/services/distributed_workers/identity_reenrollment.py", "status": "A", "category": "SECURITY/RBAC"},
+    {"path": "backend/app/services/distributed_workers/schema.py", "status": "M", "category": "REENROLLMENT_SCHEMA"},
+    {"path": "backend/app/services/distributed_workers/settings.py", "status": "M", "category": "REENROLLMENT_RUNTIME"},
+    {"path": "tests/test_identity_reenrollment_12f1e.py", "status": "A", "category": "REENROLLMENT_TEST"}
+  ],
+  "unexpected_files": [],
+  "unexpected_changed_files_count": 0,
+  "unrelated_ui_files": 0,
+  "block_vector_files": 0,
+  "dependency_manifest_files": 0,
+  "database_or_log_files": 0,
+  "production_config_values": 0,
+  "provider_credentials": 0,
+  "git_diff_check": "PASS",
+  "verdict": "PASS"
+}

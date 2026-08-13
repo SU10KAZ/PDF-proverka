@@ -1,0 +1,59 @@
+{
+  "schema": "auditmanager.12f1f.external_writers.v1",
+  "preflight_checked_at": "2026-08-13T13:43:46+03:00",
+  "final_checked_at": "2026-08-13T14:36:34+03:00",
+  "active_external_source_writers": 0,
+  "active_external_deployers": 0,
+  "observations": [
+    {
+      "process": "Claude IDE sessions",
+      "pids_final": [1276831, 2232198, 2254084, 2307685],
+      "cwd_values": [
+        "/home/coder/Uzun/Uzun L/Normirovanie",
+        "/home/coder/projects/OSA/Repnikov",
+        "/home/coder/projects/OSA/Grivapsch"
+      ],
+      "state": "dormant_ep_poll",
+      "can_modify_12f1f_source_now": false,
+      "can_cutover_release_now": false,
+      "safe_to_pause": "not needed; unrelated sessions were not touched"
+    },
+    {
+      "process": "Codex IDE app-server processes",
+      "pids_final": [1275557, 2225576, 2227593, 2230991],
+      "state": "app servers waiting; current 12F.1F session is not external",
+      "active_external_task_children_in_final_candidate": 0,
+      "can_cutover_release_now": false,
+      "safe_to_pause": "not needed"
+    },
+    {
+      "process": "/home/coder/bin/webapp-watchdog.sh from user cron",
+      "schedule": "once per minute",
+      "role": "reports immutable backend service health and supervises pre-existing production cloudflared",
+      "can_modify_source": false,
+      "can_cutover_release": false,
+      "can_restart_backend": false,
+      "evidence": "script contains no current symlink switch and no backend start/restart; systemd owns same-release Restart=on-failure"
+    },
+    {
+      "process": "/home/coder/auditmanager/bin/boot-backend.sh",
+      "schedule": "@reboot only",
+      "active": false,
+      "can_cutover_release": false,
+      "role": "starts already-configured immutable user service only"
+    },
+    {
+      "process": "systemd user auditmanager-backend.service",
+      "active": true,
+      "role": "same-release process supervisor",
+      "can_cutover_release": false,
+      "restart_policy": "on-failure",
+      "n_restarts_during_12f1f": 0
+    }
+  ],
+  "system_timers_related_to_auditmanager_deploy": 0,
+  "user_timers_related_to_auditmanager_deploy": 0,
+  "active_process_command_matching_deploy_or_cutover": 0,
+  "processes_killed_or_paused_for_writer_freeze": 0,
+  "verdict": "PASS_WRITERS_AND_DEPLOYERS_ZERO"
+}

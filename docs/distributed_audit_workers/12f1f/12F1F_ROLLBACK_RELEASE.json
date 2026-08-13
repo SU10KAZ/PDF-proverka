@@ -1,0 +1,28 @@
+{
+  "schema": "auditmanager.12f1f.rollback_release.v1",
+  "immediate_rollback": {
+    "commit": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "tree": "e2d67c5c4b5b62b3921bff6443cbbe7d52f9a72a",
+    "release_id": "ui-e2b98c3b",
+    "path": "/home/coder/auditmanager/releases/ui-e2b98c3b",
+    "manifest_sha256": "4434bd3e63f8ec72b37682078e787d04d9d82f13845a01b771acee66bd5177d2",
+    "directory_mode": "0555",
+    "self_contained": true,
+    "available": true,
+    "preferred": true
+  },
+  "deep_fallback": {
+    "commit": "46bcd527065aff074ca5fe730e3594e982d080d2",
+    "tree": "06fac1ef8f01ae99d689401f816cec352a73dd75",
+    "release_id": "baseline-46bcd527",
+    "path": "/home/coder/auditmanager/releases/baseline-46bcd527",
+    "manifest_sha256": "568f5a5a43cf5e0c7114543e6bf7f96ec49cd20a1c0a8ff4eed1f7de24284281",
+    "directory_mode": "0555",
+    "self_contained": true,
+    "available": true
+  },
+  "database_policy": "schema 13 migration is additive; rollback code at schema 12 opens and reads the v13 database; do not downgrade or delete the database",
+  "rollback_compatibility_test": "PASS",
+  "production_switch_performed": false,
+  "verdict": "PASS"
+}
