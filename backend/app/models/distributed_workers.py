@@ -299,6 +299,45 @@ class RegisterResponse(BaseModel):
     message: str
 
 
+class IdentityReenrollmentAuthorizationCreateRequest(BaseModel):
+    """Admin intent for exactly one historical worker+installation pair."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    expected_worker_id: str = Field(min_length=12, max_length=36)
+    expected_instance_id: str = Field(min_length=8, max_length=128)
+    ttl_sec: Optional[int] = Field(default=None, ge=30, le=3600)
+
+
+class IdentityReenrollmentCompleteRequest(BaseModel):
+    """Machine proof.  IDs repeat the server-owned authorization, not choose it."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    authorization_id: str = Field(min_length=8, max_length=64)
+    worker_id: str = Field(min_length=12, max_length=36)
+    instance_id: str = Field(min_length=8, max_length=128)
+    display_name_hint: str = Field(default="", max_length=200)
+    worker_version: str = Field(default="0.0.0", max_length=64)
+    protocol_version: int = 1
+    pipeline_revision: Optional[str] = Field(default=None, max_length=200)
+    capabilities: WorkerCapabilities = Field(default_factory=WorkerCapabilities)
+    configured_max_slots_hint: int = Field(default=1, ge=1, le=64)
+
+
+class IdentityReenrollmentCompleteResponse(BaseModel):
+    worker_id: str
+    instance_id: str
+    registration_status: RegistrationStatus
+    transport_mode: str
+    reason_code: str
+    credential_issued: bool
+    recovery_required: bool
+    # Present only on the first committed response.  The Center has no raw
+    # value to replay; an exact retry points to admin token rotation instead.
+    worker_token: Optional[str] = None
+
+
 class ClaimRequest(BaseModel):
     """Обмен одноразового claim-secret на постоянный токен."""
 

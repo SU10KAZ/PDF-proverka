@@ -165,6 +165,27 @@ class CenterClient:
             self._raise(response)
         return response.json()
 
+    def complete_identity_reenrollment(
+        self,
+        payload: dict[str, Any],
+        *,
+        authorization_token: str,
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Use the separate exact-pair flow; no current runtime token is sent."""
+        response = self._client.post(
+            f"{self.base_url}/api/v1/worker/identity-reenrollment",
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {authorization_token}",
+                "Idempotency-Key": idempotency_key,
+                "X-Protocol-Version": str(PROTOCOL_VERSION),
+            },
+        )
+        if response.status_code >= 400:
+            self._raise(response)
+        return response.json()
+
     def update_registration(self, payload: dict[str, Any]) -> dict[str, Any]:
         return self.request("PUT", "/api/v1/worker/registration", json_body=payload)
 

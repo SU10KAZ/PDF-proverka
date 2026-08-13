@@ -54,6 +54,7 @@ class DistributedWorkersSettings:
     registration_rate_window_sec: int = 3600
     registration_rate_max_per_instance: int = 10
     registration_rate_max_per_ip: int = 30
+    identity_reenrollment_ttl_sec: int = 300
     # ─── Provider gate (этап 11) ────────────────────────────────────────────
     # Порог `low`. 0 или отрицательное = состояние `low` не вычисляется вовсе.
     # Это не «выключено по недосмотру»: §12 прямо запрещает вычислять `low`
@@ -158,6 +159,10 @@ def get_settings() -> DistributedWorkersSettings:
         registration_rate_max_per_ip=_env_int(
             "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP",
             config.DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP,
+        ),
+        identity_reenrollment_ttl_sec=_env_int(
+            "DISTRIBUTED_WORKERS_IDENTITY_REENROLLMENT_TTL_SEC",
+            config.DISTRIBUTED_WORKERS_IDENTITY_REENROLLMENT_TTL_SEC,
         ),
         quota_low_threshold_pct=_env_int(
             "DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT",
