@@ -1,44 +1,28 @@
-# 12F.1C source-writer attribution
+# 12F.1C source-writer attribution and final audit
 
-Read-only process and `/proc/<pid>/cwd` inspection confirms an active Claude
-coding agent in the mutable production checkout:
+The earlier parallel Claude session is confirmed as a production-root coding
+agent with HIGH confidence: PID `1630609`, cwd and Git root
+`/home/coder/projects/PDF-proverka`, branch `feature/block-vector-graphs`, not
+an isolated worktree. This proves the earlier quiescence prerequisite was
+violated. It does not prove that this PID wrote every one of the seven later
+deltas; no per-file audit/inotify record exists, so that claim remains NO.
 
-| Field | Evidence |
-| --- | --- |
-| Writer class | `PARALLEL_CODING_AGENT` |
-| Tool | Claude |
-| PID | `1630609` |
-| Start | `2026-08-12 07:22:24 +03:00` |
-| Working directory | `/home/coder/projects/PDF-proverka` |
-| Git root | `/home/coder/projects/PDF-proverka` |
-| Branch | `feature/block-vector-graphs` |
-| Production checkout | YES |
-| Isolated worktree | NO |
-| Confidence | HIGH |
+After the operator closed the coding session, the PID remained as a dormant
+VS Code extension daemon in `ep_poll`. Read-only `/proc` checks found no open
+repository files, and its `write_bytes` counter stayed exactly `823296` from
+the precheck through the final audit. Other Claude processes had cwd in
+Normirovanie or OSA projects and no open PDF-proverka files.
 
-This is sufficient to fail the quiescence prerequisite. It is not sufficient
-to claim that this exact process wrote every one of the seven files observed
-after the 12F.1B snapshot. No per-file process-open/audit/inotify evidence was
-available, so file-level attribution is explicitly **NO / not proven**.
-
-Other active Claude sessions checked have cwd outside this production root.
-Processes in the root also include the production backend, idle shells,
-language tooling and orphaned multiprocessing workers. Their mere cwd does not
-prove source writes; none is classified as a writer without evidence. The
-mandatory final absence audit must be repeated after PID `1630609` is stopped
-by the operator.
-
-No process was killed, signalled, restarted or reconfigured.
+The decisive evidence is content-based: a 60-second precheck and the fresh
+1200.106-second window both retained the same 1477-path manifest hash
+`af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a`.
+The post-build check at 08:55 retained it again. Final active source writers:
+`0`. No process was killed or signalled.
 
 ## Architectural rule
 
-`/home/coder/projects/PDF-proverka` is production/deployment source only and
-must not be used as a mutable coding-agent worktree. Claude, Codex and other
-autonomous development workflows must use
-`/home/coder/projects/PDF-proverka/.claude/worktrees/<task>` or another separate
-Git worktree following project convention.
-
-A development preflight guard should fail closed before mutations when the Git
-toplevel is the production root, while permitting read-only production
-runtime access. The guard is not implemented now because source freeze has not
-been achieved and this task forbids production-checkout mutation.
+The production root is deployment source only. Coding agents must mutate a
+separate Git worktree. Final baseline commit `46bcd527` contains a preflight
+guard and tests: mutation intent from the production root exits `2`, while
+read-only access and linked-worktree development remain allowed. Filesystem
+permissions of the running production checkout were not changed.

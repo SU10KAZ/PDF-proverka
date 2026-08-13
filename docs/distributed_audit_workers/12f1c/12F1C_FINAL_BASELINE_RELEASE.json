@@ -1,0 +1,22 @@
+{
+  "schema": "auditmanager.12f1c.release.v1",
+  "release_id": "baseline-46bcd527",
+  "status": "FINAL_IMMUTABLE_ROLLBACK_RELEASE",
+  "commit": "46bcd527065aff074ca5fe730e3594e982d080d2",
+  "git_tree_sha1": "06fac1ef8f01ae99d689401f816cec352a73dd75",
+  "path": "/tmp/12f1c-releases/baseline-46bcd527",
+  "git_archive_tar_sha256": "a4240f83ddbaf1f90f8b90deeb142e924f5015f20d42c49dfd7c0c8c7532389e",
+  "dependency_freeze_sha256": "030c88577d9737be3d03986b99fb48461bb7c266fefa0ab9bc0af3b21416b575",
+  "dependency_count": 128,
+  "venv_preseal_canonical_tar_sha256": "81310902767c126a9af4e29b0ecbb1f8fb600bc59001be2345e189f05657e656",
+  "manifest_sha256": "568f5a5a43cf5e0c7114543e6bf7f96ec49cd20a1c0a8ff4eed1f7de24284281",
+  "sealed_bundle_canonical_tar_sha256": "4950d5bfdad2ef3d8ecc09a379563f9bf96eddadea77cfd67518ff7f5612315c",
+  "writable_regular_paths_after_seal": 0,
+  "startup_definition": "../venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+  "polling_endpoint": "https://auditmanager.app",
+  "stable_disk_equivalence": "PASS_39_OF_39_SELECTED_RUNTIME_PATHS",
+  "unexplained_source_diffs": 0,
+  "sealed_boot_pass": true,
+  "production_install_performed": false,
+  "production_restart_performed": false
+}

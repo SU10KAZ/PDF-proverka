@@ -1,0 +1,990 @@
+{
+  "schema": "auditmanager.12f1c.quiescence_window.v1",
+  "result": "PASS",
+  "started_at": "2026-08-13T07:45:18.824780+03:00",
+  "finished_at": "2026-08-13T08:05:18.924691+03:00",
+  "elapsed_seconds": 1200.106,
+  "required_duration_seconds": 1200,
+  "interval_seconds": 15,
+  "sample_count": 81,
+  "entry_count": 1477,
+  "initial_manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+  "final_manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+  "source_changes_during_window": 0,
+  "new_release_scope_paths": 0,
+  "removed_release_scope_paths": 0,
+  "samples": [
+    {
+      "sample": 0,
+      "captured_at": "2026-08-13T07:45:18.917770+03:00",
+      "elapsed_seconds": 0.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 1,
+      "captured_at": "2026-08-13T07:45:33.919295+03:00",
+      "elapsed_seconds": 15.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 2,
+      "captured_at": "2026-08-13T07:45:48.918628+03:00",
+      "elapsed_seconds": 30.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 3,
+      "captured_at": "2026-08-13T07:46:03.920314+03:00",
+      "elapsed_seconds": 45.101,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 4,
+      "captured_at": "2026-08-13T07:46:18.918017+03:00",
+      "elapsed_seconds": 60.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 5,
+      "captured_at": "2026-08-13T07:46:33.916673+03:00",
+      "elapsed_seconds": 75.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 6,
+      "captured_at": "2026-08-13T07:46:48.918837+03:00",
+      "elapsed_seconds": 90.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 7,
+      "captured_at": "2026-08-13T07:47:03.916915+03:00",
+      "elapsed_seconds": 105.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 8,
+      "captured_at": "2026-08-13T07:47:18.916444+03:00",
+      "elapsed_seconds": 120.096,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 9,
+      "captured_at": "2026-08-13T07:47:33.916491+03:00",
+      "elapsed_seconds": 135.096,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 10,
+      "captured_at": "2026-08-13T07:47:48.915770+03:00",
+      "elapsed_seconds": 150.096,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 11,
+      "captured_at": "2026-08-13T07:48:03.916092+03:00",
+      "elapsed_seconds": 165.096,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 12,
+      "captured_at": "2026-08-13T07:48:18.917202+03:00",
+      "elapsed_seconds": 180.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 13,
+      "captured_at": "2026-08-13T07:48:33.916781+03:00",
+      "elapsed_seconds": 195.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 14,
+      "captured_at": "2026-08-13T07:48:48.917367+03:00",
+      "elapsed_seconds": 210.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 15,
+      "captured_at": "2026-08-13T07:49:03.915879+03:00",
+      "elapsed_seconds": 225.096,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 16,
+      "captured_at": "2026-08-13T07:49:18.917946+03:00",
+      "elapsed_seconds": 240.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 17,
+      "captured_at": "2026-08-13T07:49:33.916696+03:00",
+      "elapsed_seconds": 255.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 18,
+      "captured_at": "2026-08-13T07:49:48.918536+03:00",
+      "elapsed_seconds": 270.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 19,
+      "captured_at": "2026-08-13T07:50:03.918536+03:00",
+      "elapsed_seconds": 285.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 20,
+      "captured_at": "2026-08-13T07:50:18.919030+03:00",
+      "elapsed_seconds": 300.1,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 21,
+      "captured_at": "2026-08-13T07:50:33.917563+03:00",
+      "elapsed_seconds": 315.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 22,
+      "captured_at": "2026-08-13T07:50:48.916681+03:00",
+      "elapsed_seconds": 330.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 23,
+      "captured_at": "2026-08-13T07:51:03.923886+03:00",
+      "elapsed_seconds": 345.105,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 24,
+      "captured_at": "2026-08-13T07:51:18.917573+03:00",
+      "elapsed_seconds": 360.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 25,
+      "captured_at": "2026-08-13T07:51:33.911424+03:00",
+      "elapsed_seconds": 375.092,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 26,
+      "captured_at": "2026-08-13T07:51:48.910465+03:00",
+      "elapsed_seconds": 390.091,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 27,
+      "captured_at": "2026-08-13T07:52:03.909041+03:00",
+      "elapsed_seconds": 405.09,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 28,
+      "captured_at": "2026-08-13T07:52:18.909120+03:00",
+      "elapsed_seconds": 420.089,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 29,
+      "captured_at": "2026-08-13T07:52:33.909788+03:00",
+      "elapsed_seconds": 435.091,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 30,
+      "captured_at": "2026-08-13T07:52:48.908592+03:00",
+      "elapsed_seconds": 450.089,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 31,
+      "captured_at": "2026-08-13T07:53:03.908831+03:00",
+      "elapsed_seconds": 465.089,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 32,
+      "captured_at": "2026-08-13T07:53:18.910223+03:00",
+      "elapsed_seconds": 480.091,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 33,
+      "captured_at": "2026-08-13T07:53:33.908215+03:00",
+      "elapsed_seconds": 495.089,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 34,
+      "captured_at": "2026-08-13T07:53:48.917771+03:00",
+      "elapsed_seconds": 510.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 35,
+      "captured_at": "2026-08-13T07:54:03.916988+03:00",
+      "elapsed_seconds": 525.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 36,
+      "captured_at": "2026-08-13T07:54:18.917918+03:00",
+      "elapsed_seconds": 540.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 37,
+      "captured_at": "2026-08-13T07:54:33.917055+03:00",
+      "elapsed_seconds": 555.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 38,
+      "captured_at": "2026-08-13T07:54:48.917159+03:00",
+      "elapsed_seconds": 570.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 39,
+      "captured_at": "2026-08-13T07:55:03.917210+03:00",
+      "elapsed_seconds": 585.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 40,
+      "captured_at": "2026-08-13T07:55:18.916160+03:00",
+      "elapsed_seconds": 600.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 41,
+      "captured_at": "2026-08-13T07:55:33.918601+03:00",
+      "elapsed_seconds": 615.1,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 42,
+      "captured_at": "2026-08-13T07:55:48.918318+03:00",
+      "elapsed_seconds": 630.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 43,
+      "captured_at": "2026-08-13T07:56:03.908217+03:00",
+      "elapsed_seconds": 645.089,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 44,
+      "captured_at": "2026-08-13T07:56:18.919161+03:00",
+      "elapsed_seconds": 660.1,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 45,
+      "captured_at": "2026-08-13T07:56:33.918791+03:00",
+      "elapsed_seconds": 675.1,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 46,
+      "captured_at": "2026-08-13T07:56:48.917177+03:00",
+      "elapsed_seconds": 690.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 47,
+      "captured_at": "2026-08-13T07:57:03.918390+03:00",
+      "elapsed_seconds": 705.1,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 48,
+      "captured_at": "2026-08-13T07:57:18.917331+03:00",
+      "elapsed_seconds": 720.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 49,
+      "captured_at": "2026-08-13T07:57:33.917102+03:00",
+      "elapsed_seconds": 735.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 50,
+      "captured_at": "2026-08-13T07:57:48.918171+03:00",
+      "elapsed_seconds": 750.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 51,
+      "captured_at": "2026-08-13T07:58:03.916565+03:00",
+      "elapsed_seconds": 765.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 52,
+      "captured_at": "2026-08-13T07:58:18.920858+03:00",
+      "elapsed_seconds": 780.103,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 53,
+      "captured_at": "2026-08-13T07:58:33.910274+03:00",
+      "elapsed_seconds": 795.092,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 54,
+      "captured_at": "2026-08-13T07:58:48.916271+03:00",
+      "elapsed_seconds": 810.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 55,
+      "captured_at": "2026-08-13T07:59:03.916422+03:00",
+      "elapsed_seconds": 825.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 56,
+      "captured_at": "2026-08-13T07:59:18.917599+03:00",
+      "elapsed_seconds": 840.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 57,
+      "captured_at": "2026-08-13T07:59:33.923368+03:00",
+      "elapsed_seconds": 855.105,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 58,
+      "captured_at": "2026-08-13T07:59:48.916479+03:00",
+      "elapsed_seconds": 870.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 59,
+      "captured_at": "2026-08-13T08:00:03.916873+03:00",
+      "elapsed_seconds": 885.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 60,
+      "captured_at": "2026-08-13T08:00:18.918758+03:00",
+      "elapsed_seconds": 900.1,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 61,
+      "captured_at": "2026-08-13T08:00:33.917322+03:00",
+      "elapsed_seconds": 915.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 62,
+      "captured_at": "2026-08-13T08:00:48.916568+03:00",
+      "elapsed_seconds": 930.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 63,
+      "captured_at": "2026-08-13T08:01:03.907372+03:00",
+      "elapsed_seconds": 945.088,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 64,
+      "captured_at": "2026-08-13T08:01:18.917405+03:00",
+      "elapsed_seconds": 960.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 65,
+      "captured_at": "2026-08-13T08:01:33.917894+03:00",
+      "elapsed_seconds": 975.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 66,
+      "captured_at": "2026-08-13T08:01:48.917045+03:00",
+      "elapsed_seconds": 990.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 67,
+      "captured_at": "2026-08-13T08:02:03.915630+03:00",
+      "elapsed_seconds": 1005.096,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 68,
+      "captured_at": "2026-08-13T08:02:18.916974+03:00",
+      "elapsed_seconds": 1020.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 69,
+      "captured_at": "2026-08-13T08:02:33.917047+03:00",
+      "elapsed_seconds": 1035.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 70,
+      "captured_at": "2026-08-13T08:02:48.917123+03:00",
+      "elapsed_seconds": 1050.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 71,
+      "captured_at": "2026-08-13T08:03:03.916775+03:00",
+      "elapsed_seconds": 1065.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 72,
+      "captured_at": "2026-08-13T08:03:18.916584+03:00",
+      "elapsed_seconds": 1080.097,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 73,
+      "captured_at": "2026-08-13T08:03:33.911065+03:00",
+      "elapsed_seconds": 1095.093,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 74,
+      "captured_at": "2026-08-13T08:03:48.916786+03:00",
+      "elapsed_seconds": 1110.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 75,
+      "captured_at": "2026-08-13T08:04:03.915472+03:00",
+      "elapsed_seconds": 1125.096,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 76,
+      "captured_at": "2026-08-13T08:04:18.917668+03:00",
+      "elapsed_seconds": 1140.099,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 77,
+      "captured_at": "2026-08-13T08:04:33.917022+03:00",
+      "elapsed_seconds": 1155.098,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 78,
+      "captured_at": "2026-08-13T08:04:48.923304+03:00",
+      "elapsed_seconds": 1170.105,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 79,
+      "captured_at": "2026-08-13T08:05:03.918387+03:00",
+      "elapsed_seconds": 1185.1,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    },
+    {
+      "sample": 80,
+      "captured_at": "2026-08-13T08:05:18.924691+03:00",
+      "elapsed_seconds": 1200.106,
+      "entry_count": 1477,
+      "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+      "delta_counts": {
+        "changed": 0,
+        "new": 0,
+        "removed": 0
+      }
+    }
+  ]
+}
