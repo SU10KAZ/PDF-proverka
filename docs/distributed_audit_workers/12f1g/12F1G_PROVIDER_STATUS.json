@@ -1,0 +1,51 @@
+{
+  "schema": "auditmanager.12f1g.provider_status.v1",
+  "verification": "metadata-only probes in the exact Agent HOME/PATH/auth-mode environment; no model request",
+  "agent_auth_modes": {
+    "claude": "ambient_user",
+    "codex": "ambient_user",
+    "openrouter": "isolated_provider_home"
+  },
+  "providers": {
+    "claude": {
+      "installation_status": "installed",
+      "auth_state": "logged_in",
+      "plan_type": "max",
+      "inference_allowed": false,
+      "credential_mode": "0600"
+    },
+    "codex": {
+      "installation_status": "installed",
+      "auth_state": "logged_in",
+      "plan_type": "pro",
+      "inference_allowed": false,
+      "credential_mode": "0600"
+    },
+    "openrouter": {
+      "installation_status": "installed",
+      "auth_state": "logged_in",
+      "detail": "configured; validity deliberately not tested because that would be a paid network request",
+      "inference_allowed": false,
+      "credential_mode": "0600"
+    }
+  },
+  "center_heartbeat_states": {
+    "claude": "installed/logged_in/inference_allowed=false",
+    "codex": "installed/logged_in/inference_allowed=false",
+    "openrouter": "installed/logged_in/inference_allowed=false"
+  },
+  "provider_probe_grants_remaining": {
+    "claude": 0,
+    "codex": 0,
+    "openrouter": 0
+  },
+  "pipeline_inference_grants_remaining": 0,
+  "last_pipeline_inference": null,
+  "runtime_inference_calls": {
+    "claude": 0,
+    "codex": 0,
+    "openrouter": 0
+  },
+  "auth_preserved": true,
+  "verdict": "PASS"
+}

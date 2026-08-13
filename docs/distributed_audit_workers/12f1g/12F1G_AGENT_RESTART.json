@@ -1,0 +1,23 @@
+{
+  "schema": "auditmanager.12f1g.agent_restart.v1",
+  "idle_gate_repeated_immediately_before_restart": true,
+  "active_attempts_before": 0,
+  "active_executor_jobs_before": 0,
+  "event_outbox_unwritten_before": 0,
+  "pending_commands_before": 0,
+  "agent_unit": "audit-worker-audit-worker-11l-30b5e4d544-agent.service",
+  "old_agent_pid": 2048874,
+  "new_agent_pid": 2212836,
+  "agent_n_restarts_before": 0,
+  "agent_n_restarts_after": 0,
+  "restart_started_at": "2026-08-13T22:03:00.904164597+03:00",
+  "new_process_observed_at": "2026-08-13T22:03:00.954037831+03:00",
+  "restart_duration_ms": 50,
+  "executor_unit": "audit-worker-audit-worker-11l-30b5e4d544-executor.service",
+  "executor_pid_before": 1384880,
+  "executor_pid_after": 1384880,
+  "executor_restarted_or_signalled": false,
+  "executor_active_after": true,
+  "transport_after": "POLLING",
+  "verdict": "PASS"
+}

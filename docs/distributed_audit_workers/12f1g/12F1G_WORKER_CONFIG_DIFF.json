@@ -1,0 +1,26 @@
+{
+  "schema": "auditmanager.12f1g.worker_config_diff.v1",
+  "backup": "/home/auditworker_11l/audit-worker-11l/config/worker.env.before-12f1g-20260813T220006",
+  "backup_mode": "0600",
+  "backup_sha256": "b75851ca4b088930d791959e2092a7fbce397dbca121b2036becce43891b4799",
+  "current_mode": "0600",
+  "current_sha256": "e84354b269f072ccaff778ebf58f608f34ac524a93a5c8c2575bc3f5ffd7fdb9",
+  "changed_fields": {
+    "AUDIT_WORKER_DISPATCHER_URL": {
+      "before": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+      "after": "https://auditmanager.app"
+    },
+    "AUDIT_WORKER_PIPELINE_REVISION": {
+      "before": "e05f44ef4a0f732d8c3fb3b30e7dc8ed11939f4e",
+      "after": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f"
+    }
+  },
+  "non_target_hash_before": "356e5dc46f4149d9cd4b233eb9d742fb8f537c0efb03c0560205030d600164b1",
+  "non_target_hash_after": "356e5dc46f4149d9cd4b233eb9d742fb8f537c0efb03c0560205030d600164b1",
+  "only_required_fields_changed": true,
+  "transport_before": "POLLING",
+  "transport_after": "POLLING",
+  "old_trycloudflare_fallback_active": false,
+  "credential_contents_recorded": false,
+  "verdict": "PASS"
+}

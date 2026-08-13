@@ -1,0 +1,30 @@
+{
+  "schema": "auditmanager.12f1g.heartbeat_proof.v1",
+  "agent_restart_at": "2026-08-13T22:03:00+03:00",
+  "first_authenticated_sequence": {
+    "source": "176.12.77.31",
+    "registration_http": 200,
+    "reconcile_http": 200,
+    "heartbeat_http": 200,
+    "commands_http": 200,
+    "jobs_next_http": 204,
+    "first_seen_at": "2026-08-13T22:03:01+03:00"
+  },
+  "journal_aggregate_since_restart": {
+    "scope": "/api/v1/worker/*",
+    "requests": 1314,
+    "http_200": 1267,
+    "http_204": 47,
+    "http_401": 0,
+    "heartbeats": 42,
+    "registrations": 1,
+    "reconciliations": 4
+  },
+  "dns_endpoint": "auditmanager.app",
+  "tls_verified_by_client": true,
+  "protocol": "authenticated HTTPS polling",
+  "new_runtime_credential_used": true,
+  "old_trycloudflare_endpoint_used_after_cutover": false,
+  "authenticated_heartbeat": "PASS",
+  "verdict": "PASS"
+}

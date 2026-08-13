@@ -1,0 +1,23 @@
+{
+  "schema": "auditmanager.12f1g.rollback_status.v1",
+  "rollback_executed": false,
+  "rollback_required": false,
+  "patch_remains_active": true,
+  "immediate_rollback": {
+    "commit": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "release": "/home/coder/auditmanager/releases/ui-e2b98c3b",
+    "release_mode": "0555",
+    "manifest_sha256": "4434bd3e63f8ec72b37682078e787d04d9d82f13845a01b771acee66bd5177d2",
+    "physically_available": true
+  },
+  "deep_rollback": {
+    "commit": "46bcd527065aff074ca5fe730e3594e982d080d2",
+    "release": "/home/coder/auditmanager/releases/baseline-46bcd527",
+    "release_mode": "0555",
+    "manifest_sha256": "568f5a5a43cf5e0c7114543e6bf7f96ec49cd20a1c0a8ff4eed1f7de24284281",
+    "physically_available": true
+  },
+  "prechange_backup": "/home/coder/auditmanager/backups/12f1g-20260813T213817+0300",
+  "schema_13_additive_compatibility_prevalidated": true,
+  "verdict": "READY_NOT_USED"
+}

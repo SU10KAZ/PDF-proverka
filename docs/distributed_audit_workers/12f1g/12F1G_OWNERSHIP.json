@@ -1,0 +1,16 @@
+{
+  "schema": "auditmanager.12f1g.ownership.v1",
+  "worker_id": "wrk_19c87718",
+  "transport_mode": "polling",
+  "ownership": "POLLING",
+  "worker_local_transport": "polling",
+  "center_transport_session_visible": true,
+  "active_grpc_connection_id": null,
+  "gateway_started": false,
+  "listener_8443": false,
+  "grpc_cutover_performed": false,
+  "control_path": "176.12.77.31 -> auditmanager.app:443 -> production Center polling API",
+  "cloudflared_is_production_public_http_ingress": true,
+  "cloudflared_is_worker_control_transport": false,
+  "verdict": "PASS"
+}
