@@ -1,0 +1,9 @@
+{
+  "schema": "auditmanager.12f1d.ownership.v1",
+  "local_worker_transport": "POLLING",
+  "center_transport_ownership_visible": false,
+  "center_transport_ownership": null,
+  "grpc_stream_used": false,
+  "gateway_8443_started": false,
+  "ownership_gate": "BLOCKED_UNREGISTERED"
+}

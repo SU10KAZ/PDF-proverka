@@ -1,0 +1,17 @@
+{
+  "schema": "auditmanager.12f1d.worker_config_diff.v1",
+  "status": "NOT_EXECUTED_BLOCKED",
+  "center_url_before": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+  "center_url_after": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+  "expected_center_url_after_success": "https://auditmanager.app",
+  "worker_id_before": "wrk_19c87718",
+  "worker_id_after": "wrk_19c87718",
+  "instance_id_before": "inst_boot_e129036dddf5c59049080ddd15624e72",
+  "instance_id_after": "inst_boot_e129036dddf5c59049080ddd15624e72",
+  "runtime_credential_rotated": false,
+  "transport_before": "POLLING",
+  "transport_after": "POLLING",
+  "config_or_state_files_changed": false,
+  "atomic_backup_created": false,
+  "reason": "No safe identity-preserving production enrollment exists in the exact candidate."
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "auditmanager.12f1d.observation.v1",
+  "required_post_authenticated_heartbeat_seconds": 600,
+  "post_authenticated_heartbeat_observation_started": false,
+  "actual_post_authenticated_heartbeat_seconds": 0,
+  "observation_pass": false,
+  "reason": "Authenticated heartbeat was not attempted because enrollment stopped at the identity contract gate.",
+  "read_only_center_stability": {
+    "backend_pid": 2214574,
+    "candidate_commit": "4767d0bf83fcb99ee69267d94324495b92954b41",
+    "active": true,
+    "n_restarts": 0,
+    "health_http": 200
+  }
+}

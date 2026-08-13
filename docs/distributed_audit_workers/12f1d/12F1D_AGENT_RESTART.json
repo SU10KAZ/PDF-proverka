@@ -1,0 +1,12 @@
+{
+  "schema": "auditmanager.12f1d.agent_restart.v1",
+  "status": "NOT_EXECUTED_BLOCKED",
+  "agent_pid_before": 2048874,
+  "agent_pid_after": 2048874,
+  "agent_active_at_final_read_only_check": true,
+  "executor_pid_before": 1384880,
+  "executor_pid_after": 1384880,
+  "executor_restarted_or_signalled": false,
+  "restart_timestamp": null,
+  "reason": "Enrollment contract hard stop occurred before local mutation or restart precondition."
+}
