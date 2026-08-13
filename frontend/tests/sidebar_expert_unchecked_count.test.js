@@ -46,6 +46,7 @@ describe('счётчик непроверенных экспертами про�
         expect(css).toContain('border-bottom: 1px solid currentColor;');
         expect(css).toContain('font-size: 9px;');
         expect(css).toContain('box-shadow: none;');
+        expect(css).toContain('align-items: baseline;');
     });
 
     it('обновляет список проектов сразу после сохранения экспертных решений', () => {
