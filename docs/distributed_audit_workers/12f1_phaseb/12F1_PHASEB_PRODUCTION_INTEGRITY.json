@@ -1,0 +1,70 @@
+{
+  "schema": "auditmanager.12f1.phaseb.production_integrity.v1",
+  "checked_at": "2026-08-13T10:10:16.748360148+03:00",
+  "production_checkout": {
+    "manifest_paths": 1477,
+    "manifest_sha256_before": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+    "manifest_sha256_after": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+    "modified_by_phase_b": false
+  },
+  "backend": {
+    "pid": 2214574,
+    "candidate_active": true,
+    "n_restarts": 0,
+    "health": "PASS",
+    "rollback_executed": false
+  },
+  "production_data": {
+    "existing_audit_data_mutated_by_phase_b": false,
+    "production_dotenv_sha256_before": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+    "production_dotenv_sha256_after": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+    "intended_new_distributed_db_only": true
+  },
+  "network_and_proxies": {
+    "production_cloudflared_pid_before": 1263127,
+    "production_cloudflared_pid_after": 1263127,
+    "production_cloudflared_target": "http://127.0.0.1:8081",
+    "production_cloudflared_modified_or_restarted": false,
+    "nginx_site_sha256_before": "a6d64f789c0f9d3cd91d9c492a7638d269a3cdd1f5fd17176b049525f3f54ca2",
+    "nginx_site_sha256_after": "a6d64f789c0f9d3cd91d9c492a7638d269a3cdd1f5fd17176b049525f3f54ca2",
+    "nginx_conf_sha256_before": "d7be180d12cb332090cf4a0e8de780bd30e7f59fd0ffa4ad42be0e70e6bc6348",
+    "nginx_conf_sha256_after": "d7be180d12cb332090cf4a0e8de780bd30e7f59fd0ffa4ad42be0e70e6bc6348",
+    "nginx_modified": false,
+    "caddy_modified": false,
+    "ufw_command_or_mutation_by_phase_b": false,
+    "ufw_service_final": "active/enabled",
+    "ufw_ipv4_rules_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ufw_ipv6_rules_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "ufw_ipv4_rules_mtime": "2026-08-12T15:10:46.699311313+03:00",
+    "expected_8443_rule": "ALLOW IN from 176.12.77.31 only",
+    "global_8443_allow_created": false,
+    "9443_rule_created": false,
+    "listener_8443": false,
+    "listener_9443": false
+  },
+  "ufw_verification_note": "sudo -n ufw status numbered required interactive authentication; equivalent final read-only evidence was obtained from the unchanged UFW rules-file hashes/content plus active/enabled service state. The IPv4 rule is -s 176.12.77.31 --dport 8443; no 9443 or global 8443 rule exists.",
+  "worker_31": {
+    "agent_before": 1575036,
+    "agent_after_url_probe_and_restore": 2048874,
+    "agent_active": true,
+    "executor_before": 1384880,
+    "executor_after": 1384880,
+    "executor_untouched": true,
+    "transport_before": "POLLING",
+    "transport_after": "POLLING",
+    "final_config_restored_exactly": true
+  },
+  "intended_changes": [
+    "durable immutable baseline and candidate release layout",
+    "protected external production config boundary",
+    "user systemd backend supervision plus external boot wrapper/watchdog and one backend crontab-line replacement",
+    "canonical empty distributed workers database",
+    "historical backend to exact immutable candidate restart",
+    "temporary URL-only polling probe followed by exact Worker config restore"
+  ],
+  "unexplained_production_changes": 0,
+  "real_audit_started": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "production_center_integrity": "PASS",
+  "full_phase_b_acceptance": "BLOCKED_BY_WORKER_AUTH_PROVISIONING"
+}

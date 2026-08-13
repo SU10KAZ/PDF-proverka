@@ -1,0 +1,46 @@
+[Unit]
+Description=AuditManager immutable production backend
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=/home/coder/auditmanager/current/app
+EnvironmentFile=/home/coder/.config/auditmanager/backend.secrets.env
+EnvironmentFile=/home/coder/.config/auditmanager/backend.phaseb.env
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStartPre=/usr/bin/test -L /home/coder/auditmanager/current
+ExecStartPre=/usr/bin/test -f /home/coder/auditmanager/current/release-manifest.json
+ExecStart=/home/coder/auditmanager/current/venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081
+Restart=on-failure
+RestartSec=5s
+KillSignal=SIGTERM
+TimeoutStopSec=120s
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+# PrivateDevices, ProtectKernelModules and ProtectKernelLogs are unavailable
+# in this host's unprivileged user manager (status 218/CAPABILITIES). The
+# remaining namespace/no-new-privileges controls were individually verified.
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+# CapabilityBoundingSet/AmbientCapabilities are intentionally omitted here:
+# this is a per-user unit and the host user manager cannot perform a second
+# capability drop (systemd status 218/CAPABILITIES). The process already runs
+# as unprivileged uid/gid 1001 and NoNewPrivileges remains enforced.
+ReadOnlyPaths=/home/coder/auditmanager/releases
+ReadWritePaths=/home/coder/projects/PDF-proverka
+ReadWritePaths=/var/lib/auditmanager/distributed_workers
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=default.target

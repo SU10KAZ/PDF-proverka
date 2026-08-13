@@ -1,0 +1,51 @@
+{
+  "schema": "auditmanager.12f1.phaseb.before.v1",
+  "captured_at": "2026-08-13T09:25:01+03:00",
+  "production_checkout": {
+    "path": "/home/coder/projects/PDF-proverka",
+    "release_scope_paths": 1477,
+    "release_scope_manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+    "writers": 0,
+    "modified_by_phase_b": false
+  },
+  "center": {
+    "backend_pid": 1968811,
+    "command": "/opt/py312/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+    "cwd": "/home/coder/projects/PDF-proverka",
+    "listener_8081": true,
+    "api_info_http": 200,
+    "reproducible_immutable_release": false,
+    "systemd_user_service": false,
+    "active_audits": 0,
+    "batch_active": false,
+    "known_unsafe_critical_operation": false
+  },
+  "distributed": {
+    "persistent_root": "/var/lib/auditmanager/distributed_workers",
+    "workers_db_existed": false,
+    "scheduler_expected_default": "DISABLED",
+    "unexpected_jobs": 0
+  },
+  "worker_31": {
+    "transport": "POLLING",
+    "agent_pid": 1575036,
+    "agent_active": true,
+    "executor_pid": 1384880,
+    "executor_active": true,
+    "endpoint": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+    "endpoint_dns": "UNRESOLVABLE",
+    "active_attempts": 0,
+    "active_processes": 0,
+    "unwritten_event_outbox": 0,
+    "pending_cancel": 0
+  },
+  "network": {
+    "cloudflared_pid": 1263127,
+    "cloudflared_target": "http://127.0.0.1:8081",
+    "listener_8443": false,
+    "listener_9443": false
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "hard_idle_gate": "PASS",
+  "deploy_authorized": true
+}

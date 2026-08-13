@@ -1,0 +1,56 @@
+{
+  "schema": "auditmanager.12f1.phaseb.polling_probe.v1",
+  "host": "176.12.77.31",
+  "worker_id": "wrk_19c87718",
+  "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+  "transport_before": "POLLING",
+  "transport_after": "POLLING",
+  "endpoint_before": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+  "probe_endpoint": "https://auditmanager.app",
+  "endpoint_final": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+  "url_only_change_attempted": true,
+  "all_other_worker_config_changed": false,
+  "config_backup": {
+    "path": "/home/auditworker_11l/audit-worker-11l/config/worker.env.before-12f1-phaseb-20260813T1000",
+    "mode": "0600",
+    "sha256_observed_prefix": "b75851"
+  },
+  "config_probe_sha256_observed_prefix": "02affa",
+  "config_final_sha256_observed_prefix": "b75851",
+  "agent": {
+    "pid_before": 1575036,
+    "pid_during_probe": 2047981,
+    "pid_final": 2048874,
+    "final_active": true,
+    "final_n_restarts": 0,
+    "endpoint_probe_rolled_back": true
+  },
+  "executor": {
+    "pid_before": 1384880,
+    "pid_after": 1384880,
+    "restarted_or_signalled": false
+  },
+  "idle_state": {
+    "active_attempts": 0,
+    "active_processes": 0,
+    "unwritten_event_outbox": 0,
+    "pending_cancel": 0
+  },
+  "physical_probe": {
+    "dns_tls_api_to_auditmanager_app": "PASS",
+    "direct_connection": "176.12.77.31:34400 -> 176.12.77.128:443",
+    "center_observed_source": "176.12.77.31",
+    "requests_observed": ["registration", "reconcile", "heartbeat", "jobs", "commands"],
+    "http_result": 401,
+    "center_workers": 0,
+    "center_tokens": 0,
+    "center_worker_identity_present": false,
+    "classification": "PRESERVED_WORKER_IDENTITY_TOKEN_NOT_PROVISIONED_IN_NEW_CENTER_DB",
+    "candidate_protocol_or_network_defect": false
+  },
+  "fresh_authenticated_heartbeat": false,
+  "worker_ownership_visible_at_center": false,
+  "pending_result_visible_at_center": false,
+  "final_reason_for_restore": "Current authorization permits only a URL edit; it forbids worker identity/auth changes. The failed authenticated probe was stopped and the exact original URL/config restored.",
+  "required_follow_up_authority": "securely migrate the preserved production polling identity/token into the new Center, or authorize one-time re-enrollment/token rotation"
+}

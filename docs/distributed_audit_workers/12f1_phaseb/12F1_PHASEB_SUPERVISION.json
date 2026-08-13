@@ -1,0 +1,49 @@
+{
+  "schema": "auditmanager.12f1.phaseb.supervision.v1",
+  "installed_at": "2026-08-13T09:36:12+03:00",
+  "service": {
+    "path": "/home/coder/.config/systemd/user/auditmanager-backend.service",
+    "sha256": "75fe5691d6cbe73013959ba0d8fc5e249bfc7e4fa01592b41af61f197ff0033c",
+    "mode": "0644",
+    "enabled": true,
+    "identity": "coder:coder",
+    "exec_start": "/home/coder/auditmanager/current/venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+    "working_directory": "/home/coder/auditmanager/current/app",
+    "umask": "0077",
+    "no_new_privileges": true,
+    "protect_system": "strict",
+    "protect_home": "read-only"
+  },
+  "config": {
+    "secret_env_path": "/home/coder/.config/auditmanager/backend.secrets.env",
+    "secret_env_sha256": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+    "secret_env_mode": "0600",
+    "nonsecret_env_path": "/home/coder/.config/auditmanager/backend.phaseb.env",
+    "nonsecret_env_sha256": "3837e7c45afc077cc5d5fc979e5ae8c4663c00c1ffe60c416f18bf70a3f6788c",
+    "nonsecret_env_mode": "0600",
+    "production_dotenv_modified": false,
+    "reusable_bootstrap_secret_fallback": "ABSENT"
+  },
+  "boot_wrapper": {
+    "path": "/home/coder/auditmanager/bin/boot-backend.sh",
+    "sha256": "d1c1c40c1b5eb6ee374809c661b58e9f4e7d246e6e97f15cfc07a6ae6555f4c9",
+    "mode": "0755",
+    "role": "start only the enabled immutable-release systemd service"
+  },
+  "watchdog": {
+    "path": "/home/coder/bin/webapp-watchdog.sh",
+    "sha256": "0dae6c4638f5d886d647cc83adba853fc1c0a5bcc328ff48cf4f83ccdefff330",
+    "mode": "0755",
+    "role": "report inactive enabled backend service and supervise the pre-existing production cloudflared; never launch a mutable checkout"
+  },
+  "crontab": {
+    "before_backend_line": "@reboot /home/coder/projects/PDF-proverka/scripts/server/start_server_deploy.sh >> /home/coder/.cloudflared/logs/webapp-reboot.log 2>&1",
+    "after_backend_line": "@reboot /home/coder/auditmanager/bin/boot-backend.sh >> /home/coder/.cloudflared/logs/webapp-reboot.log 2>&1",
+    "after_sha256": "092e39d453fac247a08b42353a2fdf89707846b593dc9d0d466214407d178f25",
+    "other_entries_changed": false
+  },
+  "linger_enabled": true,
+  "double_launch_protection": "PASS",
+  "mutable_checkout_launch_path_remaining_in_active_supervision": false,
+  "rollback_exact": true
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "auditmanager.12f1.12f_resume_gate.v1",
+  "evaluated_at": "2026-08-13T10:10:16.748360148+03:00",
+  "checks": {
+    "production_backend_exact_candidate": true,
+    "backend_health_pass": true,
+    "existing_api_pass": true,
+    "production_db_pass": true,
+    "distributed_router_pass": true,
+    "workers_db_pass": true,
+    "scheduler_safe_default": true,
+    "polling_protocol_network_pass": true,
+    "physical_polling_worker_connected": false,
+    "worker_idle_state_visible": false,
+    "transport_ownership_visible": false,
+    "transport_ownership_polling": false,
+    "event_ack_state_visible": false,
+    "pending_result_visible": false,
+    "pending_cancel_visible": false,
+    "no_unexpected_jobs": true,
+    "production_integrity_pass": true,
+    "provider_inference_zero": true,
+    "observation_pass": true
+  },
+  "physical_worker_local_facts": {
+    "transport": "POLLING",
+    "active_attempts": 0,
+    "unwritten_event_outbox": 0,
+    "pending_cancel": 0,
+    "agent_active": true,
+    "executor_active": true
+  },
+  "center_visibility_note": "Local idle facts do not satisfy the gate's Center-visible requirements. Authentication failed before heartbeat/state registration because the new Center has no preserved Worker identity/token.",
+  "blocker": "Secure migration of the preserved production polling Worker identity/token, or explicit authorization for one-time re-enrollment/token rotation, is required. Phase B authorization allowed only a Center URL change and explicitly prohibited auth/identity changes.",
+  "candidate_rollback_required": false,
+  "12F_RESUME_ALLOWED": false,
+  "verdict": "BLOCKED"
+}
