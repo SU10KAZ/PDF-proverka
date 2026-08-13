@@ -37,12 +37,15 @@ describe('счётчик непроверенных экспертами про�
         expect(countExpertUnchecked(null)).toBe(0);
     });
 
-    it('показывает красный счётчик перед общим и для всех разделов, и для каждого раздела', () => {
-        expect((html.match(/nav-sub-badge--expert-unchecked/g) || []).length).toBe(2);
-        expect(html).toContain('{{ expertUncheckedCount(projects) }}');
+    it('показывает только ненулевой маленький счётчик у конкретных разделов', () => {
+        expect((html.match(/nav-sub-badge--expert-unchecked/g) || []).length).toBe(1);
+        expect(html).not.toContain('{{ expertUncheckedCount(projects) }}');
+        expect(html).toContain('v-if="expertUncheckedCount(items) > 0"');
         expect(html).toContain('{{ expertUncheckedCount(items) }}');
         expect(css).toContain('.nav-sub-badge--expert-unchecked');
-        expect(css).toContain('border-color: var(--red);');
+        expect(css).toContain('border-bottom: 1px solid currentColor;');
+        expect(css).toContain('font-size: 9px;');
+        expect(css).toContain('box-shadow: none;');
     });
 
     it('обновляет список проектов сразу после сохранения экспертных решений', () => {
