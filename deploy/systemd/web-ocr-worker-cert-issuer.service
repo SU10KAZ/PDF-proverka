@@ -7,9 +7,10 @@ Before=web-ocr-agent-gateway.service
 Type=simple
 User=web-ocr-cert-issuer
 Group=web-ocr-agent-gateway
-WorkingDirectory=/opt/auditmanager/current
+WorkingDirectory=/opt/auditmanager/current/app
 EnvironmentFile=/etc/auditmanager/worker-issuer.env
-ExecStart=/opt/auditmanager/venv-gateway/bin/python -m backend.app.security.issuer_service
+Environment=PYTHONPATH=/opt/auditmanager/current/app
+ExecStart=/opt/auditmanager/current/venv/bin/python -m backend.app.security.issuer_service
 Restart=on-failure
 RestartSec=5s
 UMask=0007
