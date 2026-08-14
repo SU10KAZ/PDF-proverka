@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import errno
 import grp
 import json
 import os
@@ -26,6 +27,33 @@ from backend.app.services.distributed_workers.settings import (
 )
 from scripts import manage_distributed_worker_state as state_tool
 from tests.distributed_workers_helpers import make_center_app
+
+
+def _set_access_acl(
+    path: Path,
+    *,
+    owner_permissions: int,
+    group_permissions: int,
+    mask_permissions: int,
+    other_permissions: int,
+    named_users: tuple[tuple[int, int], ...] = (),
+    named_groups: tuple[tuple[int, int], ...] = (),
+) -> None:
+    undefined = 0xFFFFFFFF
+    entries = [(0x01, owner_permissions, undefined)]
+    entries.extend((0x02, permissions, uid) for uid, permissions in named_users)
+    entries.append((0x04, group_permissions, undefined))
+    entries.extend((0x08, permissions, gid) for gid, permissions in named_groups)
+    entries.extend(
+        (
+            (0x10, mask_permissions, undefined),
+            (0x20, other_permissions, undefined),
+        )
+    )
+    raw = bytearray(struct.pack("<I", 2))
+    for entry in entries:
+        raw.extend(struct.pack("<HHI", *entry))
+    os.setxattr(path, "system.posix_acl_access", bytes(raw))
 
 
 def _seed_private_state(monkeypatch, data_dir: Path) -> None:
@@ -212,6 +240,146 @@ def test_named_access_acl_is_rejected(monkeypatch, tmp_path):
     os.setxattr(settings.incoming_dir, "system.posix_acl_access", bytes(raw))
     with pytest.raises(DistributedWorkersConfigError, match="named access ACL"):
         database.ensure_ready(settings)
+
+
+def test_prepare_canonicalizes_production_like_stale_named_acl_before_receipt(
+    monkeypatch, tmp_path
+):
+    settings, args = _prepare(monkeypatch, tmp_path / "stale-production" / "state")
+    service_uid = os.getuid()
+    args.service_uid = [service_uid]
+
+    # Parent traversal is a distinct contract: its required execute-only
+    # service ACL must survive state-object canonicalization.
+    os.setxattr(
+        settings.data_dir.parent,
+        "system.posix_acl_access",
+        state_tool._access_acl(settings.data_dir.parent, (service_uid,)),
+    )
+
+    # Exact production semantics after e601 rollback: chmod makes the ACL mask
+    # zero but leaves historical named records physically present.
+    settings.data_dir.chmod(0o700)
+    settings.db_path.chmod(0o600)
+    _set_access_acl(
+        settings.data_dir,
+        owner_permissions=0o7,
+        group_permissions=0o0,
+        mask_permissions=0o0,
+        other_permissions=0o0,
+        named_users=((service_uid, 0o7),),
+    )
+    _set_access_acl(
+        settings.db_path,
+        owner_permissions=0o6,
+        group_permissions=0o0,
+        mask_permissions=0o0,
+        other_permissions=0o0,
+        named_users=((service_uid, 0o6),),
+    )
+    state_entries = state_permissions._decode_acl(
+        os.getxattr(settings.data_dir, "system.posix_acl_access"),
+        settings.data_dir,
+        "access",
+    )
+    assert state_entries[(0x02, service_uid)] == 0o7
+    assert state_entries[(0x10, 0xFFFFFFFF)] == 0o0
+
+    receipt_events: list[str] = []
+    original_write_receipt = state_tool._write_receipt
+
+    def write_receipt_last(path: Path, payload: bytes) -> None:
+        # The strict host validator must already pass before trust is minted.
+        state_tool._validate_host_state(args, require_receipt=False)
+        assert state_permissions._xattr(settings.data_dir, "system.posix_acl_access") is None
+        assert state_permissions._xattr(settings.db_path, "system.posix_acl_access") is None
+        receipt_events.append("canonical-state-validated")
+        original_write_receipt(path, payload)
+
+    monkeypatch.setattr(state_tool, "_write_receipt", write_receipt_last)
+    state_tool.prepare(args)
+    state_tool.validate(args)
+
+    assert receipt_events == ["canonical-state-validated"]
+    state_tool._validate_parent_acl(settings.data_dir.parent, (service_uid,))
+    assert stat.S_IMODE(settings.data_dir.stat().st_mode) == 0o2770
+    assert stat.S_IMODE(settings.db_path.stat().st_mode) == 0o660
+    assert state_permissions._xattr(settings.data_dir, "system.posix_acl_access") is None
+    assert state_permissions._xattr(settings.db_path, "system.posix_acl_access") is None
+    assert (
+        state_permissions._decode_acl(
+            os.getxattr(settings.data_dir, "system.posix_acl_default"),
+            settings.data_dir,
+            "default",
+        )
+        == state_permissions._EXPECTED_DEFAULT_ACL
+    )
+
+
+def test_prepare_is_repeatable_after_e601_private_mode_rollback(monkeypatch, tmp_path):
+    settings, args = _prepare(monkeypatch, tmp_path / "repeat-transition" / "state")
+    for _iteration in range(3):
+        for directory in database._state_directories(settings):
+            directory.chmod(0o700)
+        for path in state_tool._known_database_files(settings.data_dir):
+            path.chmod(0o600)
+
+        state_tool.prepare(args)
+        state_tool.validate(args)
+
+        assert stat.S_IMODE(settings.data_dir.stat().st_mode) == 0o2770
+        assert stat.S_IMODE(settings.db_path.stat().st_mode) == 0o660
+        assert state_permissions._xattr(settings.data_dir, "system.posix_acl_access") is None
+        assert state_permissions._xattr(settings.db_path, "system.posix_acl_access") is None
+
+
+def test_prepare_fully_replaces_unexpected_named_acl_but_validator_stays_strict(
+    monkeypatch, tmp_path
+):
+    settings, args = _prepare(monkeypatch, tmp_path / "unexpected-acl" / "state")
+    _set_access_acl(
+        settings.data_dir,
+        owner_permissions=0o7,
+        group_permissions=0o0,
+        mask_permissions=0o0,
+        other_permissions=0o0,
+        named_groups=((os.getgid(), 0o7),),
+    )
+
+    state_tool.prepare(args)
+    state_tool.validate(args)
+    assert state_permissions._xattr(settings.data_dir, "system.posix_acl_access") is None
+
+    # Reintroducing any named access principal after preparation is still a
+    # hard validation failure; prepare canonicalizes instead of weakening it.
+    _set_access_acl(
+        settings.data_dir,
+        owner_permissions=0o7,
+        group_permissions=0o7,
+        mask_permissions=0o7,
+        other_permissions=0o0,
+        named_groups=((os.getgid(), 0o7),),
+    )
+    with pytest.raises(DistributedWorkersConfigError, match="named access ACL"):
+        state_tool.validate_host(args)
+
+
+def test_prepare_fails_closed_if_access_acl_cannot_be_canonicalized(
+    monkeypatch, tmp_path
+):
+    settings, args = _prepare(monkeypatch, tmp_path / "acl-removal-denied" / "state")
+    receipt_before = args.receipt.read_bytes()
+    original_removexattr = state_tool.os.removexattr
+
+    def deny_state_acl_removal(path, name, *, follow_symlinks=True):
+        if Path(path) == settings.data_dir and name == "system.posix_acl_access":
+            raise OSError(errno.EPERM, "isolated ACL removal denial")
+        return original_removexattr(path, name, follow_symlinks=follow_symlinks)
+
+    monkeypatch.setattr(state_tool.os, "removexattr", deny_state_acl_removal)
+    with pytest.raises(SystemExit, match="cannot canonicalize shared-state access ACL"):
+        state_tool.prepare(args)
+    assert args.receipt.read_bytes() == receipt_before
 
 
 def test_inherited_sqlite_access_acl_uses_mask_for_group_mode(monkeypatch, tmp_path):

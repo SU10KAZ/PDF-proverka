@@ -7,6 +7,7 @@ runtime consumes the root-owned receipt and remains validation-only.
 from __future__ import annotations
 
 import argparse
+import errno
 import grp
 import json
 import os
@@ -71,6 +72,29 @@ def _access_acl(parent: Path, service_uids: tuple[int, ...]) -> bytes:
     for entry in entries:
         raw.extend(struct.pack("<HHI", *entry))
     return bytes(raw)
+
+
+def _canonicalize_access_acl(path: Path) -> None:
+    """Remove any extended access ACL before installing target mode bits.
+
+    The canonical shared-state contract has no named access principals on the
+    state directories or SQLite objects.  Legacy e601 chmod(0700/0600)
+    transitions can mask named entries to zero without deleting their ACL
+    records, so chmod alone cannot perform this transition.  Removing the
+    access ACL first is fail-closed and avoids briefly activating stale named
+    entries when the group mode is subsequently broadened to 2770/0660.
+
+    POSIX base owner/group/other access is represented by the inode mode once
+    the extended ACL is absent.  The strict validators remain responsible for
+    rejecting any non-canonical ACL that survives or is reintroduced.
+    """
+    try:
+        os.removexattr(path, _ACL_ACCESS, follow_symlinks=False)
+    except OSError as exc:
+        if exc.errno != errno.ENODATA:
+            raise SystemExit(
+                f"cannot canonicalize shared-state access ACL: {path}: {exc}"
+            ) from exc
 
 
 def _validate_parent_acl(parent: Path, service_uids: tuple[int, ...]) -> None:
@@ -305,11 +329,13 @@ def prepare(args: argparse.Namespace) -> None:
         path = data_dir / name if name else data_dir
         path.mkdir(mode=0o700, exist_ok=True)
         _plain(path, directory=True)
+        _canonicalize_access_acl(path)
         os.chown(path, args.owner_uid, args.shared_gid, follow_symlinks=False)
         os.chmod(path, SHARED_DIRECTORY_MODE, follow_symlinks=False)
         os.setxattr(path, _ACL_DEFAULT, encode_default_acl(), follow_symlinks=False)
     for path in _known_database_files(data_dir):
         _plain(path, directory=False)
+        _canonicalize_access_acl(path)
         os.chown(path, -1, args.shared_gid, follow_symlinks=False)
         os.chmod(path, SHARED_FILE_MODE, follow_symlinks=False)
     _validate_host_state(args, require_receipt=False)
