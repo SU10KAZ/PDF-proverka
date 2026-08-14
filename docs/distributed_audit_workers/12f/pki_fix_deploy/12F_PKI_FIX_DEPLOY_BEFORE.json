@@ -1,0 +1,65 @@
+{
+  "schema": "auditmanager.12f.pki_fix_deploy_before.v1",
+  "captured_at": "2026-08-14T07:23:22.032326+03:00",
+  "production_release": {
+    "release_id": "reenrollment-e6015d33",
+    "commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+    "tree": "00e75c545eb314ff0bac82990b9ad5f11050e476",
+    "path": "/home/coder/auditmanager/releases/reenrollment-e6015d33",
+    "manifest_sha256": "9c66b398f7cee0323c47d1e0e9d0a403aef60492713095b3b4a03ad81491580a"
+  },
+  "backend": {
+    "active": true,
+    "pid": 2379476,
+    "n_restarts": 0,
+    "cwd": "/home/coder/auditmanager/releases/reenrollment-e6015d33/app",
+    "api_info_http": 200
+  },
+  "center_db": {
+    "path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "schema": 13,
+    "integrity": "ok",
+    "journal_mode": "wal",
+    "workers": 1,
+    "logical_jobs": 0,
+    "attempts": 0,
+    "offers": 0,
+    "commands": 0,
+    "certificates": 0
+  },
+  "worker": {
+    "host": "176.12.77.31",
+    "worker_id": "wrk_19c87718",
+    "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+    "registration_status": "approved",
+    "connection_status": "online",
+    "worker_state": "idle",
+    "transport": "polling",
+    "ownership": "polling",
+    "agent_pid": 2212836,
+    "agent_n_restarts": 0,
+    "executor_pid": 1384880,
+    "executor_n_restarts": 0,
+    "active_attempts": 0,
+    "active_processes": 0,
+    "event_outbox_unwritten": 0,
+    "pending_commands": 0
+  },
+  "safety": {
+    "scheduler_enabled": false,
+    "source_write_fds": 0,
+    "external_deployers": 0,
+    "issuer_active": false,
+    "gateway_active": false,
+    "listener_8443": false,
+    "listener_9443": false,
+    "ufw_ipv4_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ufw_ipv6_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "cloudflared_pid": 1263127,
+    "cloudflared_target": "http://127.0.0.1:8081",
+    "nginx_master_pid": 57095
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "hard_gates_passed": true,
+  "verdict": "PASS"
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "auditmanager.12f.pki_fix_backend_restart.v1",
+  "deploy_restart": {
+    "mechanism": "systemctl --user restart auditmanager-backend.service",
+    "kill_signal": "SIGTERM",
+    "sigkill_used": false,
+    "old_pid": 2379476,
+    "new_candidate_pid": 2521866,
+    "invoked_at": "2026-08-14T07:26:13.693777515+03:00",
+    "candidate_exec_started": "2026-08-14T07:26:35+03:00",
+    "first_api_200": "2026-08-14T07:26:37.431634062+03:00",
+    "measured_restart_to_first_200_ms": 23731
+  },
+  "rollback_restart": {
+    "mechanism": "systemctl --user restart auditmanager-backend.service",
+    "kill_signal": "SIGTERM",
+    "sigkill_used": false,
+    "failed_candidate_pid": 2521866,
+    "rollback_pid": 2522606,
+    "invoked_at": "2026-08-14T07:27:23.430209168+03:00",
+    "first_api_200_observed_in_journal": "2026-08-14T07:27:25+03:00",
+    "rollback_restart_to_first_200": "approximately 2 seconds; journal resolution is one second",
+    "n_restarts": 0
+  },
+  "worker_agent_restarted": false,
+  "worker_executor_restarted": false,
+  "cloudflared_restarted": false,
+  "nginx_restarted": false,
+  "verdict": "FAIL_ROLLED_BACK"
+}

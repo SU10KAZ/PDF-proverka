@@ -1,0 +1,31 @@
+{
+  "schema": "auditmanager.12f.pki_fix_issuer_state.v1",
+  "issuer": {
+    "unit": "web-ocr-worker-cert-issuer.service",
+    "active_before": false,
+    "active_during_candidate": false,
+    "active_after_rollback": false,
+    "main_pid": 0,
+    "n_restarts_recorded_from_prior_failed_recovery": 12,
+    "exec_start": "/opt/auditmanager/releases/reenrollment-e6015d33/venv/bin/python -m backend.app.security.issuer_service",
+    "working_directory": "/opt/auditmanager/releases/reenrollment-e6015d33/app",
+    "definition_updated_by_this_deploy": false,
+    "started_by_this_deploy": false
+  },
+  "gateway": {
+    "unit": "auditmanager-agent-gateway.service",
+    "enabled": false,
+    "active_before": false,
+    "active_during_candidate": false,
+    "active_after_rollback": false,
+    "main_pid": 0,
+    "exec_start": "/opt/auditmanager/releases/reenrollment-e6015d33/venv/bin/python -m backend.app.agent_gateway",
+    "working_directory": "/opt/auditmanager/releases/reenrollment-e6015d33/app",
+    "definition_updated_by_this_deploy": false,
+    "started_by_this_deploy": false
+  },
+  "listeners": {"tcp_8443": false, "tcp_9443": false},
+  "pki_preparation_script_executed": false,
+  "worker_certificate_issued": false,
+  "verdict": "INACTIVE_EXPECTED"
+}

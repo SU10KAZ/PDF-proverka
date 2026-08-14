@@ -1,0 +1,46 @@
+{
+  "schema": "auditmanager.12f.pki_fix_center_acceptance.v1",
+  "candidate": {
+    "commit": "5e3750a26f65a884c1c644c6bc25c490f4b665ef",
+    "pid": 2521866,
+    "running_immutable_path": "/home/coder/auditmanager/releases/pki-shared-5e3750a2/app",
+    "api_info_http": 200,
+    "public_api_info_http": 200,
+    "core_application_smoke": "PASS",
+    "production_db_access": "FAIL for distributed routes",
+    "distributed_worker_commands_http": 500,
+    "authenticated_polling_continuity": "FAIL",
+    "acceptance": "FAIL"
+  },
+  "database": {
+    "path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "schema_before": 13,
+    "schema_after_rollback": 13,
+    "migration_executed": false,
+    "integrity_after_rollback": "ok",
+    "worker_identity_preserved": true,
+    "runtime_token_preserved": true,
+    "count_delta_backup_to_after": {
+      "workers": 0,
+      "tokens": 0,
+      "logical_jobs": 0,
+      "attempts": 0,
+      "offers": 0,
+      "commands": 0,
+      "admin_actions": 0,
+      "worker_certificates": 0,
+      "reenrollment_authorizations": 0,
+      "reenrollment_events": 0
+    }
+  },
+  "final_rollback_center": {
+    "commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+    "pid": 2522606,
+    "api_info_http": 200,
+    "distributed_worker_commands_http": 200,
+    "worker_connection": "online",
+    "worker_state": "idle",
+    "scheduler_enabled": false
+  },
+  "verdict": "FAIL_ROLLED_BACK"
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "auditmanager.12f.pki_fix_production_integrity.v1",
+  "verified_at": "2026-08-14T07:39:21+03:00",
+  "backend": {
+    "commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+    "path": "/home/coder/auditmanager/releases/reenrollment-e6015d33/app",
+    "pid": 2522606,
+    "active": true,
+    "n_restarts": 0,
+    "local_api_info_http": 200,
+    "public_api_info_http": 200,
+    "phase_env_sha256": "3837e7c45afc077cc5d5fc979e5ae8c4663c00c1ffe60c416f18bf70a3f6788c",
+    "phase_env_matches_backup": true
+  },
+  "center_db": {
+    "path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "schema": 13,
+    "integrity": "ok",
+    "journal_mode": "wal",
+    "backup_to_final_logical_count_deltas_zero": true,
+    "workers": 1,
+    "tokens": 1,
+    "logical_jobs": 0,
+    "attempts": 0,
+    "offers": 0,
+    "commands": 0,
+    "certificates": 0
+  },
+  "worker": {
+    "worker_id": "wrk_19c87718",
+    "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+    "connection_status": "online",
+    "worker_state": "idle",
+    "transport": "polling",
+    "ownership": "polling",
+    "agent_pid": 2212836,
+    "agent_n_restarts": 0,
+    "executor_pid": 1384880,
+    "executor_n_restarts": 0,
+    "agent_restarted_by_deploy": false,
+    "executor_restarted_by_deploy": false,
+    "active_attempts": 0,
+    "active_processes": 0,
+    "event_outbox_unwritten": 0,
+    "pending_commands": 0,
+    "provider_auth_preserved": true
+  },
+  "security_services": {
+    "issuer_active": false,
+    "gateway_active": false,
+    "listener_8443": false,
+    "listener_9443": false,
+    "pki_preparation_executed": false,
+    "worker_certificate_issued": false,
+    "existing_pki_deleted_overwritten_regenerated_or_rotated": false,
+    "new_ca_generated": false
+  },
+  "infrastructure": {
+    "ufw_changed": false,
+    "ufw_ipv4_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ufw_ipv6_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "nginx_master_pid": 57095,
+    "nginx_changed": false,
+    "cloudflared_pid": 1263127,
+    "cloudflared_target": "http://127.0.0.1:8081",
+    "cloudflared_changed": false,
+    "caddy_present": false
+  },
+  "authorized_changes": {
+    "candidate_pointer_and_phase_env_switch": true,
+    "candidate_backend_restart": true,
+    "rollback_pointer_and_phase_env_restore": true,
+    "rollback_backend_restart": true
+  },
+  "production_unexplained_changes": 0,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "rollback_observation_pass": true,
+  "verdict": "PASS_AFTER_ROLLBACK"
+}

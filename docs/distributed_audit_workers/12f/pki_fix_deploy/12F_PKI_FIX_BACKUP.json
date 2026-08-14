@@ -1,0 +1,43 @@
+{
+  "schema": "auditmanager.12f.pki_fix_backup.v1",
+  "created_at": "2026-08-14T07:12:56+03:00",
+  "path": "/home/coder/auditmanager/backups/pki-fix-deploy-20260814T071256+0300",
+  "directory_owner": "coder:coder",
+  "directory_mode": "0700",
+  "artifact_mode": "0600",
+  "sqlite": {
+    "method": "sqlite3 online backup API from a URI mode=ro connection",
+    "file": "workers.db",
+    "size": 794624,
+    "sha256": "a4b7ade374d28febeae070c5ffe20f9651f6dd4d8659f2b95057826470131ee6",
+    "schema": 13,
+    "integrity": "ok",
+    "workers": 1,
+    "logical_jobs": 0,
+    "attempts": 0,
+    "offers": 0
+  },
+  "configuration": {
+    "backend_phase_env_sha256": "3837e7c45afc077cc5d5fc979e5ae8c4663c00c1ffe60c416f18bf70a3f6788c",
+    "backend_secrets_env_sha256": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+    "backend_unit_sha256": "75fe5691d6cbe73013959ba0d8fc5e249bfc7e4fa01592b41af61f197ff0033c",
+    "issuer_unit_sha256": "9323cedfcd63bec2e7580a95cc3c970d8fe7e5a26db61a3125bfeaf4b46ae631",
+    "gateway_unit_sha256": "346dc6e6f256b65c680438424cd30cc63a8de872eb921207abe5416ecfb24eba",
+    "rollback_manifest_sha256": "9c66b398f7cee0323c47d1e0e9d0a403aef60492713095b3b4a03ad81491580a"
+  },
+  "pki_metadata": {
+    "files_recorded": 8,
+    "stat_recorded": true,
+    "sha256_recorded": true,
+    "safe_certificate_fingerprints_recorded": true,
+    "private_key_contents_exposed": false,
+    "metadata_file_sha256": "56399d2ec03bd486627680f54a8215fe3288c2331b216a012a11c899ebc3668b"
+  },
+  "firewall_snapshot": {
+    "numbered_status_recorded": true,
+    "ipv4_rules_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ipv6_rules_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1"
+  },
+  "backup_verified": true,
+  "verdict": "PASS"
+}

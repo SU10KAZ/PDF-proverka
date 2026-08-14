@@ -1,0 +1,20 @@
+{
+  "schema": "auditmanager.12f.pki_fix_script_verify.v1",
+  "path": "/tmp/12f_prepare_production_pki.sh",
+  "actual_sha256": "89129b4445e120a636fd644ea89dce800ae69d1cf26d85f8940cf2b039bd360d",
+  "expected_sha256": "89129b4445e120a636fd644ea89dce800ae69d1cf26d85f8940cf2b039bd360d",
+  "hash_verified": true,
+  "expected_release_id": "pki-shared-5e3750a2",
+  "expected_commit": "5e3750a26f65a884c1c644c6bc25c490f4b665ef",
+  "static_expected_release_guard_present": true,
+  "static_running_backend_guard_present": true,
+  "static_shared_state_guard_present": true,
+  "script_executed_during_deploy": false,
+  "final_runtime_release": "reenrollment-e6015d33",
+  "final_shared_state_env_enabled": false,
+  "expected_release_guard_satisfied_final": false,
+  "running_backend_guard_satisfied_final": false,
+  "shared_state_guard_satisfied_final": false,
+  "fail_closed_after_rollback": true,
+  "verdict": "HASH_PASS_RUNTIME_GUARDS_BLOCKED"
+}
