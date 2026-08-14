@@ -16,6 +16,7 @@ import asyncio
 import logging
 import os
 import sqlite3
+import stat
 import threading
 from collections.abc import Callable
 from contextlib import contextmanager
@@ -45,6 +46,76 @@ def _connect(path: Path) -> sqlite3.Connection:
     return conn
 
 
+def _validate_plain_path(path: Path, *, directory: bool) -> os.stat_result:
+    """Reject symlinks and unexpected file types in the durable state tree."""
+    value = path.lstat()
+    expected = stat.S_ISDIR(value.st_mode) if directory else stat.S_ISREG(value.st_mode)
+    if stat.S_ISLNK(value.st_mode) or not expected:
+        kind = "directory" if directory else "file"
+        raise RuntimeError(f"distributed Worker state {kind} is not a plain path: {path}")
+    return value
+
+
+def _enforce_state_permissions(
+    path: Path,
+    *,
+    directory: bool,
+    shared: bool,
+    shared_gid: int | None,
+) -> None:
+    """Apply and verify either private-owner or typed shared-service DAC."""
+    current = _validate_plain_path(path, directory=directory)
+    if shared:
+        expected_mode = 0o2770 if directory else 0o660
+    else:
+        expected_mode = 0o700 if directory else 0o600
+    if shared and shared_gid is not None:
+        if current.st_gid != shared_gid:
+            try:
+                os.chown(path, -1, shared_gid)
+            except OSError as exc:
+                raise RuntimeError(
+                    f"distributed Worker state has GID {current.st_gid}, expected "
+                    f"configured GID {shared_gid}: {path}"
+                ) from exc
+    try:
+        os.chmod(path, expected_mode)
+    except OSError as exc:
+        raise RuntimeError(
+            f"cannot enforce distributed Worker state mode {expected_mode:o}: {path}"
+        ) from exc
+    final = _validate_plain_path(path, directory=directory)
+    if stat.S_IMODE(final.st_mode) != expected_mode:
+        raise RuntimeError(
+            f"distributed Worker state mode verification failed for {path}"
+        )
+    if shared and shared_gid is not None and final.st_gid != shared_gid:
+        raise RuntimeError(
+            f"distributed Worker state GID verification failed for {path}"
+        )
+
+
+def _secure_database_files(st: DistributedWorkersSettings) -> None:
+    """Secure SQLite main/WAL/SHM files that currently exist.
+
+    WAL and SHM can be created by any of the three cooperating processes after
+    the main database.  Rechecking them on every lazy access avoids depending
+    on a caller's umask for the cross-process registry boundary.
+    """
+    for path in (
+        st.db_path,
+        st.db_path.with_name(st.db_path.name + "-wal"),
+        st.db_path.with_name(st.db_path.name + "-shm"),
+    ):
+        if path.exists() or path.is_symlink():
+            _enforce_state_permissions(
+                path,
+                directory=False,
+                shared=st.shared_state_enabled,
+                shared_gid=st.shared_state_gid,
+            )
+
+
 def ensure_ready(settings: DistributedWorkersSettings | None = None) -> Path:
     """Создать каталоги и применить миграции. Идемпотентно.
 
@@ -64,23 +135,35 @@ def ensure_ready(settings: DistributedWorkersSettings | None = None) -> Path:
         st.job_logs_dir,
     ):
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-        # The production service has UMask=0077 as the primary boundary.  Keep
-        # the invariant explicit here too so an isolated/manual candidate boot
-        # cannot accidentally create a group/world-readable state tree.
-        directory.chmod(0o700)
+        _enforce_state_permissions(
+            directory, directory=True, shared=st.shared_state_enabled,
+            shared_gid=st.shared_state_gid,
+        )
+
+    _secure_database_files(st)
 
     key = str(st.db_path)
     if key in _migrated:
+        _secure_database_files(st)
         return st.db_path
     with _migrate_lock:
         if key not in _migrated:
             conn = _connect(st.db_path)
             try:
-                os.chmod(st.db_path, 0o600)
-                _backup_before_migration(conn, st.db_path)
+                _secure_database_files(st)
+                backup = _backup_before_migration(conn, st.db_path)
+                if backup is not None:
+                    _enforce_state_permissions(
+                        backup,
+                        directory=False,
+                        shared=st.shared_state_enabled,
+                        shared_gid=st.shared_state_gid,
+                    )
                 schema.migrate(conn)
+                _secure_database_files(st)
             finally:
                 conn.close()
+            _secure_database_files(st)
             _migrated.add(key)
     return st.db_path
 
