@@ -96,6 +96,16 @@ def _install_default_thread_executor() -> None:
         print(f"[startup] не удалось расширить пул потоков: {exc}")
 
 
+async def _validate_distributed_worker_state() -> None:
+    """Fail before serving traffic when shared persistent state is misprepared."""
+    from backend.app.services.distributed_workers import database
+    from backend.app.services.distributed_workers.settings import get_settings
+
+    settings = get_settings()
+    if settings.enabled:
+        await database.run_db(database.ensure_ready, settings)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle."""
@@ -107,6 +117,7 @@ async def lifespan(app: FastAPI):
     # health-проверка не отвечает — и вотчдог убивает живой аудит.
     # Расширяем заранее: потоки дешёвые, а голодание здесь стоит часов работы.
     _install_default_thread_executor()
+    await _validate_distributed_worker_state()
 
     data_dir = Path(__file__).parent / "data"
     data_dir.mkdir(exist_ok=True)
