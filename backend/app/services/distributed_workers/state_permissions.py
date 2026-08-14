@@ -33,6 +33,7 @@ TRUSTED_RECEIPT_MODE = 0o444
 TRUSTED_RECEIPT_PARENT_MODE = 0o755
 SHARED_DIRECTORY_MODE = 0o2770
 SHARED_FILE_MODE = 0o660
+SQLITE_SIDECAR_SUFFIXES = ("-wal", "-shm", "-journal")
 STATIC_DIRECTORY_NAMES = (
     "",
     "source_packages",
@@ -149,14 +150,33 @@ def _validate_access_acl(path: Path, mode: int) -> None:
         raise SharedStatePermissionError(
             f"distributed Worker state has named access ACL entries: {path}"
         )
-    expected = {
-        (_ACL_USER_OBJ, _ACL_UNDEFINED_ID): (mode >> 6) & 0o7,
-        (_ACL_GROUP_OBJ, _ACL_UNDEFINED_ID): (mode >> 3) & 0o7,
-        (_ACL_OTHER, _ACL_UNDEFINED_ID): mode & 0o7,
-    }
-    if (_ACL_MASK, _ACL_UNDEFINED_ID) in entries:
-        expected[(_ACL_MASK, _ACL_UNDEFINED_ID)] = (mode >> 3) & 0o7
-    if entries != expected:
+    user_key = (_ACL_USER_OBJ, _ACL_UNDEFINED_ID)
+    group_key = (_ACL_GROUP_OBJ, _ACL_UNDEFINED_ID)
+    mask_key = (_ACL_MASK, _ACL_UNDEFINED_ID)
+    other_key = (_ACL_OTHER, _ACL_UNDEFINED_ID)
+    expected_keys = {user_key, group_key, other_key}
+    owner_mode = (mode >> 6) & 0o7
+    group_mode = (mode >> 3) & 0o7
+    other_mode = mode & 0o7
+    if mask_key in entries:
+        # POSIX mode group bits represent ACL_MASK when an extended access ACL
+        # exists.  The inherited ACL installed by our default policy therefore
+        # has GROUP_OBJ=rwx and MASK=rw on a regular 0660 SQLite file.  Requiring
+        # raw GROUP_OBJ == mode-group incorrectly rejects that safe canonical
+        # state after chmod(0600) -> chmod(0660) rollback/redeploy transitions.
+        expected_keys.add(mask_key)
+        group_effective = entries.get(group_key, 0) & entries.get(mask_key, 0)
+        group_matches = (
+            entries.get(mask_key) == group_mode and group_effective == group_mode
+        )
+    else:
+        group_matches = entries.get(group_key) == group_mode
+    if (
+        set(entries) != expected_keys
+        or entries.get(user_key) != owner_mode
+        or entries.get(other_key) != other_mode
+        or not group_matches
+    ):
         raise SharedStatePermissionError(
             f"distributed Worker state access ACL/mode mismatch: {path}"
         )

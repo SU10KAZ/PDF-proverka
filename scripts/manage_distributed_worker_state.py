@@ -11,6 +11,7 @@ import grp
 import json
 import os
 import socket
+import sqlite3
 import stat
 import struct
 from datetime import datetime, timezone
@@ -19,6 +20,7 @@ from pathlib import Path
 from backend.app.services.distributed_workers.state_permissions import (
     SHARED_DIRECTORY_MODE,
     SHARED_FILE_MODE,
+    SQLITE_SIDECAR_SUFFIXES,
     STATIC_DIRECTORY_NAMES,
     TRUSTED_RECEIPT_MODE,
     TRUSTED_RECEIPT_OWNER_GID,
@@ -100,7 +102,7 @@ def _validate_parent_acl(parent: Path, service_uids: tuple[int, ...]) -> None:
 
 def _known_database_files(data_dir: Path) -> list[Path]:
     result = []
-    for name in ("workers.db", "workers.db-wal", "workers.db-shm"):
+    for name in ("workers.db", *("workers.db" + suffix for suffix in SQLITE_SIDECAR_SUFFIXES)):
         path = data_dir / name
         if path.exists() or path.is_symlink():
             result.append(path)
@@ -139,6 +141,53 @@ def _require_backend_inactive(host: str, port: int) -> None:
     raise SystemExit(
         f"refusing shared-state preparation while backend listener is active: {host}:{port}"
     )
+
+
+def _require_database_quiescent(data_dir: Path) -> tuple[int, int, int]:
+    """Recover/checkpoint SQLite through SQLite itself before host mutation.
+
+    WAL is durable database state and must never be unlinked blindly.  A
+    successful TRUNCATE checkpoint proves that no active reader/writer blocks
+    recovery and moves every committed frame into the main database.  The
+    subsequent integrity check is performed before metadata normalization or
+    receipt minting.  Closing this read/write connection lets SQLite perform
+    its own safe WAL/SHM cleanup; any retained sidecar is normalized later.
+    """
+    database_path = data_dir / "workers.db"
+    _plain(database_path, directory=False)
+    for suffix in SQLITE_SIDECAR_SUFFIXES:
+        path = database_path.with_name(database_path.name + suffix)
+        if path.exists() or path.is_symlink():
+            _plain(path, directory=False)
+    connection: sqlite3.Connection | None = None
+    try:
+        connection = sqlite3.connect(
+            f"{database_path.as_uri()}?mode=rw",
+            uri=True,
+            timeout=0.0,
+            isolation_level=None,
+        )
+        connection.execute("PRAGMA busy_timeout = 0")
+        checkpoint = connection.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+        if checkpoint is None or len(checkpoint) != 3 or int(checkpoint[0]) != 0:
+            raise SystemExit(
+                "refusing shared-state preparation while SQLite is busy: "
+                f"checkpoint={tuple(checkpoint) if checkpoint is not None else None}"
+            )
+        integrity = [str(row[0]) for row in connection.execute("PRAGMA integrity_check")]
+        if integrity != ["ok"]:
+            raise SystemExit(
+                "refusing shared-state preparation for a database that failed "
+                f"integrity_check: {integrity[:3]}"
+            )
+        return tuple(int(value) for value in checkpoint)
+    except sqlite3.Error as exc:
+        raise SystemExit(
+            f"refusing shared-state preparation for non-quiescent/invalid SQLite state: {exc}"
+        ) from exc
+    finally:
+        if connection is not None:
+            connection.close()
 
 
 def _receipt_parent(path: Path) -> Path:
@@ -244,6 +293,7 @@ def prepare(args: argparse.Namespace) -> None:
     data_dir = _absolute_scoped(args.data_dir, "--data-dir")
     _require_backend_inactive(args.backend_host, args.backend_port)
     _validate_group(args)
+    checkpoint = _require_database_quiescent(data_dir)
     parent = data_dir.parent
     _plain(parent, directory=True)
     if args.service_uid:
@@ -265,6 +315,7 @@ def prepare(args: argparse.Namespace) -> None:
     _validate_host_state(args, require_receipt=False)
     _write_receipt(args.receipt, canonical_receipt_bytes(_receipt(args)))
     _validate_host_state(args, require_receipt=True)
+    print(f"SQLITE_QUIESCENCE_PASS checkpoint={checkpoint} integrity=ok")
     print("DISTRIBUTED_WORKER_STATE_PREPARATION_PASS")
 
 

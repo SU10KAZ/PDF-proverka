@@ -29,6 +29,7 @@ from backend.app.services.distributed_workers.settings import (
     get_settings,
 )
 from backend.app.services.distributed_workers.state_permissions import (
+    SQLITE_SIDECAR_SUFFIXES,
     STATIC_DIRECTORY_NAMES,
     validate_runtime_shared_state,
 )
@@ -114,8 +115,8 @@ def _secure_database_files(st: DistributedWorkersSettings) -> None:
         return
     for path in (
         st.db_path,
-        st.db_path.with_name(st.db_path.name + "-wal"),
-        st.db_path.with_name(st.db_path.name + "-shm"),
+        *(st.db_path.with_name(st.db_path.name + suffix)
+          for suffix in SQLITE_SIDECAR_SUFFIXES),
     ):
         if path.exists() or path.is_symlink():
             _enforce_private_permissions(path, directory=False)

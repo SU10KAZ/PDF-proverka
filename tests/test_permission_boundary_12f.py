@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import grp
+import json
 import os
 import socket
+import sqlite3
 import stat
 import struct
+import subprocess
+import sys
 import time
 import uuid
 from argparse import Namespace
@@ -208,6 +212,154 @@ def test_named_access_acl_is_rejected(monkeypatch, tmp_path):
     os.setxattr(settings.incoming_dir, "system.posix_acl_access", bytes(raw))
     with pytest.raises(DistributedWorkersConfigError, match="named access ACL"):
         database.ensure_ready(settings)
+
+
+def test_inherited_sqlite_access_acl_uses_mask_for_group_mode(monkeypatch, tmp_path):
+    settings, _args = _prepare(monkeypatch, tmp_path / "inherited-acl")
+    sidecar = settings.db_path.with_name(settings.db_path.name + "-wal")
+    previous_umask = os.umask(0o077)
+    try:
+        descriptor = os.open(sidecar, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
+        os.close(descriptor)
+    finally:
+        os.umask(previous_umask)
+
+    raw = os.getxattr(sidecar, "system.posix_acl_access")
+    entries = state_permissions._decode_acl(raw, sidecar, "access")
+    undefined = 0xFFFFFFFF
+    assert entries[(0x04, undefined)] == 0o7  # inherited GROUP_OBJ
+    assert entries[(0x10, undefined)] == 0o6  # mode group bits / effective mask
+    assert stat.S_IMODE(sidecar.stat().st_mode) == 0o660
+    state_permissions.validate_shared_file(
+        sidecar,
+        shared_gid=os.getgid(),
+        allowed_owner_uids={os.getuid()},
+    )
+
+
+def test_prepare_recovers_e601_wal_preserves_data_and_mints_receipt_last(
+    monkeypatch, tmp_path
+):
+    settings, args = _prepare(monkeypatch, tmp_path / "e601-redeploy")
+    connection = sqlite3.connect(settings.db_path, isolation_level=None)
+    try:
+        assert connection.execute("PRAGMA journal_mode = WAL").fetchone()[0] == "wal"
+        connection.execute("CREATE TABLE redeploy_probe(value TEXT NOT NULL)")
+        connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+    finally:
+        connection.close()
+
+    # Exact legacy e601 policy: directories and the main DB become private.
+    for directory in database._state_directories(settings):
+        directory.chmod(0o700)
+    settings.db_path.chmod(0o600)
+
+    # Model the e601 process-level lifecycle: a committed WAL transaction is
+    # followed by process exit without sqlite3_close() for thread-local conns.
+    # This leaves recoverable durable WAL state despite a clean systemd stop.
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import os,sqlite3,sys; "
+                "c=sqlite3.connect(sys.argv[1],isolation_level=None); "
+                "c.execute('PRAGMA journal_mode=WAL'); "
+                "c.execute('PRAGMA wal_autocheckpoint=0'); "
+                "c.execute(\"INSERT INTO redeploy_probe VALUES "
+                "('committed-in-wal')\"); os._exit(0)"
+            ),
+            str(settings.db_path),
+        ],
+        check=True,
+    )
+    wal = settings.db_path.with_name(settings.db_path.name + "-wal")
+    shm = settings.db_path.with_name(settings.db_path.name + "-shm")
+    assert wal.exists()
+    assert shm.exists()
+    assert stat.S_IMODE(settings.data_dir.stat().st_mode) == 0o700
+    assert stat.S_IMODE(settings.db_path.stat().st_mode) == 0o600
+
+    # An immutable main-file read deliberately ignores WAL: the committed row
+    # is not checkpointed yet, so deleting WAL here would lose it.
+    immutable = sqlite3.connect(
+        f"{settings.db_path.as_uri()}?mode=ro&immutable=1", uri=True
+    )
+    try:
+        assert immutable.execute("SELECT COUNT(*) FROM redeploy_probe").fetchone()[0] == 0
+    finally:
+        immutable.close()
+
+    state_tool.prepare(args)
+    state_tool.validate(args)
+    receipt = json.loads(args.receipt.read_text(encoding="utf-8"))
+    assert receipt["objects"]
+    for path in state_tool._known_database_files(settings.data_dir):
+        info = path.stat()
+        assert info.st_gid == os.getgid()
+        assert stat.S_IMODE(info.st_mode) == 0o660
+
+    recovered = sqlite3.connect(settings.db_path)
+    try:
+        assert recovered.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+        assert recovered.execute("SELECT value FROM redeploy_probe").fetchall() == [
+            ("committed-in-wal",)
+        ]
+    finally:
+        recovered.close()
+
+    # The new hardened runtime accepts the receipt and opens the recovered DB.
+    monkeypatch.setattr(
+        state_permissions,
+        "_read_id_map",
+        lambda kind: (
+            state_permissions.IdMapRange(
+                os.getuid() if kind == "uid" else os.getgid(),
+                os.getuid() if kind == "uid" else os.getgid(),
+                1,
+            ),
+        ),
+    )
+    assert database.ensure_ready(settings) == settings.db_path
+    with database.read_conn(settings) as runtime_connection:
+        assert runtime_connection.execute("SELECT value FROM redeploy_probe").fetchone()[0] == (
+            "committed-in-wal"
+        )
+
+
+def test_prepare_fails_closed_while_sqlite_writer_is_active(monkeypatch, tmp_path):
+    settings, args = _prepare(monkeypatch, tmp_path / "active-writer")
+    receipt_before = args.receipt.read_bytes()
+    settings.data_dir.chmod(0o700)
+    settings.db_path.chmod(0o600)
+    writer = sqlite3.connect(settings.db_path, isolation_level=None)
+    try:
+        writer.execute("PRAGMA journal_mode = WAL")
+        writer.execute("BEGIN IMMEDIATE")
+        writer.execute("CREATE TABLE active_writer_probe(value INTEGER)")
+        with pytest.raises(SystemExit, match="SQLite is busy|non-quiescent"):
+            state_tool.prepare(args)
+        assert args.receipt.read_bytes() == receipt_before
+        assert stat.S_IMODE(settings.data_dir.stat().st_mode) == 0o700
+        assert stat.S_IMODE(settings.db_path.stat().st_mode) == 0o600
+    finally:
+        writer.execute("ROLLBACK")
+        writer.close()
+
+
+def test_prepare_normalizes_legacy_rollback_journal(monkeypatch, tmp_path):
+    settings, args = _prepare(monkeypatch, tmp_path / "rollback-journal")
+    journal = settings.db_path.with_name(settings.db_path.name + "-journal")
+    journal.write_bytes(b"non-hot legacy journal fixture")
+    journal.chmod(0o600)
+    monkeypatch.setattr(state_tool, "_require_database_quiescent", lambda _path: (0, -1, -1))
+
+    state_tool.prepare(args)
+
+    assert journal in state_tool._known_database_files(settings.data_dir)
+    assert stat.S_IMODE(journal.stat().st_mode) == 0o660
+    receipt = json.loads(args.receipt.read_text(encoding="utf-8"))
+    assert "workers.db-journal" in {item["path"] for item in receipt["objects"]}
 
 
 def test_object_replacement_is_detected(monkeypatch, tmp_path):
