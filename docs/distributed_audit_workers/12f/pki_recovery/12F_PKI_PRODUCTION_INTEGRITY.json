@@ -1,0 +1,38 @@
+{
+  "schema": "auditmanager.12f.pki_recovery_production_integrity.v1",
+  "checked_at": "2026-08-14T00:44:06+03:00",
+  "backend": {"pid": 2379476, "active": true, "n_restarts": 0, "http_8081": 200, "restarted_by_recovery": false},
+  "worker_31": {
+    "agent_pid": 2212836,
+    "agent_active": true,
+    "agent_n_restarts": 0,
+    "executor_pid": 1384880,
+    "executor_active": true,
+    "executor_n_restarts": 0,
+    "active_attempts": 0,
+    "active_processes": 0,
+    "event_outbox_unwritten": 0,
+    "pending_commands": 0,
+    "local_db_integrity": "ok",
+    "transport": "POLLING"
+  },
+  "center_db": {"schema": 13, "integrity": "ok", "workers": 1, "jobs": 0, "attempts": 0, "certificate_rows": 0},
+  "issuer": {"active": false, "pid": 0, "enabled": true, "started_by_recovery": false},
+  "gateway": {"installed": true, "enabled": false, "active": false},
+  "listeners": {"127.0.0.1:8081": true, "tcp_8443": false, "tcp_9443": false},
+  "firewall": {
+    "ufw_interactive_status_available": false,
+    "ipv4_rules_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ipv6_rules_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "hashes_match_last_proven_production_state": true,
+    "changed_by_recovery": false
+  },
+  "cloudflared": {"pid": 1263127, "started_at": "2026-08-11T19:52:01+03:00", "target": "http://127.0.0.1:8081", "changed": false},
+  "nginx": {"pid": 57095, "active": true, "n_restarts": 0, "changed": false},
+  "caddy": {"installed": false, "active": false, "changed": false},
+  "ssh_forwarding_used": false,
+  "tunnel_used_by_12f_recovery": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "production_unchanged": true,
+  "verdict": "PASS"
+}

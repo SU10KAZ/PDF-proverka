@@ -1,0 +1,25 @@
+{
+  "schema": "auditmanager.12f.pki_fix.v1",
+  "status": "IMPLEMENTED_AND_ISOLATED_PROVEN_NOT_DEPLOYED",
+  "changes": [
+    "explicit immutable app WorkingDirectory and PYTHONPATH in issuer/Gateway units",
+    "strict typed DISTRIBUTED_WORKERS_SHARED_STATE boolean, disabled by default",
+    "optional strict numeric DISTRIBUTED_WORKERS_SHARED_GID",
+    "private 0700/0600 default retained",
+    "shared 2770/0660 policy preserves POSIX named-user ACL masks",
+    "plain-path/symlink rejection and mode/GID postcondition verification",
+    "SQLite main/WAL/SHM and migration backup permissions enforced",
+    "read-only validate-set command proves complete PKI identity and profiles without regeneration"
+  ],
+  "source_file_sha256": {
+    "backend/app/services/distributed_workers/settings.py": "de731c1d7ca9731a639517c815537e679c88eee15485f57513ac253f6bb8c797",
+    "backend/app/services/distributed_workers/database.py": "91046f8bf269768b9f0f8f6abca416772ac779f55eb579036dde134690ec3694",
+    "scripts/manage_worker_pki.py": "ee86df4f51808d899115887d0ed5f0a7b556f6c16566512ce45f84e87fb1c825",
+    "deploy/systemd/web-ocr-worker-cert-issuer.service": "352f49842a1c0accc1107dc1a35b6370c2be63f04000412eb20f456ea480e6f3",
+    "deploy/systemd/web-ocr-agent-gateway.service": "5d14a964cc42055ac1122e5b0ade5d8e253b106f6e7df6f1f6225ef0caeffde9"
+  },
+  "active_production_release_contains_fix": false,
+  "production_restart_performed": false,
+  "fix_commit": "f0a293f3d6c49efeea700b4acdd0f443e56a1b66",
+  "commit_note": "local fix commit created on feat/distributed-audit-workers-production-canary; not pushed or merged"
+}

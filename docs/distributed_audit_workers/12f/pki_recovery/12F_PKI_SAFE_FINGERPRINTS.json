@@ -1,0 +1,40 @@
+{
+  "schema": "auditmanager.12f.pki_safe_fingerprints.v1",
+  "root": {
+    "path": "/etc/auditmanager/pki/offline-root/root-ca.pem",
+    "subject": "CN=AuditManager Offline Root CA",
+    "issuer": "CN=AuditManager Offline Root CA",
+    "serial_hex": "5CA414DFF6B81743F71560739966C7123B276DD1",
+    "not_before": "2026-08-13T20:15:52Z",
+    "not_after": "2036-08-10T20:20:52Z",
+    "certificate_fingerprint_sha256": "52EBD11F74F5FA862349A01E309CDBA6C94C766E4E4B57F6CCF0C3BF4FC734C6",
+    "file_sha256": "9aed00b5e6681e1a5d10474f4baf1da8a7ad008fa10037e1ba62e97f36e76109",
+    "basic_constraints": "CA:true,pathLen:1",
+    "key_pair_match": true
+  },
+  "issuer": {
+    "path": "/etc/auditmanager/pki/issuer/issuing-ca.pem",
+    "subject": "CN=AuditManager Worker Issuing CA",
+    "issuer": "CN=AuditManager Offline Root CA",
+    "serial_hex": "228AD3F5C963BDE65C82A3709924DF827A2DD09C",
+    "not_before": "2026-08-13T20:15:52Z",
+    "not_after": "2031-08-12T20:20:52Z",
+    "certificate_fingerprint_sha256": "E6784E3AC885E2986021F25E7298F9E56EEA4C6F007831001A22E1BAD637B6B5",
+    "file_sha256": "faa28e0d2be7f5217b82130c917918e56e7bffbb2773bfaa0e5032344279d3f5",
+    "basic_constraints": "CA:true,pathLen:0",
+    "key_pair_match": true
+  },
+  "gateway_server": {
+    "path": "/etc/auditmanager/pki/gateway/server-chain.pem",
+    "subject": "CN=176.12.77.128",
+    "serial_hex": "6A2C1F2110837957B708123FFB3552A9E4E3B7AA",
+    "not_before": "2026-08-13T20:15:52Z",
+    "not_after": "2026-11-11T20:20:52Z",
+    "certificate_fingerprint_sha256": "BCF7F018CC283C1708CD800F6EC7FB3DC76AF7AE8AA48F4F34ABB7B220902EE9",
+    "san": "IP:176.12.77.128",
+    "eku": "serverAuth only",
+    "key_pair_match": true
+  },
+  "private_key_contents_exposed": false,
+  "new_ca_generated_during_recovery": false
+}

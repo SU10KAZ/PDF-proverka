@@ -1,0 +1,22 @@
+{
+  "schema": "auditmanager.12f.pki_partial_state.v1",
+  "inventory_complete": true,
+  "classification": "COMPLETE_VALID_PKI_MATERIAL_SERVICE_NOT_STARTED",
+  "files_present": 8,
+  "files_expected": 8,
+  "registry_certificate_rows": 0,
+  "materials": [
+    {"path": "/etc/auditmanager/pki/offline-root/root-key.pem", "owner": "root:root", "mode": "0600", "size": 241, "sha256": "94fb0f7ccf769f313ff1795d2b196fb64f2c213319f66a3add0c4db5e8f5274c", "private": true},
+    {"path": "/etc/auditmanager/pki/offline-root/root-ca.pem", "owner": "root:root", "mode": "0644", "size": 656, "sha256": "9aed00b5e6681e1a5d10474f4baf1da8a7ad008fa10037e1ba62e97f36e76109", "private": false},
+    {"path": "/etc/auditmanager/pki/issuer/issuing-ca-key.pem", "owner": "web-ocr-cert-issuer:web-ocr-agent-gateway", "mode": "0600", "size": 241, "sha256": "c7cb061126e6bd9664895c9f556896631c70e40e6191c08b241b77b7d61f5663", "private": true},
+    {"path": "/etc/auditmanager/pki/issuer/issuing-ca.pem", "owner": "web-ocr-cert-issuer:web-ocr-agent-gateway", "mode": "0640", "size": 656, "sha256": "faa28e0d2be7f5217b82130c917918e56e7bffbb2773bfaa0e5032344279d3f5", "private": false},
+    {"path": "/etc/auditmanager/pki/issuer/issuing-chain.pem", "owner": "web-ocr-cert-issuer:web-ocr-agent-gateway", "mode": "0640", "size": 1312, "sha256": "9d1a192429fc1ec6f7541f74086601db413b1f54283ca96f930f24a190f7f48f", "private": false},
+    {"path": "/etc/auditmanager/pki/gateway/server-key.pem", "owner": "web-ocr-agent-gateway:web-ocr-agent-gateway", "mode": "0600", "size": 241, "sha256": "9c2fcce0a8c417596d5a969e56b4d10522578341778f6bd4b50648750d84fbd3", "private": true},
+    {"path": "/etc/auditmanager/pki/gateway/server-chain.pem", "owner": "web-ocr-agent-gateway:web-ocr-agent-gateway", "mode": "0640", "size": 1911, "sha256": "c1cbc30275313c0bbd5b73fc7086a32e1c8a6671879253bdf07e5b2bf0b2d0b4", "private": false},
+    {"path": "/etc/auditmanager/pki/worker-trust/worker-ca-bundle.pem", "owner": "root:web-ocr-agent-gateway", "mode": "0640", "size": 1312, "sha256": "9d1a192429fc1ec6f7541f74086601db413b1f54283ca96f930f24a190f7f48f", "private": false}
+  ],
+  "key_certificate_matches": {"root": true, "issuer": true, "gateway_server": true},
+  "new_ca_generated_during_recovery": false,
+  "private_key_contents_exposed": false,
+  "disposition": "PRESERVE_NO_REGENERATION"
+}
