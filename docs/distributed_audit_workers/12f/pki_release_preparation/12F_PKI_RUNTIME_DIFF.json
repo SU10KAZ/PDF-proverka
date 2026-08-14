@@ -1,0 +1,83 @@
+{
+  "schema": "auditmanager.12f.pki_fix_runtime_diff.v1",
+  "baseline_commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "fix_commit": "5e3750a26f65a884c1c644c6bc25c490f4b665ef",
+  "parent_commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "tree": "d9a9c42732337b567d4fe7efe6c339e0612dcc3c",
+  "source_recovery_commit": "f0a293f3d6c49efeea700b4acdd0f443e56a1b66",
+  "changed_files_count": 8,
+  "changed_runtime_files_count": 7,
+  "changed_test_files_count": 1,
+  "unexpected_runtime_files_count": 0,
+  "files": [
+    {
+      "path": "backend/app/services/distributed_workers/database.py",
+      "category": "RUNTIME",
+      "required": true,
+      "reason": "preserve effective named-service ACL masks with typed shared 2770/0660 state permissions and secure SQLite main/WAL/SHM/backup files",
+      "production_impact": "opt-in only; private 0700/0600 default remains unchanged",
+      "rollback_behavior": "e6015d33 restores single-owner chmod behavior; schema and logical DB content are unchanged"
+    },
+    {
+      "path": "backend/app/services/distributed_workers/settings.py",
+      "category": "RUNTIME",
+      "required": true,
+      "reason": "strict typed DISTRIBUTED_WORKERS_SHARED_STATE and optional numeric shared GID",
+      "production_impact": "none until explicit shared-state activation",
+      "rollback_behavior": "old release ignores the new environment keys"
+    },
+    {
+      "path": "deploy/systemd/agent-gateway.env.example",
+      "category": "DEPLOY_CONFIG",
+      "required": true,
+      "reason": "activate shared state for Gateway on the existing production underscore state path",
+      "production_impact": "future generated environment only",
+      "rollback_behavior": "old Gateway remains stopped"
+    },
+    {
+      "path": "deploy/systemd/worker-issuer.env.example",
+      "category": "DEPLOY_CONFIG",
+      "required": true,
+      "reason": "activate shared state for issuer on the existing production underscore state path",
+      "production_impact": "future generated environment only",
+      "rollback_behavior": "old issuer remains stopped"
+    },
+    {
+      "path": "deploy/systemd/web-ocr-agent-gateway.service",
+      "category": "RUNTIME_LAUNCHER",
+      "required": true,
+      "reason": "explicit module root, shared umask and correct /var/lib/auditmanager/distributed_workers sandbox path",
+      "production_impact": "installed only by future separately approved preparation",
+      "rollback_behavior": "old installed unit remains available until approved replacement"
+    },
+    {
+      "path": "deploy/systemd/web-ocr-worker-cert-issuer.service",
+      "category": "RUNTIME_LAUNCHER",
+      "required": true,
+      "reason": "explicit module root, shared umask and correct /var/lib/auditmanager/distributed_workers sandbox path",
+      "production_impact": "installed only by future separately approved preparation",
+      "rollback_behavior": "old inactive unit is retained until approved replacement"
+    },
+    {
+      "path": "scripts/manage_worker_pki.py",
+      "category": "OPERATOR_RUNTIME",
+      "required": true,
+      "reason": "read-only validate-set proves complete existing PKI identity, chains, profiles and key matches before preservation-only retry",
+      "production_impact": "validation only; never regenerates existing material",
+      "rollback_behavior": "not invoked by backend runtime"
+    },
+    {
+      "path": "tests/test_pki_recovery_12f.py",
+      "category": "TEST",
+      "required": false,
+      "reason": "regression proof including exact production underscore systemd state path",
+      "production_impact": "none",
+      "rollback_behavior": "not runtime"
+    }
+  ],
+  "dependency_files_changed": false,
+  "schema_files_changed": false,
+  "reenrollment_files_changed": false,
+  "block_vector_files_changed": false,
+  "verdict": "PASS_SCOPED"
+}

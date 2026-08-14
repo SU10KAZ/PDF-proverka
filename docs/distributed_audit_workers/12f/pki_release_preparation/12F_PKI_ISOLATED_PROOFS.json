@@ -1,0 +1,64 @@
+{
+  "schema": "auditmanager.12f.pki_fix_isolated_proofs.v1",
+  "release_id": "pki-shared-5e3750a2",
+  "tests": {
+    "final_sha_critical_integration": 100,
+    "final_sha_production_behavior": 185,
+    "read_only_durable_artifact_repeat": 100,
+    "total_successful_executions": 385,
+    "failures": 0,
+    "warnings": "pytest-asyncio scope and Python crypt deprecation only"
+  },
+  "backend_boot": {
+    "release": "/home/coder/auditmanager/releases/pki-shared-5e3750a2",
+    "listener": "127.0.0.1:18101",
+    "api_info_http": 200,
+    "openapi_http": 200,
+    "schema": 13,
+    "integrity": "ok",
+    "workers": 1,
+    "shared_state_directory_mode": "2770",
+    "shared_state_database_mode": "0660",
+    "reenrollment_routes_present": true,
+    "scheduler_disabled": true,
+    "clean_shutdown": true
+  },
+  "rollback": {
+    "sequence": "e6015d33 -> 5e3750a2 -> e6015d33",
+    "baseline_listener": "127.0.0.1:18102",
+    "baseline_health_http": 200,
+    "logical_database_sha256_before_and_after": "24e096c361db7de41bb0ea9b390c6a07a410c0bf9894a14acda7b1b341dd1817",
+    "worker_registry_preserved": true,
+    "schema_13_preserved": true,
+    "listeners_removed": true,
+    "verdict": "PASS"
+  },
+  "partial_state_retry": {
+    "old_state_created_by": "reenrollment-e6015d33 PKI tool",
+    "all_eight_pki_files_preserved": true,
+    "new_release_validation_runs": 2,
+    "issuer_start_runs": 2,
+    "issuer_exit_codes": [0, 0],
+    "issuer_launcher_from_exact_new_release": true,
+    "signing_e2e": true,
+    "same_request_same_serial": true,
+    "worker_certificate_rows": 1,
+    "duplicate_root": false,
+    "duplicate_intermediate": false,
+    "gateway_unit_rendered_and_installed_in_isolated_tree": true,
+    "gateway_process_started": false,
+    "safe_receipt": "/tmp/12f_pki_prepare_isolated_receipt.json",
+    "safe_receipt_sha256": "206575820b2f78dc3fde78d2adeb4f47199d797e17a957049c8d6d378aea9637",
+    "verdict": "12F_PKI_PREP_PASS"
+  },
+  "production_partial_pki": {
+    "reusable": true,
+    "root_certificate_sha256": "52EBD11F74F5FA862349A01E309CDBA6C94C766E4E4B57F6CCF0C3BF4FC734C6",
+    "issuer_certificate_sha256": "E6784E3AC885E2986021F25E7298F9E56EEA4C6F007831001A22E1BAD637B6B5",
+    "server_certificate_sha256": "BCF7F018CC283C1708CD800F6EC7FB3DC76AF7AE8AA48F4F34ABB7B220902EE9",
+    "new_ca_generated_in_this_pass": false,
+    "production_pki_mutated": false
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "verdict": "PASS"
+}
