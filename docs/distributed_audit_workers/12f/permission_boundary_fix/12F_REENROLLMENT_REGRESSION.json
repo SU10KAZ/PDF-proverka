@@ -1,0 +1,18 @@
+{
+  "schema": "auditmanager.12f.reenrollment_regression.v1",
+  "tests": 34,
+  "result": "34 passed as part of exact immutable 106-test matrix",
+  "identity_preserving_pair": true,
+  "production_worker_id_shape_supported": "wrk_19c87718",
+  "exact_instance_binding": true,
+  "generic_registration_generates_random_center_id": true,
+  "one_time_authorization": true,
+  "new_runtime_credential": true,
+  "raw_credential_persistence": false,
+  "fault_injection_transaction_rollback": true,
+  "schema_fresh": 13,
+  "schema_populated_before": 12,
+  "schema_populated_after": 13,
+  "permission_fix_schema_delta": 0,
+  "verdict": "PASS"
+}

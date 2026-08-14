@@ -1,0 +1,43 @@
+{
+  "schema": "auditmanager.12f.hardened_systemd_regression.v1",
+  "executed_at": "2026-08-14T08:50:00+03:00",
+  "boundary": {
+    "service_manager": "real systemd --user transient units",
+    "backend_identity": "coder:coder uid/gid 1001",
+    "UMask": "0077",
+    "RestrictSUIDSGID": true,
+    "NoNewPrivileges": true,
+    "ProtectSystem": "strict",
+    "ProtectHome": "read-only",
+    "PrivateTmp": true,
+    "AmbientCapabilities": "empty",
+    "listeners": ["127.0.0.1:18121", "127.0.0.1:18122"]
+  },
+  "old_candidate": {
+    "release": "/home/coder/auditmanager/releases/pki-shared-5e3750a2",
+    "commit": "5e3750a26f65a884c1c644c6bc25c490f4b665ef",
+    "core_health_http": 200,
+    "commands_http": 500,
+    "heartbeat_http": 500,
+    "exception": "PermissionError: EPERM on state-root chmod followed by RuntimeError cannot enforce mode 2770",
+    "root_cause_reproduced": true
+  },
+  "fixed_candidate": {
+    "release": "/home/coder/auditmanager/releases/permission-boundary-dd8c760e",
+    "commit": "dd8c760e1bf21abcb061557efe2bfe436108ee51",
+    "core_health_http": 200,
+    "commands_http": 200,
+    "heartbeat_http": 200,
+    "EPERM": false,
+    "traceback": false,
+    "directory_mode_after": "2770",
+    "database_mode_after": "0660",
+    "wal_mode_after": "0660",
+    "shm_mode_after": "0660"
+  },
+  "isolated_group_note": "The real backend uid and hardening were exact. The isolated state used gid 1001 because a non-root user-systemd proof cannot assign production gid 984; the root-scoped bootstrap tool separately passed with actual service UIDs 997/999, and production gid 984 is encoded in the future operator action.",
+  "units_stopped": true,
+  "listeners_removed": true,
+  "production_used": false,
+  "verdict": "PASS"
+}

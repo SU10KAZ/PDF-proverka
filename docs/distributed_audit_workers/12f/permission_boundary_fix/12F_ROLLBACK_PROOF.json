@@ -1,0 +1,16 @@
+{
+  "schema": "auditmanager.12f.permission_rollback.v1",
+  "sequence": "e6015d33 -> dd8c760e -> e6015d33",
+  "first_baseline": {"health_http": 200, "workers_status_http": 200, "stopped": true},
+  "candidate": {"health_http": 200, "workers_status_http": 200, "openapi_http": 200, "directory_mode": "2770", "database_mode": "0660", "stopped": true},
+  "final_baseline": {"health_http": 200, "workers_status_http": 200, "stopped": true},
+  "schema": 13,
+  "integrity": "ok",
+  "workers": 1,
+  "logical_dump_sha256_all_three_stages": "d34d3ad8bc006646ce98a3d5c367e01e32c11e11fb8dacbc21fbab92c9839302",
+  "logical_state_preserved": true,
+  "listeners_18131_18132_18133_removed": true,
+  "production_used": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "verdict": "PASS"
+}

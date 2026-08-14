@@ -1,0 +1,30 @@
+{
+  "schema": "auditmanager.12f.permission_operator_scripts.v1",
+  "candidate_phase_env": {
+    "path": "/tmp/12f_backend.phaseb.env.permission-fixed",
+    "sha256": "f034849b2509fe816b62dcf2429f525a18414e24fad37f67a85e30734312cdd1"
+  },
+  "predeploy_permission_script": {
+    "path": "/tmp/12f_prepare_production_permission_boundary.sh",
+    "sha256": "67312a3e8c71e2f1c63704acf775772958efb775e6e9268e8bfd07cebd0f8b75",
+    "idempotent": true,
+    "path_scoped": true,
+    "requires_backend_intentionally_stopped": true,
+    "executed": false
+  },
+  "postdeploy_pki_script": {
+    "path": "/tmp/12f_prepare_production_pki_permission_fixed.sh",
+    "sha256": "eb563f41c0e63ffc9ec1ee460e76b51577cd0e57c28cae6f7ef3cb5e486c7da7",
+    "release_guard": "permission-boundary-dd8c760e / dd8c760e1bf21abcb061557efe2bfe436108ee51",
+    "manifest_guard": "07948299accdfbd7204409ff82c0a17d46fb811cc6b80afb86b3a6a157c8efdb",
+    "bundle_guard": "60e16594700e3df6cc9e0a5e238d29f2ef3ff75137698d8270518ff0b9c500b5",
+    "validates_shared_state_without_repair": true,
+    "preserves_existing_ca": true,
+    "starts_issuer_only": true,
+    "starts_gateway": false,
+    "executed": false
+  },
+  "bash_syntax": "PASS",
+  "production_mutated": false,
+  "verdict": "READY_BUT_NOT_AUTHORIZED_TO_RUN"
+}

@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-08-14T08:15:00+03:00",
+  "production_release": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "production_mutated": false,
+  "identities": {
+    "backend": {"user": "coder", "uid": 1001, "group": "coder", "gid": 1001, "member_of_shared_gid": false},
+    "issuer": {"user": "web-ocr-cert-issuer", "uid": 997, "group": "web-ocr-agent-gateway", "gid": 984},
+    "gateway": {"user": "web-ocr-agent-gateway", "uid": 999, "group": "web-ocr-agent-gateway", "gid": 984}
+  },
+  "hardening": {
+    "backend": {"RestrictSUIDSGID": true, "NoNewPrivileges": true, "ProtectSystem": "strict", "ProtectHome": "read-only", "UMask": "0077"},
+    "issuer": {"RestrictSUIDSGID": true, "NoNewPrivileges": true, "ProtectSystem": "strict", "ProtectHome": true, "UMask": "0007"},
+    "gateway": {"RestrictSUIDSGID": true, "NoNewPrivileges": true, "ProtectSystem": "strict", "ProtectHome": true}
+  },
+  "shared_group": {"name": "web-ocr-agent-gateway", "gid": 984},
+  "paths": [
+    {"path": "/var/lib/auditmanager", "owner": "coder", "group": "coder", "current_mode": "0710", "desired_mode": "0710", "backend_read": true, "backend_write": true, "issuer_read": false, "issuer_write": false, "gateway_read": false, "gateway_write": false, "setgid_required": false, "reason": "container only; exact service traverse ACLs"},
+    {"path": "/var/lib/auditmanager/distributed_workers", "owner": "coder", "group": "coder", "current_mode": "0700", "desired_owner": "coder", "desired_group": "web-ocr-agent-gateway", "desired_mode": "02770", "backend_read": true, "backend_write": true, "issuer_read": true, "issuer_write": true, "gateway_read": true, "gateway_write": true, "setgid_required": true, "reason": "three approved identities share SQLite state and require deterministic group inheritance"},
+    {"path": "/var/lib/auditmanager/distributed_workers/incoming", "owner": "coder", "group": "coder", "current_mode": "0700", "desired_owner": "coder", "desired_group": "web-ocr-agent-gateway", "desired_mode": "02770", "backend_read": true, "backend_write": true, "issuer_read": false, "issuer_write": false, "gateway_read": false, "gateway_write": false, "setgid_required": true, "reason": "static child of the shared state boundary"},
+    {"path": "/var/lib/auditmanager/distributed_workers/source_packages", "current_state": "not present in rolled-back baseline or private when lazily created", "desired_owner": "coder", "desired_group": "web-ocr-agent-gateway", "desired_mode": "02770", "backend_read": true, "backend_write": true, "issuer_read": false, "issuer_write": false, "gateway_read": true, "gateway_write": false, "setgid_required": true, "reason": "Gateway reads job-offer manifests"},
+    {"path": "/var/lib/auditmanager/distributed_workers/result_packages", "current_state": "not present in rolled-back baseline or private when lazily created", "desired_owner": "coder", "desired_group": "web-ocr-agent-gateway", "desired_mode": "02770", "backend_read": true, "backend_write": true, "issuer_read": false, "issuer_write": false, "gateway_read": false, "gateway_write": false, "setgid_required": true, "reason": "backend result transfer/import state"},
+    {"path": "/var/lib/auditmanager/distributed_workers/event_logs", "current_state": "not present in rolled-back baseline or private when lazily created", "desired_owner": "coder", "desired_group": "web-ocr-agent-gateway", "desired_mode": "02770", "backend_read": true, "backend_write": true, "issuer_read": false, "issuer_write": false, "gateway_read": true, "gateway_write": true, "setgid_required": true, "reason": "Gateway event ingestion invokes the domain writer"},
+    {"path": "/var/lib/auditmanager/distributed_workers/workers.db{,-wal,-shm}", "current_owner": "coder", "current_group": "coder", "current_mode": "0600", "desired_owner": "approved runtime identity", "desired_group": "web-ocr-agent-gateway", "desired_mode": "0660", "backend_read": true, "backend_write": true, "issuer_read": true, "issuer_write": true, "gateway_read": true, "gateway_write": true, "setgid_required": false, "reason": "shared SQLite registry; creator ownership may vary, group and mode are invariant"},
+    {"path": "/etc/auditmanager/pki", "owner": "root", "group": "root", "current_mode": "0700", "desired_mode": "0700 with identity-scoped children", "backend_read": false, "backend_write": false, "issuer_read": true, "issuer_write": true, "gateway_read": true, "gateway_write": false, "setgid_required": false, "reason": "explicit PKI material and key separation, not a shared creator directory"}
+  ],
+  "sgid_required": true,
+  "sgid_boundary": "privileged deployment/bootstrap only",
+  "runtime_boundary": "read-only validation plus ordinary creator-owned file mode completion where explicitly safe",
+  "request_path_forbidden_operation": "chmod(directory, 02770)",
+  "pki_key_separation_preserved": true
+}

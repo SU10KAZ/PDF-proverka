@@ -1,0 +1,18 @@
+{
+  "schema": "auditmanager.12f.unsafe_permission_negative.v1",
+  "release": "permission-boundary-dd8c760e",
+  "intentionally_wrong": {"directory_mode": "0770", "expected": "2770"},
+  "real_systemd": true,
+  "RestrictSUIDSGID": true,
+  "startup_error_type": "SharedStatePermissionError",
+  "startup_error": "distributed Worker shared directory metadata mismatch",
+  "service_result": "exit-code",
+  "exec_main_status": 3,
+  "listener_18123": false,
+  "request_reached": false,
+  "silent_repair": false,
+  "fail_closed_before_traffic": true,
+  "wrong_owner_unit_test": "PASS",
+  "missing_default_acl_unit_test": "PASS",
+  "verdict": "PASS"
+}

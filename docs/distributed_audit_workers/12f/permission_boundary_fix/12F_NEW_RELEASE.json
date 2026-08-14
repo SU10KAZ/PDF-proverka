@@ -1,0 +1,22 @@
+{
+  "schema": "auditmanager.12f.permission_release.v1",
+  "release_id": "permission-boundary-dd8c760e",
+  "path": "/home/coder/auditmanager/releases/permission-boundary-dd8c760e",
+  "commit": "dd8c760e1bf21abcb061557efe2bfe436108ee51",
+  "parent": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "tree_sha1": "955940d56e38ee5c2bb7f15d1e745d34a4f874c0",
+  "git_archive_tar_sha256": "8a7a37428f69278df05e90e260fb02e9fd9ab45133c8b4b58a6bfcfb62d4c441",
+  "bundle": "patch-dd8c760e.bundle",
+  "bundle_sha256": "60e16594700e3df6cc9e0a5e238d29f2ef3ff75137698d8270518ff0b9c500b5",
+  "manifest_sha256": "07948299accdfbd7204409ff82c0a17d46fb811cc6b80afb86b3a6a157c8efdb",
+  "dependencies_sha256": "0f3b123e82b9ee78a20584dac911e2ce7bfb1f29d9b9cca0d06107aff781bd24",
+  "dependency_count": 132,
+  "release_specific_venv": true,
+  "app_write_bits": 0,
+  "release_write_bits": 0,
+  "durable": true,
+  "immutable": true,
+  "production_current_pointer_changed": false,
+  "deployed": false,
+  "verdict": "PASS"
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "auditmanager.12f.polling_hardened_e2e.v1",
+  "release": "permission-boundary-dd8c760e",
+  "synthetic_worker_id": "wrk_fd7b000a",
+  "authenticated_runtime_token": true,
+  "runtime_token_persisted_in_evidence": false,
+  "runtime_token_receipt_deleted": true,
+  "commands_endpoint": "/api/v1/worker/commands",
+  "commands_http": 200,
+  "commands_body_sha256": "a9c3a7631d2a488d1a25c667c554f206b08ddd4ed9f3f6b3c9a4bec2e7f3bd84",
+  "heartbeat_endpoint": "/api/v1/worker/heartbeat",
+  "heartbeat_http": 200,
+  "heartbeat_body_sha256": "c783d9eccf916c761fcee28c8a193c4fc7937a0eb0a7b2d982bf27659cba9a78",
+  "real_systemd": true,
+  "RestrictSUIDSGID": true,
+  "request_path_forbidden_chmod": false,
+  "EPERM": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "verdict": "PASS"
+}
