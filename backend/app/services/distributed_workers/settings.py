@@ -36,6 +36,40 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
+def _env_optional_id(name: str, kind: str) -> int | None:
+    """Read an opt-in POSIX id without silently accepting typos.
+
+    Most integer settings predate security-sensitive multi-service state and
+    intentionally fall back to their default on malformed input.  A wrong GID
+    would either lock a service out of the registry or grant state access to
+    the wrong group, so this setting is deliberately fail-closed.
+    """
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return None
+    value = raw.strip()
+    if not value.isascii() or not value.isdecimal():
+        raise DistributedWorkersConfigError(f"{name} must be a numeric POSIX {kind}")
+    identifier = int(value)
+    if identifier < 0:
+        raise DistributedWorkersConfigError(
+            f"{name} must be a non-negative POSIX {kind}"
+        )
+    return identifier
+
+
+def _env_strict_bool(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return default
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"0", "false", "no", "off"}:
+        return False
+    raise DistributedWorkersConfigError(f"{name} must be an explicit boolean")
+
+
 @dataclass(frozen=True)
 class DistributedWorkersSettings:
     enabled: bool
@@ -49,6 +83,13 @@ class DistributedWorkersSettings:
     protocol_version: int
     manifest_version: int
     allow_insecure_admin: bool = False
+    # Opt-in production shared-service boundary.  2770/0660 deliberately keeps
+    # POSIX ACL masks effective; an optional exact GID supports deployments
+    # that use one dedicated group instead of named service-user ACL entries.
+    # Disabled by default, preserving historical single-owner 0700/0600.
+    shared_state_enabled: bool = False
+    shared_state_owner_uid: int | None = None
+    shared_state_gid: int | None = None
     # Лимит частоты заявок на регистрацию. 0 в любом из порогов = этот порог
     # выключен явной настройкой (обе нули — ограничителя нет вовсе).
     registration_rate_window_sec: int = 3600
@@ -116,12 +157,32 @@ def get_settings() -> DistributedWorkersSettings:
     """Снимок настроек. Env перечитывается каждый раз (тесты, hot-reload)."""
     raw_dir = os.environ.get("DISTRIBUTED_WORKERS_DATA_DIR", "").strip()
     data_dir = Path(raw_dir).resolve() if raw_dir else config.DISTRIBUTED_WORKERS_DATA_DIR
+    shared_state_enabled = _env_strict_bool("DISTRIBUTED_WORKERS_SHARED_STATE")
+    shared_state_owner_uid = _env_optional_id(
+        "DISTRIBUTED_WORKERS_SHARED_OWNER_UID", "UID"
+    )
+    shared_state_gid = _env_optional_id("DISTRIBUTED_WORKERS_SHARED_GID", "GID")
+    if (shared_state_owner_uid is not None or shared_state_gid is not None) and not shared_state_enabled:
+        raise DistributedWorkersConfigError(
+            "DISTRIBUTED_WORKERS_SHARED_OWNER_UID/SHARED_GID require "
+            "DISTRIBUTED_WORKERS_SHARED_STATE=true"
+        )
+    if shared_state_enabled and (
+        shared_state_owner_uid is None or shared_state_gid is None
+    ):
+        raise DistributedWorkersConfigError(
+            "DISTRIBUTED_WORKERS_SHARED_STATE=true requires exact "
+            "DISTRIBUTED_WORKERS_SHARED_OWNER_UID and DISTRIBUTED_WORKERS_SHARED_GID"
+        )
     return DistributedWorkersSettings(
         enabled=_env_bool("DISTRIBUTED_WORKERS_ENABLED", config.DISTRIBUTED_WORKERS_ENABLED),
         allow_insecure_admin=_env_bool(
             "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN",
             config.DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN,
         ),
+        shared_state_enabled=shared_state_enabled,
+        shared_state_owner_uid=shared_state_owner_uid,
+        shared_state_gid=shared_state_gid,
         data_dir=data_dir,
         heartbeat_stale_sec=_env_int(
             "DISTRIBUTED_WORKERS_HEARTBEAT_STALE_SEC",

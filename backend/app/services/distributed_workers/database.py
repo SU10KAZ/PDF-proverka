@@ -16,6 +16,7 @@ import asyncio
 import logging
 import os
 import sqlite3
+import stat
 import threading
 from collections.abc import Callable
 from contextlib import contextmanager
@@ -26,6 +27,11 @@ from backend.app.services.distributed_workers import schema
 from backend.app.services.distributed_workers.settings import (
     DistributedWorkersSettings,
     get_settings,
+)
+from backend.app.services.distributed_workers.state_permissions import (
+    STATIC_DIRECTORY_NAMES,
+    validate_or_complete_shared_file,
+    validate_shared_directory,
 )
 
 T = TypeVar("T")
@@ -38,11 +44,83 @@ _migrated: set[str] = set()
 _migrate_lock = threading.Lock()
 
 
-def _connect(path: Path) -> sqlite3.Connection:
-    conn = sqlite3.connect(str(path), timeout=10.0, isolation_level=None)
+def _connect(st: DistributedWorkersSettings) -> sqlite3.Connection:
+    conn = sqlite3.connect(str(st.db_path), timeout=10.0, isolation_level=None)
     conn.row_factory = sqlite3.Row
     schema.apply_pragmas(conn)
+    _secure_database_files(st)
     return conn
+
+
+def _validate_plain_path(path: Path, *, directory: bool) -> os.stat_result:
+    """Reject symlinks and unexpected file types in the durable state tree."""
+    value = path.lstat()
+    expected = stat.S_ISDIR(value.st_mode) if directory else stat.S_ISREG(value.st_mode)
+    if stat.S_ISLNK(value.st_mode) or not expected:
+        kind = "directory" if directory else "file"
+        raise RuntimeError(f"distributed Worker state {kind} is not a plain path: {path}")
+    return value
+
+
+def _enforce_private_permissions(
+    path: Path,
+    *,
+    directory: bool,
+) -> None:
+    """Retain historical caller-owned 0700/0600 behavior in private mode."""
+    _validate_plain_path(path, directory=directory)
+    expected_mode = 0o700 if directory else 0o600
+    try:
+        os.chmod(path, expected_mode)
+    except OSError as exc:
+        raise RuntimeError(
+            f"cannot enforce distributed Worker state mode {expected_mode:o}: {path}"
+        ) from exc
+    final = _validate_plain_path(path, directory=directory)
+    if stat.S_IMODE(final.st_mode) != expected_mode:
+        raise RuntimeError(
+            f"distributed Worker state mode verification failed for {path}"
+        )
+
+
+def _state_directories(st: DistributedWorkersSettings) -> tuple[Path, ...]:
+    return tuple(st.data_dir / name if name else st.data_dir for name in STATIC_DIRECTORY_NAMES)
+
+
+def _prepare_or_validate_directories(st: DistributedWorkersSettings) -> None:
+    if st.shared_state_enabled:
+        assert st.shared_state_owner_uid is not None
+        assert st.shared_state_gid is not None
+        for directory in _state_directories(st):
+            validate_shared_directory(
+                directory,
+                owner_uid=st.shared_state_owner_uid,
+                shared_gid=st.shared_state_gid,
+            )
+        return
+    for directory in _state_directories(st):
+        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        _enforce_private_permissions(directory, directory=True)
+
+
+def _secure_database_files(st: DistributedWorkersSettings) -> None:
+    """Secure SQLite main/WAL/SHM files that currently exist.
+
+    WAL and SHM can be created by any of the three cooperating processes after
+    the main database.  Rechecking them on every lazy access avoids depending
+    on a caller's umask for the cross-process registry boundary.
+    """
+    for path in (
+        st.db_path,
+        st.db_path.with_name(st.db_path.name + "-wal"),
+        st.db_path.with_name(st.db_path.name + "-shm"),
+    ):
+        if path.exists() or path.is_symlink():
+            if st.shared_state_enabled:
+                assert st.shared_state_gid is not None
+                validate_or_complete_shared_file(path, shared_gid=st.shared_state_gid)
+            else:
+                _enforce_private_permissions(path, directory=False)
 
 
 def ensure_ready(settings: DistributedWorkersSettings | None = None) -> Path:
@@ -53,34 +131,33 @@ def ensure_ready(settings: DistributedWorkersSettings | None = None) -> Path:
     """
     st = settings or get_settings()
     st.require_enabled()
-    for directory in (
-        st.data_dir,
-        st.source_packages_dir,
-        st.incoming_dir,
-        st.result_staging_dir,
-        st.validated_results_dir,
-        st.rejected_results_dir,
-        st.superseded_results_dir,
-        st.job_logs_dir,
-    ):
-        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-        # The production service has UMask=0077 as the primary boundary.  Keep
-        # the invariant explicit here too so an isolated/manual candidate boot
-        # cannot accidentally create a group/world-readable state tree.
-        directory.chmod(0o700)
+    _prepare_or_validate_directories(st)
+
+    _secure_database_files(st)
 
     key = str(st.db_path)
     if key in _migrated:
+        _secure_database_files(st)
         return st.db_path
     with _migrate_lock:
         if key not in _migrated:
-            conn = _connect(st.db_path)
+            conn = _connect(st)
             try:
-                os.chmod(st.db_path, 0o600)
-                _backup_before_migration(conn, st.db_path)
+                _secure_database_files(st)
+                backup = _backup_before_migration(conn, st.db_path)
+                if backup is not None:
+                    if st.shared_state_enabled:
+                        assert st.shared_state_gid is not None
+                        validate_or_complete_shared_file(
+                            backup, shared_gid=st.shared_state_gid
+                        )
+                    else:
+                        _enforce_private_permissions(backup, directory=False)
                 schema.migrate(conn)
+                _secure_database_files(st)
             finally:
                 conn.close()
+            _secure_database_files(st)
             _migrated.add(key)
     return st.db_path
 
@@ -122,13 +199,13 @@ def _backup_before_migration(conn: sqlite3.Connection, db_path: Path) -> Optiona
     return target
 
 
-def _thread_conn(path: Path) -> sqlite3.Connection:
+def _thread_conn(st: DistributedWorkersSettings) -> sqlite3.Connection:
     """Соединение, закреплённое за потоком (sqlite3 не любит шаринг между потоками)."""
     cache: dict[str, sqlite3.Connection] = getattr(_local, "conns", None) or {}
-    key = str(path)
+    key = str(st.db_path)
     conn = cache.get(key)
     if conn is None:
-        conn = _connect(path)
+        conn = _connect(st)
         cache[key] = conn
         _local.conns = cache
     return conn
@@ -139,7 +216,7 @@ def read_conn(settings: DistributedWorkersSettings | None = None):
     """Читающее соединение. Без глобального лока — WAL допускает многих читателей."""
     st = settings or get_settings()
     path = ensure_ready(st)
-    yield _thread_conn(path)
+    yield _thread_conn(st)
 
 
 def _drop_thread_conn(path: Path) -> None:
@@ -165,8 +242,9 @@ def write_txn(settings: DistributedWorkersSettings | None = None):
     st = settings or get_settings()
     path = ensure_ready(st)
     with _write_lock:
-        conn = _thread_conn(path)
+        conn = _thread_conn(st)
         conn.execute("BEGIN IMMEDIATE")
+        _secure_database_files(st)
             # COMMIT и ROLLBACK — внутри try, и оба умеют не сработать.
             # Раньше COMMIT стоял в `else`, снаружи защиты: отказ на коммите
             # (SQLITE_BUSY, кончившийся диск, ошибка ввода-вывода) оставлял
@@ -187,6 +265,7 @@ def write_txn(settings: DistributedWorkersSettings | None = None):
                 conn.execute("ROLLBACK")
                 raise
             conn.execute("COMMIT")
+            _secure_database_files(st)
         except Exception:
             if conn.in_transaction:
                 _drop_thread_conn(path)
