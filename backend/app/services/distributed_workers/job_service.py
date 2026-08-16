@@ -702,6 +702,14 @@ def catch_up_to_result_received(
     рёбрами, что описаны в таблице, от имени worker, помечая причину.
     """
     path = {
+        # JobAccept/JobStarted lost after reconnect while the worker already
+        # finished offline and is delivering the archive (12H canary).
+        JobState.SOURCE_READY: [
+            JobState.ACCEPTED_BY_WORKER,
+            JobState.RUNNING,
+            JobState.COMPLETED_LOCALLY,
+            JobState.RESULT_UPLOADING,
+        ],
         JobState.RUNNING: [JobState.COMPLETED_LOCALLY, JobState.RESULT_UPLOADING],
         JobState.ACCEPTED_BY_WORKER: [
             JobState.RUNNING, JobState.COMPLETED_LOCALLY, JobState.RESULT_UPLOADING,
