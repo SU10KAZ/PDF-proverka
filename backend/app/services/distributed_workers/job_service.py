@@ -338,7 +338,43 @@ def _overall_for(state: JobState, disposition: str) -> Optional[str]:
 
 # ─── Создание тестового задания ──────────────────────────────────────────────
 def worker_capabilities(worker: dict[str, Any]) -> dict[str, Any]:
-    return _loads(worker.get("capabilities"), {}) or {}
+    caps = _loads(worker.get("capabilities"), {}) or {}
+    if not isinstance(caps, dict):
+        return {}
+
+    # AgentStream's CapabilitySnapshot currently omits these mode flags while
+    # retaining provider names/capabilities.  Recover only from unambiguous
+    # evidence; an explicit worker declaration always remains authoritative.
+    if isinstance(caps.get("real_llm_enabled"), bool):
+        return caps
+
+    provider_capabilities = caps.get("provider_capabilities")
+    provider_names = (
+        {name for name in provider_capabilities if isinstance(name, str)}
+        if isinstance(provider_capabilities, dict)
+        else set()
+    )
+    providers = caps.get("providers")
+    if isinstance(providers, list):
+        provider_names.update(name for name in providers if isinstance(name, str))
+
+    if caps.get("provider_mode") == "fake" or any(
+        name.startswith("fake_") for name in provider_names
+    ):
+        caps["real_llm_enabled"] = False
+        caps["provider_mode"] = "fake"
+        if caps.get("pipeline_provider_bridge_enabled") is not True:
+            caps["pipeline_provider_bridge_enabled"] = False
+    elif provider_names & {"claude", "codex", "openrouter"}:
+        caps["real_llm_enabled"] = True
+        caps["provider_mode"] = "real"
+        if "pipeline_provider_bridge_enabled" not in caps:
+            caps["pipeline_provider_bridge_enabled"] = True
+    else:
+        return caps
+
+    caps["_capabilities_recovered_from_grpc_snapshot"] = True
+    return caps
 
 
 def assignment_params(job: dict[str, Any], payload_obj: dict[str, Any]):
