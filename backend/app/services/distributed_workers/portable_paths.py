@@ -146,11 +146,11 @@ NORMALIZED_SUFFIXES: tuple[str, ...] = (".json", ".jsonl")
 
 #: Что считается ЗНАЧЕНИЕМ-ПУТЁМ. Не «строка со слэшем»: описание замечания
 #: тоже содержит слэши. Требуется, чтобы строка ЦЕЛИКОМ была абсолютным путём —
-#: без переводов строки, без табуляций и без кавычек.
+#: без пробельных символов, NUL, двоеточия и кавычек.
 #: Пробел и двоеточие исключены намеренно: без них под шаблон попадала
 #: диагностика вида «/bin/bash: line 1: rg: command not found», а такая строка
 #: в поле неизвестной схемы означала отказ ВСЕГО пакета результата.
-_ABSOLUTE_PATH = re.compile(r"^/(?:[^/\0\s:\"']+/?)*$")
+_ABSOLUTE_PATH_FORBIDDEN = frozenset("\0:\"'")
 
 
 def looks_like_absolute_path(value: Any) -> bool:
@@ -160,9 +160,15 @@ def looks_like_absolute_path(value: Any) -> bool:
     text = value.strip()
     if len(text) < 2 or not text.startswith("/"):
         return False
-    if any(ch in text for ch in "\n\r\t"):
+    # Предыдущий regex содержал вложенные `+`/`*` и экспоненциально перебирал
+    # разбиения длинного допустимого префикса, если ближе к концу встречался
+    # пробел. Явный проход сохраняет тот же язык и всегда линеен.
+    if " " in text:
         return False
-    return bool(_ABSOLUTE_PATH.match(text))
+    if any(ch.isspace() or ch in _ABSOLUTE_PATH_FORBIDDEN for ch in text):
+        return False
+    # В исходном шаблоне каждый компонент непуст; один завершающий `/` допустим.
+    return "//" not in text
 
 
 class PortablePathError(RuntimeError):

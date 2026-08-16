@@ -170,6 +170,37 @@ def import_result_for_attempt(
 
 def _resolve_version_dir(attempt: dict[str, Any]) -> Path:
     """Найти каталог версии на центре по метаданным задания."""
+    payload = _loads(attempt.get("payload"))
+    params = (
+        payload.get("params") if isinstance(payload.get("params"), dict) else {}
+    )
+    raw_layout = params.get("project_layout_version")
+    if raw_layout is None:
+        raw_layout = attempt.get("project_layout_version")
+    try:
+        layout = int(raw_layout)
+    except (TypeError, ValueError):
+        layout = 1
+
+    if layout == 2:
+        # Раскладка результата зафиксирована в задании. Нельзя выбирать её по
+        # текущему process-wide write mode: после рестарта он может отличаться
+        # от режима, в котором был собран source package.
+        from backend.app.services.storage.v2_primary_wiring import resolve_v2_job_paths
+
+        paths = resolve_v2_job_paths(
+            str(attempt.get("project_id") or ""),
+            str(attempt.get("version_id") or ""),
+            run_id=str(attempt.get("job_id") or ""),
+            object_id=str(attempt.get("object_id") or "") or None,
+        )
+        if paths is None:
+            raise ResultImportError(
+                "Не удалось разрешить каталог projects_v2 для результата: "
+                f"{attempt.get('project_id')}/{attempt.get('version_id')}"
+            )
+        return Path(paths[1])
+
     from backend.app.models.audit import AuditJob
     from backend.app.pipeline.manager import pipeline_manager
 
