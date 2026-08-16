@@ -78,6 +78,11 @@
 .distributed-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--teal); transition: width .25s ease; }
 .distributed-progress--warning > span { background: var(--amber); }
 .distributed-progress--danger > span { background: var(--red); }
+.distributed-progress--unavailable {
+  background: repeating-linear-gradient(135deg, var(--border2) 0 6px, transparent 6px 12px);
+  border: 1px dashed var(--border2);
+}
+.distributed-progress--unavailable > span { width: 0 !important; }
 .distributed-progress--quota { height: 5px; }
 .distributed-progress--task { min-width: 90px; width: 120px; height: 6px; }
 .distributed-progress--task > span { background: var(--blue); }

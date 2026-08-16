@@ -12,8 +12,9 @@
                     <p>Мощности, лимиты провайдеров и распределение проверок проектной документации.</p>
                 </div>
                 <div class="distributed-page-header__status">
-                    <span class="distributed-demo-badge" title="Все действия изменяют только локальные mock-данные">Демо-данные · без запуска задач</span>
-                    <span class="distributed-system-badge"><i></i>Система в норме</span>
+                    <span v-if="distributed.isDemo" class="distributed-demo-badge" title="Все действия изменяют только локальные mock-данные">Демо-данные · без запуска задач</span>
+                    <span v-else class="distributed-demo-badge" title="Данные получены из AuditManager; действия отключены">Реальные данные · только чтение</span>
+                    <span class="distributed-system-badge"><i></i>{{ distributed.isDemo ? 'Демо-сценарий' : 'Scheduler выключен' }}</span>
                 </div>
             </header>
 
@@ -52,7 +53,7 @@
 
                         <section class="distributed-section">
                             <div class="distributed-section-heading">
-                                <div><h2>Вычислительные узлы</h2><p>Ресурсы, доступные слоты и примерные остатки лимитов</p></div>
+                                <div><h2>Вычислительные узлы</h2><p>Heartbeat, фактическая телеметрия, слоты и сохранённые статусы провайдеров</p></div>
                                 <button class="distributed-section-heading__action" @click="distributed.goToTab('workers')">Все воркеры →</button>
                             </div>
                             <div class="distributed-workers-grid">
@@ -60,7 +61,7 @@
                             </div>
                         </section>
 
-                        <section v-if="distributed.overview.recommendation && distributed.recommendationProject && distributed.recommendationWorker" class="distributed-section">
+                        <section v-if="distributed.overview.recommendation && distributed.overview.recommendation.available !== false && distributed.recommendationProject && distributed.recommendationWorker" class="distributed-section">
                             <div class="distributed-section-heading"><div><h2>Следующая задача</h2><p>Рекомендация на основе свободных мощностей и лимитов</p></div></div>
                             <article class="distributed-recommendation">
                                 <div>
@@ -74,17 +75,21 @@
                                         <span>{{ distributed.overview.recommendation.freeSlots }} свободный слот</span><span>GPU {{ distributed.overview.recommendation.gpu }}%</span><span>Claude {{ distributed.overview.recommendation.claude }}%</span><span>Codex {{ distributed.overview.recommendation.codex }}%</span>
                                     </div>
                                 </div>
-                                <div class="distributed-recommendation__actions">
+                                <div v-if="distributed.isDemo" class="distributed-recommendation__actions">
                                     <button class="btn btn-primary btn-sm" @click="distributed.openSend(distributed.recommendationProject, distributed.recommendationWorker.id)">Отправить сейчас</button>
                                     <button class="btn btn-outline btn-sm" @click="distributed.openAlternative()">Другой VPS</button>
                                     <button class="btn btn-ghost btn-sm" @click="distributed.openWhy()">Почему выбран?</button>
                                 </div>
                             </article>
                         </section>
+                        <section v-else-if="distributed.overview.recommendation && distributed.overview.recommendation.available === false" class="distributed-section">
+                            <div class="distributed-section-heading"><div><h2>Следующая задача</h2><p>Рекомендация недоступна</p></div></div>
+                            <div class="distributed-all-good">{{ distributed.overview.recommendation.reason }} Новые назначения и scheduler не запускаются.</div>
+                        </section>
 
                         <section class="distributed-section distributed-overview-split">
                             <article class="distributed-panel">
-                                <header class="distributed-panel__header"><div><h2>Проекты для проверки</h2><p>Ручное назначение или автоматический выбор VPS</p></div></header>
+                                <header class="distributed-panel__header"><div><h2>Проекты для проверки</h2><p>{{ distributed.isDemo ? 'Ручное назначение или автоматический выбор VPS' : 'Фактически ожидающие задания · только чтение' }}</p></div></header>
                                 <div class="distributed-table-wrap">
                                     <table class="distributed-table">
                                         <thead><tr><th>Проект / комплект</th><th>Режим</th><th>Размер</th><th>Приоритет</th><th>Статус</th><th>Назначение</th><th></th></tr></thead>
@@ -92,16 +97,17 @@
                                             <tr v-for="project in distributed.overview.projects" :key="project.id">
                                                 <td class="distributed-table__project"><strong>{{ project.project }}</strong><span>{{ project.packageName }}</span></td>
                                                 <td><span class="distributed-mode">{{ distributed.modeLabel(project.mode) }}</span></td>
-                                                <td>{{ project.pageCount }} стр. / {{ project.blockCount }} блоков</td>
-                                                <td><span class="distributed-priority" :class="'distributed-priority--' + project.priority">{{ distributed.priorityLabel(project.priority) }}</span></td>
+                                                <td>{{ Number.isFinite(project.pageCount) && Number.isFinite(project.blockCount) ? project.pageCount + ' стр. / ' + project.blockCount + ' блоков' : 'Недоступно' }}</td>
+                                                <td><span class="distributed-priority" :class="project.priority ? 'distributed-priority--' + project.priority : ''">{{ project.priority ? distributed.priorityLabel(project.priority) : 'Не задан' }}</span></td>
                                                 <td><span class="distributed-chip" :class="project.status === 'Добавлен в очередь' ? 'distributed-chip--green' : ''">{{ project.status }}</span></td>
                                                 <td>
-                                                    <select class="form-input" :value="distributed.assignmentByProject[project.id]" @change="distributed.setAssignment(project.id, $event.target.value)" :aria-label="'Назначение для ' + project.project + ' ' + project.packageName">
+                                                    <select v-if="distributed.isDemo" class="form-input" :value="distributed.assignmentByProject[project.id]" @change="distributed.setAssignment(project.id, $event.target.value)" :aria-label="'Назначение для ' + project.project + ' ' + project.packageName">
                                                         <option value="auto">Автоматически</option>
                                                         <option v-for="worker in distributed.workers" :key="worker.id" :value="worker.id" :disabled="worker.status === 'offline'">VPS {{ worker.name }}{{ worker.status === 'offline' ? ' · offline' : '' }}</option>
                                                     </select>
+                                                    <span v-else>{{ project.assignment ? 'VPS ' + distributed.workerName(project.assignment) : 'Не назначено' }}</span>
                                                 </td>
-                                                <td class="distributed-table__actions"><button class="btn btn-primary btn-sm" @click="distributed.openSend(project)">Отправить</button></td>
+                                                <td class="distributed-table__actions"><button v-if="distributed.isDemo" class="btn btn-primary btn-sm" @click="distributed.openSend(project)">Отправить</button><span v-else>Только чтение</span></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -113,7 +119,7 @@
                                 <div class="distributed-queue-preview">
                                     <div v-for="item in distributed.overview.queuePreview" :key="item.id" class="distributed-queue-preview__item">
                                         <span class="distributed-queue-preview__number">{{ item.position }}</span>
-                                        <div><div class="distributed-queue-preview__project">{{ item.project }} → {{ item.packageName }}</div><div class="distributed-queue-preview__meta"><span>{{ distributed.modeLabel(item.mode) }}</span><span>VPS {{ distributed.workerName(item.suggestedWorkerId) }}</span><span>Старт {{ item.expectedStart }}</span></div></div>
+                                        <div><div class="distributed-queue-preview__project">{{ item.project }} → {{ item.packageName }}</div><div class="distributed-queue-preview__meta"><span>{{ distributed.modeLabel(item.mode) }}</span><span>{{ item.suggestedWorkerId ? 'VPS ' + distributed.workerName(item.suggestedWorkerId) : 'VPS не назначен' }}</span><span>Старт {{ item.expectedStart || 'недоступен' }}</span></div></div>
                                     </div>
                                 </div>
                             </article>
@@ -127,8 +133,8 @@
                                     <div><h3>VPS {{ distributed.workerName(issue.workerId) }} · {{ issue.title }}</h3><p>{{ issue.description }}</p></div>
                                     <div class="distributed-attention-card__actions">
                                         <button class="btn btn-outline btn-sm" @click="distributed.openAttentionTask(issue.taskId)">Подробнее</button>
-                                        <button class="btn btn-outline btn-sm" @click="distributed.retryAttentionTask(issue.taskId)">Повторить</button>
-                                        <button class="btn btn-outline btn-sm" @click="distributed.transferAttentionTask(issue.taskId)">Перенести</button>
+                                        <button v-if="distributed.isDemo" class="btn btn-outline btn-sm" @click="distributed.retryAttentionTask(issue.taskId)">Повторить</button>
+                                        <button v-if="distributed.isDemo" class="btn btn-outline btn-sm" @click="distributed.transferAttentionTask(issue.taskId)">Перенести</button>
                                     </div>
                                 </article>
                             </div>
@@ -140,7 +146,7 @@
 
                 <!-- Очередь -->
                 <div v-else-if="distributed.activeTab === 'queue'">
-                    <div class="distributed-section-heading"><div><h2>Очередь проверок</h2><p>{{ distributed.queue.length }} комплектов ожидают запуска · изменения сохраняются только в демо-состоянии</p></div></div>
+                    <div class="distributed-section-heading"><div><h2>Очередь проверок</h2><p>{{ distributed.queue.length }} комплектов ожидают запуска · {{ distributed.isDemo ? 'изменения сохраняются только в демо-состоянии' : 'порядок и назначения доступны только для чтения' }}</p></div></div>
                     <article v-if="distributed.queue.length" class="distributed-panel">
                         <div class="distributed-table-wrap">
                             <table class="distributed-table distributed-table--queue">
@@ -148,12 +154,12 @@
                                 <tbody>
                                     <tr v-for="(item, index) in distributed.queue" :key="item.id">
                                         <td><span class="distributed-position">{{ item.position }}</span></td><td class="distributed-table__project"><strong>{{ item.project }}</strong></td><td>{{ item.packageName }}</td><td><span class="distributed-mode">{{ distributed.modeLabel(item.mode) }}</span></td>
-                                        <td><select class="form-input" :value="item.priority" @change="distributed.changePriority(item, $event.target.value)" :aria-label="'Приоритет ' + item.project + ' ' + item.packageName"><option value="critical">Критический</option><option value="high">Высокий</option><option value="normal">Обычный</option><option value="low">Низкий</option></select></td>
-                                        <td>{{ item.pageCount }} стр. / {{ item.blockCount }} блоков</td>
-                                        <td>VPS {{ distributed.workerName(item.suggestedWorkerId) }}<button class="distributed-info-button" @click="distributed.openQueueWhy(item)" aria-label="Почему выбран этот VPS?">i</button></td>
-                                        <td>{{ item.expectedStart }}</td><td><span class="distributed-chip">{{ item.status }}</span></td>
+                                        <td><select v-if="distributed.isDemo" class="form-input" :value="item.priority" @change="distributed.changePriority(item, $event.target.value)" :aria-label="'Приоритет ' + item.project + ' ' + item.packageName"><option value="critical">Критический</option><option value="high">Высокий</option><option value="normal">Обычный</option><option value="low">Низкий</option></select><span v-else>{{ item.priority ? distributed.priorityLabel(item.priority) : 'Не задан' }}</span></td>
+                                        <td>{{ Number.isFinite(item.pageCount) && Number.isFinite(item.blockCount) ? item.pageCount + ' стр. / ' + item.blockCount + ' блоков' : 'Недоступно' }}</td>
+                                        <td>{{ item.suggestedWorkerId ? 'VPS ' + distributed.workerName(item.suggestedWorkerId) : 'Не назначен' }}<button v-if="distributed.isDemo && item.suggestedWorkerId" class="distributed-info-button" @click="distributed.openQueueWhy(item)" aria-label="Почему выбран этот VPS?">i</button></td>
+                                        <td>{{ item.expectedStart || 'Недоступно' }}</td><td><span class="distributed-chip">{{ item.status }}</span></td>
                                         <td class="distributed-table__actions">
-                                            <button class="distributed-icon-action" :disabled="index === 0" @click="distributed.moveQueue(item, 'first')" title="На первое место">⇈</button><button class="distributed-icon-action" :disabled="index === 0" @click="distributed.moveQueue(item, 'up')" title="Выше">↑</button><button class="distributed-icon-action" :disabled="index === distributed.queue.length - 1" @click="distributed.moveQueue(item, 'down')" title="Ниже">↓</button><button class="distributed-icon-action" :disabled="index === distributed.queue.length - 1" @click="distributed.moveQueue(item, 'last')" title="В конец">⇊</button>
+                                            <template v-if="distributed.isDemo"><button class="distributed-icon-action" :disabled="index === 0" @click="distributed.moveQueue(item, 'first')" title="На первое место">⇈</button><button class="distributed-icon-action" :disabled="index === 0" @click="distributed.moveQueue(item, 'up')" title="Выше">↑</button><button class="distributed-icon-action" :disabled="index === distributed.queue.length - 1" @click="distributed.moveQueue(item, 'down')" title="Ниже">↓</button><button class="distributed-icon-action" :disabled="index === distributed.queue.length - 1" @click="distributed.moveQueue(item, 'last')" title="В конец">⇊</button></template><span v-else>Только чтение</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -179,7 +185,7 @@
                         <div class="distributed-table-wrap"><table class="distributed-table distributed-table--tasks">
                             <thead><tr><th>Проект</th><th>VPS</th><th>Режим</th><th>Прогресс</th><th>Время</th><th>Последняя активность</th><th>Статус</th></tr></thead>
                             <tbody><tr v-for="task in distributed.tasks.active" :key="task.id" tabindex="0" class="distributed-table__row-button" @click="distributed.openTask(task)" @keyup.enter="distributed.openTask(task)">
-                                <td class="distributed-table__project"><strong>{{ task.project }}</strong><span>{{ task.packageName }}</span></td><td>VPS {{ distributed.workerName(task.workerId) }}</td><td>{{ distributed.modeLabel(task.mode) }}</td><td><div class="distributed-task-progress"><div class="distributed-progress distributed-progress--task"><span :style="distributed.progressStyle(task.progress)"></span></div><b>{{ task.progress }}%</b></div></td><td>{{ task.duration }}</td><td>{{ task.lastActivity }}</td><td><span class="distributed-chip distributed-chip--green">{{ task.status }}</span></td>
+                                <td class="distributed-table__project"><strong>{{ task.project }}</strong><span>{{ task.packageName }}</span></td><td>{{ task.workerId ? 'VPS ' + distributed.workerName(task.workerId) : 'Не назначен' }}</td><td>{{ distributed.modeLabel(task.mode) }}</td><td><div class="distributed-task-progress"><div class="distributed-progress distributed-progress--task" :class="{'distributed-progress--unavailable': task.progressKind === 'unavailable'}"><span :style="distributed.progressStyle(task.progressPercent)"></span></div><b>{{ distributed.progressText(task) }}</b></div></td><td>{{ task.duration }}</td><td>{{ task.lastActivity }}</td><td><span class="distributed-chip distributed-chip--green">{{ task.status }}</span></td>
                             </tr></tbody>
                         </table></div>
                     </article>
@@ -192,7 +198,7 @@
                     <article v-else-if="distributed.taskSubtab === 'errors' && distributed.tasks.errors.length" class="distributed-panel">
                         <div class="distributed-table-wrap"><table class="distributed-table distributed-table--tasks">
                             <thead><tr><th>Проект</th><th>VPS</th><th>Этап</th><th>Что произошло</th><th>Когда</th><th>Действия</th></tr></thead>
-                            <tbody><tr v-for="task in distributed.tasks.errors" :key="task.id"><td class="distributed-table__project"><strong>{{ task.project }}</strong><span>{{ task.packageName }}</span></td><td>VPS {{ distributed.workerName(task.workerId) }}</td><td><span class="distributed-chip distributed-chip--red">{{ task.status }}</span></td><td class="distributed-error-message">{{ task.errorMessage }}</td><td>{{ task.lastActivity }}</td><td class="distributed-table__actions"><button class="btn btn-outline btn-sm" @click="distributed.openTask(task)">Подробнее</button><button class="btn btn-outline btn-sm" @click="distributed.retryTask(task)">Повторить</button><button class="btn btn-outline btn-sm" @click="distributed.openTransfer(task)">Перенести</button></td></tr></tbody>
+                            <tbody><tr v-for="task in distributed.tasks.errors" :key="task.id"><td class="distributed-table__project"><strong>{{ task.project }}</strong><span>{{ task.packageName }}</span></td><td>{{ task.workerId ? 'VPS ' + distributed.workerName(task.workerId) : 'Не назначен' }}</td><td><span class="distributed-chip distributed-chip--red">{{ task.status }}</span><span v-if="task.needsOperator && !task.isActive"> · история</span></td><td class="distributed-error-message">{{ task.errorMessage || 'Подробности недоступны' }}</td><td>{{ task.lastActivity }}</td><td class="distributed-table__actions"><button class="btn btn-outline btn-sm" @click="distributed.openTask(task)">Подробнее</button><button v-if="distributed.isDemo" class="btn btn-outline btn-sm" @click="distributed.retryTask(task)">Повторить</button><button v-if="distributed.isDemo" class="btn btn-outline btn-sm" @click="distributed.openTransfer(task)">Перенести</button></td></tr></tbody>
                         </table></div>
                     </article>
                     <div v-else class="distributed-empty"><div class="distributed-empty__icon">✓</div><h3>{{ distributed.taskSubtab === 'errors' ? 'Ошибок нет' : 'Задач пока нет' }}</h3><p>{{ distributed.taskSubtab === 'errors' ? 'Все проверки выполняются штатно.' : 'В выбранном периоде нет задач.' }}</p></div>
@@ -200,7 +206,7 @@
 
                 <!-- Воркеры -->
                 <div v-else-if="distributed.activeTab === 'workers'">
-                    <div class="distributed-section-heading"><div><h2>Воркеры</h2><p>Детальное состояние VPS и демо-управление приёмом новых задач</p></div></div>
+                    <div class="distributed-section-heading"><div><h2>Воркеры</h2><p>{{ distributed.isDemo ? 'Детальное состояние VPS и демо-управление приёмом новых задач' : 'Детальное фактическое состояние VPS · управление отключено' }}</p></div></div>
                     <div v-if="distributed.workers.length" class="distributed-workers-grid">
                         <distributed-worker-card v-for="worker in distributed.workers" :key="worker.id" :worker="worker" :detailed="true" @detail="distributed.openWorker" @toggle-intake="distributed.toggleWorkerIntake(worker, $event)" @task="distributed.openTask"></distributed-worker-card>
                     </div>
@@ -211,16 +217,16 @@
                 <div v-else-if="distributed.activeTab === 'limits'">
                     <div v-if="distributed.limits.length">
                         <div class="distributed-limits-summary">
-                            <article class="distributed-summary-card distributed-summary-card--accent"><span>Claude · средний остаток</span><strong>{{ distributed.limitsSummary.claude }}%</strong></article><article class="distributed-summary-card distributed-summary-card--accent"><span>Codex · средний остаток</span><strong>{{ distributed.limitsSummary.codex }}%</strong></article><article class="distributed-summary-card"><span>Ближайший сброс</span><strong>{{ distributed.limitsSummary.nextReset }}</strong></article><article class="distributed-summary-card"><span>Больше всего Claude</span><strong>VPS {{ distributed.limitsSummary.bestClaude }}</strong></article><article class="distributed-summary-card"><span>Больше всего Codex</span><strong>VPS {{ distributed.limitsSummary.bestCodex }}</strong></article>
+                            <article class="distributed-summary-card distributed-summary-card--accent"><span>Claude · средний остаток</span><strong>{{ Number.isFinite(distributed.limitsSummary.claude) ? '≈ ' + distributed.limitsSummary.claude + '%' : 'Недоступно' }}</strong></article><article class="distributed-summary-card distributed-summary-card--accent"><span>Codex · средний остаток</span><strong>{{ Number.isFinite(distributed.limitsSummary.codex) ? '≈ ' + distributed.limitsSummary.codex + '%' : 'Недоступно' }}</strong></article><article class="distributed-summary-card"><span>Ближайший сброс</span><strong>{{ distributed.limitsSummary.nextReset }}</strong></article><article class="distributed-summary-card"><span>Больше всего Claude</span><strong>{{ distributed.limitsSummary.bestClaude === 'Недоступно' ? 'Недоступно' : 'VPS ' + distributed.limitsSummary.bestClaude }}</strong></article><article class="distributed-summary-card"><span>Больше всего Codex</span><strong>{{ distributed.limitsSummary.bestCodex === 'Недоступно' ? 'Недоступно' : 'VPS ' + distributed.limitsSummary.bestCodex }}</strong></article>
                         </div>
                         <div class="distributed-provider-columns">
                             <article v-for="provider in [{key:'claude',label:'Claude'},{key:'codex',label:'Codex'}]" :key="provider.key" class="distributed-panel">
-                                <header class="distributed-panel__header"><div><h2>{{ provider.label }}</h2><p>Примерная доступность подписки по VPS</p></div><span class="distributed-demo-badge">≈ оценка</span></header>
+                                <header class="distributed-panel__header"><div><h2>{{ provider.label }}</h2><p>Последний безопасный статус по heartbeat</p></div><span class="distributed-demo-badge">без запросов к провайдеру</span></header>
                                 <div class="distributed-provider-list">
                                     <div v-for="item in distributed.limits" :key="provider.key + item.workerId" class="distributed-provider-row">
-                                        <div class="distributed-provider-row__worker"><strong>{{ item.workerName }}</strong><span>{{ item.online ? (item.stale ? 'последние данные' : 'online') : 'offline · последние данные' }}</span></div>
-                                        <div class="distributed-provider-row__quota"><div class="distributed-progress" :class="item[provider.key].status === 'critical' ? 'distributed-progress--danger' : item[provider.key].status === 'warning' ? 'distributed-progress--warning' : ''"><span :style="distributed.progressStyle(item[provider.key].percentageRemaining)"></span></div><strong>{{ item[provider.key].percentageRemaining }}%</strong></div>
-                                        <div class="distributed-provider-row__reset">{{ item.stale ? 'Последний известный reset: ' : 'Сброс через ' }}{{ item[provider.key].resetIn }}</div><div class="distributed-provider-row__used">Использовано сегодня {{ item[provider.key].usedToday }}%</div>
+                                        <div class="distributed-provider-row__worker"><strong>{{ item.workerName }}</strong><span>{{ item.online ? (item[provider.key].stale ? 'последние данные' : 'online') : 'offline · последние данные' }}</span></div>
+                                        <div class="distributed-provider-row__quota"><div class="distributed-progress" :class="[item[provider.key].status === 'critical' ? 'distributed-progress--danger' : item[provider.key].status === 'warning' ? 'distributed-progress--warning' : '', {'distributed-progress--unavailable': !Number.isFinite(item[provider.key].percentageRemaining)}]"><span :style="distributed.progressStyle(item[provider.key].percentageRemaining)"></span></div><strong>{{ item[provider.key].isEstimated && Number.isFinite(item[provider.key].percentageRemaining) ? '≈ ' : '' }}{{ distributed.quotaText(item[provider.key]) }}</strong></div>
+                                        <div class="distributed-provider-row__reset">{{ item[provider.key].resetIn ? (item[provider.key].stale ? 'Последний известный reset: ' : 'Сброс через ') + item[provider.key].resetIn : 'Дата сброса недоступна' }}</div><div class="distributed-provider-row__used">{{ Number.isFinite(item[provider.key].usedToday) ? 'Использовано сегодня ' + item[provider.key].usedToday + '%' : 'Расход за сегодня недоступен' }}</div>
                                     </div>
                                 </div>
                             </article>
@@ -235,7 +241,7 @@
                     <article v-if="distributed.diagnostics.length" class="distributed-panel">
                         <div class="distributed-table-wrap"><table class="distributed-table distributed-table--diagnostics">
                             <thead><tr><th>Worker</th><th>Instance</th><th>Transport</th><th>gRPC stream</th><th>mTLS</th><th>Heartbeat</th><th>Agent / Executor</th><th>EventOutbox</th><th>Версия</th><th></th></tr></thead>
-                            <tbody><tr v-for="row in distributed.diagnostics" :key="row.diagnostic.workerId"><td class="distributed-table__project"><strong>{{ row.workerName }}</strong><span class="distributed-mono">{{ row.diagnostic.workerId }}</span></td><td class="distributed-mono">{{ row.diagnostic.instanceId }}</td><td>{{ row.diagnostic.transport }}</td><td><span class="distributed-chip" :class="row.diagnostic.grpcStream === 'connected' ? 'distributed-chip--green' : row.diagnostic.grpcStream === 'disconnected' ? 'distributed-chip--red' : 'distributed-chip--amber'">{{ row.diagnostic.grpcStream }}</span></td><td>{{ row.diagnostic.mtls }}</td><td>{{ row.diagnostic.heartbeat }}</td><td>{{ row.diagnostic.agentStatus }} / {{ row.diagnostic.executorStatus }}</td><td class="distributed-mono">{{ row.diagnostic.eventOutbox.lastAckedSeq }} / {{ row.diagnostic.eventOutbox.lastWrittenSeq }} · pending {{ row.diagnostic.eventOutbox.pending }}</td><td>{{ row.diagnostic.workerVersion }}</td><td><button class="btn btn-outline btn-sm" @click="distributed.openDiagnostic(row)">Подробнее</button></td></tr></tbody>
+                            <tbody><tr v-for="row in distributed.diagnostics" :key="row.diagnostic.workerId"><td class="distributed-table__project"><strong>{{ row.workerName }}</strong><span class="distributed-mono">{{ row.diagnostic.workerId }}</span></td><td class="distributed-mono">{{ row.diagnostic.instanceId || 'unavailable' }}</td><td>{{ row.diagnostic.transport }}</td><td><span class="distributed-chip" :class="row.diagnostic.grpcStream === 'connected' ? 'distributed-chip--green' : row.diagnostic.grpcStream === 'disconnected' ? 'distributed-chip--red' : 'distributed-chip--amber'">{{ row.diagnostic.grpcStream }}</span></td><td>{{ row.diagnostic.mtls }}</td><td>{{ row.diagnostic.heartbeat }}</td><td>{{ row.diagnostic.agentStatus }} / {{ row.diagnostic.executorStatus }}</td><td class="distributed-mono">{{ distributed.outboxText(row.diagnostic) }}</td><td>{{ row.diagnostic.workerVersion || 'unavailable' }}</td><td><button class="btn btn-outline btn-sm" @click="distributed.openDiagnostic(row)">Подробнее</button></td></tr></tbody>
                         </table></div>
                     </article>
                     <div v-else class="distributed-empty"><div class="distributed-empty__icon">⌁</div><h3>Диагностика недоступна</h3><p>Нет безопасной метаинформации о подключённых воркерах.</p></div>
@@ -246,23 +252,23 @@
             <div v-if="distributed.selectedTask" class="distributed-drawer-overlay" @click.self="distributed.closeTask()">
                 <aside class="distributed-drawer" role="dialog" aria-modal="true" aria-label="Подробности задачи">
                     <header class="distributed-drawer__header"><div><div class="distributed-drawer__eyebrow">Задача аудита</div><h2>{{ distributed.selectedTask.project }}</h2><p>{{ distributed.selectedTask.packageName }}</p></div><button class="distributed-close" @click="distributed.closeTask()" aria-label="Закрыть">×</button></header>
-                    <div class="distributed-detail-grid"><div class="distributed-detail"><span>VPS</span><strong>{{ distributed.workerName(distributed.selectedTask.workerId) }}</strong></div><div class="distributed-detail"><span>Режим</span><strong>{{ distributed.modeLabel(distributed.selectedTask.mode) }}</strong></div><div class="distributed-detail"><span>Прогресс</span><strong>{{ distributed.selectedTask.progress }}%</strong></div><div class="distributed-detail"><span>Время</span><strong>{{ distributed.selectedTask.duration }}</strong></div></div>
-                    <section class="distributed-drawer-section"><h3>Этапы</h3><div class="distributed-stage-list"><div v-for="stage in ['transfer','preparing','auditing','collecting','returning','done']" :key="stage" class="distributed-stage" :class="'distributed-stage--' + distributed.taskStageState(distributed.selectedTask, stage)"><i>{{ distributed.taskStageText(distributed.selectedTask, stage) }}</i><span>{{ distributed.stageLabel(stage) }}</span><b v-if="stage === distributed.selectedTask.stage && stage === 'auditing'">{{ distributed.selectedTask.progress }}%</b></div></div></section>
+                    <div class="distributed-detail-grid"><div class="distributed-detail"><span>VPS</span><strong>{{ distributed.selectedTask.workerId ? distributed.workerName(distributed.selectedTask.workerId) : 'Не назначен' }}</strong></div><div class="distributed-detail"><span>Режим</span><strong>{{ distributed.modeLabel(distributed.selectedTask.mode) }}</strong></div><div class="distributed-detail"><span>Прогресс</span><strong>{{ distributed.progressText(distributed.selectedTask) }}</strong></div><div class="distributed-detail"><span>Время</span><strong>{{ distributed.selectedTask.duration }}</strong></div></div>
+                    <section class="distributed-drawer-section"><h3>Этапы</h3><div class="distributed-stage-list"><div v-for="stage in ['queued','transfer','preparing','auditing','collecting','returning','importing','done']" :key="stage" class="distributed-stage" :class="'distributed-stage--' + distributed.taskStageState(distributed.selectedTask, stage)"><i>{{ distributed.taskStageText(distributed.selectedTask, stage) }}</i><span>{{ distributed.stageLabel(stage) }}</span><b v-if="stage === distributed.selectedTask.stage && stage === 'auditing'">{{ distributed.progressText(distributed.selectedTask) }}</b></div></div></section>
                     <section v-if="distributed.selectedTask.errorMessage" class="distributed-drawer-section"><h3>Что произошло</h3><p class="distributed-error-message">{{ distributed.selectedTask.errorMessage }}</p></section>
                     <section class="distributed-drawer-section"><h3>Использование моделей</h3><div class="distributed-detail-grid" style="padding:0"><div class="distributed-detail"><span>Claude</span><strong>{{ distributed.selectedTask.modelUsage.claude }}</strong></div><div class="distributed-detail"><span>Codex</span><strong>{{ distributed.selectedTask.modelUsage.codex }}</strong></div></div></section>
                     <section class="distributed-drawer-section"><h3>Краткие события</h3><div class="distributed-events"><div v-for="event in distributed.selectedTask.events" :key="event.at + event.text" class="distributed-event"><time>{{ event.at }}</time><span>{{ event.text }}</span></div></div></section>
                     <details class="distributed-technical"><summary>Техническая информация</summary><pre><span>task_id: {{ distributed.selectedTask.id }}</span>\n<span>stage: {{ distributed.selectedTask.stage }}</span>\n<span>worker_id: {{ distributed.selectedTask.workerId }}</span><span v-if="distributed.selectedTask.technicalCode">\ncode: {{ distributed.selectedTask.technicalCode }}</span></pre></details>
-                    <footer v-if="distributed.selectedTask.stage === 'error'" class="distributed-drawer__actions"><button class="btn btn-outline" @click="distributed.openTransfer(distributed.selectedTask)">Перенести</button><button class="btn btn-primary" @click="distributed.retryTask(distributed.selectedTask)">Повторить</button></footer>
+                    <footer v-if="distributed.selectedTask.stage === 'error' && distributed.isDemo" class="distributed-drawer__actions"><button class="btn btn-outline" @click="distributed.openTransfer(distributed.selectedTask)">Перенести</button><button class="btn btn-primary" @click="distributed.retryTask(distributed.selectedTask)">Повторить</button></footer>
                 </aside>
             </div>
 
             <!-- Worker details drawer -->
             <div v-if="distributed.selectedWorker" class="distributed-drawer-overlay" @click.self="distributed.closeWorker()">
                 <aside class="distributed-drawer distributed-drawer--wide" role="dialog" aria-modal="true" aria-label="Подробности воркера">
-                    <header class="distributed-drawer__header"><div><div class="distributed-drawer__eyebrow">Вычислительный узел</div><h2>VPS {{ distributed.selectedWorker.name }}</h2><p>{{ distributed.selectedWorker.diagnostic.workerId }} · uptime {{ distributed.selectedWorker.uptime }}</p></div><button class="distributed-close" @click="distributed.closeWorker()">×</button></header>
-                    <section class="distributed-drawer-section"><div class="distributed-detail-grid"><div class="distributed-detail"><span>Состояние</span><strong>{{ distributed.selectedWorker.status }}</strong></div><div class="distributed-detail"><span>Последний heartbeat</span><strong>{{ distributed.selectedWorker.lastHeartbeat }}</strong></div><div class="distributed-detail"><span>Слоты</span><strong>{{ distributed.selectedWorker.slots.used }} занято / {{ distributed.selectedWorker.slots.total }} всего</strong></div><div class="distributed-detail"><span>OpenRouter</span><strong>{{ distributed.selectedWorker.openRouter.status }} · {{ distributed.selectedWorker.openRouter.usedToday }}</strong></div><div class="distributed-detail"><span>Диск</span><strong>{{ distributed.selectedWorker.resources.disk }}%</strong></div><div class="distributed-detail"><span>VRAM</span><strong>{{ distributed.selectedWorker.resources.vramUsedGb }} / {{ distributed.selectedWorker.resources.vramTotalGb }} ГБ</strong></div></div></section>
-                    <section class="distributed-drawer-section"><h3>Лимиты провайдеров</h3><div class="distributed-quota-grid"><distributed-quota-bar label="Claude" :quota="distributed.selectedWorker.quotas.claude" :stale="distributed.selectedWorker.quotaDataStale"></distributed-quota-bar><distributed-quota-bar label="Codex" :quota="distributed.selectedWorker.quotas.codex" :stale="distributed.selectedWorker.quotaDataStale"></distributed-quota-bar></div></section>
-                    <section class="distributed-drawer-section"><h3>Текущие задачи</h3><div v-if="distributed.selectedWorker.currentTasks.length" class="distributed-events"><button v-for="task in distributed.selectedWorker.currentTasks" :key="task.id" class="distributed-worker-task" @click="distributed.openTask(task)"><span><strong>{{ task.project }}</strong> → {{ task.packageName }}</span><span>{{ task.progress }}%</span></button></div><div v-else class="distributed-all-good">Активных задач нет</div></section>
+                    <header class="distributed-drawer__header"><div><div class="distributed-drawer__eyebrow">Вычислительный узел</div><h2>VPS {{ distributed.selectedWorker.name }}</h2><p>{{ distributed.selectedWorker.diagnostic.workerId }} · uptime {{ distributed.selectedWorker.uptime || 'недоступен' }}</p></div><button class="distributed-close" @click="distributed.closeWorker()">×</button></header>
+                    <section class="distributed-drawer-section"><div class="distributed-detail-grid"><div class="distributed-detail"><span>Состояние</span><strong>{{ distributed.selectedWorker.status }}</strong></div><div class="distributed-detail"><span>Последний heartbeat</span><strong>{{ distributed.selectedWorker.lastHeartbeat }}</strong></div><div class="distributed-detail"><span>Слоты</span><strong>{{ distributed.selectedWorker.slots.used }} занято / {{ distributed.selectedWorker.slots.total }} всего</strong></div><div class="distributed-detail"><span>OpenRouter</span><strong>{{ distributed.selectedWorker.openRouter.status }} · расход {{ Number.isFinite(distributed.selectedWorker.openRouter.usedToday) ? distributed.selectedWorker.openRouter.usedToday : 'недоступен' }}</strong></div><div class="distributed-detail"><span>Диск</span><strong>{{ distributed.metricText(distributed.selectedWorker.resources.disk) }}</strong></div><div class="distributed-detail"><span>VRAM</span><strong>{{ Number.isFinite(distributed.selectedWorker.resources.vramUsedGb) && Number.isFinite(distributed.selectedWorker.resources.vramTotalGb) ? distributed.selectedWorker.resources.vramUsedGb + ' / ' + distributed.selectedWorker.resources.vramTotalGb + ' ГБ' : 'Нет телеметрии' }}</strong></div></div></section>
+                    <section class="distributed-drawer-section"><h3>Лимиты провайдеров</h3><div class="distributed-quota-grid"><distributed-quota-bar label="Claude" :quota="distributed.selectedWorker.quotas.claude" :stale="distributed.selectedWorker.quotas.claude.stale"></distributed-quota-bar><distributed-quota-bar label="Codex" :quota="distributed.selectedWorker.quotas.codex" :stale="distributed.selectedWorker.quotas.codex.stale"></distributed-quota-bar></div></section>
+                    <section class="distributed-drawer-section"><h3>Текущие задачи</h3><div v-if="distributed.selectedWorker.currentTasks.length" class="distributed-events"><button v-for="task in distributed.selectedWorker.currentTasks" :key="task.id" class="distributed-worker-task" @click="distributed.openTask(task)"><span><strong>{{ task.project }}</strong> → {{ task.packageName }}</span><span>{{ distributed.progressText(task) }}</span></button></div><div v-else class="distributed-all-good">Активных задач нет</div></section>
                     <footer class="distributed-drawer__actions"><button class="btn btn-outline" @click="distributed.openWorkerDiagnostic()">Открыть диагностику</button></footer>
                 </aside>
             </div>
@@ -276,8 +282,8 @@
                 </aside>
             </div>
 
-            <!-- Distributed demo modals -->
-            <div v-if="distributed.modal" class="modal-overlay" @click.self="distributed.closeModal()">
+            <!-- Explicit demo-mode mutation modals -->
+            <div v-if="distributed.modal && distributed.isDemo" class="modal-overlay" @click.self="distributed.closeModal()">
                 <div class="modal-content distributed-modal" role="dialog" aria-modal="true">
                     <button class="modal-close" @click="distributed.closeModal()">×</button>
                     <template v-if="distributed.modal.type === 'send'">

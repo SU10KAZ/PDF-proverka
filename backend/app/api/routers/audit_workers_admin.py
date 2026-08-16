@@ -41,6 +41,7 @@ from backend.app.services.distributed_workers import (
     attempt_service,
     authorization,
     database,
+    distributed_ui,
     event_service,
     identifiers,
     job_service,
@@ -771,6 +772,72 @@ async def providers_ranking_preview(
         )
     except provider_accounts.ProviderAccountError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+# ─── Read-only projections for the distributed-computing UI (12I) ──────────
+# These static paths must remain above `/{worker_id}`.  Every handler uses the
+# viewer permission and the projection module contains no mutation operation.
+async def _distributed_snapshot(settings) -> dict[str, Any]:
+    return await database.run_db(distributed_ui.build_snapshot, settings=settings)
+
+
+@router.get("/distributed/snapshot")
+async def distributed_snapshot(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    """One consistent read for the production page's initial load."""
+    settings = _settings_or_404()
+    return await _distributed_snapshot(settings)
+
+
+@router.get("/distributed/overview")
+async def distributed_overview(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    settings = _settings_or_404()
+    snapshot = await _distributed_snapshot(settings)
+    return snapshot["overview"]
+
+
+@router.get("/distributed/workers")
+async def distributed_workers(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    settings = _settings_or_404()
+    snapshot = await _distributed_snapshot(settings)
+    return {"workers": snapshot["workers"], "metadata": snapshot["metadata"]}
+
+
+@router.get("/distributed/tasks")
+async def distributed_tasks(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    settings = _settings_or_404()
+    snapshot = await _distributed_snapshot(settings)
+    return {"tasks": snapshot["tasks"], "metadata": snapshot["metadata"]}
+
+
+@router.get("/distributed/queue")
+async def distributed_queue(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    settings = _settings_or_404()
+    snapshot = await _distributed_snapshot(settings)
+    return {"queue": snapshot["queue"], "metadata": snapshot["metadata"]}
+
+
+@router.get("/distributed/limits")
+async def distributed_limits(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    settings = _settings_or_404()
+    snapshot = await _distributed_snapshot(settings)
+    return {"limits": snapshot["limits"], "metadata": snapshot["metadata"]}
+
+
+@router.get("/distributed/diagnostics")
+async def distributed_diagnostics(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    settings = _settings_or_404()
+    snapshot = await _distributed_snapshot(settings)
+    return {"diagnostics": snapshot["diagnostics"], "metadata": snapshot["metadata"]}
+
+
+@router.get("/distributed/recommendation")
+async def distributed_recommendation(actor: Actor = Depends(require_view)) -> dict[str, Any]:
+    settings = _settings_or_404()
+    snapshot = await _distributed_snapshot(settings)
+    return {
+        "recommendation": snapshot["recommendation"],
+        "metadata": snapshot["metadata"],
+    }
 
 
 @router.get("/{worker_id}")

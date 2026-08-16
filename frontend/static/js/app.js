@@ -11,8 +11,8 @@ const app = createApp({
         document.documentElement.setAttribute('data-theme', theme.value);
 
         const currentView = ref('dashboard');
-        // Изолированный UI-контроллер распределённых вычислений. Он работает
-        // только через mock service adapter и не обращается к backend/runtime.
+        // Изолированный UI-контроллер распределённых вычислений. Production
+        // читает только AuditManager API; mock включается лишь явным demo-флагом.
         const distributed = window.DistributedFeature.createManager();
         const blockBackRoute = ref(null);  // куда вернуться из просмотра блока
 

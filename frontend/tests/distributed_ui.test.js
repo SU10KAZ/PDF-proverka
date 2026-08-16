@@ -12,12 +12,16 @@ const pageSource = fs.readFileSync(path.join(frontendRoot, 'static/js/distribute
 const appSource = fs.readFileSync(path.join(frontendRoot, 'static/js/app.js'), 'utf8');
 const htmlSource = fs.readFileSync(path.join(frontendRoot, 'index.html'), 'utf8');
 
-function loadRuntime() {
+function loadRuntime(options = {}) {
   const context = vm.createContext({
     console,
     setTimeout,
     clearTimeout,
     structuredClone,
+    location: options.location || {},
+    fetch: options.fetch,
+    __DISTRIBUTED_UI_CONFIG__: options.config,
+    Vue: options.Vue,
   });
   vm.runInContext(serviceSource, context, { filename: 'distributed-service.js' });
   vm.runInContext(featureSource, context, { filename: 'distributed-feature.js' });
@@ -92,9 +96,14 @@ describe('distributed UI integration', () => {
     expect(tasks.active).toHaveLength(7);
     expect(tasks.completed.length).toBeGreaterThanOrEqual(2);
     expect(tasks.errors).toHaveLength(2);
-    expect(DistributedFeature.filterCompletedTasks(tasks.completed, 'today')).toHaveLength(2);
-    expect(DistributedFeature.filterCompletedTasks(tasks.completed, '7d')).toHaveLength(4);
+    const anchor = new Date('2026-08-16T12:00:00+03:00');
+    expect(DistributedFeature.filterCompletedTasks(tasks.completed, 'today', undefined, undefined, anchor)).toHaveLength(2);
+    expect(DistributedFeature.filterCompletedTasks(tasks.completed, '7d', undefined, undefined, anchor)).toHaveLength(4);
     expect(DistributedFeature.filterCompletedTasks(tasks.completed, 'custom', '2026-08-15', '2026-08-15')).toHaveLength(1);
+    expect(DistributedFeature.filterCompletedTasks(
+      [{ completedAtIso: '2026-08-16T21:05:00+00:00' }],
+      'today', undefined, undefined, new Date('2026-08-17T12:00:00+03:00'),
+    )).toHaveLength(1);
     for (const label of ['Активные', 'Завершённые', 'Ошибки', 'Подробности задачи', 'Техническая информация']) expect(pageSource).toContain(label);
   });
 
@@ -151,5 +160,123 @@ describe('distributed UI integration', () => {
     for (const marker of ['distributed-drawer-overlay', 'distributed-modal', 'distributed-toast', 'distributed-worker-card', 'distributed-progress', 'Почему выбран?', 'Другой VPS']) {
       expect(pageSource + featureSource).toContain(marker);
     }
+  });
+
+  it('uses RealDistributedService by default and calls only AuditManager read endpoints', async () => {
+    const calls = [];
+    const payloads = {
+      overview: { kpis: {}, workers: [], projects: [], queuePreview: [], attention: [], recommendation: { available: false } },
+      snapshot: { overview: {}, workers: [], queue: [], tasks: {}, limits: [], diagnostics: [] },
+      workers: { workers: [] },
+      queue: { queue: [] },
+      tasks: { tasks: { active: [], completed: [], errors: [] } },
+      limits: { limits: [] },
+      diagnostics: { diagnostics: [] },
+      recommendation: { recommendation: { available: false, source: 'unavailable' } },
+    };
+    const runtime = loadRuntime({
+      fetch: async (url, options) => {
+        calls.push({ url, options });
+        const key = String(url).split('/').at(-1);
+        return { ok: true, status: 200, json: async () => payloads[key] };
+      },
+    });
+    const service = runtime.DistributedData.createDefaultService();
+    expect(service.mode).toBe('real');
+    expect(service.readOnly).toBe(true);
+    await Promise.all([
+      service.getOverview(), service.getWorkers(), service.getQueue(), service.getTasks(),
+      service.getProviderLimits(), service.getDiagnostics(), service.getNextRecommendation(), service.getSnapshot(),
+    ]);
+    expect(calls.map((call) => call.url).sort()).toEqual([
+      '/api/workers/distributed/diagnostics',
+      '/api/workers/distributed/limits',
+      '/api/workers/distributed/overview',
+      '/api/workers/distributed/queue',
+      '/api/workers/distributed/recommendation',
+      '/api/workers/distributed/snapshot',
+      '/api/workers/distributed/tasks',
+      '/api/workers/distributed/workers',
+    ]);
+    expect(calls.every((call) => call.options.method === 'GET' && call.options.credentials === 'same-origin')).toBe(true);
+  });
+
+  it('loads one consistent backend snapshot for the production manager', async () => {
+    const calls = [];
+    const Vue = {
+      ref: (value) => ({ value }),
+      computed: (getter) => Object.defineProperty({}, 'value', { get: getter }),
+      reactive: (value) => value,
+    };
+    const runtime = loadRuntime({
+      Vue,
+      fetch: async (url) => {
+        calls.push(url);
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            overview: { projects: [], workers: [], recommendation: { available: false } },
+            workers: [], queue: [], tasks: { active: [], completed: [], errors: [] },
+            limits: [], diagnostics: [], metadata: { readOnly: true },
+          }),
+        };
+      },
+    });
+    const manager = runtime.DistributedFeature.createManager();
+    await manager.load();
+    expect(calls).toEqual(['/api/workers/distributed/snapshot']);
+  });
+
+  it('enables mock data only through an explicit option, query, or test config', () => {
+    expect(loadRuntime().DistributedData.createDefaultService().mode).toBe('real');
+    expect(loadRuntime({ location: { search: '?distributed_mode=mock' } }).DistributedData.createDefaultService().mode).toBe('mock');
+    expect(loadRuntime({ location: { hash: '#/distributed?distributed_demo=1' } }).DistributedData.createDefaultService().mode).toBe('mock');
+    expect(loadRuntime({ config: { mode: 'mock' } }).DistributedData.createDefaultService().mode).toBe('mock');
+    expect(loadRuntime().DistributedData.createDefaultService({ mode: 'mock', latency: 0 }).mode).toBe('mock');
+  });
+
+  it('never falls back to mock data when the real API fails', async () => {
+    const runtime = loadRuntime({
+      fetch: async () => { throw new Error('network down'); },
+    });
+    const service = runtime.DistributedData.createDefaultService();
+    await expect(service.getOverview()).rejects.toThrow('AuditManager API недоступен: network down');
+
+    const httpFailure = runtime.DistributedData.createRealService({
+      fetch: async () => ({ ok: false, status: 503, json: async () => ({ detail: 'backend unavailable' }) }),
+    });
+    await expect(httpFailure.getWorkers()).rejects.toThrow('AuditManager API: backend unavailable');
+    expect(service.mode).toBe('real');
+  });
+
+  it('rejects every production mutation before network or local state changes', async () => {
+    const calls = [];
+    const { DistributedData } = loadRuntime({ fetch: async (...args) => { calls.push(args); } });
+    const service = DistributedData.createRealService();
+    const mutations = [
+      service.assignTask('p', 'w'), service.sendTask('p', 'w'),
+      service.changePriority('q', 'high'), service.moveQueueItem('q', 'up'),
+      service.setWorkerIntake('w', true), service.retryTask('t'), service.transferTask('t', 'w'),
+    ];
+    for (const mutation of mutations) {
+      await expect(mutation).rejects.toThrow('следующем этапе');
+    }
+    expect(calls).toEqual([]);
+    expect(pageSource).toContain('distributed.modal && distributed.isDemo');
+    expect(pageSource).toContain('Реальные данные · только чтение');
+  });
+
+  it('uses explicit progress provenance and unavailable telemetry copy', async () => {
+    const { DistributedData } = loadRuntime();
+    const tasks = await DistributedData.createMockService({ latency: 0 }).getTasks();
+    for (const task of [...tasks.active, ...tasks.completed, ...tasks.errors]) {
+      expect(['exact', 'estimated', 'unavailable']).toContain(task.progressKind);
+      expect(task).toHaveProperty('progressPercent');
+    }
+    expect(pageSource + featureSource).toContain('Прогресс недоступен');
+    expect(pageSource + featureSource).toContain('Нет телеметрии');
+    expect(pageSource + featureSource).toContain('Остаток недоступен');
+    expect(pageSource).toContain("'importing'");
   });
 });

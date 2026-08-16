@@ -1,38 +1,40 @@
 // @ts-check
 /**
- * Typed demo data/service layer for the "Distributed computing" UI.
+ * Data adapters for the "Distributed computing" UI.
  *
- * The UI only talks to the interface implemented by MockDistributedService.
- * A production adapter can replace it later without changing page templates.
+ * RealDistributedService is the production default and talks only to the
+ * AuditManager backend. MockDistributedService remains available exclusively
+ * for an explicitly selected demo/test mode.
  */
 (function initDistributedData(root) {
     'use strict';
 
-    /** @typedef {'full_codex'|'hybrid'} AuditMode */
+    /** @typedef {'full_codex'|'hybrid'|'distributed_audit'} AuditMode */
     /** @typedef {'critical'|'high'|'normal'|'low'} TaskPriority */
-    /** @typedef {'queued'|'transfer'|'preparing'|'auditing'|'collecting'|'returning'|'done'|'error'} TaskStage */
+    /** @typedef {'queued'|'transfer'|'preparing'|'auditing'|'collecting'|'returning'|'importing'|'done'|'error'} TaskStage */
     /** @typedef {'online'|'busy'|'offline'} WorkerStatus */
-    /** @typedef {'ok'|'warning'|'critical'|'unknown'} QuotaStatus */
+    /** @typedef {'ok'|'warning'|'critical'|'unknown'|'stale'|'unavailable'} QuotaStatus */
 
     /**
      * @typedef {Object} ProviderQuota
-     * @property {number} percentageRemaining
-     * @property {string} resetAt
-     * @property {string} resetIn
+     * @property {number|null} percentageRemaining
+     * @property {string|null} resetAt
+     * @property {string|null} resetIn
      * @property {QuotaStatus} status
      * @property {string} source
      * @property {boolean} isEstimated
-     * @property {number} usedToday
+     * @property {number|null} usedToday
+     * @property {boolean=} stale
      */
 
     /**
      * @typedef {Object} WorkerResources
-     * @property {number} cpu
-     * @property {number} ram
-     * @property {number} gpu
-     * @property {number} vramUsedGb
-     * @property {number} vramTotalGb
-     * @property {number} disk
+     * @property {number|null} cpu
+     * @property {number|null} ram
+     * @property {number|null} gpu
+     * @property {number|null} vramUsedGb
+     * @property {number|null} vramTotalGb
+     * @property {number|null} disk
      */
 
     /**
@@ -42,6 +44,8 @@
      * @property {string} packageName
      * @property {AuditMode} mode
      * @property {number} progress
+     * @property {number|null} [progressPercent]
+     * @property {'exact'|'estimated'|'unavailable'} [progressKind]
      * @property {string} duration
      * @property {TaskStage} stage
      */
@@ -130,6 +134,8 @@
      * @property {string} workerId
      * @property {AuditMode} mode
      * @property {number} progress
+     * @property {number|null} [progressPercent]
+     * @property {'exact'|'estimated'|'unavailable'} [progressKind]
      * @property {string} duration
      * @property {string} lastActivity
      * @property {TaskStage} stage
@@ -331,6 +337,20 @@
             { id: 'task-error-02', project: 'Покровское-Стрешнево', packageName: 'АР-К3', workerId: 'worker-mow-05', mode: 'full_codex', progress: 8, duration: '6 мин', lastActivity: '42 мин назад', stage: 'error', status: 'Ошибка соединения', errorMessage: 'VPS Москва-05 потерял соединение. Текущая задача сохранена локально; можно перенести её на другой узел.', technicalCode: 'WORKER_CONNECTION_LOST', events: [{ at: '10:54', text: 'Передача комплекта завершена' }, { at: '11:02', text: 'Соединение с воркером потеряно' }], modelUsage: { claude: 'не использовался', codex: 'последний статус: доступен' } },
         ];
 
+        // Demo percentages are intentionally marked as estimates. This keeps
+        // the same explicit progress contract as production without making a
+        // mock number look like measured telemetry.
+        for (const task of [...active, ...completed, ...errors]) {
+            task.progressPercent = task.progress;
+            task.progressKind = task.stage === 'done' ? 'exact' : 'estimated';
+        }
+        for (const worker of workers) {
+            for (const task of worker.currentTasks) {
+                task.progressPercent = task.progress;
+                task.progressKind = 'estimated';
+            }
+        }
+
         return {
             workers,
             projects,
@@ -350,6 +370,8 @@
     class MockDistributedService {
         /** @param {{scenario?:'loaded'|'empty'|'error',latency?:number}=} options */
         constructor(options = {}) {
+            this.mode = 'mock';
+            this.readOnly = false;
             this.scenario = options.scenario || 'loaded';
             this.latency = options.latency ?? 70;
             this.state = createDemoDataset();
@@ -451,6 +473,8 @@
             task.stage = 'transfer';
             task.status = 'Повторная передача';
             task.progress = 3;
+            task.progressPercent = 3;
+            task.progressKind = 'estimated';
             task.lastActivity = 'сейчас';
             delete task.errorMessage;
             delete task.technicalCode;
@@ -479,9 +503,144 @@
         }
     }
 
+    const MANAGEMENT_UNAVAILABLE = 'Управление распределёнными заданиями появится на следующем этапе. Данные не изменены.';
+
+    /** @param {unknown} value */
+    function isObject(value) { return Boolean(value) && typeof value === 'object' && !Array.isArray(value); }
+
+    /** @param {string} text */
+    function parseQuery(text) {
+        const result = {};
+        const raw = String(text || '').replace(/^[?#]/, '');
+        for (const part of raw.split('&')) {
+            if (!part) continue;
+            const [key, ...rest] = part.split('=');
+            try {
+                result[decodeURIComponent(key)] = decodeURIComponent(rest.join('=') || '');
+            } catch (_) {
+                // An invalid query cannot opt production into demo mode.
+            }
+        }
+        return result;
+    }
+
+    /** @param {Record<string,unknown>=} options */
+    function explicitMode(options = {}) {
+        if (options.mode === 'mock' || options.mode === 'demo' || options.mock === true || options.demo === true) return 'mock';
+        if (options.mode === 'real') return 'real';
+        const config = isObject(root.__DISTRIBUTED_UI_CONFIG__) ? root.__DISTRIBUTED_UI_CONFIG__ : {};
+        if (config.mode === 'mock' || config.mode === 'demo' || config.mock === true || config.demo === true) return 'mock';
+        if (config.mode === 'real') return 'real';
+        /** @type {any} */
+        const location = root.location || {};
+        const search = parseQuery(location.search || '');
+        const hashText = String(location.hash || '');
+        const hashQuery = parseQuery(hashText.includes('?') ? hashText.slice(hashText.indexOf('?') + 1) : '');
+        const requested = search.distributed_mode || hashQuery.distributed_mode;
+        const demoFlag = search.distributed_demo || hashQuery.distributed_demo;
+        return requested === 'mock' || requested === 'demo' || demoFlag === '1' || demoFlag === 'true' ? 'mock' : 'real';
+    }
+
+    class RealDistributedService {
+        /** @param {{fetch?:Function,baseUrl?:string}=} options */
+        constructor(options = {}) {
+            this.mode = 'real';
+            this.readOnly = true;
+            this.baseUrl = String(options.baseUrl || '/api/workers/distributed').replace(/\/$/, '');
+            this.fetchImpl = options.fetch || (typeof root.fetch === 'function' ? root.fetch.bind(root) : null);
+            this.safeDiagnostics = [];
+        }
+
+        /** @param {string} path @returns {Promise<Record<string,any>>} */
+        async get(path) {
+            if (!this.fetchImpl) throw new Error('Браузерный API fetch недоступен');
+            let response;
+            try {
+                response = await this.fetchImpl(`${this.baseUrl}/${path}`, {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                    headers: { Accept: 'application/json' },
+                });
+            } catch (error) {
+                throw new Error(`AuditManager API недоступен: ${error && error.message ? error.message : error}`);
+            }
+            let body = null;
+            try { body = await response.json(); } catch (_) { body = null; }
+            if (!response.ok) {
+                const detail = body && body.detail;
+                const message = typeof detail === 'string' ? detail : `HTTP ${response.status}`;
+                throw new Error(`AuditManager API: ${message}`);
+            }
+            if (!isObject(body)) throw new Error(`AuditManager API вернул некорректный ответ для ${path}`);
+            return body;
+        }
+
+        async getOverview() { return this.get('overview'); }
+        async getSnapshot() {
+            const body = await this.get('snapshot');
+            if (!isObject(body.overview) || !Array.isArray(body.workers) || !isObject(body.tasks)) {
+                throw new Error('AuditManager API: distributed snapshot неполон');
+            }
+            this.safeDiagnostics = Array.isArray(body.diagnostics) ? clone(body.diagnostics) : [];
+            return body;
+        }
+        async getWorkers() {
+            const body = await this.get('workers');
+            if (!Array.isArray(body.workers)) throw new Error('AuditManager API: workers отсутствует');
+            return body.workers;
+        }
+        async getQueue() {
+            const body = await this.get('queue');
+            if (!Array.isArray(body.queue)) throw new Error('AuditManager API: queue отсутствует');
+            return body.queue;
+        }
+        async getTasks() {
+            const body = await this.get('tasks');
+            if (!isObject(body.tasks)) throw new Error('AuditManager API: tasks отсутствует');
+            return body.tasks;
+        }
+        async getProviderLimits() {
+            const body = await this.get('limits');
+            if (!Array.isArray(body.limits)) throw new Error('AuditManager API: limits отсутствует');
+            return body.limits;
+        }
+        async getDiagnostics() {
+            const body = await this.get('diagnostics');
+            if (!Array.isArray(body.diagnostics)) throw new Error('AuditManager API: diagnostics отсутствует');
+            this.safeDiagnostics = clone(body.diagnostics);
+            return body.diagnostics;
+        }
+        async getNextRecommendation() {
+            const body = await this.get('recommendation');
+            return body.recommendation || null;
+        }
+
+        async managementUnavailable() { throw new Error(MANAGEMENT_UNAVAILABLE); }
+        async assignTask() { return this.managementUnavailable(); }
+        async sendTask() { return this.managementUnavailable(); }
+        async changePriority() { return this.managementUnavailable(); }
+        async moveQueueItem() { return this.managementUnavailable(); }
+        async setWorkerIntake() { return this.managementUnavailable(); }
+        async retryTask() { return this.managementUnavailable(); }
+        async transferTask() { return this.managementUnavailable(); }
+
+        getSafeDiagnosticsText() { return JSON.stringify(this.safeDiagnostics, null, 2); }
+    }
+
+    /** @param {Record<string,unknown>=} options */
+    function createDefaultService(options = {}) {
+        return explicitMode(options) === 'mock'
+            ? new MockDistributedService(options)
+            : new RealDistributedService(options);
+    }
+
     root.DistributedData = Object.freeze({
         createMockService: (options) => new MockDistributedService(options),
+        createRealService: (options) => new RealDistributedService(options),
+        createDefaultService,
+        explicitMode,
         createDemoDataset,
         quotaStatus,
+        MANAGEMENT_UNAVAILABLE,
     });
 })(typeof window !== 'undefined' ? window : globalThis);
