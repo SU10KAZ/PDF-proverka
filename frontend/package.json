@@ -5,11 +5,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "typecheck": "tsc -p tsconfig.distributed.json --noEmit",
+    "lint": "eslint static/js/distributed-service.js static/js/distributed-feature.js static/js/distributed-page.js tests/distributed_ui.test.js",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "eslint": "^8.57.1",
+    "typescript": "^5.5.4",
     "vite": "^5.0.0",
     "vitest": "^1.6.1"
   }
