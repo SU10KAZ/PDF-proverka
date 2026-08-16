@@ -18,6 +18,7 @@
           media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
     <link rel="stylesheet" href="/static/css/styles.css?v={{css_version}}">
+    <link rel="stylesheet" href="/static/css/distributed.css?v={{css_version}}">
 </head>
 <body>
     <div id="app" v-cloak>
@@ -94,6 +95,14 @@
                           class="nav-badge" style="background: #5d8efc;">
                         {{ prepareQueue.items.filter(i => i.status === 'pending' || i.status === 'running').length }}
                     </span>
+                </div>
+                <div class="nav-item" :class="{active: currentView === 'distributed'}" @click="navigate('/distributed')" title="Распределённые вычисления">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="1.5" y="2" width="5" height="4" rx="1"/><rect x="9.5" y="2" width="5" height="4" rx="1"/>
+                        <rect x="5.5" y="10" width="5" height="4" rx="1"/><path d="M4 6v2h8V6M8 8v2"/>
+                    </svg>
+                    Диспетчер
+                    <span v-if="distributed.overview && distributed.overview.kpis.errors" class="nav-badge red">{{ distributed.overview.kpis.errors }}</span>
                 </div>
                 <div class="nav-item" :class="{active: currentView === 'knowledge-base'}" @click="navigate('/knowledge-base')">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -557,6 +566,9 @@
                     class="version-pdf-drawer__frame"
                     title="PDF версии"></iframe>
         </div>
+
+        <!-- ═══ Распределённые вычисления ═══ -->
+        <distributed-dispatcher-page v-if="currentView === 'distributed'" :distributed="distributed"></distributed-dispatcher-page>
 
         <!-- ═══ Dashboard ═══ -->
         <!-- ═══ Главная ═══ -->
@@ -7734,6 +7746,9 @@
         </div><!-- /main-area -->
     </div>
 
+    <script src="/static/js/distributed-service.js?v={{js_version}}"></script>
+    <script src="/static/js/distributed-page.js?v={{js_version}}"></script>
+    <script src="/static/js/distributed-feature.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>

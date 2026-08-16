@@ -11,6 +11,9 @@ const app = createApp({
         document.documentElement.setAttribute('data-theme', theme.value);
 
         const currentView = ref('dashboard');
+        // Изолированный UI-контроллер распределённых вычислений. Он работает
+        // только через mock service adapter и не обращается к backend/runtime.
+        const distributed = window.DistributedFeature.createManager();
         const blockBackRoute = ref(null);  // куда вернуться из просмотра блока
 
         // ─── Пользователи (сотрудники-эксперты) ────────────────────────────
@@ -2620,7 +2623,12 @@ const app = createApp({
                 loadProjectGroups();
             }
 
-            if (hash === '/knowledge-base') {
+            const distributedTab = window.DistributedFeature.routeToTab(hash);
+            if (distributedTab) {
+                currentView.value = 'distributed';
+                distributed.setTab(distributedTab);
+                distributed.load();
+            } else if (hash === '/knowledge-base') {
                 currentView.value = 'knowledge-base';
                 connectGlobalWS();
                 // БЗ фильтруется по глобально выбранному объекту (верхний селектор «Объект»).
@@ -17224,6 +17232,7 @@ const app = createApp({
             subSpendLoad, subSpendColor, subSpendInitials, subSpendDayLabel, subSpendTok,
             // State
             currentView, currentProject, currentProjectId, visiblePipelineSummary,
+            distributed,
             projectLoading, projects, loading, isProjectView,
             findingsData, filterSeverity, filterSearch, severityOptions,
             // KB-Validation
@@ -17719,4 +17728,5 @@ const app = createApp({
     }
 });
 
+window.DistributedFeature.registerComponents(app);
 app.mount('#app');
