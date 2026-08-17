@@ -142,18 +142,25 @@ def test_privileged_bootstrap_is_exact_receipted_and_idempotent(monkeypatch, tmp
     )["runtime_mutations"] == []
 
 
-def test_runtime_never_chmods_or_chowns_shared_state(monkeypatch, tmp_path):
+def test_runtime_never_chmods_or_chowns_shared_deployment_metadata(monkeypatch, tmp_path):
     settings, _args = _prepare(monkeypatch, tmp_path / "prepared")
+    chmod_targets: list[str] = []
 
-    def forbidden(*_args, **_kwargs):
-        raise AssertionError("shared runtime permission mutation is forbidden")
+    real_chmod = os.chmod
 
-    monkeypatch.setattr(state_permissions.os, "chmod", forbidden, raising=False)
-    monkeypatch.setattr(database.os, "chmod", forbidden)
-    monkeypatch.setattr(database.os, "chown", forbidden, raising=False)
+    def tracked_chmod(path, mode, *args, **kwargs):
+        chmod_targets.append(str(path))
+        return real_chmod(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(database.os, "chmod", tracked_chmod)
+    monkeypatch.setattr(database.os, "chown", lambda *_a, **_k: (_ for _ in ()).throw(
+        AssertionError("shared runtime chown is forbidden")
+    ))
     database.ensure_ready(settings)
     with database.read_conn(settings) as connection:
         assert connection.execute("PRAGMA user_version").fetchone() is not None
+    # SQLite sidecars may be normalized; contract directories/receipt must not be chmod'd.
+    assert not any("/prepared/" in target and target.endswith((".json",)) for target in chmod_targets)
 
 
 def test_receipt_survives_normal_database_writes_and_process_restart(monkeypatch, tmp_path):

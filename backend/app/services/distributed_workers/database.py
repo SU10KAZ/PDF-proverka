@@ -29,6 +29,7 @@ from backend.app.services.distributed_workers.settings import (
     get_settings,
 )
 from backend.app.services.distributed_workers.state_permissions import (
+    SHARED_FILE_MODE,
     SQLITE_SIDECAR_SUFFIXES,
     STATIC_DIRECTORY_NAMES,
     validate_runtime_shared_state,
@@ -104,14 +105,37 @@ def _prepare_or_validate_directories(st: DistributedWorkersSettings) -> None:
         _enforce_private_permissions(directory, directory=True)
 
 
-def _secure_database_files(st: DistributedWorkersSettings) -> None:
-    """Retain only the historical private-state mode normalization.
+def _normalize_shared_sqlite_files(st: DistributedWorkersSettings) -> None:
+    """Ensure runtime SQLite artifacts stay group-accessible in shared mode.
 
-    Shared-state metadata is fully deployment-owned.  In shared mode this
-    request-path helper is deliberately a no-op: runtime never chmods/chowns or
-    repairs persistent state.
+    Contract-prepared ``workers.db`` is 0660, but SQLite creates ``-wal``/``-shm``
+    using the process umask (0077 on our systemd units). Default ACL on the data
+    directory cannot guarantee 0660 on every creation path, so a gateway open
+    after a backend write can fail until sidecars are normalized.
     """
+    for path in (
+        st.db_path,
+        *(st.db_path.with_name(st.db_path.name + suffix)
+          for suffix in SQLITE_SIDECAR_SUFFIXES),
+    ):
+        if not path.exists() or path.is_symlink():
+            continue
+        _validate_plain_path(path, directory=False)
+        current = stat.S_IMODE(path.lstat().st_mode)
+        if current == SHARED_FILE_MODE:
+            continue
+        os.chmod(path, SHARED_FILE_MODE)
+        final = stat.S_IMODE(path.lstat().st_mode)
+        if final != SHARED_FILE_MODE:
+            raise RuntimeError(
+                f"shared SQLite file mode normalization failed for {path}: {final:o}"
+            )
+
+
+def _secure_database_files(st: DistributedWorkersSettings) -> None:
+    """Normalize SQLite file modes for the active storage mode."""
     if st.shared_state_enabled:
+        _normalize_shared_sqlite_files(st)
         return
     for path in (
         st.db_path,
