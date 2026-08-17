@@ -49,6 +49,10 @@ def _gb(value: float) -> float:
 
 
 def loadavg() -> tuple[float, float, float]:
+    try:
+        return os.getloadavg()
+    except OSError:
+        return (0.0, 0.0, 0.0)
 
 
 def _gpu_snapshot() -> dict[str, Any]:
@@ -86,10 +90,6 @@ def _gpu_snapshot() -> dict[str, Any]:
         "total_gb": round(total_mb / 1024.0, 2),
         "source": "nvidia-smi",
     }
-    try:
-        return os.getloadavg()
-    except OSError:
-        return (0.0, 0.0, 0.0)
 
 
 @dataclass
