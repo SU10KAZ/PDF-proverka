@@ -47,10 +47,10 @@ WINDOW_5H_TOKEN_LIMIT = 12_000_000
 WEEKLY_TOKEN_LIMIT = 17_000_000
 
 # Момент еженедельного сброса лимитов подписки Claude.
-# Пятница 19:00 MSK = 16:00 UTC. Единый источник истины для окна недели
+# Понедельник 17:00 MSK = 14:00 UTC. Единый источник истины для окна недели
 # и суточных бакетов панели «Расход подписки по инженерам».
-WEEKLY_RESET_WEEKDAY = 4   # пятница (0=пн … 6=вс)
-WEEKLY_RESET_HOUR_UTC = 16  # 16:00 UTC = 19:00 MSK
+WEEKLY_RESET_WEEKDAY = 0   # понедельник (0=пн … 6=вс)
+WEEKLY_RESET_HOUR_UTC = 14  # 14:00 UTC = 17:00 MSK
 
 # Москва (UTC+3, без перехода на летнее время). Столбцы панели «Расход
 # подписки» считаются по календарным суткам именно в этой зоне, независимо
@@ -204,12 +204,13 @@ class UsageTracker:
             except ValueError:
                 pass
 
-        # 3. Недельный (с понедельника 00:00)
-        days_since_monday = now.weekday()
-        monday = (now - timedelta(days=days_since_monday)).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        weekly_recs = [r for r in records if r.get("timestamp", "") >= monday.isoformat()]
+        # 3. Недельный (с момента сброса лимитов подписки — пн 17:00 MSK).
+        # Записи хранят наивный local-ISO, поэтому момент сброса переводим
+        # в МСК и снимаем tzinfo — сравнение строк остаётся корректным.
+        week_start = _prev_weekly_reset(
+            datetime.now(timezone.utc), WEEKLY_RESET_WEEKDAY, WEEKLY_RESET_HOUR_UTC
+        ).astimezone(MSK_TZ).replace(tzinfo=None)
+        weekly_recs = [r for r in records if r.get("timestamp", "") >= week_start.isoformat()]
         wk_input, wk_output, wk_cost, wk_calls = self._sum_records(weekly_recs)
         wk_total = wk_input + wk_output
         wk_pct = min(100.0, round(wk_total / WEEKLY_TOKEN_LIMIT * 100, 1)) if WEEKLY_TOKEN_LIMIT > 0 else 0
@@ -242,7 +243,7 @@ class UsageTracker:
             weekly_limit_tokens=WEEKLY_TOKEN_LIMIT,
             weekly_remaining_tokens=wk_remaining,
             weekly_percent_used=wk_pct,
-            weekly_started_at=monday.isoformat(),
+            weekly_started_at=week_start.isoformat(),
         )
 
     @staticmethod
@@ -617,7 +618,7 @@ def _next_weekly_reset(now: datetime, reset_weekday: int, reset_hour: int) -> da
     """Следующий еженедельный сброс.
 
     reset_weekday: 0=пн, 1=вт, ..., 3=чт, 6=вс
-    reset_hour: час UTC (для MSK 20:00 = UTC 17:00)
+    reset_hour: час UTC (для MSK 17:00 = UTC 14:00)
     """
     days_ahead = (reset_weekday - now.weekday()) % 7
     reset = now.replace(hour=reset_hour, minute=0, second=0, microsecond=0)
@@ -660,10 +661,10 @@ class GlobalUsageScanner:
         self._cache: Optional[GlobalUsageCounters] = None
         self._cache_at: float = 0
         self._lock = threading.Lock()
-        # Настройки сброса (по умолчанию пятница 19:00 MSK = 16:00 UTC)
+        # Настройки сброса (по умолчанию понедельник 17:00 MSK = 14:00 UTC)
         # Можно менять через set_weekly_reset()
-        self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY  # пятница
-        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 16:00 UTC = 19:00 MSK
+        self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY  # понедельник
+        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 14:00 UTC = 17:00 MSK
         # Лимиты (output_tokens как основная метрика)
         self.session_5h_limit = WINDOW_5H_TOKEN_LIMIT
         self.weekly_all_limit = WEEKLY_TOKEN_LIMIT
@@ -1540,10 +1541,10 @@ def _subscription_person(dirname: str):
 def scan_subscription_by_person(days: int = 7) -> dict:
     """Расход подписки Claude по инженерам за ТЕКУЩУЮ недельную квоту.
 
-    Окно = от последнего еженедельного сброса лимитов (по умолчанию пятница
-    16:00 UTC = 19:00 MSK) до сейчас. Дни-колонки — это 24-часовые бакеты,
-    отсчитанные от момента сброса (день 0 = пятница с 19:00 MSK), поэтому
-    таблица всегда начинается с пятницы.
+    Окно = от последнего еженедельного сброса лимитов (по умолчанию
+    понедельник 14:00 UTC = 17:00 MSK) до сейчас. Дни-колонки — это
+    календарные сутки по МСК, начиная с даты сброса, поэтому таблица всегда
+    начинается с дня сброса (первый столбец — частичный).
 
     Токены считаются точно (из поля usage), стоимость — оценка по прайсу
     Claude. Людмила исключена по требованию. Параметр `days` игнорируется —
@@ -1556,11 +1557,11 @@ def scan_subscription_by_person(days: int = 7) -> dict:
 
     # Столбцы — настоящие календарные сутки по МСК (00:00–24:00), от даты
     # сброса до сегодня включительно. Считаем только записи внутри недельного
-    # окна (ts ≥ week_start), поэтому первый столбец (пятница) — частичный,
-    # с момента сброса; сумма столбцов = недельному «Итого».
+    # окна (ts ≥ week_start), поэтому первый столбец (день сброса) —
+    # частичный, с момента сброса; сумма столбцов = недельному «Итого».
     start_local_date = week_start.astimezone(MSK_TZ).date()
     today_local = now_utc.astimezone(MSK_TZ).date()
-    # До 8 календарных дат: окно пт 19:00 → пт 19:00 может задевать 8 суток.
+    # До 8 календарных дат: окно пн 17:00 → пн 17:00 может задевать 8 суток.
     n_days = max(1, min((today_local - start_local_date).days + 1, 8))
     day_keys = [(start_local_date + timedelta(days=i)).isoformat() for i in range(n_days)]
     day_key_set = set(day_keys)

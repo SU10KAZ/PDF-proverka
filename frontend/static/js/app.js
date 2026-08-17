@@ -11033,6 +11033,17 @@ const app = createApp({
             kuldiaev: '#22c55e', kalinina: '#f59e0b',
         };
         const _SUB_SPEND_WD = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+        // Родительный падеж для «с понедельника 17.08 …»: день сброса приходит
+        // с бэкенда (week_start_date), в UI ничего не зашито жёстко.
+        const _SUB_SPEND_WD_GEN = [
+            'воскресенья', 'понедельника', 'вторника', 'среды',
+            'четверга', 'пятницы', 'субботы',
+        ];
+        function _subSpendWdIndex(isoDate) {
+            const p = String(isoDate || '').split('-').map(Number);
+            if (p.length !== 3 || p.some(isNaN)) return null;
+            return new Date(p[0], p[1] - 1, p[2]).getDay();
+        }
         function subSpendColor(id) { return _SUB_SPEND_COLORS[id] || '#94a3b8'; }
         function subSpendInitials(name) {
             const parts = String(name || '').split(/\s+/).filter(Boolean);
@@ -11055,7 +11066,18 @@ const app = createApp({
             const d = subSpendData.value;
             if (!d || !d.week_start_date) return '';
             const [y, m, day] = d.week_start_date.split('-');
-            return `с пятницы ${day}.${m} ${d.week_start_time || '19:00'} (сброс лимитов)`;
+            const wdIdx = _subSpendWdIndex(d.week_start_date);
+            const wd = wdIdx === null ? '' : _SUB_SPEND_WD_GEN[wdIdx] + ' ';
+            return `с ${wd}${day}.${m} ${d.week_start_time || '17:00'} (сброс лимитов)`;
+        });
+        // Короткая подпись плана: «сброс пн 17:00 MSK».
+        const subSpendResetText = computed(() => {
+            const d = subSpendData.value;
+            const wdIdx = d ? _subSpendWdIndex(d.week_start_date) : null;
+            const wd = wdIdx === null ? 'пн' : _SUB_SPEND_WD[wdIdx];
+            const time = (d && d.week_start_time) || '17:00';
+            const plan = (d && d.plan) || 'Claude Max 20x';
+            return `${plan} · сброс ${wd} ${time} MSK · оценка $`;
         });
         async function subSpendLoad() {
             subSpendLoading.value = true;
@@ -17228,7 +17250,7 @@ const app = createApp({
             schedPlanMap, schedPlanDraft, schedPlanSaving, schedPlanMsg, schedIsAdmin,
             schedDraftFor, schedSetPlanDraft, schedCancelPlanEdit, schedLoadPlans, schedSavePlans,
             // Расход подписки по инженерам
-            subSpendOpen, subSpendLoading, subSpendData, subSpendWeekText,
+            subSpendOpen, subSpendLoading, subSpendData, subSpendWeekText, subSpendResetText,
             subSpendLoad, subSpendColor, subSpendInitials, subSpendDayLabel, subSpendTok,
             // State
             currentView, currentProject, currentProjectId, visiblePipelineSummary,
