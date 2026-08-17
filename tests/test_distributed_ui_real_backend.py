@@ -326,8 +326,25 @@ def test_limits_and_diagnostics_are_nullable_and_credential_free(viewer):
     diagnostics_response = viewer.get("/api/workers/distributed/diagnostics")
     assert diagnostics_response.status_code == 200
     diagnostic = diagnostics_response.json()["diagnostics"][0]["diagnostic"]
-    assert diagnostic["mtls"] == "unavailable"
+    # Раньше здесь стояло `== "unavailable"`, и тест закреплял жёстко зашитую
+    # строку из кода: поле ВСЕГДА сообщало «неизвестно», хотя реестр
+    # сертификатов хранит серийник, отпечаток, срок и статус. Тест на константу
+    # защищал дефект. Теперь проверяется СЕМАНТИКА: значение из допустимого
+    # набора и согласовано с транспортом. В этой фикстуре сертификата нет и
+    # поток не gRPC, поэтому честный ответ — «неприменимо».
+    assert diagnostic["mtls"] in {
+        "verified", "enrolled", "unknown", "not_applicable",
+    }
+    if diagnostic["transport"] != "grpc_stream":
+        assert diagnostic["mtls"] == "not_applicable"
+    # Срок действия отдаётся только вместе с сертификатом — числа без
+    # источника здесь так же недопустимы, как и в квотах.
+    if diagnostic["mtls"] in {"unknown", "not_applicable"}:
+        assert diagnostic["certExpiry"] is None
+        assert diagnostic["certSerial"] is None
     assert diagnostic["gatewayTarget"] is None
+    # Пустой адрес обязан быть объяснён, иначе он неотличим от недоделки.
+    assert diagnostic["gatewayTargetNote"]
     assert diagnostic["eventOutbox"] == {
         "lastWrittenSeq": None, "lastAckedSeq": None, "pending": None,
     }
@@ -515,3 +532,111 @@ def test_resource_view_exposes_cpu_ram_gpu():
     assert view["gpu"] == 7.0
     assert view["vramUsedGb"] == 4.0
 
+
+
+def test_resource_view_reports_no_gpu_instead_of_zeroes():
+    """Машина без видеокарты не должна выглядеть как машина с пустой картой.
+
+    `nvidia-smi` на таком хосте не отвечает, и по проводу приезжают нули.
+    Показать «0.0 / 0.0 ГБ VRAM» значит выдать отсутствие данных за измерение:
+    на экране это неотличимо от настоящего замера. Нулевой ОБЪЁМ памяти у
+    существующей карты физически невозможен, поэтому он и служит признаком
+    отсутствия устройства.
+    """
+    from backend.app.services.distributed_workers import distributed_ui
+
+    view = distributed_ui._resource_view({
+        "at": 1.0,
+        "cpu": {"utilization_pct": 5.1, "cores": 8},
+        "ram": {"total_gb": 11.58, "available_gb": 7.76, "used_pct": 33.0},
+        "gpu": {"used_gb": 0.0, "total_gb": 0.0},
+    })
+    assert view["gpuPresent"] is False
+    assert view["gpu"] is None
+    assert view["vramUsedGb"] is None
+    assert view["vramTotalGb"] is None
+    # CPU и RAM при этом обязаны остаться настоящими.
+    assert view["cpu"] == 5.1
+    assert view["ram"] == 33.0
+
+
+def test_resource_view_reads_disk_from_heartbeat_report():
+    """Диск приходит в `disk_report` в БАЙТАХ, ключа `disk` в снимке нет.
+
+    Чтение только из `disk` давало пустые «Диск: —» при полностью исправной
+    телеметрии — то есть теряло реальные сведения.
+    """
+    from backend.app.services.distributed_workers import distributed_ui
+
+    view = distributed_ui._resource_view({
+        "at": 1.0,
+        "disk_report": {
+            "total_bytes": 126711623680.0,
+            "free_bytes": 55454093312.0,
+            "used_bytes": None,
+        },
+    })
+    assert view["diskTotalGb"] == 118.01
+    assert view["diskFreeGb"] == 51.65
+    assert view["disk"] == 56.2
+
+
+def test_resource_view_keeps_unknown_distinct_from_zero():
+    """Отсутствие сведений — это `None`, а не ноль."""
+    from backend.app.services.distributed_workers import distributed_ui
+
+    view = distributed_ui._resource_view({"at": 1.0})
+    for key in ("cpu", "ram", "disk", "diskTotalGb", "diskFreeGb",
+                "gpu", "vramUsedGb", "vramTotalGb"):
+        assert view[key] is None, key
+
+
+def test_disabled_intake_is_not_a_slot_count_mismatch():
+    """Выключенный приём — это политика центра, а не расхождение в счёте.
+
+    Раньше число воркера сравнивалось с `center_free`, куда уже вложены
+    политические запреты. Оператор, выключивший приём, немедленно получал
+    предупреждение «одна из сторон считает не то» — при полном согласии сторон
+    о том, СКОЛЬКО слотов существует. Ровно это состояние (физически свободен
+    1, к назначению 0) этап 12I.1 делает штатным.
+    """
+    from backend.app.services.distributed_workers import slots
+
+    worker = {
+        "worker_id": "wrk_test", "registration_status": "approved",
+        "intake_enabled": 0, "connection_status": "online",
+        "configured_max_slots": 1, "worker_reported_max_slots": 1,
+        "calculated_free_slots": 1,
+    }
+    limit = slots.effective_limit(worker)
+    usage = slots.SlotUsage(occupied=0, awaiting=0, unproven=0)
+    view = slots.build_slot_view(worker, usage, limit)
+
+    assert view["physical_free_slots"] == 1      # слот физически есть
+    assert view["effective_free_slots"] == 0     # но назначать нельзя
+    assert view["slot_count_mismatch"] is False  # и это НЕ расхождение
+    assert view["limit_binding"] == "operator_intake"
+
+
+def test_real_slot_count_mismatch_is_still_reported():
+    """Настоящее расхождение обязано остаться видимым.
+
+    Проверка нужна, чтобы исправление предыдущего теста не превратилось в
+    «молчать всегда»: воркер, обещающий больше слотов, чем есть физически, —
+    по-прежнему повод для предупреждения.
+    """
+    from backend.app.services.distributed_workers import slots
+
+    worker = {
+        "worker_id": "wrk_test", "registration_status": "approved",
+        "intake_enabled": 1, "connection_status": "online",
+        "configured_max_slots": 1, "worker_reported_max_slots": 1,
+        "calculated_free_slots": 2,
+    }
+    limit = slots.effective_limit(worker)
+    usage = slots.SlotUsage(occupied=0, awaiting=0, unproven=0)
+    view = slots.build_slot_view(worker, usage, limit)
+
+    assert view["slot_count_mismatch"] is True
+    assert view["slot_count_mismatch_direction"] == "worker_claims_more"
+    assert view["slot_count_mismatch_hint"]

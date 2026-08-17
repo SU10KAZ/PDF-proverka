@@ -374,6 +374,17 @@ def build_slot_view(
     claimed = worker_claimed_free
     if claimed is None:
         claimed = int(worker.get("calculated_free_slots") or 0)
+
+    # ФИЗИЧЕСКАЯ свободная ёмкость: только то, сколько слотов существует, без
+    # политических запретов (приём выключен, регистрация, связь, исполнитель,
+    # диск). Она и сравнивается с числом воркера ниже.
+    capacity_facts = [
+        limit.components.get(key)
+        for key in ("center_configured", "worker_configured", "max_verified")
+        if isinstance(limit.components.get(key), int)
+    ]
+    physical_limit = min(capacity_facts) if capacity_facts else limit.value
+    physical_free = max(0, physical_limit - usage.reserved)
     # Расхождение считается в ОБЕ стороны. Односторонняя проверка
     # («воркер обещает больше, чем есть у центра») пропускала ровно тот
     # случай, который тише всего заканчивается тупиком: центр видит слот
@@ -382,10 +393,19 @@ def build_slot_view(
     # работает, локальная ёмкость съедена. Новая попытка висит в `assigned`,
     # агент за ней не идёт, потому что у него занято, и никто не сообщает
     # оператору, почему ничего не происходит.
-    mismatch = claimed != center_free
+    # Сравнивать надо СЧЁТ со СЧЁТОМ. Прежде число воркера сверялось с
+    # `center_free`, в которое уже вложены политические запреты, и выключенный
+    # оператором приём немедленно давал «расхождение»: воркер честно сообщает
+    # один физически свободный слот, центр отвечает нулём назначаемых — при
+    # полном согласии сторон о том, СКОЛЬКО слотов есть. Оператор видел
+    # предупреждение «одна из сторон считает не то» на штатном состоянии, а
+    # ровно это состояние 12I.1 и делает нормой: физически свободно 1,
+    # доступно для назначения 0. Настоящее расхождение — только когда стороны
+    # не сходятся в физической ёмкости.
+    mismatch = claimed != physical_free
     mismatch_direction = (
-        None if claimed == center_free
-        else ("worker_claims_more" if claimed > center_free else "worker_claims_fewer")
+        None if claimed == physical_free
+        else ("worker_claims_more" if claimed > physical_free else "worker_claims_fewer")
     )
     return {
         "effective_limit": limit.value,
@@ -397,6 +417,7 @@ def build_slot_view(
         "unproven_remote": usage.unproven,
         "reserved": usage.reserved,
         "center_free_slots": center_free,
+        "physical_free_slots": physical_free,
         "worker_claimed_free_slots": claimed,
         # Центр использует МЕНЬШЕЕ из двух — безопасная сторона (S-15).
         "effective_free_slots": min(center_free, max(0, claimed)) if claimed >= 0 else 0,
@@ -407,7 +428,7 @@ def build_slot_view(
             else (
                 "Воркер обещает больше свободных слотов, чем насчитал центр. "
                 "Назначаем по меньшему числу."
-                if claimed > center_free
+                if claimed > physical_free
                 else "Центр считает слот свободным, а воркер — занятым: на VPS "
                      "могла остаться работа, которую центр перестал учитывать "
                      "(например, после признания попытки потерянной). Новое "

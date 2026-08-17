@@ -63,6 +63,24 @@ class CertificateRegistry:
                 (serial_hex.lower(),),
             ).fetchone())
 
+    def active_for_worker(self, worker_id: str) -> dict[str, Any] | None:
+        """Действующий сертификат воркера — только чтение.
+
+        Нужен экрану диагностики. До этого он показывал `mtls: "unavailable"`
+        жёстко зашитой строкой с комментарием «факт проверки сертификата не
+        сохраняется». Комментарий не соответствовал устройству: реестр хранит
+        и серийный номер, и отпечаток, и срок действия, а статус ACTIVE
+        выставляется при выдаче. Показывать «неизвестно» там, где сведения
+        есть, — это выдуманное значение с обратным знаком.
+        """
+        with database.read_conn(self.settings) as conn:
+            return _row(conn.execute(
+                "SELECT * FROM worker_certificates "
+                "WHERE worker_id = ? AND status = 'ACTIVE' "
+                "ORDER BY not_after DESC LIMIT 1",
+                (worker_id,),
+            ).fetchone())
+
     def by_request(self, request_id: str) -> dict[str, Any] | None:
         with database.read_conn(self.settings) as conn:
             return _row(conn.execute(

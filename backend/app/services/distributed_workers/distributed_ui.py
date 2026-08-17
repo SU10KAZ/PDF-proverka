@@ -17,6 +17,7 @@ from typing import Any, Optional
 
 from backend.app.services.distributed_workers import (
     central_handoff,
+    certificate_registry,
     database,
     gateway_repository,
     progress_service,
@@ -72,6 +73,18 @@ def _finite_number(value: Any) -> Optional[float]:
         return None
     number = float(value)
     return number if math.isfinite(number) else None
+
+
+def _gb(value: Any) -> Optional[float]:
+    """Байты в гигабайты. `None` остаётся `None`, а не превращается в 0.0.
+
+    Ноль и «неизвестно» на экране должны различаться: нулевой свободный диск —
+    это авария, а отсутствие сведений — это отсутствие сведений.
+    """
+    number = _finite_number(value)
+    if number is None:
+        return None
+    return round(number / (1024 ** 3), 2)
 
 
 def _percent(value: Any) -> Optional[float]:
@@ -419,13 +432,31 @@ def _resource_view(snapshot: Any) -> dict[str, Any]:
     cpu = data.get("cpu") if isinstance(data.get("cpu"), dict) else {}
     disk = data.get("disk") if isinstance(data.get("disk"), dict) else {}
     disk_report = data.get("disk_report") if isinstance(data.get("disk_report"), dict) else {}
-    disk_percent = _ratio_used(disk.get("total_gb"), disk.get("free_gb"))
+    # Диск приходит в heartbeat как `disk_report` в БАЙТАХ, а ключа `disk` с
+    # гигабайтами в снимке нет вовсе. Чтение только из `disk` давало пустые
+    # «Диск: —» при полностью исправной телеметрии.
+    disk_total_gb = _finite_number(disk.get("total_gb"))
+    disk_free_gb = _finite_number(disk.get("free_gb"))
+    if disk_total_gb is None:
+        disk_total_gb = _gb(_finite_number(disk_report.get("total_bytes")))
+    if disk_free_gb is None:
+        disk_free_gb = _gb(_finite_number(disk_report.get("free_bytes")))
+    disk_percent = _ratio_used(disk_total_gb, disk_free_gb)
     if disk_percent is None:
         total_bytes = _finite_number(disk_report.get("total_bytes"))
         used_bytes = _finite_number(disk_report.get("used_bytes"))
         if total_bytes and used_bytes is not None:
             disk_percent = _percent(used_bytes / total_bytes * 100.0)
+
     gpu = data.get("gpu") if isinstance(data.get("gpu"), dict) else {}
+    # На машине без видеокарты `nvidia-smi` не отвечает, и по проводу приезжают
+    # нули. Показать «0.0 / 0.0 ГБ VRAM» значит выдать отсутствие данных за
+    # измерение: оператор увидит правдоподобное число там, где мерить нечего.
+    # Нулевой ОБЪЁМ VRAM физически невозможен у существующей карты, поэтому он
+    # и служит признаком отсутствия устройства.
+    gpu_total_gb = _finite_number(gpu.get("total_gb"))
+    gpu_present = bool(gpu_total_gb and gpu_total_gb > 0)
+
     ram_pct = _percent(ram.get("used_pct"))
     if ram_pct is None:
         ram_pct = _ratio_used(ram.get("total_gb"), ram.get("available_gb"))
@@ -437,12 +468,16 @@ def _resource_view(snapshot: Any) -> dict[str, Any]:
         "ram": ram_pct,
         "ramTotalGb": _finite_number(ram.get("total_gb")),
         "ramAvailableGb": _finite_number(ram.get("available_gb")),
-        "gpu": _percent(gpu.get("utilization_pct")),
-        "vramUsedGb": _finite_number(gpu.get("used_gb")),
-        "vramTotalGb": _finite_number(gpu.get("total_gb")),
+        "gpu": _percent(gpu.get("utilization_pct")) if gpu_present else None,
+        "vramUsedGb": _finite_number(gpu.get("used_gb")) if gpu_present else None,
+        "vramTotalGb": gpu_total_gb if gpu_present else None,
+        # Отдельный признак: «видеокарты нет» и «сведения не дошли» выглядят на
+        # экране одинаково (прочерк), но означают разное, и оператор вправе их
+        # различать.
+        "gpuPresent": gpu_present,
         "disk": disk_percent,
-        "diskTotalGb": _finite_number(disk.get("total_gb")),
-        "diskFreeGb": _finite_number(disk.get("free_gb")),
+        "diskTotalGb": disk_total_gb,
+        "diskFreeGb": disk_free_gb,
         "telemetryAt": _iso(data.get("at")),
     }
 
@@ -522,6 +557,27 @@ def _diagnostic(
     executor = view.get("executor") if isinstance(view.get("executor"), dict) else {}
     assigned = [job for job in jobs if job.get("assigned_worker_id") == worker_id]
     acknowledged = any(job.get("result_acknowledged_at") for job in assigned)
+
+    stream_live = bool(active_connection) and connection_status == "online"
+    # Сертификат берём из реестра. Раньше здесь стояла строка "unavailable" с
+    # пояснением, что факт проверки не сохраняется, — и это было неверно:
+    # реестр хранит серийник, отпечаток, срок и статус.
+    try:
+        cert = certificate_registry.CertificateRegistry(settings).active_for_worker(worker_id)
+    except Exception:  # noqa: BLE001 — диагностика не вправе ронять весь экран
+        cert = None
+    if cert and stream_live and transport == "grpc_stream":
+        # Шлюз принимает поток только по mTLS (GRPC_SECURITY_MODE=mtls), то есть
+        # живой поток — это уже состоявшаяся проверка клиентского сертификата.
+        # Вместе с ACTIVE-записью в реестре это факт, а не предположение.
+        mtls_state = "verified"
+    elif cert:
+        mtls_state = "enrolled"
+    elif transport == "grpc_stream":
+        mtls_state = "unknown"
+    else:
+        mtls_state = "not_applicable"
+
     return {
         "workerId": worker_id,
         "instanceId": _safe_text(row.get("instance_id"), limit=96),
@@ -531,10 +587,13 @@ def _diagnostic(
             else "disconnected" if session else "unavailable"
         ),
         "connectionId": _safe_text(active_connection, limit=128),
-        # The registry has no persisted certificate-verification fact.
-        "mtls": "unavailable",
+        "mtls": mtls_state,
         "heartbeat": _age_label(row.get("last_seen_at"), now=now),
+        # Адрес шлюза задан на стороне воркера и центру по проводу не
+        # передаётся. Оставляем None ЧЕСТНО и рядом объясняем причину, чтобы
+        # пустое поле не читалось как «забыли заполнить».
         "gatewayTarget": None,
+        "gatewayTargetNote": "адрес задаётся на воркере и в центр не передаётся",
         "sourceHost": None,
         "resultHost": None,
         "nginx": "unavailable",
@@ -545,7 +604,8 @@ def _diagnostic(
         "workerVersion": _safe_text(row.get("worker_version"), limit=40),
         "runtimeVersion": _safe_text(executor.get("version"), limit=40),
         "uptime": None,
-        "certExpiry": None,
+        "certExpiry": _iso((cert or {}).get("not_after")),
+        "certSerial": _safe_text((cert or {}).get("serial_hex"), limit=64),
     }
 
 
@@ -594,7 +654,12 @@ def _worker(
     )
     total = _capacity(slot_view, copied)
     used = max(0, int(slot_view.get("reserved") or 0))
-    physical_free = max(0, total - used)
+    # Физическую свободную ёмкость считает slots.py — там же, где заданы все
+    # прочие правила слотов. Локальное «total - used» жило бы своей жизнью и
+    # разошлось бы с ним при первом изменении.
+    physical_free = slot_view.get("physical_free_slots")
+    if not isinstance(physical_free, int):
+        physical_free = max(0, total - used)
     dispatchable = max(0, int(slot_view.get("effective_free_slots") or 0))
     intake_enabled = bool(view.get("intake_enabled"))
     telemetry_freshness = _freshness(snapshot_obj.get("at"), settings=settings, now=now)

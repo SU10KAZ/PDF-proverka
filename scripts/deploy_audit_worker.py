@@ -84,6 +84,15 @@ BUNDLE_INCLUDE: tuple[str, ...] = (
     "audit_worker/",
     "contracts/__init__.py",
     "contracts/agent_stream/",
+    # Продление сертификата mTLS: agent.py безусловно импортирует
+    # certificate_renewal, а тот — contracts.worker_certificate. Пакета здесь
+    # не было, и агент падал с ModuleNotFoundError на КАЖДОМ старте, уходя в
+    # вечный цикл перезапусков. Заметить это по выкатке было нельзя: сборка,
+    # хэш и selftest проходили — selftest импортирует audit_worker.agent как
+    # модуль, а до конструктора WorkerAgent, где и происходит импорт, не
+    # доходит. Поэтому пакет перечислен здесь, а тест ниже сверяет список
+    # включений с фактическими импортами.
+    "contracts/worker_certificate/",
     "backend/__init__.py",
     "backend/app/",
     "blocks.py",
@@ -647,7 +656,15 @@ py="$root/venv/bin/python"
 cd "$app"
 export AUDIT_DISABLE_DOTENV=1
 export PYTHONPATH="$app"
-"$py" -c 'import audit_worker, sys; print("AGENT_IMPORT_OK", audit_worker.__version__, audit_worker.PROTOCOL_VERSION)'
+# Импортируем ИМЕННО то, что агент грузит на старте, а не только пакет.
+# `import audit_worker` трогает лишь __init__ и потому пропустил подряд два
+# отказа, каждый из которых оставил воркер в вечном цикле перезапусков:
+# синтаксическую ошибку в resource_monitor и отсутствие пакета
+# contracts.worker_certificate в артефакте. Оба видны здесь — до переключения
+# `current`, то есть до того, как выкатка станет необратимой.
+# certificate_renewal перечислен отдельно: agent.py импортирует его внутри
+# конструктора, и до него импорт самого agent не доходит.
+"$py" -c 'import audit_worker, audit_worker.agent, audit_worker.certificate_renewal, audit_worker.executor, audit_worker.resource_monitor, audit_worker.grpc_transport, audit_worker.heartbeat; print("AGENT_IMPORT_OK", audit_worker.__version__, audit_worker.PROTOCOL_VERSION)'
 "$py" -c 'import backend.app.pipeline.remote_audit_runner as r; print("PIPELINE_IMPORT_OK")'
 "$py" -c 'import fitz; print("FITZ_OK", fitz.__doc__.strip()[:40] if fitz.__doc__ else "")'
 "$py" -m audit_worker selftest --root "$root/data" --steps 3 2>&1 | tail -4
