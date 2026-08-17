@@ -181,7 +181,7 @@ def _sanitize_warnings(warnings: Any) -> list[dict[str, Any]]:
 
 # Поля снимка ресурсов, которые ДОЛЖНЫ быть числами. Всё остальное в этих
 # разделах — либо короткая строка из закрытого набора, либо мусор.
-_NUMERIC_SNAPSHOT_SECTIONS = ("ram", "cpu", "disk", "processes", "slots")
+_NUMERIC_SNAPSHOT_SECTIONS = ("ram", "cpu", "gpu", "disk", "processes", "slots")
 _SNAPSHOT_TEXT_FIELDS = {"binding_constraint", "explanation"}
 _SNAPSHOT_TEXT_MAX = 200
 

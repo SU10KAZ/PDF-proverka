@@ -165,6 +165,81 @@ def _provider_availability(snapshot: Mapping[str, Any]) -> int:
     return common_pb.PROVIDER_AVAILABILITY_UNSPECIFIED
 
 
+def _gb_from_bytes(value: int | float | None) -> float:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return 0.0
+    return round(float(value) / (1024 ** 3), 2)
+
+
+def _bytes_from_gb(value: Any) -> int:
+    number = float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else 0.0
+    if number <= 0:
+        return 0
+    return int(number * (1024 ** 3))
+
+
+def _provider_snapshot_to_proto(item: Mapping[str, Any]) -> common_pb.ProviderCapabilitySnapshot:
+    quota = item.get("quota") if isinstance(item.get("quota"), Mapping) else {}
+    remaining = quota.get("estimated_remaining_pct")
+    remaining_milli = 0
+    raw_supported = bool(quota.get("raw_remaining_supported"))
+    if raw_supported and isinstance(remaining, (int, float)) and not isinstance(remaining, bool):
+        remaining_milli = max(0, min(100_000, int(round(float(remaining) * 1000))))
+    observed = item.get("observed_at") or quota.get("observed_at")
+    reset_at = quota.get("next_reset_at")
+    return common_pb.ProviderCapabilitySnapshot(
+        provider=str(item.get("provider") or ""),
+        capabilities=sorted(str(x) for x in (item.get("capabilities") or [])),
+        availability=_provider_availability(item),
+        safe_status=str(quota.get("quota_state") or item.get("quota_state") or item.get("status") or "unknown")[:64],
+        account_group_id=str(item.get("account_group_id") or "")[:64],
+        account_kind=str(item.get("account_kind") or "")[:64],
+        model_report_supported=bool(item.get("model_report_supported", False)),
+        installation_status=str(item.get("installation_status") or "missing")[:32],
+        auth_state=str(item.get("auth_state") or "unknown")[:32],
+        policy_state=str(item.get("policy_state") or "allowed")[:32],
+        inference_allowed=bool(item.get("inference_allowed")),
+        credential_present=bool(item.get("credential_present")),
+        observed_at=timestamp_from_epoch(observed),
+        quota_source=str(quota.get("source") or item.get("quota_source") or "unavailable")[:64],
+        quota_confidence=str(quota.get("confidence") or item.get("quota_confidence") or "none")[:16],
+        remaining_pct_milli=remaining_milli,
+        next_reset_at=timestamp_from_epoch(reset_at),
+        raw_remaining_supported=raw_supported,
+        cli_version=str(item.get("cli_version") or "")[:64],
+    )
+
+
+def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) -> dict[str, Any]:
+    remaining = None
+    if item.raw_remaining_supported and item.remaining_pct_milli:
+        remaining = round(item.remaining_pct_milli / 1000.0, 1)
+    observed = epoch_from_timestamp(item.observed_at) if item.HasField("observed_at") else None
+    reset = epoch_from_timestamp(item.next_reset_at) if item.HasField("next_reset_at") else None
+    quota = {
+        "provider": item.provider,
+        "quota_state": item.safe_status or "unknown",
+        "observed_at": observed,
+        "source": item.quota_source or "unavailable",
+        "confidence": item.quota_confidence or "none",
+        "estimated_remaining_pct": remaining,
+        "raw_remaining_supported": bool(item.raw_remaining_supported),
+        "next_reset_at": reset,
+    }
+    return {
+        "provider": item.provider,
+        "installation_status": item.installation_status or "missing",
+        "auth_state": item.auth_state or "unknown",
+        "policy_state": item.policy_state or "allowed",
+        "inference_allowed": bool(item.inference_allowed),
+        "credential_present": bool(item.credential_present),
+        "observed_at": observed,
+        "cli_version": item.cli_version or None,
+        "account_group_id": item.account_group_id or None,
+        "quota": quota,
+    }
+
+
 def capabilities_from_domain(
     capabilities: Mapping[str, Any],
     *,
@@ -183,17 +258,10 @@ def capabilities_from_domain(
     providers = []
     for name in sorted(names):
         snap = by_name.get(name, {})
-        providers.append(
-            common_pb.ProviderCapabilitySnapshot(
-                provider=name,
-                capabilities=sorted(str(item) for item in provider_caps.get(name, [])),
-                availability=_provider_availability(snap),
-                safe_status=str(snap.get("quota_state") or snap.get("status") or "unknown")[:64],
-                account_group_id=str(snap.get("account_group_id") or "")[:64],
-                account_kind=str(snap.get("account_kind") or "")[:64],
-                model_report_supported=bool(snap.get("model_report_supported", False)),
-            )
-        )
+        snap = dict(snap)
+        snap.setdefault("provider", name)
+        snap.setdefault("capabilities", sorted(str(item) for item in provider_caps.get(name, [])))
+        providers.append(_provider_snapshot_to_proto(snap))
     semantic = {
         "job_types": list(capabilities.get("job_types") or []),
         "compressions": list(capabilities.get("compressions") or []),
@@ -269,6 +337,9 @@ def heartbeat_from_http(
         else {}
     )
     resource = payload.get("resource_snapshot") or {}
+    ram = resource.get("ram") if isinstance(resource.get("ram"), Mapping) else {}
+    cpu = resource.get("cpu") if isinstance(resource.get("cpu"), Mapping) else {}
+    gpu = resource.get("gpu") if isinstance(resource.get("gpu"), Mapping) else {}
     sampled_at = resource.get("at") if isinstance(resource, Mapping) else None
     worker_state = getattr(
         common_pb,
@@ -323,6 +394,16 @@ def heartbeat_from_http(
             disk_level=str(disk.get("level") or ""),
             executor_status=str(executor.get("status") or ""),
             sampled_at=timestamp_from_epoch(sampled_at),
+            cpu_utilization_pct=float(cpu.get("utilization_pct") or 0.0),
+            ram_used_pct=float(ram.get("used_pct") or 0.0),
+            ram_total_bytes=_bytes_from_gb(ram.get("total_gb")),
+            ram_available_bytes=_bytes_from_gb(ram.get("available_gb")),
+            gpu_utilization_pct=float(gpu.get("utilization_pct") or 0.0),
+            vram_used_bytes=_bytes_from_gb(gpu.get("used_gb")),
+            vram_total_bytes=_bytes_from_gb(gpu.get("total_gb")),
+            cpu_cores=int(cpu.get("cores") or 0),
+            cpu_load1=float(cpu.get("la1") or 0.0),
+            cpu_load5=float(cpu.get("la5") or 0.0),
         ),
         capabilities_revision=capability_message.revision,
         capabilities_sha256=capability_message.sha256,
@@ -354,7 +435,26 @@ def heartbeat_to_http(message: stream_pb.Heartbeat, *, instance_id: str) -> dict
             }
             for item in message.active_attempts
         ],
-        "resource_snapshot": {"at": epoch_from_timestamp(message.resources.sampled_at)},
+        "resource_snapshot": {
+            "at": epoch_from_timestamp(message.resources.sampled_at),
+            "ram": {
+                "total_gb": _gb_from_bytes(message.resources.ram_total_bytes),
+                "available_gb": _gb_from_bytes(message.resources.ram_available_bytes),
+                "used_pct": message.resources.ram_used_pct or None,
+            },
+            "cpu": {
+                "cores": message.resources.cpu_cores or None,
+                "la1": message.resources.cpu_load1 or None,
+                "la5": message.resources.cpu_load5 or None,
+                "utilization_pct": message.resources.cpu_utilization_pct or None,
+            },
+            "gpu": {
+                "utilization_pct": message.resources.gpu_utilization_pct or None,
+                "used_gb": _gb_from_bytes(message.resources.vram_used_bytes),
+                "total_gb": _gb_from_bytes(message.resources.vram_total_bytes),
+                "source": "nvidia-smi" if message.resources.vram_total_bytes else "unavailable",
+            },
+        },
         "warnings": [],
         "executor": {"status": message.resources.executor_status},
         "disk": {

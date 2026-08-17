@@ -119,7 +119,19 @@ message ProviderCapabilitySnapshot {
   string account_group_id = 5;
   string account_kind = 6;
   bool model_report_supported = 7;
-  reserved 8 to 15;
+  string installation_status = 8;
+  string auth_state = 9;
+  string policy_state = 10;
+  bool inference_allowed = 11;
+  bool credential_present = 12;
+  google.protobuf.Timestamp observed_at = 13;
+  string quota_source = 14;
+  string quota_confidence = 15;
+  uint32 remaining_pct_milli = 16;
+  google.protobuf.Timestamp next_reset_at = 17;
+  bool raw_remaining_supported = 18;
+  string cli_version = 19;
+  reserved 20 to 29;
 }
 
 message CapabilitySnapshot {
@@ -148,7 +160,17 @@ message ResourceSummary {
   string disk_level = 7;
   string executor_status = 8;
   google.protobuf.Timestamp sampled_at = 9;
-  reserved 10 to 15;
+  double cpu_utilization_pct = 10;
+  double ram_used_pct = 11;
+  uint64 ram_total_bytes = 12;
+  uint64 ram_available_bytes = 13;
+  double gpu_utilization_pct = 14;
+  uint64 vram_used_bytes = 15;
+  uint64 vram_total_bytes = 16;
+  uint32 cpu_cores = 17;
+  double cpu_load1 = 18;
+  double cpu_load5 = 19;
+  reserved 20 to 29;
 }
 
 message PackageTransferDescriptor {

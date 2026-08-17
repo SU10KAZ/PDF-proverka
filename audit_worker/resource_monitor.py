@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import shutil
 import threading
 import time
@@ -48,6 +49,43 @@ def _gb(value: float) -> float:
 
 
 def loadavg() -> tuple[float, float, float]:
+
+
+def _gpu_snapshot() -> dict[str, Any]:
+    try:
+        proc = subprocess.run(
+            [
+                "nvidia-smi",
+                "--query-gpu=utilization.gpu,memory.used,memory.total",
+                "--format=csv,noheader,nounits",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=2.0,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return {"source": "unavailable"}
+    if proc.returncode != 0 or not proc.stdout.strip():
+        return {"source": "unavailable"}
+    line = proc.stdout.strip().splitlines()[0]
+    parts = [part.strip() for part in line.split(",")]
+    if len(parts) < 3:
+        return {"source": "unavailable"}
+    try:
+        util = float(parts[0])
+        used_mb = float(parts[1])
+        total_mb = float(parts[2])
+    except ValueError:
+        return {"source": "unavailable"}
+    if total_mb <= 0:
+        return {"source": "unavailable"}
+    return {
+        "utilization_pct": round(max(0.0, min(100.0, util)), 1),
+        "used_gb": round(used_mb / 1024.0, 2),
+        "total_gb": round(total_mb / 1024.0, 2),
+        "source": "nvidia-smi",
+    }
     try:
         return os.getloadavg()
     except OSError:
@@ -80,12 +118,18 @@ class ResourceMonitor:
 
     # ─── Снимок ──────────────────────────────────────────────────────────────
     def snapshot(self, *, active_jobs: int = 0, live_processes: int = 0) -> dict[str, Any]:
-        ram_total = ram_available = swap_used = 0.0
+        ram_total = ram_available = ram_used_pct = swap_used = 0.0
+        cpu_util = None
         if psutil is not None:
             vm = psutil.virtual_memory()
             sw = psutil.swap_memory()
             ram_total, ram_available = _gb(vm.total), _gb(vm.available)
+            ram_used_pct = round(float(vm.percent), 1)
             swap_used = _gb(sw.used)
+            try:
+                cpu_util = round(float(psutil.cpu_percent(interval=0.0)), 1)
+            except Exception:  # noqa: BLE001 - telemetry must not break heartbeat
+                cpu_util = None
 
         try:
             usage = shutil.disk_usage(str(self.data_root))
@@ -106,14 +150,23 @@ class ResourceMonitor:
         )
         return {
             "at": time.time(),
+            "cpu": {
+                "cores": cores,
+                "la1": la1,
+                "la5": la5,
+                "la15": la15,
+                "utilization_pct": cpu_util,
+            },
             "ram": {
                 "total_gb": ram_total,
                 "available_gb": ram_available,
+                "used_pct": ram_used_pct if psutil is not None else None,
                 "swap_used_gb": swap_used,
                 "source": "psutil" if psutil else "unavailable",
             },
-            "cpu": {"cores": cores, "la1": la1, "la5": la5, "la15": la15},
+            "gpu": _gpu_snapshot(),
             "disk": {"path": str(self.data_root), "total_gb": disk_total, "free_gb": disk_free},
+
             "processes": {"live_children": live_processes, "active_jobs": active_jobs},
             "slots": {
                 "configured_max": slots.configured_max,

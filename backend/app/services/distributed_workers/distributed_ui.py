@@ -126,6 +126,20 @@ def _duration_label(seconds: Any) -> str:
     return f"{days} д {hours} ч" if hours else f"{days} д"
 
 
+
+
+def _freshness(at_value: Any, *, settings: DistributedWorkersSettings, now: float) -> dict[str, Any]:
+    observed = _finite_number(at_value)
+    stale_after = max(60, int(settings.quota_stale_sec))
+    if observed is None or observed <= 0:
+        return {"observedAt": None, "ageSec": None, "stale": True, "unavailable": True}
+    age = max(0, int(now - observed))
+    return {
+        "observedAt": _iso(observed),
+        "ageSec": age,
+        "stale": age > stale_after,
+        "unavailable": False,
+    }
 def _safe_text(value: Any, *, limit: int = 500) -> Optional[str]:
     if value is None:
         return None
@@ -411,18 +425,21 @@ def _resource_view(snapshot: Any) -> dict[str, Any]:
         used_bytes = _finite_number(disk_report.get("used_bytes"))
         if total_bytes and used_bytes is not None:
             disk_percent = _percent(used_bytes / total_bytes * 100.0)
+    gpu = data.get("gpu") if isinstance(data.get("gpu"), dict) else {}
+    ram_pct = _percent(ram.get("used_pct"))
+    if ram_pct is None:
+        ram_pct = _ratio_used(ram.get("total_gb"), ram.get("available_gb"))
     return {
-        # Heartbeat exposes load averages, not CPU utilisation.
-        "cpu": None,
+        "cpu": _percent(cpu.get("utilization_pct")),
         "cpuLoad1": _finite_number(cpu.get("la1")),
         "cpuLoad5": _finite_number(cpu.get("la5")),
         "cpuCores": _finite_number(cpu.get("cores")),
-        "ram": _ratio_used(ram.get("total_gb"), ram.get("available_gb")),
+        "ram": ram_pct,
         "ramTotalGb": _finite_number(ram.get("total_gb")),
         "ramAvailableGb": _finite_number(ram.get("available_gb")),
-        "gpu": None,
-        "vramUsedGb": None,
-        "vramTotalGb": None,
+        "gpu": _percent(gpu.get("utilization_pct")),
+        "vramUsedGb": _finite_number(gpu.get("used_gb")),
+        "vramTotalGb": _finite_number(gpu.get("total_gb")),
         "disk": disk_percent,
         "diskTotalGb": _finite_number(disk.get("total_gb")),
         "diskFreeGb": _finite_number(disk.get("free_gb")),
@@ -448,16 +465,21 @@ def _provider_quota(
     auth = str(state.get("auth_state") or "unknown")
     policy = str(state.get("policy_state") or "unknown")
     inference_allowed = bool(state.get("inference_allowed"))
-    blocked = (
-        install in {"missing", "broken", "error"}
-        or auth in {"logged_out", "expired", "auth_required", "error", "missing"}
-        or policy not in {"allowed"}
-        or not inference_allowed
-        or quota_state in {"limited", "cooldown", "auth_required", "policy_blocked", "error"}
-    )
-    availability = "unavailable" if blocked else (
-        "available" if install == "installed" and auth in {"logged_in", "ready"} else "unknown"
-    )
+    auth_blocked = auth in {"logged_out", "expired", "auth_required", "error", "missing"}
+    install_blocked = install in {"broken", "error"}
+    policy_blocked = policy not in {"allowed"}
+    quota_blocked = quota_state in {"limited", "cooldown", "auth_required", "policy_blocked", "error"}
+    inference_capable = bool(inference_allowed) and not policy_blocked and not auth_blocked
+    if install == "missing" and inference_capable:
+        install_blocked = False
+    blocked = install_blocked or auth_blocked or policy_blocked or quota_blocked
+    if inference_capable and not blocked:
+        availability = "available"
+    elif auth_blocked or install_blocked or policy_blocked or quota_blocked:
+        availability = "unavailable"
+    else:
+        availability = "unknown"
+
     remaining = _percent(quota.get("estimated_remaining_pct"))
     reset = _finite_number(quota.get("next_reset_at"))
     status = "unknown"
@@ -484,6 +506,7 @@ def _provider_quota(
         "usedToday": None,
         "stale": stale,
         "observedAt": _iso(observed),
+        "inferenceCapable": inference_capable,
     }
 
 
@@ -564,13 +587,18 @@ def _worker(
         )
         for provider in PROVIDERS
     }
-    resource = _resource_view(view.get("resource_snapshot"))
+    snapshot_obj = _json_object(view.get("resource_snapshot"))
+    resource = _resource_view(snapshot_obj)
     diagnostic = _diagnostic(
         copied, view, settings=settings, now=now, jobs=jobs
     )
     total = _capacity(slot_view, copied)
     used = max(0, int(slot_view.get("reserved") or 0))
-    free = max(0, int(slot_view.get("effective_free_slots") or 0))
+    physical_free = max(0, total - used)
+    dispatchable = max(0, int(slot_view.get("effective_free_slots") or 0))
+    intake_enabled = bool(view.get("intake_enabled"))
+    telemetry_freshness = _freshness(snapshot_obj.get("at"), settings=settings, now=now)
+    resource = {**resource, "freshness": telemetry_freshness}
     return {
         "id": worker_id,
         "name": _safe_text(view.get("display_name"), limit=160) or worker_id,
@@ -583,12 +611,17 @@ def _worker(
         "uptime": None,
         "resources": resource,
         "resourceTelemetryAvailable": any(
-            resource.get(key) is not None for key in ("cpuLoad1", "ram", "disk")
+            resource.get(key) is not None for key in ("cpu", "ram", "gpu", "disk")
         ),
         "slots": {
+            "totalSlots": total,
+            "occupiedSlots": used,
+            "physicalFreeSlots": physical_free,
+            "intakeEnabled": intake_enabled,
+            "dispatchableSlots": dispatchable,
             "used": used,
             "total": total,
-            "free": free,
+            "free": physical_free,
             "effectiveTotal": int(slot_view.get("effective_limit") or 0),
             "binding": slot_view.get("limit_binding"),
             "mismatch": bool(slot_view.get("slot_count_mismatch")),

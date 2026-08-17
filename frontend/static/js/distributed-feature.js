@@ -479,8 +479,8 @@
                         </div>
                     </div>
                     <div class="distributed-worker-card__slots">
-                        <span>Слоты <b>{{ worker.slots.used }} / {{ worker.slots.total }}</b></span>
-                        <span :class="{'is-free': worker.slots.total - worker.slots.used > 0}">{{ worker.status === 'offline' ? 'недоступен' : worker.slots.total - worker.slots.used + ' свободно' }}</span>
+                        <span>Слоты <b>{{ worker.slots.occupiedSlots ?? worker.slots.used }} / {{ worker.slots.totalSlots ?? worker.slots.total }}</b></span>
+                        <span :class="{'is-free': (worker.slots.physicalFreeSlots ?? (worker.slots.total - worker.slots.used)) > 0}">{{ worker.status === 'offline' ? 'недоступен' : (worker.slots.physicalFreeSlots ?? (worker.slots.total - worker.slots.used)) + ' физически свободно' }}</span>
                     </div>
                     <div class="distributed-quota-grid">
                         <distributed-quota-bar label="Claude" :quota="worker.quotas.claude" :stale="worker.quotas.claude.stale"></distributed-quota-bar>

@@ -509,4 +509,48 @@ def test_polling_runtime_requirements_and_transport_are_unchanged():
 
 
 def test_descriptor_set_digest_is_pinned():
-    assert hashlib.sha256(DESCRIPTOR_PATH.read_bytes()).hexdigest() == "b17f857c47e5ce904a6b6283d8b1e1c2d74b31ce4fbd6bc728823b58c0f9e324"
+    assert hashlib.sha256(DESCRIPTOR_PATH.read_bytes()).hexdigest() == "1ae2dabe1d638c03a6e3d3eb538942a5f8d0558977722c8c04b3a06aa04e11f8"
+
+def test_heartbeat_roundtrip_preserves_resource_telemetry():
+    from contracts.agent_stream.v1 import adapters
+
+    payload = {
+        "instance_id": "inst",
+        "worker_state": "idle",
+        "configured_max_slots": 1,
+        "calculated_free_slots": 1,
+        "active_jobs": [],
+        "resource_snapshot": {
+            "at": 100.0,
+            "ram": {"total_gb": 32, "available_gb": 16, "used_pct": 50.0},
+            "cpu": {"cores": 8, "la1": 0.5, "la5": 0.4, "utilization_pct": 12.0},
+            "gpu": {"utilization_pct": 3.0, "used_gb": 1.0, "total_gb": 8.0},
+        },
+        "providers": [{
+            "provider": "codex",
+            "installation_status": "installed",
+            "auth_state": "logged_in",
+            "policy_state": "allowed",
+            "inference_allowed": True,
+            "credential_present": True,
+            "observed_at": 100.0,
+            "quota": {
+                "provider": "codex",
+                "quota_state": "ready",
+                "observed_at": 100.0,
+                "source": "official_app_server_rpc",
+                "confidence": "high",
+                "estimated_remaining_pct": 55.0,
+                "raw_remaining_supported": True,
+            },
+        }],
+        "disk": {"level": "ok"},
+        "executor": {"status": "online"},
+    }
+    message = adapters.heartbeat_from_http(payload, worker_id="wrk", connection_id="conn")
+    roundtrip = adapters.heartbeat_to_http(message, instance_id="inst")
+    snap = roundtrip["resource_snapshot"]
+    assert snap["cpu"]["utilization_pct"] == 12.0
+    assert snap["ram"]["used_pct"] == 50.0
+    assert snap["gpu"]["utilization_pct"] == 3.0
+

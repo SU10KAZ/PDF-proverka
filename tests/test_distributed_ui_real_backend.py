@@ -487,3 +487,31 @@ def test_all_12i_routes_are_viewer_only_gets_and_no_mutation_surface(seeded):
     stranger = portal_client(app, username=STRANGER_USER)
     assert viewer.get("/api/workers/distributed/recommendation").status_code == 200
     assert stranger.get("/api/workers/distributed/recommendation").status_code == 403
+
+def test_worker_slot_semantics_intake_off(seeded):
+    from backend.app.services.distributed_workers import database, distributed_ui
+
+    with database.write_txn(seeded) as conn:
+        conn.execute("UPDATE workers SET intake_enabled=0 WHERE worker_id=?", (WORKER_ID,))
+    snap = distributed_ui.build_snapshot(settings=seeded)
+    worker = next(item for item in snap["workers"] if item["id"] == WORKER_ID)
+    slots = worker["slots"]
+    assert slots["intakeEnabled"] is False
+    assert slots["dispatchableSlots"] == 0
+    assert slots["physicalFreeSlots"] == max(0, slots["totalSlots"] - slots["occupiedSlots"])
+
+
+def test_resource_view_exposes_cpu_ram_gpu():
+    from backend.app.services.distributed_workers import distributed_ui
+
+    view = distributed_ui._resource_view({
+        "at": 1.0,
+        "cpu": {"utilization_pct": 12.5, "cores": 8, "la1": 0.4},
+        "ram": {"total_gb": 32, "available_gb": 16, "used_pct": 50.0},
+        "gpu": {"utilization_pct": 7.0, "used_gb": 4.0, "total_gb": 8.0},
+    })
+    assert view["cpu"] == 12.5
+    assert view["ram"] == 50.0
+    assert view["gpu"] == 7.0
+    assert view["vramUsedGb"] == 4.0
+

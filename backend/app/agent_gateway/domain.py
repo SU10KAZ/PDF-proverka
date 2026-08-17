@@ -105,16 +105,7 @@ class GatewayDomainAdapter:
         self, worker_id: str, capabilities: common_pb.CapabilitySnapshot
     ) -> None:
         snapshots = [
-            {
-                "provider": item.provider,
-                "status": common_pb.ProviderAvailability.Name(item.availability)
-                .removeprefix("PROVIDER_AVAILABILITY_")
-                .lower(),
-                "quota_state": item.safe_status,
-                "account_group_id": item.account_group_id,
-                "account_kind": item.account_kind,
-                "model_report_supported": item.model_report_supported,
-            }
+            adapters.provider_capability_to_center(item)
             for item in capabilities.providers
         ]
         if snapshots:
