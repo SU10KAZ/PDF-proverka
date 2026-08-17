@@ -41,6 +41,8 @@ def _insert_job(
     state: str = "assigned",
     overall: str = "active",
     central: str = "worker_running",
+    result_import: str | None = None,
+    worker_id: str | None = WORKER_ID,
     params: dict | None = None,
     error: dict | None = None,
     created_at: float | None = None,
@@ -68,10 +70,11 @@ def _insert_job(
             "INSERT INTO job_attempts (attempt_id,job_id,attempt_number,assignment_generation,"
             "assigned_worker_id,execution_state,attempt_disposition,connectivity_state,"
             "retention_state,created_at,assigned_at,started_at,validated_at,error_json,"
-            "progress_json,central_handoff_state,central_handoff_at,central_completed_at) "
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "progress_json,central_handoff_state,central_handoff_at,central_completed_at,"
+            "result_import_state) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
-                attempt_id, job_id, 1, 1, WORKER_ID, state, disposition, "online",
+                attempt_id, job_id, 1, 1, worker_id, state, disposition, "online",
                 "retained", created, created + 10, created + 20,
                 created + 8 if state == "completed" else None,
                 json.dumps(error, ensure_ascii=False) if error else None,
@@ -79,7 +82,7 @@ def _insert_job(
                     "processed": 25, "total": 100, "percent_reliable": True,
                     "stage": "audit", "received_at": created + 300,
                 }) if state == "running" else None,
-                central, created + 10, central_completed,
+                central, created + 10, central_completed, result_import,
             ),
         )
         conn.execute(
@@ -170,7 +173,8 @@ def seeded(center_env, monkeypatch):
 
     _insert_job(
         center_env, job_id=REAL_JOB_ID, project="13АВ-РД-КМ-К2",
-        state="completed", overall="completed", central="completed",
+        state="completed", overall="completed", central="central_resume_pending",
+        result_import="applied",
         params={"discipline_id": "KM", "project_layout_version": 2},
         created_at=now - 60,
     )
@@ -359,6 +363,98 @@ def test_human_stage_mapping(state, central, expected):
     assert distributed_ui.human_stage({
         "state": state, "central_handoff_state": central, "overall_state": "active",
     }) == expected
+
+
+def test_human_stage_treats_12h_imported_success_as_done():
+    from backend.app.services.distributed_workers import distributed_ui
+
+    assert distributed_ui.human_stage({
+        "state": "completed",
+        "overall_state": "completed",
+        "central_handoff_state": "central_resume_pending",
+        "result_import_state": "applied",
+    }) == "done"
+
+
+@pytest.mark.parametrize(
+    ("job", "expected"),
+    [
+        (
+            {
+                "state": "completed", "overall_state": "completed",
+                "central_handoff_state": "central_resume_running",
+                "result_import_state": "applied",
+            },
+            "done",
+        ),
+        (
+            {
+                "state": "completed", "overall_state": "active",
+                "central_handoff_state": "result_imported",
+            },
+            "done",
+        ),
+        (
+            {
+                "state": "completed", "overall_state": "active",
+                "central_handoff_state": "result_importing",
+                "result_import_state": "applied",
+            },
+            "done",
+        ),
+        (
+            {
+                "state": "completed", "overall_state": "active",
+                "central_handoff_state": "central_resume_pending",
+            },
+            "importing",
+        ),
+        (
+            {
+                "state": "running", "overall_state": "active",
+                "central_handoff_state": "central_resume_running",
+            },
+            "importing",
+        ),
+    ],
+)
+def test_human_stage_import_completion_rules(job, expected):
+    from backend.app.services.distributed_workers import distributed_ui
+
+    assert distributed_ui.human_stage(job) == expected
+
+
+def test_12h_like_fixture_lands_in_completed_with_finding_count(
+    center_env, monkeypatch, tmp_path,
+):
+    from backend.app.services.distributed_workers import distributed_ui, result_import
+
+    now = time.time()
+    _insert_job(
+        center_env, job_id=REAL_JOB_ID, project="13АВ-РД-КМ-К2",
+        state="completed", overall="completed", central="central_resume_pending",
+        result_import="applied",
+        worker_id=None,
+        params={"discipline_id": "KM", "project_layout_version": 2},
+        created_at=now - 60,
+    )
+    resolved_version = tmp_path / "documents" / "13АВ-РД-КМ-К2" / "versions" / "v001"
+    latest = resolved_version / "03_analysis" / "latest"
+    latest.mkdir(parents=True)
+    (latest / "03_findings.json").write_text(
+        json.dumps({"findings": [{"id": index} for index in range(21)]}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(result_import, "_resolve_version_dir", lambda job: resolved_version)
+
+    snapshot = distributed_ui.build_snapshot(settings=center_env, now=now)
+    completed = snapshot["tasks"]["completed"]
+    match = next(task for task in completed if task["id"] == REAL_JOB_ID)
+    assert match["stage"] == "done"
+    assert match["findingCount"] == 21
+    assert match["isActive"] is False
+    assert all(task["id"] != REAL_JOB_ID for task in snapshot["tasks"]["errors"])
+    assert all(task["id"] != REAL_JOB_ID for task in snapshot["tasks"]["active"])
 
 
 def test_all_12i_routes_are_viewer_only_gets_and_no_mutation_surface(seeded):

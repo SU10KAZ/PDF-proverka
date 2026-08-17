@@ -174,11 +174,19 @@ def human_stage(job: dict[str, Any]) -> str:
     handoff = central_handoff.current(job)
     if handoff is central_handoff.HandoffState.FAILED:
         return "error"
+
+    import_applied = str(job.get("result_import_state") or "") == "applied"
+    if overall == "completed":
+        return "done"
+    if import_applied and execution == "completed":
+        return "done"
     if handoff is central_handoff.HandoffState.COMPLETED:
         return "done"
+    if handoff is central_handoff.HandoffState.RESULT_IMPORTED:
+        return "done"
+
     if handoff in {
         central_handoff.HandoffState.RESULT_IMPORTING,
-        central_handoff.HandoffState.RESULT_IMPORTED,
         central_handoff.HandoffState.CENTRAL_RESUME_PENDING,
         central_handoff.HandoffState.CENTRAL_RESUME_RUNNING,
     }:
