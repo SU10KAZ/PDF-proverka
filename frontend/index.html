@@ -3163,7 +3163,7 @@
                                     📅 Текущая неделя<template v-if="subSpendWeekText"> — {{ subSpendWeekText }}</template>
                                 </span>
                                 <button class="btn btn-sm btn-outline" @click="subSpendLoad()" title="Обновить">⟳</button>
-                                <span class="sub-spend-controls__plan">Claude Max 20x · сброс пт {{ (subSpendData && subSpendData.week_start_time) || '16:00' }} MSK · оценка $</span>
+                                <span class="sub-spend-controls__plan">{{ subSpendResetText }}</span>
                             </div>
                             <div v-if="subSpendLoading" class="sub-spend-empty">Загрузка…</div>
                             <div v-else-if="!subSpendData || !subSpendData.people.length" class="sub-spend-empty">

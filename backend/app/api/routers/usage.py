@@ -4,6 +4,7 @@ from fastapi import APIRouter, Body, HTTPException
 from backend.app.services.common.usage_service import (
     usage_tracker, global_scanner, paid_cost_tracker,
     WINDOW_5H_TOKEN_LIMIT, WEEKLY_TOKEN_LIMIT,
+    WEEKLY_RESET_WEEKDAY, WEEKLY_RESET_HOUR_UTC,
 )
 
 router = APIRouter(prefix="/api/usage", tags=["usage"])
@@ -39,9 +40,13 @@ async def update_limits(session_5h: int = 0, weekly_all: int = 0):
 
 
 @router.post("/global/weekly-reset")
-async def update_weekly_reset(weekday: int = 4, hour_utc: int = 6):
+async def update_weekly_reset(
+    weekday: int = WEEKLY_RESET_WEEKDAY,
+    hour_utc: int = WEEKLY_RESET_HOUR_UTC,
+):
     """Изменить день/время еженедельного сброса.
-    weekday: 0=пн..6=вс, hour_utc: час UTC."""
+    weekday: 0=пн..6=вс, hour_utc: час UTC.
+    По умолчанию — штатный сброс подписки: пн 14:00 UTC = 17:00 MSK."""
     global_scanner.set_weekly_reset(weekday=weekday, hour_utc=hour_utc)
     return {"status": "ok", "weekday": weekday, "hour_utc": hour_utc}
 
