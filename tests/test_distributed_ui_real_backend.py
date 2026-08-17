@@ -640,3 +640,104 @@ def test_real_slot_count_mismatch_is_still_reported():
     assert view["slot_count_mismatch"] is True
     assert view["slot_count_mismatch_direction"] == "worker_claims_more"
     assert view["slot_count_mismatch_hint"]
+
+
+def test_idle_worker_provider_is_available_not_unknown():
+    """Простой воркер не делает исправного провайдера «неизвестным».
+
+    Это вторая половина противоречия 12H: инференс в реальном аудите работал, а
+    экран показывал провайдера недоступным. Причина — доступность выводилась из
+    `inference_allowed`, то есть из наличия ВЫДАННОГО ГРАНТА на вызов модели.
+    Гранты выпускаются под конкретную попытку и по её завершении истекают, так
+    что у простаивающего воркера их нет никогда.
+    """
+    from backend.app.services.distributed_workers import distributed_ui
+    from backend.app.services.distributed_workers.settings import get_settings
+
+    state = {
+        "installation_status": "installed",
+        "auth_state": "logged_in",
+        "policy_state": "allowed",
+        "inference_allowed": False,          # грантов нет: воркер простаивает
+        "observed_at": time.time(),
+        "quota": {"quota_state": "unknown", "source": "unavailable",
+                  "confidence": "none", "observed_at": time.time()},
+    }
+    view = distributed_ui._provider_quota(
+        state, settings=get_settings(), now=time.time()
+    )
+    assert view["availability"] == "available"
+    # Отсутствие разрешения на вызов при этом остаётся видимым отдельно.
+    assert view["inferenceCapable"] is False
+
+
+def test_blocked_provider_is_still_unavailable():
+    """Обратная сторона: настоящая блокировка обязана остаться видимой."""
+    from backend.app.services.distributed_workers import distributed_ui
+    from backend.app.services.distributed_workers.settings import get_settings
+
+    for broken in (
+        {"auth_state": "logged_out"},
+        {"policy_state": "denied"},
+        {"installation_status": "broken"},
+    ):
+        state = {
+            "installation_status": "installed", "auth_state": "logged_in",
+            "policy_state": "allowed", "inference_allowed": True,
+            "observed_at": time.time(),
+            "quota": {"quota_state": "ready", "source": "unavailable",
+                      "confidence": "none", "observed_at": time.time()},
+            **broken,
+        }
+        view = distributed_ui._provider_quota(
+            state, settings=get_settings(), now=time.time()
+        )
+        assert view["availability"] == "unavailable", broken
+
+
+def test_reported_quota_is_not_marked_as_estimate():
+    """Число от провайдера — не оценка.
+
+    Контракт квот запрещает процент без `raw_remaining_supported`, поэтому
+    любой дошедший до экрана процент сообщён самим провайдером. Пометка
+    «оценка» занижала доверие к самому надёжному источнику из имеющихся.
+    """
+    from backend.app.services.distributed_workers import distributed_ui
+    from backend.app.services.distributed_workers.settings import get_settings
+
+    now = time.time()
+    view = distributed_ui._provider_quota(
+        {
+            "installation_status": "installed", "auth_state": "logged_in",
+            "policy_state": "allowed", "inference_allowed": False,
+            "observed_at": now,
+            "quota": {
+                "quota_state": "ready", "source": "official_app_server_rpc",
+                "confidence": "high", "estimated_remaining_pct": 11.0,
+                "raw_remaining_supported": True, "next_reset_at": now + 3600,
+                "observed_at": now,
+            },
+        },
+        settings=get_settings(), now=now,
+    )
+    assert view["percentageRemaining"] == 11.0
+    assert view["isEstimated"] is False
+    assert view["resetAt"] is not None
+
+
+def test_every_supported_provider_reaches_the_limits_row(seeded):
+    """openrouter доезжал до центра, но терялся на выходе из проекции.
+
+    И строка лимитов, и словарь quotas перечисляли claude с codex жёстко, хотя
+    сам расчёт шёл по PROVIDERS. Провайдер, про которого центр всё знает, на
+    экране не существовал.
+    """
+    from backend.app.services.distributed_workers import distributed_ui
+
+    snapshot = distributed_ui.build_snapshot(settings=seeded)
+    row = snapshot["limits"][0]
+    for provider in distributed_ui.PROVIDERS:
+        assert provider in row, provider
+        assert isinstance(row[provider], dict), provider
+    for worker in snapshot["workers"]:
+        assert set(worker["quotas"]) == set(distributed_ui.PROVIDERS)

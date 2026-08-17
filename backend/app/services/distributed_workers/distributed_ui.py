@@ -508,10 +508,22 @@ def _provider_quota(
     if install == "missing" and inference_capable:
         install_blocked = False
     blocked = install_blocked or auth_blocked or policy_blocked or quota_blocked
-    if inference_capable and not blocked:
-        availability = "available"
-    elif auth_blocked or install_blocked or policy_blocked or quota_blocked:
+
+    # ГОТОВНОСТЬ ПРОВАЙДЕРА и НАЛИЧИЕ РАЗРЕШЕНИЯ НА ВЫЗОВ — разные вопросы.
+    # `inference_allowed` означает «прямо сейчас есть выданный грант на вызов
+    # модели», а гранты выпускаются под КОНКРЕТНУЮ попытку и по её завершении
+    # истекают. У простаивающего воркера их нет никогда. Пока доступность
+    # выводилась из этого поля, исправно установленный и авторизованный
+    # провайдер показывался как «неизвестно» ровно в том состоянии, в котором
+    # воркер и должен находиться между заданиями. Это и была вторая половина
+    # противоречия 12H: инференс в аудите работал, а экран уверял, что
+    # провайдер недоступен. Доступность определяется тем, что проверяемо без
+    # задания: CLI установлен, вход выполнен, политика разрешает, лимит не
+    # исчерпан. Разрешение на вызов остаётся отдельным полем.
+    if blocked:
         availability = "unavailable"
+    elif install == "installed" and auth in {"logged_in", "ready"}:
+        availability = "available"
     else:
         availability = "unknown"
 
@@ -535,7 +547,13 @@ def _provider_quota(
         "quotaState": quota_state,
         "source": _safe_text(quota.get("source"), limit=80),
         "confidence": _safe_text(quota.get("confidence"), limit=32),
-        "isEstimated": remaining is not None,
+        # «Оценка» — это когда число выведено нами, а не сообщено провайдером.
+        # Контракт квот (quota.py) запрещает процент без
+        # `raw_remaining_supported`, поэтому любое дошедшее сюда число —
+        # ОТВЕТ ПРОВАЙДЕРА. Прежнее `remaining is not None` помечало оценкой
+        # даже 11 % от codex app-server с confidence=high, то есть занижало
+        # доверие к самому надёжному источнику из имеющихся.
+        "isEstimated": remaining is not None and not bool(quota.get("raw_remaining_supported")),
         # No existing heartbeat field means "usage today"; never derive it
         # from a rolling-window remainder.
         "usedToday": None,
@@ -691,7 +709,10 @@ def _worker(
             "binding": slot_view.get("limit_binding"),
             "mismatch": bool(slot_view.get("slot_count_mismatch")),
         },
-        "quotas": {"claude": quotas["claude"], "codex": quotas["codex"]},
+        # Тот же дефект, что и в строке лимитов: словарь собирался по PROVIDERS,
+        # а наружу отдавались два жёстко прописанных ключа, и openrouter
+        # терялся здесь же, на выходе из проекции.
+        "quotas": {name: quotas[name] for name in PROVIDERS},
         "openRouter": {
             "status": quotas["openrouter"]["availability"],
             "usedToday": None,
@@ -848,8 +869,11 @@ def build_snapshot(
             "workerName": worker["name"],
             "online": worker["connectionStatus"] == "online",
             "stale": worker["quotaDataStale"],
-            "claude": worker["quotas"]["claude"],
-            "codex": worker["quotas"]["codex"],
+            # Провайдеры перечисляются из PROVIDERS, а не двумя жёстко
+            # прописанными ключами: openrouter доезжал до центра и лежал в
+            # worker_provider_states, но на экран не попадал вовсе — строка
+            # лимитов знала только про claude и codex.
+            **{name: worker["quotas"][name] for name in PROVIDERS},
         }
         for worker in workers
     ]
