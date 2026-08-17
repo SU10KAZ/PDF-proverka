@@ -2645,12 +2645,6 @@ const app = createApp({
                 currentView.value = 'stage-comparison';
                 connectGlobalWS();
                 scLoadObjects();
-                scLoadSavedConfig();
-                // Каноничная конфигурация v2: пробуем автоматически открыть
-                // ранее сохранённую рабочую сессию. История сессий обычному
-                // пользователю не показывается.
-                scLoadCanonicalConfig();
-                scTryOpenCanonical();
             } else if (hash === '/') {
                 currentView.value = 'dashboard';
                 sidebarFilterSection.value = null;
@@ -3422,6 +3416,22 @@ const app = createApp({
             if (p.expert_review_status === 'complete') return true;
             return p.findings_review_status === 'complete'
                 && p.optimization_review_status === 'complete';
+        }
+
+        // Счётчик в sidebar строго привязан к двум видимым галочкам карточки.
+        // Общий expert_review_status здесь не fallback: проект перестаёт быть
+        // «непроверенным» только когда complete стоит у обоих раздельных статусов.
+        function hasBothExpertChecks(p) {
+            return !!p
+                && p.findings_review_status === 'complete'
+                && p.optimization_review_status === 'complete';
+        }
+
+        function expertUncheckedCount(items) {
+            return (items || []).reduce(
+                (count, p) => count + (hasBothExpertChecks(p) ? 0 : 1),
+                0,
+            );
         }
 
         // Порядок карточек в разделе: 0 — проверенные экспертом, 1 — обработанные
@@ -11329,6 +11339,9 @@ const app = createApp({
                         body: JSON.stringify({ status: 'open', summary: '' }),
                     }).catch(() => {});
                 }
+                // Сразу пересчитать две галочки и sidebar-индикатор, не дожидаясь
+                // перехода на другую страницу или фонового обновления.
+                await refreshProjects();
                 alert(`Сохранено: ${result.accepted} принято, ${result.rejected} отклонено`);
             } catch (e) {
                 console.error('Submit expert review error:', e);
@@ -11632,6 +11645,7 @@ const app = createApp({
             window.addEventListener('hashchange', handleRoute);
             window.addEventListener('click', _scInlineMatchOutsideClick);
             window.addEventListener('keydown', _stageAlgorithmKeydown);
+            window.addEventListener('resize', scScheduleMdPageAlignment);
             // Клик вне дропдауна «Тип» закрывает его (сам тогл/меню используют @click.stop).
             window.addEventListener('click', () => { if (kbTypeMenuOpen.value) kbTypeMenuOpen.value = false; });
             // Клик вне панелей шапки (объект/расходы/аккаунт) закрывает их.
@@ -11667,6 +11681,7 @@ const app = createApp({
             window.removeEventListener('hashchange', handleRoute);
             window.removeEventListener('click', _scInlineMatchOutsideClick);
             window.removeEventListener('keydown', _stageAlgorithmKeydown);
+            window.removeEventListener('resize', scScheduleMdPageAlignment);
             window.removeEventListener('click', closeHeaderPopovers);
             stopPolling();
             if (usagePollTimer) { clearInterval(usagePollTimer); usagePollTimer = null; }
@@ -11745,7 +11760,7 @@ const app = createApp({
         // Каноничная конфигурация (новая модель v2): объекту соответствует одна
         // активная конфигурация (canonical_session_id + pairs + режимы).
         // {saved, canonical_session_id, canonical_session_available, config_hash,
-        //  pairs:[{pair_id, left_filename, right_filename, disabled, analysis_mode, order, ...}],
+        //  pairs:[{pair_id, left_filename, right_filename, disabled, order, ...}],
         //  updated_at, ...}
         const scCanonicalConfig = ref(null);
         const scCanonicalStale  = ref(false);  // true если saved hash != current hash
@@ -11764,6 +11779,16 @@ const app = createApp({
         const scSelectedObjectId = ref('');
         const scSelectedStageA = ref('');    // имя выбранной stage_*, не путь
         const scSelectedStageB = ref('');
+        const scStageUploadBusy = reactive({stage_1: false, stage_2: false});
+        const scStageUploadError = ref('');
+        const scStageFolderDialogOpen = ref(false);
+        const scStageFolderDialogStage = ref('');
+        const scStageFolderDialogName = ref('');
+        const scStageFolderCandidates = ref([]);
+        const scStageFolderInput = ref(null);
+        const scStageFolderSelectedCount = computed(() =>
+            scStageFolderCandidates.value.filter(candidate => candidate.checked).length
+        );
         const scLinking        = ref(false);
         const scError          = ref('');
         const scWarnings       = ref([]);
@@ -11776,6 +11801,18 @@ const app = createApp({
         const scAutoLoading    = ref(false);
         const scActivePair     = ref(null);          // pair-summary object
         const scPairData       = ref(null);          // full pair view with blocks
+        // Новый консервативный matcher листов. Он меняет только page_alignment
+        // и автоматически отказывается от применения при ручной карте.
+        const scSheetMatchingBusy = reactive({});
+        const scSheetMatchingInfo = reactive({});
+        const scSheetIdentityBusy = reactive({});
+        const scSheetIdentityInfo = reactive({});
+        const scSheetAlignmentBusy = reactive({});
+        const scSheetAlignmentInfo = reactive({});
+        const scChangeRegionsBusy = reactive({});
+        const scChangeRegionsInfo = reactive({});
+        const scChangeGroupsBusy = reactive({});
+        const scChangeGroupsInfo = reactive({});
         const scCurrentPage    = ref(1);             // legacy, не используется в slot-based viewer
         const scCanvasRefs     = reactive({});       // legacy (single img ref)
         const scCanvasNat      = reactive({left: null, right: null});
@@ -11786,19 +11823,11 @@ const app = createApp({
         // обоим панелям дать одинаковую высоту слота — иначе левая и правая стороны
         // расходятся по скроллу когда страницы разной длины.
         const scSlotHeights    = reactive({});       // {[slotId]: {left?: number, right?: number}}
-        const scSelectedLeft   = ref(null);
-        const scSelectedRight  = ref(null);
-        const scSelectedSlotLeft  = ref(null);
-        const scSelectedSlotRight = ref(null);
         // Поповер «упавшие блоки» на цифре «упало» в таблице пар.
         const scFailedPopoverPairId = ref(null);   // id пары с открытым поповером (null = закрыт)
         const scFailedBlocks        = ref([]);
         const scFailedBlocksLoading = ref(false);
         const scFailedBlocksError   = ref('');
-        // Pair config template (Save button + auto-apply banner)
-        const scTemplateSaving       = ref(false);
-        const scTemplateLastSaveMsg  = ref('');   // короткое подтверждение «сохранён шаблон …»
-        const scTemplateError        = ref('');
         // Семантический LLM-анализ текста (Claude Sonnet через Claude Code) — session-only.
         // Per-pair результат остаётся доступен по GET-endpoint'у (для отладки), но в UI
         // мы агрегируем все пары в один плоский список (см. scTextLLMFlat ниже).
@@ -11856,12 +11885,6 @@ const app = createApp({
         const scRecogStarting         = ref(false);
         const scRecogError            = ref('');
         const scRecogStartedAtClient  = ref(null);  // fallback elapsed_sec до прихода aggregate
-        // Per-pair analysis mode: 'block_links' (default) | 'concept_no_block_links'.
-        // Если concept_no_block_links — unified pipeline сравнивает enriched MD
-        // целиком, не требуя связей блоков (см. backend/store.py).
-        const scAnalysisMode            = ref('block_links');
-        const scAnalysisModeSaving      = ref(false);
-        const scAnalysisModeError       = ref('');
         // ── Unified analysis (Qwen enrichment → Opus comparison) ──────────
         // Это primary UX «Сравнение стадий»: одна кнопка «Проанализировать и
         // сравнить» вместо отдельных text-llm + md-enrichment + graphic-diff.
@@ -12280,8 +12303,7 @@ const app = createApp({
                     return false;
                 }
                 scSession.value = j.session;
-                // Подставляем пути в форму, чтобы при ручном «Открыть проект»
-                // тоже всё совпадало.
+                // Подставляем пути сессии для таблицы и автовосстановления.
                 if (j.session.stage_a_path) scStageAPath.value = j.session.stage_a_path;
                 if (j.session.stage_b_path) scStageBPath.value = j.session.stage_b_path;
                 // Баннер автоподгрузки старой модели не показываем — он про историю сессий.
@@ -12295,48 +12317,236 @@ const app = createApp({
             } catch (_) { return false; }
         }
 
-        // На первой загрузке /stage-comparison `scLoadObjects()` стартует параллельно с
-        // `loadObjects()` (который заполняет `objectName`). Любой из них может
-        // финишировать первым — поэтому ещё watch'им obj/objects и переподставляем
-        // объект, когда обе стороны готовы.
-        watch([objectName, scObjects], () => {
+        // Единственный источник выбора — platform object selector в шапке.
+        // Любая его смена немедленно сбрасывает локальный comparison-context и
+        // выбирает comparison/stage_1|2 внутри папки объекта projects_v2.
+        watch([currentObjectId, objectName, scObjects], () => {
             if (currentView.value !== 'stage-comparison') return;
-            if (scSelectedObjectId.value) return;
             scAutoSelectFromTopObject();
         });
 
         function scAutoSelectFromTopObject() {
-            const top = (objectName.value || '').trim();
-            if (!top) return;
-            const match = scObjects.value.find(o => (o.name || '').trim() === top);
-            if (!match) return;
-            if (scSelectedObjectId.value === match.id) return;
+            const platformId = String(currentObjectId.value || '').trim();
+            const platformObject = (objectsList.value || []).find(o => String(o.id || '') === platformId);
+            const top = String((platformObject && platformObject.name) || objectName.value || '').trim();
+            const match = scObjects.value.find(o =>
+                (o.name || '').trim() === top || String(o.id || '') === platformId);
+            if (!match) {
+                scSelectedObjectId.value = '';
+                scSelectedStageA.value = 'stage_1';
+                scSelectedStageB.value = 'stage_2';
+                scStageAPath.value = '';
+                scStageBPath.value = '';
+                scSession.value = null;
+                scActivePair.value = null;
+                scPairData.value = null;
+                return;
+            }
+            const changed = scSelectedObjectId.value !== match.id;
             scSelectedObjectId.value = match.id;
-            scSelectedStageA.value = '';
-            scSelectedStageB.value = '';
+            scSelectedStageA.value = 'stage_1';
+            scSelectedStageB.value = 'stage_2';
+            if (changed) {
+                scSession.value = null;
+                scActivePair.value = null;
+                scPairData.value = null;
+                scAutoLoadInfo.value = null;
+            }
             scApplySelectedObject();
+        }
+
+        function scSelectedStagesHaveSources(obj = scSelectedObject.value) {
+            if (!obj) return false;
+            const left = (obj.stages || []).find(s => s.name === 'stage_1');
+            const right = (obj.stages || []).find(s => s.name === 'stage_2');
+            return Number(left && left.pdf_count || 0) > 0
+                && Number(right && right.pdf_count || 0) > 0;
+        }
+
+        function scClearStaleSessionWhenSourcesMissing(obj = scSelectedObject.value) {
+            if (scSelectedStagesHaveSources(obj)) return false;
+            scSession.value = null;
+            scActivePair.value = null;
+            scPairData.value = null;
+            scAutoLoadInfo.value = null;
+            return true;
         }
 
         function scApplySelectedObject() {
             const obj = scObjects.value.find(o => o.id === scSelectedObjectId.value);
             if (!obj) { scStageAPath.value = ''; scStageBPath.value = ''; return; }
-            // Подставляем дефолтные стадии при первом выборе или если ранее выбранных уже нет
-            const stageNames = (obj.stages || []).map(s => s.name);
-            if (!stageNames.includes(scSelectedStageA.value)) {
-                scSelectedStageA.value = obj.default_stage_a?.name || stageNames[0] || '';
-            }
-            if (!stageNames.includes(scSelectedStageB.value)) {
-                scSelectedStageB.value = obj.default_stage_b?.name || stageNames[stageNames.length - 1] || '';
-            }
-            const sA = (obj.stages || []).find(s => s.name === scSelectedStageA.value);
-            const sB = (obj.stages || []).find(s => s.name === scSelectedStageB.value);
+            // Пользовательский сценарий фиксирован: сравниваются stage_1 и stage_2.
+            scSelectedStageA.value = 'stage_1';
+            scSelectedStageB.value = 'stage_2';
+            const sA = (obj.stages || []).find(s => s.name === 'stage_1');
+            const sB = (obj.stages || []).find(s => s.name === 'stage_2');
             scStageAPath.value = sA ? sA.path : '';
             scStageBPath.value = sB ? sB.path : '';
+            // Путь к стадии остаётся тем же и после удаления файлов. Поэтому
+            // нельзя считать старую cached-сессию актуальной только по
+            // совпадению путей: при пустой стадии сразу убираем её из UI.
+            scClearStaleSessionWhenSourcesMissing(obj);
         }
 
         const scSelectedObject = computed(() =>
             scObjects.value.find(o => o.id === scSelectedObjectId.value) || null
         );
+
+        async function _scSubmitStageUpload(stage, input, form, endpoint) {
+            if (!currentObjectId.value || !['stage_1', 'stage_2'].includes(stage)) return;
+            scStageUploadBusy[stage] = true;
+            scStageUploadError.value = '';
+            scError.value = '';
+            try {
+                const url = `/api/stage-comparison/objects/${encodeURIComponent(currentObjectId.value)}/stages/${stage}/${endpoint}`;
+                const r = await fetch(url, {method: 'POST', body: form});
+                const data = await r.json().catch(() => ({}));
+                if (!r.ok) throw new Error(data.detail || ('HTTP ' + r.status));
+
+                scStageAPath.value = (data.stage_paths && data.stage_paths.stage_1) || '';
+                scStageBPath.value = (data.stage_paths && data.stage_paths.stage_2) || '';
+                scSession.value = null;
+                scActivePair.value = null;
+                scPairData.value = null;
+                scAutoLoadInfo.value = null;
+                await scLoadObjects();
+
+                if (data.ready_for_comparison) {
+                    await scScanFolders();
+                    try { await scLoadPairCompareStatuses(); } catch (_) {}
+                    try { await scLoadExpertPerPair(); } catch (_) {}
+                    try { await scOpusLoadPreflight(); } catch (_) {}
+                } else {
+                    const other = stage === 'stage_1' ? 'stage_2' : 'stage_1';
+                    scWarnings.value = [`Загрузите ${other}: сравнение начнётся, когда в обеих стадиях будут PDF.`];
+                }
+                return true;
+            } catch (e) {
+                scStageUploadError.value = String(e.message || e);
+                return false;
+            } finally {
+                scStageUploadBusy[stage] = false;
+                if (input) input.value = '';
+            }
+        }
+
+        async function scUploadStageFolder(stage, event) {
+            const input = event && event.target;
+            const files = Array.from((input && input.files) || []);
+            if (!files.length) return;
+            const paths = files.map(file => file.webkitRelativePath || file.name);
+            const folderName = String(paths[0] || '').split('/')[0] || 'folder';
+            const candidates = scBuildStageFolderCandidates(files, folderName);
+            scStageFolderInput.value = input;
+            scStageFolderDialogStage.value = stage;
+            scStageFolderDialogName.value = folderName;
+            scStageFolderCandidates.value = candidates;
+            scStageUploadError.value = candidates.length ? '' : 'В выбранной папке не найдены PDF или ZIP-проекты.';
+            scStageFolderDialogOpen.value = candidates.length > 0;
+        }
+
+        function scBuildStageFolderCandidates(files, rootName) {
+            const prepared = files.map((file, index) => {
+                const full = file.webkitRelativePath || file.name;
+                const parts = String(full).split('/').filter(Boolean);
+                const relative = parts[0] === rootName ? parts.slice(1) : parts;
+                return {file, index, full, relative, name: relative[relative.length - 1] || file.name};
+            });
+            const candidates = [];
+            const used = new Set();
+            for (const item of prepared) {
+                if (!item.name.toLowerCase().endsWith('.zip')) continue;
+                used.add(item.index);
+                candidates.push({
+                    id: 'zip:' + item.index,
+                    name: item.name.replace(/\.zip$/i, ''),
+                    source: item.name,
+                    kind: 'ZIP-комплект',
+                    pdfCount: null,
+                    files: [item],
+                    checked: false,
+                });
+            }
+
+            const nested = new Map();
+            for (const item of prepared) {
+                if (used.has(item.index) || item.relative.length < 2) continue;
+                const key = item.relative[0];
+                if (!nested.has(key)) nested.set(key, []);
+                nested.get(key).push(item);
+            }
+            for (const [name, items] of nested.entries()) {
+                const pdfCount = items.filter(item => item.name.toLowerCase().endsWith('.pdf')).length;
+                if (!pdfCount) continue;
+                items.forEach(item => used.add(item.index));
+                candidates.push({
+                    id: 'folder:' + name,
+                    name,
+                    source: name,
+                    kind: 'папка проекта',
+                    pdfCount,
+                    files: items,
+                    checked: false,
+                });
+            }
+
+            const rootFiles = prepared.filter(item => !used.has(item.index) && item.relative.length === 1);
+            const rootPdfs = rootFiles.filter(item => item.name.toLowerCase().endsWith('.pdf'));
+            for (const pdf of rootPdfs) {
+                const stem = pdf.name.replace(/\.pdf$/i, '').toLowerCase();
+                const related = rootFiles.filter(item => {
+                    if (used.has(item.index)) return false;
+                    const low = item.name.toLowerCase();
+                    return item === pdf || low.startsWith(stem)
+                        || (rootPdfs.length === 1 && /^(document\.|result\.json|ocr\.)/.test(low));
+                });
+                related.forEach(item => used.add(item.index));
+                candidates.push({
+                    id: 'pdf:' + pdf.index,
+                    name: pdf.name.replace(/\.pdf$/i, ''),
+                    source: pdf.name,
+                    kind: 'PDF-проект',
+                    pdfCount: 1,
+                    files: related,
+                    checked: false,
+                });
+            }
+            return candidates.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+        }
+
+        function scToggleAllStageCandidates(checked) {
+            scStageFolderCandidates.value.forEach(candidate => { candidate.checked = checked; });
+        }
+
+        function scCloseStageFolderDialog() {
+            if (scStageUploadBusy[scStageFolderDialogStage.value]) return;
+            scStageFolderDialogOpen.value = false;
+            scStageFolderCandidates.value = [];
+            if (scStageFolderInput.value) scStageFolderInput.value.value = '';
+            scStageFolderInput.value = null;
+        }
+
+        async function scSubmitSelectedStageProjects() {
+            const selected = scStageFolderCandidates.value.filter(candidate => candidate.checked);
+            if (!selected.length) return;
+            const stage = scStageFolderDialogStage.value;
+            const input = scStageFolderInput.value;
+            const selectedItems = [];
+            const seen = new Set();
+            selected.forEach(candidate => candidate.files.forEach(item => {
+                if (!seen.has(item.index)) { seen.add(item.index); selectedItems.push(item); }
+            }));
+            const form = new FormData();
+            selectedItems.forEach(item => form.append('files', item.file, item.file.name));
+            form.append('relative_paths', JSON.stringify(selectedItems.map(item => item.full)));
+            form.append('folder_name', scStageFolderDialogName.value);
+            const uploaded = await _scSubmitStageUpload(stage, input, form, 'upload-folder');
+            if (uploaded) {
+                scStageFolderDialogOpen.value = false;
+                scStageFolderCandidates.value = [];
+                scStageFolderInput.value = null;
+            }
+        }
 
         // Открыть проект: если для текущих stage_a_path/stage_b_path уже
         // есть сессия — подгрузить её (без перерасчётов). Иначе создать
@@ -12345,6 +12555,10 @@ const app = createApp({
         async function scOpenProject() {
             scError.value = '';
             scWarnings.value = [];
+            if (scClearStaleSessionWhenSourcesMissing()) {
+                scWarnings.value = ['Загрузите документы в stage_1 и stage_2: сохранённая сессия не открыта, потому что исходные PDF удалены.'];
+                return;
+            }
             const a = _scNormalizePath(scStageAPath.value);
             const b = _scNormalizePath(scStageBPath.value);
             if (!a || !b) return;
@@ -12438,6 +12652,8 @@ const app = createApp({
         // подгрузить её. Запускается при смене объекта/стадии и при первичном
         // монтировании (после восстановления выбранного объекта с бекенда).
         async function scTryAutoLoadSession() {
+            if (scScanning.value || scStageUploadBusy.stage_1 || scStageUploadBusy.stage_2) return;
+            if (scClearStaleSessionWhenSourcesMissing()) return;
             const a = _scNormalizePath(scStageAPath.value);
             const b = _scNormalizePath(scStageBPath.value);
             if (!a || !b) return;
@@ -12469,6 +12685,13 @@ const app = createApp({
                         scPairData.value = null;
                     }
                     scAutoLoadInfo.value = null;
+                    const obj = scSelectedObject.value;
+                    const left = obj && (obj.stages || []).find(s => s.name === 'stage_1');
+                    const right = obj && (obj.stages || []).find(s => s.name === 'stage_2');
+                    if (Number(left && left.pdf_count || 0) > 0
+                        && Number(right && right.pdf_count || 0) > 0) {
+                        await scScanFolders();
+                    }
                     return;
                 }
                 // Грузим. Не используем scLoadSession напрямую, потому что та
@@ -13024,10 +13247,6 @@ const app = createApp({
                             scPv2RunStopPoll(pid);
                             if (job.status === 'completed') scPv2RunArtifactPairs[pid] = true;
                             try { await scPv2RunLoadArtifactPairs(); } catch (e) {}
-                            if (typeof scPv2LpLoad === 'function' && scPv2LpVisible.value
-                                && scPv2LpPairId.value === pid) {
-                                try { await scPv2LpLoad(); } catch (e) {}
-                            }
                             return;
                         }
                     }
@@ -13079,10 +13298,6 @@ const app = createApp({
         async function scOpenPair(pair) {
             if (!pair || !pair.left || !pair.right) return;
             scActivePair.value = pair;
-            scSelectedLeft.value = null;
-            scSelectedRight.value = null;
-            scSelectedSlotLeft.value = null;
-            scSelectedSlotRight.value = null;
             scTextLLMDiff.value = null;
             scGraphicSummary.value = null;
             scGraphicPreview.value = null;
@@ -13103,9 +13318,6 @@ const app = createApp({
             for (const k of Object.keys(scSlotHeights)) delete scSlotHeights[k];
             await scLoadPairData();
             await scLoadAlignment();
-            // Загружаем analysis_mode чтобы кнопка «Блоки без связей» сразу
-            // отражала текущее состояние.
-            try { await scLoadAnalysisMode(); } catch (_) {}
             // Если открыт MD-вьювер — подтянуть enriched MD новой пары.
             if (scShowMd.value) scLoadEnrichedMd();
             scTab.value = 'links';
@@ -13218,6 +13430,102 @@ const app = createApp({
             }
         }
 
+        async function scRunSheetMatching(pair) {
+            if (!scSession.value || !pair || !pair.id || scSheetMatchingBusy[pair.id]) return;
+            scSheetMatchingBusy[pair.id] = true;
+            scSheetMatchingInfo[pair.id] = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pair.id)}/sheet-matching`;
+                const response = await fetch(url, {method: 'POST'});
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                const summary = (data.sheet_matching && data.sheet_matching.summary) || {};
+                scSheetMatchingInfo[pair.id] = data.applied
+                    ? `Карта обновлена: пар ${summary.matched || 0}, ручная проверка ${((summary.uncertain_left || 0) + (summary.uncertain_right || 0))}.`
+                    : 'Ручная карта сохранена без изменений. Результат matcher подготовлен для проверки.';
+                if (scActivePair.value && scActivePair.value.id === pair.id) {
+                    await scLoadPairData();
+                    await scLoadAlignment();
+                }
+            } catch (error) {
+                scSheetMatchingInfo[pair.id] = 'Не удалось сопоставить листы: ' + String(error.message || error);
+            } finally {
+                scSheetMatchingBusy[pair.id] = false;
+            }
+        }
+
+        async function scRunSheetIdentity(pair) {
+            if (!scSession.value || !pair || !pair.id || scSheetIdentityBusy[pair.id]) return;
+            scSheetIdentityBusy[pair.id] = true;
+            scSheetIdentityInfo[pair.id] = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pair.id)}/sheet-identity`;
+                const response = await fetch(url, {method: 'POST'});
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                const summary = (data.sheet_identity && data.sheet_identity.summary) || {};
+                scSheetIdentityInfo[pair.id] = `Идентичных: ${summary.identical || 0}; требуют сравнения: ${summary.needs_comparison || 0}; не определено: ${summary.uncertain || 0}.`;
+            } catch (error) {
+                scSheetIdentityInfo[pair.id] = 'Не удалось проверить идентичность: ' + String(error.message || error);
+            } finally {
+                scSheetIdentityBusy[pair.id] = false;
+            }
+        }
+
+        async function scRunSheetAlignment(pair) {
+            if (!scSession.value || !pair || !pair.id || scSheetAlignmentBusy[pair.id]) return;
+            scSheetAlignmentBusy[pair.id] = true;
+            scSheetAlignmentInfo[pair.id] = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pair.id)}/sheet-alignment`;
+                const response = await fetch(url, {method: 'POST'});
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                const summary = (data.sheet_alignment && data.sheet_alignment.summary) || {};
+                scSheetAlignmentInfo[pair.id] = `Совмещено: ${summary.aligned || 0}; слабых: ${summary.weak_alignment || 0}; не удалось: ${summary.failed || 0}.`;
+            } catch (error) {
+                scSheetAlignmentInfo[pair.id] = 'Не удалось проверить совмещение: ' + String(error.message || error);
+            } finally {
+                scSheetAlignmentBusy[pair.id] = false;
+            }
+        }
+
+        async function scRunChangeRegionsPilot(pair) {
+            if (!scSession.value || !pair || !pair.id || scChangeRegionsBusy[pair.id]) return;
+            scChangeRegionsBusy[pair.id] = true;
+            scChangeRegionsInfo[pair.id] = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pair.id)}/change-regions-pilot`;
+                const response = await fetch(url, {method: 'POST'});
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                const summary = (data.change_regions && data.change_regions.summary) || {};
+                scChangeRegionsInfo[pair.id] = `Пилот: пар ${summary.pairs || 0}; raw ${summary.raw_differences || 0}; регионов ${summary.regions || 0}.`;
+            } catch (error) {
+                scChangeRegionsInfo[pair.id] = 'Не удалось выполнить пилот: ' + String(error.message || error);
+            } finally {
+                scChangeRegionsBusy[pair.id] = false;
+            }
+        }
+
+        async function scRunChangeGroupsPilot(pair) {
+            if (!scSession.value || !pair || !pair.id || scChangeGroupsBusy[pair.id]) return;
+            scChangeGroupsBusy[pair.id] = true;
+            scChangeGroupsInfo[pair.id] = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pair.id)}/change-detection`;
+                const response = await fetch(url, {method: 'POST'});
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                const summary = (data.change_detection && data.change_detection.summary) || {};
+                scChangeGroupsInfo[pair.id] = `Обработано: ${summary.aligned_pairs || 0}; atomic ${summary.atomic_regions || 0}; groups ${summary.change_groups || 0}; проверить ${summary.review_required || 0}.`;
+            } catch (error) {
+                scChangeGroupsInfo[pair.id] = 'Не удалось сгруппировать области: ' + String(error.message || error);
+            } finally {
+                scChangeGroupsBusy[pair.id] = false;
+            }
+        }
+
         function scPageImageUrl(side, page) {
             if (!scSession.value || !scActivePair.value) return '';
             if (!page) return '';
@@ -13245,6 +13553,7 @@ const app = createApp({
                 scMdViewError.value = 'Не удалось загрузить enriched MD: ' + e;
             } finally {
                 scMdViewLoading.value = false;
+                scScheduleMdPageAlignment();
             }
         }
 
@@ -13355,14 +13664,103 @@ const app = createApp({
             const pane = ev.target;
             const otherPane = scMdPaneRefs[other];
             if (!pane || !otherPane) return;
-            const denom = pane.scrollHeight - pane.clientHeight;
-            const ratio = denom > 0 ? pane.scrollTop / denom : 0;
-            const otherDenom = otherPane.scrollHeight - otherPane.clientHeight;
             _scMdSyncing = true;
-            otherPane.scrollTop = ratio * otherDenom;
+            // Страничные секции обеих сторон имеют одинаковую высоту, поэтому
+            // одинаковый scrollTop сохраняет точное горизонтальное выравнивание.
+            otherPane.scrollTop = pane.scrollTop;
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => { _scMdSyncing = false; });
             });
+        }
+
+        // Разбивает enriched MD на вводную часть и страницы. Обе панели затем
+        // рендерят одинаковый набор page-секций; отсутствующая страница получает
+        // пустую секцию. После рендера высота каждой пары секций выравнивается по
+        // более длинной стороне — следующая страница начинается на одной линии.
+        function _scMdSplitPages(text) {
+            const preamble = [];
+            const pages = new Map();
+            let current = preamble;
+            for (const line of String(text || '').split('\n')) {
+                const match = line.match(/^##\s+СТРАНИЦА\s+(\d+)\s*$/i);
+                if (match) {
+                    const page = parseInt(match[1], 10);
+                    current = pages.get(page) || [];
+                    if (!pages.has(page)) pages.set(page, current);
+                }
+                current.push(line);
+            }
+            return {preamble: preamble.join('\n'), pages};
+        }
+
+        function _scMdAlignedParts(side, text) {
+            const own = _scMdSplitPages(text);
+            const otherSide = side === 'left' ? 'right' : 'left';
+            const otherText = scMdView[otherSide] && scMdView[otherSide].content;
+            const other = _scMdSplitPages(otherText || '');
+            const pageNumbers = [...new Set([...own.pages.keys(), ...other.pages.keys()])]
+                .sort((a, b) => a - b);
+            return {
+                preamble: own.preamble,
+                showPreamble: !!(own.preamble.trim() || other.preamble.trim()),
+                pages: pageNumbers.map(page => ({
+                    page,
+                    text: own.pages.has(page) ? own.pages.get(page).join('\n') : '',
+                    blank: !own.pages.has(page),
+                })),
+            };
+        }
+
+        function _scMdSectionHtml(key, body, blank, isPreamble = false) {
+            const classes = [
+                'sc-md-page-section',
+                blank ? 'sc-md-page-section--blank' : '',
+                isPreamble ? 'sc-md-page-section--preamble' : '',
+            ].filter(Boolean).join(' ');
+            return `<section class="${classes}" data-sc-md-page="${key}">${body || ''}</section>`;
+        }
+
+        let _scMdAlignFrame = 0;
+        function scScheduleMdPageAlignment() {
+            if (_scMdAlignFrame) cancelAnimationFrame(_scMdAlignFrame);
+            nextTick(() => {
+                _scMdAlignFrame = requestAnimationFrame(() => {
+                    _scMdAlignFrame = requestAnimationFrame(() => {
+                        _scMdAlignFrame = 0;
+                        scSyncMdPageHeights();
+                    });
+                });
+            });
+        }
+
+        function scSetMdPaneRef(side, el) {
+            if (el) scMdPaneRefs[side] = el;
+            else delete scMdPaneRefs[side];
+            scScheduleMdPageAlignment();
+        }
+
+        function scSyncMdPageHeights() {
+            const bySide = {};
+            for (const side of ['left', 'right']) {
+                const pane = scMdPaneRefs[side];
+                const nodes = pane
+                    ? [...pane.querySelectorAll('[data-sc-md-page]')]
+                    : [];
+                nodes.forEach(node => { node.style.minHeight = ''; });
+                bySide[side] = new Map(nodes.map(node => [node.dataset.scMdPage, node]));
+            }
+            const keys = new Set([...bySide.left.keys(), ...bySide.right.keys()]);
+            for (const key of keys) {
+                const left = bySide.left.get(key);
+                const right = bySide.right.get(key);
+                if (!left || !right) continue;
+                const height = Math.ceil(Math.max(
+                    left.getBoundingClientRect().height,
+                    right.getBoundingClientRect().height,
+                ));
+                left.style.minHeight = `${height}px`;
+                right.style.minHeight = `${height}px`;
+            }
         }
 
         // Подсветка enriched MD по типу строки:
@@ -13370,10 +13768,9 @@ const app = createApp({
         //   ### BLOCK [TEXT] …       → зелёный
         //   ### Графический блок … / ### BLOCK [IMAGE] … → красный (image-блоки)
         // Возвращает безопасный HTML (контент экранируется), по одной <div> на строку.
-        function scMdHighlightHtml(text) {
-            if (!text) return '';
+        function scMdHighlightHtml(text, side = 'left') {
             const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return text.split('\n').map((line) => {
+            const renderPart = (part) => part.split('\n').map((line) => {
                 let cls = 'sc-md-line';
                 if (/^##\s+СТРАНИЦА(?:\s|$)/.test(line)) cls += ' sc-md-page';
                 else if (/^###\s+BLOCK\s+\[TEXT\]/.test(line)) cls += ' sc-md-text';
@@ -13381,6 +13778,15 @@ const app = createApp({
                 const safe = esc(line);
                 return `<div class="${cls}">${safe === '' ? '&nbsp;' : safe}</div>`;
             }).join('');
+            const parts = _scMdAlignedParts(side, text);
+            const out = [];
+            if (parts.showPreamble) {
+                out.push(_scMdSectionHtml('preamble', renderPart(parts.preamble), !parts.preamble.trim(), true));
+            }
+            for (const page of parts.pages) {
+                out.push(_scMdSectionHtml(`page-${page.page}`, renderPart(page.text), page.blank));
+            }
+            return out.join('');
         }
 
         // Чинит GFM-таблицы, у которых подпись/текст приклеены к строке
@@ -13417,21 +13823,35 @@ const app = createApp({
 
         // Красивый рендер enriched MD как HTML (через marked) + цветовая
         // подсветка заголовков по типу блока (## СТРАНИЦА / BLOCK [TEXT] / image).
-        function scMdRenderHtml(text) {
-            if (!text) return '';
-            text = _scRepairGluedTables(text);
-            let html;
-            if (typeof marked !== 'undefined') {
-                try { html = marked.parse(text, { breaks: true, gfm: true }); }
-                catch (e) { html = '<pre>' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>'; }
-            } else {
-                html = '<pre>' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>';
+        function scMdRenderHtml(text, side = 'left') {
+            text = _scRepairGluedTables(String(text || ''));
+            const renderPart = (part) => {
+                if (!part) return '';
+                let html;
+                if (typeof marked !== 'undefined') {
+                    try { html = marked.parse(part, { breaks: true, gfm: true }); }
+                    catch (e) { html = '<pre>' + part.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>'; }
+                } else {
+                    html = '<pre>' + part.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>';
+                }
+                return html
+                    .replace(/<h2([^>]*)>(\s*СТРАНИЦА)/g, '<h2$1 class="sc-md-h-page">$2')
+                    .replace(/<h3([^>]*)>(\s*BLOCK\s*\[TEXT\])/g, '<h3$1 class="sc-md-h-text">$2')
+                    .replace(/<h3([^>]*)>(\s*(?:BLOCK\s*\[IMAGE\]|Графический блок))/g, '<h3$1 class="sc-md-h-image">$2');
+            };
+            const parts = _scMdAlignedParts(side, text);
+            const out = [];
+            if (parts.showPreamble) {
+                out.push(_scMdSectionHtml('preamble', renderPart(parts.preamble), !parts.preamble.trim(), true));
             }
-            return html
-                .replace(/<h2([^>]*)>(\s*СТРАНИЦА)/g, '<h2$1 class="sc-md-h-page">$2')
-                .replace(/<h3([^>]*)>(\s*BLOCK\s*\[TEXT\])/g, '<h3$1 class="sc-md-h-text">$2')
-                .replace(/<h3([^>]*)>(\s*(?:BLOCK\s*\[IMAGE\]|Графический блок))/g, '<h3$1 class="sc-md-h-image">$2');
+            for (const page of parts.pages) {
+                out.push(_scMdSectionHtml(`page-${page.page}`, renderPart(page.text), page.blank));
+            }
+            scScheduleMdPageAlignment();
+            return out.join('');
         }
+
+        watch(scMdRenderMode, scScheduleMdPageAlignment);
 
         let _scSlotRO = null;
         function _scEnsureSlotRO() {
@@ -13513,14 +13933,10 @@ const app = createApp({
                 width:  ((nx1 - nx0) * 100).toFixed(3) + '%',
                 height: ((ny1 - ny0) * 100).toFixed(3) + '%',
             };
-            // Если блок связан — окрашиваем рамку цветом связи. Selected
-            // приоритет выше (рамка остаётся синей при ручном выборе нового блока).
-            const sel = (side === 'left' ? scSelectedLeft : scSelectedRight).value;
-            if (sel !== block.id) {
-                const info = scBlockLinkInfo(side, block.id);
-                if (info) {
-                    style.borderColor = info.color;
-                }
+            // Связанные блоки остаются видимыми в read-only просмотре.
+            const info = scBlockLinkInfo(side, block.id);
+            if (info) {
+                style.borderColor = info.color;
             }
             return style;
         }
@@ -13532,8 +13948,6 @@ const app = createApp({
         }
         function scBlockOverlayClass(side, blockId, slot) {
             const cls = [];
-            const sel = (side === 'left' ? scSelectedLeft : scSelectedRight).value;
-            if (sel === blockId) cls.push('selected');
             const info = scBlockLinkInfo(side, blockId);
             if (info) {
                 cls.push('linked');
@@ -13544,34 +13958,7 @@ const app = createApp({
             }
             return cls.join(' ');
         }
-        function scSelectBlock(side, blockId, slot) {
-            // Если кликнули на уже связанный блок — выбираем эту связь как
-            // активную (для компактной панели удаления), не трогая
-            // selected-state создания новой связи.
-            const info = scBlockLinkInfo(side, blockId);
-            if (info) {
-                scActiveLinkKey.value = (scActiveLinkKey.value === info.key) ? null : info.key;
-                // Сбрасываем selected на этой стороне, чтобы не путать с активной связью
-                if (side === 'left') {
-                    scSelectedLeft.value = null;
-                    scSelectedSlotLeft.value = null;
-                } else {
-                    scSelectedRight.value = null;
-                    scSelectedSlotRight.value = null;
-                }
-                return;
-            }
-            // Несвязанный блок — обычное toggle-выделение для создания новой связи
-            scActiveLinkKey.value = null;
-            if (side === 'left') {
-                scSelectedLeft.value = scSelectedLeft.value === blockId ? null : blockId;
-                scSelectedSlotLeft.value = slot ? slot.slot : null;
-            } else {
-                scSelectedRight.value = scSelectedRight.value === blockId ? null : blockId;
-                scSelectedSlotRight.value = slot ? slot.slot : null;
-            }
-        }
-        // Явный helper из ТЗ — обёртка, использующая scSelectBlock с учётом инфо
+        // Read-only выбор уже существующей связи для просмотра/удаления.
         function scSelectLinkedBlock(side, blockId) {
             const info = scBlockLinkInfo(side, blockId);
             if (!info) return false;
@@ -13743,7 +14130,7 @@ const app = createApp({
 
         // ── LMB hand-pan (Adobe Acrobat style) ─────────────────────────────
         // Зажатие ЛКМ + перетаскивание двигает pane как «рука». Если движение
-        // меньше порога — это обычный клик (попадёт в scSelectBlock на блоке).
+        // меньше порога — это обычный клик по вьюверу.
         // Если больше — глотаем следующий click чтобы случайно не выделить блок.
         function scOnPanePanStart(side, ev) {
             if (ev.button !== 0) return;                    // только ЛКМ
@@ -14507,30 +14894,6 @@ const app = createApp({
             await scReportLoad();
         }
 
-        async function scCreateLink() {
-            if (!scSelectedLeft.value || !scSelectedRight.value) return;
-            scLinking.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/links`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({left_block_id: scSelectedLeft.value, right_block_id: scSelectedRight.value}),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                scSelectedLeft.value = null;
-                scSelectedRight.value = null;
-                await scLoadPairData();
-            } catch (e) {
-                scError.value = 'Не удалось связать блоки: ' + e;
-            } finally {
-                scLinking.value = false;
-            }
-        }
-
         async function scDeleteLink(link) {
             try {
                 const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/links`;
@@ -14574,354 +14937,6 @@ const app = createApp({
             await scLoadPairData();
         }
 
-        async function scRunAutoLink() {
-            scLinking.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/auto-link`;
-                await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({iou_threshold: 0.5}),
-                });
-                await scLoadPairData();
-            } catch (e) {
-                scError.value = 'Auto-link error: ' + e;
-            } finally {
-                scLinking.value = false;
-            }
-        }
-
-        // ── Сопоставление листов по штампам (предложение page-alignment) ──
-        // Находит листы по имени из штампа (схема ГРЩ стр.21 ↔ стр.56) и
-        // предлагает поставить их напротив друг друга. Применение = обычный
-        // PUT page-alignment (ничего нового на сервере не мутирует впустую).
-        const scStampProposals = ref(null);   // {suggested_items, confidence, ...}
-        const scStampLoading   = ref(false);
-        const scStampApplying  = ref(false);
-        const scStampError     = ref('');
-        const scStampSelected  = ref({});      // `${L}_${R}` -> bool (matched rows)
-        const scStampUseLlm    = ref(true);    // доматчивать остаток через Haiku
-
-        function scStampRowKey(it) {
-            return (it.left_page == null ? '_' : it.left_page) + '_'
-                 + (it.right_page == null ? '_' : it.right_page);
-        }
-        // Строка «выбираемая» (есть чекбокс) = уверенный матч ИЛИ позиционное
-        // выравнивание (его можно отклонить). Истинно односторонние — только показ.
-        function scStampIsSelectable(it) {
-            return !!it.match || it.match_type === 'positional_alignment';
-        }
-        // Все строки предложения (matched + positional + true one-sided) — для показа.
-        const scStampAllRows = computed(() =>
-            (scStampProposals.value && scStampProposals.value.suggested_items) || []);
-        const scStampMatchedRows = computed(() =>
-            scStampAllRows.value.filter(it => it.match));
-        const scStampSelectableRows = computed(() =>
-            scStampAllRows.value.filter(scStampIsSelectable));
-        const scStampSelectedCount = computed(() =>
-            scStampSelectableRows.value.filter(it => scStampSelected.value[scStampRowKey(it)]).length);
-
-        // One-click авто-сопоставление листов: умный matching + авто-применение
-        // надёжных пар + отчёт. dryRun=true → preview без сохранения.
-        const scAutoMatchApplyLoading = ref(false);
-        const scAutoMatchApplyResult = ref(null);
-        const scAutoMatchApplyError = ref(null);
-        async function scAutoMatchApplySheets(dryRun = false) {
-            if (!scSession.value || !scActivePair.value) return;
-            scAutoMatchApplyLoading.value = true;
-            scAutoMatchApplyError.value = null;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment/auto-match-apply`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ use_llm: false, overwrite_existing: false, dry_run: !!dryRun }),
-                });
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                scAutoMatchApplyResult.value = await r.json();
-                // Реально применили — перечитать карту страниц и связи блоков.
-                if (scAutoMatchApplyResult.value && scAutoMatchApplyResult.value.applied_to_disk) {
-                    await scLoadAlignment();
-                    await scLoadPairData();
-                }
-            } catch (e) {
-                scAutoMatchApplyError.value = 'Ошибка авто-сопоставления листов: ' + e;
-            } finally {
-                scAutoMatchApplyLoading.value = false;
-            }
-        }
-        async function scSuggestByStamp() {
-            if (!scSession.value || !scActivePair.value) return;
-            scStampError.value = '';
-            scStampLoading.value = true;
-            scStampProposals.value = null;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment/suggest-by-stamp`;
-                // use_llm=true: после детерминированного матчинга остаток
-                // НЕсматченных листов доматчивает Haiku (семантически
-                // эквивалентные имена). Fail-soft на стороне backend.
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({use_llm: scStampUseLlm.value}),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                const d = await r.json();
-                scStampProposals.value = d;
-                const sel = {};
-                (d.suggested_items || []).forEach(it => {
-                    // matched + positional отмечены по умолчанию (positional нужно
-                    // для сохранения визуальной карты, но его можно снять).
-                    if (it.match || it.match_type === 'positional_alignment')
-                        sel[scStampRowKey(it)] = true;
-                });
-                scStampSelected.value = sel;
-            } catch (e) {
-                scStampError.value = 'Сопоставление по штампам: ' + (e.message || e);
-            } finally {
-                scStampLoading.value = false;
-            }
-        }
-
-        function scStampToggleRow(it) {
-            const k = scStampRowKey(it);
-            scStampSelected.value = {...scStampSelected.value, [k]: !scStampSelected.value[k]};
-        }
-
-        // Человекочитаемые подписи типов матча / risk-флагов (display-only поля).
-        const SC_STAMP_TYPE_LABELS = {
-            exact_name: 'точное',
-            exact_canonical_name: 'каноническое',
-            equipment_canonical_match: '⚡ по оборудованию',
-            exact_multipart_group: '📑 многостр. лист',
-            multipart_group: '📑 многостр. часть',
-            multipart_continuation: '📑 продолжение',
-            fuzzy_name: 'похожее',
-            fuzzy_structural: 'по признакам',
-            text_layer: 'текст-слой',
-            llm_semantic: '🧠 по смыслу',
-            derived_name_match: 'по содержимому',
-            positional_alignment: 'позиционно',
-            left_only: 'только слева',
-            right_only: 'только справа',
-        };
-        const SC_STAMP_RISK_LABELS = {
-            low_margin: 'слабый отрыв',
-            duplicate_sheet_name: 'дубль имени',
-            text_layer_fallback: 'текст-слой',
-            llm_semantic: 'ИИ',
-            derived_name: 'из содержимого',
-            unconfirmed_alignment: 'без уверенного матча',
-        };
-        // Имя для показа: штамп-имя, иначе derived-заголовок из содержимого.
-        function scStampDisplayName(it, side) {
-            const nm = (it[side + '_sheet_name'] || '').trim();
-            if (nm) return nm;
-            const dv = (it[side + '_derived_sheet_name'] || '').trim();
-            return dv ? dv + ' (из содержимого)' : '(без названия)';
-        }
-        function scStampNameIsDerived(it, side) {
-            return !((it[side + '_sheet_name'] || '').trim())
-                 && !!((it[side + '_derived_sheet_name'] || '').trim());
-        }
-        function scStampTypeLabel(mt) { return SC_STAMP_TYPE_LABELS[mt] || 'похожее'; }
-        function scStampRiskLabel(f) { return SC_STAMP_RISK_LABELS[f] || f; }
-        function scStampTypeColor(it) {
-            if (['exact_name', 'exact_canonical_name', 'equipment_canonical_match', 'exact_multipart_group', 'multipart_group'].includes(it.match_type)) return '#15803d';
-            if (it.match_type === 'llm_semantic') return '#6d28d9';
-            if (it.match_type === 'derived_name_match') return '#0e7490';
-            if (it.match_type === 'positional_alignment') return '#0891b2';
-            if (['left_only', 'right_only', 'multipart_continuation'].includes(it.match_type)) return '#6b7280';
-            return it.needs_review ? '#b45309' : '#374151';
-        }
-        function scStampRowTitle(it) {
-            const parts = [];
-            if (it.reason) parts.push(it.reason);
-            if (it.positive_evidence && it.positive_evidence.length)
-                parts.push('за: ' + it.positive_evidence.join('; '));
-            if (it.negative_evidence && it.negative_evidence.length)
-                parts.push('против: ' + it.negative_evidence.join('; '));
-            return parts.join('\n');
-        }
-
-        // ── Пакетное авто-сопоставление листов (раздел «1. Загрузка документации») ──
-        // Проходит по ВСЕМ парам сессии, безопасные совпадения применяет в
-        // page_alignment, рискованные оставляет на ручную проверку. Прогресс —
-        // polling job-эндпоинта. Ручное выравнивание по умолчанию не затирается.
-        const scAutoMatchJob      = ref(null);
-        const scAutoMatchStarting = ref(false);
-        const scAutoMatchError    = ref('');
-        const scAutoMatchUseLlm   = ref(true);
-        const scAutoMatchOverwrite = ref(false);
-        const scAutoMatchAsk      = ref(false);   // показать popup-вопрос перед стартом
-        let   scAutoMatchTimer    = null;
-        const scAutoMatchRunning  = computed(() =>
-            scAutoMatchJob.value && ['queued', 'running'].includes(scAutoMatchJob.value.status));
-
-        function scAutoMatchStopPolling() {
-            if (scAutoMatchTimer) { clearInterval(scAutoMatchTimer); scAutoMatchTimer = null; }
-        }
-        // Клик по кнопке открывает popup-вопрос (ИИ-доматчинг / перезапись),
-        // запуск — только после подтверждения в окне.
-        function scAutoMatchOpenDialog() {
-            if (scAutoMatchStarting.value || scAutoMatchRunning.value) return;
-            scAutoMatchError.value = '';
-            scAutoMatchAsk.value = true;
-        }
-        function scAutoMatchCloseDialog() { scAutoMatchAsk.value = false; }
-        async function scAutoMatchConfirm() {
-            scAutoMatchAsk.value = false;
-            await scAutoMatchStart();
-        }
-        async function scAutoMatchPoll() {
-            if (!scSession.value || !scAutoMatchJob.value) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match/${encodeURIComponent(scAutoMatchJob.value.id)}`;
-                const r = await fetch(url);
-                if (!r.ok) return;
-                const j = await r.json();
-                scAutoMatchJob.value = j;
-                if (!['queued', 'running'].includes(j.status)) scAutoMatchStopPolling();
-            } catch (_) { /* keep polling */ }
-        }
-        async function scAutoMatchStart() {
-            if (!scSession.value || scAutoMatchStarting.value || scAutoMatchRunning.value) return;
-            scAutoMatchError.value = '';
-            scAutoMatchStarting.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match`;
-                const r = await fetch(url, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({use_llm: scAutoMatchUseLlm.value,
-                                          overwrite_existing: scAutoMatchOverwrite.value,
-                                          auto_apply: true}),
-                });
-                if (!r.ok) {
-                    const e = await r.json().catch(() => ({}));
-                    throw new Error(e.detail || ('HTTP ' + r.status));
-                }
-                scAutoMatchJob.value = await r.json();
-                scAutoMatchStopPolling();
-                scAutoMatchTimer = setInterval(scAutoMatchPoll, 1200);
-            } catch (e) {
-                scAutoMatchError.value = 'Авто сопоставление: ' + (e.message || e);
-            } finally {
-                scAutoMatchStarting.value = false;
-            }
-        }
-        async function scAutoMatchCancel() {
-            if (!scSession.value || !scAutoMatchJob.value) return;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match/${encodeURIComponent(scAutoMatchJob.value.id)}/cancel`;
-                const r = await fetch(url, {method: 'POST'});
-                if (r.ok) scAutoMatchJob.value = await r.json();
-            } catch (_) { /* ignore */ }
-        }
-        async function scAutoMatchLoadLast() {
-            scAutoMatchStopPolling();
-            if (!scSession.value) { scAutoMatchJob.value = null; return; }
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/page-alignment/auto-match-last`;
-                const r = await fetch(url);
-                if (!r.ok) { scAutoMatchJob.value = null; return; }
-                const j = await r.json();
-                const job = j.latest_job || j.last_run || null;
-                scAutoMatchJob.value = job;
-                // Если последний job ещё жив — продолжить polling.
-                if (job && ['queued', 'running'].includes(job.status))
-                    scAutoMatchTimer = setInterval(scAutoMatchPoll, 1200);
-            } catch (_) { scAutoMatchJob.value = null; }
-        }
-
-        function scCloseStampProposals() {
-            scStampProposals.value = null;
-            scStampError.value = '';
-        }
-
-        async function scApplyStampProposals() {
-            if (!scStampProposals.value || scStampApplying.value) return;
-            scStampApplying.value = true;
-            scStampError.value = '';
-            try {
-                const props = scStampProposals.value.suggested_items || [];
-                const items = [];
-                for (const it of props) {
-                    const selectable = it.match || it.match_type === 'positional_alignment';
-                    if (selectable && scStampSelected.value[scStampRowKey(it)]) {
-                        // подтверждённый матч ИЛИ принятое позиционное выравнивание
-                        // → пара напротив друг друга
-                        items.push({left_page: it.left_page, right_page: it.right_page,
-                                    mode: 'manual', note: it.note || ''});
-                    } else if (selectable) {
-                        // отклонён (снят чекбокс) → расцепить на два односторонних слота
-                        if (it.left_page != null)
-                            items.push({left_page: it.left_page, right_page: null,
-                                        mode: 'manual', note: 'не подтверждено'});
-                        if (it.right_page != null)
-                            items.push({left_page: null, right_page: it.right_page,
-                                        mode: 'manual', note: 'не подтверждено'});
-                    } else {
-                        // истинно односторонний лист как есть
-                        items.push({left_page: it.left_page, right_page: it.right_page,
-                                    mode: 'manual', note: it.note || ''});
-                    }
-                }
-                items.forEach((it, i) => { it.slot = i + 1; });
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-alignment?force=true`;
-                const r = await fetch(url, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({items, force: true}),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    const ve = j.detail && j.detail.validation_errors;
-                    throw new Error(ve ? JSON.stringify(ve) : (j.detail || ('HTTP ' + r.status)));
-                }
-                await scLoadAlignment();
-                await scLoadPairData();
-                scStampProposals.value = null;
-            } catch (e) {
-                scStampError.value = 'Применение карты: ' + (e.message || e);
-            } finally {
-                scStampApplying.value = false;
-            }
-        }
-
-        // ── Pair config template (save links + alignment) ─────────────────
-        async function scSavePairTemplate() {
-            if (!scSession.value || !scActivePair.value) return;
-            if (scTemplateSaving.value) return;
-            scTemplateError.value = '';
-            scTemplateLastSaveMsg.value = '';
-            scTemplateSaving.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/save-template`;
-                const r = await fetch(url, {method: 'POST'});
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                const d = await r.json();
-                scTemplateLastSaveMsg.value = `Шаблон сохранён (${d.links_count || 0} связей) — будет применён при повторном открытии пары.`;
-                // Локально включаем ✓ в «Загрузке документации» без полного перезапроса сессии.
-                if (scActivePair.value) scActivePair.value.has_template = true;
-                const sess = scSession.value;
-                if (sess && Array.isArray(sess.pairs)) {
-                    const row = sess.pairs.find(p => p.id === scActivePair.value?.id);
-                    if (row) row.has_template = true;
-                }
-                // через несколько секунд скрыть, чтобы не висел на UI
-                setTimeout(() => { scTemplateLastSaveMsg.value = ''; }, 8000);
-            } catch (e) {
-                scTemplateError.value = 'Не удалось сохранить шаблон: ' + e;
-            } finally {
-                scTemplateSaving.value = false;
-            }
-        }
         // ── Семантический LLM-анализ текста (Claude Sonnet) ────────────────
         async function scLoadTextLLMConfig() {
             if (!scSession.value) return;
@@ -14940,64 +14955,6 @@ const app = createApp({
                 scTextLLMDiff.value = await r.json();
             } catch (e) { /* silent */ }
         }
-        // ── Analysis mode (block_links | concept_no_block_links) ─────────
-        async function scLoadAnalysisMode() {
-            if (!scSession.value || !scActivePair.value) {
-                scAnalysisMode.value = 'block_links';
-                return;
-            }
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/analysis-mode`;
-                const r = await fetch(url);
-                if (!r.ok) {
-                    scAnalysisMode.value = 'block_links';
-                    return;
-                }
-                const data = await r.json();
-                scAnalysisMode.value = data.analysis_mode || 'block_links';
-            } catch (e) {
-                scAnalysisMode.value = 'block_links';
-            }
-        }
-        async function scSetAnalysisMode(mode) {
-            if (!scSession.value || !scActivePair.value) return;
-            scAnalysisModeError.value = '';
-            scAnalysisModeSaving.value = true;
-            try {
-                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/analysis-mode`;
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({mode}),
-                });
-                if (!r.ok) {
-                    const j = await r.json().catch(() => ({}));
-                    throw new Error(j.detail || ('HTTP ' + r.status));
-                }
-                const data = await r.json();
-                scAnalysisMode.value = data.analysis_mode || mode;
-            } catch (e) {
-                scAnalysisModeError.value = 'Не удалось сохранить режим: ' + e;
-            } finally {
-                scAnalysisModeSaving.value = false;
-            }
-        }
-        async function scToggleAnalysisMode() {
-            const next = scAnalysisMode.value === 'concept_no_block_links'
-                       ? 'block_links'
-                       : 'concept_no_block_links';
-            if (next === 'concept_no_block_links') {
-                if (!confirm(
-                    'Для этой PDF-пары будет отключена логика обязательного сопоставления блоков. ' +
-                    'Анализ будет выполнен по концепции документа целиком: Qwen подготовит ' +
-                    'enriched MD для каждой стороны, затем Opus сравнит две enriched версии. Продолжить?'
-                )) return;
-            } else {
-                if (!confirm('Вернуть обычный режим со связями блоков для этой PDF-пары?')) return;
-            }
-            await scSetAnalysisMode(next);
-        }
-
         // ── MD enrichment (Qwen image descriptions) ──────────────────────
         async function scLoadMdEnrichmentSummary() {
             if (!scSession.value || !scActivePair.value) return;
@@ -17099,11 +17056,6 @@ const app = createApp({
             scPv2GdLoad();
         }
         function scPv2GdClose() { scPv2GdOpen.value = false; }
-        // Мост grounding-карточка → block link preview (read-only UX, без
-        // автоприменения связей): баннер «открыта связь по карточке» и warning,
-        // если matching block_link не найден.
-        const scPv2GdJumpBanner = ref('');    // label карточки, по которой прыгнули
-        const scPv2GdJumpWarning = ref('');   // связь не найдена
         const scPv2FilterOptions = computed(() => {
             const f = (scPv2Payload.value && scPv2Payload.value.filters) || {};
             return {
@@ -17233,8 +17185,6 @@ const app = createApp({
             scPv2GdResp.value = null;
             scPv2GdError.value = '';
             scPv2GdFilter.value = 'all';
-            scPv2GdJumpBanner.value = '';
-            scPv2GdJumpWarning.value = '';
         });
         // Смена сессии → полный сброс панели: pair из старой сессии не должен
         // утекать в запросы новой, фильтры и payload устаревают; инвалидация
@@ -17248,1302 +17198,6 @@ const app = createApp({
             scPv2Loading.value = false;
             scPv2ResetFilters();
         });
-
-        // ─── Stage Comparison: Pipeline V2 Block Link Preview ────────────
-        // Read-only режим «Pipeline V2 — предложенные связи» в разделе
-        // «Связь блоков»: GET /api/stage-comparison/pipeline-v2/{sid}/
-        // block-link-preview?pair_id=. Ничего не применяет: ручные связи
-        // блоков пары не читаются и не изменяются, никаких job'ов.
-        const scPv2LpVisible = ref(false);     // панель открыта
-        const scPv2LpLoading = ref(false);
-        const scPv2LpError = ref('');
-        const scPv2LpResp = ref(null);         // envelope {status, payload, …}
-        const scPv2LpPairId = ref('');         // выбранная пара (дефолт — активная)
-        const scPv2LpFilter = ref('all');      // all|strong|weak|manual_review|unmatched|graphic|visual_changed|visual_identical
-        const scPv2LpSelectedPage = ref('');   // page_link_id
-        const scPv2LpSelectedLink = ref('');   // block_link_id / un_<side>_<id>
-        let scPv2LpReqSeq = 0;
-
-        const SC_PV2_LP_COLORS = { green: '#16a34a', yellow: '#ca8a04',
-                                   orange: '#ea580c', gray: '#6b7280',
-                                   blue: '#2563eb' };
-        const SC_PV2_LP_FILTERS = [
-            { key: 'all', label: 'Все' },
-            { key: 'strong', label: '🟢 strong' },
-            { key: 'weak', label: '🟡 weak' },
-            { key: 'manual_review', label: '🟠 manual review' },
-            { key: 'unmatched', label: '⚪ без пары' },
-            { key: 'graphic', label: '📐 только графика' },
-            { key: 'visual_changed', label: '👁 visual changed' },
-            { key: 'visual_identical', label: '👁 visual identical' },
-        ];
-
-        const scPv2LpReport = computed(() =>
-            (scPv2LpResp.value && scPv2LpResp.value.payload) || null);
-        const scPv2LpSummary = computed(() =>
-            (scPv2LpReport.value && scPv2LpReport.value.summary) || null);
-        const scPv2LpPageLinks = computed(() =>
-            (scPv2LpReport.value && scPv2LpReport.value.page_links) || []);
-        const scPv2LpNotFound = computed(() =>
-            !!scPv2LpResp.value && scPv2LpResp.value.status === 'not_found');
-        const scPv2LpRespError = computed(() =>
-            (scPv2LpResp.value && scPv2LpResp.value.status === 'error')
-                ? ((scPv2LpResp.value.warnings || []).join('; ')
-                   || scPv2LpResp.value.message || 'error')
-                : '');
-        // Связи + односторонние блоки в одном списке (kind: link|unmatched).
-        const scPv2LpAllLinks = computed(() => {
-            const r = scPv2LpReport.value;
-            if (!r) return [];
-            const links = (r.block_links || []).map(l =>
-                ({ ...l, kind: 'link' }));
-            const un = r.unmatched || {};
-            const one = [...(un.left_blocks || []), ...(un.right_blocks || [])]
-                .map(u => ({ ...u, kind: 'unmatched',
-                             block_link_id: 'un_' + u.side + '_' + u.block_id }));
-            return [...links, ...one];
-        });
-        function scPv2LpLinkMatchesFilter(l) {
-            const f = scPv2LpFilter.value;
-            if (!f || f === 'all') return true;
-            if (f === 'unmatched') return l.kind === 'unmatched';
-            if (f === 'graphic') return !!l.is_graphic;
-            if (f === 'visual_changed') return l.visual_status === 'changed_visual';
-            if (f === 'visual_identical')
-                return l.visual_status === 'identical_visual'
-                    || l.visual_status === 'minor_visual';
-            return l.link_status === f;
-        }
-        const scPv2LpFilteredLinks = computed(() =>
-            scPv2LpAllLinks.value.filter(l => scPv2LpLinkMatchesFilter(l)));
-        const scPv2LpSelectedPageLink = computed(() =>
-            scPv2LpPageLinks.value.find(
-                p => p.page_link_id === scPv2LpSelectedPage.value) || null);
-        const scPv2LpSelectedLinkObj = computed(() =>
-            scPv2LpAllLinks.value.find(
-                l => l.block_link_id === scPv2LpSelectedLink.value) || null);
-        // Блоки для overlay выбранной пары страниц (обе стороны).
-        const scPv2LpPageOverlays = computed(() => {
-            const p = scPv2LpSelectedPageLink.value;
-            const out = { left: [], right: [] };
-            if (!p) return out;
-            for (const l of scPv2LpAllLinks.value) {
-                if (l.kind === 'link') {
-                    if (l.page_match_id !== p.page_link_id) continue;
-                    if (l.left_bbox_norm)
-                        out.left.push({ entry: l, side: 'left', bbox: l.left_bbox_norm });
-                    if (l.right_bbox_norm)
-                        out.right.push({ entry: l, side: 'right', bbox: l.right_bbox_norm });
-                } else {
-                    // unmatched: только на своей стороне и своей странице
-                    const page = l.side === 'left' ? p.left_page_number
-                                                   : p.right_page_number;
-                    if (page != null && l.page_number === page && l.bbox_norm)
-                        out[l.side].push({ entry: l, side: l.side, bbox: l.bbox_norm });
-                }
-            }
-            return out;
-        });
-        function scPv2LpEffectivePairId() {
-            return scPv2LpPairId.value
-                || (scActivePair.value && scActivePair.value.id) || '';
-        }
-        function scPv2LpPageImageUrl(side, page) {
-            const sid = scSession.value && scSession.value.id;
-            // картинки ДОЛЖНЫ соответствовать паре загруженного отчёта
-            // (envelope.pair_id), а не живому селектору — иначе при смене
-            // пары в селекторе bbox старой пары лёг бы на листы новой
-            const pid = (scPv2LpResp.value && scPv2LpResp.value.pair_id)
-                || scPv2LpEffectivePairId();
-            if (!sid || !pid || !page) return '';
-            return `/api/stage-comparison/sessions/${encodeURIComponent(sid)}/pairs/${encodeURIComponent(pid)}/page-image?side=${side}&page=${page}&target_long_side=1400`;
-        }
-        function scPv2LpOverlayStyle(ov) {
-            const b = ov.bbox || [0, 0, 0, 0];
-            const sel = scPv2LpSelectedLink.value
-                && ov.entry.block_link_id === scPv2LpSelectedLink.value;
-            const color = SC_PV2_LP_COLORS[(ov.entry.ui && ov.entry.ui.color) || 'gray']
-                || SC_PV2_LP_COLORS.gray;
-            return {
-                position: 'absolute',
-                left: (b[0] * 100) + '%',
-                top: (b[1] * 100) + '%',
-                width: (Math.max(0, b[2] - b[0]) * 100) + '%',
-                height: (Math.max(0, b[3] - b[1]) * 100) + '%',
-                border: sel ? ('3px solid ' + SC_PV2_LP_COLORS.blue)
-                            : ('2px solid ' + color),
-                boxShadow: sel ? ('inset 0 0 0 2px ' + color) : 'none',
-                background: sel ? 'rgba(37,99,235,.12)' : (color + '22'),
-                cursor: 'pointer',
-                boxSizing: 'border-box',
-            };
-        }
-        function scPv2LpStatusColor(l) {
-            return SC_PV2_LP_COLORS[(l && l.ui && l.ui.color) || 'gray']
-                || SC_PV2_LP_COLORS.gray;
-        }
-        function scPv2LpSelectLink(l) {
-            if (!l) return;
-            scPv2LpSelectedLink.value =
-                scPv2LpSelectedLink.value === l.block_link_id
-                    ? '' : l.block_link_id;
-            // выбор из списка подтягивает страницу связи
-            if (scPv2LpSelectedLink.value) {
-                if (l.kind === 'link' && l.page_match_id) {
-                    scPv2LpSelectedPage.value = l.page_match_id;
-                } else if (l.kind === 'unmatched') {
-                    const p = scPv2LpPageLinks.value.find(pl =>
-                        (l.side === 'left' ? pl.left_page_number
-                                           : pl.right_page_number) === l.page_number);
-                    if (p) scPv2LpSelectedPage.value = p.page_link_id;
-                }
-            }
-        }
-        function scPv2LpSelectPage(pid) {
-            scPv2LpSelectedPage.value = pid || '';
-            scPv2LpSelectedLink.value = '';
-        }
-        async function scPv2LpLoad() {
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2LpEffectivePairId();
-            if (!sid || !pid) return;
-            const myReq = ++scPv2LpReqSeq;
-            scPv2LpLoading.value = true;
-            scPv2LpError.value = '';
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid)
-                + '/block-link-preview?pair_id=' + encodeURIComponent(pid);
-            try {
-                const r = await fetch(url);
-                if (myReq !== scPv2LpReqSeq) return;   // устаревший ответ
-                if (r.status === 401 || r.status === 403) {
-                    scPv2LpResp.value = null;
-                    scPv2LpError.value = 'Доступ запрещён (' + r.status
-                        + '). Войдите в портал заново.';
-                    return;
-                }
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const j = await r.json();
-                if (myReq !== scPv2LpReqSeq) return;   // устаревший ответ
-                scPv2LpResp.value = j;
-                scPv2LpSelectedLink.value = '';
-                // автоселект первой пары страниц со связями
-                const pages = (j && j.payload && j.payload.page_links) || [];
-                const first = pages.find(p =>
-                    (p.block_link_ids || []).length) || pages[0];
-                scPv2LpSelectedPage.value = first ? first.page_link_id : '';
-            } catch (e) {
-                if (myReq !== scPv2LpReqSeq) return;
-                scPv2LpResp.value = null;
-                scPv2LpError.value = String((e && e.message) || e);
-            } finally {
-                if (myReq === scPv2LpReqSeq) scPv2LpLoading.value = false;
-            }
-        }
-        function scPv2LpToggle() {
-            scPv2LpVisible.value = !scPv2LpVisible.value;
-            if (scPv2LpVisible.value && !scPv2LpResp.value
-                    && !scPv2LpLoading.value) {
-                scPv2LpPairId.value = scPv2LpEffectivePairId();
-                scPv2LpLoad();
-            }
-        }
-        // Смена сессии/активной пары → полный сброс панели (поздние ответы
-        // старой пары отменяются инвалидацией sequence).
-        function scPv2LpReset() {
-            scPv2LpReqSeq++;
-            scPv2LpVisible.value = false;
-            scPv2LpResp.value = null;
-            scPv2LpError.value = '';
-            scPv2LpLoading.value = false;
-            scPv2LpPairId.value = '';
-            scPv2LpFilter.value = 'all';
-            scPv2LpSelectedPage.value = '';
-            scPv2LpSelectedLink.value = '';
-        }
-        watch(() => (scSession.value && scSession.value.id) || '', scPv2LpReset);
-        watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2LpReset);
-        // Смена пары в селекторе панели → сброс загруженного отчёта до
-        // явного «Загрузить»: данные и изображения не могут разъехаться
-        // по парам (поздние ответы отменяет sequence guard).
-        watch(scPv2LpPairId, () => {
-            scPv2LpReqSeq++;
-            scPv2LpResp.value = null;
-            scPv2LpError.value = '';
-            scPv2LpLoading.value = false;
-            scPv2LpSelectedPage.value = '';
-            scPv2LpSelectedLink.value = '';
-        });
-
-        // ── Мост: grounding-карточка → block link preview ───────────────────
-        // Выводит block ids из карточки (или из item_id gv_<L>__<R>).
-        function scPv2GdBlockIdsFromCard(card) {
-            let left = (card && card.left_block_id) || null;
-            let right = (card && card.right_block_id) || null;
-            if ((!left || !right) && card && card.item_id) {
-                const parts = String(card.item_id).replace(/^gv_/, '').split('__');
-                if (parts.length === 2) {
-                    left = left || parts[0];
-                    right = right || parts[1];
-                }
-            }
-            if (!left && card && card.side === 'old' && card.block_id) left = card.block_id;
-            if (!right && card && card.side === 'new' && card.block_id) right = card.block_id;
-            if (!left && card && card.block_id) left = card.block_id;   // either
-            return { left, right };
-        }
-        function scPv2GdCardHasTarget(card) {
-            if (!card) return false;
-            return !!(card.left_block_id || card.right_block_id || card.item_id
-                || card.block_id || card.left_page_number != null
-                || card.right_page_number != null || card.page_number != null);
-        }
-        function scPv2GdMatchLink(target) {
-            const links = scPv2LpAllLinks.value || [];
-            // 1) exact: оба block_id совпали
-            let m = links.find(l => l.kind === 'link'
-                && l.left_block_id === target.left_block_id
-                && l.right_block_id === target.right_block_id);
-            if (m) return m;
-            // 2) по одному block_id
-            m = links.find(l => l.kind === 'link'
-                && (l.left_block_id === target.left_block_id
-                    || l.right_block_id === target.right_block_id));
-            if (m) return m;
-            // 3) односторонний блок (unmatched)
-            m = links.find(l => l.kind === 'unmatched'
-                && (l.block_id === target.left_block_id
-                    || l.block_id === target.right_block_id));
-            if (m) return m;
-            // 4) по номерам страниц
-            if (target.left_page_number != null && target.right_page_number != null) {
-                m = links.find(l => l.kind === 'link'
-                    && l.left_page_number === target.left_page_number
-                    && l.right_page_number === target.right_page_number);
-                if (m) return m;
-            }
-            return null;
-        }
-        function scPv2GdSelectMatchingLink(target) {
-            const link = scPv2GdMatchLink(target);
-            if (link) {
-                scPv2LpSelectedLink.value = '';     // сброс → toggle выберет
-                scPv2LpSelectLink(link);            // ставит link + page
-                scPv2GdJumpWarning.value = '';
-                nextTick(() => {
-                    try {
-                        const el = (typeof document !== 'undefined')
-                            && document.querySelector('[data-bllink="' + link.block_link_id + '"]');
-                        if (el && el.scrollIntoView)
-                            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                    } catch (_) { /* no-op в jsdom/без DOM */ }
-                });
-                return true;
-            }
-            scPv2GdJumpWarning.value =
-                'Связь блоков для этой grounding-карточки не найдена. Откройте пару вручную.';
-            return false;
-        }
-        // Главный обработчик кнопки «🔗 К связи блоков» в grounding-карточке.
-        async function scPv2OpenBlockLinkFromGrounding(card) {
-            if (!card) return;
-            const ids = scPv2GdBlockIdsFromCard(card);
-            const pid = scPv2PairId.value
-                || (scActivePair.value && scActivePair.value.id) || '';
-            const target = {
-                pair_id: pid, item_id: card.item_id || '',
-                left_block_id: ids.left, right_block_id: ids.right,
-                left_page_number: (card.left_page_number != null ? card.left_page_number
-                    : (card.side === 'old' ? card.page_number : null)),
-                right_page_number: (card.right_page_number != null ? card.right_page_number
-                    : (card.side === 'new' ? card.page_number : null)),
-                label: card.value || '',
-            };
-            // 1) закрыть grounding drawer
-            scPv2GdOpen.value = false;
-            scPv2GdJumpWarning.value = '';
-            // 2) активировать пару + вкладку «Связь блоков» (если другая активна;
-            //    scActivePair-watch сбросит LP-панель — поэтому ДО открытия LP)
-            if (pid && (!scActivePair.value || scActivePair.value.id !== pid)) {
-                const pairObj = (scPairs.value || []).find(p => p && p.id === pid);
-                if (pairObj && pairObj.left && pairObj.right) {
-                    await scOpenPair(pairObj);
-                } else {
-                    scTab.value = 'links';
-                }
-            } else {
-                scTab.value = 'links';
-            }
-            // 3) открыть LP-панель на нужной паре
-            scPv2LpPairId.value = pid;
-            scPv2LpVisible.value = true;
-            // 4) загрузить отчёт пары, если не загружен / другой пары
-            const loadedPid = scPv2LpResp.value && scPv2LpResp.value.pair_id;
-            if (!scPv2LpResp.value || loadedPid !== pid) {
-                await scPv2LpLoad();
-            }
-            // 5) баннер + поиск/выбор связи
-            scPv2GdJumpBanner.value = target.label;
-            scPv2GdSelectMatchingLink(target);
-        }
-        function scPv2GdClearJumpBanner() {
-            scPv2GdJumpBanner.value = '';
-            scPv2GdJumpWarning.value = '';
-        }
-
-        // ─── Stage Comparison: Pipeline V2 Entity Alignment Preview ──────────
-        // Read-only «Сущности и маппинг»: GET /api/stage-comparison/pipeline-v2/
-        // {sid}/entity-alignment-preview?pair_id=. Классифицирует графические
-        // пары OLD↔NEW (same_entity_likely / possible_rename / scope_reorganized
-        // / mismatch_likely / link_validation_candidate) + unpaired-сущности.
-        // Ничего не применяет: подтверждения/перепривязки маппинга НЕТ (это
-        // отдельный будущий этап). Никаких job'ов, моделей, мутаций.
-        const scPv2EaVisible = ref(false);
-        const scPv2EaLoading = ref(false);
-        const scPv2EaError = ref('');
-        const scPv2EaResp = ref(null);         // detail {status, summary, pairs, unpaired_entities, …}
-        const scPv2EaPairId = ref('');
-        const scPv2EaFilter = ref('all');      // all|<classification>|unpaired
-        let scPv2EaReqSeq = 0;
-
-        const SC_PV2_EA_CLASS_META = {
-            same_entity_likely:        { label: 'Same entity', icon: '🟢', color: '#16a34a', bg: '#dcfce7', fg: '#166534' },
-            possible_rename:           { label: 'Возможно переименование', icon: '🔵', color: '#2563eb', bg: '#dbeafe', fg: '#1e40af' },
-            scope_reorganized:         { label: 'Реорганизация', icon: '🟠', color: '#ea580c', bg: '#ffedd5', fg: '#9a3412' },
-            mismatch_likely:           { label: 'Mismatch', icon: '🔴', color: '#dc2626', bg: '#fee2e2', fg: '#991b1b' },
-            link_validation_candidate: { label: 'Проверка связи', icon: '🟣', color: '#7c3aed', bg: '#ede9fe', fg: '#5b21b6' },
-        };
-        const SC_PV2_EA_FILTERS = [
-            { key: 'all', label: 'Все' },
-            { key: 'same_entity_likely', label: '🟢 Same entity' },
-            { key: 'scope_reorganized', label: '🟠 Реорганизация' },
-            { key: 'mismatch_likely', label: '🔴 Mismatch' },
-            { key: 'link_validation_candidate', label: '🟣 Проверка связи' },
-            { key: 'unpaired', label: '⚪ Без пары' },
-        ];
-
-        const scPv2EaSummary = computed(() =>
-            (scPv2EaResp.value && scPv2EaResp.value.summary) || null);
-        const scPv2EaPairs = computed(() =>
-            (scPv2EaResp.value && scPv2EaResp.value.pairs) || []);
-        const scPv2EaUnpaired = computed(() =>
-            (scPv2EaResp.value && scPv2EaResp.value.unpaired_entities) || { left: [], right: [] });
-        const scPv2EaNotFound = computed(() =>
-            !!scPv2EaResp.value && scPv2EaResp.value.status === 'not_found');
-        const scPv2EaRespError = computed(() =>
-            (scPv2EaResp.value && scPv2EaResp.value.status === 'error')
-                ? ((scPv2EaResp.value.warnings || []).join('; ')
-                   || scPv2EaResp.value.message || 'error')
-                : '');
-        const scPv2EaShowUnpaired = computed(() =>
-            scPv2EaFilter.value === 'all' || scPv2EaFilter.value === 'unpaired');
-        const scPv2EaShowPairs = computed(() => scPv2EaFilter.value !== 'unpaired');
-        const scPv2EaFilteredPairs = computed(() => {
-            const f = scPv2EaFilter.value;
-            if (f === 'unpaired') return [];
-            if (!f || f === 'all') return scPv2EaPairs.value;
-            return scPv2EaPairs.value.filter((p) => p.classification === f);
-        });
-        function scPv2EaClassMeta(c) {
-            return SC_PV2_EA_CLASS_META[c]
-                || { label: c || '—', icon: '⚪', color: '#6b7280', bg: '#f3f4f6', fg: '#6b7280' };
-        }
-        function scPv2EaConfPct(p) {
-            const c = p && p.confidence;
-            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
-        }
-        function scPv2EaEffectivePairId() {
-            return scPv2EaPairId.value
-                || (scActivePair.value && scActivePair.value.id) || '';
-        }
-        async function scPv2EaLoad() {
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            const myReq = ++scPv2EaReqSeq;
-            scPv2EaLoading.value = true;
-            scPv2EaError.value = '';
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid)
-                + '/entity-alignment-preview?pair_id=' + encodeURIComponent(pid)
-                + '&limit=500';
-            try {
-                const r = await fetch(url);
-                if (myReq !== scPv2EaReqSeq) return;   // устаревший ответ
-                if (r.status === 401 || r.status === 403) {
-                    scPv2EaResp.value = null;
-                    scPv2EaError.value = 'Доступ запрещён (' + r.status
-                        + '). Войдите в портал заново.';
-                    return;
-                }
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const j = await r.json();
-                if (myReq !== scPv2EaReqSeq) return;   // устаревший ответ
-                scPv2EaResp.value = j;
-                // инициализировать draft-объекты решений (seed из manual_mapping)
-                for (const k of Object.keys(scPv2EaDrafts)) delete scPv2EaDrafts[k];
-                for (const k of Object.keys(scPv2EaSaveErr)) delete scPv2EaSaveErr[k];
-                scPv2EaSaveHint.value = '';
-                for (const p of (j.pairs || [])) {
-                    scPv2EaDraft(scPv2EaPairKey(p),
-                                 (p.manual_mapping && p.manual_mapping.decision) || '');
-                }
-                const un = j.unpaired_entities || {};
-                for (const e of (un.left || [])) {
-                    scPv2EaDraft(scPv2EaUnpairedKey(e, 'left'),
-                                 (e.manual_mapping && e.manual_mapping.decision) || '');
-                }
-                for (const e of (un.right || [])) {
-                    scPv2EaDraft(scPv2EaUnpairedKey(e, 'right'),
-                                 (e.manual_mapping && e.manual_mapping.decision) || '');
-                }
-                // подгрузить link validation, exclusion preview, skip readiness
-                // и controlled enforce preflight для той же пары (read-only)
-                scPv2LvLoad();
-                scPv2XpLoad();
-                scPv2SrLoad();
-                scPv2CeLoad();
-                scPv2CdrLoad();
-            } catch (e) {
-                if (myReq !== scPv2EaReqSeq) return;
-                scPv2EaResp.value = null;
-                scPv2EaError.value = String((e && e.message) || e);
-            } finally {
-                if (myReq === scPv2EaReqSeq) scPv2EaLoading.value = false;
-            }
-        }
-        function scPv2EaToggle() {
-            scPv2EaVisible.value = !scPv2EaVisible.value;
-            if (scPv2EaVisible.value && !scPv2EaResp.value
-                    && !scPv2EaLoading.value) {
-                scPv2EaPairId.value = scPv2EaEffectivePairId();
-                scPv2EaLoad();
-            }
-        }
-        function scPv2EaReset() {
-            scPv2EaReqSeq++;
-            scPv2EaVisible.value = false;
-            scPv2EaResp.value = null;
-            scPv2EaError.value = '';
-            scPv2EaLoading.value = false;
-            scPv2EaPairId.value = '';
-            scPv2EaFilter.value = 'all';
-            scPv2LvReset();
-            scPv2XpReset();
-            scPv2SrReset();
-            scPv2CeReset();
-            scPv2CdrReset();
-        }
-        watch(() => (scSession.value && scSession.value.id) || '', scPv2EaReset);
-        watch(() => (scActivePair.value && scActivePair.value.id) || '', scPv2EaReset);
-        watch(scPv2EaPairId, () => {
-            scPv2EaReqSeq++;
-            scPv2EaResp.value = null;
-            scPv2EaError.value = '';
-            scPv2EaLoading.value = false;
-            scPv2LvReset();
-            scPv2XpReset();
-            scPv2SrReset();
-            scPv2CeReset();
-            scPv2CdrReset();
-        });
-        // Read-only jump: карточка выравнивания сущностей → block link preview.
-        // Переиспользует существующий мост (scPv2OpenBlockLinkFromGrounding):
-        // НЕ применяет связь, только подсвечивает её в панели «Связь блоков».
-        function scPv2EaOpenBlockLink(p) {
-            if (!p) return;
-            scPv2OpenBlockLinkFromGrounding({
-                item_id: '',
-                left_block_id: p.left_block_id,
-                right_block_id: p.right_block_id,
-                left_page_number: p.left_page_number,
-                right_page_number: p.right_page_number,
-                value: (p.left_entity_label || p.right_entity_label
-                        || p.entity_family || ''),
-            });
-        }
-
-        // ── Link validation (read-only, mark-only) ───────────────────────────
-        // GET /api/stage-comparison/pipeline-v2/{sid}/link-validation?pair_id=.
-        // Vision-проверка manual mapping пар (same/reorganized/different) +
-        // agreement с ручным решением. НЕ grounded-факт, НЕ для delta. Read-only:
-        // ничего не запускает/применяет/создаёт.
-        const scPv2LvResp = ref(null);          // detail {status, summary, items, …}
-        const scPv2LvLoading = ref(false);
-        const scPv2LvError = ref('');
-        let scPv2LvReqSeq = 0;
-
-        const SC_PV2_LV_DECISION_META = {
-            valid_mapping: { label: 'valid_mapping', icon: '🟢', bg: '#dcfce7', fg: '#166534' },
-            manual_review: { label: 'manual_review', icon: '🟡', bg: '#fef9c3', fg: '#854d0e' },
-            reject_mapping: { label: 'reject_mapping', icon: '🔴', bg: '#fee2e2', fg: '#991b1b' },
-        };
-
-        const scPv2LvSummary = computed(() =>
-            (scPv2LvResp.value && scPv2LvResp.value.summary) || null);
-        const scPv2LvItems = computed(() =>
-            (scPv2LvResp.value && scPv2LvResp.value.items) || []);
-        const scPv2LvAvailable = computed(() =>
-            !!scPv2LvResp.value && scPv2LvResp.value.status === 'ok'
-            && scPv2LvResp.value.available);
-        const scPv2LvNotFound = computed(() =>
-            !!scPv2LvResp.value && scPv2LvResp.value.status === 'not_found');
-        const scPv2LvRespError = computed(() =>
-            (scPv2LvResp.value && scPv2LvResp.value.status === 'error')
-                ? ((scPv2LvResp.value.warnings || []).join('; ')
-                   || scPv2LvResp.value.message || 'error')
-                : '');
-        function scPv2LvDecisionMeta(d) {
-            return SC_PV2_LV_DECISION_META[d]
-                || { label: d || '—', icon: '⚪', bg: '#f3f4f6', fg: '#374151' };
-        }
-        function scPv2LvConfPct(it) {
-            const c = it && it.validation && it.validation.confidence;
-            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
-        }
-        async function scPv2LvLoad() {
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            const myReq = ++scPv2LvReqSeq;
-            scPv2LvLoading.value = true;
-            scPv2LvError.value = '';
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid)
-                + '/link-validation?pair_id=' + encodeURIComponent(pid) + '&limit=200';
-            try {
-                const r = await fetch(url);
-                if (myReq !== scPv2LvReqSeq) return;
-                if (r.status === 401 || r.status === 403) {
-                    scPv2LvResp.value = null;
-                    scPv2LvError.value = 'Доступ запрещён (' + r.status + ').';
-                    return;
-                }
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const j = await r.json();
-                if (myReq !== scPv2LvReqSeq) return;
-                scPv2LvResp.value = j;
-            } catch (e) {
-                if (myReq !== scPv2LvReqSeq) return;
-                scPv2LvResp.value = null;
-                scPv2LvError.value = String((e && e.message) || e);
-            } finally {
-                if (myReq === scPv2LvReqSeq) scPv2LvLoading.value = false;
-            }
-        }
-        function scPv2LvReset() {
-            scPv2LvReqSeq++;
-            scPv2LvResp.value = null;
-            scPv2LvError.value = '';
-            scPv2LvLoading.value = false;
-        }
-        // read-only jump: validation item → block link preview (reuse мост)
-        function scPv2LvOpenBlockLink(it) {
-            if (!it) return;
-            scPv2OpenBlockLinkFromGrounding({
-                item_id: '', left_block_id: it.left_block_id,
-                right_block_id: it.right_block_id,
-                left_page_number: it.left_page_number,
-                right_page_number: it.right_page_number,
-                value: (it.left_entity_label || it.right_entity_label || ''),
-            });
-        }
-
-        // ── Exclusion Preview v2 (read-only, mark-only) ─────────────────────
-
-        const scPv2XpResp = ref(null);          // detail {status, summary, items, …}
-        const scPv2XpLoading = ref(false);
-        const scPv2XpError = ref('');
-        let scPv2XpReqSeq = 0;
-
-        const SC_PV2_XP_CLASS_META = {
-            candidate_exclude:       { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'исключить' },
-            review_only:             { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'ручная проверка' },
-            keep:                    { icon: '🟢', bg: '#dcfce7', fg: '#166534', label: 'оставить' },
-            link_validation_required:{ icon: '🔵', bg: '#ede9fe', fg: '#4c1d95', label: 'нужна LV' },
-        };
-
-        const scPv2XpSummary = computed(() =>
-            (scPv2XpResp.value && scPv2XpResp.value.summary) || null);
-        const scPv2XpItems = computed(() =>
-            (scPv2XpResp.value && scPv2XpResp.value.items) || []);
-        const scPv2XpAvailable = computed(() =>
-            !!scPv2XpResp.value && scPv2XpResp.value.status === 'ok'
-            && scPv2XpResp.value.available);
-        const scPv2XpNotFound = computed(() =>
-            !!scPv2XpResp.value && scPv2XpResp.value.status === 'not_found');
-        const scPv2XpRespError = computed(() =>
-            (scPv2XpResp.value && scPv2XpResp.value.status === 'error')
-                ? ((scPv2XpResp.value.warnings || []).join('; ')
-                   || scPv2XpResp.value.message || 'error')
-                : '');
-        function scPv2XpClassMeta(cls) {
-            return SC_PV2_XP_CLASS_META[cls]
-                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: cls || '—' };
-        }
-        function scPv2XpConfPct(it) {
-            const c = it && it.confidence;
-            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
-        }
-        async function scPv2XpLoad() {
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            const myReq = ++scPv2XpReqSeq;
-            scPv2XpLoading.value = true;
-            scPv2XpError.value = '';
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid)
-                + '/exclusion-preview-v2?pair_id=' + encodeURIComponent(pid) + '&limit=200';
-            try {
-                const r = await fetch(url);
-                if (myReq !== scPv2XpReqSeq) return;
-                if (r.status === 401 || r.status === 403) {
-                    scPv2XpResp.value = null;
-                    scPv2XpError.value = 'Доступ запрещён (' + r.status + ').';
-                    return;
-                }
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const j = await r.json();
-                if (myReq !== scPv2XpReqSeq) return;
-                scPv2XpResp.value = j;
-            } catch (e) {
-                if (myReq !== scPv2XpReqSeq) return;
-                scPv2XpResp.value = null;
-                scPv2XpError.value = String((e && e.message) || e);
-            } finally {
-                if (myReq === scPv2XpReqSeq) scPv2XpLoading.value = false;
-            }
-        }
-        function scPv2XpReset() {
-            scPv2XpReqSeq++;
-            scPv2XpResp.value = null;
-            scPv2XpError.value = '';
-            scPv2XpLoading.value = false;
-        }
-
-        // ── Skip Readiness (read-only, mark-only) ────────────────────────────
-        // ТОЛЬКО чтение GET .../skip-readiness — НЕ запускает модели,
-        // НЕ пишет файлы, НЕ применяет пропуски. Observe / mark-only.
-
-        const scPv2SrResp = ref(null);          // detail {status, summary, items, …}
-        const scPv2SrLoading = ref(false);
-        const scPv2SrError = ref('');
-        let scPv2SrReqSeq = 0;
-
-        const SC_PV2_SR_READINESS_META = {
-            ready_to_skip: { icon: '✅', bg: '#dcfce7', fg: '#166534', label: 'к пропуску' },
-            blocked:       { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'заблокирован' },
-            needs_review:  { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нужна проверка' },
-            keep:          { icon: '🟢', bg: '#f0fdf4', fg: '#166534', label: 'оставить' },
-        };
-
-        const scPv2SrSummary = computed(() =>
-            (scPv2SrResp.value && scPv2SrResp.value.summary) || null);
-        const scPv2SrItems = computed(() =>
-            (scPv2SrResp.value && scPv2SrResp.value.items) || []);
-        const scPv2SrAvailable = computed(() =>
-            !!scPv2SrResp.value && scPv2SrResp.value.status === 'ok'
-            && scPv2SrResp.value.available);
-        const scPv2SrNotFound = computed(() =>
-            !!scPv2SrResp.value && scPv2SrResp.value.status === 'not_found');
-        const scPv2SrRespError = computed(() =>
-            (scPv2SrResp.value && scPv2SrResp.value.status === 'error')
-                ? ((scPv2SrResp.value.warnings || []).join('; ')
-                   || scPv2SrResp.value.message || 'error')
-                : '');
-        function scPv2SrReadinessMeta(status) {
-            return SC_PV2_SR_READINESS_META[status]
-                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
-        }
-        function scPv2SrConfPct(it) {
-            const c = it && it.confidence;
-            return (typeof c === 'number') ? Math.round(c * 100) + '%' : '';
-        }
-        async function scPv2SrLoad() {
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            const myReq = ++scPv2SrReqSeq;
-            scPv2SrLoading.value = true;
-            scPv2SrError.value = '';
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid)
-                + '/skip-readiness?pair_id=' + encodeURIComponent(pid) + '&limit=200';
-            try {
-                const r = await fetch(url);
-                if (myReq !== scPv2SrReqSeq) return;
-                if (r.status === 401 || r.status === 403) {
-                    scPv2SrResp.value = null;
-                    scPv2SrError.value = 'Доступ запрещён (' + r.status + ').';
-                    return;
-                }
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const j = await r.json();
-                if (myReq !== scPv2SrReqSeq) return;
-                scPv2SrResp.value = j;
-            } catch (e) {
-                if (myReq !== scPv2SrReqSeq) return;
-                scPv2SrResp.value = null;
-                scPv2SrError.value = String((e && e.message) || e);
-            } finally {
-                if (myReq === scPv2SrReqSeq) scPv2SrLoading.value = false;
-            }
-        }
-        function scPv2SrReset() {
-            scPv2SrReqSeq++;
-            scPv2SrResp.value = null;
-            scPv2SrError.value = '';
-            scPv2SrLoading.value = false;
-        }
-
-        // ── Controlled Enforce Preflight (read-only, observe-only) ───────────
-        // ТОЛЬКО чтение GET .../controlled-enforce-preflight. Это НЕ enforce:
-        // НЕ пропускает/исключает, НЕ применяет, НЕ запускает модели/jobs,
-        // НЕ создаёт замечаний, НЕ меняет block links. Observe / preflight-only.
-
-        const scPv2CeResp = ref(null);          // detail {status, summary, …}
-        const scPv2CeLoading = ref(false);
-        const scPv2CeError = ref('');
-        let scPv2CeReqSeq = 0;
-
-        const SC_PV2_CE_STATUS_META = {
-            blocked:          { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'enforce заблокирован' },
-            preflight_ok:     { icon: '🟢', bg: '#dcfce7', fg: '#166534', label: 'preflight ok (не применяется)' },
-            no_eligible_items:{ icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нет eligible' },
-        };
-        const SC_PV2_CE_BLOCK_META = {
-            blocked:      { icon: '🔴', bg: '#fee2e2', fg: '#991b1b', label: 'заблокирован' },
-            needs_review: { icon: '🟡', bg: '#fef9c3', fg: '#854d0e', label: 'нужна проверка' },
-            keep:         { icon: '🟢', bg: '#f0fdf4', fg: '#166534', label: 'оставить' },
-            ready_to_skip:{ icon: '✅', bg: '#dcfce7', fg: '#166534', label: 'к пропуску' },
-        };
-
-        const scPv2CeSummary = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.summary) || null);
-        const scPv2CeGuards = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.global_guards) || null);
-        const scPv2CeRuntimeRoot = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.runtime_root) || null);
-        const scPv2CeFatalBlocks = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.fatal_blocks) || []);
-        const scPv2CeBlockedItems = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.blocked_items) || []);
-        const scPv2CeEligibleItems = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.eligible_items) || []);
-        const scPv2CeReportStatus = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.report_status) || '');
-        const scPv2CeAvailable = computed(() =>
-            !!scPv2CeResp.value && scPv2CeResp.value.status === 'ok'
-            && scPv2CeResp.value.available);
-        const scPv2CeNotFound = computed(() =>
-            !!scPv2CeResp.value && scPv2CeResp.value.status === 'not_found');
-        const scPv2CeRespError = computed(() =>
-            (scPv2CeResp.value && scPv2CeResp.value.status === 'error')
-                ? ((scPv2CeResp.value.warnings || []).join('; ')
-                   || scPv2CeResp.value.message || 'error')
-                : '');
-        function scPv2CeStatusMeta(status) {
-            return SC_PV2_CE_STATUS_META[status]
-                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
-        }
-        function scPv2CeBlockMeta(status) {
-            return SC_PV2_CE_BLOCK_META[status]
-                || { icon: '⚪', bg: '#f3f4f6', fg: '#374151', label: status || '—' };
-        }
-        async function scPv2CeLoad() {
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            const myReq = ++scPv2CeReqSeq;
-            scPv2CeLoading.value = true;
-            scPv2CeError.value = '';
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid)
-                + '/controlled-enforce-preflight?pair_id='
-                + encodeURIComponent(pid) + '&limit=200';
-            try {
-                const r = await fetch(url);
-                if (myReq !== scPv2CeReqSeq) return;
-                if (r.status === 401 || r.status === 403) {
-                    scPv2CeResp.value = null;
-                    scPv2CeError.value = 'Доступ запрещён (' + r.status + ').';
-                    return;
-                }
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const j = await r.json();
-                if (myReq !== scPv2CeReqSeq) return;
-                scPv2CeResp.value = j;
-            } catch (e) {
-                if (myReq !== scPv2CeReqSeq) return;
-                scPv2CeResp.value = null;
-                scPv2CeError.value = String((e && e.message) || e);
-            } finally {
-                if (myReq === scPv2CeReqSeq) scPv2CeLoading.value = false;
-            }
-        }
-        function scPv2CeReset() {
-            scPv2CeReqSeq++;
-            scPv2CeResp.value = null;
-            scPv2CeError.value = '';
-            scPv2CeLoading.value = false;
-        }
-
-        // ── Controlled Enforce Dry-run (read-only, observe-only) ─────────────
-        // ТОЛЬКО чтение GET .../controlled-enforce-dry-run. Показывает «что было
-        // бы пропущено», но НИЧЕГО не применяет/не пишет. Dry-run only.
-
-        const scPv2CdrResp = ref(null);
-        const scPv2CdrLoading = ref(false);
-        const scPv2CdrError = ref('');
-        let scPv2CdrReqSeq = 0;
-
-        const scPv2CdrSummary = computed(() =>
-            (scPv2CdrResp.value && scPv2CdrResp.value.summary) || null);
-        const scPv2CdrTransitions = computed(() =>
-            (scPv2CdrResp.value && scPv2CdrResp.value.logical_transitions) || []);
-        const scPv2CdrItems = computed(() =>
-            (scPv2CdrResp.value && scPv2CdrResp.value.would_skip_items) || []);
-        const scPv2CdrReportStatus = computed(() =>
-            (scPv2CdrResp.value && scPv2CdrResp.value.report_status) || '');
-        const scPv2CdrAvailable = computed(() =>
-            !!scPv2CdrResp.value && scPv2CdrResp.value.status === 'ok'
-            && scPv2CdrResp.value.available);
-        const scPv2CdrNotFound = computed(() =>
-            !!scPv2CdrResp.value && scPv2CdrResp.value.status === 'not_found');
-        const scPv2CdrRespError = computed(() =>
-            (scPv2CdrResp.value && scPv2CdrResp.value.status === 'error')
-                ? ((scPv2CdrResp.value.warnings || []).join('; ')
-                   || scPv2CdrResp.value.message || 'error')
-                : '');
-        async function scPv2CdrLoad() {
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            const myReq = ++scPv2CdrReqSeq;
-            scPv2CdrLoading.value = true;
-            scPv2CdrError.value = '';
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid)
-                + '/controlled-enforce-dry-run?pair_id='
-                + encodeURIComponent(pid) + '&limit=200';
-            try {
-                const r = await fetch(url);
-                if (myReq !== scPv2CdrReqSeq) return;
-                if (r.status === 401 || r.status === 403) {
-                    scPv2CdrResp.value = null;
-                    scPv2CdrError.value = 'Доступ запрещён (' + r.status + ').';
-                    return;
-                }
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const j = await r.json();
-                if (myReq !== scPv2CdrReqSeq) return;
-                scPv2CdrResp.value = j;
-            } catch (e) {
-                if (myReq !== scPv2CdrReqSeq) return;
-                scPv2CdrResp.value = null;
-                scPv2CdrError.value = String((e && e.message) || e);
-            } finally {
-                if (myReq === scPv2CdrReqSeq) scPv2CdrLoading.value = false;
-            }
-        }
-        function scPv2CdrReset() {
-            scPv2CdrReqSeq++;
-            scPv2CdrResp.value = null;
-            scPv2CdrError.value = '';
-            scPv2CdrLoading.value = false;
-        }
-
-        // ── Controlled Enforce STATE (read-only видимость active state) ──────
-        // Источник — ui-payload (controlled_enforce_state section). Это ВИДИМОСТЬ
-        // active controlled exclusion state, НЕ enforce/apply. Никаких действий.
-        const scPv2CesSection = computed(() =>
-            (scPv2Payload.value && scPv2Payload.value.controlled_enforce_state) || null);
-        const scPv2CesAvailable = computed(() =>
-            !!(scPv2CesSection.value && scPv2CesSection.value.available));
-
-        // ── Selection Observe (read-only observe-mode, Qwen НЕ вызывался) ────
-        // Источник — ui-payload (controlled_enforce_selection_observe section).
-        const scPv2CesoSection = computed(() =>
-            (scPv2Payload.value
-             && scPv2Payload.value.controlled_enforce_selection_observe) || null);
-        const scPv2CesoAvailable = computed(() =>
-            !!(scPv2CesoSection.value && scPv2CesoSection.value.available));
-
-        // ── Enrichment Selection Observe (read-only observe-plan, Qwen НЕ зван) ──
-        // Источник — ui-payload (enrichment_selection_observe section).
-        const scPv2EsoSection = computed(() =>
-            (scPv2Payload.value
-             && scPv2Payload.value.enrichment_selection_observe) || null);
-        const scPv2EsoAvailable = computed(() =>
-            !!(scPv2EsoSection.value && scPv2EsoSection.value.available));
-        // redundant_state_matches — пары, уже исключённые ДО хука (real path)
-        const scPv2EsoRedundant = computed(() =>
-            (scPv2EsoSection.value && scPv2EsoSection.value.redundant_state_matches) || []);
-
-        // ── Controlled Enforce State DEACTIVATE (rollback, write-слой) ───────
-        // POST .../controlled-enforce-state/deactivate — пишет ТОЛЬКО state
-        // (active=false + audit + history). Требует точного confirmation.
-        // Никаких enforce/qwen/jobs/findings/links. Жёсткий confirm.
-        const SC_PV2_CDS_PHRASE = 'DEACTIVATE_CONTROLLED_STATE';
-        const scPv2CdsOpen = ref(false);
-        const scPv2CdsConfirmText = ref('');
-        const scPv2CdsComment = ref('');
-        const scPv2CdsRunId = ref('');
-        const scPv2CdsBusy = ref(false);
-        const scPv2CdsError = ref('');
-        const scPv2CdsDone = ref(false);
-        const scPv2CdsConfirmOk = computed(() =>
-            scPv2CdsConfirmText.value === SC_PV2_CDS_PHRASE);
-
-        async function scPv2CdsBegin() {
-            scPv2CdsOpen.value = true;
-            scPv2CdsConfirmText.value = '';
-            scPv2CdsComment.value = '';
-            scPv2CdsError.value = '';
-            scPv2CdsDone.value = false;
-            scPv2CdsRunId.value = (scPv2CesSection.value && scPv2CesSection.value.run_id) || '';
-            // авторитетный run_id — из read-only GET state endpoint
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            try {
-                const r = await fetch('/api/stage-comparison/pipeline-v2/'
-                    + encodeURIComponent(sid) + '/controlled-enforce-state?pair_id='
-                    + encodeURIComponent(pid));
-                if (r.ok) {
-                    const j = await r.json();
-                    if (j && j.run_id) scPv2CdsRunId.value = j.run_id;
-                }
-            } catch (e) { /* run_id может остаться из секции */ }
-        }
-        function scPv2CdsCancel() {
-            scPv2CdsOpen.value = false;
-            scPv2CdsConfirmText.value = '';
-            scPv2CdsError.value = '';
-        }
-        async function scPv2CdsSubmit() {
-            if (!scPv2CdsConfirmOk.value || scPv2CdsBusy.value) return;
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) { scPv2CdsError.value = 'Нет сессии/пары'; return; }
-            if (!scPv2CdsRunId.value) { scPv2CdsError.value = 'run_id не загружен'; return; }
-            scPv2CdsBusy.value = true;
-            scPv2CdsError.value = '';
-            try {
-                const r = await fetch('/api/stage-comparison/pipeline-v2/'
-                    + encodeURIComponent(sid)
-                    + '/controlled-enforce-state/deactivate?pair_id='
-                    + encodeURIComponent(pid), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        run_id: scPv2CdsRunId.value,
-                        confirmation: SC_PV2_CDS_PHRASE,
-                        comment: scPv2CdsComment.value
-                            || 'manual rollback / deactivate controlled state',
-                        updated_by: 'operator',
-                    }),
-                });
-                if (!r.ok) {
-                    let msg = 'HTTP ' + r.status;
-                    try { const j = await r.json(); msg = (j && (j.detail || j.message)) || msg; } catch (e) {}
-                    throw new Error(msg);
-                }
-                scPv2CdsDone.value = true;
-                scPv2CdsOpen.value = false;
-                scPv2Load();   // перечитать ui-payload — панель отразит inactive
-            } catch (e) {
-                scPv2CdsError.value = String((e && e.message) || e);
-            } finally {
-                scPv2CdsBusy.value = false;
-            }
-        }
-
-        // ── Operator review write-layer для Exclusion Preview v2 ─────────────
-        // PUT .../exclusion-review-overrides — отдельный обратимый artifact.
-        // mark-only: НЕ применяет исключения, НЕ запускает jobs/Qwen/Opus/Claude,
-        // НЕ меняет exclusion_preview_v2_report.json, НЕ создаёт замечаний.
-
-        const scPv2XrDrafts = reactive({});       // item_id → { decision, comment }
-        const scPv2XrSaving = reactive({});        // item_id → bool
-        const scPv2XrSaveErr = reactive({});       // item_id → string
-
-        const SC_PV2_XR_DECISION_META = {
-            approve_exclude:    { label: 'approve_exclude', style: 'background:#dcfce7; color:#166534' },
-            reject_exclude:     { label: 'reject_exclude',  style: 'background:#fee2e2; color:#991b1b' },
-            needs_review:       { label: 'needs_review',    style: 'background:#fef9c3; color:#854d0e' },
-            keep:               { label: 'keep',            style: 'background:#f0fdf4; color:#15803d' },
-            run_link_validation:{ label: 'run_link_valid.', style: 'background:#ede9fe; color:#4c1d95' },
-        };
-
-        function scPv2XrDecisionMeta(decision) {
-            return SC_PV2_XR_DECISION_META[decision]
-                || { label: decision || '—', style: 'background:#f3f4f6; color:#374151' };
-        }
-
-        function scPv2XrGetDraft(it) {
-            const key = it && (it.item_id || it.left_block_id || String(it._index || ''));
-            if (!key) return { decision: '', comment: '' };
-            if (!scPv2XrDrafts[key]) {
-                // pre-fill from existing decision if present
-                const rev = it.operator_review;
-                scPv2XrDrafts[key] = reactive({
-                    decision: (rev && rev.status === 'reviewed' && rev.operator_decision) || '',
-                    comment:  (rev && rev.comment) || '',
-                });
-            }
-            return scPv2XrDrafts[key];
-        }
-
-        async function scPv2XrSaveDecision(it) {
-            const key = it && (it.item_id || it.left_block_id || '');
-            if (!key) return;
-            const draft = scPv2XrGetDraft(it);
-            if (!draft.decision) return;
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            scPv2XrSaving[key] = true;
-            scPv2XrSaveErr[key] = '';
-            try {
-                const body = {
-                    decision: {
-                        exclusion_item_id:   it.item_id || null,
-                        left_block_id:       it.left_block_id || null,
-                        right_block_id:      it.right_block_id || null,
-                        left_entity_label:   it.left_entity_label || null,
-                        right_entity_label:  it.right_entity_label || null,
-                        preview_classification: it.classification || null,
-                        preview_severity:    it.severity || null,
-                        operator_decision:   draft.decision,
-                        comment:             draft.comment || null,
-                    },
-                    created_by: null,
-                };
-                const r = await fetch(
-                    '/api/stage-comparison/pipeline-v2/'
-                    + encodeURIComponent(sid)
-                    + '/exclusion-review-overrides?pair_id='
-                    + encodeURIComponent(pid),
-                    { method: 'PUT',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify(body) });
-                if (!r.ok) {
-                    const t = await r.text().catch(() => '');
-                    throw new Error('HTTP ' + r.status + ': ' + t);
-                }
-                // reload preview to get fresh operator_review in items
-                await scPv2XpLoad();
-            } catch (e) {
-                scPv2XrSaveErr[key] = String((e && e.message) || e);
-            } finally {
-                scPv2XrSaving[key] = false;
-            }
-        }
-
-        async function scPv2XrDeleteDecision(it) {
-            const rev = it && it.operator_review;
-            if (!rev || !rev.decision_id) return;
-            const sid = scSession.value && scSession.value.id;
-            const pid = scPv2EaEffectivePairId();
-            if (!sid || !pid) return;
-            const key = it.item_id || it.left_block_id || '';
-            scPv2XrSaving[key] = true;
-            scPv2XrSaveErr[key] = '';
-            try {
-                const r = await fetch(
-                    '/api/stage-comparison/pipeline-v2/'
-                    + encodeURIComponent(sid)
-                    + '/exclusion-review-overrides/'
-                    + encodeURIComponent(rev.decision_id)
-                    + '?pair_id=' + encodeURIComponent(pid),
-                    { method: 'DELETE' });
-                if (!r.ok) {
-                    const t = await r.text().catch(() => '');
-                    throw new Error('HTTP ' + r.status + ': ' + t);
-                }
-                // clear local draft and reload
-                const draftKey = it.item_id || it.left_block_id || '';
-                if (scPv2XrDrafts[draftKey]) {
-                    scPv2XrDrafts[draftKey].decision = '';
-                    scPv2XrDrafts[draftKey].comment = '';
-                }
-                await scPv2XpLoad();
-            } catch (e) {
-                scPv2XrSaveErr[key] = String((e && e.message) || e);
-            } finally {
-                scPv2XrSaving[key] = false;
-            }
-        }
-
-        // ── Manual entity mapping (write-слой поверх preview) ─────────────────
-        // PUT .../entity-mapping-overrides — отдельный обратимый artifact. НЕ
-        // применяет block links, НЕ запускает vision/Qwen/Opus, НЕ создаёт
-        // замечаний. Только сохраняет ручное решение и обновляет UI-state.
-        const SC_PV2_EA_DECISIONS = [
-            { key: 'confirmed_same_entity', label: '✅ Та же сущность' },
-            { key: 'confirmed_rename', label: '🔁 Переименование' },
-            { key: 'confirmed_reorganized', label: '🟠 Реорганизация' },
-            { key: 'rejected_mapping', label: '❌ Отклонить связь' },
-            { key: 'no_match', label: '⚪ Нет пары' },
-        ];
-        const SC_PV2_EA_MANUAL_META = {
-            mapped:   { label: 'Подтверждено', color: '#16a34a', bg: '#dcfce7', fg: '#166534' },
-            rejected: { label: 'Отклонено', color: '#dc2626', bg: '#fee2e2', fg: '#991b1b' },
-            no_match: { label: 'Нет пары', color: '#6b7280', bg: '#f3f4f6', fg: '#374151' },
-        };
-        // decision → цвет (для бейджа сохранённого решения)
-        const SC_PV2_EA_DECISION_META = {
-            confirmed_same_entity: { label: 'confirmed_same_entity', color: '#16a34a' },
-            confirmed_rename:      { label: 'confirmed_rename', color: '#2563eb' },
-            confirmed_reorganized: { label: 'confirmed_reorganized', color: '#ea580c' },
-            rejected_mapping:      { label: 'rejected_mapping', color: '#dc2626' },
-            no_match:              { label: 'no_match', color: '#6b7280' },
-        };
-        const scPv2EaDrafts = reactive({});     // key → {decision, comment, counterpart}
-        const scPv2EaSaving = reactive({});      // key → bool
-        const scPv2EaSaveErr = reactive({});     // key → string
-        const scPv2EaSaveHint = ref('');         // глобальная подсказка после сохранения
-
-        function scPv2EaPairKey(p) {
-            return (p && (p.pair_key
-                || ((p.left_block_id || '') + '__' + (p.right_block_id || '')))) || '';
-        }
-        function scPv2EaUnpairedKey(e, side) {
-            const b = (e && e.block_ids && e.block_ids[0]) || '';
-            return side + ':' + ((e && e.entity_label) || '') + ':' + b;
-        }
-        function scPv2EaDraft(key, initDecision) {
-            if (!scPv2EaDrafts[key]) {
-                scPv2EaDrafts[key] = { decision: initDecision || '', comment: '',
-                                       counterpart: '' };
-            }
-            return scPv2EaDrafts[key];
-        }
-        function scPv2EaDecisionMeta(decision) {
-            return SC_PV2_EA_DECISION_META[decision]
-                || { label: decision || '', color: '#6b7280' };
-        }
-        function scPv2EaManualMeta(status) {
-            return SC_PV2_EA_MANUAL_META[status] || null;
-        }
-        async function _scPv2EaPutMapping(mapping) {
-            const sid = scSession.value && scSession.value.id;
-            const pid = (scPv2EaResp.value && scPv2EaResp.value.pair_id)
-                || scPv2EaEffectivePairId();
-            if (!sid || !pid) throw new Error('Нет активной пары');
-            const url = '/api/stage-comparison/pipeline-v2/'
-                + encodeURIComponent(sid) + '/entity-mapping-overrides?pair_id='
-                + encodeURIComponent(pid);
-            const by = (typeof currentUserName === 'function' ? currentUserName() : '')
-                || usersLoggedInUsername.value || '';
-            const r = await fetch(url, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mapping, created_by: by }),
-            });
-            if (r.status === 401 || r.status === 403) {
-                throw new Error('Доступ запрещён (' + r.status + ')');
-            }
-            if (!r.ok) {
-                let msg = 'HTTP ' + r.status;
-                try { const j = await r.json(); if (j && j.detail) msg = j.detail; }
-                catch (_) { /* no-op */ }
-                throw new Error(msg);
-            }
-            return r.json();
-        }
-        function _scPv2EaApplyManual(targetObj, override, summary) {
-            if (override) {
-                targetObj.manual_mapping = {
-                    status: override.manual_decision
-                        && (['confirmed_same_entity', 'confirmed_rename', 'confirmed_reorganized']
-                            .includes(override.manual_decision) ? 'mapped'
-                            : override.manual_decision === 'rejected_mapping' ? 'rejected'
-                            : override.manual_decision === 'no_match' ? 'no_match' : 'none'),
-                    decision: override.manual_decision,
-                    mapping_id: override.mapping_id,
-                    comment: override.comment || null,
-                    updated_at: override.updated_at,
-                };
-            }
-            if (summary && scPv2EaResp.value && scPv2EaResp.value.summary) {
-                scPv2EaResp.value.summary.manual_mapping = summary;
-            }
-            scPv2EaSaveHint.value = 'Ручной mapping сохранён. Он будет использован в '
-                + 'следующем этапе отбора vision-кандидатов, но сейчас ничего не '
-                + 'запускается (block links и vision не трогаются).';
-        }
-        async function scPv2EaSavePair(p) {
-            if (!p) return;
-            const key = scPv2EaPairKey(p);
-            const draft = scPv2EaDraft(key);
-            if (!draft.decision) { scPv2EaSaveErr[key] = 'Выберите решение'; return; }
-            scPv2EaSaving[key] = true;
-            scPv2EaSaveErr[key] = '';
-            try {
-                const res = await _scPv2EaPutMapping({
-                    left_entity_label: p.left_entity_label,
-                    right_entity_label: p.right_entity_label,
-                    left_block_id: p.left_block_id,
-                    right_block_id: p.right_block_id,
-                    left_page_number: p.left_page_number,
-                    right_page_number: p.right_page_number,
-                    source_classification: p.classification,
-                    pair_key: p.pair_key,
-                    manual_decision: draft.decision,
-                    comment: draft.comment || null,
-                });
-                _scPv2EaApplyManual(p, res.override, res.summary);
-            } catch (e) {
-                scPv2EaSaveErr[key] = String((e && e.message) || e);
-            } finally {
-                scPv2EaSaving[key] = false;
-            }
-        }
-        // Кандидаты-counterpart для unpaired-сущности (с противоположной стороны).
-        function scPv2EaUnpairedCounterparts(side) {
-            const u = scPv2EaUnpaired.value || {};
-            const other = side === 'left' ? (u.right || []) : (u.left || []);
-            return other;
-        }
-        async function scPv2EaSaveUnpaired(e, side) {
-            if (!e) return;
-            const key = scPv2EaUnpairedKey(e, side);
-            const draft = scPv2EaDraft(key);
-            if (!draft.decision) { scPv2EaSaveErr[key] = 'Выберите решение'; return; }
-            const myBlock = (e.block_ids && e.block_ids[0]) || null;
-            // counterpart нужен только для confirmed_*
-            const isConfirmed = ['confirmed_same_entity', 'confirmed_rename',
-                                 'confirmed_reorganized'].includes(draft.decision);
-            let cp = null;
-            if (isConfirmed) {
-                const list = scPv2EaUnpairedCounterparts(side);
-                cp = list.find((x) => ((x.block_ids && x.block_ids[0]) || x.entity_label)
-                    === draft.counterpart);
-                if (!cp) { scPv2EaSaveErr[key] = 'Выберите counterpart с другой стороны'; return; }
-            }
-            const cpBlock = cp ? ((cp.block_ids && cp.block_ids[0]) || null) : null;
-            const mapping = side === 'left'
-                ? { left_entity_label: e.entity_label, left_block_id: myBlock,
-                    right_entity_label: cp ? cp.entity_label : null, right_block_id: cpBlock }
-                : { right_entity_label: e.entity_label, right_block_id: myBlock,
-                    left_entity_label: cp ? cp.entity_label : null, left_block_id: cpBlock };
-            mapping.manual_decision = draft.decision;
-            mapping.comment = draft.comment || null;
-            mapping.source_classification = 'unpaired';
-            scPv2EaSaving[key] = true;
-            scPv2EaSaveErr[key] = '';
-            try {
-                const res = await _scPv2EaPutMapping(mapping);
-                _scPv2EaApplyManual(e, res.override, res.summary);
-            } catch (err) {
-                scPv2EaSaveErr[key] = String((err && err.message) || err);
-            } finally {
-                scPv2EaSaving[key] = false;
-            }
-        }
 
         return {
             // Theme
@@ -18667,6 +17321,7 @@ const app = createApp({
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             toggleUnanalyzedSelection, isUnanalyzedSelected,
+            expertUncheckedCount,
             sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,
@@ -18892,67 +17547,10 @@ const app = createApp({
             scPv2GdOpen, scPv2GdLoading, scPv2GdError, scPv2GdResp,
             scPv2GdFilter, scPv2GdFilteredCards, scPv2GdPagination,
             scPv2GdStatusColor, scPv2GdOpenDrawer, scPv2GdClose,
-            scPv2GdJumpBanner, scPv2GdJumpWarning, scPv2GdCardHasTarget,
-            scPv2OpenBlockLinkFromGrounding, scPv2GdClearJumpBanner,
             scPv2FilterOptions, scPv2HasFilterOptions,
             scPv2FiltersActive, scPv2SectionEmoji, scPv2CardsFor,
             scPv2ResetFilters, scPv2ToggleSection, scPv2StatusBadge,
             scPv2AllWarnings, scPv2Load, scPv2EnsureLoaded, scPv2OpenPair,
-            // Pipeline V2 Block Link Preview («Связь блоков», read-only)
-            scPv2LpVisible, scPv2LpLoading, scPv2LpError, scPv2LpResp,
-            scPv2LpPairId, scPv2LpFilter, scPv2LpSelectedPage, scPv2LpSelectedLink,
-            scPv2LpReport, scPv2LpSummary, scPv2LpPageLinks, scPv2LpNotFound,
-            scPv2LpRespError, scPv2LpFilteredLinks, scPv2LpSelectedPageLink,
-            scPv2LpSelectedLinkObj, scPv2LpPageOverlays,
-            scPv2LpPageImageUrl, scPv2LpOverlayStyle, scPv2LpStatusColor,
-            scPv2LpSelectLink, scPv2LpSelectPage, scPv2LpLoad, scPv2LpToggle,
-            SC_PV2_LP_FILTERS,
-            // Pipeline V2 Entity Alignment Preview («Сущности и маппинг», read-only)
-            scPv2EaVisible, scPv2EaLoading, scPv2EaError, scPv2EaResp,
-            scPv2EaPairId, scPv2EaFilter, scPv2EaSummary, scPv2EaPairs,
-            scPv2EaUnpaired, scPv2EaNotFound, scPv2EaRespError,
-            scPv2EaShowUnpaired, scPv2EaShowPairs, scPv2EaFilteredPairs,
-            scPv2EaClassMeta, scPv2EaConfPct, scPv2EaLoad, scPv2EaToggle,
-            scPv2EaOpenBlockLink, SC_PV2_EA_FILTERS,
-            // Pipeline V2 Link Validation (read-only, mark-only)
-            scPv2LvResp, scPv2LvLoading, scPv2LvError, scPv2LvSummary,
-            scPv2LvItems, scPv2LvAvailable, scPv2LvNotFound, scPv2LvRespError,
-            scPv2LvDecisionMeta, scPv2LvConfPct, scPv2LvLoad, scPv2LvOpenBlockLink,
-            // Pipeline V2 Exclusion Preview v2 (read-only, mark-only)
-            scPv2XpResp, scPv2XpLoading, scPv2XpError,
-            scPv2XpSummary, scPv2XpItems, scPv2XpAvailable, scPv2XpNotFound, scPv2XpRespError,
-            scPv2XpClassMeta, scPv2XpConfPct, scPv2XpLoad, scPv2XpReset,
-            // Pipeline V2 Skip Readiness (read-only, mark-only, observe)
-            scPv2SrResp, scPv2SrLoading, scPv2SrError,
-            scPv2SrSummary, scPv2SrItems, scPv2SrAvailable, scPv2SrNotFound, scPv2SrRespError,
-            scPv2SrReadinessMeta, scPv2SrConfPct, scPv2SrLoad, scPv2SrReset,
-            SC_PV2_SR_READINESS_META,
-            // Pipeline V2 Controlled Enforce Preflight (read-only / observe-only)
-            scPv2CeResp, scPv2CeLoading, scPv2CeError,
-            scPv2CeSummary, scPv2CeGuards, scPv2CeRuntimeRoot,
-            scPv2CeFatalBlocks, scPv2CeBlockedItems, scPv2CeEligibleItems,
-            scPv2CeReportStatus, scPv2CeAvailable, scPv2CeNotFound, scPv2CeRespError,
-            scPv2CeStatusMeta, scPv2CeBlockMeta, scPv2CeLoad, scPv2CeReset,
-            SC_PV2_CE_STATUS_META, SC_PV2_CE_BLOCK_META,
-            // Pipeline V2 Controlled Enforce Dry-run (read-only / observe-only)
-            scPv2CdrResp, scPv2CdrLoading, scPv2CdrError,
-            scPv2CdrSummary, scPv2CdrTransitions, scPv2CdrItems,
-            scPv2CdrReportStatus, scPv2CdrAvailable, scPv2CdrNotFound, scPv2CdrRespError,
-            scPv2CdrLoad, scPv2CdrReset,
-            // Pipeline V2 Controlled Enforce State + Selection Observe (read-only)
-            scPv2CesSection, scPv2CesAvailable,
-            scPv2CesoSection, scPv2CesoAvailable,
-            // Pipeline V2 Enrichment Selection Observe (read-only observe-plan)
-            scPv2EsoSection, scPv2EsoAvailable, scPv2EsoRedundant,
-            // Pipeline V2 Controlled Enforce State deactivate (rollback, write)
-            SC_PV2_CDS_PHRASE, scPv2CdsOpen, scPv2CdsConfirmText, scPv2CdsComment,
-            scPv2CdsRunId, scPv2CdsBusy, scPv2CdsError, scPv2CdsDone, scPv2CdsConfirmOk,
-            scPv2CdsBegin, scPv2CdsCancel, scPv2CdsSubmit,
-            // Pipeline V2 Manual Entity Mapping (write-слой)
-            SC_PV2_EA_DECISIONS, scPv2EaDrafts, scPv2EaSaving, scPv2EaSaveErr,
-            scPv2EaSaveHint, scPv2EaPairKey, scPv2EaUnpairedKey, scPv2EaDraft,
-            scPv2EaDecisionMeta, scPv2EaManualMeta, scPv2EaSavePair,
-            scPv2EaUnpairedCounterparts, scPv2EaSaveUnpaired,
             // Saved canonical config (one-click apply/save)
             scSavedConfig, scSavedConfigSaving, scSavedConfigMsg,
             scLoadSavedConfig, scApplySavedConfig, scSaveCurrentAsCanonical,
@@ -18966,12 +17564,21 @@ const app = createApp({
             scObjects, scObjectsRoots, scObjectsLoading, scObjectsError,
             scSelectedObjectId, scSelectedStageA, scSelectedStageB,
             scSelectedObject, scLoadObjects, scApplySelectedObject,
+            scStageUploadBusy, scStageUploadError,
+            scUploadStageFolder,
+            scStageFolderDialogOpen, scStageFolderDialogStage, scStageFolderDialogName,
+            scStageFolderCandidates, scStageFolderSelectedCount,
+            scToggleAllStageCandidates, scCloseStageFolderDialog, scSubmitSelectedStageProjects,
             scScanning, scLinking, scError, scWarnings,
             scSession, scSessions, scSessionsListOpen,
             scAutoLoadInfo, scAutoLoading,
             scActivePair, scPairData, scCurrentPage,
-            scCanvasRefs, scCanvasNat, scSelectedLeft, scSelectedRight,
-            scSelectedSlotLeft, scSelectedSlotRight,
+            scSheetMatchingBusy, scSheetMatchingInfo, scRunSheetMatching,
+            scSheetIdentityBusy, scSheetIdentityInfo, scRunSheetIdentity,
+            scSheetAlignmentBusy, scSheetAlignmentInfo, scRunSheetAlignment,
+            scChangeRegionsBusy, scChangeRegionsInfo, scRunChangeRegionsPilot,
+            scChangeGroupsBusy, scChangeGroupsInfo, scRunChangeGroupsPilot,
+            scCanvasRefs, scCanvasNat,
             scTextLLMDiff, scTextLLMConfig,
             scLoadTextLLMDiff, scLoadTextLLMConfig,
             // Session-level batch preflight + job
@@ -19005,9 +17612,6 @@ const app = createApp({
             scOpusFallbackLabel,
             // Per-pair Opus fallback (evidence_first_s2_fallback) для too_large
             scOpusFallbackByPair, scOpusFallbackStarting, scOpusRunFallbackForPair,
-            // Per-pair analysis mode
-            scAnalysisMode, scAnalysisModeSaving, scAnalysisModeError,
-            scLoadAnalysisMode, scSetAnalysisMode, scToggleAnalysisMode,
             // Unified analysis (Qwen enrichment + Opus comparison) — primary UX
             scUnifiedConfig, scUnifiedPairStatus, scUnifiedPairLoading,
             scUnifiedFlat, scUnifiedFlatLoading, scUnifiedFlatError,
@@ -19092,31 +17696,15 @@ const app = createApp({
             scPageImageUrl, scOnImageLoad, scOnPageImageLoad,
             scShowMd, scMdView, scMdViewLoading, scMdViewError, scMdRenderMode, scMdPaneRefs,
             scToggleMdView, scLoadEnrichedMd, scMdHighlightHtml, scMdRenderHtml, scOnMdPaneScroll,
+            scSetMdPaneRef, scScheduleMdPageAlignment, scSyncMdPageHeights,
             scSlotBlocks, scBlankPageStyle,
-            scBlockOverlayStyle, scBlockOverlayClass, scIsBlockLinked, scSelectBlock,
+            scBlockOverlayStyle, scBlockOverlayClass, scIsBlockLinked,
             scBlockLinkInfo, scLinkColor, scLinkVisualIndex, scSelectLinkedBlock,
             scActiveLinkKey, scActiveLink, scActiveLinkInfo,
             scDeleteActiveLink, scClearStaleLinks,
             scOnPaneScroll, scOnPaneWheel, scOnPanePanStart, scZoomBy, scZoomReset,
             scSetSlotRef, scIsSlotRendered, scSlotContainerStyle, scSlotPlaceholderStyle,
-            scCreateLink, scDeleteLink, scRunAutoLink,
-            // Сопоставление листов по штампам
-            scStampProposals, scStampLoading, scStampApplying, scStampError,
-            scStampSelected, scStampRowKey, scStampToggleRow, scStampMatchedRows,
-            scStampAllRows, scStampSelectableRows, scStampIsSelectable,
-            scStampSelectedCount, scSuggestByStamp, scApplyStampProposals,
-            scAutoMatchApplyLoading, scAutoMatchApplyResult, scAutoMatchApplyError, scAutoMatchApplySheets,
-            scCloseStampProposals, scStampUseLlm,
-            scStampTypeLabel, scStampRiskLabel, scStampTypeColor, scStampRowTitle,
-            scStampDisplayName, scStampNameIsDerived,
-            // Пакетное авто-сопоставление листов (раздел «1. Загрузка документации»)
-            scAutoMatchJob, scAutoMatchStarting, scAutoMatchError, scAutoMatchUseLlm,
-            scAutoMatchOverwrite, scAutoMatchRunning, scAutoMatchStart,
-            scAutoMatchCancel, scAutoMatchLoadLast,
-            scAutoMatchAsk, scAutoMatchOpenDialog, scAutoMatchCloseDialog, scAutoMatchConfirm,
-            // Pair config templates
-            scTemplateSaving, scTemplateLastSaveMsg, scTemplateError,
-            scSavePairTemplate,
+            scDeleteLink,
             scLoadGraphicSummary,
             scFindGraphicDiff, scPrepareGraphicDiff, scRunGraphicDiff,
             // ─── Report tab (read-only сводка согласованных) ───

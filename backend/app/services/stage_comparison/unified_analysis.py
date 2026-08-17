@@ -40,8 +40,6 @@ class PairPreflight:
     md_left_path: Optional[str] = None
     md_right_path: Optional[str] = None
 
-    # Качание режима анализа: block_links (default) | concept_no_block_links
-    analysis_mode: str = "block_links"
     image_blocks_source: str = "cache"              # cache | parsed_md | none
 
     # Qwen enrichment
@@ -87,7 +85,6 @@ class PairPreflight:
             "has_md": self.has_md,
             "md_left_path": self.md_left_path,
             "md_right_path": self.md_right_path,
-            "analysis_mode": self.analysis_mode,
             "image_blocks_source": self.image_blocks_source,
             "enrichment": {
                 "ready": self.enrichment_ready,
@@ -187,7 +184,6 @@ def preflight_pair(
         raise KeyError("pair_not_found")
 
     out = PairPreflight(pair_id=pair_id, pair_label=_pair_label(pair))
-    out.analysis_mode = store_mod.get_pair_analysis_mode(session_id, pair_id)
     has_md, lmd, rmd = _md_present(pair)
     out.has_md = has_md
     out.md_left_path = lmd
@@ -295,14 +291,6 @@ def preflight_pair(
     elif out.will_run_comparison and not cfg.enabled:
         out.warnings.append(
             "Enriched comparison выключен в env (STAGE_COMPARISON_ENRICHED_COMPARE_ENABLED!=true)."
-        )
-
-    # Task 4: подсказка про concept_no_block_links режим.
-    if out.analysis_mode == "concept_no_block_links":
-        out.warnings.append(
-            "Режим анализа: «Блоки без связей». "
-            "Сравнение будет выполнено по enriched MD целиком, "
-            "block-to-block matching не требуется."
         )
 
     # Can run: либо есть смысл запускать enrichment, либо есть смысл запускать

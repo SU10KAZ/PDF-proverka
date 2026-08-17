@@ -35,6 +35,16 @@ from . import alignment as alignment_mod
 from . import blocks as blocks_mod
 from . import paths as paths_mod
 from . import scanner as scanner_mod
+from . import prepared_document as prepared_document_mod
+from . import sheet_matcher as sheet_matcher_mod
+from . import sheet_identity as sheet_identity_mod
+from . import sheet_alignment as sheet_alignment_mod
+from . import change_regions as change_regions_mod
+from . import change_groups as change_groups_mod
+from . import change_detection as change_detection_mod
+from . import semantic_diff as semantic_diff_mod
+from . import semantic_diff_v6a1 as semantic_diff_v6a1_mod
+from . import semantic_diff_v6a2 as semantic_diff_v6a2_mod
 
 logger = logging.getLogger(__name__)
 
@@ -143,21 +153,7 @@ def _load_session_meta(session_id: str) -> dict | None:
     return None
 
 
-_PAIR_PASSTHROUGH_FIELDS = (
-    "template_applied", "template_applied_at",
-    "template_key", "template_saved_at", "template_source_session_id",
-    # Unified pipeline: режим анализа пары.
-    #   "block_links"            — обычный режим, ожидаются связи блоков (default)
-    #   "concept_no_block_links" — концептуальный анализ enriched MD целиком,
-    #                              отсутствие связей блоков не считается проблемой.
-    "analysis_mode",
-    "analysis_mode_updated_at",
-)
-
-
-# Допустимые значения analysis_mode (см. unified pipeline).
-ALLOWED_ANALYSIS_MODES = ("block_links", "concept_no_block_links")
-DEFAULT_ANALYSIS_MODE = "block_links"
+_PAIR_PASSTHROUGH_FIELDS: tuple[str, ...] = ()
 
 
 def _save_pair(session_id: str, pair: dict) -> None:
@@ -180,41 +176,6 @@ def _load_pair_meta(session_id: str, pair_id: str) -> dict | None:
     if isinstance(data, dict) and data.get("id"):
         return data
     return None
-
-
-# ── Analysis mode helpers ───────────────────────────────────────────────
-
-
-def get_pair_analysis_mode(session_id: str, pair_id: str) -> str:
-    """Текущий analysis_mode пары. По умолчанию `block_links`.
-
-    Не бросает исключений, если pair.json не найден — возвращает default,
-    чтобы старые пары без поля работали как и раньше.
-    """
-    meta = _load_pair_meta(session_id, pair_id) or {}
-    mode = str(meta.get("analysis_mode") or DEFAULT_ANALYSIS_MODE).strip()
-    if mode not in ALLOWED_ANALYSIS_MODES:
-        return DEFAULT_ANALYSIS_MODE
-    return mode
-
-
-def set_pair_analysis_mode(session_id: str, pair_id: str, mode: str) -> dict:
-    """Сохранить новый analysis_mode в pair.json.
-
-    Бросает KeyError если pair.json не найден, ValueError если mode невалиден.
-    Возвращает обновлённый pair-meta (dict).
-    """
-    if mode not in ALLOWED_ANALYSIS_MODES:
-        raise ValueError(
-            f"invalid_analysis_mode: {mode!r}; allowed {ALLOWED_ANALYSIS_MODES}"
-        )
-    meta = _load_pair_meta(session_id, pair_id)
-    if meta is None:
-        raise KeyError("pair_not_found")
-    meta["analysis_mode"] = mode
-    meta["analysis_mode_updated_at"] = _utc_now()
-    _save_pair(session_id, meta)
-    return meta
 
 
 def _save_links(session_id: str, pair_id: str, links: list[dict]) -> None:
@@ -268,9 +229,6 @@ def _list_pair_ids(session_id: str) -> list[str]:
 
 def _aggregate_session(session_id: str) -> dict | None:
     """Собрать сессию из новой папки comparison/ или fallback на legacy."""
-    # Lazy import: pair_template lazy-imports store, чтобы избежать цикла на load.
-    from . import pair_template as pair_template_mod  # noqa: WPS433
-
     meta = _load_session_meta(session_id)
     if meta is not None:
         pairs: list[dict] = []
@@ -280,20 +238,6 @@ def _aggregate_session(session_id: str) -> dict | None:
                 continue
             pair_meta["links"] = _load_links(session_id, pid)
             pair_meta["graphic_diffs"] = _load_graphic_diffs(session_id, pid)
-            # Зелёная галочка в «Загрузке документации»: есть ли сохранённый
-            # шаблон для этой пары PDF (identity ключ по полным путям).
-            left = pair_meta.get("left") or {}
-            right = pair_meta.get("right") or {}
-            tpl_key = pair_template_mod.template_key(
-                left.get("pdf_path"), right.get("pdf_path"),
-            )
-            if tpl_key:
-                try:
-                    pair_meta["has_template"] = paths_mod.pair_template_path(tpl_key).exists()
-                except (ValueError, OSError):
-                    pair_meta["has_template"] = False
-            else:
-                pair_meta["has_template"] = False
             pairs.append(pair_meta)
         # Восстановить порядок из session.json (pair_order), если есть
         order = meta.get("pair_order") or []
@@ -423,10 +367,6 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
     pair_order: list[str] = []
     pair_summaries: list[dict] = []
 
-    # Lazy import: pair_template импортирует store, цикл разрываем здесь.
-    from . import pair_template as pair_template_mod  # noqa: WPS433
-
-    templates_applied = 0
     with _lock:
         for rp in raw_pairs:
             pid = _new_id(prefix="p", n=8)
@@ -435,57 +375,18 @@ def create_session(stage_a_path: str, stage_b_path: str) -> tuple[dict, list[str
 
             left_pdf_path = (d.get("left") or {}).get("pdf_path")
             right_pdf_path = (d.get("right") or {}).get("pdf_path")
-            template = pair_template_mod.find_template(left_pdf_path, right_pdf_path)
-
             _save_pair(session_id, d)
             _save_graphic_diffs(session_id, pid, [])
-
-            if template is not None:
-                # Шаблон найден — пишем links/alignment из шаблона, отмечаем
-                # template_applied. Дефолтный alignment всё равно
-                # пересчитываем — page_count для свежей пары может отличаться.
-                tpl_links = template.get("links") or []
-                _save_links(session_id, pid, tpl_links if isinstance(tpl_links, list) else [])
-
-                left_count = _pdf_page_count(left_pdf_path)
-                right_count = _pdf_page_count(right_pdf_path)
-                base_alignment = alignment_mod.build_default(left_count, right_count)
-                base_alignment.update({
-                    "left_page_count": left_count,
-                    "right_page_count": right_count,
-                    "updated_at": _utc_now(),
-                })
-                tpl_alignment = template.get("page_alignment") or {}
-                if isinstance(tpl_alignment, dict) and tpl_alignment:
-                    # Из шаблона берём items/слоты, page_count'ы — актуальные.
-                    merged = dict(tpl_alignment)
-                    merged["left_page_count"] = left_count
-                    merged["right_page_count"] = right_count
-                    merged["updated_at"] = _utc_now()
-                    _save_alignment(session_id, pid, merged)
-                else:
-                    _save_alignment(session_id, pid, base_alignment)
-
-                # Помечаем pair.json.
-                d["template_applied"] = True
-                d["template_applied_at"] = _utc_now()
-                d["template_key"] = template.get("key")
-                d["template_saved_at"] = template.get("saved_at")
-                d["template_source_session_id"] = template.get("source_session_id")
-                _save_pair(session_id, d)
-                templates_applied += 1
-            else:
-                _save_links(session_id, pid, [])
-                left_count = _pdf_page_count(left_pdf_path)
-                right_count = _pdf_page_count(right_pdf_path)
-                alignment = alignment_mod.build_default(left_count, right_count)
-                alignment.update({
-                    "left_page_count": left_count,
-                    "right_page_count": right_count,
-                    "updated_at": _utc_now(),
-                })
-                _save_alignment(session_id, pid, alignment)
-
+            _save_links(session_id, pid, [])
+            left_count = _pdf_page_count(left_pdf_path)
+            right_count = _pdf_page_count(right_pdf_path)
+            alignment = alignment_mod.build_default(left_count, right_count)
+            alignment.update({
+                "left_page_count": left_count,
+                "right_page_count": right_count,
+                "updated_at": _utc_now(),
+            })
+            _save_alignment(session_id, pid, alignment)
             pair_order.append(pid)
             pair_summaries.append({
                 "id": pid,
@@ -764,6 +665,309 @@ def alignment_reset(session_id: str, pair_id: str) -> dict:
         return payload
 
 
+# ─── Deterministic sheet matching ────────────────────────────────────────
+
+def _prepared_document_for_comparison_pdf(pdf_path: str | None) -> tuple[dict, Path, Path]:
+    """Найти PreparedDocument по document.pdf versioned-stage загрузки.
+
+    Если его ещё нет, собрать из уже подготовленных артефактов. Исходные PDF,
+    MD и blocks.json при этом не меняются.
+    """
+    pdf = Path(str(pdf_path or ""))
+    if not pdf.is_file() or pdf.name != "document.pdf" or pdf.parent.name != "02_work":
+        raise ValueError("pair_pdf_is_not_a_versioned_comparison_document")
+    version_dir = pdf.parent.parent
+    stage_dir = next((parent for parent in version_dir.parents if parent.name in {"stage_1", "stage_2"}), None)
+    if stage_dir is None or stage_dir.parent.name != "comparison":
+        raise ValueError("pair_pdf_is_outside_object_comparison_storage")
+    prepared_path = prepared_document_mod.prepared_document_path(version_dir)
+    if prepared_path.is_file():
+        data = _read_json(prepared_path)
+        if isinstance(data, dict) and data.get("kind") == prepared_document_mod.MODEL_KIND:
+            return data, version_dir, stage_dir.parent
+    data, prepared_path = prepared_document_mod.build_and_write_prepared_document(
+        version_dir, stage_name=stage_dir.name,
+        object_metadata=_read_json(stage_dir.parent / "object.json") or {},
+    )
+    return data, version_dir, stage_dir.parent
+
+
+def run_sheet_matching(session_id: str, pair_id: str) -> dict:
+    """Построить и, только при отсутствии ручной карты, применить карту листов.
+
+    Ручной alignment никогда не перезаписывается: диагностический JSON всё
+    равно сохраняется, но response сообщает, что применение пропущено.
+    """
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left, _, comparison_left = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
+        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
+        if comparison_left != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        result = sheet_matcher_mod.match_prepared_documents(
+            left, right,
+            left_pdf=(pair.get("left") or {}).get("pdf_path"),
+            right_pdf=(pair.get("right") or {}).get("pdf_path"),
+        )
+        result_path = comparison_left / "diagnostics" / "sheet_matching.json"
+        sheet_matcher_mod.write_sheet_matching_result(result_path, result)
+        report_path = sheet_matcher_mod.write_sheet_matching_report(
+            comparison_left / "diagnostics" / "sheet_matching.md", result,
+        )
+
+        current = _ensure_alignment(session_id, pair_id, persist=False)
+        if sheet_matcher_mod.alignment_has_manual_items(current.get("items") or []):
+            return {
+                "ok": True, "applied": False, "reason": "manual_alignment_preserved",
+                "sheet_matching": result, "result_path": str(result_path), "report_path": str(report_path),
+                "alignment": get_alignment(session_id, pair_id),
+            }
+        alignment = save_alignment(
+            session_id, pair_id, sheet_matcher_mod.alignment_items_from_result(result), force=False,
+        )
+        return {
+            "ok": True, "applied": True, "reason": "automatic_alignment_applied",
+            "sheet_matching": result, "result_path": str(result_path), "report_path": str(report_path), "alignment": alignment,
+        }
+
+
+def run_sheet_identity(session_id: str, pair_id: str) -> dict:
+    """Проверить только принятые matcher/manual пары на фактическую идентичность.
+
+    Эта операция не пишет в page_alignment, links или вкладку расхождений.
+    """
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left, _, comparison_left = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
+        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
+        if comparison_left != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        matching = _read_json(comparison_left / "diagnostics" / "sheet_matching.json")
+        if not isinstance(matching, dict) or matching.get("kind") != "stage_comparison_sheet_matching":
+            raise ValueError("sheet_matching_result_missing_run_sheet_matcher_first")
+        alignment = _ensure_alignment(session_id, pair_id, persist=False)
+        report = sheet_identity_mod.evaluate_sheet_identity(
+            left, right,
+            left_pdf=(pair.get("left") or {}).get("pdf_path"),
+            right_pdf=(pair.get("right") or {}).get("pdf_path"),
+            sheet_matching=matching,
+            alignment_items=alignment.get("items") or [],
+        )
+        json_path, md_path = sheet_identity_mod.write_sheet_identity_report(comparison_left / "diagnostics", report)
+        return {"ok": True, "sheet_identity": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_sheet_alignment(session_id: str, pair_id: str) -> dict:
+    """Диагностически совместить только уже принятые пары листов.
+
+    Не меняет карту страниц, links, findings или вкладку расхождений. Матрицы
+    сохраняются рядом с PreparedDocument как вход для следующего этапа.
+    """
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left, _, comparison_left = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
+        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
+        if comparison_left != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        matching = _read_json(comparison_left / "diagnostics" / "sheet_matching.json")
+        if not isinstance(matching, dict) or matching.get("kind") != "stage_comparison_sheet_matching":
+            raise ValueError("sheet_matching_result_missing_run_sheet_matcher_first")
+        alignment = _ensure_alignment(session_id, pair_id, persist=False)
+        diagnostics = comparison_left / "diagnostics"
+        report = sheet_alignment_mod.evaluate_sheet_alignment(
+            left, right,
+            left_pdf=(pair.get("left") or {}).get("pdf_path"),
+            right_pdf=(pair.get("right") or {}).get("pdf_path"),
+            sheet_matching=matching,
+            alignment_items=alignment.get("items") or [],
+            diagnostics_dir=diagnostics / "sheet_alignment",
+        )
+        json_path, md_path = sheet_alignment_mod.write_sheet_alignment_report(diagnostics, report)
+        return {"ok": True, "sheet_alignment": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_change_regions_pilot(session_id: str, pair_id: str) -> dict:
+    """Этап 5Б: только три показательные aligned-пары, без findings."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left, _, comparison_left = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
+        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
+        if comparison_left != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        alignment_report = _read_json(comparison_left / "diagnostics" / "sheet_alignment.json")
+        if not isinstance(alignment_report, dict) or alignment_report.get("kind") != "stage_comparison_sheet_alignment":
+            raise ValueError("sheet_alignment_result_missing_run_sheet_alignment_first")
+        report = change_regions_mod.run_pilot(
+            (pair.get("left") or {}).get("pdf_path"), (pair.get("right") or {}).get("pdf_path"),
+            left, right, alignment_report, comparison_left / "change_regions",
+        )
+        json_path, md_path = change_regions_mod.write_report(comparison_left / "change_regions", report)
+        return {"ok": True, "change_regions": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_change_regions_cleanup_pilot(session_id: str, pair_id: str) -> dict:
+    """Этап 5Б.1: canonical vector evidence для тех же трёх пилотных пар."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None: raise KeyError("pair_not_found")
+        left, _, comparison = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
+        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
+        if comparison != comparison_right: raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        alignment = _read_json(comparison / "diagnostics" / "sheet_alignment.json")
+        if not isinstance(alignment, dict): raise ValueError("sheet_alignment_result_missing_run_sheet_alignment_first")
+        before = _read_json(comparison / "change_regions" / "change_regions.json") or {}
+        destination = comparison / "change_regions_v5b1"
+        report = change_regions_mod.run_pilot((pair.get("left") or {}).get("pdf_path"),(pair.get("right") or {}).get("pdf_path"),left,right,alignment,destination,canonical_vectors=True)
+        report["kind"]="stage_comparison_change_regions_vector_cleanup_pilot"
+        report["before_reference"]={"path":str(comparison / "change_regions" / "change_regions.json"),"summary":before.get("summary")}
+        json_path, md_path = change_regions_mod.write_report(destination, report)
+        return {"ok":True,"change_regions":report,"result_path":str(json_path),"report_path":str(md_path)}
+
+
+def run_change_regions_rebuild_pilot(session_id: str, pair_id: str) -> dict:
+    with _lock:
+        pair=_find_pair_meta(session_id,pair_id)
+        if pair is None: raise KeyError("pair_not_found")
+        left,_,comparison=_prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path")); right,_,_= _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
+        prior=_read_json(comparison/"change_regions_v5b1"/"change_regions.json")
+        if not isinstance(prior,dict): raise ValueError("change_regions_v5b1_missing_run_cleanup_first")
+        report=change_regions_mod.rebuild_regions_after_canonical(prior,left,right)
+        destination=comparison/"change_regions_v5b2"; json_path=destination/"change_regions.json"; md_path=destination/"change_regions.md"
+        change_regions_mod._write(json_path,json.dumps(report,ensure_ascii=False,indent=2,sort_keys=True)+"\n")
+        lines=["# 5Б.2 — Regions после canonical diff",""]
+        for item in report["items"]:
+            lines += [f"## V2 {item['left_page']} ↔ V3 {item['right_page']}","",f"Regions: {item['summary']['regions_before']} → {item['summary']['regions_after']}; supporting long vectors: {item['summary']['supporting_long_vectors']}.","", "| Region | bbox V2 | Page area | role |", "| --- | --- | ---: | --- |", *[f"| {r['region_id']} | {r['bbox']} | {r['page_area_ratio']:.2%} | {r['region_role']} |" for r in item['regions']],""]
+        change_regions_mod._write(md_path,"\n".join(lines)); return {"ok":True,"change_regions":report,"result_path":str(json_path),"report_path":str(md_path)}
+
+
+def run_change_groups_pilot(session_id: str, pair_id: str) -> dict:
+    """Этап 5Б.3: неизменяемые atomic regions 5Б.2 → change groups."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left, _, comparison = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
+        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
+        if comparison != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        atomic = _read_json(comparison / "change_regions_v5b2" / "change_regions.json")
+        if not isinstance(atomic, dict) or atomic.get("kind") != "stage_comparison_change_regions_rebuilt_after_canonical":
+            raise ValueError("change_regions_v5b2_missing_run_rebuild_first")
+        report = change_groups_mod.evaluate_change_groups(atomic, left, right)
+        destination = comparison / "change_groups_v5b3"
+        change_groups_mod.write_diagnostics(destination / "diagnostics", report, (pair.get("left") or {}).get("pdf_path"))
+        json_path, md_path = change_groups_mod.write_report(destination, report)
+        return {"ok": True, "change_groups": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_change_detection(session_id: str, pair_id: str) -> dict:
+    """Этап 5Б.4: массово обработать все и только aligned пары листов."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_pdf, right_pdf = (pair.get("left") or {}).get("pdf_path"), (pair.get("right") or {}).get("pdf_path")
+        left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
+        right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
+        if comparison != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        alignment_path = comparison / "diagnostics" / "sheet_alignment.json"
+        alignment = _read_json(alignment_path)
+        if not isinstance(alignment, dict) or alignment.get("kind") != "stage_comparison_sheet_alignment":
+            raise ValueError("sheet_alignment_result_missing_run_sheet_alignment_first")
+        report = change_detection_mod.run_change_detection(left_pdf, right_pdf, left, right, alignment)
+        destination = comparison / "change_detection"
+        change_detection_mod.write_diagnostics(destination / "diagnostics", report, left_pdf)
+        json_path, md_path = change_detection_mod.write_report(destination, report)
+        return {"ok": True, "change_detection": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_semantic_diff_pilot(session_id: str, pair_id: str) -> dict:
+    """Этап 6А: смысловой пилот поверх неизменяемого результата 5Б.4."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_pdf = (pair.get("left") or {}).get("pdf_path")
+        right_pdf = (pair.get("right") or {}).get("pdf_path")
+        left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
+        right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
+        if comparison != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        detection_path = comparison / "change_detection" / "change_detection.json"
+        detection = _read_json(detection_path)
+        if not isinstance(detection, dict) or detection.get("kind") != "stage_comparison_change_detection_v5b4":
+            raise ValueError("change_detection_result_missing_run_stage_5b4_first")
+        destination = comparison / "semantic_diff_v6a"
+        llm_runner, llm_provider = semantic_diff_mod.resolve_provider_runner(destination / "llm_work")
+        report = semantic_diff_mod.run_pilot(
+            left_pdf, right_pdf, left, right, detection, destination, llm_runner=llm_runner,
+        )
+        report["llm_provider"] = llm_provider
+        json_path, md_path = semantic_diff_mod.write_report(destination, report)
+        return {"ok": True, "semantic_diff": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_semantic_diff_v6a1_pilot(session_id: str, pair_id: str) -> dict:
+    """Этап 6А.1: только deterministic evidence-first поверх тех же 12 групп."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_pdf = (pair.get("left") or {}).get("pdf_path")
+        right_pdf = (pair.get("right") or {}).get("pdf_path")
+        left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
+        right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
+        if comparison != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        detection = _read_json(comparison / "change_detection" / "change_detection.json")
+        old_semantic = _read_json(comparison / "semantic_diff_v6a" / "semantic_diff.json")
+        if not isinstance(detection, dict) or detection.get("kind") != "stage_comparison_change_detection_v5b4":
+            raise ValueError("change_detection_result_missing_run_stage_5b4_first")
+        if not isinstance(old_semantic, dict) or old_semantic.get("kind") != "stage_comparison_semantic_diff_v6a_pilot":
+            raise ValueError("semantic_diff_v6a_missing_run_stage_6a_first")
+        destination = comparison / "semantic_diff_v6a1"
+        report = semantic_diff_v6a1_mod.run_pilot(
+            left_pdf, right_pdf, left, right, detection, old_semantic, destination,
+        )
+        json_path, md_path = semantic_diff_v6a1_mod.write_report(destination, report)
+        return {"ok": True, "semantic_diff": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+def run_semantic_diff_v6a2_mass(session_id: str, pair_id: str) -> dict:
+    """Этап 6А.2: все группы 5Б.4, строго неизменённой логикой 6А.1."""
+    with _lock:
+        pair = _find_pair_meta(session_id, pair_id)
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_pdf = (pair.get("left") or {}).get("pdf_path")
+        right_pdf = (pair.get("right") or {}).get("pdf_path")
+        left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
+        right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
+        if comparison != comparison_right:
+            raise ValueError("pair_documents_belong_to_different_comparison_objects")
+        detection = _read_json(comparison / "change_detection" / "change_detection.json")
+        pilot = _read_json(comparison / "semantic_diff_v6a1" / "semantic_diff.json")
+        if not isinstance(detection, dict) or detection.get("kind") != "stage_comparison_change_detection_v5b4":
+            raise ValueError("change_detection_result_missing_run_stage_5b4_first")
+        if not isinstance(pilot, dict) or pilot.get("kind") != "stage_comparison_semantic_diff_v6a1_pilot":
+            raise ValueError("semantic_diff_v6a1_missing_run_stage_6a1_first")
+        destination = comparison / "semantic_diff_v6a2"
+        report = semantic_diff_v6a2_mod.run_mass(
+            left_pdf, right_pdf, left, right, detection, destination, pilot_v6a1=pilot,
+        )
+        json_path, md_path = semantic_diff_v6a2_mod.write_report(destination, report)
+        return {"ok": True, "semantic_diff": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
 def _resync_links_after_alignment(
     session_id: str,
     pair_id: str,
@@ -931,38 +1135,6 @@ def _enrich_link_with_pages(link: dict, left_blocks: list[dict], right_blocks: l
     return out
 
 
-def add_manual_link(session_id: str, pair_id: str, left_block_id: str, right_block_id: str) -> dict:
-    with _lock:
-        pair = _find_pair_meta(session_id, pair_id)
-        if pair is None:
-            raise KeyError("pair_not_found")
-        left_blocks, right_blocks, _, _ = _load_pair_blocks(pair)
-        left_ids = {b["id"] for b in left_blocks}
-        right_ids = {b["id"] for b in right_blocks}
-        if left_block_id not in left_ids:
-            raise ValueError(f"left_block_id_not_found:{left_block_id}")
-        if right_block_id not in right_ids:
-            raise ValueError(f"right_block_id_not_found:{right_block_id}")
-        alignment = _ensure_alignment(session_id, pair_id)
-        items = alignment.get("items") or []
-        link = {
-            "left_block_id": left_block_id,
-            "right_block_id": right_block_id,
-            "method": "manual",
-            "score": 1.0,
-            "created_at": _utc_now(),
-        }
-        link = _enrich_link_with_pages(link, left_blocks, right_blocks, items)
-        links = _pair_links(session_id, pair_id)
-        # Удалить старую связь с этой парой id'шников
-        links = [l for l in links if not (
-            l.get("left_block_id") == left_block_id and l.get("right_block_id") == right_block_id
-        )]
-        links.append(link)
-        _save_links(session_id, pair_id, links)
-        return link
-
-
 def delete_link(session_id: str, pair_id: str, left_block_id: str, right_block_id: str) -> bool:
     with _lock:
         pair = _find_pair_meta(session_id, pair_id)
@@ -976,41 +1148,6 @@ def delete_link(session_id: str, pair_id: str, left_block_id: str, right_block_i
         if changed:
             _save_links(session_id, pair_id, new_links)
         return changed
-
-
-def run_auto_link(session_id: str, pair_id: str, *, iou_threshold: float = 0.5) -> dict:
-    """Прогнать IoU-сопоставление с учётом alignment, не перезаписывая manual."""
-    with _lock:
-        pair = _find_pair_meta(session_id, pair_id)
-        if pair is None:
-            raise KeyError("pair_not_found")
-        left_blocks, right_blocks, _, _ = _load_pair_blocks(pair)
-        alignment = _ensure_alignment(session_id, pair_id)
-        items = alignment.get("items") or []
-        existing = _pair_links(session_id, pair_id)
-        existing_pairs = {(l.get("left_block_id"), l.get("right_block_id")) for l in existing}
-        manual_left = {l.get("left_block_id") for l in existing if str(l.get("method", "")).startswith("manual")}
-        manual_right = {l.get("right_block_id") for l in existing if str(l.get("method", "")).startswith("manual")}
-        # Очистим старые auto-link'и — пересоберём с учётом alignment
-        kept = [l for l in existing if not str(l.get("method", "")).startswith("auto")]
-
-        new_auto = blocks_mod.auto_link_blocks(
-            left_blocks, right_blocks,
-            iou_threshold=iou_threshold,
-            alignment_items=items,
-        )
-        added = 0
-        for link in new_auto:
-            if (link["left_block_id"] in manual_left or
-                link["right_block_id"] in manual_right):
-                continue
-            if (link["left_block_id"], link["right_block_id"]) in existing_pairs:
-                continue
-            link["created_at"] = _utc_now()
-            kept.append(link)
-            added += 1
-        _save_links(session_id, pair_id, kept)
-        return {"added": added, "links_total": len(kept)}
 
 
 # ─── Graphic summary ─────────────────────────────────────────────────────
@@ -1590,14 +1727,34 @@ def _parse_allowlist() -> list[Path]:
 
 
 def assert_path_in_allowlist(path: str) -> None:
-    """Если AUDIT_STAGE_COMPARISON_ROOTS задан, путь должен быть внутри одного из root."""
+    """Разрешить новые object-local comparison-пути и legacy allowlist.
+
+    Основной layout ограничен только веткой
+    ``projects_v2/objects/<object>/comparison/**``. Настраиваемый legacy
+    allowlist остаётся читаемым для уже созданных исторических сессий.
+    """
     allow = _parse_allowlist()
-    if not allow:
-        return
     try:
         candidate = Path(path).expanduser().resolve()
     except Exception:
         raise PermissionError(f"path_resolution_failed:{path}")
+
+    try:
+        from backend.app.core.config import DATA_DIR
+        v2_root = Path(
+            os.environ.get("AUDIT_PROJECTS_V2_DIR") or (Path(DATA_DIR) / "projects_v2")
+        ).expanduser().resolve()
+        relative = candidate.relative_to((v2_root / "objects").resolve())
+        parts = relative.parts
+        if len(parts) >= 3 and parts[1] == "comparison" and parts[2] in {"stage_1", "stage_2"}:
+            return
+    except ValueError:
+        pass
+
+    # До введения object-local layout пустой allowlist означал unrestricted.
+    # Сохраняем этот контракт для внешних тестовых/операторских путей.
+    if not allow:
+        return
     for root in allow:
         try:
             candidate.relative_to(root)
@@ -1611,565 +1768,13 @@ def assert_path_in_allowlist(path: str) -> None:
 
 # ─── Alignment suggestion (Задача 6) ─────────────────────────────────────
 
-def _page_fingerprint(pdf_path: str, page_idx_zero_based: int, blocks_on_page: list[dict]) -> dict:
-    """Простой fingerprint страницы: размер, число блоков, объединённый bbox, текст-превью."""
-    try:
-        fitz = _import_fitz()
-        doc = fitz.open(str(pdf_path))
-        try:
-            page = doc[page_idx_zero_based]
-            width = float(page.rect.width)
-            height = float(page.rect.height)
-            text = page.get_text("text") or ""
-        finally:
-            doc.close()
-    except Exception:
-        width = 0.0; height = 0.0; text = ""
-
-    block_count = len(blocks_on_page or [])
-    union = None
-    types: dict[str, int] = {}
-    for b in blocks_on_page or []:
-        types[b.get("type", "unknown")] = types.get(b.get("type", "unknown"), 0) + 1
-        bn = b.get("bbox_norm")
-        if bn and len(bn) == 4:
-            if union is None:
-                union = [bn[0], bn[1], bn[2], bn[3]]
-            else:
-                union[0] = min(union[0], bn[0])
-                union[1] = min(union[1], bn[1])
-                union[2] = max(union[2], bn[2])
-                union[3] = max(union[3], bn[3])
-    # Текст: первые 300 символов, нормализовано
-    import re as _re
-    txt = _re.sub(r"\s+", " ", text)[:300].strip().lower()
-    return {
-        "width": round(width, 2),
-        "height": round(height, 2),
-        "aspect": round((width / height) if height else 0, 3),
-        "block_count": block_count,
-        "block_types": types,
-        "union_bbox_norm": union,
-        "text_preview": txt,
-    }
-
-
-def _fingerprint_similarity(a: dict, b: dict) -> float:
-    """Похожесть двух fingerprint'ов в [0, 1]."""
-    if not a or not b:
-        return 0.0
-    sims: list[float] = []
-    weights: list[float] = []
-
-    # Aspect ratio (PDF orientation/size)
-    if a.get("aspect") and b.get("aspect"):
-        diff = abs(a["aspect"] - b["aspect"]) / max(a["aspect"], b["aspect"])
-        sims.append(max(0.0, 1.0 - diff)); weights.append(1.0)
-
-    # Block count (нормализованная разница)
-    bc_a = a.get("block_count", 0); bc_b = b.get("block_count", 0)
-    if max(bc_a, bc_b) > 0:
-        sims.append(1.0 - abs(bc_a - bc_b) / max(bc_a, bc_b))
-    else:
-        sims.append(1.0)
-    weights.append(0.8)
-
-    # Block types
-    types_a = a.get("block_types", {}); types_b = b.get("block_types", {})
-    all_types = set(types_a) | set(types_b)
-    if all_types:
-        common = sum(min(types_a.get(t, 0), types_b.get(t, 0)) for t in all_types)
-        total = sum(max(types_a.get(t, 0), types_b.get(t, 0)) for t in all_types)
-        sims.append(common / total if total else 0.0); weights.append(0.6)
-
-    # Text similarity (быстро)
-    txt_a = a.get("text_preview") or ""
-    txt_b = b.get("text_preview") or ""
-    if txt_a and txt_b:
-        from difflib import SequenceMatcher
-        sims.append(SequenceMatcher(None, txt_a, txt_b).ratio()); weights.append(2.0)
-    elif not txt_a and not txt_b:
-        sims.append(0.5); weights.append(0.3)
-    else:
-        sims.append(0.0); weights.append(0.3)
-
-    # Union bbox area diff
-    ub_a = a.get("union_bbox_norm"); ub_b = b.get("union_bbox_norm")
-    if ub_a and ub_b:
-        area_a = max(0.0, (ub_a[2] - ub_a[0]) * (ub_a[3] - ub_a[1]))
-        area_b = max(0.0, (ub_b[2] - ub_b[0]) * (ub_b[3] - ub_b[1]))
-        if max(area_a, area_b) > 0:
-            sims.append(1.0 - abs(area_a - area_b) / max(area_a, area_b))
-            weights.append(0.4)
-
-    total_w = sum(weights) or 1.0
-    return sum(s * w for s, w in zip(sims, weights)) / total_w
-
-
-def suggest_alignment(session_id: str, pair_id: str) -> dict:
-    """Предложить новую карту страниц на основании fingerprint'ов."""
-    pair = _find_pair_meta(session_id, pair_id)
-    if pair is None:
-        raise KeyError("pair_not_found")
-    left_pdf = (pair.get("left") or {}).get("pdf_path")
-    right_pdf = (pair.get("right") or {}).get("pdf_path")
-    if not left_pdf or not right_pdf:
-        return {
-            "suggested_items": [],
-            "confidence": 0.0,
-            "warnings": ["one_side_has_no_pdf"],
-        }
-
-    left_blocks, right_blocks, _, _ = _load_pair_blocks(pair)
-    left_blocks_by_page: dict[int, list[dict]] = {}
-    for b in left_blocks:
-        left_blocks_by_page.setdefault(b.get("page") or 1, []).append(b)
-    right_blocks_by_page: dict[int, list[dict]] = {}
-    for b in right_blocks:
-        right_blocks_by_page.setdefault(b.get("page") or 1, []).append(b)
-
-    left_count = _pdf_page_count(left_pdf)
-    right_count = _pdf_page_count(right_pdf)
-
-    warnings: list[str] = []
-    if left_count == 0 or right_count == 0:
-        return {"suggested_items": [], "confidence": 0.0,
-                "warnings": ["empty_pdf"]}
-
-    # Fingerprint'ы (потенциально медленно — но это операция по требованию)
-    fp_left = [_page_fingerprint(left_pdf, i, left_blocks_by_page.get(i+1, []))
-               for i in range(left_count)]
-    fp_right = [_page_fingerprint(right_pdf, i, right_blocks_by_page.get(i+1, []))
-                for i in range(right_count)]
-
-    # Жадное сопоставление: для каждой левой страницы ищем лучшую правую,
-    # не нарушая порядок (двигаем «указатель» справа только вперёд).
-    suggested: list[dict] = []
-    r_cursor = 0
-    confidences: list[float] = []
-    slot = 0
-    while r_cursor < right_count:
-        # пока left ещё есть, ищем для текущей левой страницы (lp_index = len(suggested where left_page is set))
-        # Алгоритм проще: жадно итерируем по левым страницам, выбираем лучшую правую
-        # из окна [r_cursor .. r_cursor+lookahead]
-        break
-
-    # Дополнительный, более понятный проход:
-    suggested = []
-    slot = 0
-    r_pos = 0
-    lookahead = 4
-    for lp in range(1, left_count + 1):
-        # Кандидаты справа: r_pos..min(right_count, r_pos+lookahead)
-        best_rp = None; best_sc = -1.0
-        for rp in range(r_pos, min(right_count, r_pos + lookahead + 1)):
-            sc = _fingerprint_similarity(fp_left[lp - 1], fp_right[rp])
-            if sc > best_sc:
-                best_sc = sc; best_rp = rp + 1   # 1-based
-        # Решение: соединить или пропустить
-        if best_rp is None or best_sc < 0.45:
-            # Не нашли — оставляем left без пары
-            slot += 1
-            suggested.append({
-                "slot": slot, "left_page": lp, "right_page": None,
-                "mode": "manual", "note": "no_match_found",
-            })
-            confidences.append(0.0)
-            continue
-        # Сначала добавим правые страницы, которые мы «пропускаем», как новые right-only
-        for rp_skip in range(r_pos, best_rp - 1):
-            slot += 1
-            suggested.append({
-                "slot": slot, "left_page": None, "right_page": rp_skip + 1,
-                "mode": "manual", "note": "new_in_right",
-            })
-        slot += 1
-        suggested.append({
-            "slot": slot, "left_page": lp, "right_page": best_rp,
-            "mode": "manual", "note": f"fp_score={best_sc:.2f}",
-        })
-        confidences.append(best_sc)
-        r_pos = best_rp
-
-    # Хвост справа
-    for rp in range(r_pos, right_count):
-        slot += 1
-        suggested.append({
-            "slot": slot, "left_page": None, "right_page": rp + 1,
-            "mode": "manual", "note": "tail_right",
-        })
-
-    avg_conf = sum(confidences) / len(confidences) if confidences else 0.0
-    return {
-        "suggested_items": suggested,
-        "confidence": round(avg_conf, 3),
-        "warnings": warnings,
-    }
-
-
-def _read_text_file(path: str | None) -> str:
-    """Прочитать текстовый файл (MD) безопасно, errors='replace'."""
-    if not path:
-        return ""
-    try:
-        return Path(path).read_text(encoding="utf-8", errors="replace")
-    except (OSError, ValueError):
-        return ""
-
-
-def _page_text_index_from_result_json(path: str | None) -> dict[int, str]:
-    """page_number → объединённый текст-слой блоков (pdfplumber_text / ocr_text).
-
-    Офлайн-фолбэк для страниц без `**Наименование листа:**`: используем текст,
-    который уже извлёк OCR/текст-слой. Сети нет, result.json читается с диска.
-    Никогда не падает — на ошибке возвращает {}.
-    """
-    if not path:
-        return {}
-    try:
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
-    except (OSError, ValueError, json.JSONDecodeError):
-        return {}
-    pages = data.get("pages") if isinstance(data, dict) else data
-    if not isinstance(pages, list):
-        return {}
-    out: dict[int, str] = {}
-    for p in pages:
-        if not isinstance(p, dict):
-            continue
-        page_no = p.get("page_number") or p.get("page") or p.get("page_index")
-        try:
-            page_no = int(page_no)
-        except (TypeError, ValueError):
-            continue
-        parts: list[str] = []
-        for b in (p.get("blocks") or []):
-            if not isinstance(b, dict):
-                continue
-            for key in ("pdfplumber_text", "ocr_text", "text"):
-                val = b.get(key)
-                if isinstance(val, str) and val.strip():
-                    parts.append(val.strip())
-                    break
-        if parts:
-            out[page_no] = "\n".join(parts)[:2000]
-    return out
-
-
-def suggest_alignment_by_stamp(session_id: str, pair_id: str,
-                               *, use_llm: bool = False) -> dict:
-    """Предложить карту страниц по ИМЕНИ листа из штампа (MD), с офлайн-фолбэком
-    на текст-слой блоков (result.json) для безымянных страниц.
-
-    В отличие от `suggest_alignment` (fingerprint, локальное окно) — матч
-    глобальный по имени, поэтому находит листы, уехавшие далеко между стадиями
-    (схема ГРЩ стр.21 ↔ стр.56).
-
-    use_llm: если True И включён kill-switch STAGE_COMPARISON_STAMP_LLM_ENABLED
-    И доступен Claude Code CLI — после детерминированного матчинга остаток
-    НЕсматченных листов отдаётся Haiku, который доматчивает семантически
-    эквивалентные имена («Однолинейная расчетная схема ГРЩ» == «Однолинейная
-    схема ГРЩ»). Fail-soft: любая проблема → обычный детерминированный результат.
-    """
-    from . import stamp_matching as sm  # lazy import (избегаем циклов)
-
-    pair = _find_pair_meta(session_id, pair_id)
-    if pair is None:
-        raise KeyError("pair_not_found")
-
-    left = pair.get("left") or {}
-    right = pair.get("right") or {}
-    md_left = _read_text_file(left.get("md_path"))
-    md_right = _read_text_file(right.get("md_path"))
-
-    warnings: list[str] = []
-    if not md_left:
-        warnings.append("left_md_missing")
-    if not md_right:
-        warnings.append("right_md_missing")
-    if not md_left or not md_right:
-        return {
-            "method": "stamp",
-            "suggested_items": [],
-            "confidence": 0.0,
-            "warnings": warnings or ["md_missing"],
-            "matched_count": 0,
-            "left_only_count": 0,
-            "right_only_count": 0,
-        }
-
-    extra_left = _page_text_index_from_result_json(left.get("result_json_path"))
-    extra_right = _page_text_index_from_result_json(right.get("result_json_path"))
-
-    left_idx = sm.build_sheet_index(md_left, extra_text_by_page=extra_left or None)
-    right_idx = sm.build_sheet_index(md_right, extra_text_by_page=extra_right or None)
-
-    # Опциональный LLM-слой доматчинга остатка (Haiku через Claude Code).
-    llm_match_fn = None
-    llm_diag: dict = {}
-    if use_llm:
-        try:
-            from . import stamp_llm_match as slm
-            from .text_llm_provider import ClaudeCodeProvider
-            if slm.stamp_llm_enabled():
-                provider = ClaudeCodeProvider()
-                ok, reason = provider.check_availability()
-                if ok:
-                    llm_match_fn = slm.make_llm_match_fn(provider, diagnostics=llm_diag)
-                else:
-                    llm_diag = {"status": "provider_not_available", "error": reason,
-                                "pairs_added": 0}
-            else:
-                llm_diag = {"status": "disabled_by_flag", "pairs_added": 0}
-        except Exception as exc:  # fail-soft — LLM-слой не должен валить эндпоинт
-            llm_diag = {"status": "setup_exception", "error": str(exc),
-                        "pairs_added": 0}
-
-    result = sm.match_sheet_indexes(left_idx, right_idx, llm_match_fn=llm_match_fn)
-    result["warnings"] = list(dict.fromkeys([*warnings, *result.get("warnings", [])]))
-    result["llm_requested"] = bool(use_llm)
-    if use_llm:
-        result["llm"] = llm_diag or {"status": "no_unmatched", "pairs_added": 0}
-
-    # Сверка с реальным числом страниц PDF (MD-разметка может быть неполной).
-    left_pdf_pages = _pdf_page_count(left.get("pdf_path"))
-    right_pdf_pages = _pdf_page_count(right.get("pdf_path"))
-    if left_pdf_pages and result.get("left_page_count") != left_pdf_pages:
-        result["warnings"].append("left_md_page_count_mismatch")
-    if right_pdf_pages and result.get("right_page_count") != right_pdf_pages:
-        result["warnings"].append("right_md_page_count_mismatch")
-    result["left_pdf_page_count"] = left_pdf_pages
-    result["right_pdf_page_count"] = right_pdf_pages
-    return result
-
-
-def has_manual_alignment(session_id: str, pair_id: str) -> bool:
-    """Есть ли у пары РУЧНОЕ/применённое выравнивание (не авто-дефолт).
-
-    `get_alignment`/`_ensure_alignment` авто-создаёт дефолт со `mode='auto'`
-    при первом открытии пары — это НЕ ручная работа. Ручным/применённым
-    считаем alignment, где хоть один item `mode` ∈ {manual, blank}.
-    """
-    raw = _load_alignment_raw(session_id, pair_id)
-    if not raw:
-        return False
-    for it in (raw.get("items") or []):
-        if str(it.get("mode") or "") in ("manual", "blank"):
-            return True
-    return False
-
-
-def apply_safe_stamp_alignment_for_pair(
-    session_id: str, pair_id: str, *,
-    use_llm: bool = False,
-    overwrite_existing: bool = False,
-) -> dict:
-    """Пакетное безопасное авто-применение штамп-сопоставления для ОДНОЙ пары.
-
-    Переиспользует `suggest_alignment_by_stamp` (тот же алгоритм, что и ручной
-    `suggest-by-stamp`), фильтрует безопасные пары через
-    `stamp_auto_apply.should_auto_apply_stamp_match` и сохраняет через тот же
-    `save_alignment`, что и ручной `PUT page-alignment`. Display-поля в
-    сохранённый alignment НЕ копируются.
-
-    Не перезаписывает ручное выравнивание, если overwrite_existing=False.
-    Fail-soft на уровне вызывающего (job); здесь бросаем только KeyError для
-    отсутствующей пары.
-    """
-    from . import stamp_auto_apply as auto_mod  # lazy import (избегаем циклов)
-
-    pair = _find_pair_meta(session_id, pair_id)
-    if pair is None:
-        raise KeyError("pair_not_found")
-
-    summary = {
-        "pair_id": pair_id, "status": "done", "applied": 0, "review": 0,
-        "skipped_reason": None, "confidence": 0.0, "matched_count": 0,
-        "multipart_match_count": 0,
-        "split_prevented": 0, "true_left_only": 0, "true_right_only": 0,
-        "positional_alignment": 0,
-        "review_items": [], "errors": [],
-    }
-
-    if not overwrite_existing and has_manual_alignment(session_id, pair_id):
-        summary["status"] = "skipped_existing_alignment"
-        summary["skipped_reason"] = "existing_alignment"
-        return summary
-
-    sugg = suggest_alignment_by_stamp(session_id, pair_id, use_llm=use_llm)
-    summary["confidence"] = sugg.get("confidence", 0.0)
-    summary["matched_count"] = sugg.get("matched_count", 0)
-    summary["multipart_match_count"] = sugg.get("multipart_match_count", 0)
-    # #65: прокинуть LLM-диагностику доматчинга для агрегации в job summary.
-    summary["llm"] = sugg.get("llm") or {}
-    summary["warnings"] = list(sugg.get("warnings") or [])
-    # #64: surface MD/PDF page-count mismatch (раньше молча игнорировался). Это
-    # наблюдаемость, не блокировка: расхождение MD/PDF встречается штатно
-    # (MD-разметка бывает неполной), поэтому статус НЕ меняем — оператор видит флаг.
-    summary["md_page_count_mismatch"] = any(
-        "md_page_count_mismatch" in str(w) for w in summary["warnings"]
-    )
-
-    built = auto_mod.build_auto_apply_items(sugg.get("suggested_items") or [])
-    summary["applied"] = built["applied"]
-    summary["review"] = built["review"]
-    summary["split_prevented"] = built.get("split_prevented", 0)
-    summary["true_left_only"] = built.get("true_left_only", 0)
-    summary["true_right_only"] = built.get("true_right_only", 0)
-    summary["positional_alignment"] = built.get("positional_alignment", 0)
-    summary["review_items"] = built.get("review_items", [])
-    summary["reasons"] = built.get("reasons", {})
-
-    if built["applied"] == 0 and built.get("positional_alignment", 0) == 0:
-        # Нечего безопасно применить и нет позиционного выравнивания — НЕ трогаем
-        # alignment (Вариант Б: лучше ничего, чем испортить карту). Если matcher
-        # что-то нашёл, но оно ушло в review — помечаем пару needs_review.
-        summary["status"] = "needs_review" if built["review"] > 0 else "no_safe_matches"
-        summary["skipped_reason"] = (
-            "unsafe_matches_not_applied" if built["review"] > 0 else "no_safe_matches")
-        return summary
-
-    save_res = save_alignment(session_id, pair_id, built["items"], force=True)
-    if not save_res.get("ok"):
-        summary["status"] = "error"
-        summary["errors"].append("save_failed")
-        return summary
-    # #64: не обнулять пары молча — surface validation_errors/saved_with_warnings
-    # в summary (наблюдаемость). Статус НЕ меняем: saved_with_warnings — частое
-    # штатное состояние (blank-строки multipart/односторонних), и принятый
-    # контракт считает такой apply успешным.
-    val_errors = save_res.get("validation_errors") or []
-    if val_errors:
-        summary["warnings"].extend(str(e) for e in val_errors)
-    summary["saved_with_warnings"] = bool(save_res.get("saved_with_warnings"))
-    return summary
-
-
-def _backup_page_alignment(session_id: str, pair_id: str) -> Optional[str]:
-    """Бэкап существующего page_alignment.json перед перезаписью (one-click).
-
-    Возвращает путь бэкапа или None (файла ещё нет). Не бросает наружу."""
-    try:
-        import shutil
-        src = paths_mod.page_alignment_path(session_id, pair_id)
-        if not src.exists():
-            return None
-        ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-        dst = src.with_name(f"{src.name}.bak_onclick_{ts}")
-        shutil.copy2(src, dst)
-        return str(dst)
-    except Exception as exc:  # noqa: BLE001 — бэкап best-effort
-        logger.warning("page_alignment backup failed %s/%s: %s", session_id, pair_id, exc)
-        return None
-
-
-def auto_match_apply_pair(
-    session_id: str, pair_id: str, *,
-    use_llm: bool = False,
-    overwrite_existing: bool = False,
-    dry_run: bool = False,
-) -> dict:
-    """One-click авто-сопоставление листов ОДНОЙ пары: suggest → классификация →
-    (опц.) безопасное применение → подробный отчёт.
-
-    Детерминированно и быстро (без Qwen/Opus/pipeline). ``use_llm`` по умолчанию
-    False — тяжёлый LLM-доматчинг не запускается без явного флага. ``dry_run``
-    True → ничего не сохраняет (preview). Перед реальной перезаписью делает
-    бэкап ``page_alignment.json``. Связи блоков НЕ удаляются — ``save_alignment``
-    лишь помечает их stale/cross-page через ``_resync_links_after_alignment``.
-
-    Fail-soft: бросает только KeyError при отсутствии пары; прочее ловит
-    вызывающий (endpoint).
-    """
-    from . import stamp_auto_apply as auto_mod  # lazy import (избегаем циклов)
-
-    pair = _find_pair_meta(session_id, pair_id)
-    if pair is None:
-        raise KeyError("pair_not_found")
-
-    report = {
-        "session_id": session_id, "pair_id": pair_id,
-        "status": "completed", "dry_run": bool(dry_run), "applied_to_disk": False,
-        "use_llm": bool(use_llm),
-        "summary": {
-            "old_pages_total": 0, "new_pages_total": 0,
-            "auto_applied": 0, "needs_review": 0,
-            "unmatched_old": 0, "unmatched_new": 0,
-            "replaced_existing": 0, "stale_block_links_marked": 0,
-            "positional_alignment": 0,
-        },
-        "applied": [], "needs_review": [], "unmatched_old": [], "unmatched_new": [],
-        "warnings": [], "backup_path": None,
-    }
-
-    # Сколько существующих ручных/применённых пар (с обеими страницами) будет
-    # перезаписано — для отчёта (replaced_existing).
-    existing = _load_alignment_raw(session_id, pair_id) or {}
-    replaced = sum(
-        1 for it in (existing.get("items") or [])
-        if it.get("left_page") is not None and it.get("right_page") is not None
-        and str(it.get("mode") or "") in ("manual", "blank")
-    )
-    report["summary"]["replaced_existing"] = replaced
-
-    skip = (not overwrite_existing) and has_manual_alignment(session_id, pair_id)
-
-    sugg = suggest_alignment_by_stamp(session_id, pair_id, use_llm=use_llm)
-    report["warnings"] = list(sugg.get("warnings") or [])
-    s = report["summary"]
-    s["old_pages_total"] = sugg.get("left_page_count") or sugg.get("left_pdf_page_count") or 0
-    s["new_pages_total"] = sugg.get("right_page_count") or sugg.get("right_pdf_page_count") or 0
-
-    suggested_items = sugg.get("suggested_items") or []
-    cls = auto_mod.classify_for_one_click(suggested_items)
-    report["applied"] = cls["applied"]
-    report["needs_review"] = cls["needs_review"]
-    report["unmatched_old"] = cls["unmatched_old"]
-    report["unmatched_new"] = cls["unmatched_new"]
-    s["auto_applied"] = len(cls["applied"])
-    s["needs_review"] = len(cls["needs_review"])
-    s["unmatched_old"] = len(cls["unmatched_old"])
-    s["unmatched_new"] = len(cls["unmatched_new"])
-    s["positional_alignment"] = cls["positional_alignment"]
-
-    if skip:
-        report["status"] = "skipped_existing_alignment"
-        report["warnings"].append("manual_alignment_exists_not_overwritten")
-        return report
-
-    built = auto_mod.build_auto_apply_items(suggested_items)
-
-    if dry_run:
-        report["status"] = "dry_run"
-        return report
-
-    if built["applied"] == 0 and built.get("positional_alignment", 0) == 0:
-        # Нечего безопасно применить — НЕ трогаем карту (лучше ничего).
-        report["status"] = "needs_review" if built["review"] > 0 else "no_safe_matches"
-        return report
-
-    report["backup_path"] = _backup_page_alignment(session_id, pair_id)
-    save_res = save_alignment(session_id, pair_id, built["items"], force=True)
-    if not save_res.get("ok"):
-        report["status"] = "error"
-        report["warnings"].append("save_failed")
-        return report
-
-    report["applied_to_disk"] = True
-    rs = save_res.get("links_resync") or {}
-    s["stale_block_links_marked"] = int(rs.get("stale_auto", 0)) + int(rs.get("cross_page_manual", 0))
-    return report
-
-
 __all__ = [
     "SESSIONS_DIR",
     "create_session",
     "get_session",
     "list_sessions",
     "get_pair_view",
-    "add_manual_link",
     "delete_link",
-    "run_auto_link",
     "compute_graphic_summary",
     "render_pdf_page",
     "render_block_crop",
@@ -2180,11 +1785,6 @@ __all__ = [
     "alignment_insert_blank",
     "alignment_move",
     "alignment_reset",
-    "suggest_alignment",
-    "suggest_alignment_by_stamp",
-    "has_manual_alignment",
-    "apply_safe_stamp_alignment_for_pair",
-    "auto_match_apply_pair",
     # Manual PDF pair management
     "list_unmatched",
     "update_pair_match",

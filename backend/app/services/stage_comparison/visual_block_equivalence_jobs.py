@@ -12,7 +12,7 @@
     in-memory; персист в ``comparison/sessions/<sid>/jobs/`` опционален и
     включается явным флагом (для будущих endpoint'ов).
 
-Конвенции зеркалят :mod:`auto_match_jobs` (job-модель, fail-soft per-pair,
+Конвенции используют общую job-модель (fail-soft per-pair,
 async-обёртка + background scheduler), но registry здесь **in-memory**
 (``_JOBS``), а тяжёлый per-pair runner **инъектируется** (``runner_fn``) —
 тесты прогоняют job без store/PDF/cv2/Qwen/Opus.

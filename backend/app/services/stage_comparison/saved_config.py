@@ -24,7 +24,6 @@
           "left_filename": "...",
           "right_filename": "...",
           "disabled": false,
-          "analysis_mode": "block_links" | "concept_no_block_links",
           "manual_links_count": 3,
           "order": 1
         },
@@ -89,7 +88,6 @@ def _normalize_pair_summary(pair: dict, *, order: int) -> dict:
         "right_pdf_path": (right.get("pdf_path") or "").strip() or None,
         "disabled": str(pair.get("status") or "").strip() == "disabled",
         "status": (pair.get("status") or "").strip() or None,
-        "analysis_mode": (pair.get("analysis_mode") or "").strip() or None,
         "manual_links_count": len([l for l in links if isinstance(l, dict)]),
         "order": int(order),
     }

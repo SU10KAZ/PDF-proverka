@@ -188,28 +188,13 @@ def test_build_user_prompt_includes_block_links_when_provided():
     ]
     user_prompt = ec.build_user_prompt(
         "LEFT-MD-BODY", "RIGHT-MD-BODY",
-        block_links=links, analysis_mode="block_links",
+        block_links=links,
     )
     assert "<BLOCK_LINKS>" in user_prompt
     assert "</BLOCK_LINKS>" in user_prompt
     assert "L1" in user_prompt and "R1" in user_prompt
     # Heavy fields не передаются (нет таких ключей):
     assert "base64" not in user_prompt.lower()
-    # Режим явно указан
-    assert "block_links" in user_prompt
-    # Тэг режима concept_no_block_links не должен попасть.
-    assert "concept_no_block_links" not in user_prompt
-
-
-# 1e. concept_no_block_links → BLOCK_LINKS не передаются даже если есть.
-def test_build_user_prompt_concept_no_block_links_omits_block_links_section():
-    from backend.app.services.stage_comparison import enriched_comparison as ec
-    links = [{"left_block_id": "L1", "right_block_id": "R1", "score": 1.0}]
-    user_prompt = ec.build_user_prompt(
-        "L", "R", block_links=links, analysis_mode="concept_no_block_links",
-    )
-    assert "<BLOCK_LINKS>" not in user_prompt
-    assert "Связи блоков не используются" in user_prompt
 
 
 # 1f. build_block_links_context strips heavy raw fields.
@@ -866,8 +851,6 @@ def test_unified_diff_flat_aggregates_changes(tmp_path, monkeypatch):
     assert flat_p1["summary"]["total_changes"] == 2
     assert len(flat_p1["items"]) == 2
     assert all(it["pair_id"] == "p1" for it in flat_p1["items"])
-    # pair_modes тоже отфильтрован
-    assert [pm["pair_id"] for pm in flat_p1["pair_modes"]] == ["p1"]
 
     flat_p2 = uf.build_unified_flat(session_id, pair_id="p2")
     assert len(flat_p2["items"]) == 2
@@ -878,7 +861,6 @@ def test_unified_diff_flat_aggregates_changes(tmp_path, monkeypatch):
     assert flat_unknown["summary"]["total_pairs"] == 0
     assert flat_unknown["summary"]["total_changes"] == 0
     assert flat_unknown["items"] == []
-    assert flat_unknown["pair_modes"] == []
 
 
 def test_unified_diff_flat_exposes_cost_direction_and_merge_tags(tmp_path, monkeypatch):
@@ -1163,281 +1145,6 @@ def test_enriched_comparison_timeout_status(tmp_path, monkeypatch):
     res = ec.run_enriched_comparison("sess_to", "p1", provider=_TimeoutProvider())
     assert res["status"] == "timeout"
     assert "timed_out" in str(res.get("error") or "")
-
-
-# ════════════════════════════════════════════════════════════════════════
-# «Блоки без связей» — analysis_mode (Tasks 1–11 из ТЗ)
-# ════════════════════════════════════════════════════════════════════════
-
-
-# 1. Default analysis_mode = block_links.
-def test_default_analysis_mode_is_block_links(tmp_path):
-    from backend.app.services.stage_comparison import store
-    _make_pair("sess_am_def", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    mode = store.get_pair_analysis_mode("sess_am_def", "p1")
-    assert mode == "block_links"
-
-
-# 2. POST /analysis-mode меняет mode на concept_no_block_links.
-def test_set_analysis_mode_to_concept_via_helper(tmp_path):
-    from backend.app.services.stage_comparison import store
-    _make_pair("sess_am_concept", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    meta = store.set_pair_analysis_mode("sess_am_concept", "p1", "concept_no_block_links")
-    assert meta["analysis_mode"] == "concept_no_block_links"
-    assert store.get_pair_analysis_mode("sess_am_concept", "p1") == "concept_no_block_links"
-
-
-# 3. POST /analysis-mode умеет вернуть block_links.
-def test_set_analysis_mode_back_to_block_links(tmp_path):
-    from backend.app.services.stage_comparison import store
-    _make_pair("sess_am_back", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    store.set_pair_analysis_mode("sess_am_back", "p1", "concept_no_block_links")
-    assert store.get_pair_analysis_mode("sess_am_back", "p1") == "concept_no_block_links"
-    store.set_pair_analysis_mode("sess_am_back", "p1", "block_links")
-    assert store.get_pair_analysis_mode("sess_am_back", "p1") == "block_links"
-
-
-# 4. Invalid mode → ValueError из helper / HTTP 422 из endpoint.
-def test_set_analysis_mode_invalid_raises(tmp_path):
-    from backend.app.services.stage_comparison import store
-    _make_pair("sess_am_inv", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    import pytest as _pytest
-    with _pytest.raises(ValueError):
-        store.set_pair_analysis_mode("sess_am_inv", "p1", "some_bogus_mode")
-    # Mode не должен измениться
-    assert store.get_pair_analysis_mode("sess_am_inv", "p1") == "block_links"
-
-
-def test_set_analysis_mode_http_422_on_invalid(tmp_path):
-    from fastapi.testclient import TestClient
-    from backend.app.main import app
-    _make_pair("sess_am_http_inv", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    client = TestClient(app)
-    r = client.post(
-        "/api/stage-comparison/sessions/sess_am_http_inv/pairs/p1/analysis-mode",
-        json={"mode": "totally_invalid"},
-    )
-    assert r.status_code == 422
-
-
-def test_set_analysis_mode_http_ok_for_concept(tmp_path):
-    from fastapi.testclient import TestClient
-    from backend.app.main import app
-    _make_pair("sess_am_http_ok", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    client = TestClient(app)
-    r = client.post(
-        "/api/stage-comparison/sessions/sess_am_http_ok/pairs/p1/analysis-mode",
-        json={"mode": "concept_no_block_links"},
-    )
-    assert r.status_code == 200
-    data = r.json()
-    assert data["ok"] is True
-    assert data["analysis_mode"] == "concept_no_block_links"
-    # GET тоже должен возвращать новое значение
-    r = client.get("/api/stage-comparison/sessions/sess_am_http_ok/pairs/p1/analysis-mode")
-    assert r.json()["analysis_mode"] == "concept_no_block_links"
-
-
-# 5. Pair.json сохраняет mode (passthrough survives re-save).
-def test_analysis_mode_survives_pair_resave(tmp_path):
-    from backend.app.services.stage_comparison import store
-    from backend.app.services.stage_comparison import paths as paths_mod
-    import json as _json
-    _make_pair("sess_persist", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    store.set_pair_analysis_mode("sess_persist", "p1", "concept_no_block_links")
-    raw = _json.loads(paths_mod.pair_json_path("sess_persist", "p1").read_text(encoding="utf-8"))
-    assert raw["analysis_mode"] == "concept_no_block_links"
-    assert raw.get("analysis_mode_updated_at")
-
-
-# 6. Unified preflight для concept_no_block_links не требует linked blocks.
-def test_unified_preflight_concept_mode_does_not_require_links(tmp_path):
-    from backend.app.services.stage_comparison import store
-    from backend.app.services.stage_comparison import unified_analysis as ua
-    _make_pair("sess_pf_concept", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    store.set_pair_analysis_mode("sess_pf_concept", "p1", "concept_no_block_links")
-    pre = ua.preflight_pair("sess_pf_concept", "p1")
-    d = pre.as_dict()
-    assert d["analysis_mode"] == "concept_no_block_links"
-    # Не должен ставить errors про отсутствие linked blocks
-    assert not d["errors"]
-    # В warnings должна быть подсказка про режим
-    assert any("Блоки без связей" in w for w in d["warnings"])
-    # can_run должен быть True (есть MD)
-    assert d["can_run"] is True
-
-
-# 7. Unified-diff-flat возвращает analysis_mode.
-def test_unified_diff_flat_includes_analysis_mode(tmp_path):
-    from backend.app.services.stage_comparison import store, unified_findings as uf
-    from backend.app.services.stage_comparison import paths as paths_mod
-    session_id = "sess_flat_am"
-    paths_mod.session_json_path(session_id).write_text(
-        json.dumps({"id": session_id, "pair_order": ["p_concept", "p_blocks"]}),
-        encoding="utf-8",
-    )
-    for pid, mode in (("p_concept", "concept_no_block_links"), ("p_blocks", "block_links")):
-        pair = {
-            "id": pid, "status": "matched",
-            "left":  {"filename": f"{pid}-l.pdf", "md_path": "/x.md"},
-            "right": {"filename": f"{pid}-r.pdf", "md_path": "/y.md"},
-        }
-        paths_mod.pair_json_path(session_id, pid).write_text(
-            json.dumps(pair), encoding="utf-8",
-        )
-        # Через helper, чтобы заодно проверить сохранение
-        store.set_pair_analysis_mode(session_id, pid, mode)
-        comp = {
-            "status": "done", "summary": "", "changes": [{
-                "id": f"{pid}_c", "source": "text", "type": "changed",
-                "category": "general", "severity": "low",
-                "title": "demo", "summary": "demo",
-                "old_value": "", "new_value": "",
-                "construction_impact": "", "cost_impact": "none",
-                "requires_human_review": False, "confidence": 0.5,
-                "evidence_left": {}, "evidence_right": {},
-            }],
-            "warnings": [], "input_stats": {},
-        }
-        f = paths_mod.enriched_comparison_result_path(session_id, pid)
-        f.parent.mkdir(parents=True, exist_ok=True)
-        f.write_text(json.dumps(comp), encoding="utf-8")
-
-    flat = uf.build_unified_flat(session_id)
-    # Каждый item имеет analysis_mode
-    assert all("analysis_mode" in it for it in flat["items"])
-    by_pair = {it["pair_id"]: it["analysis_mode"] for it in flat["items"]}
-    assert by_pair["p_concept"] == "concept_no_block_links"
-    assert by_pair["p_blocks"] == "block_links"
-    # pair_modes mapping тоже есть
-    assert "pair_modes" in flat
-    modes_by_pair = {pm["pair_id"]: pm["analysis_mode"] for pm in flat["pair_modes"]}
-    assert modes_by_pair["p_concept"] == "concept_no_block_links"
-    assert modes_by_pair["p_blocks"] == "block_links"
-
-
-# 8. UI содержит кнопку «Блоки без связей» перед «Авто-связь по IoU».
-def test_ui_has_no_block_links_button_before_auto_link():
-    from pathlib import Path
-    html = Path(__file__).resolve().parent.parent / "frontend" / "index.html"
-    text = html.read_text(encoding="utf-8")
-    # Ищем взаимное расположение
-    idx_no_links = text.find("Блоки без связей")
-    idx_auto_link = text.find("Авто-связь по IoU")
-    assert idx_no_links > -1, "Кнопка «Блоки без связей» должна быть в HTML"
-    assert idx_auto_link > -1, "Кнопка «Авто-связь по IoU» должна быть в HTML"
-    assert idx_no_links < idx_auto_link, (
-        "Кнопка «Блоки без связей» должна быть ПЕРЕД «Авто-связь по IoU»"
-    )
-    # И она вызывает scToggleAnalysisMode
-    assert "scToggleAnalysisMode" in text
-
-
-# 9. UI показывает активный режим concept_no_block_links.
-def test_ui_shows_active_concept_mode_banner():
-    from pathlib import Path
-    html = Path(__file__).resolve().parent.parent / "frontend" / "index.html"
-    text = html.read_text(encoding="utf-8")
-    # Активное состояние через scAnalysisMode==='concept_no_block_links'
-    assert "scAnalysisMode==='concept_no_block_links'" in text
-    # Баннер режима
-    assert "концептуальное сравнение без связей блоков" in text
-    # Badge в unified-таблице (lowercase post-redesign 2026-05-27)
-    assert "без связей</span>" in text
-    # JS ref зарегистрирован
-    js = Path(__file__).resolve().parent.parent / "frontend" / "static" / "js" / "app.js"
-    js_text = js.read_text(encoding="utf-8")
-    assert "scAnalysisMode" in js_text
-    assert "scToggleAnalysisMode" in js_text
-
-
-# 10. Preflight свежей пары считает image blocks из MD без image_descriptions.json.
-def test_preflight_counts_image_blocks_via_md_when_no_cache(tmp_path):
-    from backend.app.services.stage_comparison import unified_analysis as ua
-
-    md_with_image = """### СТРАНИЦА 1
-
-### BLOCK [TEXT]: T-1
-some text here
-
-### BLOCK [IMAGE]: img-1
-[IMAGE]: img-1
-description of image
-
-### BLOCK [IMAGE]: img-2
-[IMAGE]: img-2
-another image
-"""
-    _make_pair("sess_pf_md", "p1",
-               left_md=_write_md(tmp_path / "L.md", md_with_image),
-               right_md=_write_md(tmp_path / "R.md", md_with_image))
-    pre = ua.preflight_pair("sess_pf_md", "p1")
-    d = pre.as_dict()
-    # image_descriptions.json не существует → fallback на parse_md_blocks
-    assert d["enrichment"]["image_blocks_left"] == 2
-    assert d["enrichment"]["image_blocks_right"] == 2
-    # image_blocks_source = parsed_md (а не cache)
-    assert d["image_blocks_source"] == "parsed_md"
-
-
-# 12. Никаких live model calls (защита: дефолтное состояние pipeline disabled).
-def test_no_live_model_calls_in_concept_mode(tmp_path, monkeypatch):
-    """Concept mode preflight НЕ должен ходить ни в LM Studio, ни в Claude.
-
-    Защита: monkeypatch httpx/asyncio.subprocess чтобы любой случайный live-call
-    падал с явной ошибкой.
-    """
-    import httpx
-
-    def _block_httpx(*a, **kw):
-        raise RuntimeError("LIVE httpx call detected — test must not network!")
-
-    monkeypatch.setattr(httpx, "post", _block_httpx, raising=False)
-    monkeypatch.setattr(httpx, "get", _block_httpx, raising=False)
-
-    from backend.app.services.stage_comparison import store, unified_analysis as ua
-    _make_pair("sess_no_live", "p1",
-               left_md=_write_md(tmp_path / "L.md", "left"),
-               right_md=_write_md(tmp_path / "R.md", "right"))
-    store.set_pair_analysis_mode("sess_no_live", "p1", "concept_no_block_links")
-    # Preflight НЕ должен делать live calls
-    pre = ua.preflight_pair("sess_no_live", "p1")
-    assert pre.analysis_mode == "concept_no_block_links"
-    # Live model calls в этой задаче не запускались — set/get analysis_mode и
-    # preflight read-only по дизайну.
-
-
-# Бонус: invalid analysis_mode в store passthrough → graceful fallback на block_links.
-def test_get_analysis_mode_fallback_when_pair_json_has_bogus_mode(tmp_path):
-    from backend.app.services.stage_comparison import store
-    from backend.app.services.stage_comparison import paths as paths_mod
-    import json as _json
-    _make_pair("sess_bogus", "p1",
-               left_md=_write_md(tmp_path / "L.md", "L"),
-               right_md=_write_md(tmp_path / "R.md", "R"))
-    # Подменяем mode на мусор, минуя helper
-    pp = paths_mod.pair_json_path("sess_bogus", "p1")
-    data = _json.loads(pp.read_text(encoding="utf-8"))
-    data["analysis_mode"] = "garbage"
-    pp.write_text(_json.dumps(data), encoding="utf-8")
-    # Helper должен вернуть default
-    assert store.get_pair_analysis_mode("sess_bogus", "p1") == "block_links"
 
 
 # ─── Replacement-format preflight ────────────────────────────────────────

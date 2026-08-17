@@ -792,7 +792,7 @@ def test_v2_entity_extraction_hardening():
     # feeder leak: назначение не попадает в идентичность листа
     assert gv.extract_entity_ids("ВРУ2-РП1") == {"ВРУ-2"}
     # суффикс нормализуется по регистру; запятая-вольтаж намеренно
-    # отсекается (consistent со stamp_matching: «0,4кВ» — не номер)
+    # отсекается: «0,4кВ» — значение напряжения, а не номер
     assert gv.extract_entity_ids("ЩР-1А") == {"ЩР-1а"}
     assert gv.extract_entity_ids("РУСН-0,4") == {"РУСН-0"}
     # все объявленные families извлекаются

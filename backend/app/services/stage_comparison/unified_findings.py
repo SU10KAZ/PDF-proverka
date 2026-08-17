@@ -190,7 +190,6 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
     `pair_id`: если задан, summary и items считаются только по этой паре.
     Это нужно UI, чтобы вкладка «Расхождения» по умолчанию была привязана
     к активной PDF-паре и не подмешивала stale findings других пар.
-    `pair_modes` тоже фильтруется до одной пары (если найдена).
     """
     session = store_mod.get_session(session_id)
     if session is None:
@@ -204,8 +203,6 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
     pairs = session.get("pairs") or []
     summary = _empty_summary()
     items: list[dict] = []
-    # Per-pair analysis_mode map (UI рисует badge даже если у пары 0 changes).
-    pair_modes: list[dict] = []
     filter_pair_id = (pair_id or "").strip() or None
 
     for pair in pairs:
@@ -216,18 +213,12 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
         pid = str(pair.get("id") or "")
         if not pid:
             continue
-        # Фильтр по pair_id применяется до summary/items/pair_modes, иначе
+        # Фильтр по pair_id применяется до summary/items, иначе
         # счётчики total_pairs/not_run/done пересчитаются по всей сессии и
         # UI получит summary, не соответствующий items.
         if filter_pair_id is not None and pid != filter_pair_id:
             continue
         summary["total_pairs"] += 1
-
-        _pm = str(pair.get("analysis_mode") or "block_links")
-        if _pm not in ("block_links", "concept_no_block_links"):
-            _pm = "block_links"
-        pair_modes.append({"pair_id": pid, "analysis_mode": _pm,
-                           "pair_label": _pair_label(pair)})
 
         result = enriched_mod.get_comparison_result(session_id, pid)
         if result is None:
@@ -257,11 +248,6 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
         pair_label = _pair_label(pair)
         left_pdf_name = str((pair.get("left") or {}).get("filename") or "")
         right_pdf_name = str((pair.get("right") or {}).get("filename") or "")
-        # analysis_mode хранится в pair.json как passthrough. Default — block_links.
-        pair_analysis_mode = str(pair.get("analysis_mode") or "block_links")
-        if pair_analysis_mode not in ("block_links", "concept_no_block_links"):
-            pair_analysis_mode = "block_links"
-
         for ch in (result.get("changes") or []):
             if not isinstance(ch, dict):
                 continue
@@ -323,7 +309,6 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
                 "id": finding_id,
                 "pair_id": pid,
                 "pair_label": pair_label,
-                "analysis_mode": pair_analysis_mode,
                 "left_pdf_name": left_pdf_name,
                 "right_pdf_name": right_pdf_name,
                 "sheet": _sheet_label(left_page, right_page),
@@ -382,7 +367,6 @@ def build_unified_flat(session_id: str, pair_id: Optional[str] = None) -> dict:
         "session_id": session_id,
         "summary": summary,
         "items": items,
-        "pair_modes": pair_modes,
     }
 
 
@@ -396,7 +380,6 @@ def rebuild_unified_findings(session_id: str) -> dict:
             "updated_at": _utc_now(),
             "summary": flat.get("summary") or _empty_summary(),
             "items": flat.get("items") or [],
-            "pair_modes": flat.get("pair_modes") or [],
         }
         return _write_unified(session_id, payload)
 

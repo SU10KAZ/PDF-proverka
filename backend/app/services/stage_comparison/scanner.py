@@ -7,6 +7,8 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Optional
 
+from . import stage_storage
+
 
 # Слова, которые подавляются при нормализации имени PDF, чтобы стадии
 # "_П"/"_Р", "v1"/"v2" не мешали матчингу. Лежат отдельным constant'ом,
@@ -82,17 +84,30 @@ class PdfEntry:
     md_path: Optional[Path] = None
     result_json_path: Optional[Path] = None
     relative: str = ""   # путь относительно корневой папки стадии
+    source_filename: Optional[str] = None
+    document_code: Optional[str] = None
+    discipline: Optional[str] = None
+    version_id: Optional[str] = None
+
+    @property
+    def match_name(self) -> str:
+        """Стабильное имя документа, даже когда PDF канонично зовётся document.pdf."""
+        return self.document_code or self.source_filename or self.pdf_path.name
 
     def to_dict(self) -> dict:
+        filename = self.source_filename or self.pdf_path.name
         return {
             "pdf_path": str(self.pdf_path),
             "md_path": str(self.md_path) if self.md_path else None,
             "result_json_path": str(self.result_json_path) if self.result_json_path else None,
             "relative": self.relative,
-            "filename": self.pdf_path.name,
-            "stem": self.pdf_path.stem,
+            "filename": filename,
+            "stem": Path(filename).stem,
             "has_md": self.md_path is not None,
             "has_result_json": self.result_json_path is not None,
+            "document_code": self.document_code,
+            "discipline": self.discipline,
+            "version_id": self.version_id,
         }
 
 
@@ -216,6 +231,38 @@ def scan_stage_folder(folder: str | Path) -> tuple[list[PdfEntry], list[str]]:
     if not root.is_dir():
         return [], [f"Не папка: {root}"]
 
+    if stage_storage.is_versioned_stage(root):
+        entries = []
+        for item in stage_storage.iter_current_documents(root):
+            document = item["document"]
+            document_code = str(document.get("document_code") or "") or None
+            discipline = str(document.get("discipline") or "") or None
+            source_filename = str(item.get("source_filename") or "") or None
+            logical_filename = source_filename or f"{document_code or 'document'}.pdf"
+            relative = str(
+                Path("documents")
+                / (document_code or Path(logical_filename).stem)
+                / "versions"
+                / str(item["version_id"])
+                / logical_filename
+            )
+            md_path = item["md_path"]
+            result_json_path = item["result_json_path"]
+            entries.append(PdfEntry(
+                pdf_path=item["pdf_path"],
+                md_path=md_path if md_path.is_file() else None,
+                result_json_path=result_json_path if result_json_path.is_file() else None,
+                relative=relative,
+                source_filename=source_filename,
+                document_code=document_code,
+                discipline=discipline,
+                version_id=str(item["version_id"]),
+            ))
+        entries.sort(key=lambda entry: entry.relative.casefold())
+        if not entries:
+            warnings.append(f"В папке не найдено PDF: {root}")
+        return entries, warnings
+
     entries: list[PdfEntry] = []
     for pdf in _safe_iter(root):
         try:
@@ -244,8 +291,8 @@ def _build_candidate_pairs(
 ) -> list[tuple[int, int, float]]:
     """Все пары (i, j, score) ниже отсортированные по score desc."""
     rows: list[tuple[int, int, float]] = []
-    left_norm = [_normalize_pdf_name(e.pdf_path.name) for e in left_entries]
-    right_norm = [_normalize_pdf_name(e.pdf_path.name) for e in right_entries]
+    left_norm = [_normalize_pdf_name(e.match_name) for e in left_entries]
+    right_norm = [_normalize_pdf_name(e.match_name) for e in right_entries]
     for i, ln in enumerate(left_norm):
         for j, rn in enumerate(right_norm):
             sc = _similarity(ln, rn)
