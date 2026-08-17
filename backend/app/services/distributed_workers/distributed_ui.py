@@ -8,6 +8,7 @@ and scheduler/management capabilities are reported as disabled.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import time
@@ -563,9 +564,165 @@ def _provider_quota(
     }
 
 
+#: Насколько долго эксплуатационная сводка воркера считается свежей. Воркер
+#: шлёт её раз в минуту, поэтому пять минут — это уже «данные устарели», а не
+#: «ещё не успел».
+RUNTIME_TELEMETRY_STALE_SEC = 300
+
+
+def _event_outbox(runtime: dict[str, Any], *, now: float) -> dict[str, Any]:
+    """Показания журнала событий воркера — фактические либо честное «нет данных».
+
+    `null` в качестве значения на экране запрещён: он читается как «ноль» или
+    как «сломалось». Состояние называется словом, а числа появляются только
+    тогда, когда они действительно пришли.
+    """
+    unavailable = {
+        "status": "unavailable",
+        "lastWrittenSeq": None,
+        "lastAckedSeq": None,
+        "pending": None,
+        "lastAckAt": None,
+        "observedAt": None,
+        "ageSec": None,
+        "attempts": None,
+    }
+    outbox = runtime.get("event_outbox")
+    if not isinstance(outbox, dict) or not outbox:
+        return unavailable
+    attempts = _finite_number(outbox.get("attempts"))
+    written = _finite_number(outbox.get("last_written_seq"))
+    acked = _finite_number(outbox.get("last_acked_seq"))
+    pending = _finite_number(outbox.get("pending"))
+    if written is None or acked is None or pending is None:
+        return unavailable
+    observed = _finite_number(runtime.get("at"))
+    age = None if observed is None else max(0, int(now - observed))
+    if age is not None and age > RUNTIME_TELEMETRY_STALE_SEC:
+        status = "stale"
+    elif int(pending) > 0:
+        status = "pending"
+    else:
+        status = "synced"
+    return {
+        "status": status,
+        "lastWrittenSeq": int(written),
+        "lastAckedSeq": int(acked),
+        "pending": int(pending),
+        "lastAckAt": _iso(outbox.get("last_ack_at")),
+        "observedAt": _iso(observed),
+        "ageSec": age,
+        # Сколько журналов посчитано. Без этого числа пара «записано/
+        # подтверждено» (последняя попытка) и «ожидает» (все попытки) выглядят
+        # арифметически противоречиво: 7/7 при ожидании 2.
+        "attempts": int(attempts) if attempts is not None else None,
+    }
+
+
+def _release_manifest(path: Any) -> dict[str, Any]:
+    """Манифест релиза с диска. Нечитаемый манифест — это «нет данных»."""
+    if not path:
+        return {}
+    try:
+        parsed = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, TypeError, ValueError):
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+#: Что именно сравнивается при проверке совместимости. `agent_stream_v1.desc` —
+#: ПОЛНЫЙ скомпилированный дескриптор протокола: номера и типы всех полей всех
+#: сообщений. `descriptor_snapshot.json` для этого не годится — он перечисляет
+#: только «критические» поля, и смена номера в ResultReady прошла бы мимо него,
+#: показав оператору ложное «совместимо».
+_WIRE_CONTRACT_FILES = (
+    ("app", "contracts", "agent_stream", "v1", "agent_stream_v1.desc"),
+    ("app", "contracts", "agent_stream", "v1", "agent_stream.proto"),
+    ("app", "contracts", "agent_stream", "v1", "common.proto"),
+)
+
+#: Потолок чтения контрактных файлов. Дескриптор — десятки килобайт; всё, что
+#: сильно больше, читать в память операторского запроса незачем.
+_WIRE_FILE_MAX_BYTES = 4 * 1024 * 1024
+
+
+def _wire_descriptor_sha(manifest_path: Any) -> Optional[str]:
+    """Отпечаток КОНТРАКТА потока в дереве релиза.
+
+    Совместимость центра и шлюза определяется проводом, а не совпадением строки
+    версии: релизы законно расходятся, пока `agent_stream` в них побайтово
+    одинаков. Читаются только данные — чужой код не импортируется и не
+    исполняется. Отсутствие любого из файлов делает вердикт «неизвестно», а не
+    «совместимо».
+    """
+    if not manifest_path:
+        return None
+    root = Path(manifest_path).parent
+    digest = hashlib.sha256()
+    for parts in _WIRE_CONTRACT_FILES:
+        path = root.joinpath(*parts)
+        try:
+            if path.stat().st_size > _WIRE_FILE_MAX_BYTES:
+                return None
+            digest.update(path.read_bytes())
+        except OSError:
+            return None
+    return digest.hexdigest()
+
+
+def _schema_target(manifest: dict[str, Any]) -> Optional[int]:
+    """Целевая версия схемы из манифеста — только если она правда число."""
+    section = manifest.get("database_schema")
+    if not isinstance(section, dict):
+        return None
+    target = section.get("target")
+    return target if isinstance(target, int) and not isinstance(target, bool) else None
+
+
+def _release_compatibility(*, settings: DistributedWorkersSettings) -> dict[str, Any]:
+    """Разъезд релизов центра и шлюза: показать раздельно и назвать вердикт.
+
+    Одинаковая строка релиза НЕ является целью. Цель — общий провод и общая
+    схема базы. Пока они совпадают, разница релизов допустима, и гнать выкатку
+    шлюза ради косметики значит трогать работающий сервис без причины.
+    """
+    center = _release_manifest(settings.center_release_manifest)
+    gateway = _release_manifest(settings.gateway_release_manifest)
+    center_wire = _wire_descriptor_sha(settings.center_release_manifest)
+    gateway_wire = _wire_descriptor_sha(settings.gateway_release_manifest)
+    center_schema = _schema_target(center)
+    gateway_schema = _schema_target(gateway)
+
+    if not center or not gateway or center_wire is None or gateway_wire is None:
+        status, reason = "unknown", "манифест релиза центра или шлюза недоступен"
+    elif center_wire != gateway_wire:
+        status, reason = "mismatch", "контракт Agent Stream в релизах различается"
+    elif center_schema != gateway_schema:
+        status, reason = "mismatch", "целевая версия схемы базы различается"
+    elif center.get("release_id") == gateway.get("release_id"):
+        status, reason = "ok", "релизы совпадают"
+    else:
+        status, reason = "ok", (
+            "релизы различаются, но провод Agent Stream и схема базы совпадают"
+        )
+    return {
+        "centerRelease": _safe_text(center.get("release_id"), limit=64),
+        "centerCommit": _safe_text(center.get("commit"), limit=40),
+        "gatewayRelease": _safe_text(gateway.get("release_id"), limit=64),
+        "gatewayCommit": _safe_text(gateway.get("commit"), limit=40),
+        "wireContractMatches": (
+            None if center_wire is None or gateway_wire is None else center_wire == gateway_wire
+        ),
+        "schemaTarget": center_schema,
+        "status": status,
+        "reason": reason,
+    }
+
+
 def _diagnostic(
     row: dict[str, Any], view: dict[str, Any], *, settings: DistributedWorkersSettings,
     now: float, jobs: list[dict[str, Any]],
+    releases: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     worker_id = str(row.get("worker_id") or "")
     session = gateway_repository.get_transport_session(worker_id, settings=settings)
@@ -577,6 +734,13 @@ def _diagnostic(
     acknowledged = any(job.get("result_acknowledged_at") for job in assigned)
 
     stream_live = bool(active_connection) and connection_status == "online"
+    # Сводку читаем из ИСТОРИИ снимков, а не из колонки: колонку перезаписывает
+    # heartbeat, а heartbeat потокового воркера обрабатывает шлюз — процесс со
+    # своим релизом, который о разделе `runtime` может не знать вовсе.
+    try:
+        runtime = repositories.latest_runtime_diagnostics(worker_id, settings=settings) or {}
+    except Exception:  # noqa: BLE001 — диагностика не вправе ронять весь экран
+        runtime = {}
     # Сертификат берём из реестра. Раньше здесь стояла строка "unavailable" с
     # пояснением, что факт проверки не сохраняется, — и это было неверно:
     # реестр хранит серийник, отпечаток, срок и статус.
@@ -607,19 +771,25 @@ def _diagnostic(
         "connectionId": _safe_text(active_connection, limit=128),
         "mtls": mtls_state,
         "heartbeat": _age_label(row.get("last_seen_at"), now=now),
-        # Адрес шлюза задан на стороне воркера и центру по проводу не
-        # передаётся. Оставляем None ЧЕСТНО и рядом объясняем причину, чтобы
-        # пустое поле не читалось как «забыли заполнить».
-        "gatewayTarget": None,
-        "gatewayTargetNote": "адрес задаётся на воркере и в центр не передаётся",
+        # Адрес шлюза — факт КОНФИГУРАЦИИ воркера. Воркер сообщает его сам в
+        # эксплуатационной сводке; центр только показывает. Управлять
+        # транспортом с экрана нельзя, обратно это значение не едет.
+        "gatewayTarget": _safe_text(runtime.get("gateway_target"), limit=120),
+        "gatewayTargetNote": (
+            None
+            if runtime.get("gateway_target")
+            else "воркер ещё не прислал эксплуатационную сводку"
+        ),
         "sourceHost": None,
         "resultHost": None,
         "nginx": "unavailable",
         "agentStatus": connection_status,
         "executorStatus": _safe_text(executor.get("status"), limit=32) or "unknown",
-        "eventOutbox": {"lastWrittenSeq": None, "lastAckedSeq": None, "pending": None},
+        "eventOutbox": _event_outbox(runtime, now=now),
         "resultAck": "confirmed" if acknowledged else "unavailable",
         "workerVersion": _safe_text(row.get("worker_version"), limit=40),
+        "workerRelease": _safe_text(runtime.get("worker_release"), limit=64),
+        "releases": releases if releases is not None else _release_compatibility(settings=settings),
         "runtimeVersion": _safe_text(executor.get("version"), limit=40),
         "uptime": None,
         "certExpiry": _iso((cert or {}).get("not_after")),
@@ -643,6 +813,7 @@ def _worker(
     row: dict[str, Any], *, settings: DistributedWorkersSettings, now: float,
     tasks: list[dict[str, Any]], provider_states: dict[tuple[str, str], dict[str, Any]],
     jobs: list[dict[str, Any]],
+    releases: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     worker_id = str(row.get("worker_id") or "")
     copied = dict(row)
@@ -668,7 +839,7 @@ def _worker(
     snapshot_obj = _json_object(view.get("resource_snapshot"))
     resource = _resource_view(snapshot_obj)
     diagnostic = _diagnostic(
-        copied, view, settings=settings, now=now, jobs=jobs
+        copied, view, settings=settings, now=now, jobs=jobs, releases=releases
     )
     total = _capacity(slot_view, copied)
     used = max(0, int(slot_view.get("reserved") or 0))
@@ -855,10 +1026,15 @@ def build_snapshot(
         for state in raw_provider_states
     }
     worker_rows = repositories.list_workers(settings=settings)
+    # Вердикт о разъезде релизов считается ОДИН раз на снимок: он про пару
+    # «центр — шлюз» и от воркера не зависит вовсе, а внутри читает файлы с
+    # диска. На каждого воркера это были бы одни и те же чтения заново.
+    release_verdict = _release_compatibility(settings=settings)
     workers = [
         _worker(
             row, settings=settings, now=moment, tasks=projected_tasks,
             provider_states=state_by_worker, jobs=business_jobs,
+            releases=release_verdict,
         )
         for row in worker_rows
     ]

@@ -26,6 +26,35 @@ class CenterError(RuntimeError):
         self.body = body
 
 
+class ResultRejectedError(CenterError):
+    """Центр ОТВЕРГ результат и сказал, имеет ли смысл повтор.
+
+    Признак `retryable` приходит прямо из ResultRejected: центр отличает
+    «попробуй ещё» от «этот пакет не будет принят никогда». Без отдельного
+    типа воркер видел только текст ошибки и повторял досылку вечно — раз в
+    ~26 секунд, до перезапуска агента.
+    """
+
+    def __init__(
+        self,
+        status: int,
+        detail: Any,
+        *,
+        retryable: bool,
+        reason: str = "",
+        acknowledgement: Any = None,
+    ):
+        super().__init__(status, detail)
+        self.retryable = bool(retryable)
+        self.reason = reason
+        # Ответ центра на `complete`, если он у нас уже есть. Отказ ПОТОКА и
+        # приём ПАКЕТА — разные события: центр мог принять результат по HTTP и
+        # назначить срок хранения, а поток отвергнуть по другой причине. Терять
+        # назначенный срок из-за исключения нельзя — это ось хранения, а она от
+        # оси доставки не зависит.
+        self.acknowledgement = acknowledgement
+
+
 class SequenceGapError(CenterError):
     """409 sequence_gap: центр сообщил, с какого seq повторять."""
 
@@ -321,14 +350,28 @@ class CenterClient:
         )
 
     def complete_upload(
-        self, upload_id: str, payload: dict[str, Any], execution_token: str
+        self,
+        upload_id: str,
+        payload: dict[str, Any],
+        execution_token: str,
+        *,
+        routing_plan_hash: str = "",
+        pipeline_revision: str = "",
     ) -> dict[str, Any]:
+        # Оба поля нужны ТОЛЬКО потоковому транспорту: там завершение отправки
+        # сопровождается отдельным сообщением ResultReady, которое обязано
+        # назвать маршрут и ревизию. HTTP-контракт центра их не принимает, и
+        # добавлять их в тело нельзя — модель запроса строгая.
+        del routing_plan_hash, pipeline_revision
         return self.request(
             "POST",
             f"/api/v1/worker/uploads/{upload_id}/complete",
             json_body=payload,
             headers={"X-Execution-Token": execution_token},
         )
+
+    def post_resources(self, snapshot: dict[str, Any]) -> dict[str, Any]:
+        return self.request("POST", "/api/v1/worker/resources", json_body=snapshot)
 
     def get_commands(self) -> dict[str, Any]:
         return self.request("GET", "/api/v1/worker/commands")

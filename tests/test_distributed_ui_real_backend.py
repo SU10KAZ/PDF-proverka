@@ -342,12 +342,22 @@ def test_limits_and_diagnostics_are_nullable_and_credential_free(viewer):
     if diagnostic["mtls"] in {"unknown", "not_applicable"}:
         assert diagnostic["certExpiry"] is None
         assert diagnostic["certSerial"] is None
+    # Воркер этой фикстуры эксплуатационную сводку не присылал, поэтому адреса
+    # шлюза нет — и пустое поле обязано быть объяснено, иначе оно неотличимо от
+    # недоделки. С 12I.2 адрес приезжает от воркера, а не «не передаётся вовсе».
     assert diagnostic["gatewayTarget"] is None
-    # Пустой адрес обязан быть объяснён, иначе он неотличим от недоделки.
     assert diagnostic["gatewayTargetNote"]
-    assert diagnostic["eventOutbox"] == {
-        "lastWrittenSeq": None, "lastAckedSeq": None, "pending": None,
-    }
+    # Числа журнала событий без источника недопустимы ровно так же, как числа
+    # квот: состояние называется словом, а `null` пользователю не показывают.
+    assert diagnostic["eventOutbox"]["status"] == "unavailable"
+    assert diagnostic["eventOutbox"]["lastWrittenSeq"] is None
+    assert diagnostic["eventOutbox"]["lastAckedSeq"] is None
+    assert diagnostic["eventOutbox"]["pending"] is None
+    # Релизы не выдумываются: без настроенных манифестов вердикт «неизвестно».
+    assert diagnostic["releases"]["status"] == "unknown"
+    assert diagnostic["releases"]["centerRelease"] is None
+    assert diagnostic["releases"]["gatewayRelease"] is None
+    assert diagnostic["workerRelease"] is None
     serialized = json.dumps(
         {"limits": limits_response.json(), "diagnostics": diagnostics_response.json()},
         ensure_ascii=False,

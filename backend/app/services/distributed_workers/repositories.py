@@ -247,6 +247,62 @@ def record_resource_snapshot(
         )
 
 
+def latest_runtime_diagnostics(
+    worker_id: str, *, settings: DistributedWorkersSettings | None = None
+) -> dict[str, Any] | None:
+    """Последняя эксплуатационная сводка воркера из ИСТОРИИ снимков.
+
+    Почему история, а не колонка `workers.resource_snapshot`. Колонку
+    перезаписывает `record_heartbeat`, а heartbeat потокового воркера
+    обрабатывает ШЛЮЗ — отдельный процесс, который исполняет СВОЙ релиз. Пока
+    шлюз старше центра (а это допустимое и намеренное состояние, см. диагностику
+    разъезда релизов), в его коде переноса раздела `runtime` нет, и сводка
+    исчезала бы через ≤30 секунд после публикации.
+
+    Таблица снимков дописывается и прореживается по возрасту, но никогда не
+    редактируется: строка со сводкой живёт своей жизнью и шлюзу неинтересна.
+    Если сводки нет вовсе — возвращаем None, и экран честно скажет «нет данных».
+    """
+    with database.read_conn(settings) as conn:
+        try:
+            row = conn.execute(
+                "SELECT at, snapshot FROM resource_snapshots "
+                "WHERE worker_id = ? AND json_extract(snapshot, '$.runtime') IS NOT NULL "
+                "ORDER BY at DESC LIMIT 1",
+                (worker_id,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            # Сборка SQLite без json1 — редкость, но отказ диагностики не повод
+            # ронять экран: просматриваем хвост истории вручную.
+            row = None
+            for candidate in conn.execute(
+                "SELECT at, snapshot FROM resource_snapshots WHERE worker_id = ? "
+                "ORDER BY at DESC LIMIT 250",
+                (worker_id,),
+            ):
+                try:
+                    parsed = json.loads(candidate["snapshot"] or "{}")
+                except (TypeError, ValueError):
+                    continue
+                if isinstance(parsed, dict) and isinstance(parsed.get("runtime"), dict):
+                    row = candidate
+                    break
+    if row is None:
+        return None
+    try:
+        parsed = json.loads(row["snapshot"] or "{}")
+    except (TypeError, ValueError):
+        return None
+    runtime = parsed.get("runtime") if isinstance(parsed, dict) else None
+    if not isinstance(runtime, dict):
+        return None
+    # Метка времени берётся у СТРОКИ снимка: воркер мог соврать про своё «at»,
+    # а «когда центр это принял» — факт центра.
+    runtime = dict(runtime)
+    runtime["at"] = float(row["at"])
+    return runtime
+
+
 # ─── Токены ──────────────────────────────────────────────────────────────────
 def insert_token(
     worker_id: str,

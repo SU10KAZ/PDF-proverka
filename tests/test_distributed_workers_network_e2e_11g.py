@@ -484,14 +484,18 @@ def test_f_assignment_params_keep_the_capability():
     """
     from fastapi.encoders import jsonable_encoder
 
-    from backend.app.api.routers.audit_worker_agent import _assignment_params
+    # Разбор нагрузки переехал из приватной функции роутера в общий
+    # `job_service.assignment_params`: тот же строгий парсер теперь обслуживает
+    # и опрос, и Agent Gateway. Тест держится за КОНТРАКТ (union не должен
+    # молча терять provider_requirement), а не за прежнее место функции.
+    from backend.app.services.distributed_workers.job_service import assignment_params
     from backend.app.models.distributed_workers import (
         JobAssignment,
         JobType,
         PackageRef,
     )
 
-    params = _assignment_params(
+    params = assignment_params(
         {"job_type": JobType.AUDIT_PIPELINE_V1.value},
         {"params": _audit_params(provider_requirement=dict(_WIRE_REQUIREMENT))},
     )

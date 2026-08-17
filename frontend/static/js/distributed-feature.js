@@ -205,12 +205,28 @@
         function metricText(value, suffix = '%') { return Number.isFinite(value) ? `${value}${suffix}` : 'Нет телеметрии'; }
         /** @param {any} quota */
         function quotaText(quota) { return quota && Number.isFinite(quota.percentageRemaining) ? `${quota.percentageRemaining}%` : 'Остаток недоступен'; }
+        const OUTBOX_STATUS_LABELS = {
+            synced: 'Синхронизировано', pending: 'Ожидается синхронизация',
+            stale: 'Данные устарели', unavailable: 'Нет данных',
+        };
+        /** Состояние журнала событий словом. `null` пользователю не показываем:
+         *  он читается либо как ноль, либо как поломка.
+         *  @param {any} diagnostic */
+        function outboxStatusText(diagnostic) {
+            const outbox = diagnostic && diagnostic.eventOutbox || {};
+            return OUTBOX_STATUS_LABELS[outbox.status] || OUTBOX_STATUS_LABELS.unavailable;
+        }
+        /** @param {any} diagnostic */
+        function outboxAvailable(diagnostic) {
+            const outbox = diagnostic && diagnostic.eventOutbox || {};
+            return [outbox.lastAckedSeq, outbox.lastWrittenSeq, outbox.pending].every(Number.isFinite);
+        }
         /** @param {any} diagnostic */
         function outboxText(diagnostic) {
             const outbox = diagnostic && diagnostic.eventOutbox || {};
-            return [outbox.lastAckedSeq, outbox.lastWrittenSeq, outbox.pending].every(Number.isFinite)
-                ? `${outbox.lastAckedSeq} / ${outbox.lastWrittenSeq} · pending ${outbox.pending}`
-                : 'unavailable';
+            return outboxAvailable(diagnostic)
+                ? `${outboxStatusText(diagnostic)} · последняя попытка ${outbox.lastAckedSeq}/${outbox.lastWrittenSeq}, ожидает всего ${outbox.pending}`
+                : OUTBOX_STATUS_LABELS.unavailable;
         }
         /** @param {string} projectId @param {string} workerId */
         async function setAssignment(projectId, workerId) {
@@ -400,10 +416,22 @@
         function diagnosticRows(diagnostic) {
             if (!diagnostic) return [];
             const outbox = diagnostic.eventOutbox || {};
-            const availableOutbox = [outbox.lastAckedSeq, outbox.lastWrittenSeq, outbox.pending].every(Number.isFinite);
-            const show = (value) => value === null || value === undefined || value === '' ? 'unavailable' : value;
+            const releases = diagnostic.releases || {};
+            const show = (value) => value === null || value === undefined || value === '' ? 'Нет данных' : value;
             return [
-                ['worker_id', show(diagnostic.workerId)], ['instance_id', show(diagnostic.instanceId)], ['transport', show(diagnostic.transport)], ['grpc_stream', show(diagnostic.grpcStream)], ['connection_id', show(diagnostic.connectionId)], ['mTLS', show(diagnostic.mtls)], ['heartbeat', show(diagnostic.heartbeat)], ['Gateway target', show(diagnostic.gatewayTarget)], ['source host', show(diagnostic.sourceHost)], ['result host', show(diagnostic.resultHost)], ['nginx', show(diagnostic.nginx)], ['Agent status', show(diagnostic.agentStatus)], ['Executor status', show(diagnostic.executorStatus)], ['EventOutbox', availableOutbox ? `${outbox.lastAckedSeq} / ${outbox.lastWrittenSeq}; pending ${outbox.pending}` : 'unavailable'], ['ResultAck', show(diagnostic.resultAck)], ['worker version', show(diagnostic.workerVersion)], ['runtime version', show(diagnostic.runtimeVersion)], ['uptime', show(diagnostic.uptime)], ['cert expiry', show(diagnostic.certExpiry)],
+                ['worker_id', show(diagnostic.workerId)], ['instance_id', show(diagnostic.instanceId)], ['transport', show(diagnostic.transport)], ['grpc_stream', show(diagnostic.grpcStream)], ['connection_id', show(diagnostic.connectionId)], ['mTLS', show(diagnostic.mtls)], ['heartbeat', show(diagnostic.heartbeat)],
+                ['Gateway target', show(diagnostic.gatewayTarget) === 'Нет данных' && diagnostic.gatewayTargetNote ? diagnostic.gatewayTargetNote : show(diagnostic.gatewayTarget)],
+                ['source host', show(diagnostic.sourceHost)], ['result host', show(diagnostic.resultHost)], ['nginx', show(diagnostic.nginx)], ['Agent status', show(diagnostic.agentStatus)], ['Executor status', show(diagnostic.executorStatus)],
+                ['EventOutbox', outboxStatusText(diagnostic)],
+                ['EventOutbox · записано (последняя попытка)', outboxAvailable(diagnostic) ? outbox.lastWrittenSeq : 'Нет данных'],
+                ['EventOutbox · подтверждено (последняя попытка)', outboxAvailable(diagnostic) ? outbox.lastAckedSeq : 'Нет данных'],
+                ['EventOutbox · ожидает (всего по попыткам)', outboxAvailable(diagnostic) ? outbox.pending : 'Нет данных'],
+                ['EventOutbox · попыток учтено', Number.isFinite(outbox.attempts) ? outbox.attempts : 'Нет данных'],
+                ['EventOutbox · последнее подтверждение', show(outbox.lastAckAt)],
+                ['ResultAck', show(diagnostic.resultAck)], ['worker version', show(diagnostic.workerVersion)],
+                ['Релиз центра', show(releases.centerRelease)], ['Релиз шлюза', show(releases.gatewayRelease)], ['Релиз воркера', show(diagnostic.workerRelease)],
+                ['Совместимость релизов', releases.status === 'ok' ? `OK — ${releases.reason}` : show(releases.reason)],
+                ['runtime version', show(diagnostic.runtimeVersion)], ['uptime', show(diagnostic.uptime)], ['cert expiry', show(diagnostic.certExpiry)],
             ];
         }
 

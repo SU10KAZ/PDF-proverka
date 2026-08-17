@@ -18,6 +18,27 @@ from audit_worker.local_store import atomic_write_json, read_json
 from audit_worker.package_io import sha256_bytes, sha256_file
 
 
+def delivery_already_acknowledged(http_response: Any) -> bool:
+    """Признал ли центр этот пакет ранее принятым — по ответу на complete.
+
+    Два условия ОДНОВРЕМЕННО, и оба обязательны:
+
+    * `validation.replayed` — центр не собирал архив заново, а ответил по уже
+      проверенной сессии загрузки. На первом успешном complete этого признака
+      нет, поэтому обычный путь по-прежнему идёт через ResultReady и запись
+      уведомления на шлюзе;
+    * `retention_until` не пуст — приём подтверждён, срок хранения назначен.
+      Без него «replayed» означал бы лишь «байты у меня», а не «результат
+      принят», и объявлять доставку завершённой было бы ложью.
+    """
+    if not isinstance(http_response, dict):
+        return False
+    if http_response.get("retention_until") is None:
+        return False
+    validation = http_response.get("validation")
+    return isinstance(validation, dict) and bool(validation.get("replayed"))
+
+
 class UploadFailed(RuntimeError):
     """Отправка не удалась. Архив на воркере при этом цел — он не удаляется."""
 
@@ -32,6 +53,8 @@ def upload_result(
     uploads_dir: Path,
     on_progress: Optional[Callable[[int, int, int], None]] = None,
     max_attempts_per_chunk: int = 3,
+    routing_plan_hash: str = "",
+    pipeline_revision: str = "",
 ) -> dict[str, Any]:
     """Загрузить архив и завершить сессию. Возвращает ответ complete."""
     if not archive.is_file():
@@ -99,6 +122,11 @@ def upload_result(
             "chunks_sent": chunks_total,
         },
         execution_token,
+        # Маршрут и ревизию берём из СОХРАНЁННЫХ метаданных попытки, а не из
+        # памяти транспорта: досылка после рестарта агента происходит тогда,
+        # когда выданного задания в памяти уже нет.
+        routing_plan_hash=routing_plan_hash,
+        pipeline_revision=pipeline_revision,
     )
 
 

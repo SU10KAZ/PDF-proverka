@@ -32,6 +32,7 @@ import httpx
 from audit_worker import (
     PROTOCOL_VERSION,
     __version__,
+    diagnostics,
     local_db,
     package_io,
     reconciliation,
@@ -41,6 +42,7 @@ from audit_worker.client import (
     AttemptSupersededError,
     CenterClient,
     CenterError,
+    ResultRejectedError,
     SequenceGapError,
     backoff_delays,
 )
@@ -64,8 +66,42 @@ _COMMAND_POLL_SEC = 1.0
 #: слот освобождался сам, без перезапуска агента.
 RECONCILE_INTERVAL_SEC = 300.0
 
+#: Состояния ДОСТАВКИ результата, после которых повтор отправки запрещён.
+#: Ось доставки намеренно отделена от оси ХРАНЕНИЯ: пакет остаётся на диске
+#: положенный срок в обоих случаях, но досылать его больше нечего и некуда.
+DELIVERY_ACKNOWLEDGED = "acknowledged"
+DELIVERY_REJECTED_PERMANENTLY = "rejected_permanently"
+TERMINAL_DELIVERY_STATES = frozenset({DELIVERY_ACKNOWLEDGED, DELIVERY_REJECTED_PERMANENTLY})
+
+
 class UploadDeferred(RuntimeError):
     """Результат готов, но канал недоступен: передача отложена, НЕ провал."""
+
+
+def _routing_binding(meta: dict[str, Any]) -> dict[str, str]:
+    """Маршрут и ревизия попытки из СОХРАНЁННЫХ метаданных.
+
+    Единственный источник, переживающий рестарт агента: выданное задание
+    живёт в памяти транспорта, а досылка случается именно после перерыва.
+    """
+    params = meta.get("params") if isinstance(meta.get("params"), dict) else {}
+    routing = params.get("routing_plan") if isinstance(params.get("routing_plan"), dict) else {}
+    return {
+        "routing_plan_hash": str(routing.get("routing_plan_hash") or ""),
+        "pipeline_revision": str(params.get("pipeline_revision") or ""),
+    }
+
+
+def delivery_is_terminal(meta: dict[str, Any]) -> bool:
+    """Доставка этого результата завершена — повторять её нельзя.
+
+    Помимо явной отметки признаём терминальным и старый признак приёма
+    (`retention_until`): попытки, подтверждённые до появления этого поля,
+    не должны получить второй круг досылки после обновления воркера.
+    """
+    if str(meta.get("delivery_state") or "") in TERMINAL_DELIVERY_STATES:
+        return True
+    return meta.get("retention_until") is not None
 
 
 def _log(message: str) -> None:
@@ -198,6 +234,8 @@ class WorkerAgent:
         self._command_lock = threading.Lock()
         self._max_slots = config.max_slots
         self._last_reconcile_at = 0.0
+        self._last_runtime_telemetry_at = 0.0
+        self._runtime_telemetry_thread: Optional[threading.Thread] = None
 
     def _on_center_error(self, exc: BaseException) -> None:
         """Классифицировать отказ центра и запомнить его как состояние связи."""
@@ -269,6 +307,7 @@ class WorkerAgent:
                     continue
                 try:
                     self._deliver_pending_results()
+                    self._publish_runtime_telemetry()
                     if (
                         time.time() - self._last_reconcile_at
                         >= RECONCILE_INTERVAL_SEC
@@ -310,6 +349,42 @@ class WorkerAgent:
                 started += 1
         finally:
             self.shutdown()
+
+    def _publish_runtime_telemetry(self) -> None:
+        """Запустить отправку сводки в ОТДЕЛЬНОМ потоке и сразу вернуться.
+
+        Синхронный вызов отсюда был бы прямым нарушением I-01. Центр может
+        принять соединение и замолчать; тогда HTTP-клиент ждёт свой таймаут
+        (десятки секунд), и всё это время главный цикл не опрашивает задания,
+        не сверяется и не досылает результаты — из-за диагностической строки
+        на экране, притом что боевой канал управления полностью исправен.
+
+        Поток ровно один (single-flight): пока предыдущая отправка висит,
+        новая не заводится, иначе зависший центр порождал бы поток в минуту.
+        """
+        now = time.time()
+        if now - self._last_runtime_telemetry_at < diagnostics.RUNTIME_TELEMETRY_INTERVAL_SEC:
+            return
+        publish = getattr(self.client, "post_resources", None)
+        if publish is None:
+            return
+        thread = self._runtime_telemetry_thread
+        if thread is not None and thread.is_alive():
+            return
+        self._last_runtime_telemetry_at = now
+        self._runtime_telemetry_thread = threading.Thread(
+            target=self._send_runtime_telemetry, args=(publish,),
+            name="runtime-telemetry", daemon=True,
+        )
+        self._runtime_telemetry_thread.start()
+
+    def _send_runtime_telemetry(self, publish: Any) -> None:
+        """Тело отправки. Любая ошибка гасится: это показания, а не решение."""
+        try:
+            payload = diagnostics.collect_runtime_telemetry(self.config, self.jobs)
+            publish({"at": payload["at"], "runtime": payload})
+        except Exception as exc:  # noqa: BLE001 — диагностика не критична
+            _log(f"сводка диагностики не отправлена: {exc}")
 
     def _reap_job_threads(self) -> None:
         with self._active_lock:
@@ -516,10 +591,17 @@ class WorkerAgent:
             )
             # Приём подтверждён — только теперь у пакета появляется срок
             # хранения. Пока retention_until пуст, удалять его запрещено (I-08).
+            #
+            # Закрываем попытку ЦЕЛИКОМ, а не одним полем срока. Прежде здесь
+            # ставился только `retention_until`, и попытка навсегда оставалась
+            # `completed_locally`: для RetentionManager она выглядела живой и не
+            # убиралась даже по истечении срока, в каждую сверку возвращалась
+            # заново, а отметки о завершении в журнале не появлялось вовсе.
             if item.get("result_accepted") and item.get("retention_until"):
-                self.jobs.update(
+                self._finalize_delivery(
                     item["job_id"], item["attempt_id"],
-                    retention_until=item["retention_until"],
+                    {"retention_until": item["retention_until"],
+                     "state": item.get("center_state")},
                 )
             if item["action"] == "stop_superseded":
                 # Останавливает ИСПОЛНИТЕЛЬ, а не агент: у агента нет права
@@ -1303,7 +1385,24 @@ class WorkerAgent:
                 execution_token=ctx["execution_token"],
                 uploads_dir=job_dir / "uploads",
                 on_progress=on_chunk,
+                **_routing_binding(meta),
             )
+        except ResultRejectedError as exc:
+            if not exc.retryable:
+                # Невосстановимый отказ на ПЕРВОЙ же отправке. Прежде он попадал
+                # в общий `except` ниже, превращался в отложенную передачу и
+                # возвращал попытку в очередь досылки — то есть в тот же вечный
+                # цикл, только начинавшийся сразу.
+                self._record_permanent_rejection(job_id, attempt_id, exc)
+                self._flush_outbox(ctx)
+                raise UploadDeferred(str(exc)) from exc
+            _log(f"задание {job_id[:8]}: центр отверг результат с правом повтора ({exc.detail})")
+            self.jobs.update(
+                job_id, attempt_id,
+                local_state="completed_locally", upload_error=str(exc),
+            )
+            self._flush_outbox(ctx)
+            raise UploadDeferred(str(exc)) from exc
         except Exception as exc:  # noqa: BLE001 — включая обрыв связи
             # Аудит УЖЕ выполнен, архив лежит на диске. Неудачная передача —
             # это не провал задания: события job_failed здесь быть не должно
@@ -1322,24 +1421,16 @@ class WorkerAgent:
             self._flush_outbox(ctx)
             raise UploadDeferred(str(exc)) from exc
 
-        retention_until = response.get("retention_until")
         # Центр мог принять архив, но НЕ принять результат (валидация не
         # прошла). Тогда «finished» — ложь: пакет остаётся на воркере без
         # подтверждения, а `finished` исключает его и из досылки, и из
         # collect_known_jobs — задание становилось невидимым навсегда.
-        accepted = retention_until is not None
-        self.jobs.update(
-            job_id,
-            attempt_id,
-            local_state="finished" if accepted else "completed_locally",
-            retention_until=retention_until,
-            center_state=response.get("state"),
-            center_validation=response.get("validation"),
-        )
-        outbox.append(
-            "job_completed",
-            {"center_state": response.get("state"), "retention_until": retention_until},
-        )
+        accepted = self._finalize_delivery(job_id, attempt_id, response)
+        if not accepted:
+            outbox.append(
+                "job_completed",
+                {"center_state": response.get("state"), "retention_until": None},
+            )
         self._flush_outbox(ctx)
         if not accepted:
             _log(
@@ -1347,6 +1438,92 @@ class WorkerAgent:
                 f"(состояние «{response.get('state')}») — результат остаётся на "
                 f"воркере как retention_unconfirmed и попадёт в следующую сверку"
             )
+
+
+    # ─── Единая финализация доставки ─────────────────────────────────────────
+    def _finalize_delivery(
+        self, job_id: str, attempt_id: str, response: dict[str, Any],
+    ) -> bool:
+        """Закрыть доставку по подтверждению центра — ОДИНАКОВО на всех путях.
+
+        Путей, на которых центр сообщает о приёме, три: обычная отправка,
+        досылка и сверка. Раньше каждый закрывал попытку по-своему, и путь
+        сверки закрывал её неполно: он ставил только `retention_until`. Из-за
+        этого попытка навсегда оставалась `completed_locally` — то есть
+        считалась живой: `RetentionManager` отказывался её убирать даже по
+        истечении срока, `collect_known_jobs` возвращал её в каждую сверку, а в
+        журнале не появлялось события о завершении.
+
+        Возвращает True, если приём подтверждён.
+        """
+        retention_until = response.get("retention_until")
+        accepted = retention_until is not None
+        fields: dict[str, Any] = {
+            "local_state": "finished" if accepted else "completed_locally",
+            "retention_until": retention_until,
+        }
+        if response.get("state") is not None:
+            fields["center_state"] = response.get("state")
+        if response.get("validation") is not None:
+            fields["center_validation"] = response.get("validation")
+        if accepted:
+            fields["delivery_state"] = DELIVERY_ACKNOWLEDGED
+            fields["delivery_acknowledged_at"] = time.time()
+        meta = self.jobs.load(job_id, attempt_id) or {}
+        self.jobs.update(job_id, attempt_id, **fields)
+        if not accepted:
+            return False
+        # Отметка о завершении в журнале ставится РОВНО один раз: повторная
+        # финализация уже подтверждённой попытки не должна плодить события.
+        if not meta.get("delivery_acknowledged_at"):
+            try:
+                outbox = self._outbox_for(
+                    job_id, attempt_id,
+                    execution_token=meta.get("execution_token") or "",
+                )
+                outbox.append(
+                    "job_completed",
+                    {"center_state": response.get("state"),
+                     "retention_until": retention_until},
+                )
+                self._flush_outbox({
+                    "job_id": job_id, "attempt_id": attempt_id, "outbox": outbox,
+                    "execution_token": meta.get("execution_token"),
+                })
+            except Exception as exc:  # noqa: BLE001 — журнал догонит по сверке
+                _log(f"задание {job_id[:8]}: отметку о завершении отправить не удалось: {exc}")
+        return True
+
+    def _record_permanent_rejection(
+        self, job_id: str, attempt_id: str, exc: "ResultRejectedError",
+    ) -> None:
+        """Невосстановимый отказ: досылку прекращаем, работу НЕ удаляем.
+
+        Пакет остаётся неподтверждённым и виден оператору предупреждением
+        `retention_unconfirmed`. Решение о его судьбе принимает человек, а не
+        молчаливый цикл, который иначе долбил бы шлюз раз в ~26 секунд вечно.
+        """
+        # Центр мог принять пакет по HTTP и назначить срок хранения, а поток
+        # отвергнуть по другой причине. Срок сохраняем: он про ХРАНЕНИЕ.
+        if isinstance(exc.acknowledgement, dict) and self._finalize_delivery(
+            job_id, attempt_id, exc.acknowledgement
+        ):
+            _log(
+                f"задание {job_id[:8]}: поток отверг досылку, но центр уже "
+                f"подтвердил приём по HTTP — доставка закрыта"
+            )
+            return
+        self.jobs.update(
+            job_id, attempt_id,
+            delivery_state=DELIVERY_REJECTED_PERMANENTLY,
+            delivery_rejected_at=time.time(),
+            delivery_reject_detail=str(exc.detail)[:500],
+        )
+        _log(
+            f"задание {job_id[:8]}: центр отверг результат без права повтора "
+            f"({exc.detail}) — досылку прекращаю, пакет остаётся на воркере "
+            f"как неподтверждённый"
+        )
 
     def _deliver_pending_results(self) -> None:
         """Дослать результаты, оставшиеся на диске после обрыва передачи.
@@ -1361,6 +1538,11 @@ class WorkerAgent:
             busy = set(self._active)
         for meta in self.jobs.iter_all():
             if meta["attempt_id"] in busy:
+                continue
+            if delivery_is_terminal(meta):
+                # Доставка закрыта: центр подтвердил приём или отказал
+                # невосстановимо. Пакет при этом остаётся на диске —
+                # удаление подчиняется ТОЛЬКО сроку хранения (I-08/I-12).
                 continue
             state = meta.get("local_state")
             if state in ("completed_locally", "uploading") and meta.get("result_hash"):
@@ -1402,6 +1584,11 @@ class WorkerAgent:
         meta = self.jobs.load(job_id, attempt_id)
         if not meta or not meta.get("result_hash"):
             return
+        if delivery_is_terminal(meta):
+            # Второй заслон рядом с проходом доставки: сюда ведёт ещё и путь
+            # сверки (`action == "upload_result"`), а подтверждённый результат
+            # не должен уезжать повторно ни по одному из них.
+            return
         _log(f"досылаю результат задания {job_id[:8]} после перерыва")
         job_dir = self.jobs.job_dir(job_id, attempt_id)
         archive = job_dir / "result" / f"{attempt_id}.tar.gz"
@@ -1425,34 +1612,18 @@ class WorkerAgent:
                 archive=archive,
                 execution_token=meta.get("execution_token", ""),
                 uploads_dir=job_dir / "uploads",
+                **_routing_binding(meta),
             )
             # Та же проверка, что и на основном пути: «finished» ставится
             # только если центр ПОДТВЕРДИЛ приём (выдал retention_until).
             # Безусловный «finished» здесь выводил невалидированный результат
             # и из досылки, и из сверки — задание исчезало навсегда.
-            resumed_retention = response.get("retention_until")
-            self.jobs.update(
-                job_id, attempt_id,
-                local_state="finished" if resumed_retention is not None
-                else "completed_locally",
-                retention_until=resumed_retention,
-                center_state=response.get("state"),
-                center_validation=response.get("validation"),
-            )
-            # Хвост журнала не должен отличаться от обычного пути: иначе в
-            # истории задания просто нет отметки о завершении.
-            outbox = self._outbox_for(
-                job_id, attempt_id, execution_token=meta.get("execution_token") or ""
-            )
-            outbox.append(
-                "job_completed",
-                {"center_state": response.get("state"),
-                 "retention_until": response.get("retention_until")},
-            )
-            self._flush_outbox({
-                "job_id": job_id, "attempt_id": attempt_id, "outbox": outbox,
-                "execution_token": meta.get("execution_token"),
-            })
+            self._finalize_delivery(job_id, attempt_id, response)
+        except ResultRejectedError as exc:
+            if exc.retryable:
+                _log(f"досылка не удалась: {exc}")
+                return
+            self._record_permanent_rejection(job_id, attempt_id, exc)
         except Exception as exc:  # noqa: BLE001 — досылка повторится позже
             _log(f"досылка не удалась: {exc}")
 

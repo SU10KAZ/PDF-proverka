@@ -4,11 +4,11 @@ from __future__ import annotations
 import shutil
 import sqlite3
 import time
+from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
-from audit_worker.event_outbox import EventOutbox
-from audit_worker.local_store import LocalJobStore, WorkerStateStore
+from audit_worker.local_store import LocalJobStore, WorkerStateStore, read_json
 
 
 def _certificate_expiry(config: Any, worker_id: str | None) -> float | None:
@@ -141,10 +141,16 @@ def collect_worker_diagnostics(config: Any) -> dict[str, Any]:
     pending_results = 0
     for meta in jobs.iter_all():
         events_dir = jobs.job_dir(meta["job_id"], meta["attempt_id"]) / "events"
-        if events_dir.is_dir():
-            outbox = EventOutbox(events_dir)
-            pending_events += max(0, outbox.last_written_seq - outbox.last_acked_seq)
-            last_event_ack = max(last_event_ack, outbox.last_acked_seq)
+        # Чистое чтение вместо конструирования EventOutbox: его конструктор
+        # чинит и СОХРАНЯЕТ курсор, а `doctor` зовут во время инцидента — рядом
+        # с живым исполнителем, который в этот же журнал пишет. Диагностика не
+        # вправе становиться вторым писателем.
+        position = read_outbox_position(events_dir)
+        if position is not None:
+            pending_events += max(
+                0, position["last_written_seq"] - position["last_acked_seq"]
+            )
+            last_event_ack = max(last_event_ack, position["last_acked_seq"])
         if meta.get("result_hash") and meta.get("retention_until") is None:
             pending_results += 1
     try:
@@ -192,3 +198,125 @@ def collect_worker_diagnostics(config: Any) -> dict[str, Any]:
         "disk_free_bytes": free,
         "token_present": bool(state_store.read_token()),
     }
+
+
+#: Как часто агент публикует эксплуатационную сводку в центр. Реже heartbeat:
+#: это диагностика для экрана, а не признак живости.
+RUNTIME_TELEMETRY_INTERVAL_SEC = 60.0
+
+
+def read_outbox_position(events_dir: Path) -> dict[str, int] | None:
+    """Позиции журнала событий ЧИСТЫМ чтением двух файлов.
+
+    Намеренно НЕ через `EventOutbox`: его конструктор — операция писателя. Он
+    создаёт каталог, чинит курсор по сегментам и при расхождении СОХРАНЯЕТ
+    исправленные `cursor.json`/`ack.json`. Для журнала, который в этот момент
+    наполняет процесс исполнителя, диагностический опрос раз в минуту означал
+    бы гонку двух писателей за один файл — ради строки на экране.
+
+    Возвращает None, если журнала ещё нет: «нет данных» лучше выдуманного нуля.
+    """
+    if not events_dir.is_dir():
+        return None
+    cursor = read_json(events_dir / "cursor.json", None)
+    if not isinstance(cursor, dict):
+        return None
+    ack = read_json(events_dir / "ack.json", None)
+    ack = ack if isinstance(ack, dict) else {}
+    try:
+        written = int(cursor.get("last_written_seq", 0))
+        acked = int(ack.get("last_acked_seq", cursor.get("last_acked_seq", 0)))
+    except (TypeError, ValueError):
+        return None
+    acked = max(0, min(acked, written))
+    return {"last_written_seq": max(0, written), "last_acked_seq": acked}
+
+
+def _outbox_rollup(jobs: LocalJobStore) -> dict[str, Any]:
+    """Свести журналы событий воркера в одну честную картину.
+
+    EventOutbox живёт ПОПЫТКАМИ: номер события осмыслен только внутри своей
+    попытки. Поэтому числа складываются по-разному и это не небрежность:
+
+    * `last_written_seq` / `last_acked_seq` — у ПОСЛЕДНЕЙ попытки. Сумма
+      номеров разных последовательностей не значит ничего;
+    * `pending` — сумма по ВСЕМ попыткам. Вот это как раз операционное число:
+      «нигде ничего не застряло»;
+    * `attempts` — по скольким журналам считали, чтобы первые два числа
+      нельзя было прочитать как «всего за всё время».
+    """
+    latest: dict[str, int] | None = None
+    latest_key = float("-inf")
+    pending = 0
+    attempts = 0
+    last_ack_at: float | None = None
+    for meta in jobs.iter_all():
+        events_dir = jobs.job_dir(meta["job_id"], meta["attempt_id"]) / "events"
+        position = read_outbox_position(events_dir)
+        if position is None:
+            continue
+        attempts += 1
+        pending += max(0, position["last_written_seq"] - position["last_acked_seq"])
+        key = float(meta.get("started_at") or meta.get("created_at") or 0.0)
+        if key >= latest_key:
+            latest_key, latest = key, position
+        try:
+            stamp = (events_dir / "ack.json").stat().st_mtime
+        except OSError:
+            continue
+        last_ack_at = stamp if last_ack_at is None else max(last_ack_at, stamp)
+    if latest is None:
+        return {"attempts": 0, "status": "unavailable"}
+    return {
+        "attempts": attempts,
+        "last_written_seq": latest["last_written_seq"],
+        "last_acked_seq": latest["last_acked_seq"],
+        "pending": pending,
+        "status": "synced" if pending == 0 else "pending",
+        **({"last_ack_at": last_ack_at} if last_ack_at is not None else {}),
+    }
+
+
+def collect_runtime_telemetry(config: Any, jobs: LocalJobStore | None = None) -> dict[str, Any]:
+    """Безопасная эксплуатационная сводка воркера для экрана диагностики.
+
+    Что здесь ЕСТЬ: счётчики журнала событий, адрес шлюза и режим транспорта.
+    Чего здесь нет и быть не может: токенов, приватных ключей, содержимого
+    сертификатов, заголовков авторизации, путей к файлам с секретами. Состав
+    задан перечислением полей, а не фильтром «убрать лишнее», — иначе новое
+    поле утекало бы по умолчанию.
+
+    Адрес шлюза — диагностический факт КОНФИГУРАЦИИ воркера. Центр его только
+    показывает: управлять транспортом со стороны экрана нельзя, и значение
+    сюда никогда не возвращается.
+    """
+    store = jobs if jobs is not None else LocalJobStore(config.jobs_dir)
+    transport = "grpc_stream" if config.control_transport == "grpc" else "polling"
+    telemetry: dict[str, Any] = {
+        "at": time.time(),
+        "transport": transport,
+        "event_outbox": _outbox_rollup(store),
+    }
+    target = str(getattr(config, "grpc_target", "") or "") if transport == "grpc_stream" else ""
+    if target:
+        telemetry["gateway_target"] = target[:120]
+    release = _installed_release(config)
+    if release:
+        telemetry["worker_release"] = release[:64]
+    return telemetry
+
+
+def _installed_release(config: Any) -> str:
+    """Идентификатор установленного релиза воркера — имя каталога `current`.
+
+    Раскладка воркера: `current` — симлинк на `app/<release_id>`. Читаем ИМЯ,
+    а не содержимое: путь до дерева релиза для оператора не сведение, а лишний
+    след файловой системы на чужом экране.
+    """
+    root = getattr(config, "pipeline_root", None)
+    if not root:
+        return ""
+    try:
+        return Path(root).resolve().name
+    except OSError:
+        return ""

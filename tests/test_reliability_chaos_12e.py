@@ -379,8 +379,19 @@ def test_c16_result_upload_resumes_same_session_after_data_plane_interruption(
             self.received.add(idx)
             return {"status": "accepted"}
 
-        def complete_upload(self, _upload_id, _payload, _token):
+        def complete_upload(
+            self, _upload_id, _payload, _token, *,
+            routing_plan_hash="", pipeline_revision="",
+        ):
             assert self.received == {0, 1}
+            # 12I.2: маршрут и ревизия доезжают до транспорта из СОХРАНЁННЫХ
+            # метаданных попытки. Здесь их не передают, и это правильный
+            # контроль: аргументы обязаны быть необязательными, иначе досылка
+            # старых попыток сломалась бы на сигнатуре.
+            self.completed_with = {
+                "routing_plan_hash": routing_plan_hash,
+                "pipeline_revision": pipeline_revision,
+            }
             return {"state": "completed", "retention_until": 1234.0}
 
     client = Client()
@@ -403,6 +414,7 @@ def test_c16_result_upload_resumes_same_session_after_data_plane_interruption(
     result = upload_result(**arguments)
 
     assert result["retention_until"] == 1234.0
+    assert client.completed_with == {"routing_plan_hash": "", "pipeline_revision": ""}
     assert client.create_calls == 2
     assert client.chunk_calls == [0, 1, 1, 1, 1]
 

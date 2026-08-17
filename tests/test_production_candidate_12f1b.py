@@ -52,9 +52,24 @@ def test_state_root_permissions_and_wal(settings):
     assert stat.S_IMODE(settings.db_path.stat().st_mode) == 0o600
     from backend.app.services.distributed_workers import database
 
+    from backend.app.services.distributed_workers import schema
+
     with database.read_conn(settings) as conn:
         assert conn.execute("PRAGMA journal_mode").fetchone()[0].lower() == "wal"
-        assert conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0] == 12
+        # Инвариант: свежесозданная база доведена до КАНОНИЧЕСКОЙ версии кода,
+        # а не до числа, записанного здесь однажды. Прежняя жёсткая «12»
+        # проверяла возраст теста, а не миграцию: версия 13 приехала вместе с
+        # переоформлением личности воркера (e6015d33), и тест начал падать на
+        # исправном продакшене. Сравнение с SCHEMA_VERSION ловит настоящую
+        # регрессию — недоехавшую или частично применённую миграцию.
+        applied = conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
+        assert applied == schema.SCHEMA_VERSION
+        # Ни один шаг не должен пропасть: подряд, начиная с первого.
+        versions = [
+            row[0]
+            for row in conn.execute("SELECT version FROM schema_migrations ORDER BY version")
+        ]
+        assert versions == list(range(1, schema.SCHEMA_VERSION + 1))
 
 
 def test_new_worker_is_durably_drained_and_heartbeat_cannot_resume(settings):

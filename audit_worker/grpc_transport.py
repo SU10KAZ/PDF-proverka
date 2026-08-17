@@ -18,12 +18,18 @@ from typing import Any, Callable
 import grpc
 
 from audit_worker import PROTOCOL_VERSION, __version__
-from audit_worker.client import CenterError, SequenceGapError, backoff_delays
+from audit_worker.client import (
+    CenterError,
+    ResultRejectedError,
+    SequenceGapError,
+    backoff_delays,
+)
 from audit_worker.local_store import (
     LocalJobStore, WorkerStateStore, atomic_write_json, read_json,
 )
 from audit_worker.key_store import platform_key_store
 from audit_worker.mtls_identity import load_identity
+from audit_worker.uploader import delivery_already_acknowledged
 from contracts.agent_stream.v1 import adapters
 from contracts.agent_stream.v1 import agent_stream_pb2 as stream_pb
 from contracts.agent_stream.v1 import agent_stream_pb2_grpc as stream_grpc
@@ -52,6 +58,7 @@ WORKER_METRIC_NAMES = (
     "cancel_commands_received",
     "result_ready_sent",
     "result_acks_received",
+    "result_acks_replayed",
     "protocol_errors",
     "mtls_handshakes_total",
     "mtls_handshake_failures",
@@ -849,18 +856,43 @@ class GrpcStreamControlTransport:
     def get_upload(self, upload_id: str) -> dict[str, Any]:
         return self.data.get_upload(upload_id)
 
+    def post_resources(self, snapshot: dict[str, Any]) -> dict[str, Any]:
+        """Эксплуатационная сводка едет по УЖЕ существующему каналу данных.
+
+        Поток Agent Stream v1 её не переносит: Heartbeat/ResourceSummary — это
+        закрытые сообщения с фиксированным набором полей и зарезервированными
+        номерами, а расширять их значит перевыпускать контракт и перекатывать
+        шлюз ради диагностической строки. Тот же канал HTTPS, что везёт
+        пакеты, уже аутентифицирован и уже ходит в центр.
+        """
+        return self.data.post_resources(snapshot)
+
     def put_chunk(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         kwargs["execution_token"] = ""
         return self.data.put_chunk(*args, **kwargs)
 
-    def complete_upload(self, upload_id: str, payload: dict[str, Any], _token: str) -> dict[str, Any]:
+    def complete_upload(
+        self,
+        upload_id: str,
+        payload: dict[str, Any],
+        _token: str,
+        *,
+        routing_plan_hash: str = "",
+        pipeline_revision: str = "",
+    ) -> dict[str, Any]:
         # HTTPS validates and stores the bytes first. Retention authority is
         # intentionally the subsequent stream ResultAck, never this HTTP reply.
-        self.data.complete_upload(upload_id, payload, "")
+        http_response = self.data.complete_upload(upload_id, payload, "") or {}
         meta = self._uploads.get(upload_id, {})
         assignment = self._assignments.get(str(payload.get("attempt_id") or ""), {})
         params = assignment.get("params") or {}
         routing = params.get("routing_plan") or {}
+        # Приоритет у СОХРАНЁННОГО значения: память транспорта пуста после
+        # рестарта агента, и именно тогда идёт досылка.
+        effective_route = str(routing_plan_hash or routing.get("routing_plan_hash") or "")
+        effective_revision = str(
+            pipeline_revision or self.config.pipeline_revision or ""
+        )
         response = self._send(
             "result_ready",
             adapters.result_ready_from_domain(
@@ -873,8 +905,8 @@ class GrpcStreamControlTransport:
                     "expected_hash": meta.get("expected_hash") or payload.get("sha256"),
                     "compression": meta.get("compression") or "gzip",
                     "manifest_version": meta.get("manifest_version") or 1,
-                    "routing_plan_hash": routing.get("routing_plan_hash") or "",
-                    "pipeline_revision": self.config.pipeline_revision or "",
+                    "routing_plan_hash": effective_route,
+                    "pipeline_revision": effective_revision,
                     "ready_at": time.time(),
                 }
             ),
@@ -883,8 +915,30 @@ class GrpcStreamControlTransport:
         self._metric("result_ready_sent")
         kind = response.WhichOneof("payload")
         if kind == "result_rejected":
-            raise CenterError(422, response.result_rejected.safe_detail)
+            rejected = response.result_rejected
+            # Порядок здесь не случаен. Сначала ВСЕГДА пробуем штатный путь:
+            # ResultReady с сохранённым маршрутом даёт шлюзу запись уведомления
+            # и настоящий ResultAck. И только если поток отказал невосстановимо,
+            # смотрим, не подтвердил ли центр приём ещё по HTTP.
+            #
+            # Обратный порядок (сначала HTTP-подтверждение) закрывал бы доставку
+            # молча и НАВСЕГДА оставлял шлюз без записи о результате: агент,
+            # упавший между удачным complete и ResultReady, больше никогда бы
+            # его не послал.
+            if delivery_already_acknowledged(http_response):
+                self._metric("result_acks_replayed")
+                return http_response
+            raise ResultRejectedError(
+                422,
+                rejected.safe_detail,
+                retryable=bool(rejected.retryable),
+                reason=str(rejected.reason),
+                acknowledgement=None,
+            )
         if kind == "error":
+            if delivery_already_acknowledged(http_response):
+                self._metric("result_acks_replayed")
+                return http_response
             raise CenterError(409, response.error.safe_message)
         self._metric("result_acks_received")
         return adapters.result_ack_to_http(response.result_ack)

@@ -182,8 +182,78 @@ def _sanitize_warnings(warnings: Any) -> list[dict[str, Any]]:
 # Поля снимка ресурсов, которые ДОЛЖНЫ быть числами. Всё остальное в этих
 # разделах — либо короткая строка из закрытого набора, либо мусор.
 _NUMERIC_SNAPSHOT_SECTIONS = ("ram", "cpu", "gpu", "disk", "processes", "slots")
+#: Публичное имя того же набора: роутер по нему отличает снимок РЕСУРСОВ от
+#: одинокой эксплуатационной сводки и не затирает первым второе.
+RESOURCE_SNAPSHOT_SECTIONS = _NUMERIC_SNAPSHOT_SECTIONS
 _SNAPSHOT_TEXT_FIELDS = {"binding_constraint", "explanation"}
 _SNAPSHOT_TEXT_MAX = 200
+
+# Эксплуатационная сводка воркера (раздел `runtime`). Состав задан
+# ПЕРЕЧИСЛЕНИЕМ, а не фильтром «выкинуть плохое»: новое поле воркера не должно
+# попадать на экран и в базу само по себе. Ни одно из этих значений не
+# участвует в решениях центра — это только показания.
+_RUNTIME_NUMERIC_FIELDS = ("at",)
+_RUNTIME_TEXT_FIELDS = {"transport": 40, "gateway_target": 120, "worker_release": 64}
+_OUTBOX_NUMERIC_FIELDS = (
+    "attempts",
+    "last_written_seq",
+    "last_acked_seq",
+    "pending",
+    "last_ack_at",
+)
+_OUTBOX_TEXT_FIELDS = {"status": 24}
+
+
+#: Потолок для КАЖДОГО числа сводки. Воркер полу-доверенный: `10**999` — не
+#: гипотеза, а обычный питоновский int, который переживает JSON и роняет
+#: `float()` в проекции OverflowError'ом — то есть весь список воркеров у
+#: оператора. Потолок выбран заведомо выше любого мыслимого номера события и
+#: заведомо ниже границы double.
+_RUNTIME_NUMBER_MAX = 2 ** 53
+
+
+def _bounded_number(value: Any) -> Optional[float]:
+    """Конечное число в разумных пределах — или ничего."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    try:
+        number = float(value)
+    except (OverflowError, ValueError):
+        return None
+    if number != number or number in (float("inf"), float("-inf")):
+        return None
+    if abs(number) > _RUNTIME_NUMBER_MAX:
+        return None
+    return number
+
+
+def _sanitize_runtime(raw: Any) -> Optional[dict[str, Any]]:
+    """Раздел `runtime` снимка: только числа и короткие строки из белого списка."""
+    if not isinstance(raw, dict):
+        return None
+    out: dict[str, Any] = {}
+    for key in _RUNTIME_NUMERIC_FIELDS:
+        number = _bounded_number(raw.get(key))
+        if number is not None:
+            out[key] = number
+    for key, limit in _RUNTIME_TEXT_FIELDS.items():
+        value = raw.get(key)
+        if isinstance(value, str) and value:
+            out[key] = value[:limit]
+    outbox = raw.get("event_outbox")
+    if isinstance(outbox, dict):
+        clean_outbox: dict[str, Any] = {}
+        for key in _OUTBOX_NUMERIC_FIELDS:
+            number = _bounded_number(outbox.get(key))
+            if number is not None:
+                clean_outbox[key] = number
+        for key, limit in _OUTBOX_TEXT_FIELDS.items():
+            value = outbox.get(key)
+            if isinstance(value, str) and value:
+                clean_outbox[key] = value[:limit]
+        out["event_outbox"] = clean_outbox
+    out.setdefault("at", time.time())
+    return out or None
 
 
 def sanitize_resource_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
@@ -214,6 +284,9 @@ def sanitize_resource_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
             elif key in _SNAPSHOT_TEXT_FIELDS and isinstance(value, str):
                 out[key] = value[:_SNAPSHOT_TEXT_MAX]
         clean[section] = out
+    runtime = _sanitize_runtime(snapshot.get("runtime"))
+    if runtime is not None:
+        clean["runtime"] = runtime
     return clean
 
 

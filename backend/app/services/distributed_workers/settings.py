@@ -58,6 +58,11 @@ def _env_optional_id(name: str, kind: str) -> int | None:
     return identifier
 
 
+def _env_optional_path(name: str) -> Path | None:
+    raw = os.environ.get(name, "").strip()
+    return Path(raw) if raw else None
+
+
 def _env_strict_bool(name: str, default: bool = False) -> bool:
     raw = os.environ.get(name)
     if raw is None or not raw.strip():
@@ -106,6 +111,14 @@ class DistributedWorkersSettings:
     quota_history_retention_days: int = 120
     quota_history_max_rows_per_account: int = 5000
     quota_history_min_interval_sec: int = 900
+    # ─── Диагностика выкатки ────────────────────────────────────────────────
+    # Манифесты релизов центра и шлюза. Это ФАКТ РАЗВЁРТЫВАНИЯ, а не телеметрия
+    # воркера: шлюз — отдельный процесс под другим пользователем, о себе он в
+    # общую базу ничего не пишет, а угадывать его релиз по каталогам значило бы
+    # показывать оператору догадку. Не задано — экран честно скажет «нет
+    # данных», а не выдумает совпадение версий.
+    center_release_manifest: Path | None = None
+    gateway_release_manifest: Path | None = None
 
     # ─── Производные пути ───────────────────────────────────────────────────
     @property
@@ -262,4 +275,6 @@ def get_settings() -> DistributedWorkersSettings:
             "DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC",
             config.DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC,
         ),
+        center_release_manifest=_env_optional_path("DISTRIBUTED_WORKERS_CENTER_RELEASE_MANIFEST"),
+        gateway_release_manifest=_env_optional_path("DISTRIBUTED_WORKERS_GATEWAY_RELEASE_MANIFEST"),
     )

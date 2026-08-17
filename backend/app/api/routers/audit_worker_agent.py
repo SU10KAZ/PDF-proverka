@@ -604,12 +604,19 @@ async def post_resources(
         clean,
         settings=principal.settings,
     )
-    await database.run_db(
-        repositories.update_worker_fields,
-        principal.worker_id,
-        {"resource_snapshot": json.dumps(clean, ensure_ascii=False)},
-        settings=principal.settings,
-    )
+    # Колонку `workers.resource_snapshot` трогаем ТОЛЬКО когда пришли настоящие
+    # ресурсы. Эксплуатационная сводка приходит одна, без CPU и диска, и прямая
+    # запись колонки стёрла бы их до следующего heartbeat. Читается сводка не
+    # отсюда, а из истории снимков (`latest_runtime_diagnostics`): колонку
+    # перезаписывает heartbeat, который у потокового воркера обрабатывает ШЛЮЗ
+    # — процесс со своим, возможно более старым, релизом.
+    if any(section in clean for section in worker_registry.RESOURCE_SNAPSHOT_SECTIONS):
+        await database.run_db(
+            repositories.update_worker_fields,
+            principal.worker_id,
+            {"resource_snapshot": json.dumps(clean, ensure_ascii=False)},
+            settings=principal.settings,
+        )
     return {"accepted": True, "server_time": time.time()}
 
 
