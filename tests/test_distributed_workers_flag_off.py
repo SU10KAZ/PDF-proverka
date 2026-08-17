@@ -251,16 +251,55 @@ def test_only_one_subprocess_spawn_point():
                         assert isinstance(kw.value, ast.Constant) and kw.value.value is False, (
                             f"shell=True в {path.name}:{node.lineno}"
                         )
-    # Точек ровно три, и все известны поимённо:
-    #   test_runner.py  — запуск ТЕСТОВОГО процесса;
-    #   audit_runner.py — запуск РЕАЛЬНОГО аудита (этап ExecutionBackend);
-    #   __main__.py     — dev-режим `run`, поднимающий собственного исполнителя
-    #                     фиксированным argv `python -m audit_worker executor`.
+    # Точек ровно четыре, и все известны поимённо:
+    #   test_runner.py      — запуск ТЕСТОВОГО процесса;
+    #   audit_runner.py     — запуск РЕАЛЬНОГО аудита (этап ExecutionBackend);
+    #   __main__.py         — dev-режим `run`, поднимающий собственного
+    #                         исполнителя фиксированным argv
+    #                         `python -m audit_worker executor`;
+    #   resource_monitor.py — опрос `nvidia-smi` ради загрузки GPU и VRAM
+    #                         (этап 12I.1).
     # Третья добавлена осознанно: реальный аудит не мог использовать точку
     # тестового процесса — у него другой argv и другое окружение. Гарантия при
     # этом сохранена: обе точки строят argv САМИ, из констант своего модуля.
+    #
+    # Четвёртая внесена в список ОСОЗНАННО и с оговорками. Телеметрия GPU
+    # появилась вместе с 12I.1, и этот тест её сразу поймал — ровно за этим он и
+    # написан: любая новая точка порождения процесса обязана быть названа here,
+    # а не просочиться молча. Опрос отличается от остальных трёх тем, что не
+    # исполняет задание: фиксированный argv из литералов, без shell, с таймаутом
+    # и `check=False`, любая ошибка гасится в «источник недоступен». Проверки
+    # ниже это и закрепляют, чтобы запись в списке не превратилась в лазейку.
     files = sorted({entry.split(":", 1)[0] for entry in found})
-    assert files == ["__main__.py", "audit_runner.py", "test_runner.py"], found
+    assert files == [
+        "__main__.py", "audit_runner.py", "resource_monitor.py", "test_runner.py",
+    ], found
+    assert sum(1 for e in found if e.startswith("resource_monitor.py")) == 1, found
+
+    # Опрос GPU обязан оставаться безобидным: только subprocess.run, argv из
+    # строковых литералов, обязательный таймаут и check=False.
+    gpu_tree = ast.parse((_ROOT / "audit_worker" / "resource_monitor.py").read_text("utf-8"))
+    gpu_calls = [
+        node for node in ast.walk(gpu_tree)
+        if isinstance(node, ast.Call) and getattr(node.func, "attr", None) in spawners
+        and getattr(getattr(node.func, "value", None), "id", None) in ("subprocess", "os")
+    ]
+    assert len(gpu_calls) == 1, "в resource_monitor должен быть один опрос"
+    call = gpu_calls[0]
+    assert getattr(call.func, "attr", None) == "run", "только subprocess.run"
+    argv = call.args[0]
+    assert isinstance(argv, ast.List) and argv.elts, "argv обязан быть списком литералов"
+    for element in argv.elts:
+        assert isinstance(element, ast.Constant) and isinstance(element.value, str), (
+            "в argv опроса GPU допустимы только строковые литералы"
+        )
+    keywords = {kw.arg for kw in call.keywords}
+    assert "timeout" in keywords, "опрос GPU обязан иметь таймаут"
+    for kw in call.keywords:
+        if kw.arg == "check":
+            assert isinstance(kw.value, ast.Constant) and kw.value.value is False, (
+                "опрос GPU не вправе ронять сердцебиение"
+            )
     assert sum(1 for e in found if e.startswith("test_runner.py")) == 1, found
     assert sum(1 for e in found if e.startswith("audit_runner.py")) == 1, found
 
