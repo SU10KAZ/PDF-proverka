@@ -2886,23 +2886,21 @@ const app = createApp({
             }
             if (pairs.length === 0) return;
 
-            // Пред-предупреждение: если у части source есть готовые findings —
-            // спрашиваем явное подтверждение, что их потеря приемлема.
+            // Одно подтверждение на всё действие. Второй вопрос («результаты
+            // source будут потеряны») убран 2026-08-18: в projects_v2 артефакты
+            // аудита переезжают в новую версию, а не отбрасываются, — спрашивать
+            // о потере стало и лишним, и неверным. Флаг discard шлём всегда:
+            // на legacy-пути он лишь снимает 409 source_output_not_empty,
+            // из-за которого всплывал третий вопрос подряд.
             const withArtifacts = pairs.filter(p => _projectHasAuditArtifacts(p.source));
-            let discardAllowed = false;
+            const artifactsLine = withArtifacts.length
+                ? `\nРезультаты аудита (${withArtifacts.length} шт.) переедут в новую версию.`
+                : '';
             if (!confirm(
                 `Привязать ${pairs.length} проект(ов) как версии существующих?\n` +
-                `Исходные карточки будут удалены. V1 каждого target не изменится.`
+                `Исходные карточки будут удалены. V1 каждого target не изменится.` +
+                artifactsLine
             )) return;
-            if (withArtifacts.length > 0) {
-                const names = withArtifacts.map(p => p.source.name || p.source.project_id).join('\n  • ');
-                if (!confirm(
-                    `У ${withArtifacts.length} source-проект(ов) есть готовые результаты аудита:\n  • ${names}\n\n`
-                    + `Они БУДУТ ПОТЕРЯНЫ при слиянии (новая версия начинается с нуля).\n`
-                    + `Продолжить?`
-                )) return;
-                discardAllowed = true;
-            }
 
             editProjectsLoading.value = true;
             const errors = [];
@@ -2910,17 +2908,13 @@ const app = createApp({
             try {
                 for (const { source, targetId } of pairs) {
                     try {
-                        let res = await _mergeOnePair(source, targetId, { discardSourceOutput: discardAllowed });
-                        // Backend может сам определить артефакты, которых фронт не увидел —
-                        // в этом случае возвращает 409 с code=source_output_not_empty.
+                        let res = await _mergeOnePair(source, targetId, { discardSourceOutput: true });
+                        // Страховка для legacy-пути: если backend всё же ответил
+                        // 409 source_output_not_empty — повторяем с флагом молча,
+                        // согласие уже получено первым (и единственным) вопросом.
                         if (!res.ok && res.status === 409
                             && res.detail && typeof res.detail === 'object'
                             && res.detail.code === 'source_output_not_empty') {
-                            if (!confirm(
-                                `${source.name || source.project_id}: ${res.detail.message}\n\nПродолжить и потерять _output?`
-                            )) {
-                                throw new Error('Отменено пользователем');
-                            }
                             res = await _mergeOnePair(source, targetId, { discardSourceOutput: true });
                         }
                         if (!res.ok) {
