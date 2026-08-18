@@ -256,11 +256,24 @@ def build(
         raise SystemExit(f"базовый релиз не найден: {base}")
     base_manifest = json.loads((base / "release-manifest.json").read_text(encoding="utf-8"))
     base_commit = str(base_manifest.get("commit") or "")
-    if base_commit and base_commit != parent:
-        raise SystemExit(
-            f"релиз-донор собран из {base_commit[:8]}, а родитель HEAD — "
-            f"{parent[:8]}: происхождение в манифесте вышло бы ложным"
+    if base_commit:
+        # Донор обязан быть ПРЕДКОМ собираемого коммита, а не непременно его
+        # родителем: релиз из двух и более коммитов — обычное дело, и
+        # требование «ровно HEAD^» запрещало бы его без всякой пользы. А вот
+        # донор из чужой ветки означал бы клонированный venv неизвестного
+        # происхождения — это отказ.
+        ancestry = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", base_commit, commit],
+            cwd=REPO_ROOT, capture_output=True,
         )
+        if ancestry.returncode != 0:
+            raise SystemExit(
+                f"релиз-донор собран из {base_commit[:8]}, который не является "
+                f"предком {commit[:8]}: происхождение venv неизвестно"
+            )
+    # Дерево родителя берётся ИЗ GIT, а не из манифеста донора: донор может
+    # отстоять на несколько коммитов, и его дерево — не дерево HEAD^.
+    parent_tree = run("git", "rev-parse", f"{parent}^{{tree}}")
     # Производные поля прошлого релиза не наследуются: они описывают ЧУЖУЮ
     # сборку и в новом манифесте были бы неправдой.
     for derived in ("changed_paths", "patch_bundle_file", "patch_bundle_sha256",
@@ -313,11 +326,11 @@ def build(
         with staging_workspace() as tmp:
             return _build(tmp, base=base, final=final, release_id=release_id,
                           commit=commit, parent=parent, tree=tree,
-                          base_manifest=base_manifest, kind=kind, notes=notes,
-                          tests=tests)
+                          parent_tree=parent_tree, base_manifest=base_manifest,
+                          kind=kind, notes=notes, tests=tests)
 
 
-def _build(tmp, *, base, final, release_id, commit, parent, tree,
+def _build(tmp, *, base, final, release_id, commit, parent, tree, parent_tree,
            base_manifest, kind, notes, tests) -> dict[str, object]:
     staging = tmp / release_id
     subprocess.run(["cp", "-a", str(base), str(staging)], check=True)
@@ -388,7 +401,7 @@ def _build(tmp, *, base, final, release_id, commit, parent, tree,
         "git_tree_sha1": tree,
         "immediate_git_parent": parent,
         "parent_commit": parent,
-        "parent_tree_sha1": base_manifest.get("git_tree_sha1"),
+        "parent_tree_sha1": parent_tree,
         "fileset_sha256": files_digest,
         "database_schema": {"baseline": code_schema, "target": code_schema,
                             "migration": "none"},

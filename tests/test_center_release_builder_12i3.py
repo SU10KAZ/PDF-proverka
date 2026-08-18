@@ -502,11 +502,37 @@ def test_partial_release_of_the_same_commit_is_not_declared_ready(tmp_path, monk
         ("git", "status", "--porcelain"): "",
         ("git", "rev-parse", "HEAD^"): "b" * 40,
         ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
+        ("git", "rev-parse", "b" * 40 + "^{tree}"): "d" * 40,
     }[a])
     monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    # Донор без записанного коммита — проверка происхождения пропускается, а
+    # проверяем мы здесь другое: обломок каталога того же коммита.
     (base / "release-manifest.json").write_text(
-        json.dumps({"commit": "b" * 40, "database_schema": {"target": 13}}),
-        encoding="utf-8")
+        json.dumps({"database_schema": {"target": 13}}), encoding="utf-8")
     with pytest.raises(SystemExit) as caught:
         builder.build(base_release="base", kind="k", notes="n", releases_dir=releases)
     assert "незавершённую сборку" in str(caught.value)
+
+
+def test_donor_release_from_a_foreign_branch_is_refused(tmp_path, monkeypatch):
+    """Клонировать venv из релиза чужой ветки нельзя: происхождение неизвестно.
+
+    Требовать при этом РОВНО `HEAD^` было бы вредно: релиз из двух коммитов —
+    обычное дело, а такое правило запрещало бы его без всякой пользы. Правило —
+    «донор обязан быть предком».
+    """
+    releases = tmp_path / "releases"
+    base = _release(tmp_path, "base")
+    (base / "release-manifest.json").write_text(
+        json.dumps({"commit": "f" * 40, "database_schema": {"target": 13}}),
+        encoding="utf-8")
+    monkeypatch.setattr(builder, "run", lambda *a, **k: {
+        ("git", "rev-parse", "HEAD"): "a" * 40,
+        ("git", "status", "--porcelain"): "",
+        ("git", "rev-parse", "HEAD^"): "b" * 40,
+        ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
+    }[a])
+    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    with pytest.raises(SystemExit) as caught:
+        builder.build(base_release="base", kind="k", notes="n", releases_dir=releases)
+    assert "не является предком" in str(caught.value)
