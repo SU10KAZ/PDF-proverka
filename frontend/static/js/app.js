@@ -2894,23 +2894,21 @@ const app = createApp({
             }
             if (pairs.length === 0) return;
 
-            // Пред-предупреждение: если у части source есть готовые findings —
-            // спрашиваем явное подтверждение, что их потеря приемлема.
+            // Одно подтверждение на всё действие. Второй вопрос («результаты
+            // source будут потеряны») убран 2026-08-18: в projects_v2 артефакты
+            // аудита переезжают в новую версию, а не отбрасываются, — спрашивать
+            // о потере стало и лишним, и неверным. Флаг discard шлём всегда:
+            // на legacy-пути он лишь снимает 409 source_output_not_empty,
+            // из-за которого всплывал третий вопрос подряд.
             const withArtifacts = pairs.filter(p => _projectHasAuditArtifacts(p.source));
-            let discardAllowed = false;
+            const artifactsLine = withArtifacts.length
+                ? `\nРезультаты аудита (${withArtifacts.length} шт.) переедут в новую версию.`
+                : '';
             if (!confirm(
                 `Привязать ${pairs.length} проект(ов) как версии существующих?\n` +
-                `Исходные карточки будут удалены. V1 каждого target не изменится.`
+                `Исходные карточки будут удалены. V1 каждого target не изменится.` +
+                artifactsLine
             )) return;
-            if (withArtifacts.length > 0) {
-                const names = withArtifacts.map(p => p.source.name || p.source.project_id).join('\n  • ');
-                if (!confirm(
-                    `У ${withArtifacts.length} source-проект(ов) есть готовые результаты аудита:\n  • ${names}\n\n`
-                    + `Они БУДУТ ПОТЕРЯНЫ при слиянии (новая версия начинается с нуля).\n`
-                    + `Продолжить?`
-                )) return;
-                discardAllowed = true;
-            }
 
             editProjectsLoading.value = true;
             const errors = [];
@@ -2918,17 +2916,13 @@ const app = createApp({
             try {
                 for (const { source, targetId } of pairs) {
                     try {
-                        let res = await _mergeOnePair(source, targetId, { discardSourceOutput: discardAllowed });
-                        // Backend может сам определить артефакты, которых фронт не увидел —
-                        // в этом случае возвращает 409 с code=source_output_not_empty.
+                        let res = await _mergeOnePair(source, targetId, { discardSourceOutput: true });
+                        // Страховка для legacy-пути: если backend всё же ответил
+                        // 409 source_output_not_empty — повторяем с флагом молча,
+                        // согласие уже получено первым (и единственным) вопросом.
                         if (!res.ok && res.status === 409
                             && res.detail && typeof res.detail === 'object'
                             && res.detail.code === 'source_output_not_empty') {
-                            if (!confirm(
-                                `${source.name || source.project_id}: ${res.detail.message}\n\nПродолжить и потерять _output?`
-                            )) {
-                                throw new Error('Отменено пользователем');
-                            }
                             res = await _mergeOnePair(source, targetId, { discardSourceOutput: true });
                         }
                         if (!res.ok) {
@@ -3435,9 +3429,22 @@ const app = createApp({
                 && p.optimization_review_status === 'complete';
         }
 
+        // Ждёт ли проект проверки экспертом. Решает бэкенд (`review_pending`):
+        // он смотрит на ПОСЛЕДНЮЮ версию, где есть результаты аудита, поэтому
+        // свежая версия без аудита не превращает проверенный проект в
+        // непроверенный и не прячет непроверенную предыдущую версию. Проект,
+        // у которого проверять нечего (аудит не запускался ни разу), в счётчик
+        // не попадает. Fallback на две галочки — для источников постарше,
+        // которые поле ещё не отдают.
+        function isProjectReviewPending(p) {
+            if (!p) return false;
+            if (typeof p.review_pending === 'boolean') return p.review_pending;
+            return !hasBothExpertChecks(p);
+        }
+
         function expertUncheckedCount(items) {
             return (items || []).reduce(
-                (count, p) => count + (hasBothExpertChecks(p) ? 0 : 1),
+                (count, p) => count + (isProjectReviewPending(p) ? 1 : 0),
                 0,
             );
         }
@@ -3494,13 +3501,14 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
-        // Проект «не проверен» (по последней загруженной версии), если у него
-        // есть аудит (замечания или оптимизации), но эксперт НЕ довёл оценку
-        // до конца — статус != 'complete' (нет отметок ИЛИ частично).
-        // Проекты без аудита не считаются — для них есть «Выделить необработанные».
+        // Проект «не проверен» — тот же критерий, что и у счётчика в сайдбаре
+        // (`isProjectReviewPending`): последняя версия С РЕЗУЛЬТАТАМИ без обеих
+        // галочек. Раньше здесь была своя формула (`expert_review_status` по
+        // текущей версии), из-за чего «Не проверено (N)» в шапке раздела и
+        // бейдж в сайдбаре показывали разные числа. Проекты без аудита не
+        // считаются — для них есть «Выделить необработанные».
         function isProjectUnreviewed(p) {
-            const hasAudit = (p.findings_count || 0) > 0 || (p.optimization_count || 0) > 0;
-            return hasAudit && p.expert_review_status !== 'complete';
+            return isProjectReviewPending(p);
         }
 
         function sectionUnreviewedPids(sectionCode) {
