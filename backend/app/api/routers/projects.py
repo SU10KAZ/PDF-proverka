@@ -349,8 +349,14 @@ class FlatVersionFromProjectRequest(BaseModel):
 
 
 @router.post("/versions/from-project")
-async def flat_create_version_from_project(req: FlatVersionFromProjectRequest):
-    """Flat-вариант POST /{target}/versions/from-project: target в body."""
+def flat_create_version_from_project(req: FlatVersionFromProjectRequest):
+    """Flat-вариант POST /{target}/versions/from-project: target в body.
+
+    Обработчик СИНХРОННЫЙ намеренно: слияние копирует/переносит файлы версии
+    и в `async def` держало event loop, из-за чего портал переставал отвечать
+    вообще всем (инцидент 2026-08-18). Обычный `def` FastAPI исполняет в
+    threadpool.
+    """
     from backend.app.services.common import version_service as _vs
     from backend.app.pipeline.manager import pipeline_manager
 
@@ -737,7 +743,7 @@ class VersionFromProjectRequest(BaseModel):
 
 
 @router.post("/{target_project_id:path}/versions/from-project")
-async def create_version_from_project(
+def create_version_from_project(
     target_project_id: str,
     req: VersionFromProjectRequest,
 ):
