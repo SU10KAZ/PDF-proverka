@@ -96,6 +96,16 @@ def _install_default_thread_executor() -> None:
         print(f"[startup] не удалось расширить пул потоков: {exc}")
 
 
+async def _validate_distributed_worker_state() -> None:
+    """Fail before serving traffic when shared persistent state is misprepared."""
+    from backend.app.services.distributed_workers import database
+    from backend.app.services.distributed_workers.settings import get_settings
+
+    settings = get_settings()
+    if settings.enabled:
+        await database.run_db(database.ensure_ready, settings)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup/shutdown lifecycle."""
@@ -107,6 +117,7 @@ async def lifespan(app: FastAPI):
     # health-проверка не отвечает — и вотчдог убивает живой аудит.
     # Расширяем заранее: потоки дешёвые, а голодание здесь стоит часов работы.
     _install_default_thread_executor()
+    await _validate_distributed_worker_state()
 
     data_dir = Path(__file__).parent / "data"
     data_dir.mkdir(exist_ok=True)
@@ -231,6 +242,48 @@ app.include_router(projects_v2_shadow.router)
 # Чтение журнала действий (сам журнал пишет ActionLogMiddleware + хуки).
 app.include_router(action_log.router)
 # migrated_findings уже подключён выше — повторно не подключаем.
+
+# ─── Распределённые audit-worker (этап 0) ───────────────────
+# Роутеры регистрируются ТОЛЬКО при DISTRIBUTED_WORKERS_ENABLED=true. При
+# выключенном флаге путей нет вовсе (404), SQLite-база не создаётся и фоновых
+# задач не появляется — существующая платформа работает без изменений.
+# Исключение: /api/workers/status отдаётся всегда, чтобы фронт мог честно
+# показать «функция отключена» вместо пустого экрана.
+from backend.app.services.distributed_workers.settings import (  # noqa: E402
+    get_settings as _dw_settings,
+)
+
+from backend.app.api.routers import audit_workers_admin  # noqa: E402
+
+# /api/workers/status отвечает всегда — фронт по нему понимает, что показывать.
+app.include_router(audit_workers_admin.status_router)
+
+if _dw_settings().enabled:
+    from backend.app.api.routers import audit_worker_agent  # noqa: E402
+    from backend.app.core import portal_auth as _portal_auth  # noqa: E402
+
+    app.include_router(audit_worker_agent.router)
+
+    # Операторский контур собственной аутентификации не имеет — он целиком
+    # опирается на портальную. Без неё `POST /api/workers/{id}/rotate-token`
+    # отдал бы живой токен воркера любому, кто дотянулся до порта. Поднимаем
+    # его только при включённой портальной защите либо при ЯВНОМ признании
+    # риска (локальный пилот).
+    _dw_admin_ok = (
+        _portal_auth.get_settings().enabled or _dw_settings().allow_insecure_admin
+    )
+    if _dw_admin_ok:
+        app.include_router(audit_workers_admin.router)
+        from backend.app.api.routers import worker_bootstrap  # noqa: E402
+        app.include_router(worker_bootstrap.router)
+        print("[startup] распределённые audit-worker: ВКЛЮЧЕНЫ")
+    else:
+        print(
+            "[startup] распределённые audit-worker: контур воркеров включён, "
+            "ОПЕРАТОРСКИЙ контур НЕ поднят — PORTAL_AUTH_ENABLED=false. "
+            "Включите портальную авторизацию или, для локального пилота, "
+            "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN=true."
+        )
 
 # ─── WebSocket Endpoints ────────────────────────────────────
 def _ws_authorized(websocket: WebSocket) -> bool:
@@ -387,6 +440,27 @@ async def serve_spa():
     # SPA-точка входа не должна кэшироваться: иначе браузер держит старый index.html
     # со старым ?v= и не подхватывает свежий CSS/JS. Сами css/js версионируются mtime
     # и кэшируются нормально — no-cache нужен только для HTML-обёртки.
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
+
+
+@app.get("/audit-workers")
+async def serve_audit_workers():
+    """Отдать экран «Аудит-воркеры».
+
+    Отдельная страница по образцу /model-control: так экран не требует правок
+    в 19-тысячестрочном app.js и не может сломать основной SPA. Сама страница
+    сначала спрашивает /api/workers/status и при выключенном флаге честно
+    показывает «функция отключена».
+    """
+    page_path = _html_dir / "audit-workers.html"
+    if not page_path.exists():
+        return {"message": "Audit workers page not found"}
+    css_path = (_static_mount_dir / "css" / "audit-workers.css") if _static_mount_dir else None
+    js_path = (_static_mount_dir / "js" / "audit-workers.js") if _static_mount_dir else None
+    css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
+    js_ver = int(js_path.stat().st_mtime) if js_path and js_path.exists() else 0
+    html = page_path.read_text(encoding="utf-8")
+    html = html.replace("{{css_version}}", str(css_ver)).replace("{{js_version}}", str(js_ver))
     return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
 
 

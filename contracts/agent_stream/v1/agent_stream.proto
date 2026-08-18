@@ -1,0 +1,340 @@
+syntax = "proto3";
+
+package auditmanager.agent_stream.v1;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "contracts/agent_stream/v1/common.proto";
+
+service AgentStreamService {
+  rpc Connect(stream AgentToCenter) returns (stream CenterToAgent);
+}
+
+enum DuplicateConnectionPolicy {
+  DUPLICATE_CONNECTION_POLICY_UNSPECIFIED = 0;
+  // A strictly greater, worker-persisted connection_epoch supersedes the old
+  // stream. Equal or lower epochs are rejected as stale.
+  DUPLICATE_CONNECTION_POLICY_NEWER_EPOCH_SUPERSEDES = 1;
+}
+
+enum JobDeclineReason {
+  JOB_DECLINE_REASON_UNSPECIFIED = 0;
+  JOB_DECLINE_REASON_UNSUPPORTED_CAPABILITY = 1;
+  JOB_DECLINE_REASON_PROVIDER_UNAVAILABLE = 2;
+  JOB_DECLINE_REASON_REVISION_MISMATCH = 3;
+  JOB_DECLINE_REASON_NO_SLOT = 4;
+  JOB_DECLINE_REASON_INVALID_ROUTING_PLAN = 5;
+  JOB_DECLINE_REASON_PACKAGE_UNSUPPORTED = 6;
+  JOB_DECLINE_REASON_WORKER_DRAINING = 7;
+  JOB_DECLINE_REASON_SOURCE_INVALID = 8;
+  JOB_DECLINE_REASON_OTHER = 9;
+}
+
+enum ProgressStatus {
+  PROGRESS_STATUS_UNSPECIFIED = 0;
+  PROGRESS_STATUS_PENDING = 1;
+  PROGRESS_STATUS_RUNNING = 2;
+  PROGRESS_STATUS_COMPLETED = 3;
+  PROGRESS_STATUS_FAILED = 4;
+  PROGRESS_STATUS_CANCELLED = 5;
+}
+
+enum WorkerEventType {
+  WORKER_EVENT_TYPE_UNSPECIFIED = 0;
+  WORKER_EVENT_TYPE_JOB_ACCEPTED = 1;
+  WORKER_EVENT_TYPE_JOB_STARTED = 2;
+  WORKER_EVENT_TYPE_STAGE_STARTED = 3;
+  WORKER_EVENT_TYPE_STAGE_PROGRESS = 4;
+  WORKER_EVENT_TYPE_LOG_LINE = 5;
+  WORKER_EVENT_TYPE_STAGE_COMPLETED = 6;
+  WORKER_EVENT_TYPE_ARTIFACT_CREATED = 7;
+  WORKER_EVENT_TYPE_QUOTA_WARNING = 8;
+  WORKER_EVENT_TYPE_RESOURCE_WARNING = 9;
+  WORKER_EVENT_TYPE_JOB_COMPLETED_LOCALLY = 10;
+  WORKER_EVENT_TYPE_RESULT_UPLOAD_STARTED = 11;
+  WORKER_EVENT_TYPE_RESULT_UPLOAD_PROGRESS = 12;
+  WORKER_EVENT_TYPE_JOB_COMPLETED = 13;
+  WORKER_EVENT_TYPE_JOB_FAILED = 14;
+  WORKER_EVENT_TYPE_CANCELLATION_RECEIVED = 15;
+  WORKER_EVENT_TYPE_WORKER_RECONNECTED = 16;
+  WORKER_EVENT_TYPE_WORKER_RESTARTED = 17;
+  WORKER_EVENT_TYPE_SOURCE_VERIFIED = 18;
+  WORKER_EVENT_TYPE_SOURCE_INVALID = 19;
+  WORKER_EVENT_TYPE_EVENTS_TRUNCATED = 20;
+}
+
+enum CancelAckStage {
+  CANCEL_ACK_STAGE_UNSPECIFIED = 0;
+  CANCEL_ACK_STAGE_RECEIVED = 1;
+  CANCEL_ACK_STAGE_CANCEL_IN_PROGRESS = 2;
+  CANCEL_ACK_STAGE_CANCELLED = 3;
+  CANCEL_ACK_STAGE_ALREADY_FINISHED = 4;
+  CANCEL_ACK_STAGE_NOT_FOUND = 5;
+  CANCEL_ACK_STAGE_REJECTED = 6;
+}
+
+enum ResultValidationStatus {
+  RESULT_VALIDATION_STATUS_UNSPECIFIED = 0;
+  RESULT_VALIDATION_STATUS_ACCEPTED = 1;
+  RESULT_VALIDATION_STATUS_STORED_UNPUBLISHED = 2;
+}
+
+enum ResultRejectReason {
+  RESULT_REJECT_REASON_UNSPECIFIED = 0;
+  RESULT_REJECT_REASON_HASH_MISMATCH = 1;
+  RESULT_REJECT_REASON_MANIFEST_INVALID = 2;
+  RESULT_REJECT_REASON_BOUNDARY_VIOLATION = 3;
+  RESULT_REJECT_REASON_REVISION_MISMATCH = 4;
+  RESULT_REJECT_REASON_ROUTING_PLAN_HASH_MISMATCH = 5;
+  RESULT_REJECT_REASON_CORRUPT_PACKAGE = 6;
+  RESULT_REJECT_REASON_UNEXPECTED_RESULT = 7;
+  RESULT_REJECT_REASON_OTHER = 8;
+}
+
+message AgentHello {
+  string worker_id = 1;
+  string worker_instance_id = 2;
+  repeated uint32 supported_protocol_versions = 3;
+  string worker_software_version = 4;
+  string execution_revision = 5;
+  string bootstrap_version = 6;
+  CapabilitySnapshot capabilities = 7;
+  uint32 max_slots = 8;
+  repeated AttemptRef active_attempts = 9;
+  repeated EventCursor event_cursors = 10;
+  uint64 connection_epoch = 11;
+  string connection_nonce = 12;
+  reserved 13 to 19;
+}
+
+message CenterHello {
+  uint32 accepted_protocol_version = 1;
+  string connection_id = 2;
+  google.protobuf.Timestamp server_time = 3;
+  google.protobuf.Duration heartbeat_interval = 4;
+  google.protobuf.Duration offer_lease_duration = 5;
+  uint32 max_control_message_bytes = 6;
+  uint32 max_events_per_batch = 7;
+  uint32 max_unacked_event_window = 8;
+  repeated EventCursor resume_cursors = 9;
+  string required_execution_revision = 10;
+  uint32 required_policy_version = 11;
+  string required_policy_sha256 = 12;
+  DuplicateConnectionPolicy duplicate_connection_policy = 13;
+  reserved 14 to 19;
+}
+
+message CapabilitiesChanged {
+  CapabilitySnapshot capabilities = 1;
+  reserved 2 to 9;
+}
+
+message Heartbeat {
+  string worker_id = 1;
+  string connection_id = 2;
+  google.protobuf.Timestamp observed_at = 3;
+  WorkerState worker_state = 4;
+  uint32 active_slots = 5;
+  uint32 max_slots = 6;
+  repeated AttemptRef active_attempts = 7;
+  ResourceSummary resources = 8;
+  string capabilities_revision = 9;
+  string capabilities_sha256 = 10;
+  bool capabilities_changed = 11;
+  bool accepting_jobs = 12;
+  reserved 13 to 19;
+}
+
+message JobOffer {
+  string job_id = 1;
+  string attempt_id = 2;
+  uint32 attempt_number = 3;
+  uint64 assignment_generation = 4;
+  string assigned_worker_id = 5;
+  string project_id = 6;
+  optional string version_id = 7;
+  string job_type = 8;
+  CanonicalJson job_params = 9;
+  RoutingPlanReference routing_plan = 10;
+  string expected_execution_revision = 11;
+  PackageTransferDescriptor source_package = 12;
+  repeated ProviderRequirement provider_requirements = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp offer_expires_at = 15;
+  int32 priority = 16;
+  uint32 required_slots = 17;
+  uint64 event_start_sequence = 18;
+  reserved 19 to 29;
+}
+
+message JobAccept {
+  string job_id = 1;
+  string attempt_id = 2;
+  string worker_id = 3;
+  string routing_plan_hash = 4;
+  string execution_revision = 5;
+  google.protobuf.Timestamp accepted_at = 6;
+  bool source_sha256_verified = 7;
+  uint32 source_manifest_version = 8;
+  repeated string planned_stages = 9;
+  reserved 10 to 15;
+}
+
+message JobDecline {
+  string job_id = 1;
+  string attempt_id = 2;
+  string worker_id = 3;
+  JobDeclineReason reason = 4;
+  string safe_detail = 5;
+  google.protobuf.Timestamp declined_at = 6;
+  reserved 7 to 15;
+}
+
+message ProgressUpdate {
+  string job_id = 1;
+  string attempt_id = 2;
+  string stage_id = 3;
+  optional string action_id = 4;
+  ProgressStatus status = 5;
+  uint64 current = 6;
+  uint64 total = 7;
+  optional double percent = 8;
+  string safe_message = 9;
+  google.protobuf.Timestamp observed_at = 10;
+  reserved 11 to 15;
+}
+
+message WorkerEvent {
+  uint64 sequence = 1;
+  string event_id = 2;
+  WorkerEventType event_type = 3;
+  google.protobuf.Timestamp occurred_at = 4;
+  uint32 schema_version = 5;
+  CanonicalJson safe_payload = 6;
+  reserved 7 to 15;
+}
+
+message EventBatch {
+  string worker_id = 1;
+  string job_id = 2;
+  string attempt_id = 3;
+  uint64 first_sequence = 4;
+  repeated WorkerEvent events = 5;
+  reserved 6 to 9;
+}
+
+message EventAck {
+  string job_id = 1;
+  string attempt_id = 2;
+  uint64 highest_contiguous_sequence = 3;
+  uint32 accepted = 4;
+  uint32 skipped_duplicates = 5;
+  reserved 6 to 9;
+}
+
+message JobStatusUpdate {
+  string job_id = 1;
+  string attempt_id = 2;
+  JobState state = 3;
+  google.protobuf.Timestamp observed_at = 4;
+  ErrorStatus error = 5;
+  reserved 6 to 9;
+}
+
+message CancelCommand {
+  string command_id = 1;
+  string job_id = 2;
+  string attempt_id = 3;
+  string safe_reason = 4;
+  google.protobuf.Timestamp requested_at = 5;
+  google.protobuf.Timestamp deadline = 6;
+  reserved 7 to 15;
+}
+
+message CancelAck {
+  string command_id = 1;
+  string job_id = 2;
+  string attempt_id = 3;
+  CancelAckStage stage = 4;
+  string safe_detail = 5;
+  google.protobuf.Timestamp acknowledged_at = 6;
+  reserved 7 to 15;
+}
+
+message ResultReady {
+  string job_id = 1;
+  string attempt_id = 2;
+  PackageTransferDescriptor result_package = 3;
+  string routing_plan_hash = 4;
+  string execution_revision = 5;
+  CanonicalJson stage_status_summary = 6;
+  CanonicalJson provider_action_ledger_summary = 7;
+  google.protobuf.Timestamp ready_at = 8;
+  reserved 9 to 15;
+}
+
+message ResultAck {
+  string job_id = 1;
+  string attempt_id = 2;
+  string result_sha256 = 3;
+  ResultValidationStatus validation_status = 4;
+  google.protobuf.Timestamp accepted_at = 5;
+  google.protobuf.Timestamp retention_starts_at = 6;
+  google.protobuf.Timestamp retention_until = 7;
+  reserved 8 to 15;
+}
+
+message ResultRejected {
+  string job_id = 1;
+  string attempt_id = 2;
+  string result_sha256 = 3;
+  ResultRejectReason reason = 4;
+  string safe_detail = 5;
+  bool retryable = 6;
+  google.protobuf.Timestamp rejected_at = 7;
+  reserved 8 to 15;
+}
+
+message AgentToCenter {
+  uint32 protocol_version = 1;
+  string message_id = 2;
+  string worker_id = 3;
+  string connection_id = 4;
+  google.protobuf.Timestamp sent_at = 5;
+  uint64 stream_sequence = 6;
+  string correlation_id = 7;
+  oneof payload {
+    AgentHello hello = 10;
+    Heartbeat heartbeat = 11;
+    JobAccept job_accept = 12;
+    JobDecline job_decline = 13;
+    ProgressUpdate progress = 14;
+    EventBatch event_batch = 15;
+    JobStatusUpdate job_status = 16;
+    ResultReady result_ready = 17;
+    CancelAck cancel_ack = 18;
+    CapabilitiesChanged capabilities_changed = 19;
+    ErrorStatus error = 20;
+  }
+  reserved 8, 9, 21 to 29;
+}
+
+message CenterToAgent {
+  uint32 protocol_version = 1;
+  string message_id = 2;
+  string worker_id = 3;
+  string connection_id = 4;
+  google.protobuf.Timestamp sent_at = 5;
+  uint64 stream_sequence = 6;
+  string correlation_id = 7;
+  oneof payload {
+    CenterHello hello = 10;
+    JobOffer job_offer = 11;
+    CancelCommand cancel = 12;
+    EventAck event_ack = 13;
+    ResultAck result_ack = 14;
+    ResultRejected result_rejected = 15;
+    ErrorStatus error = 16;
+  }
+  reserved 8, 9, 17 to 29;
+}

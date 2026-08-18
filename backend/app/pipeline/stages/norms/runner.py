@@ -429,8 +429,30 @@ async def run_norm_verification(
     total_norms = norms_data["total_unique_norms"]
 
     if total_norms == 0:
+        # «Проверять нечего» — успешный НОРМАТИВНЫЙ результат, а не отсутствие
+        # результата. Центральный handoff и resume-detector используют
+        # ``norm_checks.json`` как commit-marker хвоста. Раньше ранний return
+        # оставлял его без marker: stage писал done, а handoff справедливо
+        # переходил в failed и при каждом resume повторял уже выполненный хвост.
+        # Пишем тот же контракт, что обычная детерминированная ветка, только с
+        # нулевым набором checks; ни модель, ни внешний provider не вызываются.
+        empty_result = generate_deterministic_checks(norms_data, project_id=pid)
+        with open(norm_checks_path, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "meta": empty_result["meta"],
+                    "checks": [],
+                    "paragraph_checks": [],
+                },
+                f,
+                ensure_ascii=False,
+                indent=2,
+            )
         await ctx.log("Нормативных ссылок не найдено. Верификация не требуется.", "warn")
-        ctx.update_pipeline_log("norm_verify", "done", message="no norms found")
+        ctx.update_pipeline_log(
+            "norm_verify", "done",
+            message="no norms found; authoritative empty norm_checks.json written",
+        )
         return StageResult.ok(checks_count=0, manual_check_count=0)
 
     await ctx.log(f"Найдено {total_norms} уникальных нормативных ссылок")

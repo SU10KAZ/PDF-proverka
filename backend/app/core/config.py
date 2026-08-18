@@ -8,7 +8,17 @@ import shutil
 from pathlib import Path
 
 from dotenv import load_dotenv
-load_dotenv()
+
+# AUDIT_DISABLE_DOTENV=1 — единственный способ запустить конвейер с окружением
+# ИЗ БЕЛОГО СПИСКА и никаким другим. Нужен удалённому исполнению на воркере:
+# `load_dotenv()` ищет `.env` вверх от этого файла и находит его в корне
+# установленного кода платформы, восстанавливая всё, что воркер намеренно не
+# передал — включая ключи платных API и `PAID_API_ENABLED`. Обычный запуск
+# центра переменную не выставляет, поэтому его поведение не меняется.
+if os.environ.get("AUDIT_DISABLE_DOTENV", "").strip().lower() not in {
+    "1", "true", "yes", "on",
+}:
+    load_dotenv()
 
 
 def _env_bool(name: str, default: bool) -> bool:
@@ -374,6 +384,27 @@ def _save_stage_model_config():
 
 STAGE_MODEL_CONFIG: dict[str, str] = _load_stage_model_config()
 
+
+def reload_stage_model_config() -> dict[str, str]:
+    """Перечитать `stage_models.json` В ТОТ ЖЕ словарь.
+
+    Конфиг моделей читается ОДИН РАЗ на импорте модуля, и это верно для
+    центра: файл там появляется задолго до старта backend. Для удалённой ноги
+    это не так — снимок `stage_models.json` кладётся в `AUDIT_APP_DATA_DIR`
+    уже ПОСЛЕ старта процесса, и попадёт он в конфигурацию только если модуль
+    ещё не был импортирован. То есть применение снимка зависело от порядка
+    импортов: добавление любого нового шага, который трогает конфигурацию
+    раньше, молча возвращало прогон на дефолты кода — в том числе на
+    `ensemble/gpt-codex`, который ходит в OpenRouter по HTTPS.
+
+    Обновление идёт МУТАЦИЕЙ существующего словаря: часть модулей держит на
+    него прямую ссылку, и переприсваивание имени их бы не затронуло.
+    """
+    fresh = _load_stage_model_config()
+    STAGE_MODEL_CONFIG.clear()
+    STAGE_MODEL_CONFIG.update(fresh)
+    return dict(STAGE_MODEL_CONFIG)
+
 BLOCK_BATCH_MODE_FINDINGS_ONLY = "findings_only_block_context"
 _LEGACY_STAGE_BATCH_MODES = {
     "block_batch": {"findings_only_gemma_pair": BLOCK_BATCH_MODE_FINDINGS_ONLY},
@@ -609,10 +640,35 @@ STAGE_MODEL_HINTS: dict[str, str] = {
 }
 
 def get_stage_model(stage: str) -> str:
-    """Получить модель для этапа из унифицированного конфига."""
+    """Получить модель для этапа: сперва ЗАМОРОЖЕННЫЙ план, потом конфиг.
+
+    Порядок появился на 11J и закрывает KI-11I-3. `STAGE_MODEL_CONFIG` —
+    ГЛОБАЛЬНОЕ мутабельное состояние процесса: оператор, переключивший пресет
+    из интерфейса, менял маршрут уже идущего задания, потому что таблица
+    читалась в момент старта КАЖДОГО этапа, а не в момент запуска аудита.
+
+    Если у текущего прогона есть замороженный план (привязан к задаче на
+    центре либо к процессу на воркере) и он однозначно называет пару
+    «провайдер + способность» для этого этапа — маршрут берётся оттуда, и
+    переключение пресета на него уже не влияет. Плана нет — поведение
+    прежнее, дословно.
+
+    Отказ плана здесь fail-soft НАМЕРЕННО. `get_stage_model` зовут из
+    десятков мест, включая пути, где `backend.app.services` может быть не
+    импортируем (офлайн-скрипты); падение здесь означало бы, что план,
+    задуманный как уточнение, ломает работавшие сценарии.
+    """
     stage_key = stage
     if stage.startswith("block_batch"):
         stage_key = "block_batch"
+    try:
+        from backend.app.services.audit_routing import center_models
+
+        planned = center_models.stage_model_from_plan(stage_key)
+    except Exception:                                   # noqa: BLE001 — см. докстринг
+        planned = ""
+    if planned:
+        return planned
     return STAGE_MODEL_CONFIG.get(stage_key, "openai/gpt-5.4")
 
 def is_claude_stage(stage: str) -> bool:
@@ -1181,5 +1237,177 @@ BLOCK_CROP_EVICTION_DRY_RUN  = _env_bool("BLOCK_CROP_EVICTION_DRY_RUN", True)
 # 03_analysis/latest — тёплая локальная копия для UI; трогать только осознанно.
 BLOCK_CROP_EVICT_LATEST      = _env_bool("BLOCK_CROP_EVICT_LATEST", False)
 
+# ─── Распределённые audit-worker (этап 0: вертикальный срез) ────────────────
+# Подсистема выдачи заданий сторонним VPS. Этап 0 умеет ТОЛЬКО безопасное
+# тестовое задание `test_pipeline_v1` — реальный аудит, Claude/Codex и
+# нормативный этап не подключены (см. docs/distributed_audit_workers/).
+#
+# Kill-switch. При false: роутеры не регистрируются, SQLite-база НЕ создаётся,
+# фоновых задач нет, экран отдаёт «функция отключена». Существующий конвейер
+# при любом значении флага не затрагивается — точек врезки в PipelineManager
+# на этом этапе нет вовсе.
+DISTRIBUTED_WORKERS_ENABLED = _env_bool("DISTRIBUTED_WORKERS_ENABLED", False)
+
+# Корень состояния подсистемы: workers.db + пакеты + логи заданий.
+# ВНЕ projects_v2 и вне деревьев проектов — база не должна уезжать в архивы.
+DISTRIBUTED_WORKERS_DATA_DIR = (
+    Path(os.environ["DISTRIBUTED_WORKERS_DATA_DIR"]).resolve()
+    if os.environ.get("DISTRIBUTED_WORKERS_DATA_DIR")
+    else Path("/var/lib/auditmanager/distributed_workers")
+)
+
+# Пороги оси СВЯЗИ (не исполнения!). Молчание воркера меняет только
+# connection_status и никогда не переводит задание в failed.
+DISTRIBUTED_WORKERS_HEARTBEAT_STALE_SEC   = _env_int("DISTRIBUTED_WORKERS_HEARTBEAT_STALE_SEC", 90)
+DISTRIBUTED_WORKERS_HEARTBEAT_OFFLINE_SEC = _env_int("DISTRIBUTED_WORKERS_HEARTBEAT_OFFLINE_SEC", 600)
+
+# Потолок размера пакета в любую сторону (защита диска и от «бомбы»).
+DISTRIBUTED_WORKERS_MAX_PACKAGE_BYTES = _env_int(
+    "DISTRIBUTED_WORKERS_MAX_PACKAGE_BYTES", 2 * 1024 * 1024 * 1024
+)
+# Размер чанка загрузки результата. Держать НИЖЕ nginx client_max_body_size
+# (на проде 200M), иначе загрузка результата не пролезет вовсе.
+DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES = _env_int(
+    "DISTRIBUTED_WORKERS_UPLOAD_CHUNK_BYTES", 32 * 1024 * 1024
+)
+# Потолок ожидания в long-poll выдачи задания.
+DISTRIBUTED_WORKERS_LONG_POLL_SEC = _env_int("DISTRIBUTED_WORKERS_LONG_POLL_SEC", 25)
+# Потолок суммарной длительности тестового задания (валидируется воркером).
+DISTRIBUTED_WORKERS_TEST_JOB_MAX_SEC = _env_int("DISTRIBUTED_WORKERS_TEST_JOB_MAX_SEC", 300)
+
+# Операторский контур /api/workers/* защищён ТОЛЬКО портальной авторизацией:
+# собственной у него нет. При PORTAL_AUTH_ENABLED=false он оказался бы открыт
+# всем, а ручка rotate-token отдаёт живой токен воркера открытым текстом.
+# Поэтому по умолчанию такое сочетание запрещено; для локального пилота есть
+# явный выключатель — как и для http:// на стороне воркера.
+DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN = _env_bool(
+    "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN", False
+)
+
+# ─── Удалённое исполнение аудита (этап ExecutionBackend) ────────────────────
+# Отдельный флаг: включение подсистемы воркеров НЕ включает реальный аудит.
+# Пока он false, единственный активный backend — LocalExecutionBackend, и
+# поведение платформы полностью прежнее.
+DISTRIBUTED_AUDIT_EXECUTION_ENABLED = _env_bool(
+    "DISTRIBUTED_AUDIT_EXECUTION_ENABLED", False
+)
+# Профиль пилотного удалённого аудита. Фиксированный, один: несколько почти
+# одинаковых профилей — верный способ получить расхождение поведения.
+REMOTE_AUDIT_PROFILE = "remote_audit_pilot_v1"
+# Ревизия кода конвейера. Центр и воркер обязаны совпасть, иначе одинаковые
+# входные данные дадут разные артефакты. Пусто = «не объявлена», и тогда
+# удалённый запуск запрещён.
+AUDIT_PIPELINE_REVISION = os.environ.get("AUDIT_PIPELINE_REVISION", "").strip()
+# Сколько НАСТОЯЩИХ аудитов один воркер выполняет одновременно. Доказанный
+# максимум этапа — 1. Значение больше зажимается: два тестовых задания на
+# одном VPS ничего не говорят о двух реальных аудитах.
+AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS = min(
+    1, max(0, _env_int("AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS", 1))
+)
+# Разрешены ли НАСТОЯЩИЕ Claude/Codex на воркере. Центр этот флаг только
+# читает из capability воркера и показывает оператору; включается он на самом
+# воркере. Здесь — значение для собственных проверок и тестов.
+AUDIT_WORKER_ALLOW_REAL_LLM = _env_bool("AUDIT_WORKER_ALLOW_REAL_LLM", False)
+
+# ─── Ограничение частоты заявок на регистрацию ──────────────────────────────
+# Эндпоинт /api/v1/worker/register публичный (воркер приходит сам), и до этого
+# этапа перебор bootstrap-секрета не ограничивался ничем. Счётчики живут в
+# workers.db, а не в памяти: рестарт backend делает вотчдог, и защита, которая
+# обнуляется рестартом, — это её отсутствие.
+DISTRIBUTED_WORKERS_REGISTRATION_RATE_WINDOW_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_REGISTRATION_RATE_WINDOW_SEC", 3600
+)
+# На пару (IP, instance_id). Крэш-луп агента под systemd Restart=always с
+# RestartSec=10 даёт 360 попыток в час — но register вызывается один раз при
+# установке, а не на каждом старте, поэтому 10 хватает с запасом.
+DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_INSTANCE = _env_int(
+    "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_INSTANCE", 10
+)
+# На IP целиком: защита от перебора секрета с меняющимся instance_id.
+DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP = _env_int(
+    "DISTRIBUTED_WORKERS_REGISTRATION_RATE_MAX_PER_IP", 30
+)
+
+# Identity-preserving re-enrollment is deliberately shorter-lived than an
+# operator portal session.  Five minutes is enough for the explicitly
+# coordinated hand-off to one installation, while keeping a copied token's
+# useful lifetime small.  The domain validates the effective value to the
+# documented 30..3600 second interval and fails closed outside it.
+DISTRIBUTED_WORKERS_IDENTITY_REENROLLMENT_TTL_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_IDENTITY_REENROLLMENT_TTL_SEC", 300
+)
+
+# ─── Provider auth & quota gate (этап 11) ────────────────────────────────────
+# Порог «мало осталось». Значение по умолчанию КОНСЕРВАТИВНОЕ и намеренно
+# высокое: 25 % пятичасового окна Codex — это уже мало для полного аудита
+# раздела, и лучше предупредить рано, чем показать «готов» за десять минут до
+# упора в лимит. Состояние `low` без настроенного порога не вычисляется вовсе
+# (§12 задания): порог живёт здесь и только здесь.
+DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_LOW_THRESHOLD_PCT", 25
+)
+# Через сколько снимок квоты на ЦЕНТРЕ считается протухшим. Больше воркерского
+# `stale_after`: heartbeat мог не дойти, а данные ещё не устарели по существу.
+DISTRIBUTED_WORKERS_QUOTA_STALE_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_STALE_SEC", 3600
+)
+# История квот. Ограничена и по времени, и по числу строк: без второго предела
+# сбойный воркер, шлющий меняющиеся значения, раздул бы таблицу за сутки.
+DISTRIBUTED_WORKERS_QUOTA_HISTORY_RETENTION_DAYS = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_HISTORY_RETENTION_DAYS", 120
+)
+DISTRIBUTED_WORKERS_QUOTA_HISTORY_MAX_ROWS_PER_ACCOUNT = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_HISTORY_MAX_ROWS_PER_ACCOUNT", 5000
+)
+# Минимальный интервал между записями истории для одной пары воркер+провайдер.
+# Запись всё равно происходит при СМЕНЕ состояния — интервал ограничивает
+# только повторы одного и того же (§24: не хранить каждую 30-секундную запись).
+DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC = _env_int(
+    "DISTRIBUTED_WORKERS_QUOTA_HISTORY_MIN_INTERVAL_SEC", 900
+)
+
+# Версия протокола центр↔воркер. Целое; растёт при несовместимом изменении API.
+DISTRIBUTED_WORKERS_PROTOCOL_VERSION = 1
+# Версия схемы package_manifest.json.
+DISTRIBUTED_WORKERS_MANIFEST_VERSION = 1
+
 # Обратная совместимость: BASE_DIR → ROOT_DIR
 BASE_DIR = ROOT_DIR
+
+
+def clean_cli_cwd_root() -> str:
+    """Корень «чистых» рабочих каталогов для запуска `claude -p` вне репозитория.
+
+    Раньше путь был литералом `/tmp/sonnet_clean` в ТРЁХ местах. На центральном
+    хосте это безобидно, а на воркере — запись мимо каталога попытки: общий
+    `/tmp` виден всем заданиям и переживает попытку целиком.
+
+    `tempfile.gettempdir()` читает `TMPDIR`, который воркер уже уводит внутрь
+    каталога попытки, поэтому изоляция получается без нового рубежа. На центре
+    `TMPDIR` обычно не задан → `/tmp/sonnet_clean`, то есть прежний путь
+    буквально. `AUDIT_CLEAN_CWD_ROOT` оставлен явным override для случаев,
+    когда `TMPDIR` менять нельзя.
+    """
+    import tempfile
+
+    raw = (os.environ.get("AUDIT_CLEAN_CWD_ROOT") or "").strip()
+    if raw:
+        return raw
+    # `tempfile.gettempdir()` КЭШИРУЕТ результат первого вызова в
+    # `tempfile.tempdir`, поэтому один только он читал бы `TMPDIR`, каким тот
+    # был на импорте, — а воркер выставляет его позже.
+    base = (os.environ.get("TMPDIR") or "").strip() or tempfile.gettempdir()
+    return os.path.join(base, "sonnet_clean")
+
+
+def codex_workdir() -> str:
+    """Рабочий каталог (`-C` и `cwd`) процесса `codex exec`.
+
+    Значение по умолчанию сохраняет прежнее поведение — корень установленного
+    кода. Но песочница Codex по умолчанию `workspace-write`, то есть рабочий
+    каталог ЗАПИСЫВАЕМ агентом; на чужом VPS это означало бы право писать в
+    каталог установленного кода. `AUDIT_CODEX_WORKDIR` уводит его внутрь
+    каталога попытки, ничего не меняя на центре.
+    """
+    raw = (os.environ.get("AUDIT_CODEX_WORKDIR") or "").strip()
+    return raw or str(ROOT_DIR)

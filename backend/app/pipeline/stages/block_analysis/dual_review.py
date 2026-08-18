@@ -496,8 +496,19 @@ async def review_dual_findings(
     project_id: str,
     timeout: int,
     gap_search_enabled: bool,
+    judge_call: Any = None,
 ) -> dict[str, Any]:
-    """Run Codex semantic comparison and optional image-backed gap search."""
+    """Run semantic comparison and optional image-backed gap search.
+
+    `judge_call` — точка подмены ТРАНСПОРТА, введённая на 11I. Судья остаётся
+    тем же: тот же промпт, та же схема ответа, тот же разбор и тот же fail-soft.
+    Меняется только то, чем выполняется обращение — прямым `codex exec` на
+    центре или мостом провайдера на воркере.
+
+    Отдельный параметр, а не ветка внутри, потому что «на воркере судья другой»
+    было бы вторым алгоритмом сравнения: два судьи разошлись бы на первой же
+    правке промпта, и сравнить прогоны стало бы нельзя.
+    """
     from backend.app.services.llm.codex_runner import run_codex_json_messages
 
     working = ensure_detector_refs([dict(item) for item in findings if isinstance(item, dict)])
@@ -518,17 +529,22 @@ async def review_dual_findings(
         "block_context": context,
         "detector_findings": [_prompt_finding(item) for item in working],
     }
-    result = await run_codex_json_messages(
-        [
-            {"role": "system", "content": REVIEW_SYSTEM_PROMPT},
-            {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
-        ],
-        timeout=timeout,
-        stage="block_analysis_dual_review",
-        project_id=project_id,
-        model=reviewer_model,
-        image_paths=[image_path] if gap_search_enabled else None,
-    )
+    messages = [
+        {"role": "system", "content": REVIEW_SYSTEM_PROMPT},
+        {"role": "user", "content": json.dumps(user_payload, ensure_ascii=False)},
+    ]
+    images = [image_path] if gap_search_enabled else None
+    if judge_call is not None:
+        result = await judge_call(messages, images)
+    else:
+        result = await run_codex_json_messages(
+            messages,
+            timeout=timeout,
+            stage="block_analysis_dual_review",
+            project_id=project_id,
+            model=reviewer_model,
+            image_paths=images,
+        )
 
     if result.is_error or not isinstance(result.json_data, dict):
         error = result.error_message or "dual_review_json_missing"

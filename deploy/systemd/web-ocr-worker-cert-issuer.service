@@ -1,0 +1,37 @@
+[Unit]
+Description=AuditManager protected Worker certificate issuer
+After=network.target
+Before=web-ocr-agent-gateway.service
+
+[Service]
+Type=simple
+User=web-ocr-cert-issuer
+Group=web-ocr-agent-gateway
+WorkingDirectory=/opt/auditmanager/current/app
+EnvironmentFile=/etc/auditmanager/worker-issuer.env
+Environment=PYTHONPATH=/opt/auditmanager/current/app
+ExecStart=/opt/auditmanager/current/venv/bin/python -m backend.app.security.issuer_service
+Restart=on-failure
+RestartSec=5s
+UMask=0007
+RuntimeDirectory=auditmanager-worker-issuer
+RuntimeDirectoryMode=0750
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ReadOnlyPaths=/etc/auditmanager/pki/issuer
+ReadWritePaths=/run/auditmanager-worker-issuer
+ReadWritePaths=/var/lib/auditmanager/distributed_workers
+
+[Install]
+WantedBy=multi-user.target

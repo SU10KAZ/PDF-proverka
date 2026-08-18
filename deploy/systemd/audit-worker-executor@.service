@@ -1,0 +1,30 @@
+[Unit]
+Description=Audit worker immutable executor release %i
+
+[Service]
+Type=simple
+User=audit-worker
+Group=audit-worker
+WorkingDirectory=/opt/audit-worker/releases/%i/app
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=AUDIT_WORKER_ROOT=/var/lib/audit-worker
+Environment=AUDIT_WORKER_RETENTION_ENABLED=true
+Environment=AUDIT_WORKER_RETENTION_DELETE_ENABLED=false
+Environment=AUDIT_WORKER_MAX_SLOTS=1
+EnvironmentFile=-/etc/audit-worker/executor.env
+ExecStart=/opt/audit-worker/releases/%i/venv/bin/python -m audit_worker executor
+Restart=always
+RestartSec=5s
+KillMode=process
+TimeoutStopSec=60s
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=false
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/audit-worker/releases/%i
+ReadWritePaths=/var/lib/audit-worker
+
+[Install]
+WantedBy=multi-user.target

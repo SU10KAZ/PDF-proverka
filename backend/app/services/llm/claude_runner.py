@@ -33,11 +33,13 @@ import tempfile
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Optional, Callable, Awaitable, Sequence, Union
+from typing import Any, Optional, Callable, Awaitable, Sequence, Union
 
 from backend.app.services.storage.stage_artifacts import (
+    BLOCKS_FOR_TEXT_FILENAME,
     TEXT_ANALYSIS_FILENAME,
     TEXT_ANALYSIS_STAGE,
+    resolve_existing,
 )
 
 from backend.app.core.config import (
@@ -176,6 +178,26 @@ __all__ = [
 # Claude CLI — вспомогательные функции
 # ═══════════════════════════════════════════════════════════════════════════
 
+def _provider_bridge():
+    """Мост провайдеров воркера, если пакет доступен в этом процессе.
+
+    Импорт локальный и мягкий: `audit_worker` устанавливается на ВОРКЕРЕ, а
+    этот модуль живёт и на центре, где пакета может не быть вовсе. Отсутствие
+    пакета — не ошибка и не повод для предупреждения: это штатное состояние
+    центральной установки.
+    """
+    try:
+        from audit_worker.providers import pipeline_bridge
+    except ModuleNotFoundError:
+        # Пакета НЕТ — это центр, штатное состояние. Ловится именно
+        # `ModuleNotFoundError`, а не любое исключение: сломанный импорт
+        # внутри самого пакета (синтаксис, отсутствующая зависимость) на
+        # ВОРКЕРЕ раньше давал ровно тот же `None` — то есть тихий уход на
+        # прежний транспорт с файловыми инструментами и выходом в веб.
+        return None
+    return pipeline_bridge
+
+
 def _build_cmd(tools: str, model: str | None = None) -> list[str]:
     """Собрать команду запуска Claude CLI.
 
@@ -206,7 +228,11 @@ def _build_cmd(tools: str, model: str | None = None) -> list[str]:
 # Эмпирически (КЖ5.1, 25 блоков) даёт −42% input/блок и −36% cli_cost при +35% findings —
 # Sonnet работает прицельнее без harness'а Claude Code в качестве distractor'а.
 # См. ideas.md (Идея 6) и memory/feedback_subscription_only.md.
-_CLEAN_CWD_PATH = "/tmp/sonnet_clean"
+#: Корень «чистых» каталогов. Вычисляется, а не задан литералом: на воркере
+#: он обязан лежать внутри каталога попытки (см. config.clean_cli_cwd_root).
+def _clean_cwd_root() -> str:
+    from backend.app.core.config import clean_cli_cwd_root
+    return clean_cli_cwd_root()
 _CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
 
 
@@ -223,7 +249,7 @@ def _ensure_clean_cwd() -> str:
     каждый вызов. Общий путь остаётся корнем для них, чтобы не плодить мусор
     по всему /tmp и чтобы старая уборка по этому пути продолжала работать.
     """
-    root = _CLEAN_CWD_PATH
+    root = _clean_cwd_root()
     os.makedirs(root, exist_ok=True)
     _sweep_stale_run_dirs(root)
     return tempfile.mkdtemp(prefix="run_", dir=root)
@@ -260,7 +286,7 @@ def _sweep_stale_run_dirs(root: str) -> None:
 
 def _release_clean_cwd(path: str | None) -> None:
     """Удалить каталог одного запуска. Ошибки глушим: это уборка, не логика."""
-    if not path or not path.startswith(_CLEAN_CWD_PATH):
+    if not path or not path.startswith(_clean_cwd_root()):
         return
     try:
         shutil.rmtree(path, ignore_errors=True)
@@ -301,6 +327,51 @@ async def _run_cli(
     clean_cwd=True применяется только к Claude CLI. Для Codex exec рабочая папка
     должна оставаться корнем проекта, чтобы workspace-write sandbox видел output.
     """
+    # ─── Мост провайдеров воркера (этап 11C) ─────────────────────────────────
+    # ЕДИНСТВЕННАЯ развилка «claude или codex» во всём конвейере стоит ниже, и
+    # именно поэтому перехват сделан здесь: до неё. Когда исполнитель воркера
+    # выписал привязку провайдера, любой вызов CLI из конвейера обязан идти
+    # через `ProviderAdapter` — с авторизацией по режиму, окружением с нуля и
+    # отключёнными инструментами. Иначе конвейер нашёл бы бинарь по PATH и
+    # запустил бы его из-под изолированного HOME каталога попытки, то есть
+    # НЕавторизованным.
+    #
+    # На центре этой ветки не существует: `active()` смотрит на переменную
+    # `AUDIT_WORKER_PROVIDER_BINDING`, которую ставит только исполнитель воркера
+    # и только на время попытки. Без неё поведение ровно прежнее.
+    bridge = _provider_bridge()
+    if bridge is not None and bridge.active():
+        import asyncio as _asyncio
+
+        # Мост передаёт модели ТОЛЬКО текст. Если вызывающий приложил
+        # изображения, молча уйти без них нельзя: этап получил бы анализ
+        # чертежа без чертежа и отчитался бы успехом. Стадии, которым нужна
+        # графика, обязаны ходить своей провайдерской веткой с вложениями
+        # (`pipeline_bridge.run_stage_inference(images=…)`), а не через эту.
+        if image_paths:
+            detail = (
+                f"этап {stage!r} приложил {len(list(image_paths))} изображени(й), "
+                "а общий путь моста передаёт только текст: молчаливая потеря "
+                "графики запрещена"
+            )
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
+        exit_code, text, usage = await _asyncio.to_thread(
+            bridge.route_cli_call, stage=stage, prompt=task_text, timeout_sec=timeout,
+        )
+        cli_result = CLIResult(
+            result_text=text,
+            is_error=exit_code != 0,
+            duration_ms=int(usage.get("duration_ms", 0) or 0),
+            input_tokens=int(usage.get("input_tokens", 0) or 0),
+            output_tokens=int(usage.get("output_tokens", 0) or 0),
+            cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+            cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+            cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+        )
+        if on_output:
+            await send_output(on_output, text)
+        return exit_code, text, cli_result
+
     if is_codex_model(model):
         from backend.app.services.llm.codex_runner import run_codex_exec
         return await run_codex_exec(
@@ -762,6 +833,298 @@ async def _run_codex_text_analysis_chunked(
     return 0, combined.text, combined
 
 
+#: Ключ этапа в белом списке привязки провайдера и в `pipeline_log`. Совпадает
+#: с тем, что уходит в `_run_cli(stage=…)`, и НЕ совпадает с
+#: `TEXT_ANALYSIS_STAGE` ("02_text_analysis") — это имя артефакта, а не этапа.
+TEXT_ANALYSIS_STAGE_KEY = "text_analysis"
+
+
+class ProviderOutputPathError(RuntimeError):
+    """Путь записи вышел за каталог попытки. Тихой записи не бывает."""
+
+
+def _assert_output_inside_attempt(output_path: Path, attempt_dir: Path) -> None:
+    """Выход обязан лежать ВНУТРИ каталога попытки (§17, §AD/AE задания 11D).
+
+    Проверка не декоративная. В provider-режиме корни данных процесса конвейера
+    выставляет `audit_runner.isolated_roots`, и все они уводят внутрь попытки;
+    путь наружу означал бы, что либо роль потеряна, либо кто-то передал
+    `output_dir` руками. Оба случая — запись в чужой каталог на чужой машине, и
+    узнавать о них по факту испорченного продового артефакта поздно.
+    """
+    resolved = Path(output_path).resolve()
+    root = Path(attempt_dir).resolve()
+    if not resolved.is_relative_to(root):
+        raise ProviderOutputPathError(
+            f"выход этапа ведёт вне каталога попытки: {resolved} ⊄ {root}. "
+            "Запись отменена: в provider-режиме конвейер пишет только внутрь "
+            "своей попытки"
+        )
+
+
+#: Потолок промпта provider-режима, символов. Не оценка, а рубеж: планировщика
+#: бюджета (Tier 1 «снять норм-базу» / Tier 2 «нарезка по листам»), который есть
+#: у ветки codex, у provider-маршрута нет. Без потолка большой проект дал бы
+#: либо ошибку CLI, либо — что хуже — молчаливое усечение, при котором
+#: инструкция «Analyze the MD content COMPLETELY» осталась бы, а хвоста
+#: документа модель не увидела бы. Отказ ДО вызова бесплатен; усечённый аудит
+#: стоит оплаченного вызова и выглядит как настоящий.
+PROVIDER_PROMPT_MAX_CHARS = int(
+    os.environ.get("AUDIT_PROVIDER_TEXT_ANALYSIS_MAX_CHARS", "600000") or "600000"
+)
+
+
+async def _run_text_analysis_via_provider(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    *,
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+    stage_key: str = "text_analysis",
+) -> tuple[int, str, CLIResult]:
+    """`text_analysis` через ProviderAdapter: модель только рассуждает (11D).
+
+    Отличие от ветки Claude CLI не в «другом транспорте», а в РАСПРЕДЕЛЕНИИ
+    ОБЯЗАННОСТЕЙ. Там модель получала пути и сама делала файловую работу; здесь
+    файловую работу целиком делает конвейер:
+
+        читает MD  → строит промпт → зовёт модель → проверяет → пишет файл
+
+    Инженерная часть промпта берётся у БОЕВОГО сборщика ветки API
+    (`build_text_analysis_messages`), а не пишется заново: заводить второй
+    text_analysis ради нового транспорта — верный способ получить два расходящихся
+    аудита (§11 задания).
+
+    Молчаливого возврата к прежнему пути здесь нет ни в одной ветке. Мост
+    активен только тогда, когда исполнитель выписал привязку, УЖЕ списав
+    разрешение оператора; уйти в этот момент на `claude -p` по PATH значило бы
+    выполнить неавторизованный вызов из-под изолированного HOME и показать это
+    как обычную ошибку этапа.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.pipeline.stages.text_analysis import provider_transport
+    import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+    from backend.app.pipeline.stages.prepare.task_builder import _load_prompt_override
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        # Кастомный промпт проекта заменяемая CLI-ветка честно применяла
+        # (`prepare_text_analysis_task` начинается с него). Сборщик API-ветки
+        # про override не знает вовсе — для HTTP-транспорта это давняя данность,
+        # но на воркере молча откатиться к стоковому шаблону значит выполнить
+        # НЕ ТОТ аудит, о котором просил оператор, и не сказать об этом.
+        override = _load_prompt_override(project_id, "text_analysis")
+        if override:
+            detail = (
+                "для этапа text_analysis задан кастомный промпт проекта, а "
+                "provider-режим его не поддерживает. Прогон отменён: тихая "
+                "подмена промпта дала бы аудит по другим правилам"
+            )
+            await send_output(on_output, f"[text_analysis] {detail}")
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
+        messages = prompt_builder.build_text_analysis_messages(project_info, project_id)
+        blocks_for_text = resolve_existing(
+            Path(_resolve_output_dir(project_id, output_dir=output_dir)),
+            BLOCKS_FOR_TEXT_FILENAME,
+        )
+    # Блочный контекст вкладывается ТЕКСТОМ (этап 11F). До этого provider-режим
+    # умел только отказаться при его наличии — а при продовом порядке «блоки
+    # перед текстом» файл существует всегда, то есть полный worker-прогон
+    # упирался в отказ гарантированно. Читает файл конвейер, не модель.
+    blocks_context = ""
+    blocks_context_error = ""
+    if blocks_for_text is not None and Path(blocks_for_text).is_file():
+        try:
+            blocks_context = Path(blocks_for_text).read_text(encoding="utf-8")
+        except OSError as exc:
+            blocks_context_error = (
+                f"блочный контекст {Path(blocks_for_text).name} не читается: {exc}"
+            )
+    built = provider_transport.build_provider_prompt(
+        messages, blocks_context=blocks_context,
+    )
+    prompt = built["prompt"]
+
+    # Проверки промпта — в РАНТАЙМЕ, а не только в тестах. Тест доказывает, что
+    # код умеет вычистить пути; артефакт прогона обязан доказать, что в ЭТОТ раз
+    # их не осталось. Между «умеет» и «сделал» помещается вся разница между
+    # проверкой и обещанием.
+    guard_problems: list[str] = []
+    if built["absolute_paths_remaining_in_instructions"]:
+        guard_problems.append(
+            f"в инструкциях остались абсолютные пути "
+            f"({built['absolute_paths_remaining_in_instructions']}): §14 запрещает "
+            "давать модели путь проекта"
+        )
+    if built["prompt_chars"] > PROVIDER_PROMPT_MAX_CHARS:
+        guard_problems.append(
+            f"промпт {built['prompt_chars']} симв. > потолка "
+            f"{PROVIDER_PROMPT_MAX_CHARS}: планировщика нарезки в provider-режиме "
+            "нет, а молчаливое усечение документа недопустимо"
+        )
+    if blocks_context_error:
+        guard_problems.append(blocks_context_error)
+    elif blocks_for_text is not None and Path(blocks_for_text).is_file():
+        # Файл есть — значит он ОБЯЗАН оказаться в промпте. Проверяется факт, а
+        # не намерение: пустая секция при существующем файле означала бы ровно
+        # тот слепой аудит, ради запрета которого здесь раньше стоял отказ.
+        if not built["map"].get("blocks_context_applied"):
+            guard_problems.append(
+                f"блочный контекст ({Path(blocks_for_text).name}) существует, но "
+                "в промпт не попал: аудит вышел бы без данных, которые уже собраны"
+            )
+    if guard_problems:
+        detail = "; ".join(guard_problems)
+        await send_output(on_output, f"[text_analysis] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    await send_output(
+        on_output,
+        f"[text_analysis] provider-режим: инструкции {built['system_chars']} симв., "
+        f"документ {built['document_chars']} симв., путей вычищено "
+        f"{built['filesystem_refs_stripped']}",
+    )
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage=stage_key,
+                prompt=prompt,
+                purpose=stage_key,
+                # Маршрут ДЕЙСТВИЯ ПЛАНА (11I). Пустой словарь означает, что
+                # плана нет — поведение остаётся прежним.
+                **_plan_route("text_analysis"),
+                required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
+                field_types=provider_transport.FIELD_TYPES,
+                expected_semantics=provider_transport.EXPECTED_SEMANTICS,
+                timeout_sec=float(CLAUDE_TEXT_ANALYSIS_TIMEOUT),
+            )
+        )
+    except ProviderBridgeError as exc:
+        # Отказ моста — отказ ЭТАПА. Возвращаем его кодом возврата, а не
+        # исключением, чтобы боевой раннер обработал его своим штатным путём
+        # (запись в pipeline_log, StageResult.fail) — но ни одна ветка отсюда
+        # не ведёт к прежнему транспорту.
+        detail = f"provider_bridge: {exc}"
+        await send_output(on_output, f"[text_analysis] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    cli_result = CLIResult(
+        result_text=json.dumps(result.result, ensure_ascii=False) if result.result else (result.detail or ""),
+        is_error=not outcome.ok,
+        duration_ms=int(result.duration_ms or 0),
+        input_tokens=int(usage.get("input_tokens", 0) or 0),
+        output_tokens=int(usage.get("output_tokens", 0) or 0),
+        cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+        cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+        cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+    )
+
+    validation = outcome.validation.as_dict() if outcome.validation else None
+    payload = result.result if isinstance(result.result, dict) else {}
+    # Ни промпта, ни ответа модели в отчёте о прогоне. Оба — текст документа
+    # заказчика: промпт содержит его целиком, `provider_result.result` —
+    # замечания по нему. Отчёт уезжает центру в пакете результата
+    # (`03_analysis/` входит в возвращаемые префиксы) и разбирается руками, то
+    # есть каждая такая копия — это ещё один экземпляр документа за пределами
+    # артефакта. От результата остаются служебные поля и отпечаток; сам
+    # результат лежит там, где ему и место, — в `02_text_analysis.json`.
+    provider_facts = {
+        k: v for k, v in result.as_dict().items() if k != "result"
+    }
+    provider_facts["result_keys"] = sorted(payload.keys())
+    provider_facts["result_text_findings"] = len(payload.get("text_findings") or [])
+    run_report = {
+        "stage": stage_key,
+        "transport": "provider_adapter",
+        "prompt_build": built["map"],
+        "prompt_sha256": pipeline_bridge.sha256_text(prompt),
+        "performed_now": bool(outcome.performed),
+        "provider_result": provider_facts,
+        "validation": validation,
+        "ledger": outcome.ledger.as_dict(),
+        "soft_contract": provider_transport.soft_contract_report(payload),
+        "content_excluded": (
+            "Промпт и ответ модели в отчёт не кладутся: это текст документа "
+            "заказчика. Отпечаток промпта — prompt_sha256, отпечаток ответа — "
+            "provider_result.raw_sha256."
+        ),
+    }
+
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+    try:
+        # Проверяется КАТАЛОГ, а не один файл в нём: этап пишет три вещи —
+        # артефакт, отчёт о прогоне и `audit_trail/`. Гейт на одном пути
+        # оставлял бы две записи без проверки.
+        _assert_output_inside_attempt(resolved_output_dir, attempt_dir)
+    except ProviderOutputPathError as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[text_analysis] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    # Отчёт о прогоне пишется ВСЕГДА — и при отказе тоже: разбирать неудачу без
+    # него пришлось бы по журналу вызовов на чужой машине.
+    _write_json(resolved_output_dir / "text_analysis_provider_run.json", run_report)
+
+    if not outcome.ok:
+        failed = (validation or {}).get("failed") if validation else None
+        if outcome.performed:
+            detail = (
+                f"provider_result.status={result.status!r} "
+                f"error_code={result.error_code!r} detail={result.detail!r} "
+                f"validation_failed={failed}"
+            )
+        else:
+            # ПОВТОР уже сохранённой неудачи. Код ошибки сюда НЕ подставляется
+            # намеренно: `rate_limited` в тексте распознаётся общим
+            # классификатором конвейера как свежий лимит, и раннер уходил бы в
+            # цикл ожидания сброса — который ничего не изменит, потому что
+            # журнал попытки будет отдавать тот же сохранённый ответ. Повтор
+            # обязан выглядеть тем, чем он является: невозможностью повтора.
+            detail = (
+                "повтор невозможен: результат этого вызова уже записан в журнал "
+                f"попытки и неуспешен (проверка: {failed}). Новая попытка "
+                "требует нового attempt_id и новой единицы разрешения"
+            )
+        await send_output(on_output, f"[text_analysis] {detail}")
+        # Артефакт НЕ пишется: непринятый результат не имеет права выглядеть
+        # как выполненный этап.
+        return 1, detail, cli_result
+
+    output_path = resolved_output_dir / TEXT_ANALYSIS_FILENAME
+    _write_json(output_path, payload)
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        _save_audit_trail(
+            project_id, TEXT_ANALYSIS_STAGE, result.model or "",
+            cli_result.input_tokens, cli_result.output_tokens,
+            cli_result.duration_ms, payload,
+        )
+
+    await send_output(
+        on_output,
+        f"[text_analysis] provider-режим: {len(payload.get('text_findings') or [])} "
+        f"замечаний, модель {result.model!r}, "
+        f"{cli_result.input_tokens}->{cli_result.output_tokens} tok",
+    )
+    return 0, cli_result.result_text, cli_result
+
+
 async def run_text_analysis(
     project_info: dict,
     project_id: str,
@@ -770,8 +1133,24 @@ async def run_text_analysis(
     output_dir: str | Path | None = None,
     version_dir: str | Path | None = None,
     version_id: str | None = None,
+    stage_key: str = "text_analysis",
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ текста MD-файла -> 02_text_analysis.json (динамический выбор провайдера)."""
+    # Мост провайдеров воркера (этап 11D). Развилка стоит ВЫШЕ выбора
+    # codex/claude/OpenRouter намеренно: в provider-режиме различается не
+    # «каким CLI», а КТО делает файловую работу, и решать это после сборки
+    # промпта было бы поздно — промпт уже был бы собран под чужой транспорт.
+    #
+    # На центре ветки не существует: `active()` смотрит на файл привязки,
+    # который выписывает только исполнитель воркера и только на время попытки.
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        return await _run_text_analysis_via_provider(
+            project_info, project_id, on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            stage_key=stage_key,
+        )
+
     model = get_stage_model("text_analysis")
 
     if is_codex_model(model):
@@ -865,6 +1244,703 @@ async def run_text_analysis(
 
 # ─── Свод замечаний (Claude CLI, Opus) ────────────────────────────────
 
+#: Ключ этапа свода в белом списке привязки провайдера и в `pipeline_log`.
+#: Совпадает с тем, что уходит в `_run_cli(stage=…)`, и НЕ совпадает с
+#: `"03_findings_merge"` — то имя каталога audit trail, а не имя этапа.
+FINDINGS_MERGE_STAGE_KEY = "findings_merge"
+
+#: Имя артефакта свода. Продовое, а не назначенное здесь: его же проверяет
+#: боевой раннер этапа и его же читают все post-merge проходы.
+FINDINGS_FILENAME = "03_findings.json"
+
+#: Потолок промпта provider-режима для свода, символов.
+#:
+#: Отдельный от текстового не по капризу: у свода другой состав входа. Ветка
+#: codex умеет ужать `01_blocks_analysis.json` до компактной проекции, когда
+#: сырой payload не влезает в лимит CLI (`_CODEX_MERGE_INPUT_BUDGET`); у
+#: provider-маршрута такого планировщика нет. Без потолка большой проект дал бы
+#: либо ошибку CLI, либо — что хуже — молчаливое усечение, при котором правило
+#: «ни одно входное замечание не теряется» осталось бы в промпте, а половины
+#: замечаний модель не увидела бы. Отказ ДО вызова бесплатен.
+PROVIDER_MERGE_PROMPT_MAX_CHARS = int(
+    os.environ.get("AUDIT_PROVIDER_FINDINGS_MERGE_MAX_CHARS", "600000") or "600000"
+)
+
+
+async def _run_findings_merge_via_provider(
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    *,
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+    stage_key: str = FINDINGS_MERGE_STAGE_KEY,
+) -> tuple[int, str, CLIResult]:
+    """`findings_merge` через ProviderAdapter: модель только сводит (11E).
+
+    Отличие от ветки Claude CLI не в «другом транспорте», а в РАСПРЕДЕЛЕНИИ
+    ОБЯЗАННОСТЕЙ. Там модель получала пути к артефактам предыдущих этапов и сама
+    делала файловую работу; здесь файловую работу целиком делает конвейер:
+
+        читает 02+01 → проверяет вход → строит промпт → зовёт модель →
+        проверяет ответ → пишет 03_findings.json
+
+    Инженерная часть промпта берётся у БОЕВОГО сборщика ветки API
+    (`build_findings_merge_messages`), а не пишется заново: второй свод ради
+    нового транспорта — верный способ получить два расходящихся аудита.
+
+    Молчаливого возврата к прежнему пути нет ни в одной ветке. Мост активен
+    только тогда, когда исполнитель выписал привязку, УЖЕ списав разрешение
+    оператора; уйти в этот момент на `claude -p` по PATH значило бы выполнить
+    неавторизованный вызов из-под изолированного HOME и показать это как
+    обычную ошибку этапа.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.pipeline.stages.findings_merge import provider_transport
+    import backend.app.pipeline.stages.prepare.prompt_builder as prompt_builder
+
+    from backend.app.pipeline.stages.prepare.task_builder import _load_prompt_override
+
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        # Кастомный промпт проекта заменяемая CLI-ветка честно применяла
+        # (`prepare_findings_merge_task` начинается с него). Сборщик API-ветки
+        # про override не знает вовсе — на воркере молча откатиться к стоковому
+        # шаблону значит выполнить НЕ ТОТ свод, о котором просил оператор.
+        override = _load_prompt_override(project_id, stage_key)
+        if override:
+            detail = (
+                "для этапа findings_merge задан кастомный промпт проекта, а "
+                "provider-режим его не поддерживает. Прогон отменён: тихая "
+                "подмена промпта дала бы свод по другим правилам"
+            )
+            await send_output(on_output, f"[findings_merge] {detail}")
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+        # Вход разрешается ОТДЕЛЬНО и ДО сборки промпта. Боевой сборщик при
+        # отсутствии артефакта кладёт в промпт строку «(файл … не найден)» и
+        # идёт дальше — на центре это давняя данность, на воркере это
+        # оплаченный вызов, который выглядит успешным и теряет половину аудита.
+        try:
+            inputs = provider_transport.resolve_merge_inputs(resolved_output_dir)
+        except provider_transport.MergeInputError as exc:
+            detail = str(exc)
+            await send_output(on_output, f"[findings_merge] {detail}")
+            return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+        messages = prompt_builder.build_findings_merge_messages(project_info, project_id)
+
+    built = provider_transport.build_provider_prompt(messages)
+    prompt = built["prompt"]
+    input_facts = inputs.as_facts()
+    coverage = provider_transport.input_coverage_report(
+        prompt, input_facts["expected_input_finding_ids"],
+    )
+
+    # Проверки промпта — в РАНТАЙМЕ, а не только в тестах. Тест доказывает, что
+    # код умеет собрать промпт правильно; артефакт прогона обязан доказать, что
+    # в ЭТОТ раз он собран правильно.
+    guard_problems: list[str] = []
+    if built["absolute_paths_remaining_in_instructions"]:
+        guard_problems.append(
+            f"в инструкциях остались абсолютные пути "
+            f"({built['absolute_paths_remaining_in_instructions']}): §14 запрещает "
+            "давать модели путь проекта"
+        )
+    if built["prompt_chars"] > PROVIDER_MERGE_PROMPT_MAX_CHARS:
+        guard_problems.append(
+            f"промпт {built['prompt_chars']} симв. > потолка "
+            f"{PROVIDER_MERGE_PROMPT_MAX_CHARS}: планировщика компактной проекции "
+            "в provider-режиме нет, а молчаливое усечение входа недопустимо"
+        )
+    if not coverage["passed"]:
+        # Потеря входного замечания ДО модели не видна ни по одному артефакту:
+        # выход выглядит нормально, просто в нём нечего искать.
+        guard_problems.append(
+            "входные замечания не доехали до промпта: "
+            f"{coverage['missing_before_inference']}"
+        )
+    if guard_problems:
+        detail = "; ".join(guard_problems)
+        await send_output(on_output, f"[findings_merge] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    await send_output(
+        on_output,
+        f"[findings_merge] provider-режим: инструкции {built['system_chars']} симв., "
+        f"вход {built['payload_chars']} симв., замечаний на входе "
+        f"{coverage['expected_unique_count']} "
+        f"(T={input_facts['text_analysis']['text_findings']}, "
+        f"G={input_facts['blocks_analysis']['block_findings']})",
+    )
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage=stage_key,
+                prompt=prompt,
+                purpose=stage_key,
+                **_plan_route("findings_merge"),
+                required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
+                field_types=provider_transport.FIELD_TYPES,
+                expected_semantics=provider_transport.EXPECTED_SEMANTICS,
+                timeout_sec=float(CLAUDE_FINDINGS_MERGE_TIMEOUT),
+            )
+        )
+    except ProviderBridgeError as exc:
+        # Отказ моста — отказ ЭТАПА. Возвращаем его кодом возврата, а не
+        # исключением, чтобы боевой раннер обработал его своим штатным путём —
+        # но ни одна ветка отсюда не ведёт к прежнему транспорту.
+        detail = f"provider_bridge: {exc}"
+        await send_output(on_output, f"[findings_merge] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    cli_result = CLIResult(
+        result_text=json.dumps(result.result, ensure_ascii=False) if result.result else (result.detail or ""),
+        is_error=not outcome.ok,
+        duration_ms=int(result.duration_ms or 0),
+        input_tokens=int(usage.get("input_tokens", 0) or 0),
+        output_tokens=int(usage.get("output_tokens", 0) or 0),
+        cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+        cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+        cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+    )
+
+    validation = outcome.validation.as_dict() if outcome.validation else None
+    payload = result.result if isinstance(result.result, dict) else {}
+    # Ни промпта, ни ответа модели в отчёте о прогоне: и то и другое — замечания
+    # по документу заказчика. Отчёт уезжает центру в пакете результата и
+    # разбирается руками, то есть каждая такая копия — ещё один экземпляр
+    # клиентских данных за пределами артефакта.
+    provider_facts = {k: v for k, v in result.as_dict().items() if k != "result"}
+    provider_facts["result_keys"] = sorted(payload.keys())
+    provider_facts["result_findings"] = len(payload.get("findings") or [])
+    run_report = {
+        "stage": stage_key,
+        "transport": "provider_adapter",
+        "prompt_build": built["map"],
+        "prompt_sha256": pipeline_bridge.sha256_text(prompt),
+        "input_contract": {
+            key: value for key, value in input_facts.items()
+            if key not in ("text_finding_ids", "block_finding_ids",
+                           "expected_input_finding_ids")
+        },
+        "input_coverage": coverage,
+        "performed_now": bool(outcome.performed),
+        "provider_result": provider_facts,
+        "validation": validation,
+        "ledger": outcome.ledger.as_dict(),
+        "soft_contract": provider_transport.soft_contract_report(payload),
+        "content_excluded": (
+            "Промпт и ответ модели в отчёт не кладутся: это замечания по "
+            "документу заказчика. Отпечаток промпта — prompt_sha256, отпечаток "
+            "ответа — provider_result.raw_sha256."
+        ),
+    }
+
+    try:
+        # Проверяется КАТАЛОГ, а не один файл в нём: этап пишет артефакт, отчёт
+        # о прогоне и `audit_trail/`. Гейт на одном пути оставлял бы две записи
+        # без проверки.
+        _assert_output_inside_attempt(resolved_output_dir, attempt_dir)
+    except ProviderOutputPathError as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[findings_merge] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    # Отчёт о прогоне пишется ВСЕГДА — и при отказе тоже.
+    _write_json(resolved_output_dir / "findings_merge_provider_run.json", run_report)
+
+    if not outcome.ok:
+        failed = (validation or {}).get("failed") if validation else None
+        if outcome.performed:
+            detail = (
+                f"provider_result.status={result.status!r} "
+                f"error_code={result.error_code!r} detail={result.detail!r} "
+                f"validation_failed={failed}"
+            )
+        else:
+            # ПОВТОР уже сохранённой неудачи. Код ошибки сюда НЕ подставляется:
+            # `rate_limited` в тексте распознаётся общим классификатором
+            # конвейера как свежий лимит, и раннер ушёл бы в цикл ожидания,
+            # который ничего не изменит — журнал отдаст тот же ответ.
+            detail = (
+                "повтор невозможен: результат этого вызова уже записан в журнал "
+                f"попытки и неуспешен (проверка: {failed}). Новая попытка "
+                "требует нового attempt_id и новой единицы разрешения"
+            )
+        await send_output(on_output, f"[findings_merge] {detail}")
+        # Артефакт НЕ пишется: непринятый результат не имеет права выглядеть
+        # как выполненный этап.
+        return 1, detail, cli_result
+
+    _write_json(resolved_output_dir / FINDINGS_FILENAME, payload)
+
+    # Каталог audit trail задаётся ЯВНО уже проверенным путём, а не аргументом
+    # вызывающего: при `output_dir=None` резолвер ушёл бы в `audit_scope`/версию
+    # проекта, то есть мимо гейта `_assert_output_inside_attempt`.
+    _save_audit_trail(
+        project_id, "03_findings_merge", result.model or "",
+        cli_result.input_tokens, cli_result.output_tokens,
+        cli_result.duration_ms, payload,
+        output_dir=resolved_output_dir,
+    )
+
+    await send_output(
+        on_output,
+        f"[findings_merge] provider-режим: {len(payload.get('findings') or [])} "
+        f"замечаний, модель {result.model!r}, "
+        f"{cli_result.input_tokens}->{cli_result.output_tokens} tok",
+    )
+
+    # Targeted-проходы свода (этап 11J, закрытие KI-11I-2). До 11J
+    # провайдерский путь делал РОВНО ОДИН вызов: targeted существовали только в
+    # ветке прямого `codex exec`, до которой мост не доходит. План при этом
+    # объявлял три действия — то есть удалённый прогон «Full Codex» давал свод
+    # без усилителей, а бюджет их считал. Расхождение было измеримым и
+    # задокументированным, но от этого не переставало быть другим аудитом.
+    try:
+        return await _run_targeted_findings_merge_via_provider(
+            project_info=project_info,
+            project_id=project_id,
+            on_output=on_output,
+            output_dir=output_dir,
+            version_dir=version_dir,
+            version_id=version_id,
+            resolved_output_dir=resolved_output_dir,
+            attempt_dir=attempt_dir,
+            base_payload=payload,
+            base_result=cli_result,
+        )
+    except Exception:                                # noqa: BLE001 — см. ниже
+        # Контракт «targeted-провалы нефатальны» — дословно тот же, что в ветке
+        # прямого `codex exec`. Базовый свод УЖЕ оплачен, проверен и записан в
+        # 03_findings.json; исключение усилителя (диск кончился, каталог
+        # попытки эвакуирован, journal не пишется) не имеет права превратить
+        # выполненный этап в провалившийся. Без этой обёртки стоимость ошибки
+        # была бы асимметричной: усилитель дешевле базового свода на порядок, а
+        # ронял бы его целиком.
+        logger.exception(
+            "targeted-проходы свода через мост: исключение — остаётся базовый "
+            "свод (%s)", project_id,
+        )
+        await send_output(
+            on_output,
+            "[findings_merge] targeted-проходы прерваны исключением — "
+            "остаётся базовый свод",
+        )
+        return 0, cli_result.result_text, cli_result
+
+
+#: Имя targeted-прохода (`CodexTargetedPass.stage`) → роль действия плана.
+#:
+#: Отображение явное, а не «по префиксу»: имена проходов историчные
+#: (`alia_*`), и угадывание роли по строке сломалось бы на первом же новом
+#: проходе — молча, потому что отсутствие роли выглядит как «прохода нет».
+_TARGETED_PASS_ROLE: dict[str, str] = {
+    "alia_ar_masonry_audit": "targeted_discipline",
+    "alia_eom_protection_audit": "targeted_discipline",
+    "alia_ss_lowcurrent_audit": "targeted_discipline",
+    "alia_km_steel_audit": "targeted_discipline",
+    "alia_docnorm_audit": "targeted_docnorm",
+    "alia_mark_system_audit": "targeted_mark_system",
+}
+
+
+async def _run_targeted_findings_merge_via_provider(
+    *,
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+    resolved_output_dir: Path,
+    attempt_dir: Path,
+    base_payload: dict,
+    base_result: "CLIResult",
+) -> tuple[int, str, "CLIResult"]:
+    """Targeted-проходы свода ЧЕРЕЗ МОСТ, по действиям плана (этап 11J).
+
+    Что здесь принципиально и чего здесь нет.
+
+    **Проходы берутся из ПЛАНА, а не из флагов окружения.** Ветка прямого
+    `codex exec` спрашивает `AUDIT_CODEX_TARGETED_FINDINGS` и
+    `FINDING_EVIDENCE_OCR_OBSERVER_ENABLED` в момент исполнения; здесь оба уже
+    заморожены — компилятор превратил их в действия плана либо не превратил.
+    Поэтому на пресете «Claude+GPT+Codex» ни одного targeted-действия в плане
+    нет, и этот код не сделает ни одного вызова (§15 задания: не добавлять
+    Codex-проходы туда, где боевой Claude-маршрут их не выполняет).
+
+    **Промпт берётся у БОЕВОГО сборщика** (`build_targeted_findings_passes`) —
+    того же, что и в ветке `codex exec`. Второй набор промптов ради нового
+    транспорта означал бы два расходящихся аудита.
+
+    **Отказ прохода не фатален**, ровно как в ветке `codex exec`: базовый свод
+    уже валиден и записан. Но отказ ВИДЕН — он в журнале вызовов попытки и в
+    отчёте о прогоне, а не растворён в `except`.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.pipeline.stages.findings_merge import provider_transport
+    from backend.app.services.audit_routing import active_plan as _ap
+
+    def _empty() -> tuple[int, str, "CLIResult"]:
+        return 0, base_result.result_text, base_result
+
+    try:
+        actions = [
+            item for item in _ap.stage_actions("findings_merge")
+            if item.is_model and item.role in set(_TARGETED_PASS_ROLE.values())
+        ]
+    except Exception:                                    # noqa: BLE001 — fail-soft
+        actions = []
+    if not actions:
+        return _empty()
+    by_role = {item.role: item for item in actions}
+
+    from backend.app.pipeline.stages.prepare.codex_targeted_findings import (
+        build_targeted_findings_passes,
+        combine_findings_with_targeted,
+        enforce_stage01_atomicity,
+    )
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        passes = build_targeted_findings_passes(project_info, project_id)
+    if not passes:
+        # План объявил проходы, а сборщик их не построил: единственная причина
+        # — отсутствие MD. Это НЕ повод молчать: план и след разойдутся, и
+        # разойдутся необъяснимо, если не сказать почему.
+        await send_output(
+            on_output,
+            "[findings_merge] targeted-проходы объявлены планом "
+            f"({sorted(by_role)}), но сборщик не построил ни одного: нет MD-файла",
+        )
+        return _empty()
+
+    targeted_payloads: list[tuple[str, dict]] = []
+    reports: list[dict[str, Any]] = []
+    total_in = base_result.input_tokens
+    total_out = base_result.output_tokens
+    total_ms = base_result.duration_ms
+    total_cost = float(base_result.cost_usd or 0.0)
+
+    for targeted_pass in passes:
+        role = _TARGETED_PASS_ROLE.get(targeted_pass.stage)
+        action = by_role.get(role or "")
+        if action is None:
+            # Проход, которого нет в плане, НЕ исполняется. Иначе прогон сделал
+            # бы оплаченный вызов, которого никто не авторизовал и которого нет
+            # в бюджете, — то есть план перестал бы описывать прогон.
+            reports.append({
+                "pass": targeted_pass.stage, "executed": False,
+                "reason": "действия с такой ролью в плане нет",
+            })
+            continue
+        built = provider_transport.build_provider_prompt(targeted_pass.messages)
+        if built["prompt_chars"] > PROVIDER_MERGE_PROMPT_MAX_CHARS:
+            reports.append({
+                "pass": targeted_pass.stage, "executed": False,
+                "reason": f"промпт {built['prompt_chars']} симв. > потолка",
+            })
+            continue
+        try:
+            outcome = await _asyncio.to_thread(
+                lambda p=built, a=action, s=targeted_pass: pipeline_bridge.run_stage_inference(
+                    job_dir=attempt_dir,
+                    stage=FINDINGS_MERGE_STAGE_KEY,
+                    prompt=p["prompt"],
+                    # `purpose` несёт имя прохода: без него три targeted-вызова
+                    # одной попытки различались бы в журнале только по
+                    # `action_id`, а глазами — никак.
+                    purpose=f"findings_merge:targeted:{s.stage}",
+                    action_id=a.action_id,
+                    provider=str(a.provider or ""),
+                    capability=str(a.capability or ""),
+                    reasoning_effort=str(a.reasoning_effort or ""),
+                    required_result_fields=provider_transport.REQUIRED_RESULT_FIELDS,
+                    field_types=provider_transport.FIELD_TYPES,
+                    timeout_sec=float(_codex_targeted_timeout()),
+                )
+            )
+        except ProviderBridgeError as exc:
+            reports.append({
+                "pass": targeted_pass.stage, "executed": False,
+                "reason": f"provider_bridge: {exc}",
+            })
+            continue
+        usage = dict(outcome.provider_result.usage)
+        if outcome.performed:
+            # Расход считается ТОЛЬКО за фактический вызов. Результат, взятый
+            # из журнала попытки, уже был учтён при первом прогоне: сложив его
+            # снова, отчёт показал бы вторую оплату там, где её не было, — и
+            # сверка «бюджет против следа» перестала бы что-либо доказывать
+            # ровно на повторах, ради которых журнал и заведён.
+            total_in += int(usage.get("input_tokens", 0) or 0)
+            total_out += int(usage.get("output_tokens", 0) or 0)
+            total_ms += int(outcome.provider_result.duration_ms or 0)
+            total_cost += float(usage.get("total_cost_usd", 0.0) or 0.0)
+        payload = outcome.provider_result.result
+        ok = bool(outcome.ok and isinstance(payload, dict))
+        reports.append({
+            "pass": targeted_pass.stage,
+            "action_id": action.action_id,
+            "provider": action.provider,
+            "capability": action.capability,
+            "executed": True,
+            "performed_now": bool(outcome.performed),
+            "ok": ok,
+            "findings": len((payload or {}).get("findings") or []) if ok else 0,
+            "error_code": outcome.provider_result.error_code,
+        })
+        if ok:
+            _write_json(resolved_output_dir / targeted_pass.output_filename, payload)
+            targeted_payloads.append((targeted_pass.stage, payload))
+
+    _write_json(
+        resolved_output_dir / "findings_merge_targeted_provider_run.json",
+        {
+            "stage": FINDINGS_MERGE_STAGE_KEY,
+            "transport": "provider_adapter",
+            "planned_roles": sorted(by_role),
+            "passes": reports,
+        },
+    )
+    if not targeted_payloads:
+        await send_output(
+            on_output,
+            "[findings_merge] targeted-проходы: ни один не дал результата — "
+            "остаётся базовый свод",
+        )
+        return _empty()
+
+    # Базовый свод сохраняется отдельным файлом ДО перезаписи мастера — тот же
+    # порядок, что в ветке `codex exec`: без него сравнить «что добавили
+    # проходы» было бы не с чем.
+    _write_json(resolved_output_dir / "03_findings_codex_base.json", base_payload)
+    combined = combine_findings_with_targeted(
+        base_payload, targeted_payloads, output_dir=resolved_output_dir,
+    )
+    combined = enforce_stage01_atomicity(
+        combined, resolved_output_dir / "01_blocks_analysis.json",
+    )
+    _write_json(resolved_output_dir / FINDINGS_FILENAME, combined)
+
+    merged = CLIResult(
+        result_text=json.dumps(combined, ensure_ascii=False),
+        is_error=False,
+        duration_ms=total_ms,
+        input_tokens=total_in,
+        output_tokens=total_out,
+        # Токены кеша переносятся из базового свода, а не обнуляются. Провайдер
+        # отдаёт их отдельными полями, и `CLIResult` без них означал бы, что
+        # успешный targeted-проход СНИЖАЕТ учтённый расход этапа — то есть
+        # усилитель выглядел бы экономией.
+        cache_creation_tokens=int(base_result.cache_creation_tokens or 0),
+        cache_read_tokens=int(base_result.cache_read_tokens or 0),
+        cost_usd=total_cost,
+    )
+    _save_audit_trail(
+        project_id, "03_findings_targeted_union", "",
+        total_in, total_out, total_ms,
+        {"json_data": combined,
+         "targeted_passes": [stage for stage, _ in targeted_payloads]},
+        output_dir=resolved_output_dir,
+    )
+    await send_output(
+        on_output,
+        f"[findings_merge] targeted-проходы через мост: "
+        f"{len(targeted_payloads)} из {len(passes)}, "
+        f"итог {len(combined.get('findings') or [])} замечаний",
+    )
+    return 0, merged.result_text, merged
+
+
+def _codex_targeted_timeout() -> int:
+    """Срок targeted-прохода. Общий с веткой `codex exec`, чтобы не разъехались."""
+    try:
+        return int(os.environ.get("AUDIT_CODEX_TARGETED_TIMEOUT", "900"))
+    except ValueError:
+        return 900
+
+
+def _plan_route(stage_id: str, *, provider: Optional[str] = None) -> dict:
+    """Параметры маршрута действия плана для вызова моста (этап 11I).
+
+    Пустой словарь означает «плана нет» — вызывающий работает как до 11I.
+    Если план ЕСТЬ, но действия для этапа в нём не нашлось, словарь тоже пуст,
+    и мост ответит отказом. Это намеренно: обращение к модели, которого нет в
+    плане, означает неполный план, а молчаливое его исполнение вернуло бы
+    ровно ту непрослеживаемость, ради устранения которой план и вводится.
+    """
+    try:
+        from backend.app.services.audit_routing import active_plan as _ap
+
+        return _ap.route_kwargs_for_pipeline_stage(stage_id, provider=provider)
+    except Exception:                                # noqa: BLE001 — fail-soft
+        return {}
+
+
+async def _run_json_stage_via_provider(
+    *,
+    stage_key: str,
+    messages_builder,
+    project_info: dict,
+    project_id: str,
+    on_output: Optional[Callable[[str], Awaitable[None]]],
+    output_dir: str | Path | None,
+    version_dir: str | Path | None,
+    version_id: str | None,
+    artifact_name: str,
+    root_key: str,
+    audit_stage: str,
+    timeout: int,
+    max_prompt_chars: int = PROVIDER_PROMPT_MAX_CHARS,
+    plan_provider: Optional[str] = None,
+) -> tuple[int, str, CLIResult]:
+    """Общий provider-путь для этапов «messages → один JSON-артефакт» (11F).
+
+    Обслуживает `optimization`, `optimization_critic` и `optimization_corrector`.
+    Все три устроены одинаково: боевой сборщик отдаёт messages, модель обязана
+    вернуть один объект, конвейер пишет его в известный файл. Различаются они
+    именем артефакта, корневым ключом и сроком — это и есть аргументы.
+
+    Прежняя claude-ветка этих этапов формально прошла бы через мост (она зовёт
+    `_run_cli`), но её промпт требует `Read`/`Write`, а мост запускает CLI с
+    `--tools=`. То есть этап получил бы задание записать файл в вызове, где
+    записывать нечем, — и молча вернул бы пустой результат.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.services.llm import provider_json_stage as _pjs
+
+    resolved_output_dir = _resolve_output_dir(project_id, output_dir=output_dir)
+
+    with _scoped_audit_paths(
+        output_dir=output_dir, version_dir=version_dir,
+        project_id=project_id, version_id=version_id,
+    ):
+        messages = messages_builder(project_info, project_id)
+
+    try:
+        built = _pjs.build_provider_prompt(messages, root_key=root_key)
+    except _pjs.ProviderStageRefusal as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+    problems = _pjs.guard_problems(built, max_prompt_chars=max_prompt_chars)
+    if problems:
+        detail = "; ".join(problems)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    await send_output(
+        on_output,
+        f"[{stage_key}] provider-режим: инструкции {built['system_chars']} симв., "
+        f"вход {built['payload_chars']} симв., изображений {len(built['images'])}, "
+        f"файловых инструкций снято {built['file_instructions_stripped']}, "
+        f"путей заменено {built['filesystem_refs_stripped']}",
+    )
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage=stage_key,
+                prompt=built["prompt"],
+                purpose=stage_key,
+                # Ансамбль оптимизации зовёт эту функцию ДВАЖДЫ, различая ноги
+                # только провайдером: без него обе ноги дали бы один ключ
+                # журнала, и вторая молча получила бы ответ первой.
+                **_plan_route(stage_key, provider=plan_provider),
+                required_result_fields=(root_key,),
+                field_types={root_key: list},
+                timeout_sec=float(timeout),
+                # Картинки листов-планов, если боевой сборщик их приложил.
+                # Пустой список — обычный текстовый вызов.
+                images=built["images"],
+            )
+        )
+    except ProviderBridgeError as exc:
+        detail = f"provider_bridge: {exc}"
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    cli_result = CLIResult(
+        result_text=json.dumps(result.result, ensure_ascii=False) if result.result else (result.detail or ""),
+        is_error=not outcome.ok,
+        duration_ms=int(result.duration_ms or 0),
+        input_tokens=int(usage.get("input_tokens", 0) or 0),
+        output_tokens=int(usage.get("output_tokens", 0) or 0),
+        cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+        cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+        cost_usd=float(usage.get("total_cost_usd", 0.0) or 0.0),
+    )
+    payload = result.result if isinstance(result.result, dict) else {}
+
+    try:
+        _assert_output_inside_attempt(resolved_output_dir, attempt_dir)
+    except ProviderOutputPathError as exc:
+        detail = str(exc)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        return 1, detail, CLIResult(result_text=detail, is_error=True)
+
+    # Отчёт о прогоне пишется ВСЕГДА — и при отказе тоже.
+    _pjs.write_artifact(
+        resolved_output_dir / f"{stage_key}_provider_run.json",
+        _pjs.run_report(
+            stage=stage_key, built=built, outcome=outcome, root_key=root_key,
+            prompt_sha256=pipeline_bridge.sha256_text(built["prompt"]),
+        ),
+    )
+
+    if not outcome.ok:
+        detail = _pjs.failure_detail(outcome)
+        await send_output(on_output, f"[{stage_key}] {detail}")
+        # Артефакт НЕ пишется: непринятый результат не имеет права выглядеть
+        # как выполненный этап.
+        return 1, detail, cli_result
+
+    _pjs.write_artifact(resolved_output_dir / artifact_name, payload)
+    _save_audit_trail(
+        project_id, audit_stage, result.model or "",
+        cli_result.input_tokens, cli_result.output_tokens,
+        cli_result.duration_ms, payload,
+        output_dir=resolved_output_dir,
+    )
+    root_value = payload.get(root_key)
+    await send_output(
+        on_output,
+        f"[{stage_key}] provider-режим: "
+        f"{len(root_value) if isinstance(root_value, list) else '?'} "
+        f"записей в {root_key!r}, модель {result.model!r}, "
+        f"{cli_result.input_tokens}->{cli_result.output_tokens} tok",
+    )
+    return 0, cli_result.result_text, cli_result
+
+
 async def run_findings_merge(
     project_info: dict,
     project_id: str,
@@ -875,6 +1951,20 @@ async def run_findings_merge(
     version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить свод замечаний из текста + блоков -> 03_findings.json (динамический выбор провайдера)."""
+    # Мост провайдеров воркера (этап 11E). Развилка стоит ВЫШЕ выбора
+    # codex/claude/OpenRouter намеренно: в provider-режиме различается не
+    # «каким CLI», а КТО делает файловую работу, и решать это после сборки
+    # промпта было бы поздно — промпт уже был бы собран под чужой транспорт.
+    #
+    # На центре ветки не существует: `active()` смотрит на файл привязки,
+    # который выписывает только исполнитель воркера и только на время попытки.
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        return await _run_findings_merge_via_provider(
+            project_info, project_id, on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+        )
+
     model = get_stage_model("findings_merge")
 
     if is_codex_model(model):
@@ -1295,6 +2385,33 @@ async def run_optimization(
     reasoning_effort_override: str | None = None,
 ) -> tuple[int, str, AnyResult]:
     """Запустить анализ оптимизации -> optimization.json (динамический выбор провайдера)."""
+    # Мост воркера (этап 11F). Развилка стоит ВЫШЕ выбора codex/claude/OpenRouter
+    # намеренно: в provider-режиме различается не «каким CLI», а КТО делает
+    # файловую работу, и решать это после сборки промпта было бы поздно.
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        import backend.app.pipeline.stages.prepare.prompt_builder as _pb
+        from backend.app.core.config import CLAUDE_OPTIMIZATION_TIMEOUT as _t
+        # Какая ИМЕННО нога ансамбля вызвана. Ансамбль зовёт эту функцию
+        # дважды, различая ноги строкой `model_override`; строка приходит из
+        # КОНСТАНТ конвейера, а не из задания, поэтому классифицировать её
+        # здесь можно — инвариант I-P5 касается данных задания.
+        _leg = model_override or ""
+        _leg_provider = (
+            "claude" if _leg.startswith("claude-")
+            else "codex" if _leg.startswith("codex/")
+            else None
+        )
+        return await _run_json_stage_via_provider(
+            stage_key="optimization",
+            messages_builder=_pb.build_optimization_messages,
+            project_info=project_info, project_id=project_id, on_output=on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            artifact_name="optimization.json", root_key="items",
+            audit_stage="05_optimization", timeout=_t,
+            plan_provider=_leg_provider,
+        )
+
     model = model_override or get_stage_model("optimization")
 
     if is_codex_model(model):
@@ -1527,6 +2644,19 @@ async def run_optimization_critic(
     """Запустить критическую проверку оптимизации (динамический выбор провайдера)."""
     from backend.app.core.config import CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT, OPTIMIZATION_REVIEW_TOOLS
 
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        import backend.app.pipeline.stages.prepare.prompt_builder as _pb
+        return await _run_json_stage_via_provider(
+            stage_key="optimization_critic",
+            messages_builder=_pb.build_optimization_critic_messages,
+            project_info=project_info, project_id=project_id, on_output=on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            artifact_name="optimization_review.json", root_key="reviews",
+            audit_stage="05b_optimization_critic",
+            timeout=CLAUDE_OPTIMIZATION_CRITIC_TIMEOUT,
+        )
+
     model = get_stage_model("optimization_critic")
 
     if is_codex_model(model):
@@ -1610,6 +2740,19 @@ async def run_optimization_corrector(
     pre_review_path = output_dir / "optimization_pre_review.json"
     if opt_path.exists():
         shutil.copy2(opt_path, pre_review_path)
+
+    _bridge = _provider_bridge()
+    if _bridge is not None and _bridge.active():
+        import backend.app.pipeline.stages.prepare.prompt_builder as _pb
+        return await _run_json_stage_via_provider(
+            stage_key="optimization_corrector",
+            messages_builder=_pb.build_optimization_corrector_messages,
+            project_info=project_info, project_id=project_id, on_output=on_output,
+            output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+            artifact_name="optimization.json", root_key="items",
+            audit_stage="05c_optimization_corrector",
+            timeout=CLAUDE_OPTIMIZATION_CORRECTOR_TIMEOUT,
+        )
 
     model = get_stage_model("optimization_corrector")
 
@@ -1715,8 +2858,15 @@ async def run_triage(
     version_dir: str | Path | None = None,
     version_id: str | None = None,
 ) -> tuple[int, str, AnyResult]:
-    """Legacy: запускает text_analysis вместо триажа."""
+    """Legacy: запускает text_analysis вместо триажа.
+
+    `stage_key="triage"` существенен в provider-режиме: ключ вызова в журнале
+    попытки считается по (attempt, provider, purpose, prompt). С общим purpose
+    триаж и текстовый анализ в одной попытке делили бы одну запись, и второй
+    молча получил бы ответ первого как свой результат.
+    """
     return await run_text_analysis(
         project_info, project_id, on_output,
         output_dir=output_dir, version_dir=version_dir, version_id=version_id,
+        stage_key="triage",
     )

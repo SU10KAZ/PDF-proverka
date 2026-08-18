@@ -29,7 +29,6 @@ describe('счётчик непроверенных экспертами про�
             { findings_review_status: '', optimization_review_status: 'complete' },
             { findings_review_status: 'partial', optimization_review_status: 'complete' },
             { findings_review_status: 'complete', optimization_review_status: 'complete' },
-            // Общий legacy-статус не заменяет две галочки.
             { expert_review_status: 'complete' },
         ];
 
@@ -38,12 +37,17 @@ describe('счётчик непроверенных экспертами про�
         expect(countExpertUnchecked(null)).toBe(0);
     });
 
-    it('показывает красный счётчик перед общим и для всех разделов, и для каждого раздела', () => {
+    it('показывает ненулевой маленький счётчик у «Все разделы» и у конкретных разделов', () => {
         expect((html.match(/nav-sub-badge--expert-unchecked/g) || []).length).toBe(2);
+        expect(html).toContain('v-if="expertUncheckedCount(projects) > 0"');
         expect(html).toContain('{{ expertUncheckedCount(projects) }}');
+        expect(html).toContain('v-if="expertUncheckedCount(items) > 0"');
         expect(html).toContain('{{ expertUncheckedCount(items) }}');
         expect(css).toContain('.nav-sub-badge--expert-unchecked');
-        expect(css).toContain('border-color: var(--red);');
+        expect(css).toContain('border-bottom: 1px solid currentColor;');
+        expect(css).toContain('font-size: 9px;');
+        expect(css).toContain('box-shadow: none;');
+        expect(css).toContain('align-items: baseline;');
     });
 
     it('обновляет список проектов сразу после сохранения экспертных решений', () => {

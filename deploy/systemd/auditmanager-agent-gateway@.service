@@ -1,0 +1,33 @@
+[Unit]
+Description=AuditManager immutable Agent Gateway release %i
+After=network-online.target web-ocr-worker-cert-issuer.service
+Wants=network-online.target
+Requires=web-ocr-worker-cert-issuer.service
+
+[Service]
+Type=simple
+User=web-ocr-agent-gateway
+Group=web-ocr-agent-gateway
+WorkingDirectory=/opt/auditmanager/releases/%i/app
+EnvironmentFile=/etc/auditmanager/agent-gateway.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/auditmanager/releases/%i/venv/bin/python -m backend.app.agent_gateway
+Restart=on-failure
+RestartSec=5s
+KillSignal=SIGTERM
+TimeoutStopSec=30s
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/auditmanager/releases/%i
+ReadOnlyPaths=/etc/auditmanager/pki/gateway
+ReadOnlyPaths=/etc/auditmanager/pki/worker-trust
+ReadWritePaths=/var/lib/auditmanager/distributed_workers
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+{
+  "package": "auditmanager.agent_stream.v1",
+  "service": "AgentStreamService",
+  "rpc": "Connect",
+  "client_streaming": true,
+  "server_streaming": true,
+  "critical_fields": {
+    "AgentToCenter": {"protocol_version": 1, "message_id": 2, "worker_id": 3, "connection_id": 4, "stream_sequence": 6, "hello": 10, "event_batch": 15, "result_ready": 17},
+    "CenterToAgent": {"protocol_version": 1, "message_id": 2, "worker_id": 3, "connection_id": 4, "stream_sequence": 6, "hello": 10, "job_offer": 11, "event_ack": 13, "result_ack": 14},
+    "JobOffer": {"job_id": 1, "attempt_id": 2, "assignment_generation": 4, "routing_plan": 10, "source_package": 12},
+    "EventBatch": {"worker_id": 1, "job_id": 2, "attempt_id": 3, "first_sequence": 4, "events": 5},
+    "ResultAck": {"job_id": 1, "attempt_id": 2, "result_sha256": 3, "validation_status": 4, "retention_until": 7}
+  }
+}

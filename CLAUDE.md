@@ -254,6 +254,14 @@ CAD-шрифты (ISOCPEUR/GOST из AutoCAD/BIM) → текст из MD-фай�
 
 Все инструменты pre-approved в `.claude/settings.json`. Работай как конвейер, не как ассистент.
 
+### Защита production checkout
+
+`/home/coder/projects/PDF-proverka` — только production/deployment source, а не
+mutable worktree для разработки. Перед любой записью запусти
+`python3 scripts/development_worktree_guard.py --intent mutate`. Если guard
+блокирует операцию, сохрани работу и используй отдельный Git worktree в
+`.claude/worktrees/<task>`. Read-only inspection production root разрешён.
+
 | Ситуация | Действие |
 |----------|----------|
 | Нужно запустить скрипт | Запускай без вопросов |

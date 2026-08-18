@@ -119,7 +119,10 @@ CLAUDE_CLI_BIN = os.environ.get("CLAUDE_CLI_BIN", str(Path.home() / ".local" / "
 # clean_cwd: запуск `claude -p` из чистой папки + урезанным env, чтобы не подгружать
 # CLAUDE.md проекта, .claude/settings.json, hooks, project memory, skills manifest.
 # Эмпирически даёт −44% input/блок и −52% cli_cost для Stage 01.
-_CLEAN_CWD_PATH = "/tmp/sonnet_clean"
+def _clean_cwd_root() -> str:
+    """Корень «чистых» каталогов запуска. См. config.clean_cli_cwd_root."""
+    from backend.app.core.config import clean_cli_cwd_root
+    return clean_cli_cwd_root()
 _CLEAN_ENV_KEEP = {"HOME", "PATH", "LANG", "LC_ALL", "USER", "SHELL"}
 
 
@@ -167,6 +170,22 @@ def _build_clean_env() -> dict:
         if k in _CLEAN_ENV_KEEP or k.startswith("XDG_"):
             keep[k] = v
     return keep
+
+
+def provider_bridge_active() -> bool:
+    """Активен ли мост провайдеров воркера в ЭТОМ процессе (этап 11F).
+
+    Отсутствие пакета `audit_worker` — законный случай: на центре его может не
+    быть вовсе, и там поведение обязано остаться прежним. А вот заданная
+    переменная привязки при отсутствующем файле — ошибка развёртывания, и она
+    поднимается наверх исключением: тихий возврат к прежнему транспорту
+    означал бы вызов неавторизованного CLI из-под изолированного HOME.
+    """
+    try:
+        from audit_worker.providers import pipeline_bridge
+    except ModuleNotFoundError:
+        return False
+    return bool(pipeline_bridge.active())
 
 
 def is_claude_cli_model(model: str) -> bool:
@@ -250,8 +269,22 @@ _EXTENDED_HEADER = """
 
 
 def load_categories_for_section(section: str) -> str:
-    """Подгрузить prompts/disciplines/<SECTION>/finding_categories.md (или пусто, если нет)."""
-    path = _PROMPTS_DIR / "disciplines" / section / "finding_categories.md"
+    """Подгрузить `finding_categories.md` профиля дисциплины (или пусто).
+
+    Сегмент пути берётся не из аргумента, а из реестра: `section` приходит из
+    `project_info` пользователя и может быть чем угодно — кириллическим кодом,
+    для которого каталога с таким именем нет вовсе, или сегментом пути.
+    """
+    from backend.app.services.common import discipline_identity as _identity
+
+    try:
+        code = _identity.normalize_discipline_code(section)
+        if code is None:
+            return ""
+        profile_dir = _identity.profile_dir_name(code)
+    except _identity.DisciplineError:
+        return ""
+    path = _PROMPTS_DIR / "disciplines" / profile_dir / "finding_categories.md"
     if path.exists():
         return path.read_text(encoding="utf-8").strip()
     return ""
@@ -1080,6 +1113,161 @@ def build_effective_block_user_text(
 
 # ─── OpenRouter call ────────────────────────────────────────────────────────
 
+async def call_provider_for_block(
+    block: dict,
+    enrichment: dict,
+    page_text: str,
+    blocks_dir: Path,
+    *,
+    system_prompt: str,
+    timeout: int,
+    output_dir: Optional[Path] = None,
+    routed_context: Optional[tuple[str, str]] = None,
+    document_context: str = "",
+    document_type: str = "",
+    page_neighbors: str = "",
+    include_absence_caveat: bool = False,
+    action_id: str = "",
+    provider: str = "",
+    capability: str = "",
+    reasoning_effort: str = "",
+) -> dict:
+    """Нога Stage 01 через ProviderAdapter воркера (этапы 11F и 11I).
+
+    Контракт возврата — тот же словарь, что у остальных ног
+    (`ok`/`parsed`/`elapsed_ms`/токены/`context_source`), поэтому сводящий код
+    (`combine_detector_results`, провенанс, счётчики) не меняется ни строкой.
+
+    Отличий от `call_claude_cli_for_block` ровно три, и все транспортные:
+    изображение уходит байтами в теле запроса, инструментов у модели нет,
+    результат возвращается объектом, а не файлом.
+    """
+    import asyncio as _asyncio
+
+    from audit_worker.providers import pipeline_bridge
+    from audit_worker.providers.pipeline_bridge import ProviderBridgeError
+    from backend.app.core.config import CLAUDE_BLOCK_ANALYSIS_TIMEOUT
+    from backend.app.pipeline.stages.block_analysis import provider_transport as _pt
+
+    # Срок берётся НЕ от аргумента `timeout`, а от срока CLI-этапа.
+    #
+    # `timeout` здесь — `DEFAULT_TIMEOUT_S = 200`, транспортный лимит ноги
+    # OpenRouter: столько ждут HTTP-ответа от GPT-5.4. Провайдерский путь ходит
+    # не в HTTP, а в локальный CLI к Opus, который на сложном чертеже думает
+    # дольше. Цена ошибки измерена боевым прогоном 11F: вызов был убит на
+    # 200-й секунде сигналом 143, УЖЕ получив 74 090 байт потокового ответа —
+    # то есть модель работала, оплата состоялась, а результат выброшен.
+    #
+    # `CLAUDE_BLOCK_ANALYSIS_TIMEOUT` (1800 с) — срок ТОГО ЖЕ этапа для ветки
+    # Claude CLI, то есть значение, уже выбранное под этот провайдер. Берётся
+    # максимум: если вызывающий задал больший срок осознанно, урезать его
+    # незачем.
+    effective_timeout = max(float(timeout), float(CLAUDE_BLOCK_ANALYSIS_TIMEOUT))
+
+    started = time.monotonic()
+    block_id = str(block.get("block_id") or "")
+    try:
+        image = _pt.read_crop(blocks_dir, block.get("file") or "")
+    except _pt.BlockInputError as exc:
+        return {"ok": False, "error": str(exc), "elapsed_ms": 0}
+
+    user_text, context_source = build_effective_block_context(
+        block,
+        enrichment,
+        page_text,
+        output_dir=output_dir,
+        routed_context=routed_context,
+        document_context=document_context,
+        document_type=document_type,
+        page_neighbors=page_neighbors,
+        include_absence_caveat=include_absence_caveat,
+    )
+    built = _pt.build_provider_prompt(
+        system_prompt=system_prompt, user_text=user_text,
+    )
+    if built["prompt_chars"] > _pt.MAX_PROMPT_CHARS:
+        # Отказ ДО заявки в журнале: вызов, который заведомо не пройдёт по
+        # длине, не должен стоить ни попытки, ни единицы разрешения.
+        return {
+            "ok": False,
+            "error": (
+                f"промпт блока {built['prompt_chars']} симв. > потолка "
+                f"{_pt.MAX_PROMPT_CHARS}: нарезки в provider-режиме нет, а "
+                "молчаливое усечение входа недопустимо"
+            ),
+            "elapsed_ms": int((time.monotonic() - started) * 1000),
+            "context_source": context_source,
+        }
+
+    try:
+        attempt_dir = pipeline_bridge.attempt_dir()
+        outcome = await _asyncio.to_thread(
+            lambda: pipeline_bridge.run_stage_inference(
+                job_dir=attempt_dir,
+                stage="block_analysis",
+                prompt=built["prompt"],
+                # `purpose` включает block_id: иначе два блока одной попытки
+                # получили бы соседние ключи только за счёт отпечатка вложения,
+                # а в журнале их было бы не различить глазом.
+                purpose=f"block_analysis:{block_id}",
+                # Нога ансамбля (11I). Без action_id три детектора с одним
+                # промптом и одной картинкой дали бы ОДИН ключ журнала, и две
+                # ноги молча получили бы replay ответа первой.
+                action_id=action_id,
+                provider=provider,
+                capability=capability,
+                reasoning_effort=reasoning_effort,
+                required_result_fields=_pt.REQUIRED_RESULT_FIELDS,
+                field_types=_pt.FIELD_TYPES,
+                timeout_sec=effective_timeout,
+                images=[(_pt.CROP_MEDIA_TYPE, image)],
+            )
+        )
+    except ProviderBridgeError as exc:
+        return {
+            "ok": False,
+            "error": f"provider_bridge: {exc}",
+            "elapsed_ms": int((time.monotonic() - started) * 1000),
+            "context_source": context_source,
+        }
+
+    elapsed_ms = int((time.monotonic() - started) * 1000)
+    result = outcome.provider_result
+    usage = dict(result.usage)
+    payload = result.result if isinstance(result.result, dict) else {}
+    if not outcome.ok:
+        return {
+            "ok": False,
+            "error": _pt.failure_detail(outcome),
+            "elapsed_ms": elapsed_ms,
+            "input_tokens": usage.get("input_tokens"),
+            "output_tokens": usage.get("output_tokens"),
+            "cli_reported_cost_usd": usage.get("total_cost_usd"),
+            "exit_code": result.exit_code,
+            "context_source": context_source,
+            "provider_performed": bool(outcome.performed),
+        }
+    parsed = {"findings": _pt.result_findings(payload)}
+    return {
+        "ok": True,
+        "parse_error": None,
+        "elapsed_ms": elapsed_ms,
+        "input_tokens": usage.get("input_tokens"),
+        "output_tokens": usage.get("output_tokens"),
+        "reasoning_tokens": None,
+        "cli_reported_cost_usd": usage.get("total_cost_usd"),
+        "raw_content": "",
+        "parsed": parsed,
+        "exit_code": result.exit_code,
+        "context_source": context_source,
+        "provider_performed": bool(outcome.performed),
+        "provider_model": result.model,
+        "provider_prompt_sha256": pipeline_bridge.sha256_text(built["prompt"]),
+        "provider_prompt_map": built["map"],
+        "provider_soft_contract": _pt.soft_contract_report(payload),
+    }
+
+
 async def call_gpt_for_block(
     client: httpx.AsyncClient,
     block: dict,
@@ -1871,19 +2059,46 @@ async def run_findings_only_for_project(
         if batch.get("blocks")
     ]
 
-    use_claude_cli = is_claude_cli_model(model)
-    use_codex_cli = is_codex_model(model)
-    use_dual = model == STAGE02_DUAL_MODEL_ID
-    detector_models = (
-        [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
-        if use_dual
-        else [model]
+    # Мост воркера (этап 11F) перекрывает ЛЮБОЙ выбор транспорта: когда
+    # исполнитель выписал привязку, единственный разрешённый путь к модели —
+    # провайдерский слой. Развилка стоит выше остальных намеренно, ровно как в
+    # `run_text_analysis`/`run_findings_merge`: решать «каким CLI» после сборки
+    # промпта было бы поздно.
+    use_provider_bridge = provider_bridge_active()
+    use_claude_cli = (not use_provider_bridge) and is_claude_cli_model(model)
+    use_codex_cli = (not use_provider_bridge) and is_codex_model(model)
+
+    # ── Ансамбль ПО ПЛАНУ МАРШРУТИЗАЦИИ (этап 11I) ──────────────────────────
+    #
+    # До 11I строка ниже читалась так: «мост активен ⇒ ансамбля нет». Это и был
+    # главный дефект воспроизведения: удалённый прогон делал ОДИН вызов на блок
+    # там, где центр делает четыре, — без судьи, без gap-search и без второй
+    # модели. Причина была не в осторожности, а в контракте: привязка несла одну
+    # модель на попытку, и звать «вторую ногу» было нечем.
+    #
+    # Теперь маршрут приходит планом, а привязка несёт по маршруту на каждую
+    # пару «провайдер + способность». Ансамбль под мостом исполняется целиком.
+    from backend.app.services.audit_routing import active_plan as _active_plan
+
+    _plan_legs = _active_plan.block_detector_legs() if use_provider_bridge else ()
+    _plan_judge = _active_plan.block_judge_action() if use_provider_bridge else None
+    use_plan_ensemble = bool(_plan_legs)
+
+    use_dual = (
+        ((not use_provider_bridge) and model == STAGE02_DUAL_MODEL_ID)
+        or use_plan_ensemble
     )
+    if use_plan_ensemble:
+        detector_models = [_active_plan.leg_model_label(leg) for leg in _plan_legs]
+    elif use_dual:
+        detector_models = [DEFAULT_MODEL, CODEX_STAGE_MODEL_ID]
+    else:
+        detector_models = [model]
     configured_detector_models = list(detector_models)
     if STAGE01_PROTECTION_TABLE_CHECK_ENABLED:
         configured_detector_models.append(PROTECTION_DETECTOR_MODEL)
 
-    if not use_claude_cli and not use_codex_cli:
+    if not use_provider_bridge and not use_claude_cli and not use_codex_cli:
         if api_key is None:
             api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
@@ -1971,6 +2186,16 @@ async def run_findings_only_for_project(
     # timeout обойдён (trickle keepalive). При превышении блок помечается
     # неудачным, семафор освобождается, стадия продолжается.
     block_hard_timeout_s = timeout_s + BLOCK_HARD_TIMEOUT_BUFFER_S
+    if use_provider_bridge:
+        # Внешний backstop обязан быть ШИРЕ внутреннего срока вызова, иначе он
+        # убивает работающий вызов раньше, чем тот успевает завершиться, — и
+        # оплата уже состоялась. Провайдерский путь ждёт CLAUDE_BLOCK_ANALYSIS_TIMEOUT,
+        # значит backstop считается от него же.
+        from backend.app.core.config import CLAUDE_BLOCK_ANALYSIS_TIMEOUT as _cbt
+
+        block_hard_timeout_s = max(
+            block_hard_timeout_s, int(_cbt) + BLOCK_HARD_TIMEOUT_BUFFER_S,
+        )
     completed_count = 0
     completed_lock = asyncio.Lock()
     results: list[dict] = []
@@ -2119,8 +2344,165 @@ async def run_findings_only_for_project(
                 graph, retrieval_query, int(block.get("page") or 0)
             )
 
+            async def _finish_dual_review(combined: dict, *, judge_action) -> dict:
+                """Судья ансамбля ПЛАНА: тот же контракт, другой транспорт.
+
+                Повторяет центральную ветку дословно: пропуск при неполном
+                составе детекторов, пропуск при выключенном судье, fail-soft
+                при отказе — и тот же учёт токенов. Отличие ровно одно: вызов
+                уходит через мост провайдера, потому что прямой `codex exec` на
+                воркере недостижим (окружение процесса конвейера собрано с нуля
+                по белому списку).
+                """
+                from backend.app.pipeline.stages.block_analysis.dual_review import (
+                    fallback_dual_review,
+                    review_dual_findings,
+                )
+
+                judge_label = (
+                    _active_plan.leg_model_label(judge_action)
+                    if judge_action is not None else "provider/plan:judge"
+                )
+                if not combined.get("detectors_complete"):
+                    combined["dual_review"] = {
+                        "schema_version": 1,
+                        "status": "skipped",
+                        "reason": "partial_detector_failure",
+                        "counts": {
+                            "matches": 0, "extensions": 0, "new": 0,
+                            "disputed": 0, "gap_findings": 0,
+                        },
+                        "gap_search": {
+                            "enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+                            "performed": False,
+                            "status": "skipped",
+                            "findings_added": 0,
+                        },
+                    }
+                    return combined
+                if judge_action is None:
+                    combined["dual_review"] = {
+                        "schema_version": 1,
+                        "status": "disabled",
+                        "reviewer_model": judge_label,
+                        "counts": {
+                            "matches": 0, "extensions": 0,
+                            "new": len((combined.get("parsed") or {}).get("findings") or []),
+                            "disputed": 0, "gap_findings": 0,
+                        },
+                        "gap_search": {
+                            "enabled": bool(STAGE01_DUAL_GAP_SEARCH_ENABLED),
+                            "performed": False,
+                            "status": "disabled",
+                            "findings_added": 0,
+                        },
+                    }
+                    return combined
+
+                review_context, _ = build_effective_block_context(
+                    block,
+                    item["enrichment"],
+                    page_text,
+                    output_dir=output_dir,
+                    routed_context=routed_context,
+                    document_context=document_context,
+                    document_type=document_type,
+                    page_neighbors=page_neighbors,
+                    include_absence_caveat=include_caveat,
+                )
+                from backend.app.pipeline.stages.block_analysis import (
+                    provider_judge as _provider_judge,
+                )
+
+                judge_call = _provider_judge.build_judge_call(
+                    action=judge_action,
+                    block_id=str(block.get("block_id") or ""),
+                    blocks_dir=blocks_dir,
+                    timeout_sec=float(timeout_s),
+                )
+                try:
+                    review = await review_dual_findings(
+                        (combined.get("parsed") or {}).get("findings") or [],
+                        block_id=str(block.get("block_id") or ""),
+                        page=int(block.get("page") or 0),
+                        block_context=review_context,
+                        image_path=blocks_dir / block["file"],
+                        reviewer_model=judge_label,
+                        run_id=run_id,
+                        project_id=project_id,
+                        timeout=timeout_s,
+                        gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                        judge_call=judge_call,
+                    )
+                except Exception as exc:      # fail-soft: сырые находки выживают
+                    review = fallback_dual_review(
+                        (combined.get("parsed") or {}).get("findings") or [],
+                        reviewer_model=judge_label,
+                        run_id=run_id,
+                        gap_search_enabled=STAGE01_DUAL_GAP_SEARCH_ENABLED,
+                        error=f"{type(exc).__name__}: {exc}",
+                    )
+                combined["parsed"] = {"findings": review["findings"]}
+                combined["dual_review"] = review["report"]
+                combined["dual_review_raw_content"] = review.get("raw_content") or ""
+                combined["dual_review_calls"] = 1
+                combined["dual_review_input_tokens"] = int(review.get("input_tokens") or 0)
+                combined["dual_review_output_tokens"] = int(review.get("output_tokens") or 0)
+                combined["input_tokens"] += int(review.get("input_tokens") or 0)
+                combined["output_tokens"] += int(review.get("output_tokens") or 0)
+                combined["elapsed_ms"] += int(review.get("elapsed_ms") or 0)
+                return combined
+
             async def _dispatch() -> dict:
                 """Один вызов на блок по выбранному транспорту (без backstop)."""
+                if use_plan_ensemble:
+                    # Ноги плана: каждая идёт СВОИМ маршрутом через мост, все
+                    # одновременно, вход у всех один и тот же. Отличие от
+                    # центрального ансамбля только транспортное — состав,
+                    # порядок и объединение те же.
+                    _plan_calls = [
+                        call_provider_for_block(
+                            block, item["enrichment"], page_text, blocks_dir,
+                            system_prompt=system_prompt, timeout=timeout_s,
+                            output_dir=output_dir,
+                            routed_context=routed_context,
+                            document_context=document_context,
+                            document_type=document_type,
+                            page_neighbors=page_neighbors,
+                            include_absence_caveat=include_caveat,
+                            action_id=leg.action_id,
+                            provider=str(leg.provider or ""),
+                            capability=str(leg.capability or ""),
+                            reasoning_effort=str(leg.reasoning_effort or ""),
+                        )
+                        for leg in _plan_legs
+                    ]
+                    _plan_results = await asyncio.gather(
+                        *_plan_calls, return_exceptions=True
+                    )
+                    _plan_normalized: list = []
+                    for _r in _plan_results:
+                        if isinstance(_r, asyncio.CancelledError):
+                            raise _r
+                        if isinstance(_r, BaseException):
+                            _plan_normalized.append({
+                                "ok": False,
+                                "error": f"{type(_r).__name__}: {_r}",
+                                "parse_error": "leg_exception",
+                                "elapsed_ms": 0,
+                            })
+                        else:
+                            _plan_normalized.append(_r)
+                    _plan_pairs = [
+                        (_active_plan.leg_model_label(leg), res)
+                        for leg, res in zip(_plan_legs, _plan_normalized)
+                    ]
+                    if protection_pair is not None:
+                        _plan_pairs.append(protection_pair)
+                    combined = combine_detector_results(_plan_pairs, run_id=run_id)
+                    return await _finish_dual_review(
+                        combined, judge_action=_plan_judge
+                    )
                 if use_dual:
                     assert client is not None
                     _dispatch_calls = [
@@ -2304,6 +2686,23 @@ async def run_findings_only_for_project(
                         model=model, system_prompt=system_prompt, timeout=timeout_s,
                         reasoning_effort=reasoning_effort,
                         project_id=project_id, output_dir=output_dir,
+                        routed_context=routed_context,
+                        document_context=document_context,
+                        document_type=document_type,
+                        page_neighbors=page_neighbors,
+                        include_absence_caveat=include_caveat,
+                    )
+                if use_provider_bridge:
+                    # Мост воркера (11F). Стоит ПЕРВЫМ намеренно: когда
+                    # исполнитель выписал привязку, ни одна другая нога не имеет
+                    # права выполниться — все они идут мимо провайдерского слоя
+                    # (OpenRouter по HTTPS, `codex exec`, прямой `claude -p`), то
+                    # есть без авторизации по режиму, без журнала вызовов и без
+                    # сверки фактической модели.
+                    return await call_provider_for_block(
+                        block, item["enrichment"], page_text, blocks_dir,
+                        system_prompt=system_prompt, timeout=timeout_s,
+                        output_dir=output_dir,
                         routed_context=routed_context,
                         document_context=document_context,
                         document_type=document_type,
@@ -2801,14 +3200,19 @@ async def run_findings_only_for_project(
     total_findings = sum(len(b["findings"]) for b in block_analyses)
     # Paid-token accounting excludes Codex/Claude subscription tokens in dual
     # mode. Cache hits remain visible in total tokens but are not billed.
+    #
+    # Провайдерский режим (11F) — тоже подписка, и его пропуск здесь означал бы
+    # выдуманный платный расход: обе прежние переменные принудительно False, и
+    # токены вызовов через ProviderAdapter уехали бы в учёт по прайсу
+    # OpenRouter GPT-5.4 — вместе с записью в журнал платных событий центра.
     paid_in = sum(
         int(r["result"].get("paid_input_tokens", r["result"].get("input_tokens") or 0))
         for r in results
-    ) if not (use_claude_cli or use_codex_cli) else 0
+    ) if not (use_claude_cli or use_codex_cli or use_provider_bridge) else 0
     paid_out = sum(
         int(r["result"].get("paid_output_tokens", r["result"].get("output_tokens") or 0))
         for r in results
-    ) if not (use_claude_cli or use_codex_cli) else 0
+    ) if not (use_claude_cli or use_codex_cli or use_provider_bridge) else 0
     cached_in = sum(
         int(r["result"].get("paid_cached_input_tokens", r["result"].get("input_tokens") or 0))
         for r in results if r["result"].get("from_cache") or r["result"].get("paid_cached_input_tokens")

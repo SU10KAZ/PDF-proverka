@@ -113,6 +113,25 @@ _PARALLEL_TO_FINDINGS_REVIEW = {
     "norm_verify", "optimization", "optimization_critic", "optimization_corrector",
 }
 
+# Этапы, ПАРАЛЛЕЛЬНЫЕ нормативному, а не следующие за ним. В линейном списке
+# порядка они стоят ниже `norm_verify` — и каскад «сбросить всё, что ниже»
+# стирал их историю.
+#
+# Локально это было незаметно ровно по случайности тайминга: нормы и
+# оптимизация стартуют одновременно, и в момент `norm_verify: running`
+# оптимизация ещё `running`, то есть не терминальна и под сброс не попадает.
+# На центральном хвосте удалённого аудита оптимизация УЖЕ `done` (её выполнил
+# воркер), и первый же `norm_verify: running` удалял три записи истории
+# этапов, которые выполнялись на самом деле. Данные при этом на месте —
+# исчезала именно история, то есть ответ на вопрос «что делал воркер».
+#
+# Данными оптимизация от норм не зависит: `enrich_optimization_norm_status`
+# читает `norm_checks.json` и дописывает статус в `optimization.json`, а не
+# наоборот.
+_PARALLEL_TO_NORM_VERIFY = {
+    "optimization", "optimization_critic", "optimization_corrector",
+}
+
 # ─── Жизненный цикл audit_log.jsonl ───
 # Требование пользователя: лог переписывается ТОЛЬКО при полном перезапуске
 # пайплайна (fresh-action: full/audit/standard/pro — reset_audit_log архивирует
@@ -201,6 +220,9 @@ def update_pipeline_log(
                 # статус не сбрасывается при перезапуске findings-review.
                 if (downstream in _PARALLEL_TO_FINDINGS_REVIEW
                         and stage_key in ("findings_critic", "findings_corrector")):
+                    continue
+                if (downstream in _PARALLEL_TO_NORM_VERIFY
+                        and stage_key == "norm_verify"):
                     continue
                 ds_info = log_data["stages"].get(downstream)
                 if ds_info and ds_info.get("status") in _TERMINAL_STATUSES:

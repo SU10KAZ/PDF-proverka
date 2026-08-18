@@ -851,6 +851,9 @@ def test_unified_diff_flat_aggregates_changes(tmp_path, monkeypatch):
     assert flat_p1["summary"]["total_changes"] == 2
     assert len(flat_p1["items"]) == 2
     assert all(it["pair_id"] == "p1" for it in flat_p1["items"])
+    # Legacy pair_modes был намеренно удалён из production payload:
+    # актуальный contract не дублирует mode отдельным stale-массивом.
+    assert "pair_modes" not in flat_p1
 
     flat_p2 = uf.build_unified_flat(session_id, pair_id="p2")
     assert len(flat_p2["items"]) == 2
@@ -861,6 +864,7 @@ def test_unified_diff_flat_aggregates_changes(tmp_path, monkeypatch):
     assert flat_unknown["summary"]["total_pairs"] == 0
     assert flat_unknown["summary"]["total_changes"] == 0
     assert flat_unknown["items"] == []
+    assert "pair_modes" not in flat_unknown
 
 
 def test_unified_diff_flat_exposes_cost_direction_and_merge_tags(tmp_path, monkeypatch):
@@ -1038,7 +1042,8 @@ def test_ui_default_subtab_is_unified():
     html = html_p.read_text(encoding="utf-8")
     assert ">Расхождения<" in html
     # «Проанализировать и сравнить» button присутствует
-    assert "Проанализировать и сравнить" in html
+    # HTML formatter может перенести подпись между словами.
+    assert "Проанализировать" in html and "сравнить" in html
 
 
 # 15. Old endpoints не сломаны.

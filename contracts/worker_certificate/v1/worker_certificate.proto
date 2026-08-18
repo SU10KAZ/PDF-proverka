@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package auditmanager.worker_certificate.v1;
+
+service WorkerCertificateService {
+  // Authenticated by the current, still-valid mTLS Worker leaf.
+  rpc RenewCertificate(RenewCertificateRequest) returns (CertificateIdentity);
+  // Proves a new identity can complete mTLS before the Worker commits rotation.
+  rpc ValidateIdentity(ValidateIdentityRequest) returns (ValidatedIdentity);
+  rpc ActivateCertificate(ActivateCertificateRequest) returns (ValidatedIdentity);
+}
+
+message RenewCertificateRequest {
+  string request_id = 1;
+  bytes csr_pem = 2;
+}
+
+message CertificateIdentity {
+  bytes certificate_chain_pem = 1;
+  bytes trust_bundle_pem = 2;
+  string serial_hex = 3;
+  string fingerprint_sha256 = 4;
+  int64 not_before_unix_seconds = 5;
+  int64 not_after_unix_seconds = 6;
+  string request_id = 7;
+}
+
+message ValidateIdentityRequest {}
+
+message ActivateCertificateRequest {
+  string predecessor_serial_hex = 1;
+}
+
+message ValidatedIdentity {
+  string worker_id = 1;
+  string serial_hex = 2;
+  string fingerprint_sha256 = 3;
+  int64 not_after_unix_seconds = 4;
+}
