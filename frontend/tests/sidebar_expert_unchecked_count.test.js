@@ -37,9 +37,10 @@ describe('счётчик непроверенных экспертами про�
         expect(countExpertUnchecked(null)).toBe(0);
     });
 
-    it('показывает только ненулевой маленький счётчик у конкретных разделов', () => {
-        expect((html.match(/nav-sub-badge--expert-unchecked/g) || []).length).toBe(1);
-        expect(html).not.toContain('{{ expertUncheckedCount(projects) }}');
+    it('показывает ненулевой маленький счётчик у «Все разделы» и у конкретных разделов', () => {
+        expect((html.match(/nav-sub-badge--expert-unchecked/g) || []).length).toBe(2);
+        expect(html).toContain('v-if="expertUncheckedCount(projects) > 0"');
+        expect(html).toContain('{{ expertUncheckedCount(projects) }}');
         expect(html).toContain('v-if="expertUncheckedCount(items) > 0"');
         expect(html).toContain('{{ expertUncheckedCount(items) }}');
         expect(css).toContain('.nav-sub-badge--expert-unchecked');

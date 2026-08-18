@@ -65,7 +65,14 @@
                          :class="{active: currentView === 'dashboard' && sidebarFilterSection === '__all__'}">
                         <div class="nav-sub-dot"></div>
                         Все разделы
-                        <span class="nav-sub-badge" :title="'Всего проектов: ' + projects.length">{{ projects.length }}</span>
+                        <span class="nav-sub-badges">
+                            <span v-if="expertUncheckedCount(projects) > 0"
+                                  class="nav-sub-badge nav-sub-badge--expert-unchecked"
+                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Проект убирается из счётчика только после обеих галочек'">
+                                {{ expertUncheckedCount(projects) }}
+                            </span>
+                            <span class="nav-sub-badge" :title="'Всего проектов: ' + projects.length">{{ projects.length }}</span>
+                        </span>
                     </div>
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
                          class="nav-sub-item"
