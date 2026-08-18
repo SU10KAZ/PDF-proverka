@@ -89,6 +89,14 @@ class ProjectStatus(BaseModel):
     expert_review_status: str = ""
     findings_review_status: str = ""
     optimization_review_status: str = ""
+    # «Ждёт проверки экспертом» для счётчика «Не проверено» в сайдбаре.
+    # Считается по ПОСЛЕДНЕЙ версии, у которой ЕСТЬ результаты аудита: свежая
+    # версия без аудита не обнуляет и не удваивает счётчик (V1 не проверена +
+    # загрузили V2 → это по-прежнему один непроверенный проект). None =
+    # источник не заполнил поле, фронт падает на старую логику двух галочек.
+    review_pending: Optional[bool] = None
+    # Версия, по статусам которой посчитан review_pending (диагностика/тултип).
+    review_status_version_id: Optional[str] = None
     # ─── Версионность проекта ───────────────────────────────────
     # Для legacy-проектов без project_versions.json: v1 / 1 / "V1".
     version_id: str = "v1"

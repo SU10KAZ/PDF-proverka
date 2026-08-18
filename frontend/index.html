@@ -66,7 +66,7 @@
                         Все разделы
                         <span class="nav-sub-badges">
                             <span class="nav-sub-badge nav-sub-badge--expert-unchecked"
-                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Проект убирается из счётчика только после обеих галочек'">
+                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
                                 {{ expertUncheckedCount(projects) }}
                             </span>
                             <span class="nav-sub-badge" :title="'Всего проектов: ' + projects.length">{{ projects.length }}</span>
@@ -80,7 +80,7 @@
                         {{ code }}
                         <span class="nav-sub-badges">
                             <span class="nav-sub-badge nav-sub-badge--expert-unchecked"
-                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(items) + '. Проект убирается из счётчика только после обеих галочек'">
+                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(items) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
                                 {{ expertUncheckedCount(items) }}
                             </span>
                             <span class="nav-sub-badge" :title="'Всего проектов: ' + items.length">{{ items.length }}</span>

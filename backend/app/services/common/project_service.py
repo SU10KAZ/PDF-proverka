@@ -1314,6 +1314,17 @@ def get_project_status(
         pipeline_summary=pipeline_summary,
         pipeline_issues=pipeline_issues,
         pipeline_version=pipeline_version,
+        # review_pending для счётчика «Не проверено»: проект без результатов
+        # проверять нечего. Спуск к предыдущей версии с результатами есть в
+        # projects_v2-пути (`read_canary._v2_review_pending`) — это живой путь
+        # чтения; здесь legacy-эквивалент по текущей версии.
+        review_pending=(
+            total_items > 0
+            and not ((findings_count <= 0 or findings_review_status == "complete")
+                     and (optimization_count <= 0
+                          or optimization_review_status == "complete"))
+        ),
+        review_status_version_id=(version_entry["version_id"] if total_items > 0 else None),
         expert_review_status=expert_review_status,
         findings_review_status=findings_review_status,
         optimization_review_status=optimization_review_status,

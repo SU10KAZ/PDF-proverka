@@ -605,6 +605,71 @@ def _v2_batch_counts(a, doc_dir, vid):
     return total, completed
 
 
+def _review_incomplete(findings_count, opt_count, freview, oreview) -> bool:
+    """Есть ли незакрытая проверка: категория без элементов галочку не блокирует.
+
+    Требование «обе галочки complete» в лоб держало в счётчике любой проект без
+    оптимизаций: их статус остаётся пустым (`_v2_review_statuses` выставляет
+    его только при opt_count > 0), и проект никогда не становился проверенным.
+    """
+    findings_ok = findings_count <= 0 or freview == "complete"
+    opt_ok = opt_count <= 0 or oreview == "complete"
+    return not (findings_ok and opt_ok)
+
+
+def _v2_review_pending(a, doc, doc_dir, vid_raw, findings_count, opt_count,
+                       freview_status, oreview_status):
+    """(review_pending, version_id) — «проект ждёт проверки экспертом».
+
+    Счётчик «Не проверено» в сайдбаре считает ПРОЕКТЫ, а не версии, и смотрит
+    на ПОСЛЕДНЮЮ версию, где есть что проверять. Иначе загрузка новой версии
+    искажала счётчик в обе стороны: непроверенная V1 + пустая V2 давали то
+    «проверено» (у V2 нет результатов → нет и статусов), то двойной счёт, когда
+    версия жила отдельной карточкой.
+
+    Правила:
+      - у текущей версии есть результаты → решают её две галочки;
+      - результатов нет → спускаемся по версиям вниз до первой с результатами;
+      - ни у одной версии результатов нет → проверять нечего, `False`.
+    """
+    if (findings_count + opt_count) > 0:
+        return (_review_incomplete(findings_count, opt_count,
+                                   freview_status, oreview_status),
+                _denorm_vid(vid_raw))
+
+    # `list_documents` отдаёт version_ids (плоский список), а `versions` (список
+    # словарей) есть только у document.json — поддерживаем оба источника, иначе
+    # спуск к предыдущей версии молча не работает.
+    ids = [str(v) for v in (doc.get("version_ids") or []) if v]
+    if not ids:
+        ids = [
+            str(v.get("version_id"))
+            for v in (doc.get("versions") or [])
+            if isinstance(v, dict) and v.get("version_id")
+        ]
+    if not ids:
+        ids = [
+            str(v.get("version_id"))
+            for v in (a.list_versions(doc_dir) or [])
+            if isinstance(v, dict) and v.get("version_id")
+        ]
+    if vid_raw in ids:
+        ids = ids[:ids.index(vid_raw)]  # только более ранние версии
+    for prev in reversed(ids):
+        prev_fdata = a.read_findings(doc_dir, prev) or {}
+        prev_items = (prev_fdata.get("findings", prev_fdata.get("items", []))
+                      if isinstance(prev_fdata, dict) else [])
+        prev_fcount = len(prev_items) if isinstance(prev_items, list) else 0
+        prev_ocount, _by_type, _savings = _v2_optimization(a, doc_dir, prev)
+        if (prev_fcount + prev_ocount) <= 0:
+            continue
+        _expert, prev_fr, prev_or = _v2_review_statuses(
+            a, doc_dir, prev, prev_fcount, prev_ocount)
+        return (_review_incomplete(prev_fcount, prev_ocount, prev_fr, prev_or),
+                _denorm_vid(prev))
+    return False, None
+
+
 def _v2_project_status(a, doc, ver=None) -> dict:
     """Legacy ProjectStatus (model_dump dict) из v2-документа.
 
@@ -660,6 +725,9 @@ def _v2_project_status(a, doc, ver=None) -> dict:
     md_size_kb = round(mds[0][1] / 1024, 1) if mds else 0.0
 
     vsum = _v2_versions_summary(a, doc, doc_dir, cur)
+    review_pending, review_vid = _v2_review_pending(
+        a, doc, doc_dir, vid_raw, findings_count, opt_count,
+        freview_status, oreview_status)
     idx = a.read_blocks_index(doc_dir, vid_raw) or {}
     return ProjectStatus(
         project_id=doc["document_code"],
@@ -691,6 +759,8 @@ def _v2_project_status(a, doc, ver=None) -> dict:
         expert_review_status=expert_status,
         findings_review_status=freview_status,
         optimization_review_status=oreview_status,
+        review_pending=review_pending,
+        review_status_version_id=review_vid,
         version_id=_denorm_vid(vid_raw),
         version_no=(meta.get("version_no") or _vno(vid_raw)),
         version_label=(meta.get("label") or ("V%d" % _vno(vid_raw))),
