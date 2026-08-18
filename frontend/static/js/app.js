@@ -3429,9 +3429,22 @@ const app = createApp({
                 && p.optimization_review_status === 'complete';
         }
 
+        // Ждёт ли проект проверки экспертом. Решает бэкенд (`review_pending`):
+        // он смотрит на ПОСЛЕДНЮЮ версию, где есть результаты аудита, поэтому
+        // свежая версия без аудита не превращает проверенный проект в
+        // непроверенный и не прячет непроверенную предыдущую версию. Проект,
+        // у которого проверять нечего (аудит не запускался ни разу), в счётчик
+        // не попадает. Fallback на две галочки — для источников постарше,
+        // которые поле ещё не отдают.
+        function isProjectReviewPending(p) {
+            if (!p) return false;
+            if (typeof p.review_pending === 'boolean') return p.review_pending;
+            return !hasBothExpertChecks(p);
+        }
+
         function expertUncheckedCount(items) {
             return (items || []).reduce(
-                (count, p) => count + (hasBothExpertChecks(p) ? 0 : 1),
+                (count, p) => count + (isProjectReviewPending(p) ? 1 : 0),
                 0,
             );
         }
@@ -3488,13 +3501,14 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
-        // Проект «не проверен» (по последней загруженной версии), если у него
-        // есть аудит (замечания или оптимизации), но эксперт НЕ довёл оценку
-        // до конца — статус != 'complete' (нет отметок ИЛИ частично).
-        // Проекты без аудита не считаются — для них есть «Выделить необработанные».
+        // Проект «не проверен» — тот же критерий, что и у счётчика в сайдбаре
+        // (`isProjectReviewPending`): последняя версия С РЕЗУЛЬТАТАМИ без обеих
+        // галочек. Раньше здесь была своя формула (`expert_review_status` по
+        // текущей версии), из-за чего «Не проверено (N)» в шапке раздела и
+        // бейдж в сайдбаре показывали разные числа. Проекты без аудита не
+        // считаются — для них есть «Выделить необработанные».
         function isProjectUnreviewed(p) {
-            const hasAudit = (p.findings_count || 0) > 0 || (p.optimization_count || 0) > 0;
-            return hasAudit && p.expert_review_status !== 'complete';
+            return isProjectReviewPending(p);
         }
 
         function sectionUnreviewedPids(sectionCode) {
