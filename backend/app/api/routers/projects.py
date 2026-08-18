@@ -315,6 +315,24 @@ async def upload_folder_precheck(
     return {"status": "ok", "precheck": verdict}
 
 
+def _project_missing_everywhere(project_id: str) -> bool:
+    """Проекта нет ни в legacy-папке, ни в projects_v2.
+
+    В `projects_v2_primary` legacy-дерева `projects/<объект>/` на диске нет, и
+    проверка «папка существует» отвергала любой реальный документ (404 «Source
+    проект не найден» на привязке версий). Поэтому legacy-путь — лишь первый
+    кандидат, а решает наличие документа в projects_v2.
+    """
+    from backend.app.services.common import version_service as _vs
+
+    try:
+        if project_service.resolve_project_dir(project_id).exists():
+            return False
+    except Exception:
+        pass
+    return not _vs._document_exists_in_v2(project_id)
+
+
 # ─── Flat endpoints (target_project_id в body) — ДО динамических роутов ───
 # Эти роуты нужны для проектов со слешами в project_id (`KJ/M31A`): URL-форма
 # `/{p:path}/versions/from-project` после encodeURIComponent даёт `%2F`,
@@ -336,11 +354,9 @@ async def flat_create_version_from_project(req: FlatVersionFromProjectRequest):
     from backend.app.services.common import version_service as _vs
     from backend.app.pipeline.manager import pipeline_manager
 
-    src_dir = project_service.resolve_project_dir(req.source_project_id)
-    tgt_dir = project_service.resolve_project_dir(req.target_project_id)
-    if not src_dir.exists():
+    if _project_missing_everywhere(req.source_project_id):
         raise HTTPException(404, f"Source проект '{req.source_project_id}' не найден")
-    if not tgt_dir.exists():
+    if _project_missing_everywhere(req.target_project_id):
         raise HTTPException(404, f"Target проект '{req.target_project_id}' не найден")
 
     try:
@@ -740,11 +756,9 @@ async def create_version_from_project(
     from backend.app.pipeline.manager import pipeline_manager
 
     # source и target существуют?
-    src_dir = project_service.resolve_project_dir(req.source_project_id)
-    tgt_dir = project_service.resolve_project_dir(target_project_id)
-    if not src_dir.exists():
+    if _project_missing_everywhere(req.source_project_id):
         raise HTTPException(404, f"Source проект '{req.source_project_id}' не найден")
-    if not tgt_dir.exists():
+    if _project_missing_everywhere(target_project_id):
         raise HTTPException(404, f"Target проект '{target_project_id}' не найден")
 
     # Не сливаем активный source/target
