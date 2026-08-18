@@ -257,3 +257,57 @@ def test_flat_from_project_endpoint_404_when_document_absent(monkeypatch, tmp_pa
     })
     assert resp.status_code == 404
     assert "GHOST-SRC" in resp.text
+
+
+def test_merge_v2_primary_does_not_trigger_crop_slicing(monkeypatch, tmp_path):
+    """Регресс 18.08.2026: привязка запускала нарезку кропов, и один
+    патологический блок в pymupdf держал GIL — портал переставал отвечать всем.
+    Кропы для версии всё равно строит запуск аудита (pipeline/manager)."""
+    v2_root = tmp_path / "projects_v2"
+    _make_v2_doc(v2_root, "CROP-TGT", with_sources=True)
+    _make_v2_doc(v2_root, "CROP-SRC", with_sources=True)
+    _set_v2_env(monkeypatch, v2_root)
+    _reset_project_cache(monkeypatch, tmp_path / "legacy_projects")
+
+    from backend.app.services.common import crop_cache, version_service
+
+    calls: list = []
+    monkeypatch.setattr(
+        crop_cache, "ensure_crops_for_version",
+        lambda *a, **kw: calls.append(a) or None,
+    )
+
+    version_service.merge_project_as_version("CROP-SRC", "CROP-TGT")
+    assert calls == []
+
+
+def test_merge_v2_primary_moves_artifacts_without_copying(monkeypatch, tmp_path):
+    """Артефакты должны ПЕРЕЕЗЖАТЬ (rename), а не копироваться побайтово:
+    пустой скелет 03_analysis у новой версии не должен превращать перенос
+    гигабайтов в copytree."""
+    v2_root = tmp_path / "projects_v2"
+    _make_v2_doc(v2_root, "MOVE-TGT", with_sources=True)
+    src_doc = _make_v2_doc(v2_root, "MOVE-SRC", with_sources=True, with_artifacts=True)
+    _set_v2_env(monkeypatch, v2_root)
+    _reset_project_cache(monkeypatch, tmp_path / "legacy_projects")
+
+    import shutil
+
+    from backend.app.services.common import version_service
+
+    copied: list = []
+    real_copytree = shutil.copytree
+    monkeypatch.setattr(
+        shutil, "copytree",
+        lambda *a, **kw: copied.append(a) or real_copytree(*a, **kw),
+    )
+
+    src_version = src_doc / "versions" / "v001"
+    result = version_service.merge_project_as_version(
+        "MOVE-SRC", "MOVE-TGT", delete_source=False,
+    )
+
+    assert "03_analysis" in result["carried_artifacts"]
+    assert copied == [], f"артефакты копировались вместо переезда: {copied}"
+    # переехали физически: у source их больше нет
+    assert not (src_version / "03_analysis" / "latest" / "03_findings.json").exists()

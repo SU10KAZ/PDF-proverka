@@ -34,6 +34,7 @@ from __future__ import annotations
 import contextvars
 import json
 import logging
+import os
 import re
 from contextlib import contextmanager
 from datetime import datetime
@@ -1380,8 +1381,16 @@ def _copy_if_exists(source: Optional[Path], target: Path) -> None:
     target.write_bytes(source.read_bytes())
 
 
-def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
-    """Keep canonical 02_work files in sync with uploaded 01_input originals."""
+def _sync_v2_work_copies(
+    version_dir: Path, info: dict[str, Any], *, ensure_crops: bool = True,
+) -> None:
+    """Keep canonical 02_work files in sync with uploaded 01_input originals.
+
+    `ensure_crops=False` отключает фоновую нарезку кропов. Нужна привязке
+    версии: там кропы не требуются (их всё равно строит запуск аудита,
+    `pipeline/manager.py`), а нарезка одного патологического блока в pymupdf
+    удерживает GIL и вешает ВЕСЬ портал — живой инцидент 2026-08-18.
+    """
     work = version_dir / "02_work"
     work.mkdir(parents=True, exist_ok=True)
     _copy_if_exists(_v2_input_path(version_dir, info.get("pdf_file")), work / "document.pdf")
@@ -1435,11 +1444,12 @@ def _sync_v2_work_copies(version_dir: Path, info: dict[str, Any]) -> None:
             pass
         # кропы качаем сразу при загрузке (crop-токены живут per-generation) —
         # в фоне, идемпотентно, fail-soft; кэш в 01_input/crops/
-        try:
-            from backend.app.services.common.crop_cache import ensure_crops_for_version
-            ensure_crops_for_version(version_dir)
-        except Exception:
-            pass
+        if ensure_crops:
+            try:
+                from backend.app.services.common.crop_cache import ensure_crops_for_version
+                ensure_crops_for_version(version_dir)
+            except Exception:
+                pass
 
 
 def _update_version_project_info(
@@ -1564,6 +1574,7 @@ def save_files_to_version(
     comment: Optional[str] = None,
     allow_v1_upload: bool = False,
     resolve_project_dir_fn=None,
+    ensure_crops: bool = True,
 ) -> dict[str, Any]:
     """Сохранить исходные файлы в папку указанной версии проекта.
 
@@ -1638,7 +1649,7 @@ def save_files_to_version(
         version_dir, project_id, saved_names, comment=comment,
     )
     if is_projects_v2:
-        _sync_v2_work_copies(version_dir, info)
+        _sync_v2_work_copies(version_dir, info, ensure_crops=ensure_crops)
 
     # Step 9/10 dual-write canary: shadow-зеркало проекта в v2 после сохранения
     # входного комплекта версии (no-op в legacy, fail-soft).
@@ -2088,26 +2099,42 @@ def _v2_carry_audit_artifacts(src_version_dir: Path, dst_version_dir: Path) -> l
     """
     import shutil as _shutil
 
+    def _has_files(root: Path) -> bool:
+        return any(p.is_file() for p in root.rglob("*"))
+
     carried: list[str] = []
     for name in V2_MERGE_CARRY_SUBDIRS:
         src_sub = src_version_dir / name
-        if not src_sub.is_dir():
-            continue
-        if not any(True for _ in src_sub.rglob("*")):
+        if not src_sub.is_dir() or not _has_files(src_sub):
             continue
         dst_sub = dst_version_dir / name
+        # Целевые подпапки уже созданы пустыми (`_create_next_projects_v2_version`
+        # делает mkdir 02_work/03_analysis/latest/04_review/05_export), поэтому
+        # «переехать целиком» удаётся только после сноса пустого скелета. Без
+        # этого КАЖДЫЙ перенос шёл побайтовым copytree — на гигабайтах кропов
+        # это минуты блокировки вместо миллисекунд (инцидент 2026-08-18).
+        if dst_sub.exists() and not _has_files(dst_sub):
+            try:
+                _shutil.rmtree(dst_sub)
+            except OSError:
+                pass
         moved = False
         if not dst_sub.exists():
-            # `03_analysis` у большого проекта — гигабайты кропов и кэша Stage 02.
-            # В пределах одной ФС переезд атомарен и не требует второй копии;
-            # на разных ФС (EXDEV) откатываемся на копирование.
             try:
-                src_sub.rename(dst_sub)
+                src_sub.rename(dst_sub)  # атомарно в пределах ФС, без второй копии
                 moved = True
             except OSError:
-                moved = False
+                moved = False  # EXDEV (другая ФС) → падаем на пофайловый перенос
         if not moved:
-            _shutil.copytree(src_sub, dst_sub, dirs_exist_ok=True)
+            # Целевая папка непустая (02_work уже наполнен канонными копиями):
+            # переносим пофайлово, тоже без копирования байт там, где можно.
+            for src_file in sorted(p for p in src_sub.rglob("*") if p.is_file()):
+                dst_file = dst_sub / src_file.relative_to(src_sub)
+                dst_file.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    os.replace(src_file, dst_file)
+                except OSError:
+                    _shutil.copy2(src_file, dst_file)
         carried.append(name)
     return carried
 
@@ -2234,6 +2261,10 @@ def _merge_project_as_version_v2(
         replace_existing=False,
         comment=comment,
         allow_v1_upload=False,
+        # Нарезка кропов при привязке не нужна: кэш строит запуск аудита. Один
+        # патологический блок в pymupdf держит GIL минутами и вешает портал
+        # целиком (инцидент 2026-08-18 на пачке из 15 пар).
+        ensure_crops=False,
     )
 
     fresh_target_dir = _resolve(target_project_id)
