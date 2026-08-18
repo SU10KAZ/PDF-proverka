@@ -348,3 +348,40 @@ def test_deploy_flow_does_not_block_itself(tmp_path, monkeypatch):
     with deploy_lock(COMPONENT_WORKER, operation="deploy",
                      instance=remote.lock_instance, lock_dir=tmp_path):
         deploy.remote_switch_current(remote, "release-x")   # не должно упасть
+
+
+# ═════ Имена юнитов: догадка из пути — не факт ══════════════════════════════
+def test_units_are_discovered_from_systemd_not_guessed_from_the_path():
+    """Боевые имена содержат хэш установки, которого в пути нет.
+
+    Промах молча давал `UNIT_ABSENT`: рестарта нет, выкатка «успешна», а
+    воркер работает на старом коде при уже переключённом `current`.
+    """
+    from scripts.deploy_audit_worker import discover_units, units_for_root
+
+    root = "/home/auditworker_11l/audit-worker-11l"
+    guessed = units_for_root(root)
+    real = ["audit-worker-audit-worker-11l-30b5e4d544-agent.service",
+            "audit-worker-audit-worker-11l-30b5e4d544-executor.service"]
+    assert set(guessed) != set(real), "иначе этот тест ничего не сторожит"
+
+    class _Remote:
+        root = "/home/auditworker_11l/audit-worker-11l"
+
+        def run(self, script, **kwargs):
+            listing = "\n".join(f"{name} loaded active running описание" for name in real)
+            return type("R", (), {"stdout": "\n".join(real), "stderr": "",
+                                  "returncode": 0})()
+
+    assert discover_units(_Remote(), root) == real
+
+
+def test_unit_discovery_falls_back_quietly_when_it_learns_nothing():
+    """Разведка не вправе ронять выкатку: молчание = остаёмся на умолчании."""
+    from scripts.deploy_audit_worker import discover_units
+
+    class _Silent:
+        def run(self, script, **kwargs):
+            return type("R", (), {"stdout": "", "stderr": "", "returncode": 1})()
+
+    assert discover_units(_Silent(), "/home/auditworker_11l/audit-worker-11l") == []

@@ -1079,6 +1079,40 @@ def units_for_root(root: str) -> list[str]:
     ]
 
 
+def discover_units(remote: Remote, root: str) -> list[str]:
+    """Спросить у systemd, какие юниты ОБСЛУЖИВАЮТ этот корень.
+
+    Имя выводить из корня недостаточно: боевые юниты 11l называются
+    `audit-worker-audit-worker-11l-<хэш>-agent.service`, и хэш из пути не
+    получить никак. Прежде расхождение проходило молча — `UNIT_ABSENT`,
+    рестарта нет, выкатка «успешна», а воркер продолжает работать на старом
+    коде при уже переключённом `current`. Именно так эта выкатка и выглядела бы
+    без проверки здоровья.
+
+    Возвращает пустой список, если спросить не удалось: тогда остаётся
+    умолчание из корня, и несоответствие поймает проверка здоровья.
+    """
+    try:
+        result = remote.run(
+            """set +e
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+systemctl --user list-units --type=service --all --no-legend 'audit-worker-*' \
+  | awk '{print $1}'
+""",
+            check=False,
+        )
+    except SystemExit:
+        return []
+    names = [line.strip() for line in (result.stdout or "").splitlines() if line.strip()]
+    root_name = Path(root).name
+    matched = [n for n in names if root_name in n and n.endswith(".service")]
+    agent = [n for n in matched if "-agent.service" in n]
+    executor = [n for n in matched if "-executor.service" in n]
+    if agent and executor:
+        return sorted(set(agent)) + sorted(set(executor))
+    return []
+
+
 def _ssh_canonical_host(host: str, ssh_config: str = "") -> str:
     """Что SSH на самом деле считает адресом этого имени.
 
@@ -1156,6 +1190,17 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     if hasattr(args, "units") and not args.units:
         args.units = units_for_root(args.remote_root)
+        # Умолчание из корня — только запасной вариант. Спрашиваем systemd на
+        # самой машине: настоящие имена содержат хэш установки, которого в пути
+        # нет, и промах означал бы выкатку без единого рестарта.
+        if getattr(args, "host", "") and getattr(args, "user", ""):
+            try:
+                found = discover_units(remote_from_args(args), args.remote_root)
+            except Exception:  # noqa: BLE001 — разведка не вправе ронять выкатку
+                found = []
+            if found and set(found) != set(args.units):
+                print(f"юниты по факту: {', '.join(found)}")
+                args.units = found
     if args.command not in _MUTATING_COMMANDS:
         return int(args.func(args))
     from scripts.deploy_lock import COMPONENT_WORKER, deploy_lock
