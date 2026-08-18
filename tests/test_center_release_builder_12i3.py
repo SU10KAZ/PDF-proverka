@@ -28,9 +28,27 @@ from scripts import build_center_release as builder  # noqa: E402
 from scripts.release_staging import STAGING_PREFIX, staging_workspace  # noqa: E402
 
 
+def _isolate_locks(monkeypatch, tmp_path: Path) -> None:
+    """Увести замки в песочницу теста.
+
+    Переменная окружения тут не работает: `DEFAULT_LOCK_DIR` вычисляется при
+    импорте модуля. А боевой каталог трогать нельзя — этот же набор гоняет
+    гейт релиза ИЗНУТРИ сборки, которая сама держит замок центра, и тест
+    уперся бы в него.
+    """
+    from scripts import deploy_lock as lock_module
+
+    monkeypatch.setattr(lock_module, "DEFAULT_LOCK_DIR", tmp_path / "locks")
+
+
 def test_canonical_builder_is_repository_owned():
     path = _ROOT / "scripts" / "build_center_release.py"
     assert path.is_file()
+    if not (_ROOT / ".git").exists():
+        # Этот же набор гоняется гейтом ВНУТРИ дерева релиза, где .git нет и
+        # быть не должно. Там вопрос «лежит ли файл в индексе» бессмыслен, а
+        # его отсутствие уже доказано тем, что файл здесь есть.
+        pytest.skip("дерево релиза, а не репозиторий: индекс git недоступен")
     tracked = subprocess.run(
         ["git", "ls-files", "--error-unmatch", "scripts/build_center_release.py"],
         cwd=_ROOT, capture_output=True, text=True,
@@ -190,6 +208,7 @@ def test_release_identity_reuse_with_different_commit_is_refused(tmp_path, monke
         ("git", "rev-parse", "HEAD^"): "b" * 40,
         ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
     }.get(a, ""))
+    _isolate_locks(monkeypatch, tmp_path)
     existing = releases / "ui-real-aaaaaaaa"
     existing.mkdir()
     (existing / "release-manifest.json").write_text(
@@ -302,7 +321,7 @@ def test_deploy_touches_nothing_when_prechecks_fail(monkeypatch, tmp_path):
     monkeypatch.setattr(deployer, "_switch", lambda target: switched.append(target))
     monkeypatch.setattr(deployer, "_systemctl_user",
                         lambda *a: pytest.fail("рестарт до прохождения предпроверок"))
-    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    _isolate_locks(monkeypatch, tmp_path)
     with pytest.raises(SystemExit):
         deployer.deploy("ui-real-cafe0004")
     assert switched == [], "боевой указатель тронут при неудачной предпроверке"
@@ -324,7 +343,7 @@ def test_failed_restart_rolls_back_before_releasing_the_lock(monkeypatch, tmp_pa
     monkeypatch.setattr(deployer, "prechecks", lambda *a, **k: [])
     monkeypatch.setattr(deployer, "_health", lambda *a, **k: 200)
     monkeypatch.setattr(deployer, "running_release_dir", lambda: None)
-    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    _isolate_locks(monkeypatch, tmp_path)
 
     switches = []
     real_switch = deployer._switch
@@ -365,7 +384,7 @@ def test_health_200_alone_does_not_prove_the_new_release_is_running(monkeypatch,
     monkeypatch.setattr(deployer, "_health", lambda *a, **k: 200)
     monkeypatch.setattr(deployer, "_systemctl_user", lambda *a: "")
     monkeypatch.setattr(deployer, "running_release_dir", lambda: releases / "old")
-    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    _isolate_locks(monkeypatch, tmp_path)
     with pytest.raises(SystemExit):
         deployer.deploy("new")
     assert os.readlink(tmp_path / "current").endswith("old"), "должен быть откат"
@@ -448,7 +467,7 @@ def test_deploy_refuses_when_the_running_release_cannot_be_proven(monkeypatch, t
     monkeypatch.setattr(deployer, "_health", lambda *a, **k: 200)
     monkeypatch.setattr(deployer, "_systemctl_user", lambda *a: "")
     monkeypatch.setattr(deployer, "running_release_dir", lambda: None)
-    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    _isolate_locks(monkeypatch, tmp_path)
     with pytest.raises(SystemExit):
         deployer.deploy("new")
     assert os.readlink(tmp_path / "current").endswith("old")
@@ -504,7 +523,7 @@ def test_partial_release_of_the_same_commit_is_not_declared_ready(tmp_path, monk
         ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
         ("git", "rev-parse", "b" * 40 + "^{tree}"): "d" * 40,
     }[a])
-    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    _isolate_locks(monkeypatch, tmp_path)
     # Донор без записанного коммита — проверка происхождения пропускается, а
     # проверяем мы здесь другое: обломок каталога того же коммита.
     (base / "release-manifest.json").write_text(
@@ -532,7 +551,7 @@ def test_donor_release_from_a_foreign_branch_is_refused(tmp_path, monkeypatch):
         ("git", "rev-parse", "HEAD^"): "b" * 40,
         ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
     }[a])
-    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    _isolate_locks(monkeypatch, tmp_path)
     with pytest.raises(SystemExit) as caught:
         builder.build(base_release="base", kind="k", notes="n", releases_dir=releases)
     assert "не является предком" in str(caught.value)
