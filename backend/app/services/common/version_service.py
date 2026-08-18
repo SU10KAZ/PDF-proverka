@@ -1998,6 +1998,302 @@ def has_audit_artifacts(project_dir: Path) -> bool:
     return False
 
 
+
+# ─── projects_v2: слияние документа как версии ─────────────────────────────
+
+
+def _v2_adapter_and_doc(project_id: str):
+    """(adapter, doc) для projects_v2-документа или (None, None)."""
+    try:
+        from backend.app.services.storage.projects_v2_adapter import ProjectsV2Adapter
+    except Exception:
+        return None, None
+    try:
+        adapter = ProjectsV2Adapter()
+        if not adapter.is_available():
+            return None, None
+        return adapter, adapter.find_document_by_project_id(project_id)
+    except Exception:
+        return None, None
+
+
+def _v2_current_version_dir(project_id: str) -> Optional[Path]:
+    """Папка ТЕКУЩЕЙ версии projects_v2-документа (или None)."""
+    ctx = _resolve_projects_v2_version_context(project_id, None)
+    if ctx is None:
+        return None
+    version_dir = ctx.get("version_dir")
+    return Path(version_dir) if version_dir else None
+
+
+# Подпапки версии projects_v2, которые переносятся вместе с исходниками при
+# слиянии: результаты аудита source не должны пропадать (решение оператора —
+# «переносить в новую версию», 2026-08-18). `01_input` не входит: исходники
+# едут отдельно через `save_files_to_version` (там же валидация имён).
+V2_MERGE_CARRY_SUBDIRS = ("02_work", "03_analysis", "04_review", "05_export", "99_service")
+
+
+def has_audit_artifacts_v2(version_dir: Path) -> bool:
+    """Есть ли у версии projects_v2 непустые артефакты аудита."""
+    for name in ("03_analysis", "04_review", "05_export"):
+        sub = version_dir / name
+        if not sub.is_dir():
+            continue
+        try:
+            for entry in sub.rglob("*"):
+                if entry.is_file() and not entry.name.startswith(".") and entry.stat().st_size > 0:
+                    return True
+        except OSError:
+            continue
+    return False
+
+
+def _v2_merge_collect_source_files(
+    src_version_dir: Path,
+) -> tuple[list[tuple[str, bytes]], bool, list[str]]:
+    """Исходники source-версии из `01_input` → payload для save_files_to_version.
+
+    Возвращает (payload, pdf_found, warnings). Вложенные пути и служебные
+    файлы (`project_info.json`, `input_manifest.json`, кэш кропов) пропускаются:
+    `_v2_input_names` уже отсекает кропы, остальное отсекаем здесь.
+    """
+    payload: list[tuple[str, bytes]] = []
+    warnings: list[str] = []
+    pdf_found = False
+    input_dir = src_version_dir / "01_input"
+    for rel in _v2_input_names(src_version_dir):
+        rel_path = Path(rel)
+        if len(rel_path.parts) > 1:
+            warnings.append(f"Вложенный файл не перенесён: {rel}")
+            continue
+        name = rel_path.name
+        if name in {"project_info.json", "input_manifest.json"}:
+            continue
+        suffix = rel_path.suffix.lower()
+        if suffix not in ALLOWED_SOURCE_EXTENSIONS:
+            continue
+        validate_filename(name)  # ловит unsafe имена заранее
+        payload.append((name, (input_dir / rel).read_bytes()))
+        if suffix == ".pdf":
+            pdf_found = True
+    return payload, pdf_found, warnings
+
+
+def _v2_carry_audit_artifacts(src_version_dir: Path, dst_version_dir: Path) -> list[str]:
+    """Скопировать артефакты аудита source-версии в новую версию target.
+
+    Возвращает список перенесённых подпапок. Копирование, а не move: source
+    удаляется отдельным шагом (с backup'ом), и при сбое переноса ничего не
+    теряется.
+    """
+    import shutil as _shutil
+
+    carried: list[str] = []
+    for name in V2_MERGE_CARRY_SUBDIRS:
+        src_sub = src_version_dir / name
+        if not src_sub.is_dir():
+            continue
+        if not any(True for _ in src_sub.rglob("*")):
+            continue
+        dst_sub = dst_version_dir / name
+        moved = False
+        if not dst_sub.exists():
+            # `03_analysis` у большого проекта — гигабайты кропов и кэша Stage 02.
+            # В пределах одной ФС переезд атомарен и не требует второй копии;
+            # на разных ФС (EXDEV) откатываемся на копирование.
+            try:
+                src_sub.rename(dst_sub)
+                moved = True
+            except OSError:
+                moved = False
+        if not moved:
+            _shutil.copytree(src_sub, dst_sub, dirs_exist_ok=True)
+        carried.append(name)
+    return carried
+
+
+def _v2_apply_source_analysis_state(
+    src_version_dir: Path, dst_version_dir: Path, source_project_id: str,
+) -> None:
+    """Перенести analysis_status/run_id в version.json новой версии.
+
+    Без этого карточка target показывала бы «аудит не запускался», хотя
+    03_analysis уже перенесён из source.
+    """
+    src_vj_path = src_version_dir / "version.json"
+    dst_vj_path = dst_version_dir / "version.json"
+    try:
+        src_vj = json.loads(src_vj_path.read_text(encoding="utf-8")) if src_vj_path.exists() else {}
+        dst_vj = json.loads(dst_vj_path.read_text(encoding="utf-8")) if dst_vj_path.exists() else {}
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return
+    if not isinstance(src_vj, dict) or not isinstance(dst_vj, dict):
+        return
+    for key in ("analysis_status", "analysis_run_id", "missing_analysis_files"):
+        if src_vj.get(key) is not None:
+            dst_vj[key] = src_vj[key]
+    dst_vj["merged_from_project_id"] = source_project_id
+    try:
+        _write_json_file(dst_vj_path, dst_vj)
+    except OSError:
+        pass
+
+
+def _merge_project_as_version_v2(
+    source_project_id: str,
+    target_project_id: str,
+    *,
+    comment: Optional[str] = None,
+    source: str = "edit_projects_modal",
+    delete_source: bool = True,
+) -> dict[str, Any]:
+    """projects_v2-ветка `merge_project_as_version`.
+
+    Legacy-реализация работает с папкой проекта, в корне которой лежат PDF/MD,
+    и с `_versions/`. После cutover на projects_v2 (`AUDIT_PROJECTS_V2_WRITE_MODE=
+    projects_v2_primary`) legacy-дерева на диске нет вовсе, и весь эндпоинт
+    отвечал 404 «Source проект не найден». Здесь тот же контракт выполняется
+    поверх раскладки `objects/<obj>/disciplines/<D>/documents/<code>/versions/vNNN`.
+
+    Отличие от legacy по решению оператора: артефакты аудита source (`03_analysis`,
+    `04_review`, `05_export`, `99_service`, `02_work`) НЕ отбрасываются, а
+    переносятся в новую версию, поэтому `discard_source_output` здесь не нужен.
+    """
+    adapter, doc_src = _v2_adapter_and_doc(source_project_id)
+    if doc_src is None:
+        raise FileNotFoundError(
+            f"Source проект '{source_project_id}' не найден в projects_v2"
+        )
+    _adapter_tgt, doc_tgt = _v2_adapter_and_doc(target_project_id)
+    if doc_tgt is None:
+        raise FileNotFoundError(
+            f"Target проект '{target_project_id}' не найден в projects_v2"
+        )
+
+    src_version_dir = _v2_current_version_dir(source_project_id)
+    if src_version_dir is None or not src_version_dir.is_dir():
+        raise FileNotFoundError(
+            f"У source проекта '{source_project_id}' не найдена текущая версия"
+        )
+
+    # Section guard (как в legacy): не склеиваем документы разных разделов.
+    src_section = (_load_layout_project_info(src_version_dir).get("section")
+                   or doc_src.get("discipline"))
+    tgt_section = _read_target_section(Path(str(doc_tgt["doc_dir"])), target_project_id) \
+        or doc_tgt.get("discipline")
+    if src_section and tgt_section and src_section != tgt_section:
+        raise ValueError(
+            f"Раздел source ('{src_section}') не совпадает с target ('{tgt_section}')"
+        )
+
+    source_files, pdf_found, warnings = _v2_merge_collect_source_files(src_version_dir)
+    if not pdf_found:
+        raise ValueError(
+            f"В source проекте '{source_project_id}' нет PDF — слияние невозможно"
+        )
+
+    from backend.app.services.common.project_service import resolve_project_dir as _resolve
+    target_dir = _resolve(target_project_id)
+
+    # Переиспользуем пустую latest-версию (V2+) target'а, если она есть.
+    latest_summary = get_versions_summary(target_dir, target_project_id)
+    reused_empty_latest = False
+    new_entry: dict[str, Any] = {}
+    for v in latest_summary.get("versions", []):
+        if v.get("is_latest") and (v.get("pdf_count", 0) == 0):
+            if int(v.get("version_no") or 0) > 1:
+                new_entry = {
+                    "version_id": v["version_id"],
+                    "version_no": v["version_no"],
+                    "label": v.get("label") or f"V{v['version_no']}",
+                    "folder": v.get("folder") or v["version_id"],
+                    "status": v.get("status", "new"),
+                    "source": source,
+                }
+                if comment:
+                    new_entry["comment"] = comment
+                reused_empty_latest = True
+            break
+
+    if not reused_empty_latest:
+        new_entry = create_next_version(
+            target_dir,
+            target_project_id,
+            source=source,
+            status="new",
+            comment=comment,
+            create_folder=True,
+            seed_project_info=True,
+        )
+    new_version_id = new_entry["version_id"]
+
+    saved_result = save_files_to_version(
+        target_project_id,
+        new_version_id,
+        source_files,
+        replace_existing=False,
+        comment=comment,
+        allow_v1_upload=False,
+    )
+
+    fresh_target_dir = _resolve(target_project_id)
+    version_dir = get_version_dir(fresh_target_dir, target_project_id, new_version_id)
+
+    carried = _v2_carry_audit_artifacts(src_version_dir, version_dir)
+    if carried:
+        _v2_apply_source_analysis_state(src_version_dir, version_dir, source_project_id)
+        warnings.append(
+            "Артефакты аудита source перенесены в новую версию: " + ", ".join(carried)
+        )
+
+    # project_info новой версии: раздел + метка происхождения.
+    info_path = version_dir / "01_input" / "project_info.json"
+    try:
+        info = json.loads(info_path.read_text(encoding="utf-8")) if info_path.exists() else {}
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        info = {}
+    if not isinstance(info, dict):
+        info = {}
+    if tgt_section and not info.get("section"):
+        info["section"] = tgt_section
+    info["version_source"] = source
+    info["merged_from_project_id"] = source_project_id
+    if comment:
+        info["version_comment"] = comment
+    try:
+        info_path.parent.mkdir(parents=True, exist_ok=True)
+        info_path.write_text(json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8")
+        _sync_v2_version_project_info(version_dir, info)
+    except OSError:
+        pass
+
+    # Удаляем source-документ ПОСЛЕ успешного копирования исходников и
+    # артефактов. Идём через delete_project: в v2-primary он делает backup всех
+    # версий в `_system/destructive_backups` (удаление восстановимо).
+    if delete_source:
+        try:
+            from backend.app.services.common.project_service import delete_project as _delete_project
+            _delete_project(source_project_id)
+        except Exception as e:  # noqa: BLE001 — файлы уже перенесены, это не откат
+            warnings.append(f"Не удалось удалить source проект: {e}")
+
+    _invalidate_project_cache()
+
+    return {
+        "status": "ok",
+        "project_id": target_project_id,
+        "source_project_id": source_project_id,
+        "storage_layout": "projects_v2",
+        "version": new_entry,
+        "version_id": new_version_id,
+        "reused_empty_latest": reused_empty_latest,
+        "saved": saved_result["saved"],
+        "carried_artifacts": carried,
+        "warnings": warnings,
+        "versions_summary": get_versions_summary(fresh_target_dir, target_project_id),
+    }
+
+
 def merge_project_as_version(
     source_project_id: str,
     target_project_id: str,
@@ -2041,6 +2337,25 @@ def merge_project_as_version(
 
     source_dir: Path = resolve_project_dir_fn(source_project_id)
     target_dir: Path = resolve_project_dir_fn(target_project_id)
+
+    # projects_v2-primary: legacy-папок проектов на диске нет вовсе, поэтому
+    # legacy-ветка ниже упала бы 404 на первой же проверке. Уходим в v2-путь
+    # только когда legacy-папки source действительно нет, — legacy-семантика
+    # (и её тесты) при существующей папке сохраняется байт-в-байт.
+    if (
+        not (source_dir.exists() and source_dir.is_dir())
+        and _projects_v2_context_enabled()
+        and _document_exists_in_v2(source_project_id)
+        and _document_exists_in_v2(target_project_id)
+    ):
+        return _merge_project_as_version_v2(
+            source_project_id,
+            target_project_id,
+            comment=comment,
+            source=source,
+            delete_source=delete_source,
+        )
+
     if not source_dir.exists() or not source_dir.is_dir():
         raise FileNotFoundError(f"Source проект '{source_project_id}' не найден: {source_dir}")
     if not target_dir.exists() or not target_dir.is_dir():
