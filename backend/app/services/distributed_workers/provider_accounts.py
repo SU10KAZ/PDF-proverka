@@ -61,7 +61,17 @@ CONFIDENCE_LEVELS: tuple[str, ...] = ("high", "medium", "low", "none")
 SOURCE_STABILITY: tuple[str, ...] = (
     "stable", "experimental", "undocumented", "not_applicable",
 )
-INSTALLATION_STATES: tuple[str, ...] = ("installed", "missing", "broken")
+#: Состояния установки, принимаемые ОТ ВОРКЕРА. Кроме трёх исходов настоящего
+#: наблюдения сюда входит `not_observed` — «опроса ещё не было».
+#:
+#: Сегодня оно не приходит: воркер шлёт совместимую с работающим шлюзом
+#: заглушку `missing` (принятый остаточный дефект 12I.3). Список расширен
+#: заранее и намеренно — иначе к моменту выкатки шлюза честное значение
+#: молча схлопнулось бы обратно в `missing` уже ЗДЕСЬ, и правка на проводе
+#: оказалась бы бесполезной, а обнаружилось бы это только в бою.
+INSTALLATION_STATES: tuple[str, ...] = (
+    "installed", "missing", "broken", "not_observed",
+)
 AUTH_STATES: tuple[str, ...] = ("logged_in", "logged_out", "expired", "unknown", "error")
 POLICY_STATES: tuple[str, ...] = ("allowed", "review_required", "policy_blocked")
 ACCOUNT_KINDS: tuple[str, ...] = (

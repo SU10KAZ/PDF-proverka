@@ -25,7 +25,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.build_center_release import fileset_digest  # noqa: E402
+from scripts.build_center_release import (  # noqa: E402
+    REQUIRED_PATHS,
+    fileset_digest,
+)
 from scripts.deploy_lock import COMPONENT_CENTER, deploy_lock  # noqa: E402
 
 ROOT = Path("/home/coder/auditmanager")
@@ -97,18 +100,34 @@ def prechecks(new: Path, gateway_release: Optional[Path]) -> list[str]:
     # что собрано.
     recorded = manifest.get("fileset_sha256")
     if recorded:
-        actual = fileset_digest(new / "app")
-        if actual != recorded:
-            problems.append(
-                "дерево релиза не совпадает с манифестом: "
-                f"{actual[:12]}… вместо {str(recorded)[:12]}…"
-            )
+        try:
+            actual = fileset_digest(new / "app")
+        except (OSError, ValueError) as exc:
+            problems.append(f"дерево релиза непригодно для отпечатка: {exc}")
+        else:
+            if actual != recorded:
+                problems.append(
+                    "дерево релиза не совпадает с манифестом: "
+                    f"{actual[:12]}… вместо {str(recorded)[:12]}…"
+                )
     else:
         # Релизы, собранные сборщиком из /tmp, отпечатка не несут. Отказывать
-        # из-за этого нельзя — на такой релиз откатываются, — но и молчать о
-        # непроверяемости не следует.
+        # из-за этого нельзя — именно на такой релиз откатываются, — но и
+        # молчать о непроверяемости не следует.
         print("ВНИМАНИЕ: в манифесте нет fileset_sha256, подмена дерева "
               "не проверяется (релиз старого сборщика)", file=sys.stderr)
+
+    # Обязательный набор проверяется ВСЕГДА, независимо от отпечатка. Иначе
+    # релиз без `frontend/static/js/distributed-feature.js` проходит и импорт,
+    # и здоровье (200 отдаёт любой процесс на порту), а распределённый экран
+    # ломается — то есть выкатывается то, что прежний сборщик отвергал.
+    for rel in REQUIRED_PATHS:
+        if not (new / "app" / rel).exists():
+            problems.append(f"нет обязательного пути: {rel}")
+    for probe_dir in (new, new / "app", new / "venv", new / "venv/bin"):
+        # Нужны ОБА бита: без `x` шлюз не войдёт в каталог, даже видя его.
+        if probe_dir.exists() and (os.stat(probe_dir).st_mode & 0o005) != 0o005:
+            problems.append(f"каталог закрыт для прочих: {probe_dir}")
 
     if gateway_release is not None:
         for rel in WIRE_FILES:
@@ -205,15 +224,19 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             code = _health()
             if code != 200:
                 raise RuntimeError(f"здоровье не подтверждено: HTTP {code}")
+            # HTTP 200 доказывает, что НА ПОРТУ кто-то жив, а не что жив
+            # именно новый релиз: старый процесс мог пережить рестарт и
+            # продолжать отвечать. Спрашиваем ядро, из какого каталога работает
+            # служба, и НЕ считаем незнание успехом: недоказанная выкатка — это
+            # выкатка, о которой рецепт напишет неправду.
             running = running_release_dir()
-            if running is not None and running != new.resolve():
-                # HTTP 200 доказывает, что НА ПОРТУ кто-то жив, а не что жив
-                # именно новый релиз: старый процесс мог пережить рестарт и
-                # продолжать отвечать. Спрашиваем ядро, из какого каталога
-                # работает служба.
+            if running is None:
                 raise RuntimeError(
-                    f"служба работает из {running}, а не из {new}"
+                    "не удалось доказать, из какого релиза работает служба "
+                    "(MainPID или /proc недоступны)"
                 )
+            if running != new.resolve():
+                raise RuntimeError(f"служба работает из {running}, а не из {new}")
         except Exception as exc:  # noqa: BLE001 — сюда же попадает отказ restart
             # Отказ САМОГО restart раньше проскакивал мимо отката: исключение
             # улетало наружу, новый указатель оставался активным, а backend мог
@@ -227,10 +250,16 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
                 except Exception as restart_exc:  # noqa: BLE001
                     print(f"рестарт при откате не удался: {restart_exc}", file=sys.stderr)
                 rolled = _health()
-                print(f"откат выполнен, здоровье старого релиза: HTTP {rolled}",
-                      file=sys.stderr)
+                back = running_release_dir()
+                print(f"откат выполнен, здоровье старого релиза: HTTP {rolled}, "
+                      f"работает из {back}", file=sys.stderr)
                 if rolled != 200:
                     print("ВНИМАНИЕ: старый релиз тоже не отвечает", file=sys.stderr)
+                elif back is None or back != previous.resolve():
+                    # Замок ещё наш, и это последняя точка, где о неполном
+                    # откате можно сказать вслух.
+                    print(f"ВНИМАНИЕ: после отката служба работает из {back}, "
+                          f"а ожидался {previous}", file=sys.stderr)
             # Замок держится до конца отката: снять его раньше значило бы
             # пустить чужую выкатку в незастабилизированное состояние.
             raise SystemExit("выкатка отменена")

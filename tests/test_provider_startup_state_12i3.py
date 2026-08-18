@@ -430,3 +430,117 @@ def test_no_provider_inference_is_triggered_by_status_reporting(tmp_path, monkey
     monkeypatch.setattr(subprocess, "check_output", _forbidden)
     manager = ProviderManager(worker_root=tmp_path, inference_allowed=False)
     manager.heartbeat_payload()
+
+
+# ═════ 6. Спящая цепочка обязана быть РАБОЧЕЙ к выкатке шлюза ═══════════════
+def test_dormant_chain_survives_the_center_sanitizer():
+    """Провод → санитайзер → строка БД → экран: сквозная проверка спящего пути.
+
+    Ловушка, ради которой этот тест написан: санитайзер центра приводит
+    `installation_status` к закрытому списку. Пока в списке не было
+    `not_observed`, честное значение схлопывалось бы обратно в `missing` уже
+    ЗДЕСЬ — и правка на проводе оказалась бы бесполезной, а выяснилось бы это
+    только после выкатки шлюза, в бою.
+    """
+    from backend.app.services.distributed_workers import provider_accounts
+
+    sanitized = provider_accounts.sanitize_provider_snapshot({
+        "provider": "claude",
+        "installation_status": INSTALL_NOT_OBSERVED,
+        "auth_state": AUTH_UNKNOWN,
+        "policy_state": "allowed",
+    })
+    assert sanitized["installation_status"] == INSTALL_NOT_OBSERVED, (
+        "санитайзер стёр честное значение — спящая правка мертва"
+    )
+    view = distributed_ui._provider_quota(
+        dict(sanitized, quota={"quota_state": "unknown"}, observed_at=1000.0),
+        settings=_settings(), now=1000.0,
+    )
+    assert view["status"] == "not_observed"
+    assert view["availability"] == "unknown"
+
+
+def test_sanitizer_still_rejects_invented_states():
+    """Расширение списка не превращает его в «принимаем что угодно»."""
+    from backend.app.services.distributed_workers import provider_accounts
+
+    sanitized = provider_accounts.sanitize_provider_snapshot({
+        "provider": "claude", "installation_status": "totally_fine",
+    })
+    assert sanitized["installation_status"] == INSTALL_MISSING
+
+
+def test_worker_identity_still_refuses_not_observed():
+    """Настоящее наблюдение таким не бывает — валидация обязана отвергать."""
+    from audit_worker.providers.identity import ProviderIdentity
+
+    fields = dict(
+        provider="claude", auth_state=AUTH_UNKNOWN, auth_method="none",
+        policy_state="allowed", inference_allowed=False, last_auth_check_at=1000.0,
+    )
+    # Контроль: с настоящим исходом конструктор проходит.
+    ProviderIdentity(installation_status=INSTALL_MISSING, **fields)
+    with pytest.raises(ValueError, match="installation_status"):
+        ProviderIdentity(installation_status=INSTALL_NOT_OBSERVED, **fields)
+
+
+def test_event_from_the_previous_connection_never_overwrites_fresh_state(tmp_path):
+    """Снимок, накопленный до обрыва, не имеет права пережить переподключение.
+
+    Последовательность, которая ломала бы состояние навсегда: в соединении №1
+    поставлено в очередь событие со снимком B; связь рвётся до отправки; к
+    моменту переподключения состояние стало C, и новый Hello сообщает C; сразу
+    после CenterHello уезжает СТАРОЕ B и затирает свежую запись. Исправить это
+    следующим heartbeat невозможно — опорная точка уже равна C, изменений
+    транспорт не видит, и ложь остаётся до конца соединения.
+    """
+    ref = [list(PLACEHOLDER)]
+    transport = _live_transport(tmp_path, ref)
+    transport._hello(epoch=1)                       # соединение №1
+    stale = [_snapshot(p, install=INSTALL_INSTALLED, auth=AUTH_LOGGED_IN, remaining=50.0)
+             for p in PROVIDERS]
+    assert _beat(transport, ref, stale) is True     # событие встало в очередь
+    transport.heartbeat(transport.build_heartbeat())
+    assert transport._latest_capabilities is not None, "событие ждёт отправки"
+
+    fresh = [_snapshot(p, install=INSTALL_INSTALLED, auth=AUTH_LOGGED_IN, remaining=9.0)
+             for p in PROVIDERS]
+    ref[0] = fresh
+    transport._hello(epoch=2)                       # соединение №2 с C
+    assert transport._latest_capabilities is None, (
+        "событие прошлого поколения уехало бы после CenterHello и затёрло бы C"
+    )
+    # И новое состояние остаётся объявляемым: изменение после Hello доезжает.
+    changed = [_snapshot(p, install=INSTALL_INSTALLED, auth=AUTH_LOGGED_IN, remaining=8.0)
+               for p in PROVIDERS]
+    assert _beat(transport, ref, changed) is True
+
+
+def test_digest_covers_exactly_what_the_stream_delivers():
+    """Граница отпечатка = граница ПРОВОДА, и это надо знать явно.
+
+    По gRPC-потоку до центра доезжает лишь часть снимка: `auth_method`,
+    `plan_type`, `account_fingerprint`, `credential_mode` в контракте потока
+    отсутствуют вовсе. Отпечаток не может «пропустить» их изменение — центр
+    их не видит НИ ПРИ КАКОМ отпечатке. Расширение возможно только вместе с
+    контрактом `common.proto`, то есть с выкаткой шлюза.
+
+    Тест сторожит, чтобы это не приняли за упущение отпечатка и чтобы никто
+    не «починил» его добавлением полей, которых на проводе нет.
+    """
+    from contracts.agent_stream.v1 import adapters as ad
+
+    rich = {"provider": "claude", "installation_status": INSTALL_INSTALLED,
+            "auth_state": AUTH_LOGGED_IN, "auth_method": "claudeai",
+            "plan_type": "max20", "account_fingerprint": "AAA",
+            "credential_mode": "600", "observed_at": 1.0,
+            "quota": {"quota_state": "ready"}}
+    delivered = ad.provider_capability_to_center(ad._provider_snapshot_to_proto(rich))
+    for absent in ("auth_method", "plan_type", "account_fingerprint", "credential_mode"):
+        assert absent not in delivered, (
+            f"{absent} появилось на проводе — отпечаток обязан его учитывать"
+        )
+    # Смена учётной записи, ВИДИМАЯ центру, отпечаток менять обязана.
+    other = dict(rich, account_group_id="grp-b")
+    assert provider_status_digest([rich]) != provider_status_digest([other])

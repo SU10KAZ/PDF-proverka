@@ -400,6 +400,69 @@ def test_lost_ownership_is_resumed_not_failed_during_source_download(tmp_path,
     )
 
 
+def test_real_download_source_classifies_a_headerless_409_as_a_race(tmp_path):
+    """Дефект был в ОТДЕЛЬНОМ HTTP-пути скачивания, а не в общем `request`.
+
+    `download_source` стримит ответ и зовёт `_raise` сам. Забытый там признак
+    режима означал: обрыв потока перед первым байтом исходников читается как
+    настоящий отзыв попытки, и агент останавливает живую работу.
+    """
+    import httpx
+
+    from audit_worker.client import (
+        AttemptSupersededError, CenterClient, ControlContextLostError,
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(409, json={"error": "attempt_superseded",
+                                         "detail": "not yours"}, request=request)
+
+    client = CenterClient("https://center.invalid",
+                          transport=httpx.MockTransport(handler))
+    client.set_control_context(connection_id="gconn_a61189e7")
+    client.set_control_context(connection_id=None)   # поток оборвался
+    with pytest.raises(ControlContextLostError) as caught:
+        client.download_source("job", tmp_path / "src.tar", "", attempt_id="att")
+    assert not isinstance(caught.value, AttemptSupersededError)
+
+
+def test_real_download_source_keeps_a_genuine_supersede(tmp_path):
+    import httpx
+
+    from audit_worker.client import AttemptSupersededError, CenterClient
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(409, json={"error": "attempt_superseded",
+                                         "detail": "revoked"}, request=request)
+
+    client = CenterClient("https://center.invalid",
+                          transport=httpx.MockTransport(handler))
+    client.set_control_context(connection_id="gconn_a61189e7")
+    with pytest.raises(AttemptSupersededError):
+        client.download_source("job", tmp_path / "src.tar", "", attempt_id="att")
+
+
+def test_stale_stream_session_403_is_a_race_not_a_verdict(tmp_path):
+    """Центр отвергает УСТАРЕВШУЮ сессию потока, а не попытку.
+
+    Заголовок при этом непустой — от умершего соединения, — поэтому по одному
+    его наличию отличить нельзя; отличает текст отказа центра.
+    """
+    import httpx
+
+    from audit_worker.client import CenterClient, ControlContextLostError
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(403, json={"detail": "gRPC transport session is not active"},
+                              request=request)
+
+    client = CenterClient("https://center.invalid",
+                          transport=httpx.MockTransport(handler))
+    client.set_control_context(connection_id="gconn_dead")
+    with pytest.raises(ControlContextLostError):
+        client.request("POST", "/api/v1/worker/uploads")
+
+
 def test_chunk_retry_does_not_turn_a_lost_stream_into_upload_failure():
     """`UploadFailed` на 409 означает «чанк принят с другим содержимым».
 

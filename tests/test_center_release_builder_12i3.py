@@ -380,3 +380,133 @@ def deploy_lock_ctx(lock_dir: Path):
 
     with deploy_lock(COMPONENT_CENTER, operation="probe", lock_dir=lock_dir) as path:
         yield path
+
+
+def test_manifest_digest_must_be_taken_after_sealing(tmp_path):
+    """Порядок «запечатать → посчитать» — не стиль, а условие работоспособности.
+
+    Права входят в отпечаток. Посчитанный до `seal_tree`, он описывает дерево,
+    которого на диске уже нет, и предпроверка выкатки отвергала бы КАЖДУЮ
+    собственную сборку — то есть канонический сборщик был бы неприменим.
+    """
+    from scripts.release_staging import seal_tree
+
+    release = tmp_path / "releases" / "ui-real-0badf00d"
+    app = release / "app"
+    (app / "contracts/agent_stream/v1").mkdir(parents=True)
+    for name in ("agent_stream_v1.desc", "agent_stream.proto", "common.proto"):
+        (app / "contracts/agent_stream/v1" / name).write_text(name, encoding="utf-8")
+    (app / "mod.py").write_text("x = 1\n", encoding="utf-8")
+    (release / "venv" / "bin").mkdir(parents=True)
+    (release / "venv/bin/python").symlink_to(sys.executable)
+
+    before_sealing = builder.fileset_digest(app)
+    seal_tree(app)
+    after_sealing = builder.fileset_digest(app)
+    assert before_sealing != after_sealing, "запечатывание обязано менять отпечаток"
+
+    gateway = _gateway(tmp_path, release)
+
+    def _write_manifest(digest: str) -> None:
+        (release / "release-manifest.json").write_text(json.dumps({
+            "release_id": "ui-real-0badf00d",
+            "database_schema": {"target": 13},
+            "fileset_sha256": digest,
+        }, ensure_ascii=False), encoding="utf-8")
+
+    _write_manifest(before_sealing)
+    stale = deployer.prechecks(release, gateway)
+    assert any("не совпадает с манифестом" in item for item in stale), (
+        "отпечаток, снятый до запечатывания, обязан быть отвергнут"
+    )
+    _write_manifest(after_sealing)
+    good = deployer.prechecks(release, gateway)
+    assert not any("не совпадает с манифестом" in item for item in good), good
+
+
+def test_deploy_precheck_refuses_a_release_missing_required_paths(tmp_path):
+    """Релиз без обязательного файла UI не имеет права выкатиться.
+
+    Ни импорт, ни HTTP 200 этого не замечают: 200 отдаёт любой процесс на
+    порту, а распределённый экран при этом сломан. Прежний сборщик из /tmp
+    такой релиз отвергал — канонический обязан тоже.
+    """
+    release = _release(tmp_path, "ui-real-cafe0005")
+    problems = deployer.prechecks(release, _gateway(tmp_path, release))
+    assert any("нет обязательного пути" in item for item in problems), problems
+
+
+def test_deploy_refuses_when_the_running_release_cannot_be_proven(monkeypatch, tmp_path):
+    """Незнание — не успех: недоказанная выкатка ведёт к откату."""
+    monkeypatch.setattr(deployer, "ROOT", tmp_path)
+    releases = tmp_path / "releases"
+    (releases / "old").mkdir(parents=True)
+    (releases / "new").mkdir(parents=True)
+    (tmp_path / "current").symlink_to(releases / "old")
+    monkeypatch.setattr(deployer, "running_gateway_release_dir", lambda: tmp_path)
+    monkeypatch.setattr(deployer, "prechecks", lambda *a, **k: [])
+    monkeypatch.setattr(deployer, "_health", lambda *a, **k: 200)
+    monkeypatch.setattr(deployer, "_systemctl_user", lambda *a: "")
+    monkeypatch.setattr(deployer, "running_release_dir", lambda: None)
+    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    with pytest.raises(SystemExit):
+        deployer.deploy("new")
+    assert os.readlink(tmp_path / "current").endswith("old")
+
+
+@pytest.mark.parametrize("suite", [
+    "tests/test_startup_connection_race_12i3.py",
+    "tests/test_center_release_builder_12i3.py",
+    "tests/test_provider_startup_state_12i3.py",
+    "tests/test_deploy_lock_12i3.py",
+])
+def test_release_gate_runs_the_suites_that_guard_this_stage(suite):
+    """Гейт релиза обязан гонять именно те наборы, что стерегут эти правки."""
+    assert suite in builder.DEFAULT_RELEASE_TESTS
+
+
+def test_fileset_digest_refuses_a_fifo_instead_of_hanging(tmp_path):
+    """FIFO без писателя блокирует чтение НАВСЕГДА.
+
+    Во время выкатки такой процесс держит замок центра — и следом встают все
+    остальные выкатки. Отказ обязан быть до открытия файла.
+    """
+    root = tmp_path / "app"
+    root.mkdir()
+    os.mkfifo(root / "pipe")
+    with pytest.raises(ValueError, match="недопустимый объект"):
+        builder.fileset_digest(root)
+
+
+def test_fileset_digest_refuses_a_hard_link(tmp_path):
+    """Жёсткая связь — другая топология при том же содержимом."""
+    root = tmp_path / "app"
+    root.mkdir()
+    (root / "a.py").write_text("x = 1\n", encoding="utf-8")
+    os.link(root / "a.py", root / "b.py")
+    with pytest.raises(ValueError, match="жёсткая связь"):
+        builder.fileset_digest(root)
+
+
+def test_partial_release_of_the_same_commit_is_not_declared_ready(tmp_path, monkeypatch):
+    """Обломок прерванной установки не имеет права считаться собранным."""
+    releases = tmp_path / "releases"
+    base = _release(tmp_path, "base")
+    final = releases / "ui-real-deadbee0"
+    final.mkdir(parents=True)
+    (final / "release-manifest.json").write_text(
+        json.dumps({"commit": "deadbee0" + "0" * 32}), encoding="utf-8")
+
+    monkeypatch.setattr(builder, "run", lambda *a, **k: {
+        ("git", "rev-parse", "HEAD"): "deadbee0" + "0" * 32,
+        ("git", "status", "--porcelain"): "",
+        ("git", "rev-parse", "HEAD^"): "b" * 40,
+        ("git", "rev-parse", "HEAD^{tree}"): "c" * 40,
+    }[a])
+    monkeypatch.setenv("AUDITMANAGER_DEPLOY_LOCK_DIR", str(tmp_path / "locks"))
+    (base / "release-manifest.json").write_text(
+        json.dumps({"commit": "b" * 40, "database_schema": {"target": 13}}),
+        encoding="utf-8")
+    with pytest.raises(SystemExit) as caught:
+        builder.build(base_release="base", kind="k", notes="n", releases_dir=releases)
+    assert "незавершённую сборку" in str(caught.value)

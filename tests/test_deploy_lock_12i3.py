@@ -275,3 +275,76 @@ def test_mutating_worker_commands_take_the_lock(command):
     from scripts.deploy_audit_worker import _MUTATING_COMMANDS
 
     assert command in _MUTATING_COMMANDS, "откат меняет прод так же, как выкатка"
+
+
+def test_failed_nested_acquisition_does_not_disown_the_real_holder(tmp_path):
+    """Отказавшая попытка не имеет права снимать учёт чужого дескриптора.
+
+    Иначе внешний держатель терял бы возможность передать замок установщику
+    через `exec` — из-за чужой неудачи, к которой он не имеет отношения.
+    """
+    from scripts import deploy_lock as module
+
+    with deploy_lock(COMPONENT_CENTER, operation="deploy", lock_dir=tmp_path) as path:
+        assert str(path) in module._HELD_FDS
+        with pytest.raises(DeployLockHeld):
+            with deploy_lock(COMPONENT_CENTER, operation="deploy", lock_dir=tmp_path):
+                pass
+        assert str(path) in module._HELD_FDS, (
+            "чужая неудача стёрла учёт замка, который мы держим"
+        )
+        assert module._lock_fd_for_exec(path) >= 0
+
+
+def test_mutating_primitive_is_locked_even_when_called_directly(tmp_path, monkeypatch):
+    """Прямой вызов примитива мимо `main()` обязан упереться в чужой замок.
+
+    Так его зовёт smoke-сценарий: `deploy.remote_switch_current(...)`. Замок
+    только у разбора команд оставлял бы smoke и штатную выкатку одного воркера
+    конкурировать за один симлинк и один рестарт.
+
+    Держатель — ОТДЕЛЬНЫЙ процесс: повторный вход разрешён в пределах своего
+    процесса, и держать замок здесь же означало бы проверять не то.
+    """
+    from scripts import deploy_audit_worker as deploy
+    from scripts import deploy_lock as lock_module
+
+    # Каталог замков читается как глобаль модуля в момент вызова: примитив
+    # берёт замок без явного `lock_dir`, и подменять надо именно её.
+    monkeypatch.setattr(lock_module, "DEFAULT_LOCK_DIR", tmp_path)
+    remote = deploy.Remote(host="127.0.0.1", user="auditworker_11l",
+                           root="/home/auditworker_11l/audit-worker-11l", dry_run=True)
+    instance = remote.lock_instance
+    script = textwrap.dedent(f"""
+        import sys, time
+        sys.path.insert(0, {str(_ROOT)!r})
+        from pathlib import Path
+        from scripts.deploy_lock import deploy_lock, COMPONENT_WORKER
+        with deploy_lock(COMPONENT_WORKER, operation="deploy",
+                         instance={instance!r}, lock_dir=Path({str(tmp_path)!r})):
+            print("HELD", flush=True)
+            time.sleep(60)
+    """)
+    child = subprocess.Popen([sys.executable, "-c", script], stdout=subprocess.PIPE,
+                             text=True)
+    try:
+        assert child.stdout.readline().strip() == "HELD"
+        with pytest.raises(DeployLockHeld):
+            deploy.remote_switch_current(remote, "release-x")
+    finally:
+        child.kill()
+        child.wait(timeout=10)
+
+
+def test_deploy_flow_does_not_block_itself(tmp_path, monkeypatch):
+    """Штатная выкатка держит замок снаружи и обязана пройти шаг внутри."""
+    from scripts import deploy_audit_worker as deploy
+
+    from scripts import deploy_lock as lock_module
+
+    monkeypatch.setattr(lock_module, "DEFAULT_LOCK_DIR", tmp_path)
+    remote = deploy.Remote(host="127.0.0.1", user="auditworker_11l",
+                           root="/home/auditworker_11l/audit-worker-11l", dry_run=True)
+    with deploy_lock(COMPONENT_WORKER, operation="deploy",
+                     instance=remote.lock_instance, lock_dir=tmp_path):
+        deploy.remote_switch_current(remote, "release-x")   # не должно упасть

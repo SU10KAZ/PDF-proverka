@@ -50,6 +50,7 @@ import tarfile
 import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 from typing import Iterable, Optional, Sequence
 
@@ -492,6 +493,37 @@ def verify_artifact(archive: Path, manifest_path: Path) -> list[str]:
 # ─── удалённая сторона ───────────────────────────────────────────────────────
 
 
+@contextmanager
+def _worker_deploy_lock(remote: "Remote", *, operation: str, release: str):
+    """Обязательный замок ВНУТРИ мутирующего примитива.
+
+    Замок только у CLI-разбора команд оставлял дыру: `smoke_distributed_audit_
+    real_vps.py` дёргает `remote_install_release`/`remote_switch_current`
+    напрямую, минуя `main()`. Одновременный smoke и штатная выкатка одного
+    воркера конкурировали бы за один симлинк и один рестарт.
+
+    Повторный вход из уже заблокировавшей команды разрешён (см.
+    `scripts/deploy_lock.py`), поэтому обычная выкатка не блокирует сама себя.
+    """
+    from scripts.deploy_lock import COMPONENT_WORKER, deploy_lock
+
+    # Имя экземпляра собирается ИЗ АТРИБУТОВ, а не требует метода: сюда
+    # приходят и настоящий `Remote`, и подменённые объекты из тестов. Чего-то
+    # не хватило — получится общий замок, то есть перестраховка, а не дыра.
+    instance = worker_lock_instance(
+        host=str(getattr(remote, "host", "") or ""),
+        user=str(getattr(remote, "user", "") or ""),
+        remote_root=str(getattr(remote, "root", "") or ""),
+    )
+    with deploy_lock(
+        COMPONENT_WORKER, operation=operation, release=release,
+        instance=instance,
+        milestone=os.environ.get("AUDITMANAGER_DEPLOY_MILESTONE", ""),
+        reentrant=True,
+    ) as path:
+        yield path
+
+
 @dataclass
 class Remote:
     host: str
@@ -503,6 +535,11 @@ class Remote:
     @property
     def target(self) -> str:
         return f"{self.user}@{self.host}"
+
+    @property
+    def lock_instance(self) -> str:
+        return worker_lock_instance(host=self.host, user=self.user,
+                                    remote_root=self.root)
 
     def run(self, script: str, *, timeout: int = 600, check: bool = True) -> subprocess.CompletedProcess:
         cmd = ["ssh", *self.ssh_opts, self.target, "bash -s"]
@@ -569,6 +606,14 @@ def remote_install_release(
     remote: Remote, archive_name: str, manifest_name: str, release: str, expected_sha: str
 ) -> str:
     """Развернуть архив в app/<release>. Симлинк НЕ трогается."""
+    with _worker_deploy_lock(remote, operation="install", release=release):
+        return _remote_install_release(remote, archive_name, manifest_name,
+                                       release, expected_sha)
+
+
+def _remote_install_release(
+    remote: Remote, archive_name: str, manifest_name: str, release: str, expected_sha: str
+) -> str:
     result = remote.run(
         f"""set -euo pipefail
 root={shlex.quote(remote.root)}
@@ -702,6 +747,11 @@ ls -1 "$root/app" 2>/dev/null | grep -v '^\\.' || true
 
 def remote_switch_current(remote: Remote, release: str) -> str:
     """Атомарное переключение симлинка: ln -sfn во временный + mv -T."""
+    with _worker_deploy_lock(remote, operation="switch", release=release):
+        return _remote_switch_current(remote, release)
+
+
+def _remote_switch_current(remote: Remote, release: str) -> str:
     result = remote.run(
         f"""set -euo pipefail
 root={shlex.quote(remote.root)}
@@ -736,6 +786,32 @@ done
         check=False,
     )
     return result.stdout
+
+
+def assert_units_healthy(health: dict, *, release: str, stage: str) -> None:
+    """Юниты обязаны быть ЖИВЫ и работать из ожидаемого релиза.
+
+    Прежде отказ `systemctl restart` печатался строкой `RESTART_FAILED` и на
+    этом всё: команда завершалась успехом, замок снимался, а воркер оставался
+    выключенным — при уже переключённом `current`. Снаружи это выглядит как
+    «выкатка прошла», и обнаруживается только когда задание некому взять.
+    """
+    problems = []
+    for unit in health.get("units") or []:
+        if str(unit.get("STATE")) != "active":
+            problems.append(f"{unit.get('UNIT')}: состояние {unit.get('STATE')}")
+        elif not str(unit.get("PID") or "").strip() or str(unit.get("PID")) == "0":
+            problems.append(f"{unit.get('UNIT')}: нет главного процесса")
+    if not (health.get("units") or []):
+        problems.append("юнитов не найдено вовсе")
+    actual = str(health.get("release") or "")
+    if release and actual and actual != release:
+        problems.append(f"работает релиз {actual}, а ожидался {release}")
+    if problems:
+        raise SystemExit(
+            f"{stage}: воркер не подтвердил работоспособность — "
+            + "; ".join(problems)
+        )
 
 
 def remote_health(remote: Remote, units: Sequence[str]) -> dict:
@@ -851,12 +927,29 @@ def cmd_deploy(args: argparse.Namespace) -> int:
 
     if args.restart:
         print("[7/7] перезапуск юнитов")
-        print("      " + remote_restart_units(remote, args.units).strip().replace("\n", "\n      "))
+        restart_out = remote_restart_units(remote, args.units)
+        print("      " + restart_out.strip().replace("\n", "\n      "))
     else:
         print("[7/7] перезапуск пропущен (--no-restart)")
 
     health = remote_health(remote, args.units)
     print("health:", json.dumps(health, ensure_ascii=False))
+    if args.restart:
+        try:
+            assert_units_healthy(health, release=release, stage="выкатка")
+        except SystemExit:
+            # Указатель уже переключён, а воркер не поднялся. Возвращаем его
+            # сами и ДО снятия замка: иначе следующая выкатка входит в машину,
+            # где current указывает на нерабочий релиз.
+            if previous and previous != release:
+                print(f"ВЫКАТКА НЕ УДАЛАСЬ — откат на {previous}", file=sys.stderr)
+                print("  " + remote_switch_current(remote, previous), file=sys.stderr)
+                print("  " + remote_restart_units(remote, args.units).strip(),
+                      file=sys.stderr)
+                back = remote_health(remote, args.units)
+                print("health после отката:", json.dumps(back, ensure_ascii=False),
+                      file=sys.stderr)
+            raise
     if previous and previous != release:
         print(f"откат: python {Path(__file__).name} rollback --host {args.host} --user {args.user} --to {previous}")
     return 0
@@ -878,7 +971,12 @@ def cmd_rollback(args: argparse.Namespace) -> int:
     print("  " + remote_switch_current(remote, target))
     if args.restart:
         print("  " + remote_restart_units(remote, args.units).strip().replace("\n", "\n  "))
-    print("health:", json.dumps(remote_health(remote, args.units), ensure_ascii=False))
+    health = remote_health(remote, args.units)
+    print("health:", json.dumps(health, ensure_ascii=False))
+    if args.restart:
+        # Откат обязан доказывать успех так же строго, как выкатка: молчаливо
+        # «откатившийся» в выключенное состояние воркер — это тот же простой.
+        assert_units_healthy(health, release=target, stage="откат")
     return 0
 
 
@@ -981,10 +1079,36 @@ def units_for_root(root: str) -> list[str]:
     ]
 
 
-def worker_lock_instance(*, host: str, user: str, remote_root: str) -> str:
+def _ssh_canonical_host(host: str, ssh_config: str = "") -> str:
+    """Что SSH на самом деле считает адресом этого имени.
+
+    Алиас из `~/.ssh/config` — не то же самое, что имя хоста: обращение по
+    алиасу и по адресу идёт на одну машину, но как строки не совпадает. Про
+    это знает только сам ssh, поэтому спрашиваем его (`-G` печатает итоговую
+    конфигурацию и ничего не подключает).
+    """
+    cmd = ["ssh", "-G"]
+    if ssh_config:
+        cmd += ["-F", ssh_config]
+    cmd.append(host)
+    try:
+        out = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+    except (OSError, subprocess.SubprocessError):
+        return host
+    if out.returncode != 0:
+        return host
+    for line in out.stdout.splitlines():
+        key, _, value = line.strip().partition(" ")
+        if key.lower() == "hostname" and value.strip():
+            return value.strip()
+    return host
+
+
+def worker_lock_instance(*, host: str, user: str, remote_root: str,
+                         ssh_config: str = "") -> str:
     """Имя замка = ОДНА установка воркера, а не одно написание её адреса.
 
-    Две ошибки, каждая из которых уже возможна на этом стенде:
+    Две ошибки, каждая из которых возможна на этом стенде:
 
       * `11l` и `11g` живут на одной машине разными пользователями и в разных
         корнях — общий замок запрещал бы обслуживать их одновременно без
@@ -993,31 +1117,33 @@ def worker_lock_instance(*, host: str, user: str, remote_root: str) -> str:
         разные написания давали бы РАЗНЫЕ замки: две выкатки в один корень
         пошли бы параллельно, а именно это замок и обязан запретить.
 
-    Поэтому хост приводится к канонической форме (резолвится в адрес), а корень
-    участвует ПОЛНОСТЬЮ, через отпечаток: `…/audit-worker` у двух разных
-    пользователей — разные установки, и совпадение последнего сегмента пути не
-    должно их слеплять.
+    Поэтому имя хоста сначала раскрывается тем же ssh, который будет
+    подключаться, затем резолвится в ПОЛНЫЙ отсортированный набор адресов
+    (набор, а не первый адрес: порядок в ответе DNS меняется сам по себе).
+    Корень участвует целиком, через отпечаток: совпадение последнего сегмента
+    пути у двух разных пользователей — не совпадение установок.
 
-    Честная граница: замок локальный. Он защищает от второй выкатки, запущенной
-    С ЭТОГО хоста; выкатку с другой управляющей машины он не увидит.
+    Честные границы, которые этим не закрываются:
+      * замок ЛОКАЛЬНЫЙ — выкатку с другой управляющей машины он не увидит;
+      * DNS с раздачей разных подмножеств адресов (round-robin с усечением)
+        может дать двум процессам разные имена. Против этого помогает только
+        явный стабильный идентификатор установки; здесь он не введён.
     """
     import hashlib
     import socket
 
-    canonical = host.strip().lower()
+    canonical = _ssh_canonical_host(host.strip(), ssh_config).strip().lower()
     try:
-        infos = socket.getaddrinfo(canonical, None)
-        addresses = sorted({str(item[4][0]) for item in infos})
-        if addresses:
-            canonical = addresses[0]
+        addresses = sorted({str(item[4][0]) for item in socket.getaddrinfo(canonical, None)})
     except OSError:
-        # Имя не резолвится (алиас `~/.ssh/config` без DNS) — остаётся строка.
-        # Это хуже канонического адреса, но лучше, чем упасть в выкатке.
-        pass
+        addresses = []
+    identity = ",".join(addresses) if addresses else canonical
     fingerprint = hashlib.sha256(
-        f"{user.strip()}@{canonical}:{PurePosixPath(remote_root.strip() or '/')}".encode("utf-8")
+        f"{user.strip()}@{identity}:{PurePosixPath(remote_root.strip() or '/')}".encode("utf-8")
     ).hexdigest()[:12]
-    return f"{canonical}-{fingerprint}"
+    readable = "".join(ch for ch in (addresses[0] if addresses else canonical)
+                       if ch.isalnum() or ch in "-_.")
+    return f"{readable or 'worker'}-{fingerprint}"
 
 
 #: Команды, которые МЕНЯЮТ боевое состояние воркера. `build` и `verify`

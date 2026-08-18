@@ -6,6 +6,7 @@ long-poll задания, пакеты событий и чанки архива
 """
 from __future__ import annotations
 
+import json
 import random
 import time
 from pathlib import Path
@@ -196,6 +197,13 @@ class CenterClient:
             body = {"detail": response.text[:500]}
         detail = body.get("detail", body) if isinstance(body, dict) else body
 
+        if response.status_code == 403 and control_context_bound:
+            text = json.dumps(body, ensure_ascii=False) if isinstance(body, (dict, list)) \
+                else str(body)
+            if "transport session is not active" in text:
+                # Идентификатор в заголовке есть, но он от УМЕРШЕГО соединения:
+                # центр отвергает не попытку, а устаревшую сессию потока.
+                raise ControlContextLostError(403, detail, body)
         if response.status_code == 409:
             payload = body if isinstance(body, dict) else {}
             nested = detail if isinstance(detail, dict) else payload
@@ -332,7 +340,12 @@ class CenterClient:
                 raise CenterError(416, "Range вне диапазона — начните скачивание заново")
             if response.status_code >= 400:
                 response.read()
-                self._raise(response)
+                # Признак режима обязателен И ЗДЕСЬ. У скачивания собственный
+                # HTTP-путь мимо `request()`, и без него headerless 409
+                # классифицировался бы как настоящий отзыв попытки — то есть
+                # обрыв потока перед первым байтом исходников убивал бы живую
+                # работу ровно там, где заслон уже стоит.
+                self._raise(response, control_context_bound=self._control_context_bound)
             mode = "ab" if (offset and response.status_code == 206) else "wb"
             with part.open(mode) as fh:
                 for chunk in response.iter_bytes(1024 * 1024):

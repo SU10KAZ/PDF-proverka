@@ -19,6 +19,7 @@
 """
 from __future__ import annotations
 
+import errno
 import json
 import os
 import shutil
@@ -73,6 +74,15 @@ RECONCILE_INTERVAL_SEC = 300.0
 DELIVERY_ACKNOWLEDGED = "acknowledged"
 DELIVERY_REJECTED_PERMANENTLY = "rejected_permanently"
 TERMINAL_DELIVERY_STATES = frozenset({DELIVERY_ACKNOWLEDGED, DELIVERY_REJECTED_PERMANENTLY})
+
+
+#: Локальные отказы, которые повтором не лечатся: диск полон, прав нет,
+#: путь занят каталогом, слишком длинное имя. Всё остальное (обрывы TCP/TLS,
+#: таймауты, временная недоступность) остаётся повторяемым.
+_PERMANENT_LOCAL_ERRNOS = frozenset({
+    errno.EACCES, errno.EPERM, errno.ENOSPC, errno.EROFS, errno.EDQUOT,
+    errno.EISDIR, errno.ENAMETOOLONG, errno.ENOTDIR, errno.EMFILE, errno.ENFILE,
+})
 
 
 class UploadDeferred(RuntimeError):
@@ -1160,6 +1170,14 @@ class WorkerAgent:
                 # ниже. Иначе переподключение между выдачей задания и первым
                 # байтом исходников помечало бы живую попытку `failed`: работа
                 # не начиналась, а задание уходило в отказ по чужой причине.
+                #
+                # Но повторять можно только ВРЕМЕННОЕ. Локальный отказ диска —
+                # «нет места», «нет прав» — сам не пройдёт, и вечный повтор
+                # держал бы слот занятым: при заполнении слотов воркер
+                # перестаёт брать работу вообще, и снаружи это выглядит как
+                # молчание, а не как переполненный диск.
+                if isinstance(exc, OSError) and exc.errno in _PERMANENT_LOCAL_ERRNOS:
+                    raise
                 if self._stop.is_set():
                     raise UploadDeferred(
                         "Agent stopped while source download was awaiting resume"

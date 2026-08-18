@@ -97,6 +97,9 @@ DEFAULT_RELEASE_TESTS = (
     "tests/test_release_staging_cleanup_12i2.py",
     "tests/test_deploy_lock_12i3.py",
     "tests/test_provider_startup_state_12i3.py",
+    "tests/test_startup_connection_race_12i3.py",
+    "tests/test_center_release_builder_12i3.py",
+    "tests/test_agent_grpc_client_12c.py",
 )
 
 
@@ -126,20 +129,34 @@ def fileset_digest(root: Path) -> str:
     """
     digest = hashlib.sha256()
     for path in sorted(root.rglob("*")):
+        info = path.lstat()
+        mode = info.st_mode
         rel = str(path.relative_to(root)).encode("utf-8")
         digest.update(rel)
         digest.update(b"\0")
-        if path.is_symlink():
+        if stat.S_ISLNK(mode):
             digest.update(b"L")
             digest.update(os.readlink(path).encode("utf-8"))
-        elif path.is_dir():
+        elif stat.S_ISDIR(mode):
             digest.update(b"D")
-            digest.update(oct(stat.S_IMODE(path.lstat().st_mode)).encode("ascii"))
-        else:
+            digest.update(oct(stat.S_IMODE(mode)).encode("ascii"))
+        elif stat.S_ISREG(mode):
+            # Жёсткая связь — это ДРУГАЯ топология при том же содержимом.
+            # В дереве релиза её быть не должно: `git archive` их не создаёт, а
+            # появившаяся означает, что кто-то менял каталог руками.
+            if info.st_nlink > 1:
+                raise ValueError(
+                    f"жёсткая связь в дереве релиза: {path} ({info.st_nlink} имён)"
+                )
             digest.update(b"F")
-            digest.update(oct(stat.S_IMODE(path.lstat().st_mode)).encode("ascii"))
+            digest.update(oct(stat.S_IMODE(mode)).encode("ascii"))
             digest.update(b"\0")
             digest.update(sha256_file(path).encode("ascii"))
+        else:
+            # FIFO, сокет, устройство. Открывать ТАКОЕ на чтение нельзя: FIFO
+            # без писателя блокирует процесс навсегда — а во время выкатки он
+            # держит замок центра, и следом встают все остальные выкатки.
+            raise ValueError(f"недопустимый объект в дереве релиза: {path}")
         digest.update(b"\n")
     return digest.hexdigest()
 
@@ -262,18 +279,37 @@ def build(
             # бы работающий прод — снимала бы read-only и удаляла дерево под
             # запущенным процессом. Совпал коммит — считаем сборку уже
             # выполненной; не совпал — это подмена уже выданного имени.
-            existing = json.loads(
-                (final / "release-manifest.json").read_text(encoding="utf-8")
-            )
+            manifest_path = final / "release-manifest.json"
+            if not manifest_path.is_file():
+                raise SystemExit(
+                    f"каталог {final} существует, но манифеста в нём нет: "
+                    "это обломок прерванной установки, разберите его вручную"
+                )
+            existing = json.loads(manifest_path.read_text(encoding="utf-8"))
             if existing.get("commit") != commit:
                 raise SystemExit(
                     f"релиз {release_id} уже существует и собран из другого "
                     f"коммита ({existing.get('commit')}) — переиспользование "
                     f"идентификатора запрещено"
                 )
+            # Совпадения коммита в манифесте МАЛО. Манифест мог лечь раньше
+            # остального дерева, если установку прервали; тогда «уже собран»
+            # объявляло бы готовым огрызок. Проверяем каталог целиком.
+            problems = verify_release(final, base=base)
+            recorded = existing.get("fileset_sha256")
+            actual = fileset_digest(final / "app") if (final / "app").is_dir() else ""
+            if recorded and actual and recorded != actual:
+                problems.append("дерево не совпадает с собственным манифестом")
+            if problems:
+                for item in problems:
+                    print(f"НЕПОЛНЫЙ РЕЛИЗ: {item}", file=sys.stderr)
+                raise SystemExit(
+                    f"каталог {final} содержит незавершённую сборку того же "
+                    "коммита — удалять его автоматически запрещено (на него "
+                    "может указывать боевой current)"
+                )
             return {"RELEASE_ID": release_id, "PATH": str(final), "COMMIT": commit,
-                    "FILESET_SHA256": existing.get("fileset_sha256"),
-                    "VERIFY": "ALREADY_BUILT"}
+                    "FILESET_SHA256": recorded, "VERIFY": "ALREADY_BUILT"}
         with staging_workspace() as tmp:
             return _build(tmp, base=base, final=final, release_id=release_id,
                           commit=commit, parent=parent, tree=tree,
@@ -338,6 +374,10 @@ def _build(tmp, *, base, final, release_id, commit, parent, tree,
             f"{inherited}: миграция общей базы требует отдельного решения"
         )
 
+    # Права входят в отпечаток, поэтому считать его надо ПОСЛЕ запечатывания:
+    # иначе манифест описывал бы дерево, которого на диске уже нет, и
+    # предпроверка выкатки отвергала бы каждую собственную сборку.
+    seal_tree(app)
     files_digest = fileset_digest(app)
     manifest = dict(base_manifest)
     manifest.update({
@@ -367,7 +407,6 @@ def _build(tmp, *, base, final, release_id, commit, parent, tree,
     (staging / "release-manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    seal_tree(app)
     seal_venv(staging / "venv")
     for entry in staging.iterdir():
         if entry.is_symlink() or entry.is_dir():
@@ -385,7 +424,15 @@ def _build(tmp, *, base, final, release_id, commit, parent, tree,
         # Сюда попасть уже нельзя (проверка выше возвращает раньше), но
         # оставлять рядом код, способный удалить боевой релиз, нельзя тем более.
         raise SystemExit(f"каталог релиза уже существует, удаление запрещено: {final}")
-    subprocess.run(["cp", "-a", str(staging), str(final)], check=True)
+    # Установка АТОМАРНА: копируем рядом и переименовываем. `cp -a` прямо в
+    # `final` оставлял бы после обрыва полукаталог с уже записанным манифестом,
+    # и следующая сборка того же коммита объявила бы огрызок готовым релизом.
+    incoming = final.parent / f".incoming-{release_id}"
+    if incoming.exists():
+        make_writable(incoming)
+        shutil.rmtree(incoming)
+    subprocess.run(["cp", "-a", str(staging), str(incoming)], check=True)
+    os.rename(incoming, final)
     after = verify_release(final, base=base)
     if after:
         for item in after:
