@@ -28,6 +28,44 @@ from scripts import build_center_release as builder  # noqa: E402
 from scripts.release_staging import STAGING_PREFIX, staging_workspace  # noqa: E402
 
 
+_FAKE_SOURCE_RECEIPT = {
+    "guard": "auditmanager.production_source_guard.v1",
+    "source_commit": "a" * 40,
+    "source_tree": "c" * 40,
+    "canonical_remote": "origin",
+    "canonical_branch": "feature/block-vector-graphs",
+    "canonical_remote_head": "a" * 40,
+    "reachable_from_canonical_remote": True,
+    "local_behind_remote": 0,
+    "remote_freshly_fetched": True,
+    "clean_tree": {"checked": True, "untracked_total": 0, "untracked_blocking": 0},
+}
+
+
+@pytest.fixture(autouse=True)
+def _stub_production_source_guard(monkeypatch):
+    """Здесь проверяются инварианты СБОРКИ, а не происхождения источника.
+
+    Страж происхождения (`scripts/production_source_guard.py`) обращается к
+    настоящему git и к origin; в этих тестах и дерево, и `git` подменены
+    заглушками, поэтому настоящий страж отказал бы раньше проверяемого места.
+    Его собственное поведение закрыто отдельным набором
+    `tests/test_production_source_guard_12j1.py` — включая то, что он вызывается
+    ДО замка выкатки и что при его отказе прод не трогается.
+    """
+    monkeypatch.setattr(builder, "verify_production_source",
+                        lambda *a, **k: dict(_FAKE_SOURCE_RECEIPT))
+    import scripts.deploy_center_release as _deployer
+
+    monkeypatch.setattr(_deployer, "verify_production_source",
+                        lambda *a, **k: dict(_FAKE_SOURCE_RECEIPT))
+    # Обёртка читает манифест собираемого релиза; в этих тестах каталоги
+    # релизов синтетические и манифеста часто не имеют вовсе. Её собственные
+    # проверки (нет манифеста / нет поля commit) закрыты в наборе 12J.1.
+    monkeypatch.setattr(_deployer, "_verify_release_source",
+                        lambda *a, **k: dict(_FAKE_SOURCE_RECEIPT))
+
+
 def _isolate_locks(monkeypatch, tmp_path: Path) -> None:
     """Увести замки в песочницу теста.
 

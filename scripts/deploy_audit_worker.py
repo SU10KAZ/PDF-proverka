@@ -493,6 +493,20 @@ def verify_artifact(archive: Path, manifest_path: Path) -> list[str]:
 # ─── удалённая сторона ───────────────────────────────────────────────────────
 
 
+def _guard_production_source(commit: str = "") -> dict[str, object]:
+    """Страж происхождения: на воркер едет только опубликованный коммит.
+
+    Стоит на операторских путях (`build`, `deploy`, `rollback`) ДО замка и до
+    первого байта на чужой машине. Причина конкретная: bundle собирается из
+    РАБОЧЕГО ДЕРЕВА по allowlist'у отслеживаемых путей, поэтому незакоммиченная
+    или неопубликованная правка уехала бы на воркер, не оставив следа ни в одной
+    ветке. Ровно так 18.08.2026 дважды уезжал центр.
+    """
+    from scripts.production_source_guard import verify_production_source
+
+    return verify_production_source(REPO_ROOT, commit=commit or None)
+
+
 @contextmanager
 def _worker_deploy_lock(remote: "Remote", *, operation: str, release: str):
     """Обязательный замок ВНУТРИ мутирующего примитива.
@@ -847,6 +861,7 @@ echo "BOOTSTRAP=$( [ -f "$root/data/claim_secret" ] && echo present || echo abse
 
 
 def cmd_build(args: argparse.Namespace) -> int:
+    _guard_production_source(args.source_commit)
     result = build_artifact(
         REPO_ROOT, Path(args.out).resolve(),
         pipeline_revision=args.pipeline_revision,
@@ -879,6 +894,21 @@ def cmd_verify(args: argparse.Namespace) -> int:
 
 def cmd_deploy(args: argparse.Namespace) -> int:
     remote = remote_from_args(args)
+
+    if args.artifact:
+        # Готовый артефакт всё равно проверяется: его манифест несёт
+        # source_commit, и переключать воркер на коммит, которого нет в
+        # канонической ветке, запрещено даже если архив собран час назад.
+        _manifest_path = Path(
+            args.manifest or str(Path(args.artifact).resolve()).replace(
+                ".tar.gz", ".manifest.json")
+        )
+        _guard_production_source(
+            str(json.loads(_manifest_path.read_text(encoding="utf-8"))
+                .get("source_commit") or "")
+        )
+    else:
+        _guard_production_source(args.source_commit)
 
     if args.artifact:
         archive = Path(args.artifact).resolve()

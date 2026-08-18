@@ -30,6 +30,10 @@ from scripts.build_center_release import (  # noqa: E402
     fileset_digest,
 )
 from scripts.deploy_lock import COMPONENT_CENTER, deploy_lock  # noqa: E402
+from scripts.production_source_guard import (  # noqa: E402
+    ProductionSourceNotCanonical,
+    verify_production_source,
+)
 
 ROOT = Path("/home/coder/auditmanager")
 SERVICE = "auditmanager-backend.service"
@@ -186,6 +190,26 @@ def running_release_dir() -> Optional[Path]:
     return cwd.parent if cwd.name == "app" else cwd
 
 
+def _verify_release_source(release_dir: Path) -> dict[str, object]:
+    """Коммит релиза обязан быть опубликован в канонической ветке.
+
+    Читается манифест собираемого релиза, а не рабочее дерево: между сборкой и
+    переключением может пройти час и смениться ветка, а переключаем мы именно
+    эти байты.
+    """
+    manifest_path = release_dir / "release-manifest.json"
+    if not manifest_path.is_file():
+        raise SystemExit(f"нет манифеста релиза: {manifest_path}")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    commit = str(manifest.get("commit") or "")
+    if not commit:
+        raise SystemExit(
+            f"в манифесте {manifest_path} нет поля commit: происхождение "
+            "релиза недоказуемо, переключение запрещено"
+        )
+    return verify_production_source(REPO_ROOT, commit=commit)
+
+
 def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "",
            dry_run: bool = False) -> dict[str, object]:
     new = ROOT / "releases" / release_id
@@ -199,6 +223,13 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             f"--gateway-release-dir={gateway_release_dir} не совпадает с "
             f"работающим шлюзом ({gateway})"
         )
+
+    # Страж происхождения ДО замка и до любой мутации указателя. Коммит берётся
+    # из манифеста САМОГО релиза, а не из текущего HEAD: переключать `current`
+    # на релиз, собранный из неопубликованного коммита, запрещено даже если
+    # дерево-источник сейчас в порядке. Так закрывается и обратный случай —
+    # релиз, собранный до появления стража.
+    source_receipt = _verify_release_source(new)
 
     with deploy_lock(COMPONENT_CENTER, operation="deploy", release=release_id,
                      milestone=milestone):
@@ -274,8 +305,16 @@ def deploy(release_id: str, *, gateway_release_dir: str = "", milestone: str = "
             "gateway_restarted": False,
             "deploy_tool": "scripts/deploy_center_release.py",
             "deploy_lock": "scripts/deploy_lock.py",
+            "production_source_guard": "scripts/production_source_guard.py",
+            "production_source_canonical": True,
+            "production_source_commit": source_receipt["source_commit"],
+            "canonical_remote_branch": (
+                f"{source_receipt['canonical_remote']}/"
+                f"{source_receipt['canonical_branch']}"
+            ),
+            "canonical_remote_head": source_receipt["canonical_remote_head"],
             "milestone": milestone,
-            "push_merge": "NO/NO",
+            "push_merge": "YES/CANONICAL",
         }
         stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
         path = ROOT / "deploy-receipts" / f"{milestone or 'center'}-deploy-{stamp}.json"

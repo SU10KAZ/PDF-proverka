@@ -50,6 +50,10 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.deploy_lock import COMPONENT_CENTER, deploy_lock  # noqa: E402
+from scripts.production_source_guard import (  # noqa: E402
+    ProductionSourceNotCanonical,
+    verify_production_source,
+)
 from scripts.release_staging import (  # noqa: E402
     make_writable,
     seal_tree,
@@ -247,6 +251,12 @@ def build(
     commit = run("git", "rev-parse", "HEAD")
     if run("git", "status", "--porcelain"):
         raise SystemExit("рабочее дерево грязное: релиз собирается только из коммита")
+    # Страж происхождения — ПЕРВЫМ делом и до захвата замка. Дважды 18.08.2026
+    # релиз центра собирался из локального коммита, которого не было на origin
+    # (78199ef7, затем 08666e4d), и боевой исходник оставался только в клоне под
+    # /tmp. Проверка стоит здесь, а не в deploy: собранный, но непубликуемый
+    # релиз — это уже готовая к переключению ловушка.
+    source_receipt = verify_production_source(REPO_ROOT, commit=commit)
     parent = run("git", "rev-parse", "HEAD^")
     tree = run("git", "rev-parse", "HEAD^{tree}")
     release_id = f"ui-real-{commit[:8]}"
@@ -412,6 +422,8 @@ def _build(tmp, *, base, final, release_id, commit, parent, tree, parent_tree,
         "builder_repository_owned": True,
         "staging_lifecycle_module": "scripts/release_staging.py",
         "deploy_lock_module": "scripts/deploy_lock.py",
+        "production_source_guard_module": "scripts/production_source_guard.py",
+        "production_source_guard": source_receipt,
         "release_tests": list(tests),
         "production_current_pointer_changed": False,
         "production_restart_performed": False,
