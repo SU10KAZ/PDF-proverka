@@ -13,7 +13,11 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Optional
 
-from audit_worker.client import CenterClient, CenterError
+from audit_worker.client import (
+    CenterClient,
+    CenterError,
+    ControlContextUnavailable,
+)
 from audit_worker.local_store import atomic_write_json, read_json
 from audit_worker.package_io import sha256_bytes, sha256_file
 
@@ -140,6 +144,13 @@ def _put_chunk_with_retry(
             client.put_chunk(upload_id, idx, data, sha256_bytes(data),
                              execution_token=execution_token)
             return
+        except ControlContextUnavailable:
+            # Не отказ центра, а гонка с переподключением потока. Превращать
+            # её в `UploadFailed` нельзя: 409 «конфликт чанка» означает, что
+            # тот же индекс уже принят с ДРУГИМ содержимым, — а здесь центр
+            # вообще не понял, чей это запрос. Отдаём наружу как есть: агент
+            # оставит готовый архив на диске и дошлёт его позже.
+            raise
         except CenterError as exc:
             last = exc
             if exc.status == 409:

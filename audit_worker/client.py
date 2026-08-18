@@ -67,6 +67,35 @@ class AttemptSupersededError(CenterError):
     """409 attempt_superseded: попытка отозвана, воркер обязан остановиться."""
 
 
+class ControlContextUnavailable(CenterError):
+    """Принадлежность потока не доказана — запрос данных сейчас невозможен.
+
+    Общий предок для двух исходов одной причины: заслон перед отправкой и
+    ответ центра на запрос, ушедший без заголовка. Оба ПОВТОРЯЕМЫ и ни один
+    не является вердиктом о попытке, поэтому вызывающие ловят именно этот
+    тип, а не 409 по номеру.
+    """
+
+
+class ControlContextNotReadyError(ControlContextUnavailable):
+    """Заслон ДО отправки: поток управления ещё не назвал себя центру."""
+
+
+class ControlContextLostError(ControlContextUnavailable):
+    """409 без заголовка принадлежности: поток оборвался, попытка ЖИВА.
+
+    Центр отвечает `attempt_superseded` и на настоящий отзыв попытки, и на
+    запрос, пришедший без `X-Agent-Stream-Connection-Id`. Это разные события,
+    а последствие у них было одно: воркер по `attempt_superseded` ОСТАНАВЛИВАЕТ
+    исполнителя, то есть терял живую работу из-за переподключения потока.
+
+    Отличать их можно ровно там, где виден отправленный запрос. Если поток уже
+    хоть раз называл себя (значит, режим — gRPC, и принадлежность доказывается
+    заголовком), а в ушедшем запросе заголовка не оказалось, — это гонка с
+    переподключением, а не вердикт центра. Ошибка транспортная: повторяемая.
+    """
+
+
 class CenterClient:
     def __init__(
         self,
@@ -93,12 +122,20 @@ class CenterClient:
             timeout=timeout, verify=verify, follow_redirects=False, transport=transport
         )
         self._control_context_headers: dict[str, str] = {}
+        #: Работает ли этот клиент в режиме, где принадлежность доказывается
+        #: заголовком потока. Взводится НАВСЕГДА первым непустым
+        #: connection_id и больше не гаснет: опрашивающий транспорт сюда не
+        #: попадает никогда, а у потокового обрыв связи не должен возвращать
+        #: клиента в режим, где 409 читается как вердикт центра.
+        self._control_context_bound = False
 
     def set_control_context(self, *, connection_id: str | None = None) -> None:
         """Bind HTTPS package requests to the current authenticated gRPC session."""
         self._control_context_headers = (
             {"X-Agent-Stream-Connection-Id": connection_id} if connection_id else {}
         )
+        if connection_id:
+            self._control_context_bound = True
 
     def close(self) -> None:
         self._client.close()
@@ -143,7 +180,7 @@ class CenterClient:
         if response.status_code == 204:
             return None if expect_204 else {}
         if response.status_code >= 400:
-            self._raise(response)
+            self._raise(response, control_context_bound=self._control_context_bound)
         if not response.content:
             return {}
         try:
@@ -152,7 +189,7 @@ class CenterClient:
             return {"raw": response.text}
 
     @staticmethod
-    def _raise(response: httpx.Response) -> None:
+    def _raise(response: httpx.Response, *, control_context_bound: bool = False) -> None:
         try:
             body = response.json()
         except ValueError:
@@ -166,6 +203,18 @@ class CenterClient:
                 expected = int((payload.get("detail") or {}).get("expected_seq", 1))
                 raise SequenceGapError(expected, body)
             if isinstance(nested, dict) and nested.get("error") == "attempt_superseded":
+                sent_connection = ""
+                request = getattr(response, "request", None)
+                if request is not None:
+                    sent_connection = request.headers.get(
+                        "X-Agent-Stream-Connection-Id", ""
+                    )
+                if control_context_bound and not sent_connection:
+                    # Запрос ушёл БЕЗ доказательства принадлежности — значит
+                    # поток переподключался между проверкой и отправкой.
+                    # Центру нечем было опознать нашу попытку; его «отозвана»
+                    # относится к неизвестному владельцу, а не к нашей работе.
+                    raise ControlContextLostError(409, nested, body)
                 raise AttemptSupersededError(409, nested, body)
         raise CenterError(response.status_code, detail, body)
 
@@ -180,7 +229,7 @@ class CenterClient:
             },
         )
         if response.status_code >= 400:
-            self._raise(response)
+            self._raise(response, control_context_bound=self._control_context_bound)
         return response.json()
 
     def claim(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -191,7 +240,7 @@ class CenterClient:
             headers={"X-Protocol-Version": str(PROTOCOL_VERSION)},
         )
         if response.status_code >= 400:
-            self._raise(response)
+            self._raise(response, control_context_bound=self._control_context_bound)
         return response.json()
 
     def complete_identity_reenrollment(
@@ -212,7 +261,7 @@ class CenterClient:
             },
         )
         if response.status_code >= 400:
-            self._raise(response)
+            self._raise(response, control_context_bound=self._control_context_bound)
         return response.json()
 
     def update_registration(self, payload: dict[str, Any]) -> dict[str, Any]:

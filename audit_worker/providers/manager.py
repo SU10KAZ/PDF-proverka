@@ -303,6 +303,14 @@ class ProviderManager:
             else:
                 adapter = self.adapters.get(name)
                 payload.update({
+                    # Опроса ЕЩЁ НЕ БЫЛО, а на проводе стоит `missing` — это
+                    # ПРИНЯТЫЙ ОСТАТОЧНЫЙ ДЕФЕКТ 12I.3, а не недосмотр.
+                    # Честное значение `INSTALL_NOT_OBSERVED` определено, но
+                    # работающий шлюз ui-real-16c533a7 всё равно приведёт его
+                    # к `missing`, а перекатывать шлюз ради стартового окна
+                    # решено не будет. Заглушка теперь живёт СЕКУНДЫ: первый
+                    # завершившийся опрос меняет `provider_status_digest`, и
+                    # центр узнаёт настоящее состояние в том же соединении.
                     "installation_status": INSTALL_MISSING,
                     "auth_state": AUTH_UNKNOWN,
                     "auth_method": "none",

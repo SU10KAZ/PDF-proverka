@@ -509,6 +509,14 @@ def _provider_quota(
     if install == "missing" and inference_capable:
         install_blocked = False
     blocked = install_blocked or auth_blocked or policy_blocked or quota_blocked
+    if install == "not_observed":
+        # СПЯЩАЯ ВЕТКА. Работающий шлюз ui-real-16c533a7 приводит состояние к
+        # `installed/missing/broken`, поэтому `not_observed` сюда сегодня не
+        # доходит; код лежит готовым к будущей выкатке шлюза (12I.3, принятый
+        # остаточный дефект). Смысл: отсутствия наблюдения мало, чтобы
+        # объявить провайдера заблокированным по установке или входу, — но
+        # ДОКАЗАННЫЙ запрет политики или исчерпанный лимит остаются в силе.
+        blocked = policy_blocked or quota_blocked
 
     # ГОТОВНОСТЬ ПРОВАЙДЕРА и НАЛИЧИЕ РАЗРЕШЕНИЯ НА ВЫЗОВ — разные вопросы.
     # `inference_allowed` означает «прямо сейчас есть выданный грант на вызов
@@ -521,8 +529,18 @@ def _provider_quota(
     # провайдер недоступен. Доступность определяется тем, что проверяемо без
     # задания: CLI установлен, вход выполнен, политика разрешает, лимит не
     # исчерпан. Разрешение на вызов остаётся отдельным полем.
+    # «Ещё не опрашивали» — отдельный исход, а не «недоступен». Воркер шлёт
+    # его в окне между стартом агента и первым завершённым опросом. Смешивать
+    # его с `unavailable` значит показывать оператору аварию там, где просто
+    # нет наблюдения.
+    not_observed = install == "not_observed"
     if blocked:
+        # Доказанный блокер ПЕРВЫМ: запрет политики и исчерпанный лимит
+        # известны и без опроса CLI, и прятать их за «ещё не опрашивали»
+        # значит скрывать от оператора настоящую причину простоя.
         availability = "unavailable"
+    elif not_observed:
+        availability = "unknown"
     elif install == "installed" and auth in {"logged_in", "ready"}:
         availability = "available"
     else:
@@ -533,6 +551,8 @@ def _provider_quota(
     status = "unknown"
     if blocked:
         status = "unavailable"
+    elif not_observed:
+        status = "not_observed"
     elif stale:
         status = "stale"
     elif remaining is not None:

@@ -203,8 +203,12 @@
         }
         /** @param {number|null|undefined} value @param {string=} suffix */
         function metricText(value, suffix = '%') { return Number.isFinite(value) ? `${value}${suffix}` : 'Нет телеметрии'; }
-        /** @param {any} quota */
-        function quotaText(quota) { return quota && Number.isFinite(quota.percentageRemaining) ? `${quota.percentageRemaining}%` : 'Остаток недоступен'; }
+        /** «Ещё не опрашивали» — это не «недоступен» и не «нет лимита».
+         *  @param {any} quota */
+        function quotaText(quota) {
+            if (quota && quota.status === 'not_observed') return 'Ещё не опрошен';
+            return quota && Number.isFinite(quota.percentageRemaining) ? `${quota.percentageRemaining}%` : 'Остаток недоступен';
+        }
         const OUTBOX_STATUS_LABELS = {
             synced: 'Синхронизировано', pending: 'Ожидается синхронизация',
             stale: 'Данные устарели', unavailable: 'Нет данных',

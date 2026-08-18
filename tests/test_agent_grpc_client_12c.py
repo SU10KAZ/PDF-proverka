@@ -437,6 +437,13 @@ def test_source_transfer_is_selected_by_exact_attempt(tmp_path):
             "package": {"package_id": "pkg_new_0123456789"},
         },
     }
+    # 12I.3: канал данных не выпускает запрос, пока поток не подтвердил
+    # владение — иначе центр отвечает 409 `attempt_superseded`, а агент по
+    # этому коду ОСТАНАВЛИВАЕТ живую попытку. Скачивание исходников всегда
+    # происходит внутри установленного потока, поэтому фикстура доводится до
+    # того же состояния; проверяемая логика выбора transfer_id не меняется.
+    transport._ready.set()
+    transport._connection_id = "gconn_0123456789abcdef"
     transport.download_source(
         job_id, tmp_path / "source.tar", "", attempt_id="att_new_0123456789"
     )

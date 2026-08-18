@@ -40,6 +40,7 @@ from audit_worker import (
 from audit_worker import slots as worker_slots
 from audit_worker.client import (
     AttemptSupersededError,
+    ControlContextUnavailable,
     CenterClient,
     CenterError,
     ResultRejectedError,
@@ -235,6 +236,7 @@ class WorkerAgent:
         self._max_slots = config.max_slots
         self._last_reconcile_at = 0.0
         self._last_runtime_telemetry_at = 0.0
+        self._control_context_warned = False
         self._runtime_telemetry_thread: Optional[threading.Thread] = None
 
     def _on_center_error(self, exc: BaseException) -> None:
@@ -1153,7 +1155,11 @@ class WorkerAgent:
                     attempt_id=ctx["attempt_id"],
                 )
                 break
-            except (httpx.TransportError, OSError) as exc:
+            except (httpx.TransportError, OSError, ControlContextUnavailable) as exc:
+                # Обрыв потока управления попадает СЮДА, а не в общий `except`
+                # ниже. Иначе переподключение между выдачей задания и первым
+                # байтом исходников помечало бы живую попытку `failed`: работа
+                # не начиналась, а задание уходило в отказ по чужой причине.
                 if self._stop.is_set():
                     raise UploadDeferred(
                         "Agent stopped while source download was awaiting resume"
@@ -1525,6 +1531,23 @@ class WorkerAgent:
             f"как неподтверждённый"
         )
 
+    def _control_context_ready(self) -> bool:
+        """Готов ли транспорт к операциям, требующим владения потоком.
+
+        У опрашивающего транспорта такого понятия нет — там принадлежность
+        доказывает execution_token, и метода не существует. Отсутствие метода
+        означает «готов всегда», а не «не готов».
+        """
+        client = getattr(self, "client", None)
+        if client is None:
+            # Транспорта нет вовсе — значит нет и понятия владения потоком.
+            # Такое бывает у частично собранных объектов в тестах и на ранних
+            # стадиях запуска; выдумывать здесь «не готов» значило бы молча
+            # запретить досылку там, где раньше она работала.
+            return True
+        probe = getattr(client, "control_context_ready", None)
+        return True if probe is None else bool(probe())
+
     def _deliver_pending_results(self) -> None:
         """Дослать результаты, оставшиеся на диске после обрыва передачи.
 
@@ -1534,6 +1557,16 @@ class WorkerAgent:
         Задания, которые ведёт поток прямо сейчас, пропускаются: иначе главный
         цикл начал бы второй upload того же архива параллельно с первым.
         """
+        if not self._control_context_ready():
+            # Поток ещё не назвал себя центру. Любая отправка сейчас уйдёт без
+            # заголовка принадлежности и получит 409 «попытка отозвана» — шум,
+            # который читается как настоящая потеря попытки. Ждём не таймером,
+            # а состоянием: следующий оборот цикла наступит через доли секунды.
+            if not self._control_context_warned:
+                self._control_context_warned = True
+                _log("досылка отложена: поток управления ещё не готов")
+            return
+        self._control_context_warned = False
         with self._active_lock:
             busy = set(self._active)
         for meta in self.jobs.iter_all():
@@ -1588,6 +1621,11 @@ class WorkerAgent:
             # Второй заслон рядом с проходом доставки: сюда ведёт ещё и путь
             # сверки (`action == "upload_result"`), а подтверждённый результат
             # не должен уезжать повторно ни по одному из них.
+            return
+        if not self._control_context_ready():
+            # Тот же заслон, что и в проходе доставки, но у САМОЙ отправки:
+            # сюда ведут ещё стартовая сверка и вердикт центра, и оба могут
+            # сработать раньше, чем поток назовёт себя.
             return
         _log(f"досылаю результат задания {job_id[:8]} после перерыва")
         job_dir = self.jobs.job_dir(job_id, attempt_id)

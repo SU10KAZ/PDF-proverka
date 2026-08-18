@@ -195,6 +195,20 @@ def _provider_snapshot_to_proto(item: Mapping[str, Any]) -> common_pb.ProviderCa
         account_group_id=str(item.get("account_group_id") or "")[:64],
         account_kind=str(item.get("account_kind") or "")[:64],
         model_report_supported=bool(item.get("model_report_supported", False)),
+        # ПРИНЯТЫЙ ОСТАТОЧНЫЙ ДЕФЕКТ 12I.3. Честное значение для «ещё не
+        # опрашивали» — `INSTALL_NOT_OBSERVED`, и оно определено в
+        # `audit_worker/providers/identity.py`. На проводе его нет намеренно:
+        # работающий шлюз ui-real-16c533a7 приводит состояние к закрытому
+        # списку (`installed/missing/broken`) с умолчанием `missing`, то есть
+        # перепишет честное значение обратно в ложь, а перекатывать шлюз ради
+        # одного стартового окна решено НЕ БУДЕТ (решение заказчика 18.08).
+        #
+        # Поэтому здесь сохраняется ИСХОДНОЕ умолчание, совместимое с
+        # работающим шлюзом. Дефект, который действительно лечится в 12I.3, —
+        # другой: заглушка ЗАЩЁЛКИВАЛАСЬ на всё соединение. Обнаружение
+        # изменений теперь смотрит на состояние провайдеров
+        # (`provider_status_digest`), поэтому первый же завершившийся опрос
+        # доезжает до центра в том же соединении, и заглушка живёт секунды.
         installation_status=str(item.get("installation_status") or "missing")[:32],
         auth_state=str(item.get("auth_state") or "unknown")[:32],
         policy_state=str(item.get("policy_state") or "allowed")[:32],
@@ -208,6 +222,49 @@ def _provider_snapshot_to_proto(item: Mapping[str, Any]) -> common_pb.ProviderCa
         raw_remaining_supported=raw_supported,
         cli_version=str(item.get("cli_version") or "")[:64],
     )
+
+
+#: Поля проводного снимка, которые меняются САМИ ПО СЕБЕ на каждом такте.
+#: `observed_at` — это время сборки heartbeat, а не время наблюдения; включив
+#: его в отпечаток, мы отправляли бы CapabilitiesChanged раз в 30 секунд
+#: круглосуточно.
+_VOLATILE_WIRE_FIELDS = ("observed_at",)
+
+
+def provider_status_digest(snapshots: Any) -> str:
+    """Отпечаток НАБЛЮДАЕМОГО состояния провайдеров.
+
+    Считается по ТОЙ ЖЕ проекции, что реально уезжает в `CapabilitySnapshot`,
+    минус отметка времени сборки. Это принципиально: домашний словарь снимка
+    содержит поля, которых на проводе нет вовсе, и одно из них —
+    `quota.detail` — на просроченном снимке пересобирается с ВОЗРАСТОМ внутри
+    («снимок устарел (N с назад)»). Отпечаток по словарю менялся бы каждые
+    30 секунд навсегда; отпечаток по проводу — только когда меняется то, что
+    центр действительно видит.
+
+    Повторный УСПЕШНЫЙ опрос с теми же значениями отпечаток не меняет — и это
+    требование, а не упущение: центру нечего показывать заново.
+    """
+    if not isinstance(snapshots, (list, tuple)):
+        return ""
+    parts: list[tuple[str, bytes]] = []
+    for item in snapshots:
+        if not isinstance(item, Mapping) or not item.get("provider"):
+            continue
+        proto = _provider_snapshot_to_proto(item)
+        stable = common_pb.ProviderCapabilitySnapshot()
+        stable.CopyFrom(proto)
+        for field in _VOLATILE_WIRE_FIELDS:
+            stable.ClearField(field)
+        parts.append((stable.provider, stable.SerializeToString(deterministic=True)))
+    parts.sort()
+    digest = hashlib.sha256()
+    for name, blob in parts:
+        digest.update(name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(blob)
+        digest.update(b"\n")
+    return digest.hexdigest()
 
 
 def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) -> dict[str, Any]:
@@ -228,7 +285,13 @@ def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) ->
     }
     return {
         "provider": item.provider,
-        "installation_status": item.installation_status or "missing",
+        # Приёмная сторона: пустое поле — это ОТСУТСТВИЕ сведений, а не
+        # доказанное отсутствие CLI. Симметрично отправляющей стороне.
+        # Замечание о развёртывании: эту функцию исполняет ШЛЮЗ из своего
+        # дерева релиза, поэтому правка вступит в силу только с его будущей
+        # выкаткой. Ради неё шлюз перекатывать не нужно: воркер с 12I.3 шлёт
+        # непустую строку, и текущий шлюз ретранслирует её как есть.
+        "installation_status": item.installation_status or "not_observed",
         "auth_state": item.auth_state or "unknown",
         "policy_state": item.policy_state or "allowed",
         "inference_allowed": bool(item.inference_allowed),
@@ -253,6 +316,11 @@ def capabilities_from_domain(
         for item in provider_snapshots
         if isinstance(item, Mapping) and item.get("provider")
     }
+    # Список ПОЛНЫЙ, включая провайдеров без живого снимка: по нему
+    # `capabilities_to_domain` восстанавливает карту `provider_capabilities`, и
+    # выбросив ненаблюдённых, мы сообщили бы центру, что воркер не умеет
+    # ничего. Синтезированная запись получает стартовую заглушку `missing` —
+    # см. принятый остаточный дефект в `_provider_snapshot_to_proto`.
     names = set(str(name) for name in provider_caps)
     names.update(by_name)
     providers = []

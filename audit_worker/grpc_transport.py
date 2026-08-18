@@ -20,6 +20,7 @@ import grpc
 from audit_worker import PROTOCOL_VERSION, __version__
 from audit_worker.client import (
     CenterError,
+    ControlContextNotReadyError,
     ResultRejectedError,
     SequenceGapError,
     backoff_delays,
@@ -31,6 +32,7 @@ from audit_worker.key_store import platform_key_store
 from audit_worker.mtls_identity import load_identity
 from audit_worker.uploader import delivery_already_acknowledged
 from contracts.agent_stream.v1 import adapters
+from contracts.agent_stream.v1.adapters import provider_status_digest
 from contracts.agent_stream.v1 import agent_stream_pb2 as stream_pb
 from contracts.agent_stream.v1 import agent_stream_pb2_grpc as stream_grpc
 from contracts.agent_stream.v1 import common_pb2 as common_pb
@@ -59,6 +61,7 @@ WORKER_METRIC_NAMES = (
     "result_ready_sent",
     "result_acks_received",
     "result_acks_replayed",
+    "capabilities_changes_sent",
     "protocol_errors",
     "mtls_handshakes_total",
     "mtls_handshake_failures",
@@ -140,6 +143,10 @@ class GrpcStreamControlTransport:
         self._latest_heartbeat: Any = None
         self._latest_capabilities: Any = None
         self._last_capabilities_sha = ""
+        # None = ключ ещё не снимался. Первый heartbeat только
+        # ЗАПОМИНАЕТ состояние: о возможностях центр уже узнал из
+        # AgentHello, и дублировать их сразу же незачем.
+        self._last_capabilities_key: tuple[str, str] | None = None
         self._heartbeat_lock = threading.Lock()
         self._wake = threading.Event()
         self._ready = threading.Event()
@@ -473,6 +480,21 @@ class GrpcStreamControlTransport:
                     highest_contiguous_sequence=int(ack.get("last_acked_seq") or 0),
                 )
             )
+        hello_providers = heartbeat.get("providers") or []
+        hello_capabilities = adapters.capabilities_from_domain(
+            self.config.capabilities(),
+            provider_snapshots=hello_providers,
+            accepting_jobs=heartbeat.get("worker_state") not in {"draining", "drained"},
+        )
+        # Опорная точка обнаружения изменений — то, что РЕАЛЬНО уехало в Hello.
+        # Без неё первый heartbeat просто запоминал текущее состояние, и опрос
+        # провайдеров, успевший завершиться до него, не объявлялся центру
+        # никогда: следующего изменения могло не быть часами.
+        with self._heartbeat_lock:
+            self._last_capabilities_key = (
+                hello_capabilities.sha256, provider_status_digest(hello_providers)
+            )
+            self._last_capabilities_sha = hello_capabilities.sha256
         return stream_pb.AgentHello(
             worker_id=self.worker_id,
             worker_instance_id=self.instance_id,
@@ -482,11 +504,7 @@ class GrpcStreamControlTransport:
             bootstrap_version=str(
                 (self.config.extra_capabilities or {}).get("bootstrap_version") or "unknown"
             ),
-            capabilities=adapters.capabilities_from_domain(
-                self.config.capabilities(),
-                provider_snapshots=heartbeat.get("providers") or [],
-                accepting_jobs=heartbeat.get("worker_state") not in {"draining", "drained"},
-            ),
+            capabilities=hello_capabilities,
             max_slots=int(self.config.max_slots),
             active_attempts=[adapters._attempt_from_domain(item) for item in active],
             event_cursors=cursors,
@@ -710,11 +728,22 @@ class GrpcStreamControlTransport:
             provider_snapshots=payload.get("providers") or [],
             accepting_jobs=heartbeat.accepting_jobs,
         )
+        # Ключ обнаружения изменений — ПАРА. `capability.sha256` считается
+        # только по статическому контракту возможностей (типы заданий, сжатия,
+        # карта provider_capabilities, версия политики); ЖИВОГО состояния
+        # провайдеров в нём нет вовсе. Пока ключом был один этот хэш,
+        # CapabilitiesChanged не отправлялся никогда: заглушка «опроса ещё не
+        # было», уехавшая с первым heartbeat, оставалась на экране центра всё
+        # соединение, а настоящий результат первого опроса не доезжал.
+        status_key = provider_status_digest(payload.get("providers") or [])
+        key = (capability.sha256, status_key)
         with self._heartbeat_lock:
-            if self._last_capabilities_sha and capability.sha256 != self._last_capabilities_sha:
+            if self._last_capabilities_key is not None and key != self._last_capabilities_key:
                 self._latest_capabilities = stream_pb.CapabilitiesChanged(
                     capabilities=capability
                 )
+                self._metric("capabilities_changes_sent")
+            self._last_capabilities_key = key
             self._last_capabilities_sha = capability.sha256
             self._latest_heartbeat = heartbeat  # coalesce: newest observation wins
         self._wake.set()
@@ -828,6 +857,7 @@ class GrpcStreamControlTransport:
 
     # HTTPS package plane ------------------------------------------------------
     def download_source(self, job_id: str, dest: Any, _token: str, **kwargs: Any) -> int:
+        self._require_control_context("download_source")
         attempt_id = str(kwargs.pop("attempt_id", "") or "")
         assignment = self._assignments.get(attempt_id, {}) if attempt_id else {}
         if not assignment:
@@ -849,12 +879,46 @@ class GrpcStreamControlTransport:
         )
 
     def create_upload(self, payload: dict[str, Any], _token: str) -> dict[str, Any]:
+        self._require_control_context("create_upload")
         response = self.data.create_upload(payload, "")
         self._uploads[response["upload_id"]] = dict(payload)
         return response
 
     def get_upload(self, upload_id: str) -> dict[str, Any]:
         return self.data.get_upload(upload_id)
+
+    def _require_control_context(self, operation: str) -> None:
+        """Не выпускать запрос данных без заявленного владения потоком.
+
+        Заслон стоит ЗДЕСЬ, а не только у вызывающих: пакетный канал дёргают
+        и досылка, и первая отправка, и скачивание исходников, и сверка. Любой
+        забытый вызывающий отправлял бы запрос без заголовка принадлежности, а
+        центр отвечает на такой 409 `attempt_superseded` — и воркер по этому
+        коду просит исполнителя ОСТАНОВИТЬ живую попытку. То есть ценой гонки
+        была не строка в журнале, а убитая работа.
+
+        Ошибка намеренно транспортная (повторяемая), а не supersede.
+        """
+        if not self.control_context_ready():
+            raise ControlContextNotReadyError(
+                503,
+                f"{operation}: поток управления ещё не подтвердил владение",
+                {},
+            )
+
+    def control_context_ready(self) -> bool:
+        """Установлена ли АВТОРИТЕТНАЯ принадлежность потока.
+
+        Пакетный канал HTTPS отдаёт центру `X-Agent-Stream-Connection-Id`, и
+        центр по нему решает, наша ли эта попытка. Идентификатор появляется
+        только после CenterHello: до него заголовок пуст, и центр отвечает
+        409 `attempt_superseded` — не потому, что попытка отозвана, а потому,
+        что владение потоком ещё не заявлено.
+
+        Проверяется СОСТОЯНИЕ, а не «подождать немного»: досылка просто
+        пропускает такт и повторится на следующем обороте цикла.
+        """
+        return self._ready.is_set() and bool(self._connection_id)
 
     def post_resources(self, snapshot: dict[str, Any]) -> dict[str, Any]:
         """Эксплуатационная сводка едет по УЖЕ существующему каналу данных.
@@ -868,6 +932,7 @@ class GrpcStreamControlTransport:
         return self.data.post_resources(snapshot)
 
     def put_chunk(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        self._require_control_context("put_chunk")
         kwargs["execution_token"] = ""
         return self.data.put_chunk(*args, **kwargs)
 
@@ -882,6 +947,7 @@ class GrpcStreamControlTransport:
     ) -> dict[str, Any]:
         # HTTPS validates and stores the bytes first. Retention authority is
         # intentionally the subsequent stream ResultAck, never this HTTP reply.
+        self._require_control_context("complete_upload")
         http_response = self.data.complete_upload(upload_id, payload, "") or {}
         meta = self._uploads.get(upload_id, {})
         assignment = self._assignments.get(str(payload.get("attempt_id") or ""), {})

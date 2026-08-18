@@ -50,10 +50,15 @@ import tarfile
 import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Iterable, Optional, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+# Скрипт документирован для прямого запуска (`python scripts/deploy_audit_worker.py`).
+# При нём `sys.path[0]` — это каталог `scripts/`, и пакет `scripts` не находится:
+# импорт замка падал ДО его взятия, то есть выкатка вообще не стартовала.
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 #: Версия формата пакета доставки. Меняется, когда меняется РАСКЛАДКА архива
 #: или набор обязательных полей манифеста, — чтобы старый воркер не пытался
@@ -976,11 +981,72 @@ def units_for_root(root: str) -> list[str]:
     ]
 
 
+def worker_lock_instance(*, host: str, user: str, remote_root: str) -> str:
+    """Имя замка = ОДНА установка воркера, а не одно написание её адреса.
+
+    Две ошибки, каждая из которых уже возможна на этом стенде:
+
+      * `11l` и `11g` живут на одной машине разными пользователями и в разных
+        корнях — общий замок запрещал бы обслуживать их одновременно без
+        всякой причины;
+      * одну и ту же машину зовут то по IP, то по алиасу из `~/.ssh/config`, и
+        разные написания давали бы РАЗНЫЕ замки: две выкатки в один корень
+        пошли бы параллельно, а именно это замок и обязан запретить.
+
+    Поэтому хост приводится к канонической форме (резолвится в адрес), а корень
+    участвует ПОЛНОСТЬЮ, через отпечаток: `…/audit-worker` у двух разных
+    пользователей — разные установки, и совпадение последнего сегмента пути не
+    должно их слеплять.
+
+    Честная граница: замок локальный. Он защищает от второй выкатки, запущенной
+    С ЭТОГО хоста; выкатку с другой управляющей машины он не увидит.
+    """
+    import hashlib
+    import socket
+
+    canonical = host.strip().lower()
+    try:
+        infos = socket.getaddrinfo(canonical, None)
+        addresses = sorted({str(item[4][0]) for item in infos})
+        if addresses:
+            canonical = addresses[0]
+    except OSError:
+        # Имя не резолвится (алиас `~/.ssh/config` без DNS) — остаётся строка.
+        # Это хуже канонического адреса, но лучше, чем упасть в выкатке.
+        pass
+    fingerprint = hashlib.sha256(
+        f"{user.strip()}@{canonical}:{PurePosixPath(remote_root.strip() or '/')}".encode("utf-8")
+    ).hexdigest()[:12]
+    return f"{canonical}-{fingerprint}"
+
+
+#: Команды, которые МЕНЯЮТ боевое состояние воркера. `build` и `verify`
+#: работают с артефактом и замка не требуют — блокировать их значило бы
+#: запрещать безобидную параллельную сборку.
+_MUTATING_COMMANDS = frozenset({"deploy", "rollback"})
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     if hasattr(args, "units") and not args.units:
         args.units = units_for_root(args.remote_root)
-    return int(args.func(args))
+    if args.command not in _MUTATING_COMMANDS:
+        return int(args.func(args))
+    from scripts.deploy_lock import COMPONENT_WORKER, deploy_lock
+
+    instance = worker_lock_instance(
+        host=str(getattr(args, "host", "")),
+        user=str(getattr(args, "user", "")),
+        remote_root=str(getattr(args, "remote_root", "")),
+    )
+    with deploy_lock(
+        COMPONENT_WORKER,
+        operation=args.command,
+        release=str(getattr(args, "to", "") or ""),
+        instance=instance,
+        milestone=os.environ.get("AUDITMANAGER_DEPLOY_MILESTONE", ""),
+    ):
+        return int(args.func(args))
 
 
 if __name__ == "__main__":

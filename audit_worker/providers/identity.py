@@ -39,6 +39,12 @@ from audit_worker.providers.auth_mode import AUTH_MODES, DEFAULT_AUTH_MODE
 INSTALL_INSTALLED = "installed"
 INSTALL_MISSING = "missing"
 INSTALL_BROKEN = "broken"
+#: «Ещё не опрашивали». НЕ синоним `missing`: отсутствие наблюдения и
+#: доказанное отсутствие CLI — разные утверждения, и подменять первое вторым
+#: значит выдумывать факт. Состояние существует только в промежутке между
+#: стартом агента и завершением первого опроса; `ProviderIdentity` его не
+#: принимает намеренно — у настоящего наблюдения такого исхода не бывает.
+INSTALL_NOT_OBSERVED = "not_observed"
 
 INSTALLATION_STATES: tuple[str, ...] = (
     INSTALL_INSTALLED,

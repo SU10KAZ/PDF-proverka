@@ -147,6 +147,10 @@ class _FakeAgent:
     _resume_upload = agent_module.WorkerAgent._resume_upload
     _finalize_delivery = agent_module.WorkerAgent._finalize_delivery
     _record_permanent_rejection = agent_module.WorkerAgent._record_permanent_rejection
+    # 12I.3: досылка спрашивает у транспорта, заявлено ли владение потоком.
+    # Берём НАСТОЯЩИЙ метод, а не заглушку: иначе тест перестал бы проверять
+    # тот код, который выполняется в проде.
+    _control_context_ready = agent_module.WorkerAgent._control_context_ready
 
     def __init__(self, store: LocalJobStore):
         import threading
@@ -154,7 +158,8 @@ class _FakeAgent:
         self.jobs = store
         self._active: dict = {}
         self._active_lock = threading.Lock()
-        self.client = object()
+        self.client = object()   # нет control_context_ready → владение не требуется
+        self._control_context_warned = False
         self.resumed: list[tuple[str, str]] = []
         self.flushed: list[dict] = []
 
