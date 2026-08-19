@@ -31,16 +31,27 @@ not»). Проверено на 2.1.226: в разлогиненном сост�
     сказано ключевое: эти поля «appear only for Claude.ai subscribers (Pro/Max)
     **after the first API response in the session**».
 
-Отсюда прямое следствие по §17 задания: получить остаток можно только ЦЕНОЙ
-запроса к модели, а значит автоматический опрос квоты ЗАПРЕЩЁН. Адаптер не
-пытается обойти это ни статусной строкой в фоне, ни разбором интерактивного
-вывода, ни недокументированными эндпоинтами. Он честно возвращает
-`quota_state="unknown"`, `estimated_remaining_pct=None`,
-`raw_remaining_supported=False` — и центр показывает «неизвестен».
+Отсюда прямое следствие по §17 задания: ОПРАШИВАТЬ остаток нечем, и
+автоматический опрос запрещён. Адаптер не пытается обойти это ни статусной
+строкой в фоне, ни разбором интерактивного вывода, ни недокументированными
+эндпоинтами, ни запросом к модели ради телеметрии.
 
-Что остаётся вместо опроса (и это реализуемо на следующих этапах, а не здесь):
-наблюдённые отказы по лимиту из настоящих прогонов, собственная статистика
-вызовов и ручные даты сброса от оператора.
+ЧТО ВСЁ-ТАКИ ДАЁТ ОСТАТОК — и почему это не противоречит сказанному выше.
+
+Claude Code по ходу ОБЫЧНОЙ работы сам сохраняет последнюю известную
+утилизацию в свой конфигурационный файл (`cachedUsageUtilization`). Прочитать
+его — значит открыть локальный файл: ни одного подпроцесса, ни одного запроса,
+ни одного токена. Разбор живёт в `claude_local_usage` (жёсткий allowlist полей,
+см. его шапку), а собранный отсюда снимок несёт оба окна — пятичасовое и
+недельное — с `source=local_usage_statistics`, `confidence=medium` и
+`source_stability=undocumented`.
+
+Источник недокументирован, поэтому: он не заменяет официальный API, его нет у
+пользователя, который ещё не работал через Claude Code, и он НЕ является
+основанием для автоматического выбора воркера планировщиком (§6 задания 12J).
+Когда кеша нет или его форма незнакома, метод возвращает прежнее честное
+«неизвестно» — и это закрывает КВОТУ, а не провайдера: установка и авторизация
+живут отдельными полями.
 """
 from __future__ import annotations
 
@@ -48,7 +59,7 @@ import json
 import time
 from typing import Any, Optional, Sequence
 
-from audit_worker.providers import errors, quota
+from audit_worker.providers import claude_local_usage, errors, quota
 from audit_worker.providers.base import (
     PROBE_EXPECTED,
     PROBE_PROMPT,
@@ -312,22 +323,37 @@ class ClaudeProviderAdapter(ProviderAdapter):
             )
         return _auth_from_payload(payload, exit_code=result.exit_code)
 
-    # ─── Лимит: официального zero-inference способа нет ──────────────────────
+    # ─── Лимит: официального опроса нет, локальный кеш есть ──────────────────
     def supports_zero_inference_quota(self) -> bool:
-        return False
+        """Да — но не потому, что появился официальный опрос.
+
+        Способ узнать остаток БЕЗ обращения к модели существует ровно один:
+        прочитать кеш, который Claude Code сам пишет в свой конфигурационный
+        файл по ходу обычной работы (`claude_local_usage`). Это открытие
+        локального файла — ноль подпроцессов, ноль запросов, ноль токенов.
+
+        Значение влияет на поведение `ProviderManager`: с `False` снимок
+        пересобирался только вместе с проверкой авторизации, и свежий кеш
+        доезжал до центра с задержкой в интервал auth-проверки.
+        """
+        return True
 
     def quota_source_name(self) -> str:
-        return quota.SOURCE_UNAVAILABLE
+        return quota.SOURCE_LOCAL_USAGE_STATS
 
     def quota_source_stability(self) -> str:
-        return quota.STABILITY_NOT_APPLICABLE
+        # Ключ `cachedUsageUtilization` не описан ни в одном документе и может
+        # исчезнуть в любом обновлении CLI. Ось `stability` заведена ровно для
+        # таких случаев: число правдоподобно, контракт — нет.
+        return quota.STABILITY_UNDOCUMENTED
 
     def quota_status(self, *, auth: Optional[AuthStatus] = None) -> quota.ProviderQuotaSnapshot:
-        """Всегда «неизвестно» — и это ЕДИНСТВЕННЫЙ честный ответ.
+        """Остаток из локального кеша Claude Code — либо честное «неизвестно».
 
-        Метод намеренно не имеет ветки, которая при каких-то условиях вернула
-        бы процент: любая такая ветка потребовала бы обращения к модели, то
-        есть автоматического расхода подписки на телеметрию (запрещено §17).
+        Чего этот метод не делает ни при каких условиях: не обращается к
+        модели, не запускает интерактивный сеанс, не читает учётные данные и
+        не ходит в сеть. Отсутствие кеша закрывает КВОТУ и только квоту —
+        провайдер остаётся установленным и авторизованным (§8 задания).
         """
         now = time.time()
         auth = auth or self.auth_status()
@@ -368,18 +394,27 @@ class ClaudeProviderAdapter(ProviderAdapter):
                 observed_at=now,
                 probe_error_code=auth.error_code,
             )
-        return quota.unknown_snapshot(
-            self.provider,
+        reading = claude_local_usage.read_local_usage(
+            config_dir=self.home.config_dir,
+            home_dir=self.home.home,
+            now=now,
+        )
+        if not reading.ok:
+            return quota.unknown_snapshot(
+                self.provider,
+                auth_state=auth.auth_state,
+                quota_state=quota.QUOTA_UNKNOWN,
+                reason=_quota_unavailable_reason(reading),
+                reason_code=reading.reason,
+                observed_at=now,
+            )
+        return _snapshot_from_local_usage(
+            reading,
+            provider=self.provider,
             auth_state=auth.auth_state,
-            quota_state=quota.QUOTA_UNKNOWN,
-            reason=(
-                "у Claude Code нет официального машиночитаемого способа узнать "
-                "остаток лимита без обращения к модели: поля rate_limits "
-                "публикуются только скрипту статусной строки и только после "
-                "первого ответа API в сеансе. Автоматический опрос запрещён — "
-                "он расходовал бы подписку ради телеметрии"
-            ),
-            observed_at=now,
+            account_group_id=self.account_group_id,
+            stale_after_sec=self.stale_after_sec,
+            low_threshold_pct=self.low_threshold_pct,
         )
 
     # ─── Контрольный запрос (§18): по умолчанию запрещён ─────────────────────
@@ -730,6 +765,114 @@ class ClaudeProviderAdapter(ProviderAdapter):
 #: `invalid_request_error` теоретически способна процитировать кусок входа.
 #: Обрезка держит диагностику полезной и не превращает поле в канал утечки.
 _CLI_FAILURE_DETAIL_MAX_CHARS = 400
+
+
+#: Человекочитаемое пояснение к каждому исходу чтения кеша. Ключ — код причины
+#: из `claude_local_usage`; свободного текста «как получилось» здесь нет, и это
+#: намеренно: оператор должен видеть одну из немногих понятных ситуаций, а не
+#: сообщение, которое каждый раз выглядит по-новому.
+_QUOTA_REASON_TEXT: dict[str, str] = {
+    claude_local_usage.REASON_MISSING: (
+        "Claude Code ещё не сохранил локальные данные об использовании. "
+        "Официального машиночитаемого остатка у него нет, а кеш появляется "
+        "только после реальных обращений к модели этим пользователем"
+    ),
+    claude_local_usage.REASON_SCHEMA_UNSUPPORTED: (
+        "локальный кеш использования Claude Code имеет неизвестную форму — "
+        "остаток не читается (источник недокументирован и мог измениться)"
+    ),
+    claude_local_usage.REASON_NO_SOURCE: (
+        "у Claude Code нет поддерживаемого способа сообщить остаток лимита "
+        "без обращения к модели"
+    ),
+}
+
+
+def _quota_unavailable_reason(reading: claude_local_usage.LocalUsageReading) -> str:
+    """Причина отсутствия остатка. Код причины остаётся в тексте дословно.
+
+    Код нужен потому, что до браузера доезжает не этот текст (проводной снимок
+    его не несёт), а состояние снимка; текст же читает тот, кто смотрит
+    диагностику воркера, и ему нужна опора, по которой можно грепать.
+    """
+    base = _QUOTA_REASON_TEXT.get(
+        reading.reason, _QUOTA_REASON_TEXT[claude_local_usage.REASON_NO_SOURCE]
+    )
+    return f"[{reading.reason}] {base}"
+
+
+def _snapshot_from_local_usage(
+    reading: claude_local_usage.LocalUsageReading,
+    *,
+    provider: str,
+    auth_state: str,
+    account_group_id: Optional[str],
+    stale_after_sec: float,
+    low_threshold_pct: Optional[float],
+) -> quota.ProviderQuotaSnapshot:
+    """Чтение кеша → нормализованный снимок с ДВУМЯ окнами.
+
+    Три решения, каждое из которых легко принять неправильно.
+
+    `observed_at` — метка САМОГО кеша, а не момент чтения файла. Иначе снимок
+    восьмичасовой давности выглядел бы сделанным только что, и весь механизм
+    просроченности (`stale_after`) стал бы декорацией.
+
+    Остаток берётся по САМОМУ ОГРАНИЧИВАЮЩЕМУ окну: пятичасовое бывает
+    свободно при почти выбранном недельном, и «осталось 84 %» в этом случае
+    неправда. Дата сброса берётся у ТОГО ЖЕ окна — процент и дата обязаны
+    относиться к одному лимиту.
+
+    Достоверность — `medium`. Число сообщил сам CLI (не мы его вывели), но
+    сообщил недокументированным полем и с задержкой кеша, поэтому `high`,
+    которое стоит у Codex с его структурным RPC, здесь было бы завышением.
+    """
+    confidence = quota.CONFIDENCE_MEDIUM
+    source = quota.SOURCE_LOCAL_USAGE_STATS
+    windows = tuple(
+        quota.QuotaWindow(
+            window_id=item.window_id,
+            source=source,
+            confidence=confidence,
+            used_pct=item.used_pct,
+            remaining_pct=item.remaining_pct,
+            reset_at=item.reset_at,
+            duration_sec=item.duration_sec,
+        )
+        for item in reading.windows
+    )
+    primary = min(windows, key=lambda w: (w.remaining_pct if w.remaining_pct is not None else 101.0))
+    secondaries = tuple(w for w in windows if w is not primary)
+
+    next_reset = primary.reset_at
+    if next_reset is None:
+        others = [w.reset_at for w in secondaries if w.reset_at is not None]
+        next_reset = min(others) if others else None
+
+    observed_at = float(reading.fetched_at or 0.0)
+    snapshot = quota.ProviderQuotaSnapshot(
+        provider=provider,
+        quota_state=quota.QUOTA_READY,
+        observed_at=observed_at,
+        source=source,
+        confidence=confidence,
+        auth_state=auth_state,
+        account_group_id=account_group_id,
+        stale_after=observed_at + float(stale_after_sec),
+        primary_window=primary,
+        secondary_windows=secondaries,
+        next_reset_at=next_reset,
+        estimated_remaining_pct=primary.remaining_pct,
+        raw_remaining_supported=True,
+        source_stability=quota.STABILITY_UNDOCUMENTED,
+        parser_version=claude_local_usage.PARSER_VERSION,
+        detail=(
+            f"[{claude_local_usage.REASON_AVAILABLE}] локальный кеш Claude Code, "
+            f"окно {primary.window_id}"
+        ),
+        reason_code=quota.REASON_LOCAL_CACHE_AVAILABLE,
+    )
+    return quota.apply_low_threshold(snapshot, low_threshold_pct=low_threshold_pct)
 
 
 def _cli_failure_detail(result: Any, answer_text: str) -> str:

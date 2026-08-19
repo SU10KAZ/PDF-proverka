@@ -58,6 +58,16 @@ QUOTA_SOURCES: tuple[str, ...] = (
     "operator_manual", "unavailable",
 )
 CONFIDENCE_LEVELS: tuple[str, ...] = ("high", "medium", "low", "none")
+#: Коды причины «почему остаток такой или почему его нет». Закрытый список —
+#: чтобы объяснение оператору собиралось ЗДЕСЬ, из словаря, а не приезжало
+#: свободным текстом с полу-доверенного воркера прямо в браузер.
+QUOTA_REASON_CODES: tuple[str, ...] = (
+    "local_cache_available",
+    "local_cache_stale",
+    "local_cache_missing",
+    "local_cache_schema_unsupported",
+    "no_safe_supported_source",
+)
 SOURCE_STABILITY: tuple[str, ...] = (
     "stable", "experimental", "undocumented", "not_applicable",
 )
@@ -283,6 +293,12 @@ def sanitize_quota(raw: Any, *, provider: str) -> dict[str, Any]:
         "auth_state": _enum(data.get("auth_state"), AUTH_STATES, "unknown"),
         "probe_error_code": _opt_str(data.get("probe_error_code"), 64),
         "detail": _opt_str(data.get("detail"), 600),
+        # Необязательное поле: старые воркеры его не шлют, и это не ошибка —
+        # тогда интерфейс выводит причину из состояния снимка сам.
+        "reason_code": (
+            _enum(data.get("reason_code"), QUOTA_REASON_CODES, "")
+            if data.get("reason_code") else None
+        ) or None,
     }
 
 

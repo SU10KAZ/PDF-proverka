@@ -99,6 +99,17 @@
 .distributed-quota__top small { font: 500 8px/1 inherit; color: var(--text3); }
 .distributed-quota__reset { display: flex; justify-content: space-between; gap: 5px; color: var(--text3); font-size: 8px; margin-top: 4px; white-space: nowrap; overflow: hidden; }
 .distributed-quota__reset span:first-child { overflow: hidden; text-overflow: ellipsis; }
+/* Подпись окна, к которому относится главное число. Без неё «84 %» не имеет
+   единицы измерения: это может быть пятичасовой лимит, а может недельный. */
+.distributed-quota__window { color: var(--text3); font-size: 8px; margin-bottom: 3px; }
+/* Остальные окна: недельный лимит не имеет права прятаться за пятичасовым. */
+.distributed-quota__windows { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+.distributed-quota__windows li { display: flex; justify-content: space-between; gap: 6px; color: var(--text3); font-size: 8px; }
+.distributed-quota__age { color: var(--text3); font-size: 8px; margin-top: 3px; }
+.distributed-quota__age--stale { color: var(--amber); }
+/* Причина. Показывается и при успехе: «откуда число» — часть самого числа. */
+.distributed-quota__note { color: var(--text3); font-size: 8px; margin-top: 3px; line-height: 1.35; }
+.distributed-quota__note--undocumented { border-left: 2px solid var(--amber); padding-left: 5px; }
 .distributed-quota--warning .distributed-progress > span { background: var(--amber); }
 .distributed-quota--critical .distributed-progress > span { background: var(--red); }
 .distributed-quota--critical .distributed-quota__top strong { color: var(--red); }
@@ -224,6 +235,12 @@
 .distributed-provider-row__quota strong { font: 700 9px/1 'JetBrains Mono', monospace; text-align: right; }
 .distributed-provider-row__reset { color: var(--text2); font-size: 9px; }
 .distributed-provider-row__used { color: var(--text3); font-size: 8px; text-align: right; }
+/* Оба окна и причина занимают собственную строку сетки: они относятся ко всей
+   записи воркера, а не к одной из колонок. */
+.distributed-provider-row__windows { grid-column: 1 / -1; list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+.distributed-provider-row__windows li { display: flex; gap: 8px; color: var(--text3); font-size: 8px; }
+.distributed-provider-row__windows li span:first-child { min-width: 56px; color: var(--text2); }
+.distributed-provider-row__reason { grid-column: 1 / -1; color: var(--text3); font-size: 8px; line-height: 1.35; margin-top: 2px; }
 
 .distributed-diagnostics-intro { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 14px; margin-bottom: 10px; background: var(--blue-light); border: 1px solid color-mix(in srgb, var(--blue) 18%, transparent); border-radius: 10px; }
 .distributed-diagnostics-intro h3 { color: var(--blue); font-size: 11px; }

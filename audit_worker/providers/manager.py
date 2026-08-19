@@ -538,10 +538,18 @@ def _staleness_applied(
     ):
         return snapshot
     age = int((now or time.time()) - snapshot.observed_at)
-    return snapshot.with_state(
+    stale = snapshot.with_state(
         quota.QUOTA_STALE,
         detail=(
             f"снимок устарел ({age} с назад, было {snapshot.quota_state}); "
             "показанные числа — последние известные, а не текущие"
         ),
     )
+    if stale.reason_code == quota.REASON_LOCAL_CACHE_AVAILABLE:
+        # Код причины обязан сменить смысл вместе с состоянием: «данные из
+        # локального кеша» и «данные из локального кеша, но старые» — разные
+        # новости для того, кто по ним решает, можно ли верить проценту.
+        data = stale.as_dataclass_kwargs()
+        data["reason_code"] = quota.REASON_LOCAL_CACHE_STALE
+        return quota.ProviderQuotaSnapshot(**data)
+    return stale

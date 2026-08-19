@@ -19,6 +19,44 @@
     const STAGE_LABELS = Object.freeze({ queued: 'В очереди', transfer: 'Передача', preparing: 'Подготовка', auditing: 'Проверка', collecting: 'Сбор результата', returning: 'Возврат результата', importing: 'Импорт', done: 'Готово', error: 'Ошибка' });
     const TASK_STAGE_ORDER = Object.freeze(['queued', 'transfer', 'preparing', 'auditing', 'collecting', 'returning', 'importing', 'done']);
 
+    /**
+     * Почему остаток такой, какой есть, — словами.
+     *
+     * Воркер присылает КОД, а не текст: свободная строка с полу-доверенной
+     * стороны, показанная в браузере, — это чужой текст на нашем экране.
+     * Разворачивание кода в предложение живёт здесь, и здесь же видно, что
+     * недокументированный источник не выдаётся за официальный.
+     */
+    const QUOTA_REASON_TEXT = Object.freeze({
+        local_cache_available: 'Локальные данные Claude Code. Официального машиночитаемого остатка у Claude Code нет — показано то, что CLI сохранил у себя.',
+        local_cache_stale: 'Локальные данные Claude Code, уже неактуальные: показано последнее известное значение, а не текущее.',
+        local_cache_missing: 'Локальные данные об использовании Claude пока не появились — они возникают после обращений к модели на этом воркере.',
+        local_cache_schema_unsupported: 'Формат локальных данных Claude Code не распознан: источник недокументирован и мог измениться с обновлением CLI.',
+        no_safe_supported_source: 'Claude Code не сообщает остаток лимита без обращения к модели, а локальных данных об использовании на воркере пока нет.',
+    });
+
+    /** @param {any} quota */
+    function quotaReasonText(quota) {
+        const code = quota && quota.reason;
+        return (code && QUOTA_REASON_TEXT[code]) || '';
+    }
+
+    /** Возраст НАБЛЮДЕНИЯ. Не «когда мы посмотрели», а «когда это было верно».
+     * @param {any} quota */
+    function quotaAgeText(quota) {
+        const age = quota && quota.ageSec;
+        if (!Number.isFinite(age)) return '';
+        if (age < 90) return 'данные только что';
+        if (age < 5400) return `данные ${Math.round(age / 60)} мин назад`;
+        if (age < 172800) return `данные ${Math.round(age / 3600)} ч назад`;
+        return `данные ${Math.round(age / 86400)} сут назад`;
+    }
+
+    /** @param {any} quota */
+    function quotaWindows(quota) {
+        return (quota && Array.isArray(quota.windows)) ? quota.windows : [];
+    }
+
     /** @param {string} path */
     function routeToTab(path) {
         const clean = String(path || '').replace(/\/+$/, '') || '/';
@@ -446,6 +484,7 @@
             recommendationProject, recommendationWorker, limitsSummary, visibleCompletedTasks,
             load, refresh, setTab, goToTab, notify, workerById, workerName,
             modeLabel, priorityLabel, stageLabel, progressStyle, progressText, metricText, quotaText, outboxText, usageTone, formatBytes,
+            quotaReasonText, quotaAgeText, quotaWindows,
             setAssignment, openSend, confirmSend, openWhy, openAlternative, applyAlternative,
             openQueueWhy, moveQueue, changePriority, openTask, taskById,
             openAttentionTask, retryAttentionTask, transferAttentionTask,
@@ -463,6 +502,16 @@
         app.component('distributed-dispatcher-page', root.DistributedPage);
         app.component('distributed-quota-bar', {
             props: { label: String, quota: Object, stale: Boolean },
+            computed: {
+                // Окна лимита приходят отсортированными «самое ограничивающее
+                // первым», и главное число карточки относится именно к нему.
+                windows() { return quotaWindows(this.quota); },
+                primaryWindow() { return this.windows[0] || null; },
+                otherWindows() { return this.windows.slice(1); },
+                reasonText() { return quotaReasonText(this.quota); },
+                ageText() { return quotaAgeText(this.quota); },
+                undocumented() { return this.quota && this.quota.sourceStability === 'undocumented'; },
+            },
             template: `
                 <div class="distributed-quota" :class="'distributed-quota--' + (quota.status || 'unknown')">
                     <div class="distributed-quota__top">
@@ -470,6 +519,7 @@
                         <strong v-if="Number.isFinite(quota.percentageRemaining)">{{ quota.percentageRemaining }}% <small>осталось</small></strong>
                         <strong v-else>Остаток недоступен</strong>
                     </div>
+                    <div v-if="primaryWindow" class="distributed-quota__window">{{ primaryWindow.label }}</div>
                     <div v-if="Number.isFinite(quota.percentageRemaining)" class="distributed-progress distributed-progress--quota" role="progressbar" :aria-label="label + ': осталось ' + quota.percentageRemaining + '%'" :aria-valuenow="quota.percentageRemaining" aria-valuemin="0" aria-valuemax="100">
                         <span :style="{width: quota.percentageRemaining + '%'}"></span>
                     </div>
@@ -478,6 +528,15 @@
                         <span>{{ stale ? 'Последние известные данные' : quota.resetIn ? 'Сброс через ' + quota.resetIn : 'Дата сброса недоступна' }}</span>
                         <span v-if="quota.isEstimated" title="Провайдер передаёт приблизительное значение">≈ оценка</span>
                     </div>
+                    <ul v-if="otherWindows.length" class="distributed-quota__windows">
+                        <li v-for="window in otherWindows" :key="window.windowId">
+                            <span>{{ window.label }}</span>
+                            <span>{{ Number.isFinite(window.remainingPercent) ? window.remainingPercent + '% осталось' : 'остаток недоступен' }}<template v-if="window.resetIn"> · сброс через {{ window.resetIn }}</template></span>
+                        </li>
+                    </ul>
+                    <div v-if="stale && ageText" class="distributed-quota__age distributed-quota__age--stale">⚠ {{ ageText }}</div>
+                    <div v-else-if="ageText" class="distributed-quota__age">{{ ageText }}</div>
+                    <div v-if="reasonText" class="distributed-quota__note" :class="{'distributed-quota__note--undocumented': undocumented}">{{ reasonText }}</div>
                 </div>`,
         });
 
@@ -539,5 +598,5 @@
         });
     }
 
-    root.DistributedFeature = Object.freeze({ createManager, registerComponents, routeToTab, filterCompletedTasks, constants: { TAB_DEFINITIONS, MODE_LABELS, PRIORITY_LABELS, STAGE_LABELS } });
+    root.DistributedFeature = Object.freeze({ createManager, registerComponents, routeToTab, filterCompletedTasks, quotaReasonText, quotaAgeText, quotaWindows, constants: { TAB_DEFINITIONS, MODE_LABELS, PRIORITY_LABELS, STAGE_LABELS, QUOTA_REASON_TEXT } });
 })(typeof window !== 'undefined' ? window : globalThis);

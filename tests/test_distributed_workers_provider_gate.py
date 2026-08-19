@@ -402,20 +402,55 @@ class TestQuotaParser:
 
 
 class TestClaudeQuotaHonesty:
-    """Claude: официального zero-inference источника НЕТ — и это должно быть видно."""
+    """Claude: официального ОПРОСА нет, а единственный источник — локальный кеш.
 
-    def test_claude_declares_no_zero_inference_quota(self, worker_root):
+    Обновлено на 12J. Раньше здесь утверждалось «остаток недоступен всегда», и
+    это было верно ровно до тех пор, пока единственным кандидатом считался
+    опрос. Кеш, который Claude Code пишет себе сам, опросом не является: его
+    чтение не стоит ни запроса, ни токена. Поэтому требование сместилось —
+    не «числа нет никогда», а «число появляется ТОЛЬКО из локального кеша и
+    только с признанием, что источник недокументирован».
+    """
+
+    def test_claude_reads_quota_without_any_inference(self, worker_root):
         adapter = _claude(worker_root, _CLAUDE_LOGGED_IN)
-        assert adapter.supports_zero_inference_quota() is False
-        assert adapter.quota_source_name() == quota.SOURCE_UNAVAILABLE
+        assert adapter.supports_zero_inference_quota() is True
+        assert adapter.quota_source_name() == quota.SOURCE_LOCAL_USAGE_STATS
+        assert adapter.quota_source_stability() == quota.STABILITY_UNDOCUMENTED
 
-    def test_claude_quota_is_unknown_never_a_number(self, worker_root):
+    def test_claude_quota_is_unknown_without_local_cache(self, worker_root):
+        """Кеша нет — числа нет. Выдумывать его по факту авторизации нельзя."""
         adapter = _claude(worker_root, _CLAUDE_LOGGED_IN)
         snapshot = adapter.quota_status()
         assert snapshot.quota_state == quota.QUOTA_UNKNOWN
         assert snapshot.estimated_remaining_pct is None
         assert snapshot.raw_remaining_supported is False
-        assert "статусной строки" in (snapshot.detail or "")
+        assert snapshot.reason_code == quota.REASON_LOCAL_CACHE_MISSING
+
+    def test_claude_quota_from_local_cache(self, worker_root):
+        """Кеш есть — остаток берётся из него, а не из запроса к модели."""
+        import json as _json
+        import time as _time
+
+        adapter = _claude(worker_root, _CLAUDE_LOGGED_IN)
+        config_dir = adapter.home.config_dir
+        config_dir.mkdir(parents=True, exist_ok=True)
+        (config_dir / ".claude.json").write_text(_json.dumps({
+            "cachedUsageUtilization": {
+                "fetchedAtMs": int(_time.time() * 1000),
+                "utilization": {
+                    "five_hour": {"utilization": 16},
+                    "seven_day": {"utilization": 12},
+                },
+            },
+        }), encoding="utf-8")
+        snapshot = adapter.quota_status()
+        assert snapshot.quota_state == quota.QUOTA_READY
+        assert snapshot.estimated_remaining_pct == 84.0
+        assert snapshot.source == quota.SOURCE_LOCAL_USAGE_STATS
+        assert snapshot.confidence == quota.CONFIDENCE_MEDIUM
+        assert snapshot.source_stability == quota.STABILITY_UNDOCUMENTED
+        assert [w.window_id for w in snapshot.secondary_windows] == ["seven_day"]
 
     def test_logged_out_claude_says_auth_required(self, worker_root):
         adapter = _claude(worker_root, _CLAUDE_LOGGED_OUT)

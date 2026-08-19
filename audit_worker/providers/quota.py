@@ -70,6 +70,25 @@ QUOTA_SOURCE_PRIORITY: tuple[str, ...] = (
 )
 
 
+#: КОД ПРИЧИНЫ, по которому интерфейс объясняет оператору исход, не получая от
+#: воркера свободного текста. Разница принципиальная: текст пришлось бы
+#: показывать как есть (то есть доверять формулировке полу-доверенной стороны),
+#: а код разворачивается в предложение уже на центре, из закрытого словаря.
+REASON_LOCAL_CACHE_AVAILABLE = "local_cache_available"
+REASON_LOCAL_CACHE_STALE = "local_cache_stale"
+REASON_LOCAL_CACHE_MISSING = "local_cache_missing"
+REASON_LOCAL_CACHE_SCHEMA_UNSUPPORTED = "local_cache_schema_unsupported"
+REASON_NO_SAFE_SUPPORTED_SOURCE = "no_safe_supported_source"
+
+QUOTA_REASON_CODES: tuple[str, ...] = (
+    REASON_LOCAL_CACHE_AVAILABLE,
+    REASON_LOCAL_CACHE_STALE,
+    REASON_LOCAL_CACHE_MISSING,
+    REASON_LOCAL_CACHE_SCHEMA_UNSUPPORTED,
+    REASON_NO_SAFE_SUPPORTED_SOURCE,
+)
+
+
 def source_rank(source: str) -> int:
     """Индекс приоритета. Неизвестный источник — хуже любого известного."""
     try:
@@ -225,6 +244,11 @@ class ProviderQuotaSnapshot:
     cli_version: Optional[str] = None
     #: Человекочитаемое пояснение «почему так». Показывается оператору.
     detail: Optional[str] = None
+    #: Код причины из `QUOTA_REASON_CODES`. Заполняется там, где исход имеет
+    #: имя: «кеша нет», «форма кеша незнакома», «источника не существует».
+    #: `None` означает «объяснять нечего» — например, у обычного успешного
+    #: опроса официального RPC.
+    reason_code: Optional[str] = None
 
     def __post_init__(self) -> None:
         if self.quota_state not in QUOTA_STATES:
@@ -255,6 +279,8 @@ class ProviderQuotaSnapshot:
                 f"quota_state={self.quota_state} обещает известный остаток, "
                 "но estimated_remaining_pct пуст"
             )
+        if self.reason_code is not None and self.reason_code not in QUOTA_REASON_CODES:
+            raise QuotaContractError(f"неизвестный reason_code={self.reason_code!r}")
         object.__setattr__(self, "estimated_remaining_pct", remaining)
         object.__setattr__(self, "secondary_windows", tuple(self.secondary_windows or ()))
 
@@ -291,6 +317,7 @@ class ProviderQuotaSnapshot:
             "parser_version": self.parser_version,
             "cli_version": self.cli_version,
             "detail": self.detail,
+            "reason_code": self.reason_code,
         }
 
     def as_dict(self) -> dict[str, Any]:
@@ -313,6 +340,7 @@ class ProviderQuotaSnapshot:
             "auth_state": self.auth_state,
             "probe_error_code": self.probe_error_code,
             "detail": self.detail,
+            "reason_code": self.reason_code,
         }
 
 
@@ -326,6 +354,7 @@ def unknown_snapshot(
     cli_version: Optional[str] = None,
     source: str = SOURCE_UNAVAILABLE,
     quota_state: str = QUOTA_UNKNOWN,
+    reason_code: Optional[str] = None,
 ) -> ProviderQuotaSnapshot:
     """Честный «ничего не знаем».
 
@@ -345,6 +374,7 @@ def unknown_snapshot(
         probe_error_code=probe_error_code,
         cli_version=cli_version,
         detail=reason,
+        reason_code=reason_code,
     )
 
 

@@ -483,6 +483,83 @@ def _resource_view(snapshot: Any) -> dict[str, Any]:
     }
 
 
+#: Подписи окон лимита. Имя окна приходит от воркера, но ПОКАЗЫВАЕМ мы только
+#: то, что знаем: незнакомое окно подписывается собственным идентификатором, а
+#: не догадкой о его длительности.
+_QUOTA_WINDOW_LABELS: dict[str, str] = {
+    "five_hour": "5 часов",
+    "seven_day": "7 дней",
+}
+
+
+def _quota_windows(quota: dict[str, Any], *, now: float) -> list[dict[str, Any]]:
+    """Окна лимита в порядке «самое ограничивающее первым».
+
+    Порядок не косметика: первый элемент — то, что показывает компактная
+    карточка, и он обязан совпадать с числом в `percentageRemaining`.
+    """
+    raw: list[Any] = []
+    primary = quota.get("primary_window")
+    if isinstance(primary, dict):
+        raw.append(primary)
+    for item in (quota.get("secondary_windows") or [])[:12]:
+        if isinstance(item, dict):
+            raw.append(item)
+
+    out: list[dict[str, Any]] = []
+    for item in raw:
+        window_id = _safe_text(item.get("window_id"), limit=64)
+        if not window_id:
+            continue
+        remaining = _percent(item.get("remaining_pct"))
+        used = _percent(item.get("used_pct"))
+        reset = _finite_number(item.get("reset_at"))
+        out.append({
+            "windowId": window_id,
+            "label": _QUOTA_WINDOW_LABELS.get(window_id, window_id),
+            "remainingPercent": remaining,
+            # «Использовано» показывается рядом с остатком намеренно: именно
+            # это число приходит от источника, и по нему сверяются с UI CLI.
+            "usedPercent": used,
+            "resetAt": _iso(reset),
+            "resetIn": (
+                _duration_label(reset - now) if reset is not None and reset >= now else None
+            ),
+        })
+    out.sort(key=lambda row: (
+        row["remainingPercent"] if row["remainingPercent"] is not None else 101.0
+    ))
+    return out
+
+
+def _quota_reason(
+    *,
+    provider: str,
+    quota: dict[str, Any],
+    remaining: Optional[float],
+    stale: bool,
+    blocked: bool,
+) -> Optional[str]:
+    """Код причины для интерфейса.
+
+    Сначала — код, присланный воркером: он знает, чего именно не хватило
+    (файла, поля, знакомой формы). Если кода нет — а по нынешнему проводному
+    контракту он и не доезжает, — причина выводится из состояния снимка. Вывод
+    сознательно консервативен: там, где центр не может отличить «кеша нет» от
+    «форма незнакома», он говорит общее «нет безопасного источника», а не
+    выбирает наугад более конкретную из двух версий.
+    """
+    reported = _safe_text(quota.get("reason_code"), limit=64)
+    if reported in provider_accounts.QUOTA_REASON_CODES:
+        return reported
+    source = str(quota.get("source") or "")
+    if remaining is not None and source == "local_usage_statistics":
+        return "local_cache_stale" if stale else "local_cache_available"
+    if remaining is None and provider == "claude" and not blocked:
+        return "no_safe_supported_source"
+    return None
+
+
 def _provider_quota(
     state: Optional[dict[str, Any]], *, settings: DistributedWorkersSettings, now: float
 ) -> dict[str, Any]:
@@ -559,6 +636,7 @@ def _provider_quota(
         status = "critical" if remaining < 15 else "warning" if remaining < 25 else "ok"
     elif quota_state == "ready":
         status = "ok"
+    windows = _quota_windows(quota, now=now)
     return {
         "availability": availability,
         "percentageRemaining": remaining,
@@ -568,6 +646,27 @@ def _provider_quota(
         "quotaState": quota_state,
         "source": _safe_text(quota.get("source"), limit=80),
         "confidence": _safe_text(quota.get("confidence"), limit=32),
+        # Стабильность КОНТРАКТА источника, а не достоверность числа. Для
+        # недокументированного источника интерфейс обязан сказать об этом
+        # прямо, иначе локальный кеш читается как официальный API.
+        "sourceStability": _safe_text(quota.get("source_stability"), limit=32),
+        # Все известные окна лимита. Компактная карточка показывает самое
+        # ограничивающее, но экран «Лимиты» обязан показывать ВСЕ: недельное
+        # окно, спрятанное за пятичасовым, — это скрытая причина простоя.
+        "windows": windows,
+        # Возраст ИМЕННО НАБЛЮДЕНИЯ. Момент, когда мы прочитали данные, здесь
+        # не участвует: иначе восьмичасовой кеш выглядел бы свежим.
+        "ageSec": None if observed is None else max(0, int(now - observed)),
+        # Код причины: приехавший от воркера либо выведенный из состояния.
+        # Текст собирается в интерфейсе по коду — свободные строки от воркера
+        # в браузер не попадают.
+        "reason": _quota_reason(
+            provider=str(state.get("provider") or ""),
+            quota=quota,
+            remaining=remaining,
+            stale=stale,
+            blocked=blocked,
+        ),
         # «Оценка» — это когда число выведено нами, а не сообщено провайдером.
         # Контракт квот (quota.py) запрещает процент без
         # `raw_remaining_supported`, поэтому любое дошедшее сюда число —

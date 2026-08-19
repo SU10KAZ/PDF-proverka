@@ -915,18 +915,47 @@ class TestQuota:
         assert snapshot.primary_window.remaining_pct == 75.0
 
     def test_claude_quota_stays_honestly_unknown(self, worker_root, personal_home):
-        """Авторизация не создаёт источника остатка там, где его нет.
+        """Авторизация сама по себе остатка не создаёт.
 
-        Соблазн ровно здесь: «вошли — значит можем спросить». Спросить можно
-        только запросом к модели, то есть расходом подписки на телеметрию.
+        Соблазн ровно здесь: «вошли — значит можем спросить». Спросить нечем:
+        опрос стоил бы запроса к модели. Локальный кеш в этом сценарии тоже
+        пуст, поэтому единственный честный ответ — «неизвестно» с названной
+        причиной, а не число.
         """
         adapter = _ambient_claude(worker_root, personal_home, _CLAUDE_LOGGED_IN)
-        assert adapter.supports_zero_inference_quota() is False
         snapshot = adapter.quota_status()
         assert snapshot.quota_state == quota.QUOTA_UNKNOWN
         assert snapshot.estimated_remaining_pct is None
         assert snapshot.raw_remaining_supported is False
         assert snapshot.source == quota.SOURCE_UNAVAILABLE
+        assert snapshot.reason_code == quota.REASON_LOCAL_CACHE_MISSING
+
+    def test_ambient_claude_reads_cache_from_the_personal_home(
+        self, worker_root, personal_home
+    ):
+        """В ambient-режиме кеш живёт в ЛИЧНОМ каталоге пользователя VPS.
+
+        Это и есть причина, по которой путь берётся у `ProviderHome`, а не
+        собирается из `os.path.expanduser`: у процесса воркера свой HOME, и
+        «домашний каталог» без уточнения указал бы не туда.
+        """
+        import json as _json
+        import time as _time
+
+        adapter = _ambient_claude(worker_root, personal_home, _CLAUDE_LOGGED_IN)
+        config_dir = personal_home / ".claude"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        (config_dir / ".claude.json").write_text(_json.dumps({
+            "accessToken": "секрет-которого-не-должно-быть-в-снимке",
+            "cachedUsageUtilization": {
+                "fetchedAtMs": int(_time.time() * 1000),
+                "utilization": {"five_hour": {"utilization": 40}},
+            },
+        }), encoding="utf-8")
+        snapshot = adapter.quota_status()
+        assert snapshot.estimated_remaining_pct == 60.0
+        assert snapshot.source == quota.SOURCE_LOCAL_USAGE_STATS
+        assert "секрет" not in _json.dumps(snapshot.as_dict(), ensure_ascii=False)
 
     def test_ambient_mode_does_not_invent_a_percentage(self, worker_root,
                                                         personal_home):
