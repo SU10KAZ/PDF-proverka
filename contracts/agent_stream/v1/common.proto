@@ -111,6 +111,22 @@ message EventCursor {
   reserved 4 to 9;
 }
 
+// Одно окно лимита провайдера.
+//
+// `values_present` существует ради нуля. В proto3 скалярное поле со значением 0
+// неотличимо от незаполненного, а ноль здесь — самое важное значение: лимит
+// выбран полностью. Без явного признака «числа пришли» исчерпанный провайдер
+// приезжал бы как неопрошенный (наблюдалось 19.08.2026 на Codex).
+message QuotaWindowSnapshot {
+  string window_id = 1;
+  uint32 used_pct_milli = 2;
+  uint32 remaining_pct_milli = 3;
+  google.protobuf.Timestamp reset_at = 4;
+  uint32 duration_sec = 5;
+  bool values_present = 6;
+  reserved 7 to 12;
+}
+
 message ProviderCapabilitySnapshot {
   string provider = 1;
   repeated string capabilities = 2;
@@ -131,7 +147,20 @@ message ProviderCapabilitySnapshot {
   google.protobuf.Timestamp next_reset_at = 17;
   bool raw_remaining_supported = 18;
   string cli_version = 19;
-  reserved 20 to 29;
+  // Все известные окна лимита. `remaining_pct_milli` выше остаётся главным
+  // (самое ограничивающее окно) — ради совместимости со шлюзами, которые про
+  // эти поля не знают.
+  repeated QuotaWindowSnapshot quota_windows = 20;
+  // Код причины из закрытого словаря: почему остаток такой или почему его нет.
+  // Свободного текста провайдера на проводе по-прежнему нет.
+  string quota_reason_code = 21;
+  // Стабильность КОНТРАКТА источника (stable/experimental/undocumented) —
+  // отдельная ось от достоверности значения.
+  string quota_source_stability = 22;
+  // Признак «остаток известен», независимый от значения. Нужен по той же
+  // причине, что и `values_present` в окне: отличить 0 % от отсутствия числа.
+  bool remaining_present = 23;
+  reserved 24 to 29;
 }
 
 message CapabilitySnapshot {

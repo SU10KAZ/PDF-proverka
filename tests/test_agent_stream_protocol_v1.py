@@ -509,7 +509,12 @@ def test_polling_runtime_requirements_and_transport_are_unchanged():
 
 
 def test_descriptor_set_digest_is_pinned():
-    assert hashlib.sha256(DESCRIPTOR_PATH.read_bytes()).hexdigest() == "1ae2dabe1d638c03a6e3d3eb538942a5f8d0558977722c8c04b3a06aa04e11f8"
+    # Обновлено 19.08.2026 вместе с расширением ProviderCapabilitySnapshot
+    # (окна лимита 20, код причины 21, стабильность источника 22, признак
+    # наличия остатка 23). Дайджест прикреплён намеренно: он ловит СЛУЧАЙНОЕ
+    # изменение провода, поэтому меняться обязан только вместе с осознанной
+    # правкой контракта и её тестами.
+    assert hashlib.sha256(DESCRIPTOR_PATH.read_bytes()).hexdigest() == "f7e4bbe6887c4f394859d66fc4a9584958b4d551327ac01a392150ec505642ea"
 
 def test_heartbeat_roundtrip_preserves_resource_telemetry():
     from contracts.agent_stream.v1 import adapters

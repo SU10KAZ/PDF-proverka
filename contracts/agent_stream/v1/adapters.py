@@ -178,6 +178,77 @@ def _bytes_from_gb(value: Any) -> int:
     return int(number * (1024 ** 3))
 
 
+def _quota_windows_to_proto(quota: Mapping[str, Any]) -> list[common_pb.QuotaWindowSnapshot]:
+    """Окна лимита на провод, самое ограничивающее первым.
+
+    Порядок не косметика: главный остаток снимка относится именно к первому
+    окну, и приёмная сторона восстанавливает связь только по порядку.
+    """
+    raw: list[Any] = []
+    primary = quota.get("primary_window")
+    if isinstance(primary, Mapping):
+        raw.append(primary)
+    for extra in (quota.get("secondary_windows") or [])[:12]:
+        if isinstance(extra, Mapping):
+            raw.append(extra)
+    out: list[common_pb.QuotaWindowSnapshot] = []
+    for window in raw:
+        window_id = str(window.get("window_id") or "")[:64]
+        if not window_id:
+            continue
+        used = window.get("used_pct")
+        remaining = window.get("remaining_pct")
+        present = any(
+            isinstance(value, (int, float)) and not isinstance(value, bool)
+            for value in (used, remaining)
+        )
+        duration = window.get("duration_sec")
+        out.append(common_pb.QuotaWindowSnapshot(
+            window_id=window_id,
+            used_pct_milli=_pct_milli(used),
+            remaining_pct_milli=_pct_milli(remaining),
+            reset_at=timestamp_from_epoch(window.get("reset_at")),
+            duration_sec=(
+                int(duration) if isinstance(duration, (int, float))
+                and not isinstance(duration, bool) and duration > 0 else 0
+            ),
+            values_present=present,
+        ))
+    return out
+
+
+def _pct_milli(value: Any) -> int:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return 0
+    return max(0, min(100_000, int(round(float(value) * 1000))))
+
+
+def _quota_window_from_proto(
+    window: common_pb.QuotaWindowSnapshot, *, source: str, confidence: str
+) -> Any:
+    if not window.window_id:
+        return None
+    used = round(window.used_pct_milli / 1000.0, 1) if window.values_present else None
+    remaining = (
+        round(window.remaining_pct_milli / 1000.0, 1) if window.values_present else None
+    )
+    return {
+        "window_id": window.window_id,
+        "used_pct": used,
+        "remaining_pct": remaining,
+        "reset_at": (
+            epoch_from_timestamp(window.reset_at) if window.HasField("reset_at") else None
+        ),
+        "duration_sec": window.duration_sec or None,
+        # Источник и достоверность окна берутся у СНИМКА, а не едут отдельно:
+        # окно, противоречащее собственному снимку по источнику, невозможно
+        # осмысленно показать, а санитайзер центра без источника отбрасывает
+        # проценты — то есть окна доехали бы пустыми.
+        "source": source,
+        "confidence": confidence,
+    }
+
+
 def _provider_snapshot_to_proto(item: Mapping[str, Any]) -> common_pb.ProviderCapabilitySnapshot:
     quota = item.get("quota") if isinstance(item.get("quota"), Mapping) else {}
     remaining = quota.get("estimated_remaining_pct")
@@ -187,6 +258,7 @@ def _provider_snapshot_to_proto(item: Mapping[str, Any]) -> common_pb.ProviderCa
         remaining_milli = max(0, min(100_000, int(round(float(remaining) * 1000))))
     observed = item.get("observed_at") or quota.get("observed_at")
     reset_at = quota.get("next_reset_at")
+    windows = _quota_windows_to_proto(quota)
     return common_pb.ProviderCapabilitySnapshot(
         provider=str(item.get("provider") or ""),
         capabilities=sorted(str(x) for x in (item.get("capabilities") or [])),
@@ -195,21 +267,14 @@ def _provider_snapshot_to_proto(item: Mapping[str, Any]) -> common_pb.ProviderCa
         account_group_id=str(item.get("account_group_id") or "")[:64],
         account_kind=str(item.get("account_kind") or "")[:64],
         model_report_supported=bool(item.get("model_report_supported", False)),
-        # ПРИНЯТЫЙ ОСТАТОЧНЫЙ ДЕФЕКТ 12I.3. Честное значение для «ещё не
-        # опрашивали» — `INSTALL_NOT_OBSERVED`, и оно определено в
-        # `audit_worker/providers/identity.py`. На проводе его нет намеренно:
-        # работающий шлюз ui-real-16c533a7 приводит состояние к закрытому
-        # списку (`installed/missing/broken`) с умолчанием `missing`, то есть
-        # перепишет честное значение обратно в ложь, а перекатывать шлюз ради
-        # одного стартового окна решено НЕ БУДЕТ (решение заказчика 18.08).
-        #
-        # Поэтому здесь сохраняется ИСХОДНОЕ умолчание, совместимое с
-        # работающим шлюзом. Дефект, который действительно лечится в 12I.3, —
-        # другой: заглушка ЗАЩЁЛКИВАЛАСЬ на всё соединение. Обнаружение
-        # изменений теперь смотрит на состояние провайдеров
-        # (`provider_status_digest`), поэтому первый же завершившийся опрос
-        # доезжает до центра в том же соединении, и заглушка живёт секунды.
-        installation_status=str(item.get("installation_status") or "missing")[:32],
+        # ЗАКРЫТЫЙ ДЕФЕКТ 12I.3. Раньше здесь стояло умолчание `missing` —
+        # «CLI не установлен» про провайдера, которого ЕЩЁ НЕ ОПРАШИВАЛИ.
+        # Честное значение существовало (`INSTALL_NOT_OBSERVED`), но не
+        # доезжало: шлюз приводил его к закрытому списку с тем же `missing`,
+        # а перекатывать шлюз ради одного стартового окна было решено не
+        # делать. Правка вошла в общую выкатку контракта 19.08.2026 вместе с
+        # окнами лимита и кодом причины, поэтому умолчание стало честным.
+        installation_status=str(item.get("installation_status") or "not_observed")[:32],
         auth_state=str(item.get("auth_state") or "unknown")[:32],
         policy_state=str(item.get("policy_state") or "allowed")[:32],
         inference_allowed=bool(item.get("inference_allowed")),
@@ -221,6 +286,15 @@ def _provider_snapshot_to_proto(item: Mapping[str, Any]) -> common_pb.ProviderCa
         next_reset_at=timestamp_from_epoch(reset_at),
         raw_remaining_supported=raw_supported,
         cli_version=str(item.get("cli_version") or "")[:64],
+        quota_windows=windows,
+        quota_reason_code=str(quota.get("reason_code") or "")[:64],
+        quota_source_stability=str(quota.get("source_stability") or "")[:32],
+        # Признак наличия остатка, независимый от значения: 0 % — это число.
+        remaining_present=bool(
+            raw_supported
+            and isinstance(remaining, (int, float))
+            and not isinstance(remaining, bool)
+        ),
     )
 
 
@@ -279,7 +353,11 @@ def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) ->
     # Признаком наличия числа служит `raw_remaining_supported`: воркер ставит
     # его только вместе с настоящим ответом источника, и другого способа
     # отличить «ноль» от «поля не было» в proto3 нет.
-    if item.raw_remaining_supported and item.remaining_pct_milli >= 0:
+    # `remaining_present` — явный признак от нового воркера; для старых, у
+    # которых поля нет, остаётся прежнее правило «есть источник → есть число».
+    if item.raw_remaining_supported and (
+        item.remaining_present or item.remaining_pct_milli >= 0
+    ):
         remaining = round(item.remaining_pct_milli / 1000.0, 1)
     observed = epoch_from_timestamp(item.observed_at) if item.HasField("observed_at") else None
     reset = epoch_from_timestamp(item.next_reset_at) if item.HasField("next_reset_at") else None
@@ -292,7 +370,23 @@ def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) ->
         "estimated_remaining_pct": remaining,
         "raw_remaining_supported": bool(item.raw_remaining_supported),
         "next_reset_at": reset,
+        "source_stability": item.quota_source_stability or "not_applicable",
+        "reason_code": item.quota_reason_code or None,
     }
+    windows = [
+        _quota_window_from_proto(
+            w,
+            source=item.quota_source or "unavailable",
+            confidence=item.quota_confidence or "none",
+        )
+        for w in item.quota_windows
+    ]
+    windows = [w for w in windows if w is not None]
+    if windows:
+        # Первое окно — самое ограничивающее: воркер сортирует их так же, как
+        # выбирает главный остаток. Разъехаться эти два числа не должны.
+        quota["primary_window"] = windows[0]
+        quota["secondary_windows"] = windows[1:]
     return {
         "provider": item.provider,
         # Приёмная сторона: пустое поле — это ОТСУТСТВИЕ сведений, а не
