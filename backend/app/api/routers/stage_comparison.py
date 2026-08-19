@@ -28,7 +28,7 @@ from typing import Optional
 
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, Response, StreamingResponse
 from pydantic import BaseModel, Field
 
 from backend.app.services.stage_comparison import diff_text, store, jobs as jobs_mod, objects as objects_mod
@@ -53,6 +53,7 @@ from backend.app.services.stage_comparison import review_transfer as review_tran
 from backend.app.services.stage_comparison import paths as sc_paths_mod
 from backend.app.services.stage_comparison import saved_config as saved_config_mod
 from backend.app.services.stage_comparison import stage_upload as stage_upload_mod
+from backend.app.services.stage_comparison import diagnostic_new_pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -843,6 +844,68 @@ async def run_semantic_diff_v6a2_mass_endpoint(session_id: str, pair_id: str):
         raise HTTPException(404, str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+# ─── Диагностика новой цепочки сравнения (read-only) ──────────────────────
+#
+# Витрина уже посчитанных артефактов 5Б.4 + 6А.2 для режима
+# «Новый алгоритм (диагностика)» во вкладке «Расхождения». Эти endpoint'ы:
+#   • ничего не запускают и ничего не записывают;
+#   • не читают и не меняют comparison_result.json, findings и решения эксперта;
+#   • не вызывают LLM, Vision и OCR; влияние не считают;
+#   • не дедуплицируют результат — одинаковые «Было → Стало» видны все.
+# Выключается флагом STAGE_COMPARISON_NEW_PIPELINE_DIAGNOSTIC_ENABLED=0.
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/diagnostic/new-pipeline")
+async def get_new_pipeline_diagnostic_endpoint(session_id: str, pair_id: str):
+    """Все change groups новой цепочки со смыслом 6А.2, как есть."""
+    if not diagnostic_new_pipeline.is_enabled():
+        return {
+            "available": False,
+            "reason": "disabled_by_flag:STAGE_COMPARISON_NEW_PIPELINE_DIAGNOSTIC_ENABLED",
+            "items": [], "summary": {},
+        }
+    try:
+        return await run_in_threadpool(store.get_new_pipeline_diagnostic, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/diagnostic/new-pipeline/crop")
+async def get_new_pipeline_crop_endpoint(
+    session_id: str,
+    pair_id: str,
+    left_page: int = Query(..., ge=1),
+    right_page: int = Query(..., ge=1),
+    group_id: str = Query(...),
+    side: str = Query(..., pattern="^(v2|v3|overlay)$"),
+    target_long_side: int = Query(1100, ge=300, le=2600),
+):
+    """Кроп change group: готовый пилотный PNG либо рендер из PDF в память."""
+    if not diagnostic_new_pipeline.is_enabled():
+        raise HTTPException(403, "disabled_by_flag:STAGE_COMPARISON_NEW_PIPELINE_DIAGNOSTIC_ENABLED")
+    try:
+        png, source = await run_in_threadpool(
+            store.render_new_pipeline_crop, session_id, pair_id,
+            left_page=left_page, right_page=right_page, group_id=group_id,
+            side=side, target_long_side=target_long_side,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("new-pipeline crop failed")
+        raise HTTPException(500, f"Ошибка кропа change group: {exc}") from exc
+    headers = {"X-Crop-Source": source, "Cache-Control": "private, max-age=600"}
+    if isinstance(png, (bytes, bytearray)):
+        return Response(content=bytes(png), media_type="image/png", headers=headers)
+    return FileResponse(str(png), media_type="image/png", headers=headers)
 
 
 # ─── Visual block equivalence recompute (Stage 3B, mark-only, flag-gated) ──

@@ -5824,6 +5824,18 @@
                     </button>
                 </div>
 
+                <!-- Активная подсветка change group из диагностики нового алгоритма -->
+                <div v-if="scNpHighlight"
+                     class="sc-card" style="background:#fef2f2; border:1px solid #fecaca; border-radius:6px; padding:6px 12px; margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; font-size:12px; color:#991b1b">
+                    <span style="display:inline-block; width:12px; height:12px; border:2px solid #dc2626; background:rgba(220,38,38,.12)"></span>
+                    <strong>Change group {{ scNpHighlight.group_id }}</strong>
+                    <span>лист V2 {{ scNpHighlight.left_page }} ↔ V3 {{ scNpHighlight.right_page }}</span>
+                    <span style="opacity:.8">· {{ scNpHighlight.evidence_level }}</span>
+                    <span style="display:inline-block; width:12px; height:12px; border:1px dashed #2563eb; background:rgba(37,99,235,.10); margin-left:8px"></span>
+                    <span style="color:#1e3a8a">atomic regions: {{ (scNpHighlight.atomic_regions||[]).length }}</span>
+                    <button class="btn btn-sm btn-secondary" style="margin-left:auto; padding:1px 8px" @click="scNpClearHighlight()">Снять подсветку</button>
+                </div>
+
                 <!-- Активная связь / stale-links -->
                 <div v-if="scActiveLink || scStaleLinksCount > 0"
                      class="sc-card" style="background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:6px 12px; margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; font-size:12px">
@@ -5967,6 +5979,14 @@
                                         </span>
                                         <span v-else class="sc-block-id">{{ b.id.slice(0,8) }}</span>
                                     </div>
+                                    <!-- Подсветка change group новой цепочки (диагностика):
+                                         красная сплошная рамка — сама группа,
+                                         синий пунктир — atomic regions внутри неё.
+                                         Координаты берутся из готовых артефактов. -->
+                                    <div v-for="ov in scNpSlotOverlays(side, slot)"
+                                         :key="side+'-np-'+slot.slot+'-'+ov.key"
+                                         :style="scNpOverlayStyle(ov)"
+                                         :title="ov.kind === 'group' ? ('change group ' + ov.label) : ('atomic region ' + ov.label)"></div>
                                 </div>
                                 <div v-else class="sc-blank-page" :style="scBlankPageStyle()">
                                     <div style="text-align:center; color:#9ca3af">
@@ -6122,6 +6142,20 @@
             <!-- Tab 3: Diffs -->
             <div v-if="scTab==='diffs' && scActivePair">
                 <div class="sc-subtabs" style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; align-items:center">
+                    <!-- ДИАГНОСТИКА: результат новой детерминированной цепочки
+                         (PreparedDocument → сопоставление листов → идентичность →
+                         совмещение → canonical diff → atomic regions →
+                         change groups → semantic diff 6А.2).
+                         Показывается ОТДЕЛЬНО от старого Opus-пути: findings не
+                         создаются, влияние не считается, LLM/Vision не зовутся.
+                         Выключается флагом
+                         STAGE_COMPARISON_NEW_PIPELINE_DIAGNOSTIC_ENABLED=0. -->
+                    <button class="btn btn-sm"
+                            :class="scNpMode ? 'btn-primary' : 'btn-secondary'"
+                            @click="scNpToggleMode()"
+                            title="Диагностический просмотр новой детерминированной цепочки сравнения. Только чтение готовых артефактов: ничего не запускает, findings не создаёт, старые расхождения Opus не трогает.">
+                        🧪 {{ scNpMode ? 'Новый алгоритм (диагностика) · ВКЛ' : 'Новый алгоритм (диагностика)' }}
+                    </button>
                     <!-- Unified (primary) — Opus comparison по готовым enriched MD.
                          Кнопка-переключатель «Расхождения» убрана из UI; unified
                          остаётся дефолтным subtab'ом. -->
@@ -6177,7 +6211,261 @@
                      в pairs/<pid>/v2_review_status.json (canonical), с fallback
                      на legacy expert_review.json.
                      ════════════════════════════════════════════════════════ -->
-                <div v-if="scDiffSubtab==='unified' && scV2View==='v2'" class="sc-v2">
+                <!-- ════════════════════════════════════════════════════════
+                     ДИАГНОСТИКА: новая детерминированная цепочка сравнения.
+                     Read-only витрина артефактов 5Б.4 + 6А.2. Показывает ВСЕ
+                     change groups без скрытия и без дедупликации: одинаковые
+                     «Было → Стало» специально видны отдельными строками —
+                     это известная слабость локализации semantic diff, и её
+                     нужно оценить глазами, а не спрятать.
+                     ════════════════════════════════════════════════════════ -->
+                <div v-if="scDiffSubtab==='unified' && scNpMode" class="sc-np">
+                    <!-- Явное предупреждение о характере режима -->
+                    <div class="sc-card"
+                         style="display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:12px; background:#fdf4ff; border:1px solid #e9d5ff; color:#6b21a8">
+                        <strong>🧪 Диагностика нового алгоритма</strong>
+                        <span>Результат детерминированной цепочки, отдельно от расхождений Opus.</span>
+                        <span style="opacity:.85">Findings не создаются · влияние не считается · LLM/Vision не вызывались · дубли не склеены.</span>
+                        <span style="margin-left:auto">
+                            <button class="btn btn-sm btn-secondary" :disabled="scNpLoading" @click="scNpLoad(true)"
+                                    title="Перечитать артефакты с диска">{{ scNpLoading ? '⏳' : '⟳ Обновить' }}</button>
+                        </span>
+                    </div>
+
+                    <div v-if="scNpError"
+                         style="background:#fee2e2; color:#991b1b; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:13px">{{ scNpError }}</div>
+                    <div v-if="scNpLoading" class="empty-state" style="padding:14px 0; font-size:13px">Чтение артефактов новой цепочки…</div>
+
+                    <template v-if="!scNpLoading && scNpData && scNpData.available">
+                        <!-- Служебная строка статистики алгоритма (не пользовательская сводка) -->
+                        <div class="sc-card"
+                             style="padding:8px 12px; border-radius:6px; margin-bottom:8px; font-size:12px; background:#f8fafc; border:1px solid #e2e8f0; color:#0f172a; font-variant-numeric:tabular-nums; display:flex; gap:6px 14px; flex-wrap:wrap; align-items:baseline">
+                            <span><b>{{ scNpCounts.total }}</b> групп</span>
+                            <span style="opacity:.4">·</span>
+                            <span title="Точное доказательство">exact <b style="color:#15803d">{{ scNpCounts.exact }}</b></span>
+                            <span title="Сильное доказательство">strong <b style="color:#1d4ed8">{{ scNpCounts.strong }}</b></span>
+                            <span title="Только контекст">contextual <b style="color:#a16207">{{ scNpCounts.contextual }}</b></span>
+                            <span title="Доказательств недостаточно">insufficient <b style="color:#b91c1c">{{ scNpCounts.insufficient }}</b></span>
+                            <span style="opacity:.4">·</span>
+                            <span title="Алгоритм сам пометил, что нужна ручная проверка">требуют проверки <b>{{ scNpCounts.review }}</b></span>
+                            <span title="Групп, у которых «Было → Стало» дословно совпадает хотя бы с одной другой группой. Не склеены намеренно.">дублирующийся смысл <b style="color:#b45309">{{ scNpCounts.dup }}</b></span>
+                            <span v-if="scNpCounts.shown !== scNpCounts.total" style="margin-left:auto; opacity:.75">показано по фильтру: <b>{{ scNpCounts.shown }}</b></span>
+                        </div>
+
+                        <!-- Откуда данные -->
+                        <details class="sc-card" style="padding:6px 12px; border-radius:6px; margin-bottom:8px; font-size:11px; background:#fff; border:1px solid #e5e7eb; color:#475569">
+                            <summary style="cursor:pointer">Источник данных</summary>
+                            <div style="margin-top:6px; line-height:1.6; word-break:break-all">
+                                <div>semantic diff: <code>{{ scNpData.source.semantic_diff_path }}</code></div>
+                                <div>change detection: <code>{{ scNpData.source.change_detection_path }}</code></div>
+                                <div>kind: <code>{{ scNpData.source.kind }}</code> · <code>{{ scNpData.source.detection_kind }}</code></div>
+                                <div v-if="scNpData.detection_summary">
+                                    5Б.4: aligned пар {{ scNpData.detection_summary.aligned_pairs }} ·
+                                    canonical vector diff {{ scNpData.detection_summary.canonical_vector_differences }} ·
+                                    atomic regions {{ scNpData.detection_summary.atomic_regions }} ·
+                                    change groups {{ scNpData.detection_summary.change_groups }} ·
+                                    необъяснённой визуальной разницы {{ scNpData.detection_summary.unexplained_visual_difference }}
+                                </div>
+                                <div v-if="(scNpData.requires_alignment_fallback||[]).length" style="margin-top:4px; color:#b45309">
+                                    Не совмещено и потому не сравнивалось:
+                                    <span v-for="(f, fi) in scNpData.requires_alignment_fallback" :key="'fb-'+fi">
+                                        лист V2 {{ f.left_page }} ↔ V3 {{ f.right_page }} ({{ f.status }}){{ fi < scNpData.requires_alignment_fallback.length - 1 ? ', ' : '' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Минимальные фильтры -->
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:10px; font-size:12px">
+                            <span style="opacity:.6">Доказательство:</span>
+                            <button v-for="f in [['all','все'],['exact','exact'],['strong','strong'],['contextual','contextual'],['insufficient','insufficient'],['review','требует проверки']]"
+                                    :key="'npev-'+f[0]" class="btn btn-sm"
+                                    :class="scNpEvidenceFilter===f[0] ? 'btn-primary' : 'btn-secondary'"
+                                    @click="scNpEvidenceFilter=f[0]">{{ f[1] }}</button>
+                            <span style="width:1px; background:#e5e7eb; align-self:stretch; margin:0 4px"></span>
+                            <span style="opacity:.6">Тип:</span>
+                            <button class="btn btn-sm" :class="scNpTypeFilter==='all' ? 'btn-primary' : 'btn-secondary'"
+                                    @click="scNpTypeFilter='all'">все</button>
+                            <button v-for="t in scNpPresentTypes" :key="'nptp-'+t" class="btn btn-sm"
+                                    :class="scNpTypeFilter===t ? 'btn-primary' : 'btn-secondary'"
+                                    @click="scNpTypeFilter=t">{{ scNpTypeLabel(t) }} ({{ scNpTypeCount(t) }})</button>
+                        </div>
+
+                        <div v-if="!scNpFilteredItems.length" class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
+                            По выбранному фильтру групп нет.
+                        </div>
+
+                        <div v-else class="table-container sc-unified-table-wrap">
+                            <table class="findings-table sc-unified-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:60px; text-align:center">№</th>
+                                        <th style="width:150px">Место</th>
+                                        <th style="width:26%">Изменение</th>
+                                        <th class="sc-col-was" style="width:18%">Было</th>
+                                        <th class="sc-col-became" style="width:18%">Стало</th>
+                                        <th style="width:17%">Диагностика</th>
+                                        <th style="width:36px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template v-for="(it, idx) in scNpFilteredItems" :key="it.id">
+                                    <tr class="sc-row"
+                                        :style="'border-left:4px solid ' + scNpEvidenceMeta(it.evidence_level).bd">
+                                        <td style="text-align:center; vertical-align:top">
+                                            <div style="font-weight:600">{{ idx + 1 }}</div>
+                                            <div style="font-size:9px; opacity:.6; margin-top:2px">{{ it.group_id }}</div>
+                                        </td>
+                                        <!-- Место -->
+                                        <td class="sc-cell-place" style="vertical-align:top">
+                                            <div><strong>Лист {{ it.left_sheet || '—' }} → {{ it.right_sheet || '—' }}</strong></div>
+                                            <div class="sc-place-page">стр. PDF: V2 {{ it.left_page }} · V3 {{ it.right_page }}</div>
+                                            <div v-if="it.left_sheet_name" style="font-size:10px; opacity:.65; margin-top:2px" :title="it.left_sheet_name">{{ it.left_sheet_name }}</div>
+                                            <div v-if="it.pair_status==='review_required'" style="font-size:9px; margin-top:3px; padding:1px 5px; border-radius:999px; background:#fef3c7; color:#92400e; display:inline-block"
+                                                 :title="'Лист помечен алгоритмом: ' + (it.pair_review_reasons||[]).join(', ')">лист: проверить</div>
+                                        </td>
+                                        <!-- Изменение -->
+                                        <td class="sc-cell-change" style="vertical-align:top">
+                                            <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center; margin-bottom:3px">
+                                                <span style="font-size:9px; padding:1px 6px; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:600">{{ scNpTypeLabel(it.semantic_type) }}</span>
+                                                <span v-if="it.semantic_type==='stamp'" style="font-size:9px; padding:1px 6px; border-radius:999px; background:#e2e8f0; color:#334155; font-weight:600"
+                                                      title="Изменение в штампе листа. Показано отдельно, чтобы решить, нужно ли оно пользователю в будущем.">Штамп</span>
+                                                <span v-if="it.change_kind" style="font-size:9px; padding:1px 6px; border-radius:999px; background:#f1f5f9; color:#475569">{{ it.change_kind }}</span>
+                                                <span v-if="(it.same_semantic_result_as_other_groups||0) > 0"
+                                                      style="font-size:9px; padding:1px 6px; border-radius:999px; background:#ffedd5; color:#9a3412; font-weight:600"
+                                                      :title="'Тот же результат «Было → Стало», что и у других групп: ' + (it.same_semantic_result_group_ids||[]).join(', ')">
+                                                    ⧉ такой же смысл ещё у {{ it.same_semantic_result_as_other_groups }}
+                                                </span>
+                                            </div>
+                                            <div class="sc-change-summary">{{ it.change_summary || '—' }}</div>
+                                            <div style="margin-top:4px">
+                                                <button class="btn btn-sm btn-secondary" style="font-size:10px; padding:1px 8px"
+                                                        @click="scNpToggleExpand(it)">
+                                                    {{ scNpExpanded[it.id] ? '▾ Свернуть подробности' : '▸ Подробности' }}
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <!-- Было -->
+                                        <td class="sc-cell-was" style="vertical-align:top">{{ it.before || '—' }}</td>
+                                        <!-- Стало -->
+                                        <td class="sc-cell-became" style="vertical-align:top">{{ it.after || '—' }}</td>
+                                        <!-- Диагностика вместо будущего «Влияние» -->
+                                        <td style="vertical-align:top">
+                                            <div><span :style="'font-size:10px; padding:1px 7px; border-radius:999px; font-weight:700; ' + scNpEvidenceStyle(it.evidence_level)"
+                                                       :title="scNpEvidenceMeta(it.evidence_level).title">{{ it.evidence_level || '—' }}</span></div>
+                                            <div style="font-size:10px; margin-top:4px; line-height:1.5; color:#475569">
+                                                <div>confidence: <b>{{ it.confidence != null ? Number(it.confidence).toFixed(2) : '—' }}</b></div>
+                                                <div>source: <code style="font-size:9px">{{ it.source || '—' }}</code></div>
+                                                <div v-if="it.requires_human_review" style="color:#b45309; font-weight:600">требует проверки</div>
+                                                <div v-if="it.next_analysis">дальше: <b>{{ scNpNextLabel(it.next_analysis) }}</b></div>
+                                                <div v-if="it.unresolved_reason" style="opacity:.75">причина: {{ it.unresolved_reason }}</div>
+                                            </div>
+                                        </td>
+                                        <!-- Перейти к месту -->
+                                        <td class="sc-cell-goto" style="vertical-align:top">
+                                            <button class="sc-goto-btn" @click="scNpGoto(it)"
+                                                    title="Открыть листы и подсветить область change group (красная рамка) вместе с atomic regions (синий пунктир)">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- Подробности: кропы, atomic regions, ячейки таблиц -->
+                                    <tr v-if="scNpExpanded[it.id]" :key="it.id + '-details'">
+                                        <td colspan="7" style="background:#fafafa; padding:12px 16px">
+                                            <div style="display:grid; grid-template-columns:minmax(260px, 1fr) minmax(300px, 1.2fr); gap:16px; align-items:start">
+                                                <!-- Просмотр доказательств -->
+                                                <div>
+                                                    <div style="font-size:11px; font-weight:700; margin-bottom:6px; color:#334155">Доказательство</div>
+                                                    <div style="display:flex; gap:4px; margin-bottom:6px; flex-wrap:wrap">
+                                                        <button v-for="s in [['v2','V2'],['v3','V3'],['overlay','Overlay']]" :key="it.id+'-cs-'+s[0]"
+                                                                class="btn btn-sm"
+                                                                :class="scNpActiveCropSide(it)===s[0] ? 'btn-primary' : 'btn-secondary'"
+                                                                :disabled="!scNpCropAvailable(it, s[0])"
+                                                                :title="scNpCropAvailable(it, s[0]) ? ('Источник: ' + scNpCropSource(it, s[0])) : 'Overlay строится только этапом 6А.1 и есть лишь у 12 пилотных групп — заново не считаем'"
+                                                                style="font-size:10px; padding:1px 9px"
+                                                                @click="scNpSetCropSide(it, s[0])">{{ s[1] }}</button>
+                                                    </div>
+                                                    <img v-if="scNpCropAvailable(it, scNpActiveCropSide(it))"
+                                                         :src="scNpCropUrl(it, scNpActiveCropSide(it))"
+                                                         loading="lazy" decoding="async"
+                                                         style="max-width:100%; border:1px solid #e5e7eb; border-radius:4px; background:#fff" />
+                                                    <div v-else style="font-size:11px; color:#9ca3af; padding:10px 0">Изображение для этой стороны не построено.</div>
+                                                    <div style="font-size:10px; color:#64748b; margin-top:4px">{{ scNpCropSource(it, scNpActiveCropSide(it)) }}</div>
+                                                </div>
+                                                <!-- Технический уровень -->
+                                                <div style="font-size:11px; line-height:1.6">
+                                                    <!-- Структурные изменения ячеек -->
+                                                    <template v-if="(it.cell_changes||[]).length">
+                                                        <div style="font-weight:700; margin-bottom:4px; color:#334155">Структурные изменения ({{ it.cell_changes.length }})</div>
+                                                        <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:11px">
+                                                            <thead><tr style="text-align:left; color:#64748b">
+                                                                <th style="padding:2px 6px">Позиция</th><th style="padding:2px 6px">Колонка</th>
+                                                                <th style="padding:2px 6px">Было</th><th style="padding:2px 6px">Стало</th><th style="padding:2px 6px"></th>
+                                                            </tr></thead>
+                                                            <tbody>
+                                                                <tr v-for="(c, ci) in it.cell_changes" :key="it.id+'-c-'+ci" style="border-top:1px solid #e5e7eb">
+                                                                    <td style="padding:2px 6px"><b>{{ c.position }}</b></td>
+                                                                    <td style="padding:2px 6px">{{ c.column }}</td>
+                                                                    <td style="padding:2px 6px; color:#b91c1c">{{ c.before }}</td>
+                                                                    <td style="padding:2px 6px; color:#15803d">{{ c.after }}</td>
+                                                                    <td style="padding:2px 6px"><span :style="'font-size:9px; padding:0 5px; border-radius:999px; ' + scNpEvidenceStyle(c.evidence_level)">{{ c.evidence_level }}</span></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </template>
+                                                    <!-- Строки таблиц -->
+                                                    <details v-if="(it.table_rows && ((it.table_rows.inserted||[]).length || (it.table_rows.removed||[]).length))"
+                                                             style="margin-bottom:8px">
+                                                        <summary style="cursor:pointer; font-weight:700; color:#334155">
+                                                            Строки таблицы: +{{ (it.table_rows.inserted||[]).length }} / −{{ (it.table_rows.removed||[]).length }}
+                                                        </summary>
+                                                        <div style="margin-top:4px; max-height:180px; overflow:auto">
+                                                            <div v-for="(r, ri) in (it.table_rows.removed||[])" :key="it.id+'-tr-'+ri" style="color:#b91c1c">− {{ r }}</div>
+                                                            <div v-for="(r, ri) in (it.table_rows.inserted||[])" :key="it.id+'-ti-'+ri" style="color:#15803d">+ {{ r }}</div>
+                                                        </div>
+                                                    </details>
+                                                    <!-- Atomic regions -->
+                                                    <div style="font-weight:700; margin-bottom:4px; color:#334155">Atomic regions ({{ (it.atomic_regions||[]).length }})</div>
+                                                    <table style="width:100%; border-collapse:collapse; font-size:10px">
+                                                        <thead><tr style="text-align:left; color:#64748b">
+                                                            <th style="padding:2px 6px">ID</th><th style="padding:2px 6px">bbox (V2, pt)</th>
+                                                            <th style="padding:2px 6px">evidence</th><th style="padding:2px 6px">роль</th><th style="padding:2px 6px">conf.</th>
+                                                        </tr></thead>
+                                                        <tbody>
+                                                            <tr v-for="r in (it.atomic_regions||[])" :key="it.id+'-ar-'+r.region_id" style="border-top:1px solid #e5e7eb">
+                                                                <td style="padding:2px 6px"><code>{{ r.region_id }}</code></td>
+                                                                <td style="padding:2px 6px; font-variant-numeric:tabular-nums">{{ (r.bbox||[]).map(v => Math.round(v)).join(', ') }}</td>
+                                                                <td style="padding:2px 6px">{{ (r.change_types||[]).join(', ') || '—' }}<span v-if="r.diff_counts && Object.keys(r.diff_counts).length" style="opacity:.6"> · {{ Object.entries(r.diff_counts).map(e => e[0]+':'+e[1]).join(', ') }}</span></td>
+                                                                <td style="padding:2px 6px">{{ r.region_role || '—' }}</td>
+                                                                <td style="padding:2px 6px">{{ r.confidence != null ? Number(r.confidence).toFixed(2) : '—' }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <div style="margin-top:8px; color:#64748b">
+                                                        bbox группы (V2, pt): <code>{{ (it.bbox||[]).map(v => Math.round(v)).join(', ') }}</code>
+                                                        · блоки: <code v-for="(b, bi) in (it.block_ids||[])" :key="it.id+'-b-'+bi" style="margin-right:4px">{{ b.slice(0,10) }}</code>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <div v-else-if="!scNpLoading && scNpData && !scNpData.available" class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
+                        Артефакты новой цепочки для этой пары не найдены (<code>{{ scNpData.reason }}</code>).
+                        Сначала выполните на вкладке «Загрузка документации»: «Автоматически сопоставить листы» → «Проверить идентичность» →
+                        «Проверить совмещение» → «Рассчитать области изменений», затем этап 6А.2.
+                    </div>
+                </div>
+
+                <div v-if="scDiffSubtab==='unified' && scV2View==='v2' && !scNpMode" class="sc-v2">
                     <!-- Панель действий вкладки «Расхождения».
                          При включённой оценке слева от триггера по очереди появляются:
                          Сохранить решение · Принято/Отклонено. Повторный клик по
@@ -6432,7 +6720,7 @@
                 </div>
 
                 <!-- Unified subtab — primary UX -->
-                <div v-if="scDiffSubtab==='unified' && scV2View!=='v2'">
+                <div v-if="scDiffSubtab==='unified' && scV2View!=='v2' && !scNpMode">
 
                     <!-- Provider availability banner -->
                     <div v-if="scUnifiedConfig && (!scUnifiedConfig.enabled || !scUnifiedConfig.available)"

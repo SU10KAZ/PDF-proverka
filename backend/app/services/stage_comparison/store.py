@@ -45,6 +45,7 @@ from . import change_detection as change_detection_mod
 from . import semantic_diff as semantic_diff_mod
 from . import semantic_diff_v6a1 as semantic_diff_v6a1_mod
 from . import semantic_diff_v6a2 as semantic_diff_v6a2_mod
+from . import diagnostic_new_pipeline as diagnostic_new_pipeline_mod
 
 logger = logging.getLogger(__name__)
 
@@ -966,6 +967,82 @@ def run_semantic_diff_v6a2_mass(session_id: str, pair_id: str) -> dict:
         )
         json_path, md_path = semantic_diff_v6a2_mod.write_report(destination, report)
         return {"ok": True, "semantic_diff": report, "result_path": str(json_path), "report_path": str(md_path)}
+
+
+# ─── Диагностическая витрина новой цепочки (read-only) ───────────────────────
+#
+# Отдаёт уже посчитанные change groups 5Б.4 + смысл 6А.2 во вкладку
+# «Расхождения» отдельным режимом. Ничего не считает, не пишет и не трогает
+# старый Opus-путь: comparison_result.json, findings и экспертные решения
+# остаются как были.
+
+
+def _diagnostic_new_pipeline_context(session_id: str, pair_id: str) -> tuple[dict, Path, str, str]:
+    pair = _find_pair_meta(session_id, pair_id)
+    if pair is None:
+        raise KeyError("pair_not_found")
+    left_pdf = (pair.get("left") or {}).get("pdf_path")
+    right_pdf = (pair.get("right") or {}).get("pdf_path")
+    left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
+    right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
+    if comparison != comparison_right:
+        raise ValueError("pair_documents_belong_to_different_comparison_objects")
+    try:
+        alignment_items = (get_alignment(session_id, pair_id).get("alignment") or {}).get("items") or []
+    except Exception:  # noqa: BLE001 — карта страниц не обязательна для просмотра
+        alignment_items = []
+    payload = diagnostic_new_pipeline_mod.build_payload(comparison, left, right, alignment_items)
+    payload["session_id"], payload["pair_id"] = session_id, pair_id
+    return payload, comparison, str(left_pdf), str(right_pdf)
+
+
+def get_new_pipeline_diagnostic(session_id: str, pair_id: str) -> dict:
+    """Все change groups новой цепочки для диагностического режима вкладки."""
+    payload, _, _, _ = _diagnostic_new_pipeline_context(session_id, pair_id)
+    return payload
+
+
+def render_new_pipeline_crop(
+    session_id: str,
+    pair_id: str,
+    *,
+    left_page: int,
+    right_page: int,
+    group_id: str,
+    side: str,
+    target_long_side: int = 1100,
+    padding_pt: float = 18.0,
+) -> tuple[bytes | Path, str]:
+    """Кроп change group: готовый пилотный PNG, иначе рендер из PDF в память.
+
+    Возвращает ``(Path | bytes, source)``. Ничего на диск не пишет: пилотные
+    картинки 6А.1 переиспользуются как есть, остальные рендерятся на лету.
+    """
+    if side not in ("v2", "v3", "overlay"):
+        raise ValueError("side must be 'v2', 'v3' or 'overlay'")
+    payload, comparison, left_pdf, right_pdf = _diagnostic_new_pipeline_context(session_id, pair_id)
+    if not payload.get("available"):
+        raise FileNotFoundError(payload.get("reason") or "new_pipeline_diagnostic_unavailable")
+
+    existing = diagnostic_new_pipeline_mod.pilot_crop_path(comparison, left_page, right_page, group_id, side)
+    if existing.is_file():
+        return existing, "pilot_file"
+    if side == "overlay":
+        # Overlay строит только этап 6А.1 и только для пилотных групп —
+        # заново его не считаем, чтобы не изобретать вторую логику совмещения.
+        raise FileNotFoundError("overlay_not_generated_for_this_group")
+
+    group = diagnostic_new_pipeline_mod.find_group(payload, left_page, right_page, group_id)
+    if group is None:
+        raise KeyError("change_group_not_found")
+    if side == "v2":
+        pdf_path, page_number, bbox = left_pdf, left_page, group.get("bbox")
+    else:
+        pdf_path, page_number, bbox = right_pdf, right_page, group.get("bbox_right") or group.get("bbox")
+    png = diagnostic_new_pipeline_mod.render_crop_bytes(
+        pdf_path, page_number, bbox, padding_pt=padding_pt, target_long_side=target_long_side,
+    )
+    return png, "on_demand_render"
 
 
 def _resync_links_after_alignment(

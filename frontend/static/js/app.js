@@ -11796,6 +11796,30 @@ const app = createApp({
         // (классический unified-список, оставлен ТОЛЬКО для отладки за
         // scDevTools; переключатель [Расхождения][V2] из UI убран).
         const scV2View         = ref('v2');
+
+        // ══════════════════════════════════════════════════════════════════
+        // Диагностический режим «Новый алгоритм» во вкладке «Расхождения».
+        //
+        // Показывает результат новой ДЕТЕРМИНИРОВАННОЙ цепочки сравнения
+        // (PreparedDocument → сопоставление листов → идентичность →
+        // совмещение → canonical diff → atomic regions → change groups →
+        // semantic diff 6А.2) отдельно от старого Opus-пути.
+        //
+        // Строго просмотр: findings не создаются, влияние не считается,
+        // LLM/Vision не вызываются, одинаковые «Было → Стало» НЕ склеиваются —
+        // дубли специально видны, чтобы оценить качество алгоритма глазами.
+        // ══════════════════════════════════════════════════════════════════
+        const scNpMode         = ref(false);         // включён ли диагностический режим
+        const scNpData         = ref(null);          // payload /diagnostic/new-pipeline
+        const scNpLoading      = ref(false);
+        const scNpError        = ref('');
+        const scNpLoadedFor    = ref('');            // pair_id, для которого уже загружено
+        const scNpEvidenceFilter = ref('all');       // all|exact|strong|contextual|insufficient|review
+        const scNpTypeFilter   = ref('all');         // all|text|table|vector|image|mixed|stamp|numeric
+        const scNpExpanded     = reactive({});       // {[item.id]: true} — раскрытые подробности
+        const scNpCropSide     = reactive({});       // {[item.id]: 'v2'|'v3'|'overlay'}
+        // Подсветка change group на страницах во вкладке «Связь блоков».
+        const scNpHighlight    = ref(null);          // {id, left_page, right_page, bbox_norm_left, bbox_norm_right, atomic_regions}
         const scV2Data         = ref(null);          // {session_id, pair_id, summary, items}
         const scV2Loading      = ref(false);
         const scV2Error        = ref('');
@@ -13597,6 +13621,208 @@ const app = createApp({
             } finally {
                 scChangeGroupsBusy[pair.id] = false;
             }
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        // Диагностический режим «Новый алгоритм» — только чтение артефактов
+        // 5Б.4 + 6А.2. Никаких запусков, findings и решений эксперта.
+        // ══════════════════════════════════════════════════════════════════
+
+        const _SC_NP_EVIDENCE = {
+            exact:        {label: 'exact',        title: 'Точное доказательство: значения «до» и «после» извлечены буквально', bg: '#dcfce7', fg: '#14532d', bd: '#86efac'},
+            strong:       {label: 'strong',       title: 'Сильное доказательство: смысл восстановлен по структуре (таблица/штамп), но не буквальной парой значений', bg: '#dbeafe', fg: '#1e3a8a', bd: '#93c5fd'},
+            contextual:   {label: 'contextual',   title: 'Только контекст: изменение локализовано, смысл восстановлен приблизительно', bg: '#fef3c7', fg: '#92400e', bd: '#fcd34d'},
+            insufficient: {label: 'insufficient', title: 'Доказательств недостаточно: алгоритм честно не берётся объяснить изменение', bg: '#fee2e2', fg: '#991b1b', bd: '#fca5a5'},
+        };
+        const _SC_NP_TYPES = {
+            text: 'Текст', table: 'Таблица', vector: 'Векторная графика', image: 'Изображение',
+            mixed: 'Смешанное', stamp: 'Штамп', numeric: 'Числа', complex_graphic: 'Сложная графика',
+        };
+        const _SC_NP_NEXT = {
+            llm: 'LLM', vision: 'Vision', human: 'Человек',
+            deterministic_improvement: 'Доработка алгоритма',
+        };
+
+        function scNpEvidenceMeta(level) {
+            return _SC_NP_EVIDENCE[level] || {label: level || '—', title: '', bg: '#f1f5f9', fg: '#334155', bd: '#cbd5e1'};
+        }
+        function scNpEvidenceStyle(level) {
+            const m = scNpEvidenceMeta(level);
+            return `background:${m.bg}; color:${m.fg}; border:1px solid ${m.bd}`;
+        }
+        function scNpTypeLabel(type) { return _SC_NP_TYPES[type] || type || '—'; }
+        function scNpNextLabel(value) { return _SC_NP_NEXT[value] || value || '—'; }
+
+        async function scNpLoad(force) {
+            if (!scSession.value || !scActivePair.value) return;
+            const pid = scActivePair.value.id;
+            if (!force && scNpLoadedFor.value === pid && scNpData.value) return;
+            scNpLoading.value = true;
+            scNpError.value = '';
+            try {
+                const url = `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}`
+                          + `/pairs/${encodeURIComponent(pid)}/diagnostic/new-pipeline`;
+                const response = await fetch(url);
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scNpData.value = data;
+                scNpLoadedFor.value = pid;
+                if (!data.available) {
+                    scNpError.value = 'Артефакты новой цепочки для этой пары недоступны: ' + (data.reason || 'причина не указана');
+                }
+            } catch (error) {
+                scNpData.value = null;
+                scNpError.value = 'Не удалось загрузить диагностику новой цепочки: ' + String(error.message || error);
+            } finally {
+                scNpLoading.value = false;
+            }
+        }
+
+        function scNpToggleMode() {
+            scNpMode.value = !scNpMode.value;
+            if (scNpMode.value) scNpLoad(false);
+        }
+
+        const scNpItems = computed(() => (scNpData.value && scNpData.value.items) || []);
+
+        const scNpFilteredItems = computed(() => {
+            let rows = scNpItems.value;
+            const ev = scNpEvidenceFilter.value;
+            if (ev === 'review') rows = rows.filter(r => r.requires_human_review);
+            else if (ev !== 'all') rows = rows.filter(r => r.evidence_level === ev);
+            const tp = scNpTypeFilter.value;
+            if (tp !== 'all') rows = rows.filter(r => r.semantic_type === tp);
+            return rows;
+        });
+
+        // Служебная строка над таблицей: «93 группы · exact 16 · strong 32 …».
+        const scNpCounts = computed(() => {
+            const rows = scNpItems.value;
+            const by = {exact: 0, strong: 0, contextual: 0, insufficient: 0};
+            let review = 0, dup = 0;
+            for (const r of rows) {
+                if (by[r.evidence_level] !== undefined) by[r.evidence_level] += 1;
+                if (r.requires_human_review) review += 1;
+                if ((r.same_semantic_result_as_other_groups || 0) > 0) dup += 1;
+            }
+            return {total: rows.length, ...by, review, dup, shown: scNpFilteredItems.value.length};
+        });
+
+        // Сколько групп каждого типа — для подписей на кнопках-фильтрах.
+        function scNpTypeCount(type) {
+            if (type === 'all') return scNpItems.value.length;
+            return scNpItems.value.filter(r => r.semantic_type === type).length;
+        }
+        const scNpPresentTypes = computed(() => {
+            const seen = [];
+            for (const r of scNpItems.value) {
+                if (r.semantic_type && !seen.includes(r.semantic_type)) seen.push(r.semantic_type);
+            }
+            return seen;
+        });
+
+        function scNpToggleExpand(item) {
+            scNpExpanded[item.id] = !scNpExpanded[item.id];
+            if (scNpExpanded[item.id] && !scNpCropSide[item.id]) scNpCropSide[item.id] = 'v2';
+        }
+        function scNpSetCropSide(item, side) { scNpCropSide[item.id] = side; }
+        function scNpActiveCropSide(item) { return scNpCropSide[item.id] || 'v2'; }
+
+        function scNpCropUrl(item, side) {
+            if (!scSession.value || !scActivePair.value) return '';
+            const q = new URLSearchParams({
+                left_page: item.left_page, right_page: item.right_page,
+                group_id: item.group_id, side: side, target_long_side: '1100',
+            });
+            return `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}`
+                 + `/pairs/${encodeURIComponent(scActivePair.value.id)}/diagnostic/new-pipeline/crop?${q}`;
+        }
+        function scNpCropAvailable(item, side) {
+            const info = (item.crops || {})[side];
+            return !!(info && info.available);
+        }
+        function scNpCropSource(item, side) {
+            const info = (item.crops || {})[side] || {};
+            if (info.source === 'pilot_file') return 'готовый кроп этапа 6А.1';
+            if (info.source === 'on_demand_render') return 'рендер из PDF по координатам группы';
+            return 'нет';
+        }
+
+        // Переход к месту: подсветить change group на обеих страницах во
+        // вкладке «Связь блоков». Использует уже посчитанные координаты.
+        async function scNpGoto(item) {
+            if (!item) return;
+            scNpHighlight.value = {
+                id: item.id,
+                group_id: item.group_id,
+                left_page: item.left_page,
+                right_page: item.right_page,
+                bbox_norm_left: item.bbox_norm_left,
+                bbox_norm_right: item.bbox_norm_right,
+                atomic_regions: item.atomic_regions || [],
+                evidence_level: item.evidence_level,
+            };
+            scTab.value = 'links';
+            await nextTick();
+            const slot = item.alignment_slot;
+            setTimeout(() => {
+                let scrolled = false;
+                if (slot) {
+                    for (const side of ['left', 'right']) {
+                        const el = document.getElementById('sc-slot-' + side + '-' + slot);
+                        if (el && el.scrollIntoView) {
+                            el.scrollIntoView({behavior: 'smooth', block: 'center'});
+                            scrolled = true;
+                        }
+                    }
+                }
+                if (!scrolled) {
+                    // Карта страниц не построена — ведём по номеру страницы.
+                    const items = scAlignmentItems.value || [];
+                    const hit = items.find(s => s.left_page === item.left_page && s.right_page === item.right_page);
+                    if (hit) {
+                        for (const side of ['left', 'right']) {
+                            const el = document.getElementById('sc-slot-' + side + '-' + hit.slot);
+                            if (el && el.scrollIntoView) el.scrollIntoView({behavior: 'smooth', block: 'center'});
+                        }
+                    } else {
+                        scError.value = 'Лист найден в артефактах новой цепочки, но в текущей карте страниц слота для него нет.';
+                    }
+                }
+            }, 120);
+        }
+        function scNpClearHighlight() { scNpHighlight.value = null; }
+
+        // Прямоугольники подсветки для конкретного slot'а во вкладке «Связь блоков».
+        function scNpSlotOverlays(side, slot) {
+            const h = scNpHighlight.value;
+            if (!h) return [];
+            const page = side === 'left' ? slot.left_page : slot.right_page;
+            const want = side === 'left' ? h.left_page : h.right_page;
+            if (!page || page !== want) return [];
+            const key = side === 'left' ? 'bbox_norm_left' : 'bbox_norm_right';
+            const out = [];
+            if (h[key]) out.push({key: 'group', kind: 'group', bbox: h[key], label: h.group_id});
+            (h.atomic_regions || []).forEach((r, i) => {
+                if (r[key]) out.push({key: 'atomic-' + i, kind: 'atomic', bbox: r[key], label: r.region_id});
+            });
+            return out;
+        }
+        function scNpOverlayStyle(entry) {
+            const [x0, y0, x1, y1] = entry.bbox;
+            const isGroup = entry.kind === 'group';
+            return {
+                position: 'absolute',
+                left:   (x0 * 100).toFixed(3) + '%',
+                top:    (y0 * 100).toFixed(3) + '%',
+                width:  Math.max((x1 - x0) * 100, 0.15).toFixed(3) + '%',
+                height: Math.max((y1 - y0) * 100, 0.15).toFixed(3) + '%',
+                border: isGroup ? '2px solid #dc2626' : '1px dashed #2563eb',
+                background: isGroup ? 'rgba(220,38,38,.12)' : 'rgba(37,99,235,.10)',
+                boxShadow: isGroup ? '0 0 0 2px rgba(220,38,38,.20)' : 'none',
+                pointerEvents: 'none',
+                zIndex: isGroup ? 6 : 5,
+            };
         }
 
         function scPageImageUrl(side, page) {
@@ -16445,6 +16671,16 @@ const app = createApp({
             scLoadUnifiedFlat();
             if (newPid) scLoadUnifiedPairStatus();
         });
+
+        // Смена пары в диагностическом режиме «Новый алгоритм»: перечитать
+        // артефакты новой пары и снять подсветку change group от старой.
+        watch(() => scActivePair.value && scActivePair.value.id, (newPid, oldPid) => {
+            if (newPid === oldPid) return;
+            scNpHighlight.value = null;
+            scNpLoadedFor.value = '';
+            scNpData.value = null;
+            if (scNpMode.value && newPid) scNpLoad(true);
+        });
         // ── Computed filters для unified flat ─────────────────────────────
         const scUnifiedPairOptions = computed(() => {
             const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
@@ -17652,6 +17888,14 @@ const app = createApp({
             scSheetAlignmentBusy, scSheetAlignmentInfo, scRunSheetAlignment,
             scChangeRegionsBusy, scChangeRegionsInfo, scRunChangeRegionsPilot,
             scChangeGroupsBusy, scChangeGroupsInfo, scRunChangeGroupsPilot,
+            // Диагностический режим «Новый алгоритм» во вкладке «Расхождения»
+            scNpMode, scNpData, scNpLoading, scNpError, scNpToggleMode, scNpLoad,
+            scNpItems, scNpFilteredItems, scNpCounts, scNpEvidenceFilter, scNpTypeFilter,
+            scNpEvidenceStyle, scNpEvidenceMeta, scNpTypeLabel, scNpNextLabel,
+            scNpTypeCount, scNpPresentTypes,
+            scNpExpanded, scNpToggleExpand, scNpCropSide, scNpSetCropSide, scNpActiveCropSide,
+            scNpCropUrl, scNpCropAvailable, scNpCropSource,
+            scNpGoto, scNpHighlight, scNpClearHighlight, scNpSlotOverlays, scNpOverlayStyle,
             scCanvasRefs, scCanvasNat,
             scTextLLMDiff, scTextLLMConfig,
             scLoadTextLLMDiff, scLoadTextLLMConfig,
