@@ -13789,34 +13789,88 @@ const app = createApp({
                 evidence_level: item.evidence_level,
             };
             scTab.value = 'links';
-            await nextTick();
-            const slot = item.alignment_slot;
-            setTimeout(() => {
-                let scrolled = false;
-                if (slot) {
-                    for (const side of ['left', 'right']) {
-                        const el = document.getElementById('sc-slot-' + side + '-' + slot);
-                        if (el && el.scrollIntoView) {
-                            el.scrollIntoView({behavior: 'smooth', block: 'center'});
-                            scrolled = true;
-                        }
-                    }
-                }
-                if (!scrolled) {
-                    // Карта страниц не построена — ведём по номеру страницы.
-                    const items = scAlignmentItems.value || [];
-                    const hit = items.find(s => s.left_page === item.left_page && s.right_page === item.right_page);
-                    if (hit) {
-                        for (const side of ['left', 'right']) {
-                            const el = document.getElementById('sc-slot-' + side + '-' + hit.slot);
-                            if (el && el.scrollIntoView) el.scrollIntoView({behavior: 'smooth', block: 'center'});
-                        }
-                    } else {
-                        scError.value = 'Лист найден в артефактах новой цепочки, но в текущей карте страниц слота для него нет.';
-                    }
-                }
-            }, 120);
+            // Масштаб НЕ трогаем — какой пользователь выставил, такой и
+            // остаётся; двигаем только прокрутку, чтобы область оказалась
+            // в центре обоих листов.
+            await scNpRevealHighlight();
         }
+        // ── Наведение на выбранное расхождение ────────────────────────────
+        //
+        // Раньше переход просто прокручивал к слоту — на крупном масштабе это
+        // означало «где-то на этом листе», и область приходилось искать
+        // глазами. Теперь лист центрируется ИМЕННО на области, а масштаб
+        // остаётся тот, что пользователь выставил.
+
+        // Подвинуть панель так, чтобы элемент оказался в центре её окна.
+        // Работает на любом zoom: считаем по фактическим экранным
+        // прямоугольникам, а не по модели координат.
+        function _scCenterPaneOnElement(pane, el, opts) {
+            if (!pane || !el) return false;
+            const pr = pane.getBoundingClientRect();
+            const er = el.getBoundingClientRect();
+            const dy = (er.top + er.height / 2) - (pr.top + pr.height / 2);
+            pane.scrollTop = Math.max(0, pane.scrollTop + dy);
+            if (!(opts && opts.verticalOnly)) {
+                const dx = (er.left + er.width / 2) - (pr.left + pr.width / 2);
+                pane.scrollLeft = Math.max(0, pane.scrollLeft + dx);
+            }
+            return true;
+        }
+
+        function _scHighlightOverlay(side, slotId) {
+            return document.querySelector(
+                '#sc-slot-' + side + '-' + slotId + ' div[data-np-group="1"]');
+        }
+
+        // Центрировать обе панели (и колонку) на подсвеченной группе.
+        // Оверлей рисуется только для отрисованного слота, поэтому сначала
+        // подводим слот, ждём появления рамки и лишь затем центрируем.
+        async function scNpRevealHighlight() {
+            const h = scNpHighlight.value;
+            if (!h) return;
+            const items = scAlignmentItems.value || [];
+            const slot = items.find(s => s.left_page === h.left_page && s.right_page === h.right_page);
+            if (!slot) {
+                scError.value = 'Лист найден в артефактах новой цепочки, но в текущей карте страниц слота для него нет.';
+                return;
+            }
+            await nextTick();
+            scIsSyncing.value = true;
+            try {
+                // Шаг 1 — подвести слот, чтобы виртуализация его отрисовала.
+                for (const side of _SC_PANE_SIDES) {
+                    if (scPaneRefs[side]) _scScrollToSlot(side, slot.slot, 0.5);
+                }
+                // Шаг 2 — дождаться рамки (картинка листа грузится асинхронно).
+                let overlay = null;
+                for (let attempt = 0; attempt < 40 && !overlay; attempt++) {
+                    await new Promise(r => setTimeout(r, 50));
+                    overlay = _scHighlightOverlay('left', slot.slot) || _scHighlightOverlay('right', slot.slot);
+                }
+                // Шаг 3 — центрировать каждую сторону на СВОЕЙ рамке: у
+                // правого листа та же область стоит в других координатах.
+                let centered = false;
+                for (const side of ['left', 'right']) {
+                    const el = _scHighlightOverlay(side, slot.slot);
+                    if (el && _scCenterPaneOnElement(scPaneRefs[side], el)) centered = true;
+                }
+                if (!centered) {
+                    // Рамка не появилась (лист без вектора/картинка не пришла) —
+                    // честно оставляем прокрутку на уровне слота.
+                    for (const side of _SC_PANE_SIDES) {
+                        if (scPaneRefs[side]) _scScrollToSlot(side, slot.slot, 0.5);
+                    }
+                } else if (scPaneRefs['diff']) {
+                    // Колонка расхождений держится за слот, а не за область.
+                    _scScrollToSlot('diff', slot.slot, 0.5);
+                }
+            } finally {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => { scIsSyncing.value = false; });
+                });
+            }
+        }
+
         function scNpClearHighlight() { scNpHighlight.value = null; }
 
         // ── Колонка расхождений напротив листов («Связь блоков») ───────────
@@ -13863,6 +13917,8 @@ const app = createApp({
                 bbox_norm_left: item.bbox_norm_left, bbox_norm_right: item.bbox_norm_right,
                 atomic_regions: item.atomic_regions || [], evidence_level: item.evidence_level,
             };
+            // Центрируем листы на выбранной области в текущем масштабе.
+            scNpRevealHighlight();
         }
         // Колесо над колонкой расхождений прокручивает панель страниц:
         // собственного скролла у колонки нет, она следует за листами.
@@ -14491,22 +14547,62 @@ const app = createApp({
             // чтобы после ресайза вернуться.
             return _scTopSlotInfo('left') || _scTopSlotInfo('right');
         }
-        function _scRestoreAnchor(anchor) {
+        // Применить якорь ко ВСЕМ панелям сразу: и панели страниц, и колонке
+        // расхождений. Раньше горизонталь не переносилась вовсе, из-за чего
+        // после зума правая панель оставалась на прежнем scrollLeft и
+        // показывала другое место листа — выправлялось только ручным
+        // перетаскиванием, где scrollLeft копируется 1:1.
+        function _scApplyAnchorEverywhere(anchor, targetLeft) {
+            for (const side of _SC_PANE_SIDES) {
+                const pane = scPaneRefs[side];
+                if (!pane) continue;
+                _scScrollToSlot(side, anchor.slot, anchor.rel);
+                // Колонка расхождений по горизонтали не ездит.
+                if (side !== 'diff' && targetLeft != null) {
+                    pane.scrollLeft = Math.max(0, targetLeft);
+                }
+            }
+        }
+
+        // factor — во сколько раз изменился zoom. Нужен, чтобы удержать под
+        // центром экрана ту же точку чертежа: контент масштабируется линейно,
+        // поэтому newLeft = (oldLeft + w/2) * factor - w/2.
+        function _scRestoreAnchor(anchor, factor) {
             if (!anchor) return;
+            const ref = scPaneRefs['left'] || scPaneRefs['right'];
+            let targetLeft = null;
+            if (ref) {
+                const w = ref.clientWidth;
+                targetLeft = factor && factor > 0
+                    ? ref.scrollLeft * factor + w * (factor - 1) / 2
+                    : ref.scrollLeft;
+            }
+            scIsSyncing.value = true;
+            const apply = () => _scApplyAnchorEverywhere(anchor, targetLeft);
             nextTick(() => {
-                _scScrollToSlot('left', anchor.slot, anchor.rel);
-                if (scSyncScroll.value) _scScrollToSlot('right', anchor.slot, anchor.rel);
+                // Одного прохода мало: смена ширины запускает перевёрстку
+                // картинок, а высоты слотов приходят асинхронно через
+                // ResizeObserver. До этого offsetTop ещё старый, и якорь
+                // ложится мимо. Поэтому добиваем по мере устаканивания.
+                apply();
+                requestAnimationFrame(apply);
+                setTimeout(apply, 70);
+                setTimeout(() => { apply(); scIsSyncing.value = false; }, 240);
             });
         }
         function scZoomBy(factor) {
             const anchor = _scSaveAnchor();
+            const before = scZoom.value;
             scZoom.value = Math.max(0.2, Math.min(4.0, scZoom.value * factor));
-            _scRestoreAnchor(anchor);
+            // Реальный коэффициент, а не запрошенный: на границах диапазона
+            // zoom упирается, и множитель горизонтали должен это учитывать.
+            _scRestoreAnchor(anchor, before > 0 ? scZoom.value / before : 1);
         }
         function scZoomReset() {
             const anchor = _scSaveAnchor();
+            const before = scZoom.value;
             scZoom.value = 1.0;
-            _scRestoreAnchor(anchor);
+            _scRestoreAnchor(anchor, before > 0 ? 1.0 / before : 1);
         }
         function scZoomFitWidth() {
             // «По ширине» — pane целиком вмещает картинку без горизонтального скролла.
@@ -14564,16 +14660,23 @@ const app = createApp({
                 }
                 // Горизонталь: картинка масштабируется линейно с zoom'ом,
                 // contentX_new = factor * (startScrollLeft + cursorX)
-                pane.scrollLeft = Math.max(0, startScrollLeft * factor + cursorX * (factor - 1));
-                // Противоположная панель: тот же slot, та же relPos, тот же cursorY
-                const otherSide = side === 'left' ? 'right' : 'left';
-                const otherPane = scPaneRefs[otherSide];
-                if (otherPane && anchorSlot != null) {
-                    const otherNode = scSlotRefs[otherSide + ':' + anchorSlot];
-                    if (otherNode) {
-                        const otherContentY = otherNode.offsetTop + otherNode.offsetHeight * anchorRel;
-                        otherPane.scrollTop = Math.max(0, otherContentY - cursorY);
+                const newLeft = Math.max(0, startScrollLeft * factor + cursorX * (factor - 1));
+                pane.scrollLeft = newLeft;
+                // Остальные панели: тот же slot, та же relPos, тот же cursorY —
+                // и ТОТ ЖЕ scrollLeft. Раньше горизонталь второй панели не
+                // трогали вовсе, и после зума она показывала другое место.
+                for (const otherSide of _SC_PANE_SIDES) {
+                    if (otherSide === side) continue;
+                    const otherPane = scPaneRefs[otherSide];
+                    if (!otherPane) continue;
+                    if (anchorSlot != null) {
+                        const otherNode = scSlotRefs[otherSide + ':' + anchorSlot];
+                        if (otherNode) {
+                            const otherContentY = otherNode.offsetTop + otherNode.offsetHeight * anchorRel;
+                            otherPane.scrollTop = Math.max(0, otherContentY - cursorY);
+                        }
                     }
+                    if (otherSide !== 'diff') otherPane.scrollLeft = newLeft;
                 }
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => { scIsSyncing.value = false; });
@@ -18062,7 +18165,7 @@ const app = createApp({
             scNpTypeCount, scNpPresentTypes,
             scNpExpanded, scNpToggleExpand, scNpCropSide, scNpSetCropSide, scNpActiveCropSide,
             scNpCropUrl, scNpCropAvailable, scNpCropSource,
-            scNpGoto, scNpHighlight, scNpClearHighlight, scNpSlotOverlays, scNpOverlayStyle,
+            scNpGoto, scNpHighlight, scNpClearHighlight, scNpSlotOverlays, scNpOverlayStyle, scNpRevealHighlight,
             scNpSlotGroups, scNpDiffSlotStyle, scNpFocusGroup, scNpIsFocused, scNpDiffWheel, scNpAlignDiffColumn,
             scNpSlotSummary, scNpSlotNotice,
             scVectorPages, scVectorFailed, scPageSrcUrl, scOnPageImageError, scToggleVectorPages,

@@ -6015,6 +6015,7 @@
                                          Координаты берутся из готовых артефактов. -->
                                     <div v-for="ov in scNpSlotOverlays(side, slot)"
                                          :key="side+'-np-'+slot.slot+'-'+ov.key"
+                                         :data-np-group="ov.kind === 'group' ? '1' : null"
                                          :style="scNpOverlayStyle(ov)"
                                          :title="ov.kind === 'group' ? ('change group ' + ov.label) : ('atomic region ' + ov.label)"></div>
                                 </div>
