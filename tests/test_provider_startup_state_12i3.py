@@ -91,13 +91,18 @@ def test_not_observed_exists_in_code_but_is_not_a_validated_state():
     )
 
 
-def test_agent_hello_before_first_refresh_still_says_missing():
-    """ПРИНЯТЫЙ ОСТАТОЧНЫЙ ДЕФЕКТ, зафиксированный намеренно.
+def test_agent_hello_before_first_refresh_says_not_observed():
+    """ДЕФЕКТ ЗАКРЫТ 19.08.2026 вместе с выкаткой контракта.
 
-    Тест сторожит не «правильность», а ГРАНИЦУ решения: провод воркера обязан
-    остаться совместимым с работающим шлюзом ui-real-16c533a7. Если кто-то
-    решит починить кодировку, он обязан сначала выкатить шлюз — и увидит этот
-    тест, а не тихо разъедется с продом.
+    Раньше здесь стояло обратное требование: провод обязан слать `missing`,
+    потому что работающий шлюз ui-real-16c533a7 всё равно переписал бы честное
+    значение, а перекатывать шлюз ради одного стартового окна было незачем.
+    Тест сторожил ГРАНИЦУ решения и прямо предупреждал: чинить кодировку можно
+    только вместе с выкаткой шлюза.
+
+    Ровно это и произошло — правка вошла в общую выкатку контракта (окна
+    лимита, код причины, честный ноль). Требование перевёрнуто: «ещё не
+    опрашивали» больше не выдаётся за «CLI не установлен».
     """
     capability = adapters.capabilities_from_domain(
         {"job_types": ["audit_pipeline_v1"],
@@ -105,15 +110,23 @@ def test_agent_hello_before_first_refresh_still_says_missing():
         provider_snapshots=(),
     )
     assert {item.provider for item in capability.providers} == set(PROVIDERS)
-    assert {item.installation_status for item in capability.providers} == {INSTALL_MISSING}
+    assert {item.installation_status for item in capability.providers} == {
+        INSTALL_NOT_OBSERVED
+    }
     # Статическая карта способностей обязана уцелеть: по ней центр решает
     # вопросы совместимости маршрута.
     restored = adapters.capabilities_to_domain(capability)
     assert set(restored["provider_capabilities"]) == set(PROVIDERS)
 
 
-def test_worker_never_puts_the_new_vocabulary_on_the_wire(tmp_path):
-    """Ни один путь воркера не отправляет `not_observed` работающему шлюзу."""
+def test_worker_reports_missing_only_when_it_really_observed_it(tmp_path):
+    """«Не установлен» говорится ТОЛЬКО про настоящее наблюдение.
+
+    Прежняя редакция требовала обратного — чтобы `not_observed` не покидал
+    воркер вовсе. После выкатки контракта различие доезжает до центра, и
+    важным стало другое: снимок, собранный по завершённому опросу, обязан
+    называть установку своим именем, а не стартовой заглушкой.
+    """
     from audit_worker.providers import quota
     from audit_worker.providers.manager import ProviderManager
 
@@ -125,21 +138,23 @@ def test_worker_never_puts_the_new_vocabulary_on_the_wire(tmp_path):
         )
     rows = manager.heartbeat_payload()
     assert {row["provider"] for row in rows} == set(PROVIDERS)
+    # Опроса не было — значит и `missing` утверждать не о чем.
     assert {row["installation_status"] for row in rows} == {INSTALL_MISSING}
     capability = adapters.capabilities_from_domain(
         {"provider_capabilities": {p: [] for p in PROVIDERS}}, provider_snapshots=rows,
     )
-    assert INSTALL_NOT_OBSERVED not in {
-        item.installation_status for item in capability.providers
+    # Значение из снимка передаётся как есть, без подмены в обе стороны.
+    assert {item.installation_status for item in capability.providers} == {
+        INSTALL_MISSING
     }
 
 
-def test_gateway_side_decoder_is_ready_for_the_future_deploy():
-    """Приёмная сторона (исполняется ШЛЮЗОМ) уже понимает «не наблюдали».
+def test_gateway_side_decoder_understands_not_observed():
+    """Приёмная сторона (исполняется ШЛЮЗОМ) понимает «не наблюдали».
 
-    Функция живёт в дереве релиза шлюза, поэтому сегодня она спит. Тест
-    доказывает, что спящий код корректен, — иначе к моменту выкатки шлюза о
-    нём никто не вспомнит.
+    До 19.08.2026 этот код спал: функция живёт в дереве релиза шлюза, а шлюз
+    не перекатывался. Теперь обе стороны провода говорят на одном языке, и
+    тест сторожит именно это.
     """
     from contracts.agent_stream.v1 import common_pb2 as common_pb
 
