@@ -13994,11 +13994,26 @@ const app = createApp({
             });
         }
 
+        // Ctrl+колесо здесь ОБЯЗАН оставаться зумом. Иначе выходит ловушка:
+        // пользователь ведёт курсор к списку расхождений, продолжает крутить
+        // с зажатым Ctrl — и вместо изменения масштаба листы уезжают вниз.
         function scNpDiffWheel(ev) {
-            const pane = scPaneRefs['left'] || scPaneRefs['right'];
-            if (!pane) return;
-            pane.scrollTop += ev.deltaY;
-            scOnPaneScroll(scPaneRefs['left'] ? 'left' : 'right', ev);
+            const side = scPaneRefs['left'] ? 'left' : (scPaneRefs['right'] ? 'right' : null);
+            if (!side) return;
+            if (ev.ctrlKey || ev.metaKey) {
+                // Зумим панель страниц так, будто курсор в её центре: над
+                // колонкой привязываться к точке чертежа не к чему.
+                const rect = scPaneRefs[side].getBoundingClientRect();
+                scOnPaneWheel(side, {
+                    ctrlKey: true, metaKey: false, deltaY: ev.deltaY,
+                    clientX: rect.left + rect.width / 2,
+                    clientY: rect.top + rect.height / 2,
+                    preventDefault() {},
+                });
+                return;
+            }
+            scPaneRefs[side].scrollTop += ev.deltaY;
+            scOnPaneScroll(side, ev);
         }
 
         function scNpIsFocused(item) {
@@ -14708,38 +14723,35 @@ const app = createApp({
             const factor = newZoom / oldZoom;
             scZoom.value = newZoom;
             scIsSyncing.value = true;                       // отключаем sync-scroll на этот тик
-            nextTick(() => {
-                // Вертикаль: восстанавливаем точно ту же точку того же slot'а
-                if (anchorSlot != null) {
-                    const node = scSlotRefs[side + ':' + anchorSlot];
-                    if (node) {
-                        const newContentY = node.offsetTop + node.offsetHeight * anchorRel;
-                        pane.scrollTop = Math.max(0, newContentY - cursorY);
-                    }
-                }
-                // Горизонталь: картинка масштабируется линейно с zoom'ом,
-                // contentX_new = factor * (startScrollLeft + cursorX)
-                const newLeft = Math.max(0, startScrollLeft * factor + cursorX * (factor - 1));
-                pane.scrollLeft = newLeft;
-                // Остальные панели: тот же slot, та же relPos, тот же cursorY —
-                // и ТОТ ЖЕ scrollLeft. Раньше горизонталь второй панели не
-                // трогали вовсе, и после зума она показывала другое место.
-                for (const otherSide of _SC_PANE_SIDES) {
-                    if (otherSide === side) continue;
-                    const otherPane = scPaneRefs[otherSide];
-                    if (!otherPane) continue;
+            // Горизонталь: картинка масштабируется линейно с zoom'ом,
+            // contentX_new = factor * (startScrollLeft + cursorX)
+            const newLeft = Math.max(0, startScrollLeft * factor + cursorX * (factor - 1));
+            // Ставим точку под курсором на место во ВСЕХ панелях сразу.
+            const apply = () => {
+                for (const s of _SC_PANE_SIDES) {
+                    const target = scPaneRefs[s];
+                    if (!target) continue;
                     if (anchorSlot != null) {
-                        const otherNode = scSlotRefs[otherSide + ':' + anchorSlot];
-                        if (otherNode) {
-                            const otherContentY = otherNode.offsetTop + otherNode.offsetHeight * anchorRel;
-                            otherPane.scrollTop = Math.max(0, otherContentY - cursorY);
+                        const node = scSlotRefs[s + ':' + anchorSlot];
+                        if (node) {
+                            target.scrollTop = Math.max(
+                                0, node.offsetTop + node.offsetHeight * anchorRel - cursorY);
                         }
                     }
-                    if (otherSide !== 'diff') otherPane.scrollLeft = newLeft;
+                    // Колонка расхождений по горизонтали не ездит.
+                    if (s !== 'diff') target.scrollLeft = newLeft;
                 }
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => { scIsSyncing.value = false; });
-                });
+            };
+            nextTick(() => {
+                // Одного прохода мало ровно по той же причине, что и у кнопок
+                // зума: смена ширины запускает перевёрстку картинок, высоты
+                // слотов приходят асинхронно через ResizeObserver, и в первый
+                // тик offsetTop ещё старый. Замер до правки: после Ctrl+колеса
+                // до 161% панели расходились по вертикали на 133 px.
+                apply();
+                requestAnimationFrame(apply);
+                setTimeout(apply, 70);
+                setTimeout(() => { apply(); scIsSyncing.value = false; }, 240);
             });
         }
 
