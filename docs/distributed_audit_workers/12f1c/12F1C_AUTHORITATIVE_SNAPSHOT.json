@@ -1,0 +1,17 @@
+{
+  "schema": "auditmanager.12f1c.authoritative_snapshot.v1",
+  "snapshot_id": "12f1c-authoritative-stable-disk-20260813T080518+0300-af0ccd9a",
+  "created_after_quiescence_pass": true,
+  "captured_at": "2026-08-13T08:05:18.924691+03:00",
+  "production_root": "/home/coder/projects/PDF-proverka",
+  "production_head": "9168c3930c5e87e918f62c3812e19a8f924a3ade",
+  "production_branch": "feature/block-vector-graphs",
+  "entry_count": 1477,
+  "manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+  "full_manifest_file": "12F1C_AUTHORITATIVE_MANIFEST.json",
+  "historical_snapshot_superseded": "12f1b-stable-disk-20260812T192938+0300-137b02af",
+  "source_changes_during_window": 0,
+  "new_paths_during_window": 0,
+  "removed_paths_during_window": 0,
+  "post_build_same_manifest": true
+}

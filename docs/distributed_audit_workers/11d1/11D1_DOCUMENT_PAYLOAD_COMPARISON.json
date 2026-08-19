@@ -1,0 +1,58 @@
+{
+  "kind": "сверка полезного текста документа на входе двух путей",
+  "source_md": {
+    "sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+    "bytes": 19418,
+    "chars": 11407,
+    "encoding": "utf-8",
+    "bom": false,
+    "newlines": "LF (CRLF: 0)",
+    "read_by": "prompt_builder._read_md_file → Path.read_text(encoding='utf-8')"
+  },
+  "legacy_branch_b": {
+    "document_in_prompt": false,
+    "mechanism": "модель сама вызывает Read по {MD_FILE_PATH}",
+    "useful_document_chars_delivered": "весь файл (11407), если модель действительно прочитала его целиком — не гарантировано кодом",
+    "truncation_points_in_code": [],
+    "evidence_model_did_read": "audit_trail 01_text_analysis_2026-03-26T23-43-55.json: num_turns=5 (агентный прогон с вызовами инструментов)"
+  },
+  "provider_11d": {
+    "document_in_prompt": true,
+    "user_message_chars": 11544,
+    "user_message_composition": {
+      "prefix_chars": 137,
+      "md_chars": 11407,
+      "prefix_text": "«Below is the full text of the project MD file…» + «Required output field: \"text_source\": \"md\"»"
+    },
+    "md_fully_present_verbatim": false,
+    "truncation_points_in_code": [
+      {
+        "where": "claude_runner.PROVIDER_PROMPT_MAX_CHARS",
+        "value": 600000,
+        "behaviour": "ОТКАЗ этапа, не усечение",
+        "triggered": false,
+        "actual_prompt_chars": 31175
+      },
+      {
+        "where": "md_chunker (ветка codex)",
+        "behaviour": "нарезка",
+        "triggered": false,
+        "why": "ветка codex в provider-режиме недостижима"
+      },
+      {
+        "where": "build_text_analysis_messages(md_override=…)",
+        "behaviour": "подмена тела",
+        "triggered": false,
+        "why": "provider-маршрут вызывает сборщик без md_override"
+      },
+      {
+        "where": "include_norms=False (Tier 1)",
+        "behaviour": "снятие норм-базы",
+        "triggered": false,
+        "why": "provider-маршрут вызывает сборщик с умолчанием True"
+      }
+    ]
+  },
+  "identical_document_payload": false,
+  "note_on_11D_figures": "В отчётах 11D «11 544 символа» — это длина USER-СООБЩЕНИЯ (137 символов служебной приставки + 11 407 символов MD), а не длина MD. Сам MD — 11 407 символов / 19 418 байт. На выводы это не влияет: тело документа входит в промпт дословно и целиком."
+}

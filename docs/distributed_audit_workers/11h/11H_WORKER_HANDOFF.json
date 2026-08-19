@@ -1,0 +1,47 @@
+{
+ "stage": "11H",
+ "question": "как воркер передал результат центру",
+ "job_id": "2f025ddf-f45b-498d-8ff8-3a31073d8164",
+ "attempt_id": "4a21d5e6-bc16-4eb8-a17c-b5e06a1f654c",
+ "worker_handoff_ready": true,
+ "result_package": {
+  "assembled_by": "воркер (audit_worker/package_io) — центр пакет не собирает",
+  "sha256_prefix": "4b9d5212b434556d71b1edbe",
+  "contents": [
+   "01_blocks_analysis.json",
+   "02_text_analysis.json",
+   "03_findings.json",
+   "03_findings_review.json",
+   "optimization.json",
+   "optimization_review.json",
+   "document_graph.json",
+   "pipeline_log.json",
+   "audit_manifest.json"
+  ],
+  "manifest_carries": [
+   "job_id/attempt_id",
+   "provider_mode=real",
+   "provider_bridge (публичный вид привязки, включая model_report)",
+   "completed_stages",
+   "forbidden_stages_not_run",
+   "resume_hint",
+   "хэши артефактов"
+  ]
+ },
+ "upload": {
+  "transport": "HTTPS чанками (uploads/*), инициатор — воркер",
+  "ssh_used": false,
+  "center_ack": "после сборки и проверки хэша",
+  "retention_before_ack": "удаление запрещено — неподтверждённые результаты не попадают в кандидаты"
+ },
+ "boundary": {
+  "central_stages_run_on_worker": 0,
+  "forbidden_stages_not_run": [
+   "debt_control",
+   "decision_carryover",
+   "excel",
+   "norm_verify"
+  ],
+  "double_enforcement": "env-гейт manager._central_stage_blocked + сверка журнала в remote_audit_runner ПОСЛЕ прогона"
+ }
+}

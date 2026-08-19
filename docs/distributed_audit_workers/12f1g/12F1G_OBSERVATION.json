@@ -1,0 +1,38 @@
+{
+  "schema": "auditmanager.12f1g.observation.v1",
+  "started_at": "2026-08-13T22:07:28.071088+03:00",
+  "ended_at": "2026-08-13T22:17:31.576037+03:00",
+  "duration_sec": 603.878,
+  "sample_count": 11,
+  "interval_sec": 60,
+  "backend": {
+    "pid_values": [2379476],
+    "n_restarts_values": [0],
+    "health_http_values": [200],
+    "stable": true
+  },
+  "worker": {
+    "connection_status_values": ["online"],
+    "last_seen_monotonic": true,
+    "transport_values": ["polling"],
+    "agent_pid_values": [2212836],
+    "agent_n_restarts_values": [0],
+    "executor_pid_values": [1384880],
+    "active_attempt_values": [0],
+    "active_process_values": [0],
+    "event_unwritten_values": [0],
+    "pending_command_values": [0],
+    "stable": true
+  },
+  "center_counts": {
+    "workers_values": [1],
+    "tokens_values": [1],
+    "jobs_values": [0],
+    "offers_values": [0],
+    "commands_values": [0]
+  },
+  "provider_inference_allowed_values": [0],
+  "auth_failures": 0,
+  "observation_pass": true,
+  "verdict": "PASS"
+}

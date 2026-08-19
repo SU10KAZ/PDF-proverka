@@ -1,0 +1,40 @@
+{
+  "stage": "11F",
+  "attempt": "worker_slice_11f_real2",
+  "archive_name": "worker_slice_11f_real2-a1.tar.gz",
+  "sha256": "9b08fb3bc6412c53a77bd396a6d326916e6786cf0a9ff6caa66a69362cb667bf",
+  "bytes": 957682,
+  "files": 143,
+  "tree_hash": "sha256:696c4ec0aa6cf238f11f84650e90ecd15a8e1c8ec6f75f46fa5ba373a65dd7a5",
+  "resume_hint": "completed",
+  "stage_completion": {
+    "crop_blocks": "done",
+    "block_context": "done",
+    "gemma_enrichment": "done",
+    "block_analysis": "done",
+    "block_retry": "skipped",
+    "text_analysis": "done",
+    "findings_merge": "done",
+    "findings_critic": "done",
+    "optimization": "done",
+    "findings_corrector": "done",
+    "critic_v2_triage": "skipped",
+    "optimization_critic": "done",
+    "optimization_corrector": "done"
+  },
+  "forbidden_stages_not_run": [
+    "norm_verify",
+    "decision_carryover",
+    "debt_control",
+    "excel"
+  ],
+  "transfer": {
+    "method": "scp вручную (§34: production ingress НЕ включался)",
+    "sha256_after_transfer": "9b08fb3bc6412c53a77bd396a6d326916e6786cf0a9ff6caa66a69362cb667bf",
+    "identical": true
+  },
+  "what_is_not_inside": [
+    "inference/ — журнал вызовов не уезжает: там полные ответы модели, то есть замечания по документу заказчика (OQ-2)"
+  ],
+  "client_data_note": "пакет содержит артефакты аудита клиентского документа — это его назначение; в Git и в отчёты этапа они не попадают"
+}

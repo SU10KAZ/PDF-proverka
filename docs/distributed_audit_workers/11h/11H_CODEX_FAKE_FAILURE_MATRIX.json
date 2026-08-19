@@ -1,0 +1,145 @@
+{
+ "stage": "11H",
+ "question": "как Codex-путь ведёт себя в отказных сценариях",
+ "real_model_calls": 0,
+ "passed": 17,
+ "total": 17,
+ "scenarios": [
+  {
+   "scenario": "codex_not_logged_in",
+   "question": "вход не выполнен",
+   "expected": "отказ вызова",
+   "actual": "unknown",
+   "ok": true,
+   "detail": "CLI завершился ошибкой: auth required"
+  },
+  {
+   "scenario": "cli_missing",
+   "question": "бинаря нет по пути привязки",
+   "expected": "cli_missing",
+   "actual": "cli_missing",
+   "ok": true,
+   "detail": "CLI завершился ошибкой: исполняемый файл провайдера не найден"
+  },
+  {
+   "scenario": "unsupported_capability",
+   "question": "центр просит неизвестную способность",
+   "expected": "отказ политики",
+   "actual": "отказ политики",
+   "ok": true,
+   "detail": "локальная политика воркера не описывает способность 'fast_triage' для провайдера 'codex' (известны: ['strong_audit']). Умолчания нет намеренно: молчаливый выбор модели запрещён"
+  },
+  {
+   "scenario": "unsupported_stage",
+   "question": "этап вне белого списка привязки",
+   "expected": "исключение моста",
+   "actual": "исключение моста",
+   "ok": true,
+   "detail": "этап 'optimization' не входит в белый список привязки ['text_analysis']: обращение к модели запрещено"
+  },
+  {
+   "scenario": "malformed_structured_output",
+   "question": "модель ответила не JSON-объектом",
+   "expected": "malformed_status",
+   "actual": "malformed_status",
+   "ok": true,
+   "detail": "ответ модели не содержит JSON-объекта"
+  },
+  {
+   "scenario": "timeout",
+   "question": "CLI не ответил в срок",
+   "expected": "timeout",
+   "actual": "timeout",
+   "ok": true,
+   "detail": "рабочий вызов не завершился вовремя"
+  },
+  {
+   "scenario": "nonzero_exit_keeps_error_text",
+   "question": "CLI вышел с ненулевым кодом",
+   "expected": "отказ + СОХРАНЁННЫЙ текст ошибки",
+   "actual": "rate_limited, текст сохранён",
+   "ok": true,
+   "detail": "CLI завершился ошибкой: stream error: rate limit exceeded"
+  },
+  {
+   "scenario": "model_mismatch",
+   "question": "ответила другая модель",
+   "expected": "model_mismatch",
+   "actual": "model_mismatch",
+   "ok": true,
+   "detail": "фактическая модель 'gpt-4.1-mini' не входит в допустимые ['gpt-5.6-sol'] для назначенной 'gpt-5.6-sol'"
+  },
+  {
+   "scenario": "model_not_reported",
+   "question": "CLI не назвал модель вовсе",
+   "expected": "model_mismatch",
+   "actual": "model_mismatch",
+   "ok": true,
+   "detail": "CLI не сообщил фактическую модель; назначена 'gpt-5.6-sol'"
+  },
+  {
+   "scenario": "missing_image_attachment",
+   "question": "мультимодальный вызов без изображения",
+   "expected": "отказ без обращения к модели",
+   "actual": "отказ",
+   "ok": true,
+   "detail": "мультимодальный вызов без изображений: молчаливый переход на текстовый путь запрещён — этап получил бы анализ чертежа без чертежа"
+  },
+  {
+   "scenario": "attachment_unreadable",
+   "question": "CLI не смог открыть вложение",
+   "expected": "отказ вызова",
+   "actual": "отказ",
+   "ok": true,
+   "detail": "CLI завершился ошибкой: stub: attachment unreadable: [Errno 2] No such file or directory: '/nonexistent/x.png'"
+  },
+  {
+   "scenario": "attachment_hash_mismatch",
+   "question": "записанное вложение не совпало с переданным",
+   "expected": "отказ до обращения к модели",
+   "actual": "отказ",
+   "ok": true,
+   "detail": "хэш записанного вложения не совпал с переданным: вызов не выполняется"
+  },
+  {
+   "scenario": "attempt_replay",
+   "question": "тот же вызов повторён",
+   "expected": "второй раз модель НЕ зовётся",
+   "actual": "обращений к CLI: 1",
+   "ok": true,
+   "detail": "performed: True → False"
+  },
+  {
+   "scenario": "duplicate_claim_indeterminate",
+   "question": "исход прошлой попытки неизвестен",
+   "expected": "отказ без повтора",
+   "actual": "отказ без повтора",
+   "ok": true,
+   "detail": "вызов text_analysis-742da50b4ddeb326a54e09123ea749c0 уже начинался, но результат не сохранён. Повтор запрещён (I-P9): неизвестно, была ли попытка оплачена. Решение принимает оператор."
+  },
+  {
+   "scenario": "budget_exhausted",
+   "question": "потолок вызовов попытки исчерпан",
+   "expected": "отказ моста",
+   "actual": "отказ моста",
+   "ok": true,
+   "detail": "исчерпан потолок вызовов попытки: начато 1 из 1"
+  },
+  {
+   "scenario": "no_grant",
+   "question": "в привязке нет разрешения оператора",
+   "expected": "отказ моста",
+   "actual": "отказ моста",
+   "ok": true,
+   "detail": "в привязке нет идентификатора разрешения: рабочий вызов модели без списанного разрешения оператора не выполняется"
+  },
+  {
+   "scenario": "binding_env_without_file",
+   "question": "путь привязки задан, файла нет",
+   "expected": "исключение",
+   "actual": "исключение",
+   "ok": true,
+   "detail": "AUDIT_WORKER_PROVIDER_BINDING='/tmp/11h_fail_za4dnpmt/нет/binding.json' задана, но файла привязки нет. Это ошибка развёртывания. Тихий возврат к прежнему транспорту запрещён: он означал бы вызов неавторизованного CLI из-под изолированного HOME."
+  }
+ ]
+}

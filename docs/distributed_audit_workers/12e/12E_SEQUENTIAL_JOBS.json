@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "count": 10,
+  "completed": 10,
+  "unique_attempts": 10,
+  "result_acknowledged": 10,
+  "validated_storage": 10,
+  "stuck": 0,
+  "duplicate_executor": 0,
+  "multiple_offer_attempts": 0,
+  "event_rows": 20,
+  "distinct_event_sequences": 20,
+  "duration_seconds": 20.470642,
+  "project_prefix": "project-12e-sequential-final",
+  "job_ids": ["4e3e281a-2e84-4e91-8734-6c74bd5925f7", "34a88ffc-a223-46d6-80da-d9b281191727", "fda37ee6-1394-4034-9851-276a4ab7c552", "5f04bbb7-d5d7-4d33-bc4a-be2c5f3a2de8", "53efbf96-9a7d-446b-87f5-d5632027e8bb", "e5b193e4-5f45-43fa-b4f8-7ca6de9f5614", "10bb9184-fc0e-479f-be38-81942753560e", "6e1544c7-c8c0-4501-861e-c8ec82c72f13", "212615e0-30fc-4cd7-8443-da885de133cb", "c492154f-f4af-4e5a-bd3d-85643760f15e"],
+  "attempt_ids": ["0d0be7f9-96dd-422d-b239-2a380a1e37ce", "5b0fe27b-3780-44e9-b96c-96f6e43e2318", "ba27ee79-e982-451d-88f6-3706151e6b72", "ce25d766-bce5-46db-a947-f306b1506910", "8e8ebad8-239e-45b9-85e4-6dfbd0908dc2", "bf8c756f-7d0d-4271-8dc3-4ad022498fbc", "42762b3f-0179-4784-a1dd-83006e63c8e2", "ff854ba2-1f4a-4da3-b096-0b0e63bf882d", "732e87ef-66c7-4226-8e3e-b9aaef69fe99", "205dbd50-3459-4361-9232-3938551fa4a1"],
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

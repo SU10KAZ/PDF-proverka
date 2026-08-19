@@ -1,0 +1,29 @@
+{
+  "kind": "11E §29 — граница SSH",
+  "claim": "SSH был административной плоскостью, но НЕ транспортом обращения к модели",
+  "evidence_from_live_process_tree": {
+    "captured_by": "~/audit-worker-11e/tools/capture_proc_11e.sh (снимки каждые 2 с)",
+    "evidence_file_on_worker": "~/audit-worker-11e/logs/proc_tree_11e_real.txt",
+    "chain": "bash(983756) → timeout(983757) → python(983758, боевой раннер этапа) → claude(983837, CLI)",
+    "cli_exe": "/home/coder/.local/share/claude/versions/2.1.220 (нативный бинарь)",
+    "cli_cwd": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e_real/providers/claude/runtime",
+    "cli_argv": "--safe-mode --strict-mcp-config --disable-slash-commands --no-session-persistence --setting-sources= --model=claude-opus-5 --tools= --disallowed-tools=Bash,Read,Edit,Write,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit,TodoWrite,AskUserQuestion --permission-mode dontAsk --max-turns 1 --output-format json -p",
+    "ssh_scp_rsync_in_inference_chain": 0,
+    "cli_open_sockets": 1,
+    "runner_open_sockets": 2
+  },
+  "what_ssh_did": [
+    "положить артефакт релиза и операторские инструменты на воркер",
+    "выписать разрешение (операторский шаг)",
+    "стартовать прогон",
+    "снять свидетельства"
+  ],
+  "what_ssh_did_not_do": [
+    "переносить промпт к модели",
+    "переносить ответ модели",
+    "участвовать в цепочке процессов вызова"
+  ],
+  "hostname_of_execution": "andrewuzun3.hlab.kz",
+  "ip_of_execution": "176.12.77.31",
+  "inference_physically_local": true
+}

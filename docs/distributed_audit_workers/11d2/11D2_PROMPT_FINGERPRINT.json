@@ -1,0 +1,121 @@
+{
+  "kind": "11D.2 §8 — предпроверка промпта ДО единственного реального вызова",
+  "model_called": false,
+  "prompt_source": "/home/coder/audit-worker-11d2/sandbox/11d2-fake-1/logs/prompt.txt",
+  "prompt_source_note": "текст снят репетицией в режиме fake (подставной CLI, 0 обращений к модели); промпт не зависит от каталога попытки — абсолютные пути инструкций заменены фиксированным плейсхолдером",
+  "fingerprint": {
+    "prompt_sha256": "a376d111c0cf85a21c01c29e48a47b529f9f103dcd5ea2f3b62a5a0737dc3a78",
+    "prompt_chars": 31989,
+    "instructions_chars": 19434,
+    "document_chars": 11543,
+    "transport_tail_chars": 920,
+    "instructions_sha256": "f7e0bf9124b23053b38229e44c5d4f0c49e04236d5db09fb7da173e8cc745c17",
+    "severity_block_sha256": "86cf7d7b1bb3f7ab68093e6b1d5d124d111a26ac2edb03671f141e25b2665d2f",
+    "severity_block_chars": 651
+  },
+  "sections_in_order": [
+    "## Role",
+    "## Input Data (this run)",
+    "## Input Data",
+    "## Task",
+    "## Finding Categories",
+    "## Severity Semantics (what each value means)",
+    "## Output JSON Schema",
+    "## Normative Accuracy (norm_quote)",
+    "## Output",
+    "## Rules",
+    "## Criteria for the «ПРОВЕРИТЬ ПО СМЕЖНЫМ» severity (IMPORTANT)",
+    "## Normative Reference (discipline norms database)",
+    "## Электроснабжение и электрооборудование жилых зданий",
+    "## 1. ОСНОВНЫЕ СВОДЫ ПРАВИЛ (СП)",
+    "## 2. ПРАВИЛА УСТРОЙСТВА ЭЛЕКТРОУСТАНОВОК (ПУЭ)",
+    "## 3. ГОСУДАРСТВЕННЫЕ СТАНДАРТЫ (ГОСТ)",
+    "## 4. ФЕДЕРАЛЬНЫЕ ЗАКОНЫ И ТЕХНИЧЕСКИЕ РЕГЛАМЕНТЫ",
+    "## 5. ЧАСТО ВСТРЕЧАЮЩИЕСЯ УСТАРЕВШИЕ ССЫЛКИ",
+    "## 6. ИНСТРУКЦИЯ ПО АКТУАЛИЗАЦИИ"
+  ],
+  "checks": {
+    "1_severity_semantics_present": true,
+    "2_severity_semantics_exactly_once": true,
+    "3_all_severity_values_defined": {
+      "КРИТИЧЕСКОЕ": true,
+      "ЭКОНОМИЧЕСКОЕ": true,
+      "ЭКСПЛУАТАЦИОННОЕ": true,
+      "РЕКОМЕНДАТЕЛЬНОЕ": true,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": true
+    },
+    "4_no_claude_md_dependency": true,
+    "5_no_read_requirement": true,
+    "6_no_write_requirement": true,
+    "7_no_bash_requirement": true,
+    "8_no_grep_requirement": true,
+    "9_no_glob_requirement": true,
+    "10_no_generic_tool_requirement": {
+      "allowed-tools": true,
+      "allowedTools": true,
+      "You have access to the following tools": true,
+      "DO NOT output to chat": true,
+      "After writing, output a brief summary": true,
+      "Use the tool": true,
+      "call the tool": true
+    },
+    "11_no_project_path_dependency": {
+      "abs_paths_in_instructions": 0,
+      "abs_paths_in_transport_tail": 0,
+      "artifact_filename_absent": true,
+      "placeholder_present": true
+    },
+    "12_full_md_inlined_verbatim": {
+      "md_chars": 11407,
+      "doc_body_chars": 11543,
+      "md_inlined_as_suffix_verbatim": true,
+      "prefix_before_md": "Below is the full text of the project MD file. Analyze it according to the instructions.\n\nRequired output field: `\"text_source\": \"md\"`.\n\n",
+      "md_sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284"
+    },
+    "13_eom_discipline_rules_present": {
+      "role_electrical": true,
+      "role_section": true,
+      "checklist_body_inlined": true,
+      "checklist_formula_marker": true,
+      "checklist_uzo_marker": true,
+      "finding_categories_section": true,
+      "cross_discipline_criteria": true
+    },
+    "13b_observed_not_a_check": {
+      "triage_table_placeholder_in_stage_template": false,
+      "note": "{DISCIPLINE_TRIAGE_TABLE} в шаблоне text_analysis отсутствует в принципе — одинаково у legacy и provider; наблюдение, не проверка"
+    },
+    "14_normative_context_present": {
+      "normative_section": true,
+      "sp256": true,
+      "pue": true,
+      "norms_file_chars": 8280,
+      "norms_body_inlined": true,
+      "norms_sha256": "83043fbd2ff89ef61efd37577b80b597529d4801fb63a5568027068d5ad2dedd"
+    },
+    "15_json_contract_present": {
+      "schema_header": true,
+      "text_source_field": true,
+      "text_findings_field": true,
+      "normative_refs_field": true,
+      "items_verified_field": true,
+      "severity_field": true
+    },
+    "16_md_prescan_matches_11d1": {
+      "expected_11d1": "секция pre-scan пуста на этом документе (0 находок)",
+      "prescan_section_markers_found": [],
+      "matches": true
+    },
+    "17_transport_wording_11d1": {
+      "tool_access_only": true,
+      "absence_is_a_finding": true,
+      "old_file_missing_wording_absent": true,
+      "old_nothing_to_look_up_absent": true,
+      "no_tools_declared": true
+    }
+  },
+  "all_checks_passed": true,
+  "checks_total": 48,
+  "checks_failed": 0,
+  "content_in_report": false
+}

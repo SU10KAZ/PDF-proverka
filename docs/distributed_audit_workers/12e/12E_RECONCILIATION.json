@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "captured_after_all_faults": true,
+  "center": {
+    "sqlite_integrity_check": "ok",
+    "logical_jobs": 26,
+    "attempts": 26,
+    "completed_validated_acknowledged": 24,
+    "cancelled_expected": 2,
+    "nonterminal_attempts": 0,
+    "completed_without_result_ack": 0,
+    "completed_without_validated_storage": 0,
+    "worker_event_rows": 1756,
+    "duplicate_event_sequences": 0,
+    "multiple_offers_per_attempt": 0
+  },
+  "worker": {
+    "sqlite_integrity_check": "ok",
+    "queue_finished": 24,
+    "queue_cancelled": 1,
+    "live_process_registry_rows": 0,
+    "process_rows_exited": 24,
+    "process_rows_cancelled": 1,
+    "event_journal_rows": 3314,
+    "event_journal_written_rows": 3314,
+    "duplicate_event_sequences": 0,
+    "pending_commands": 0,
+    "partial_transfer_files": 0,
+    "running_attempt_markers": 0
+  },
+  "expected_terminal_exceptions": [
+    {"attempt_id": "3f99a4ed-47b5-4d95-9924-6b0306e9bbba", "state": "cancelled", "reason": "physical C31 cancellation"},
+    {"attempt_id": "750666ad-ed16-4039-9cd4-7133ac5cf882", "state": "cancelled", "reason": "never-offered harness authorization precondition; operator cleanup transition recorded"}
+  ],
+  "unexplained_orphans": 0,
+  "job_loss": 0,
+  "duplicate_executor": 0,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

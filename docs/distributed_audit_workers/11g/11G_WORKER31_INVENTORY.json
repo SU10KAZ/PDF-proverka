@@ -1,0 +1,55 @@
+{
+  "stage": "11G",
+  "question": "состояние воркера 176.12.77.31 до и во время этапа",
+  "host": {
+    "hostname": "andrewuzun3.hlab.kz",
+    "os": "Ubuntu 24.04",
+    "cores": 8,
+    "ram_mb": 11857,
+    "disk_free_mb": 58397,
+    "unix_user": "coder"
+  },
+  "before_stage": {
+    "audit_worker_services_active": 0,
+    "audit_worker_processes": 0,
+    "active_jobs": 0,
+    "existing_roots": [
+      "audit-worker",
+      "audit-worker-11d",
+      "audit-worker-11d2",
+      "audit-worker-11e",
+      "audit-worker-11f"
+    ],
+    "note": "юниты прошлых этапов существовали, но были остановлены с 09.08"
+  },
+  "provider_clis": {
+    "claude": "$HOME/.local/bin/claude → versions/2.1.220 (стоит с 11F)",
+    "codex": "$HOME/.local/bin/codex (этап 11G его не зовёт ни в одном режиме)",
+    "note": "прежняя проверка стенда искала CLI через `command -v` и не видела ~/.local/bin в PATH неинтерактивного SSH — то есть утверждение «настоящих моделей нет» держалось на том, что смотрели не туда. Заменено справкой; доказательство «модель не звали» даёт журнал вызовов, а не отсутствие бинаря"
+  },
+  "stage_11g_instance": {
+    "root": "/home/coder/audit-worker-11g",
+    "units": [
+      "audit-worker-11g-agent.service",
+      "audit-worker-11g-executor.service"
+    ],
+    "why_separate_units": "развёртывание во второй корень перезапускало юниты первого — имена были константами, корень параметром (см. 11G_DEPLOYMENT_REPORT.md)",
+    "data_root": "/home/coder/audit-worker-11g/data (своя worker.db, токен, jobs, outbox)",
+    "provider_auth_mode": "ambient_user (claude), unavailable (codex)",
+    "provider_policy": "/home/coder/audit-worker-11g/provider_policy.json — strong_audit → claude-opus-5",
+    "inbound_ports_opened": 0
+  },
+  "machine_side_effects": {
+    "mail_plesk_touched": false,
+    "firewall_touched": false,
+    "system_systemd_touched": false,
+    "listening_sockets_added_by_worker": 0,
+    "listening_sockets_total_on_host": 94
+  },
+  "canary": {
+    "path": "/home/coder/provider-auth-canary/DO_NOT_READ.txt",
+    "present": true,
+    "size_bytes": 664,
+    "note": "sha256 и atime фиксируются до и после каждого прогона; см. 11G_CANARY_REPORT.json"
+  }
+}

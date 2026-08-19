@@ -1,0 +1,59 @@
+{
+  "captured_at_center": "2026-08-12T09:59:49+03:00",
+  "captured_at_worker": "2026-08-12T09:52:21+03:00",
+  "production_backend_127_0_0_1_8081": {
+    "touched_or_restarted": false,
+    "pid_before_after": 277145,
+    "state": "ACTIVE_LISTENING",
+    "api_info_http_status": 200
+  },
+  "production_database_used_for_12d1": false,
+  "original_polling_agent_on_176_12_77_31": {
+    "state": "active",
+    "pid": 1575036,
+    "touched_or_restarted": false
+  },
+  "original_executor_on_176_12_77_31": {
+    "state": "active",
+    "pid": 1384880,
+    "touched_or_restarted": false
+  },
+  "isolated_agent_final": "stopped",
+  "isolated_executor_final": "stopped",
+  "isolated_https_9443_final": "stopped",
+  "public_gateway_8443_final": "stopped",
+  "issuer_final": "stopped",
+  "nginx": {
+    "state": "active",
+    "config_mtime": "2026-08-04T14:20:39.348502400+03:00",
+    "config_sha256": "a6d64f789c0f9d3cd91d9c492a7638d269a3cdd1f5fd17176b049525f3f54ca2",
+    "modified_by_12d1": false
+  },
+  "caddy": "inactive_unchanged",
+  "provider_auth_modified": false,
+  "real_audit_executed": false,
+  "claude_calls": 0,
+  "codex_calls": 0,
+  "openrouter_calls": 0,
+  "tunnel_used_by_12d": false,
+  "ssh_forwarding": "ABSENT",
+  "insecure_gateway": "ABSENT",
+  "cloudflared": {
+    "state": "PRESENT_PREEXISTING",
+    "pid": 1263127,
+    "command": "/home/coder/.local/bin/cloudflared tunnel --url http://127.0.0.1:8081 --protocol http2 --no-autoupdate --metrics 127.0.0.1:20251",
+    "local_metrics_listener": "127.0.0.1:20251",
+    "started_at": "2026-08-11T19:52:01+03:00",
+    "started_before_12d": true,
+    "listens_or_targets_8443": false,
+    "listens_or_targets_9443": false,
+    "modified_or_used_by_12d": false,
+    "part_of_12d_test_topology": false,
+    "isolation_violation": false
+  },
+  "worker_inbound_runtime_listener_added": false,
+  "current_certificate_b_private_key": "preserved on Worker, mode 0600",
+  "temporary_tokens_and_revoked_a_backup": "removed",
+  "temporary_9443_ufw_rule_cleanup": "COMPLETE",
+  "verdict": "PASS"
+}

@@ -1,0 +1,13 @@
+{
+  "prefix": "wbt_",
+  "ttl_seconds": 300,
+  "scope": ["bootstrap_session_id", "expected_instance_id", "registration only"],
+  "stored_plaintext": false,
+  "transport": "SSH stdin",
+  "argv": false,
+  "one_time": true,
+  "replay": "401 generic rejection",
+  "wrong_instance": "401 generic rejection",
+  "expired": "401 generic rejection",
+  "runtime_credential": "different worker token; center stores SHA-256 only"
+}

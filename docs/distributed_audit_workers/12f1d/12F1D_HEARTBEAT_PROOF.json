@@ -1,0 +1,12 @@
+{
+  "schema": "auditmanager.12f1d.heartbeat_proof.v1",
+  "status": "NOT_PROVEN",
+  "authenticated_polling_heartbeat": false,
+  "new_heartbeat_attempted_by_12f1d": false,
+  "last_phase_b_result": "HTTP_401_OLD_CREDENTIAL_NOT_PRESENT_IN_NEW_CENTER",
+  "target_endpoint": "https://auditmanager.app",
+  "final_worker_endpoint": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+  "dns_tcp_tls_polling_protocol_last_proven": true,
+  "production_runtime_auth_proven": false,
+  "reason": "No production enrollment authorization or new runtime credential was issued."
+}

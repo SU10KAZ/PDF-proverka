@@ -1,0 +1,62 @@
+{
+  "schema": "auditmanager.12f1.phaseb.backup.v1",
+  "created_at": "2026-08-13T09:25:01+03:00",
+  "backup_root": "/home/coder/auditmanager/backups/phaseb-20260813T0925+0300",
+  "root_mode": "0700",
+  "owner": "coder:coder",
+  "files": [
+    {
+      "path": "production.env.before",
+      "mode": "0600",
+      "size": 20853,
+      "sha256": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+      "restore_role": "production secret/config rollback; contents excluded from evidence"
+    },
+    {
+      "path": "webapp-watchdog.sh.before",
+      "mode": "0600",
+      "size": 3297,
+      "sha256": "dbaf54c013ea3970155312ea400ca073017867b017c326afc394ca30a7af8986",
+      "restore_role": "old watchdog rollback"
+    },
+    {
+      "path": "start_server_deploy.sh.before",
+      "mode": "0600",
+      "size": 1145,
+      "sha256": "d95f81fd020b77861fdeec0b63dcfca412eceeb564f7911309d6d655bffdf3c5",
+      "restore_role": "historical launch definition evidence"
+    },
+    {
+      "path": "coder.crontab.before",
+      "mode": "0600",
+      "size": 406,
+      "sha256": "7a3f5f53fef3cc9a313aa663dca78fd30d8aaa6bf892993614fb032a2b28b58a",
+      "restore_role": "exact crontab rollback"
+    },
+    {
+      "path": "workers.db.after_canonical_init",
+      "mode": "0600",
+      "size": 397312,
+      "sha256": "99d4051f9f38094b86a839e5f89e242444e63e073af3036ee36fce1b34def033",
+      "restore_role": "consistent SQLite backup produced through SQLite backup API after canonical init"
+    }
+  ],
+  "durable_releases": {
+    "baseline": {
+      "path": "/home/coder/auditmanager/releases/baseline-46bcd527",
+      "commit": "46bcd527065aff074ca5fe730e3594e982d080d2",
+      "tree": "06fac1ef8f01ae99d689401f816cec352a73dd75",
+      "manifest_sha256": "568f5a5a43cf5e0c7114543e6bf7f96ec49cd20a1c0a8ff4eed1f7de24284281",
+      "mode": "0555"
+    },
+    "candidate": {
+      "path": "/home/coder/auditmanager/releases/candidate-4767d0bf",
+      "commit": "4767d0bf83fcb99ee69267d94324495b92954b41",
+      "tree": "c3c51e6033f0641bf9068ef769a916e7a36c72f1",
+      "manifest_sha256": "fc865d5159316f8ae52228e192d2bf8d112e3e41f15a20ce60e086ee39df379f",
+      "mode": "0555"
+    }
+  },
+  "backup_verified": true,
+  "rollback_does_not_depend_on_tmp": true
+}

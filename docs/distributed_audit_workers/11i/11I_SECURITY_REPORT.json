@@ -1,0 +1,21 @@
+{
+  "credentials_in_plan": 0,
+  "checked_markers": [
+    "api_key",
+    "token",
+    "secret",
+    "password",
+    "authorization",
+    "sk-"
+  ],
+  "absolute_paths_in_plan": 0,
+  "exact_model_ids_in_plan": 0,
+  "enforcement": [
+    "backend/app/services/audit_routing/validator.py::_check_no_exact_model — по всем значениям плана",
+    "audit_worker/audit_runner.py::_validate_routing_plan — второй, независимый рубеж на воркере",
+    "tests/test_audit_routing_plan.py::test_l_plan_carries_no_credentials",
+    "tests/test_audit_routing_plan.py::test_m_no_exact_model_selection_from_center"
+  ],
+  "openrouter_key_never_travels": "OPENROUTER_API_KEY входит в FORBIDDEN_ENV_NAMES провайдерского слоя и отсутствует в белом списке окружения процесса конвейера на воркере. Ключ центра на VPS не уезжает ни при каком плане",
+  "worker_local_models_never_reported_to_center": "план несёт способности; точные строки живут в provider_policy.json машины и в публичный вид привязки попадают только как факт выбора"
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "auditmanager.12f1b.post_start_review.v1",
+  "historical_backend_start": "2026-08-12T17:31:06+03:00",
+  "reviewed_files": [
+    {
+      "path": "backend/app/api/routers/stage_comparison.py",
+      "verdict_at_stable_capture": "PRESERVE"
+    },
+    {
+      "path": "backend/app/services/stage_comparison/store.py",
+      "verdict_at_stable_capture": "PRESERVE"
+    },
+    {
+      "path": "backend/app/services/stage_comparison/semantic_diff.py",
+      "verdict_at_stable_capture": "PRESERVE"
+    },
+    {
+      "path": "backend/tests/test_semantic_diff.py",
+      "verdict_at_stable_capture": "PRESERVE"
+    }
+  ],
+  "semantic_review_tests": {
+    "passed": 14,
+    "failed": 0
+  },
+  "unknown_at_stable_capture": 0,
+  "current_status": "SUPERSEDED_BY_LATER_UNREVIEWED_SOURCE_DRIFT",
+  "note": "These four decisions remain valid for the captured 19:29 snapshot. They do not classify the seven later release-scope deltas recorded by 12F1B_QUIESCENCE.json."
+}

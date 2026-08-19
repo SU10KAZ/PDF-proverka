@@ -1,0 +1,51 @@
+{
+  "kind": "11E §21/§37 — продовое состояние",
+  "changed": false,
+  "worker_176_12_77_31": {
+    "existing_install_11b": {
+      "current_before": "app/20260809T140821-c1070168cda4",
+      "current_after": "app/20260809T140821-c1070168cda4",
+      "worker_db": {"size_before": 401408, "mtime_before": 1786256692, "size_after": 401408, "mtime_after": 1786256692},
+      "worker_state_json": {"size_before": 403, "mtime_before": 1786256798, "size_after": 403, "mtime_after": 1786256798},
+      "job_dirs_before": 37, "job_dirs_after": 37,
+      "touched": false
+    },
+    "runtime_11d": {"current_before": "app/20260809T175252-b44146f141ed", "current_after": "app/20260809T175252-b44146f141ed", "touched": false},
+    "runtime_11d2": {
+      "current_before": "app/20260809T210739-6e764b890b75", "current_after": "app/20260809T210739-6e764b890b75",
+      "artifact_02_text_analysis_sha256_before": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+      "artifact_02_text_analysis_sha256_after": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+      "touched": "только ЧТЕНИЕ артефакта"
+    },
+    "runtime_11e": {"path": "~/audit-worker-11e", "created_by_this_stage": true, "separate_root_enforced_by_code": true},
+    "venv": {"path": "~/audit-worker/venv", "used": "на чтение", "modified": false, "second_venv_created": false},
+    "os_kernel_python_node_cli_updated": false
+  },
+  "center_176_12_77_128": {
+    "DISTRIBUTED_WORKERS_ENABLED_enabled": false,
+    "env_changed": false,
+    "nginx_changed": false,
+    "firewall_changed": false,
+    "backend_service_touched": false,
+    "routing_changed": false,
+    "corpus_files_hashes_unchanged": {
+      "01_blocks_analysis.json": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+      "02_text_analysis.json": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7",
+      "document_graph.json": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857",
+      "03_findings.json": "aa9fb85bdfaf978b0b66caeab0623ef96fab425aaeecab98781ac3a398cc6ae3",
+      "133-23-ГК-ЭС_document.md": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284"
+    }
+  },
+  "stages_not_run": {
+    "block_analysis": {"run": false, "evidence": "01_blocks_analysis.json в попытке байт в байт равен исходной копии"},
+    "text_analysis": {"run": false, "evidence": "02_text_analysis.json равен артефакту 11D.2"},
+    "norm_verify": {"run": false, "evidence": "ни norm_checks.json, ни norm_checks_llm.json не созданы; --mcp-config в argv отсутствует"},
+    "critic_corrector": {"run": false},
+    "optimization": {"run": false},
+    "export_excel_finalization": {"run": false},
+    "full_audit_pipeline": {"run": false}
+  },
+  "codex": {"inferences": 0, "invoked": false, "evidence": "в журнале подделки и в argv боевого вызова упоминаний нет; развилка codex стоит НИЖЕ моста и в provider-режиме недостижима"},
+  "image_models": {"gemini": 0, "gemma": 0, "qwen": 0, "images_sent_to_claude": 0},
+  "worker_switched_to_production_active_mode": false
+}

@@ -1,0 +1,149 @@
+{
+  "stage": "11D",
+  "collected_at": "2026-08-09",
+  "collected_via": "ssh (admin plane only, no inference)",
+  "secrets_included": false,
+  "note": "Значения токенов, cookie, OAuth, содержимого ~/.claude/.credentials.json, ~/.codex/auth.json, приватных ключей и worker.env в этот файл НЕ включаются. Из worker.env приведены только имена переменных и НЕсекретные режимы.",
+
+  "host": {
+    "hostname": "andrewuzun3.hlab.kz",
+    "ip_primary": "176.12.77.31",
+    "ip_all": ["176.12.77.31", "172.17.0.1", "172.29.172.1"],
+    "os": "Ubuntu 24.04.4 LTS",
+    "kernel": "6.8.0-136-generic",
+    "architecture": "x86_64",
+    "user": "coder",
+    "home": "/home/coder",
+    "uptime": "up 1 week, 3 days, 21 hours"
+  },
+
+  "resources": {
+    "ram_total_mb": 11857,
+    "ram_available_mb": 10068,
+    "swap_total_mb": 8191,
+    "disk_root_total": "119G",
+    "disk_root_used": "54G",
+    "disk_root_free": "59G",
+    "disk_root_used_pct": 49
+  },
+
+  "toolchain": {
+    "python3": {"path": "/usr/bin/python3", "version": "3.12.3"},
+    "python3_12": {"path": "/usr/bin/python3.12", "version": "3.12.3"},
+    "node": {"path": "/usr/bin/node", "version": "v20.20.2"},
+    "git": {"version": "2.43.0"},
+    "worker_venv_python": {"path": "/home/coder/audit-worker/venv/bin/python", "version": "3.12.3"}
+  },
+
+  "claude": {
+    "executable": "/home/coder/.local/bin/claude",
+    "resolved_target": "/home/coder/.local/share/claude/versions/2.1.220",
+    "executable_kind": "ELF 64-bit native build (не npm-скрипт)",
+    "version": "2.1.220 (Claude Code)",
+    "auth_state": "logged_in",
+    "auth_method": "claude.ai",
+    "api_provider": "firstParty",
+    "subscription_type": "max",
+    "auth_checked_via": "claude auth status (0 обращений к модели)",
+    "model_flag_supported": true,
+    "model_flag_help": "--model <model>: алиас последней модели ('fable'|'opus'|'sonnet') либо полное имя (например 'claude-fable-5')",
+    "model_ids_present_in_binary": {
+      "resolution_method": "grep -a по нативному бинарю CLI, 0 обращений к модели",
+      "opus_family": ["claude-opus-5", "claude-opus-4-8", "claude-opus-4-7", "claude-opus-4-6", "claude-opus-4-5", "claude-opus-4-1", "claude-opus-4-0"],
+      "one_million_context_variants": ["claude-opus-5[1m]", "claude-opus-4-8[1m]", "claude-opus-4-7[1m]", "claude-opus-4-6[1m]", "claude-sonnet-4-6[1m]"]
+    },
+    "subcommands": ["agents", "auth", "auto-mode", "doctor", "gateway", "install", "mcp", "plugin", "project", "setup-token", "ultrareview", "update"],
+    "models_listing_subcommand": null,
+    "personal_context_present_on_host": {
+      "claude_md": "/home/coder/.claude/CLAUDE.md (226 байт)",
+      "settings_json_bytes": 91646,
+      "settings_local_json": true,
+      "hooks_dir": true,
+      "skills_dir": true,
+      "projects_dir_entries": 23,
+      "note": "нейтрализуется адаптером (--safe-mode, --strict-mcp-config, --disable-slash-commands, --no-session-persistence, --setting-sources=)"
+    }
+  },
+
+  "codex": {
+    "executable": "/home/coder/.local/bin/codex",
+    "resolved_target": "/home/coder/.codex/packages/standalone/current/bin/codex",
+    "version": "codex-cli 0.147.0",
+    "auth_file_present": true,
+    "auth_mode_configured": "ambient_user",
+    "used_in_11d": false
+  },
+
+  "worker_deployment_existing": {
+    "root": "/home/coder/audit-worker",
+    "data_root": "/home/coder/audit-worker/data",
+    "current_symlink": "/home/coder/audit-worker/app/20260809T140821-c1070168cda4",
+    "release": "20260809T140821-c1070168cda4",
+    "source_branch": "feat/distributed-audit-workers-ssh-provider-prep",
+    "source_commit": "d21035d4786d91959d090dccaafdf5d1da8b96b8",
+    "tree_hash": "sha256:c1070168cda47ca9056ce3f3308e38836a005d6950ea0e1b95d59c9aa21588ba",
+    "file_count": 560,
+    "compatible_execution_profiles": ["remote_audit_pilot_v1"],
+    "comment": "Это код этапа 11B, а НЕ 11C. Код 11C на .31 ещё не разворачивался.",
+    "worker_id": "wrk_56ac82ba",
+    "instance_id": "inst_a0d768d0673d4693",
+    "registration_status": "approved",
+    "claim_status": "claimed",
+    "center_state_last_seen": "online",
+    "jobs_dir_entries": 37,
+    "provider_mode_configured": "fake",
+    "worker_env_keys": [
+      "PYTHONPATH", "AUDIT_WORKER_ROOT", "AUDIT_WORKER_DISPATCHER_URL",
+      "AUDIT_WORKER_NAME", "AUDIT_WORKER_PIPELINE_ROOT",
+      "AUDIT_WORKER_PIPELINE_REVISION", "AUDIT_WORKER_PIPELINE_PYTHON",
+      "AUDIT_WORKER_AUDIT_PIPELINE_ENABLED", "AUDIT_WORKER_ALLOW_REAL_LLM",
+      "AUDIT_WORKER_FAKE_PROVIDER_DIR", "AUDIT_WORKER_PROVIDER_DIR",
+      "AUDIT_WORKER_FAKE_CALL_LOG", "AUDIT_WORKER_MAX_SLOTS",
+      "AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS", "AUDIT_WORKER_HEARTBEAT_SEC",
+      "AUDIT_WORKER_POLL_WAIT_SEC", "AUDIT_WORKER_RETENTION_ENABLED",
+      "AUDIT_WORKER_RETENTION_DELETE_ENABLED", "LANG", "LC_ALL",
+      "PYTHONUNBUFFERED", "AUDIT_WORKER_PROVIDER_CLAUDE_AUTH_MODE",
+      "AUDIT_WORKER_PROVIDER_CODEX_AUTH_MODE"
+    ],
+    "worker_env_nonsecret_values": {
+      "AUDIT_WORKER_ROOT": "/home/coder/audit-worker/data",
+      "AUDIT_WORKER_PIPELINE_ROOT": "/home/coder/audit-worker/current",
+      "AUDIT_WORKER_PIPELINE_PYTHON": "/home/coder/audit-worker/venv/bin/python",
+      "AUDIT_WORKER_ALLOW_REAL_LLM": "false",
+      "AUDIT_WORKER_MAX_SLOTS": "1",
+      "AUDIT_WORKER_REAL_AUDIT_MAX_SLOTS": "1",
+      "AUDIT_WORKER_PROVIDER_CLAUDE_AUTH_MODE": "ambient_user",
+      "AUDIT_WORKER_PROVIDER_CODEX_AUTH_MODE": "ambient_user"
+    }
+  },
+
+  "runtime_activity_at_collection": {
+    "audit_worker_processes": 0,
+    "systemd_user_units_matching_worker": 0,
+    "systemd_system_units_matching_worker": 0,
+    "active_attempts": 0,
+    "unfinished_uploads": 0,
+    "conclusion": "Активных worker job нет; 11D не выполняется поверх работающей попытки."
+  },
+
+  "git_on_worker": {
+    "repository_checkout": null,
+    "branches": null,
+    "worktrees": null,
+    "note": "На воркере нет клона репозитория — только развёрнутые релизы (app/<release>) с MANIFEST. Ветки/worktree существуют только на центре."
+  },
+
+  "canary": {
+    "path": "/home/coder/provider-auth-canary/DO_NOT_READ.txt",
+    "exists": true,
+    "size_bytes": 664,
+    "mode": "0600",
+    "outside_11d_sandbox": true,
+    "content_included_here": false
+  },
+
+  "grant_state_existing": {
+    "worker_root_grant_file_present": false,
+    "allow_real_provider_probe_marker": "/home/coder/audit-worker/data/config/allow_real_provider_probe"
+  }
+}

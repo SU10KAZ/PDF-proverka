@@ -1,0 +1,47 @@
+{
+  "schema": "auditmanager.12f1g.before.v1",
+  "captured_before_mutation": true,
+  "center": {
+    "release": "/home/coder/auditmanager/releases/ui-e2b98c3b",
+    "commit": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "pid": 2281536,
+    "active": true,
+    "n_restarts": 0,
+    "health_http": 200,
+    "listener": "127.0.0.1:8081",
+    "database_schema": 12,
+    "database_integrity": "ok",
+    "workers": 0,
+    "tokens": 0,
+    "jobs": 0,
+    "scheduler": "DISABLED"
+  },
+  "worker_31": {
+    "worker_id": "wrk_19c87718",
+    "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+    "transport": "POLLING",
+    "center_url": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+    "agent_pid": 2048874,
+    "agent_active": true,
+    "executor_pid": 1384880,
+    "executor_active": true,
+    "active_attempts": 0,
+    "active_executor_jobs": 0,
+    "event_outbox_critical_unacked": 0,
+    "pending_result": 0,
+    "pending_cancel": 0
+  },
+  "infrastructure": {
+    "ufw_ipv4_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ufw_ipv6_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "cloudflared_pid": 1263127,
+    "cloudflared_target": "http://127.0.0.1:8081",
+    "nginx_pid": 57095,
+    "listener_8443": false,
+    "listener_9443": false
+  },
+  "source_writers": 0,
+  "external_deployers": 0,
+  "idle_gate": "PASS",
+  "verdict": "PASS"
+}

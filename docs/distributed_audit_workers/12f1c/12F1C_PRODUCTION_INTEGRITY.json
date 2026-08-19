@@ -1,0 +1,36 @@
+{
+  "schema": "auditmanager.12f1c.production_integrity.v1",
+  "checked_at": "2026-08-13T08:55:37+03:00",
+  "backend": {
+    "pid": 1968811,
+    "started": "2026-08-12T17:31:06+03:00",
+    "command": "/opt/py312/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+    "cwd": "/home/coder/projects/PDF-proverka",
+    "listener": "127.0.0.1:8081",
+    "api_info_http_status": 200,
+    "restarted_by_12f1c": false,
+    "signalled_by_12f1c": false
+  },
+  "production_cloudflared": {
+    "pid": 1263127,
+    "started": "2026-08-11T19:52:01+03:00",
+    "target": "http://127.0.0.1:8081",
+    "changed_by_12f1c": false
+  },
+  "worker_31": {
+    "polling_agent_pid": 1575036,
+    "polling_agent_started": "2026-08-12T04:47:12+03:00",
+    "executor_pid": 1384880,
+    "executor_started": "2026-08-11T14:31:30+03:00",
+    "both_active": true,
+    "changed_by_12f1c": false
+  },
+  "temporary_listeners_remaining": [],
+  "ports_18084_18085_absent": true,
+  "production_source_manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+  "production_source_changed_by_12f1c": false,
+  "production_db_changed": false,
+  "production_env_changed": false,
+  "production_services_changed": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

@@ -1,0 +1,68 @@
+{
+  "kind": "11E.1 §5 — тождество входов боевому прогону 11E",
+  "document": "213_Mosfilmovskaya_31A_KingSons / EOM / 133-23-ГК-ЭС / v001",
+  "method": "побайтовая сверка sha256 файлов на воркере против значений, записанных в 11E_INPUT_MANIFEST.json; файлы не пересоздавались и не перекопировались",
+  "files": [
+    {
+      "filename": "02_text_analysis.json",
+      "required": true,
+      "sha256_11e": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+      "sha256_11e1": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+      "match": true,
+      "bytes": 29088,
+      "producer": "БОЕВОЙ прогон 11D.2 на воркере .31",
+      "path_on_worker": "/home/coder/audit-worker-11e/inputs/02_text_analysis.json",
+      "regenerated_in_11e1": false
+    },
+    {
+      "filename": "01_blocks_analysis.json",
+      "required": true,
+      "sha256_11e": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+      "sha256_11e1": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+      "match": true,
+      "bytes": 25132,
+      "producer": "исторический прогон block_analysis того же документа (корпус центра)",
+      "path_on_worker": "/home/coder/audit-worker-11e/inputs/01_blocks_analysis.json",
+      "regenerated_in_11e1": false,
+      "why_historical": "запуск block_analysis в 11E.1 запрещён (§21)"
+    },
+    {
+      "filename": "document_graph.json",
+      "required": false,
+      "sha256_11e": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857",
+      "sha256_11e1": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857",
+      "match": true,
+      "goes_into_model_prompt": false,
+      "role": "post-merge проходы: лист по странице, подписи блоков"
+    },
+    {
+      "filename": "133-23-ГК-ЭС_document.md",
+      "required": false,
+      "sha256_11e": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+      "sha256_11e1": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+      "match": true,
+      "goes_into_model_prompt": false
+    }
+  ],
+  "all_required_hashes_match": true,
+  "counts": {
+    "text_findings_expected": 19,
+    "text_findings_actual": 19,
+    "block_findings_expected": 6,
+    "block_findings_actual": 6,
+    "total_expected": 25,
+    "total_actual": 25,
+    "match": true
+  },
+  "input_coverage_before_inference": {
+    "expected_count": 25,
+    "encoded_count": 25,
+    "missing_before_inference": [],
+    "duplicate_input_ids": [],
+    "passed": true,
+    "measured_on": "репетиция без модели (fake CLI) на тех же входах, task_id=findings_merge_11e1_dry",
+    "byte_level": "вложенные в промпт блоки побайтово равны исходным файлам — усечение исключено"
+  },
+  "gate_decision": "все хэши и счётчики совпали → запрет §5 на выполнение вызова не сработал",
+  "committed_content": false
+}

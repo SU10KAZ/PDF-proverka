@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "actual_duration_seconds": 900.104402,
+  "claimed_duration_minutes": 15.0,
+  "samples_per_side": 31,
+  "sample_interval_seconds": 30,
+  "direct_path": "176.12.77.31 -> 176.12.77.128:8443",
+  "transport": "real grpcio HTTP/2 + mTLS",
+  "connection_epoch_start": 137,
+  "connection_epoch_end": 137,
+  "connected_samples": 31,
+  "ready_samples": 31,
+  "reconnects_during_soak": 0,
+  "worker_agent_rss_kib_final": 70204,
+  "worker_agent_rss_kib_idle_plateau": [70200, 70204],
+  "gateway_rss_kib_final": 91416,
+  "gateway_rss_kib_final_idle_band": [91012, 91508],
+  "running_attempts_final": 0,
+  "queue_growth": 0,
+  "busy_loop_observed": false,
+  "note": "The accepted minimum 15-minute option was used and is reported as 15, not 30."
+}

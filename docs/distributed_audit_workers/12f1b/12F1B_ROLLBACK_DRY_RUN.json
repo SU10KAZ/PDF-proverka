@@ -1,0 +1,31 @@
+{
+  "schema": "auditmanager.12f1b.rollback_dry_run.v1",
+  "result": "PASS_FOR_CAPTURED_ARTIFACTS",
+  "candidate_boot": {
+    "release": "candidate-965337f1",
+    "listen": "127.0.0.1:18082",
+    "health_http_status": 200,
+    "portal_auth_fail_closed": true,
+    "distributed_startup_enabled_in_isolation": true,
+    "stopped": true
+  },
+  "persistent_state": {
+    "root": "/tmp/12f1b-boot/distributed-state",
+    "schema_version": 12,
+    "directory_mode": "0700",
+    "database_mode": "0600",
+    "database_sha256_before_rollback": "e72a97ab79ba439c201ce02e886f5842e72c3cd39c00367fd3cb1cec19a7b432",
+    "database_sha256_after_rollback": "e72a97ab79ba439c201ce02e886f5842e72c3cd39c00367fd3cb1cec19a7b432",
+    "preserved": true
+  },
+  "baseline_boot": {
+    "release": "baseline-8cf5c673",
+    "listen": "127.0.0.1:18083",
+    "health_http_status": 200,
+    "distributed_workers_enabled": false,
+    "stopped": true
+  },
+  "listeners_remaining": [],
+  "production_touched": false,
+  "qualification": "The dry run proves the two captured artifacts and external-state preservation. Later production source drift means these artifacts are no longer current restart targets."
+}

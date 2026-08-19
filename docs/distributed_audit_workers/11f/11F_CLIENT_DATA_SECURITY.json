@@ -1,0 +1,43 @@
+{
+  "stage": "11F",
+  "rule": "в git и docs не попадает ни MD, ни PDF, ни кропы, ни промпты, ни ответы модели, ни findings целиком",
+  "what_docs_contain": [
+    "хэши",
+    "счётчики",
+    "схемы",
+    "идентификаторы",
+    "безопасные сводки"
+  ],
+  "artifact_by_artifact": [
+    {
+      "artifact": "*_provider_run.json",
+      "client_content": "нет",
+      "why": "поле result вырезано явно; от промпта только sha256 и карта символов"
+    },
+    {
+      "artifact": "audit_manifest.json",
+      "client_content": "нет",
+      "why": "идентификаторы, статусы этапов, публичный вид привязки без путей и литералов"
+    },
+    {
+      "artifact": "11F_RUN.json",
+      "client_content": "нет",
+      "location": "metadata/, в пакет НЕ входит",
+      "why": "счётчики вызовов, хэши, argv процесса; ответы модели не читаются"
+    },
+    {
+      "artifact": "inference/*.result.json",
+      "client_content": "ДА — полные ответы модели",
+      "location": "каталог попытки на воркере",
+      "in_result_package": false,
+      "why": "осознанно не уезжает центру: это второй экземпляр замечаний по документу заказчика"
+    },
+    {
+      "artifact": "пакет результата",
+      "client_content": "производные аудита (findings, optimization)",
+      "why": "это и есть предмет передачи; PDF и MD обратно не едут — центр их и отправлял"
+    }
+  ],
+  "sandbox_only": "/home/coder/11f_diagnostic/ на центре и ~/audit-worker-11f/sandbox/ на воркере",
+  "git_check": "в коммитах 11F нет ни одного файла клиентских данных — только код, тесты и документы с хэшами"
+}

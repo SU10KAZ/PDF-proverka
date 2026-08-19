@@ -1,0 +1,86 @@
+{
+  "http_провайдеры": [
+    "openrouter"
+  ],
+  "адаптеры_воркера": [
+    "claude",
+    "codex",
+    "openrouter"
+  ],
+  "инварианты": {
+    "адаптеры_покрывают_всех_провайдеров": true,
+    "реестр_плана_подмножество_центра": true,
+    "реестр_центра_подмножество_воркера": true
+  },
+  "модели_центра_по_паре": {
+    "claude/cheap_review": "claude-sonnet-5",
+    "claude/strong_audit": "claude-opus-5",
+    "codex/block_detector": "codex/gpt-5.4",
+    "codex/block_detector_strong": "codex/gpt-5.4",
+    "codex/block_judge": "codex/gpt-5.4",
+    "codex/cheap_review": "codex/gpt-5.4",
+    "codex/strong_audit": "codex/gpt-5.4",
+    "codex/visual_reasoning": "codex/gpt-5.4",
+    "openrouter/block_detector": "openai/gpt-5.4",
+    "openrouter/cheap_review": "openai/gpt-5.4",
+    "openrouter/strong_audit": "openai/gpt-5.4"
+  },
+  "пары_провайдер_способность": {
+    "claude": [
+      "strong_audit",
+      "cheap_review"
+    ],
+    "codex": [
+      "strong_audit",
+      "cheap_review",
+      "block_detector",
+      "block_detector_strong",
+      "block_judge",
+      "visual_reasoning"
+    ],
+    "openrouter": [
+      "strong_audit",
+      "cheap_review",
+      "block_detector"
+    ]
+  },
+  "провайдеры_воркера": [
+    "claude",
+    "codex",
+    "openrouter"
+  ],
+  "провайдеры_контракта_центра": [
+    "claude",
+    "codex",
+    "openrouter"
+  ],
+  "провайдеры_плана": [
+    "claude",
+    "codex",
+    "openrouter"
+  ],
+  "способности_контракта_центра": [
+    "strong_audit",
+    "cheap_review",
+    "block_detector",
+    "block_detector_strong",
+    "block_judge",
+    "visual_reasoning"
+  ],
+  "способности_плана": [
+    "strong_audit",
+    "cheap_review",
+    "block_detector",
+    "block_detector_strong",
+    "block_judge",
+    "visual_reasoning"
+  ],
+  "способности_политики_воркера": [
+    "strong_audit",
+    "cheap_review",
+    "block_detector",
+    "block_detector_strong",
+    "block_judge",
+    "visual_reasoning"
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "generated": "2026-08-10",
+  "host": "176.12.77.31",
+  "method": "чтение СТАТУСА без чтения учётных данных: содержимое credential-файлов не открывалось, читались только факт существования и режим доступа (os.stat), плюс имена переменных в worker.env и состав provider_policy.json (в нём моделей нет — только способности)",
+  "credentials_read": false,
+  "inference_performed": false,
+  "installed_worker_builds": [
+    {
+      "root": "/home/coder/audit-worker",
+      "provider_policy": null,
+      "mode": "fake (AUDIT_WORKER_FAKE_PROVIDER_DIR задан)"
+    },
+    {
+      "root": "/home/coder/audit-worker-11d",
+      "policy_providers": {
+        "claude": [
+          "strong_audit"
+        ]
+      }
+    },
+    {
+      "root": "/home/coder/audit-worker-11d2",
+      "policy_providers": {
+        "claude": [
+          "strong_audit"
+        ]
+      }
+    },
+    {
+      "root": "/home/coder/audit-worker-11e",
+      "policy_providers": {
+        "claude": [
+          "strong_audit"
+        ]
+      }
+    },
+    {
+      "root": "/home/coder/audit-worker-11f",
+      "policy_providers": {
+        "claude": [
+          "strong_audit"
+        ]
+      },
+      "policy_mode": "664 (шире 0600)"
+    },
+    {
+      "root": "/home/coder/audit-worker-11g",
+      "policy_providers": {
+        "claude": [
+          "strong_audit"
+        ]
+      }
+    },
+    {
+      "root": "/home/coder/audit-worker-11h",
+      "policy_providers": {
+        "codex": [
+          "strong_audit"
+        ]
+      },
+      "note": "актуальная боевая сборка 11H"
+    }
+  ],
+  "provider_auth_status": {
+    "claude": {
+      "credential_file_present": true,
+      "mode": "600",
+      "content_read": false
+    },
+    "codex": {
+      "credential_file_present": true,
+      "mode": "600",
+      "content_read": false
+    },
+    "openrouter": {
+      "configured": false,
+      "evidence": "ни в одном worker.env нет OPENROUTER_API_KEY; адаптера openrouter в audit_worker/providers нет вовсе (_ADAPTERS = {claude, codex}); имя OPENROUTER_API_KEY входит в FORBIDDEN_ENV_NAMES провайдерского слоя"
+    }
+  },
+  "declared_capabilities_today": {
+    "codex": [
+      "strong_audit"
+    ],
+    "claude": [
+      "strong_audit"
+    ],
+    "openrouter": [],
+    "routing_plan_v1": false,
+    "note": "объявляет установленная сборка воркера, а она предшествует 11I"
+  },
+  "required_by_preset": {
+    "claude_gpt_codex": {
+      "claude": [
+        "cheap_review",
+        "strong_audit"
+      ],
+      "codex": [
+        "block_detector",
+        "block_detector_strong",
+        "block_judge",
+        "visual_reasoning"
+      ],
+      "openrouter": [
+        "block_detector"
+      ]
+    },
+    "codex_exec": {
+      "claude": [
+        "cheap_review",
+        "strong_audit"
+      ],
+      "codex": [
+        "block_detector",
+        "block_detector_strong",
+        "block_judge",
+        "strong_audit",
+        "visual_reasoning"
+      ],
+      "openrouter": [
+        "block_detector"
+      ]
+    }
+  },
+  "verdict": {
+    "claude_gpt_codex": "NOT_COMPATIBLE",
+    "codex_exec": "NOT_COMPATIBLE"
+  },
+  "reasons": [
+    {
+      "code": "openrouter_absent",
+      "blocking": true,
+      "detail": "OpenRouter на воркере не поддерживается НИ В КАКОМ ВИДЕ: адаптера нет, ключа нет, а имя переменной ключа занесено в запрещённые для окружения подпроцесса провайдера. GPT-нога этапа 01 обязательна в ОБОИХ пресетах — значит точный пресет этой машине назначить нельзя"
+    },
+    {
+      "code": "capabilities_too_narrow",
+      "blocking": true,
+      "detail": "локальная политика объявляет одну способность strong_audit. Плану нужны block_detector, block_detector_strong, block_judge, visual_reasoning и cheap_review — каждая соответствует своей модели"
+    },
+    {
+      "code": "single_provider_policy",
+      "blocking": true,
+      "detail": "боевая сборка 11H держит в политике только codex. Страж отсутствия и основная нога оптимизации идут на Claude в ОБОИХ пресетах, включая «Full Codex» — маршрута для них не будет"
+    },
+    {
+      "code": "routing_plan_v1_not_declared",
+      "blocking": true,
+      "detail": "установленная сборка предшествует 11I и не объявляет routing_plan_v1. Центр такому воркеру план не выдаёт намеренно: воркер разбирает нагрузку закрытым набором полей и отверг бы задание на приёме"
+    }
+  ],
+  "what_would_make_it_compatible": [
+    "развернуть сборку воркера с 11I (объявит routing_plan_v1 и шесть способностей)",
+    "расширить provider_policy.json: claude {strong_audit, cheap_review}, codex {strong_audit, block_detector, block_detector_strong, block_judge, visual_reasoning}",
+    "решить вопрос OpenRouter отдельным продуктовым решением: либо своя учётная запись и адаптер на воркере, либо явный пресет БЕЗ GPT-ноги (это другой аудит, и называться он должен иначе)"
+  ],
+  "not_done_in_11i": "учётные данные на .31 не устанавливались и не менялись (§48 задания)"
+}

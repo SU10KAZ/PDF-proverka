@@ -1,0 +1,18 @@
+{
+  "schema": "auditmanager.12f1b.production_only_commits.v1",
+  "result": "11_REQUIRED_0_UNKNOWN",
+  "integration": "INHERITED_BY_CAPTURED_BASELINE_COMMIT",
+  "commits": [
+    "f7873f41",
+    "d4e2e804",
+    "aa964a7e",
+    "49c5e9d6",
+    "a2744e11",
+    "1903b01d",
+    "c44af97f",
+    "c3aeaf34",
+    "ad34bafe",
+    "a62856d2",
+    "9168c393"
+  ]
+}

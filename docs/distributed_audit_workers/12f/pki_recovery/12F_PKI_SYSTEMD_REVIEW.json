@@ -1,0 +1,36 @@
+{
+  "schema": "auditmanager.12f.pki_systemd_review.v1",
+  "production": {
+    "issuer_unit": "web-ocr-worker-cert-issuer.service",
+    "load_state": "loaded",
+    "unit_file_state": "enabled",
+    "active_state": "inactive",
+    "sub_state": "dead",
+    "main_pid": 0,
+    "n_restarts_recorded": 12,
+    "result": "exit-code",
+    "gateway_unit": "auditmanager-agent-gateway.service",
+    "gateway_installed": true,
+    "gateway_enabled": false,
+    "gateway_active": false,
+    "listener_8443": false
+  },
+  "installed_launcher": {
+    "release": "/opt/auditmanager/releases/reenrollment-e6015d33",
+    "working_directory": "/opt/auditmanager/releases/reenrollment-e6015d33/app",
+    "python": "/opt/auditmanager/releases/reenrollment-e6015d33/venv/bin/python",
+    "module": "backend.app.security.issuer_service",
+    "module_import_proven": true,
+    "mutable_checkout_dependency": false
+  },
+  "canonical_fix": {
+    "working_directory": "/opt/auditmanager/current/app",
+    "explicit_pythonpath": "/opt/auditmanager/current/app",
+    "python": "/opt/auditmanager/current/venv/bin/python",
+    "gateway_umask": "0007",
+    "issuer_umask": "0007",
+    "typed_shared_state_env": "DISTRIBUTED_WORKERS_SHARED_STATE=true"
+  },
+  "production_unit_changed_in_recovery": false,
+  "production_service_started_in_recovery": false
+}

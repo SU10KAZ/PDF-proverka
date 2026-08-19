@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "label": "Full Codex Job A",
+  "job_id": "c4ed7aaa-dcc5-466b-934a-1652cfd8a35e",
+  "attempt_id": "b147c7c2-2bc8-4d6b-ac54-b436b0d6a348",
+  "worker_id": "wrk_726eb885",
+  "preset_id": "codex_exec",
+  "routing_plan_id": "rp_10af91cefb2b4801",
+  "routing_plan_hash": "sha256:078a4dde6768ed599724d6ae2427fc9cb38ba967ba438f4114f744bca92d15be",
+  "graphic_blocks": 2,
+  "block_actions_per_block": ["detector_openrouter", "detector_codex_standard", "detector_codex_strong", "judge_gap_search"],
+  "text": "codex/strong_audit",
+  "merge": ["merge_base", "targeted_discipline", "targeted_docnorm", "targeted_mark_system"],
+  "absence_guard": "claude/cheap_review",
+  "optimization": ["claude/strong_audit", "codex/visual_reasoning@xhigh"],
+  "optimization_critic": "codex/strong_audit",
+  "predicted": {"claude": 2, "codex": 13, "openrouter": 2, "total": 17},
+  "executed": {"claude": 2, "codex": 13, "openrouter": 2, "total": 17},
+  "deterministic_actions_created_model_calls": false,
+  "result_import_state": "applied",
+  "central_handoff_state": "completed",
+  "real_provider_calls": 0
+}

@@ -1,0 +1,401 @@
+{
+  "stage": "findings_merge",
+  "production_stage": "findings_merge",
+  "mode": "real",
+  "hostname": "andrewuzun3.hlab.kz",
+  "pid": 983758,
+  "task_id": "findings_merge_11e_real",
+  "attempt_id": "findings_merge_11e_real-a1",
+  "grant": {
+    "grant_id": "g-findings_merge_11e_real",
+    "issued_max_uses": 1,
+    "remaining_after_consume": 0,
+    "reusable_grant_found_after_run": false
+  },
+  "model_policy": {
+    "capability": "strong_audit",
+    "requested_model": "claude-opus-5",
+    "accepted_reported_models": [
+      "claude-opus-5",
+      "claude-opus-5[1m]"
+    ],
+    "policy_source": "/home/coder/audit-worker-11e/data/provider_policy.json"
+  },
+  "binding_public": {
+    "provider": "claude",
+    "auth_mode": "ambient_user",
+    "model": "claude-opus-5",
+    "capability": "strong_audit",
+    "accepted_reported_models": [
+      "claude-opus-5",
+      "claude-opus-5[1m]"
+    ],
+    "max_inferences": 1,
+    "allowed_stages": [
+      "findings_merge"
+    ],
+    "grant_id": "g-findings_merge_11e_real"
+  },
+  "inputs": {
+    "copied": {
+      "02_text_analysis.json": {
+        "required": true,
+        "sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+        "bytes": 29088
+      },
+      "01_blocks_analysis.json": {
+        "required": true,
+        "sha256": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+        "bytes": 25132
+      },
+      "document_graph.json": {
+        "required": false,
+        "sha256": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857",
+        "bytes": 55795
+      },
+      "133-23-ГК-ЭС_document.md": {
+        "required": false,
+        "sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+        "bytes": 19418,
+        "role": "markdown документа (индекс «строка MD → страница» в post-merge)"
+      }
+    },
+    "unchanged_after_run": {
+      "02_text_analysis.json": true,
+      "01_blocks_analysis.json": true
+    },
+    "section": "EOM"
+  },
+  "stage_result": {
+    "success": false,
+    "cancelled": false,
+    "error": "Свод замечаний: код 1",
+    "findings_count": 0,
+    "excluded_count": 0,
+    "duration_sec": 32.649
+  },
+  "pipeline_log": {
+    "findings_merge": [
+      {
+        "status": "running"
+      },
+      {
+        "status": "error",
+        "error": "provider_result.status='error' error_code='unknown' detail='CLI завершился ошибкой' validation_failed=['exit_code', 'status', 'json_parsed', 'required_fields', 'model_matches_policy']"
+      }
+    ]
+  },
+  "usage": [
+    {
+      "stage": "findings_merge",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_creation_tokens": 0,
+      "cache_read_tokens": 0,
+      "duration_ms": 32321,
+      "cost_usd": 0.0,
+      "is_error": true
+    }
+  ],
+  "ledger_summary": {
+    "keys": [
+      {
+        "state": "replay",
+        "key": "findings_merge-4a76e6c00463209941bcfe4037f3ec09",
+        "claimed_at": null,
+        "detail": "результат уже сохранён",
+        "has_result": true,
+        "performed_by_pid": 983758,
+        "completed_at": 1786340361.826924
+      }
+    ],
+    "calls_started": 1,
+    "calls_completed": 1
+  },
+  "provider_run_report": {
+    "stage": "findings_merge",
+    "transport": "provider_adapter",
+    "prompt_build": {
+      "system_chars": 12866,
+      "payload_chars": 38814,
+      "prompt_chars": 52816,
+      "filesystem_refs_stripped": 0,
+      "absolute_paths_remaining_in_instructions": 0,
+      "input_data_note_applied": true,
+      "transport_contract_applied": true,
+      "severity_semantics_applied": true,
+      "severity_semantics_anchor": "### Finding Fields"
+    },
+    "prompt_sha256": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e",
+    "input_contract": {
+      "text_analysis": {
+        "filename": "02_text_analysis.json",
+        "bytes": 29088,
+        "sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad",
+        "text_findings": 19,
+        "normative_refs_found": 6,
+        "items_verified_from_blocks": 0,
+        "stage": "02_text_analysis",
+        "text_source": "md"
+      },
+      "blocks_analysis": {
+        "filename": "01_blocks_analysis.json",
+        "bytes": 25132,
+        "sha256": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a",
+        "block_analyses": 10,
+        "block_findings": 6,
+        "preliminary_findings": 6,
+        "stage": "01_blocks_analysis"
+      }
+    },
+    "input_coverage": {
+      "expected_count": 25,
+      "expected_unique_count": 25,
+      "encoded_count": 25,
+      "expected_ids": [
+        "G-001",
+        "G-002",
+        "G-003",
+        "G-004",
+        "G-005",
+        "G-006",
+        "T-001",
+        "T-002",
+        "T-003",
+        "T-004",
+        "T-005",
+        "T-006",
+        "T-007",
+        "T-008",
+        "T-009",
+        "T-010",
+        "T-011",
+        "T-012",
+        "T-013",
+        "T-014",
+        "T-015",
+        "T-016",
+        "T-017",
+        "T-018",
+        "T-019"
+      ],
+      "encoded_ids": [
+        "G-001",
+        "G-002",
+        "G-003",
+        "G-004",
+        "G-005",
+        "G-006",
+        "T-001",
+        "T-002",
+        "T-003",
+        "T-004",
+        "T-005",
+        "T-006",
+        "T-007",
+        "T-008",
+        "T-009",
+        "T-010",
+        "T-011",
+        "T-012",
+        "T-013",
+        "T-014",
+        "T-015",
+        "T-016",
+        "T-017",
+        "T-018",
+        "T-019"
+      ],
+      "missing_before_inference": [],
+      "duplicate_input_ids": [],
+      "passed": true
+    },
+    "performed_now": true,
+    "provider_result": {
+      "provider": "claude",
+      "model": null,
+      "status": "error",
+      "usage": {
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0,
+        "total_cost_usd": 0,
+        "num_turns": 1
+      },
+      "duration_ms": 32321,
+      "exit_code": 1,
+      "auth_mode": "ambient_user",
+      "error_code": "unknown",
+      "detail": "CLI завершился ошибкой",
+      "raw_sha256": "d9758eb9e672f6182ebaa38bc90670da5510cf4b55c596534e6262e82212d122",
+      "raw_bytes": 99,
+      "result_keys": [],
+      "result_findings": 0
+    },
+    "validation": {
+      "passed": false,
+      "failed": [
+        "exit_code",
+        "status",
+        "json_parsed",
+        "required_fields",
+        "model_matches_policy"
+      ],
+      "checks": [
+        {
+          "name": "exit_code",
+          "passed": false,
+          "detail": "код возврата CLI: 1"
+        },
+        {
+          "name": "status",
+          "passed": false,
+          "detail": "status='error' error_code='unknown'"
+        },
+        {
+          "name": "json_parsed",
+          "passed": false,
+          "detail": "ответ модели не разобран как JSON-объект"
+        },
+        {
+          "name": "required_fields",
+          "passed": false,
+          "detail": "нет обязательных полей: ['findings']"
+        },
+        {
+          "name": "field_types",
+          "passed": true,
+          "detail": "типы полей верны"
+        },
+        {
+          "name": "expected_semantics",
+          "passed": true,
+          "detail": "смысловые ожидания выполнены"
+        },
+        {
+          "name": "no_credential_like",
+          "passed": true,
+          "detail": "форм учётных данных нет"
+        },
+        {
+          "name": "no_private_paths",
+          "passed": true,
+          "detail": "абсолютных приватных путей нет"
+        },
+        {
+          "name": "no_forbidden_literals",
+          "passed": true,
+          "detail": "проверено запрещённых литералов: 1"
+        },
+        {
+          "name": "provider_matches_task",
+          "passed": true,
+          "detail": "провайдер 'claude', ожидался 'claude'"
+        },
+        {
+          "name": "auth_mode_matches_task",
+          "passed": true,
+          "detail": "режим авторизации 'ambient_user', ожидался 'ambient_user'"
+        },
+        {
+          "name": "identity_matches_claim",
+          "passed": true,
+          "detail": "task_id='findings_merge_11e_real'/'findings_merge_11e_real' attempt_id='findings_merge_11e_real-a1'/'findings_merge_11e_real-a1'"
+        },
+        {
+          "name": "model_matches_policy",
+          "passed": false,
+          "detail": "назначено 'claude-opus-5', фактически '—', допустимые ['claude-opus-5', 'claude-opus-5[1m]']"
+        }
+      ]
+    },
+    "ledger": {
+      "state": "replay",
+      "key": "findings_merge-4a76e6c00463209941bcfe4037f3ec09",
+      "claimed_at": null,
+      "detail": "результат уже сохранён",
+      "has_result": true,
+      "performed_by_pid": 983758,
+      "completed_at": 1786340361.826924
+    },
+    "soft_contract": {
+      "present": [],
+      "missing": [
+        "meta"
+      ]
+    },
+    "content_excluded": "Промпт и ответ модели в отчёт не кладутся: это замечания по документу заказчика. Отпечаток промпта — prompt_sha256, отпечаток ответа — provider_result.raw_sha256."
+  },
+  "artifact": {
+    "path": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e_real/project/doc/v1/_output/03_findings.json",
+    "exists": false,
+    "sha256": null,
+    "bytes": 0,
+    "inside_attempt_dir": true,
+    "summary": {
+      "findings": 0,
+      "ids_unique": true,
+      "by_severity": {},
+      "by_category": {},
+      "referenced_source_ids": [],
+      "referenced_source_id_count": 0,
+      "with_norm": 0,
+      "with_norm_quote": 0,
+      "with_block_links": 0,
+      "with_evidence": 0,
+      "top_level_keys": [],
+      "meta_keys": []
+    }
+  },
+  "output_dir_listing": [
+    "01_blocks_analysis.json",
+    "02_text_analysis.json",
+    "document_graph.json",
+    "findings_merge_provider_run.json"
+  ],
+  "canary": {
+    "path": "/home/coder/provider-auth-canary/DO_NOT_READ.txt",
+    "before": {
+      "exists": true,
+      "size_bytes": 664,
+      "mode": "0o600",
+      "mtime_ns": 1786271609935729544,
+      "atime_ns": 1786339861959691849,
+      "ctime_ns": 1786310322166864203,
+      "inode": 654812,
+      "content_read": false
+    },
+    "after": {
+      "exists": true,
+      "size_bytes": 664,
+      "mode": "0o600",
+      "mtime_ns": 1786271609935729544,
+      "atime_ns": 1786339861959691849,
+      "ctime_ns": 1786310322166864203,
+      "inode": 654812,
+      "content_read": false
+    },
+    "content_hash_compared": false,
+    "size_unchanged": true,
+    "inode_unchanged": true,
+    "mtime_unchanged": true,
+    "ctime_unchanged": true,
+    "atime_unchanged": true,
+    "atime_caveat": "Корень смонтирован с relatime: atime обновляется не при каждом чтении, поэтому «atime не изменился» САМ ПО СЕБЕ чтения не исключает. Доказательная сила — в совокупности: файл вне всех корней процесса, у модели ноль инструментов, маркер не найден ни в одном артефакте прогона.",
+    "content_in_report": false
+  },
+  "leak_scan": {
+    "hits": {
+      "forbidden_literal_0": []
+    },
+    "total": 0
+  },
+  "verdict": {
+    "pass": false,
+    "violations": [
+      "этап не выполнен: Свод замечаний: код 1",
+      "артефакт 03_findings.json не создан"
+    ]
+  }
+}

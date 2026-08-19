@@ -1,0 +1,24 @@
+{
+  "kind": "сверка детерминированного pre-scan на входе двух путей",
+  "module": "backend/app/pipeline/stages/text_analysis/md_prescan.py",
+  "determinism": "полная: регулярки по тексту MD, ни сети, ни модели, ни времени, ни random",
+  "prompt_section_builder": "build_prescan_prompt_section(md_file_path)",
+  "injected_in_legacy_branch_b": true,
+  "injected_in_api_branch_c": true,
+  "injected_in_provider_11d": true,
+  "injection_point_legacy": "task_builder.prepare_text_analysis_task — в КОНЕЦ задачи",
+  "injection_point_provider": "prompt_builder.build_text_analysis_messages — в КОНЕЦ system, ПЕРЕД норм-базой? нет: после норм-базы",
+  "actual_result_for_this_document": {
+    "scan_md_file_findings": 0,
+    "prompt_section_chars": 0,
+    "consequence": "секция pre-scan ПУСТА в обоих путях — различия быть не может"
+  },
+  "post_model_augmentation": {
+    "function": "md_prescan.augment_text_analysis_file",
+    "called_from": "stages/text_analysis/runner.py (одинаково для обоих путей)",
+    "can_change_severity_of_model_findings": false,
+    "can_add_findings": true,
+    "added_for_this_document": 0
+  },
+  "verdict": "ЭКВИВАЛЕНТНО"
+}

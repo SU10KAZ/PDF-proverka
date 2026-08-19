@@ -1,0 +1,14 @@
+{
+  "schema": "auditmanager.12f1e.polling_heartbeat_e2e.v1",
+  "environment": "isolated temporary Center registry",
+  "runtime_token_source": "first identity-reenrollment completion response",
+  "worker_token_hash_lookup": "PASS",
+  "worker_id_header_binding": "PASS",
+  "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+  "heartbeat_http": 200,
+  "connection_status": "online",
+  "transport_session_mode": "polling",
+  "gateway_started": false,
+  "production_used": false,
+  "verdict": "PASS"
+}

@@ -1,0 +1,249 @@
+{
+  "claim": "этап 05 одинаков в обоих пресетах и в «Full Codex» ТОЖЕ использует Claude: две ноги параллельно, объединение — детерминированный Python",
+  "claude_gpt_codex": [
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_primary",
+      "role": "optimization_primary",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": "optimization_legs",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_visual",
+      "role": "optimization_visual",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "visual_reasoning",
+      "reasoning_effort": "xhigh",
+      "parallel_group": "optimization_legs",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_merge",
+      "role": "optimization_merge",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "optimization_legs"
+      ],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_critic",
+      "pipeline_stage": "optimization_critic",
+      "execution_scope": "worker",
+      "action_id": "critic",
+      "role": "optimization_critic",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "cheap_review",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_critic",
+      "pipeline_stage": "optimization_critic",
+      "execution_scope": "worker",
+      "action_id": "critic_augment",
+      "role": "critic_augment",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "critic"
+      ],
+      "condition": {
+        "type": "feature_enabled",
+        "params": {
+          "flag": "OPTIMIZATION_CRITIC_DETERMINISTIC"
+        }
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_corrector",
+      "pipeline_stage": "optimization_corrector",
+      "execution_scope": "worker",
+      "action_id": "deterministic_fix",
+      "role": "deterministic_fix",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "has_critic_issues"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    }
+  ],
+  "full_codex": [
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_primary",
+      "role": "optimization_primary",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": "optimization_legs",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_visual",
+      "role": "optimization_visual",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "visual_reasoning",
+      "reasoning_effort": "xhigh",
+      "parallel_group": "optimization_legs",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_merge",
+      "role": "optimization_merge",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "optimization_legs"
+      ],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_critic",
+      "pipeline_stage": "optimization_critic",
+      "execution_scope": "worker",
+      "action_id": "critic",
+      "role": "optimization_critic",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_critic",
+      "pipeline_stage": "optimization_critic",
+      "execution_scope": "worker",
+      "action_id": "critic_augment",
+      "role": "critic_augment",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "critic"
+      ],
+      "condition": {
+        "type": "feature_enabled",
+        "params": {
+          "flag": "OPTIMIZATION_CRITIC_DETERMINISTIC"
+        }
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_corrector",
+      "pipeline_stage": "optimization_corrector",
+      "execution_scope": "worker",
+      "action_id": "deterministic_fix",
+      "role": "deterministic_fix",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "has_critic_issues"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    }
+  ]
+}

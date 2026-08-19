@@ -1,0 +1,41 @@
+{
+  "schema": "auditmanager.12f1b.restart_gate.v1",
+  "ready_for_operator_restart": false,
+  "checks": {
+    "production_worktree_quiescent": false,
+    "captured_snapshot_complete": true,
+    "current_authoritative_snapshot_complete": false,
+    "post_start_files_resolved_for_captured_snapshot": true,
+    "production_only_commits_resolved": true,
+    "operator_changes_resolved_for_captured_snapshot": true,
+    "captured_stable_disk_baseline_equivalence": true,
+    "current_stable_disk_baseline_equivalence": false,
+    "unexplained_current_stable_source_diffs_zero": false,
+    "baseline_commit_immutable": true,
+    "rollback_release_immutable": true,
+    "role_mapping_ready": true,
+    "portal_subject_mapping_ready": true,
+    "persistent_state_root_ready": true,
+    "reusable_bootstrap_fallback_removed": true,
+    "stable_polling_endpoint": true,
+    "candidate_commit_immutable": true,
+    "candidate_release_immutable": true,
+    "candidate_isolated_health": true,
+    "existing_auditmanager_regression_for_captured_candidate": true,
+    "polling_compatibility_for_captured_candidate": true,
+    "distributed_routes_for_captured_candidate": true,
+    "scheduler_safe_default_for_captured_candidate": true,
+    "rollback_dry_run_for_captured_artifacts": true,
+    "tests_pass_for_current_disk": false,
+    "baseline_review_pass_for_current_disk": false,
+    "candidate_review_pass_for_current_disk": false,
+    "operator_restart_authorization": false
+  },
+  "unexplained_current_release_scope_deltas": 7,
+  "blockers": [
+    "Production SOURCE_CODE changed during the final bounded observation (semantic_diff_v6a2.py at 20:53:13+03:00).",
+    "The 19:29 captured baseline differs from current disk in two existing release-scope paths and omits five later source/test/script paths.",
+    "A new quiescent authoritative snapshot, semantic review, baseline/candidate rebuild and delta-focused regression are required before restart can be considered.",
+    "Production restart authorization remains absent, as expected."
+  ]
+}

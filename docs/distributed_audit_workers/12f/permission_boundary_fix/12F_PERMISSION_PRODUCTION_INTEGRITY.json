@@ -1,0 +1,66 @@
+{
+  "schema": "auditmanager.12f.permission_production_integrity.v1",
+  "verified_at": "2026-08-14T09:01:02+03:00",
+  "backend": {
+    "release": "/home/coder/auditmanager/releases/reenrollment-e6015d33",
+    "commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+    "pid": 2522606,
+    "active": true,
+    "n_restarts": 0,
+    "health_http": 200,
+    "phase_env_sha256": "3837e7c45afc077cc5d5fc979e5ae8c4663c00c1ffe60c416f18bf70a3f6788c",
+    "phase_env_matches_before": true
+  },
+  "center_db": {
+    "schema": 13,
+    "integrity": "ok",
+    "workers": 1,
+    "tokens": 1,
+    "jobs": 0,
+    "attempts": 0,
+    "offers": 0,
+    "commands": 0,
+    "certificates": 0,
+    "direct_phase_a_writes": false,
+    "background_polling_heartbeat_continued": true
+  },
+  "production_worker": {
+    "worker_id": "wrk_19c87718",
+    "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+    "online": true,
+    "idle": true,
+    "transport": "polling",
+    "agent_pid": 2212836,
+    "agent_active": true,
+    "agent_n_restarts": 0,
+    "executor_pid": 1384880,
+    "executor_active": true,
+    "executor_n_restarts": 0,
+    "active_attempts": 0,
+    "active_processes": 0,
+    "event_outbox_unwritten": 0,
+    "pending_commands": 0
+  },
+  "security_services": {
+    "issuer_active": false,
+    "gateway_active": false,
+    "listener_8443": false,
+    "listener_9443": false,
+    "candidate_deployed": false,
+    "pki_preparation_executed": false
+  },
+  "infrastructure": {
+    "ufw_ipv4_sha256": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ufw_ipv6_sha256": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "ufw_matches_before": true,
+    "nginx_master_pid": 57095,
+    "cloudflared_pid": 1263127,
+    "cloudflared_target": "http://127.0.0.1:8081",
+    "cloudflared_changed": false,
+    "ssh_forwarding": false,
+    "isolated_listeners_removed": true
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "production_unexplained_changes": 0,
+  "verdict": "PASS_UNCHANGED"
+}

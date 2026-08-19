@@ -1,0 +1,48 @@
+{
+  "kind": "11D.2 §19/§20 — продовое состояние не изменено",
+  "worker_176_12_77_31": {
+    "existing_installation_root": "/home/coder/audit-worker (код 11B)",
+    "current_release_unchanged": "app/20260809T140821-c1070168cda4",
+    "worker_db_bytes": 401408,
+    "worker_db_mtime_epoch": 1786256692,
+    "worker_db_mtime_matches_11d_report": true,
+    "worker_env_touched": false,
+    "worker_processes_running": 0,
+    "systemd_units": 0,
+    "note": "11D.2 развёрнут в ОТДЕЛЬНЫЙ корень /home/coder/audit-worker-11d2; продовая установка только читалась"
+  },
+  "worker_11d_runtime": {
+    "root": "/home/coder/audit-worker-11d",
+    "modified": false,
+    "evidence": "mtime 11D_RUN.json и файла разрешений остались 2026-08-09 20:5x — читали, не писали"
+  },
+  "center_176_12_77_128": {
+    "source_md_sha256_before_and_after": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+    "historical_stage_artifact_sha256": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7",
+    "historical_artifact_matches_11d_record": true,
+    "projects_v2_written": false,
+    "backend_restarted": false,
+    "center_production_ingress_enabled": false
+  },
+  "git": {
+    "main_repo_status": "как до начала сеанса: M .claude/settings.json + untracked docs/distributed_audit_workers/",
+    "worktree_11d1_head": "9d6e06c2a0f7d2f16472ce530019db18a47a71ce",
+    "worktree_11d1_dirty": false,
+    "reset_clean_rebase_force_checkout_merge_push": "не выполнялись"
+  },
+  "files_changed_outside_11d2_sandbox_during_run": [
+    {
+      "path": "/home/coder/.claude/.credentials.json",
+      "mode": "0600",
+      "why": "режим авторизации ambient_user: CLI работает под сессией владельца машины и обновляет СВОЁ хранилище токена. Это не запись конвейера и не утечка — содержимое файла нигде не читалось и никуда не попало",
+      "expected": true
+    },
+    {
+      "path": "~/.config/google-chrome-d10/…",
+      "why": "фоновая активность Chrome на машине, к прогону отношения не имеет",
+      "expected": true
+    }
+  ],
+  "downstream_stages_started": 0,
+  "production_files_changed": false
+}

@@ -1,0 +1,53 @@
+{
+  "запрещённые_имена_файлов": [
+    ".credentials.json",
+    ".env",
+    ".env.local",
+    "03a_norms_verified.json",
+    "auth.json",
+    "batch_queue.json",
+    "claim_secret",
+    "credentials",
+    "decision_carryover_report.json",
+    "decisions_log.json",
+    "expert_review.json",
+    "migrated_findings_report.json",
+    "norm_checks.json",
+    "norm_checks_llm.json",
+    "norms_paragraphs.json",
+    "paid_cost.json",
+    "paid_cost_events.jsonl",
+    "token",
+    "usage_data.json",
+    "worker.db",
+    "workers.db"
+  ],
+  "пакет_источника_НЕ_содержит": [
+    "ключ OpenRouter",
+    "учётные данные Claude",
+    "учётные данные Codex",
+    "токен воркера",
+    "секрет начальной загрузки",
+    "нормативную базу"
+  ],
+  "пакет_источника_содержит": [
+    "снимок плана маршрутизации и его хэш",
+    "дерево версии проекта (кропы, контекст блоков, MD)",
+    "снимок промптов и профиля дисциплины",
+    "отпечаток исходного дерева"
+  ],
+  "секрет_воркера": {
+    "в_окружении_подпроцесса": "отсутствует (OPENROUTER_API_KEY в FORBIDDEN_ENV_NAMES)",
+    "переопределение_админом": "AUDIT_WORKER_PROVIDER_OPENROUTER_CREDENTIAL",
+    "права_шире_0600": "отказ, а не предупреждение",
+    "путь_по_умолчанию": "<worker_root>/providers/openrouter/home/.openrouter/credentials.json",
+    "требуемые_права": "0600, владелец — пользователь воркера",
+    "читается": "только в момент запроса, на объекте не хранится"
+  },
+  "сканер_секретов": {
+    "ловит_имя_переменной": true,
+    "ловит_ключ_openrouter": true,
+    "не_ловит_чистое_дерево": true,
+    "функция": "project_package.find_secrets_in_files"
+  }
+}

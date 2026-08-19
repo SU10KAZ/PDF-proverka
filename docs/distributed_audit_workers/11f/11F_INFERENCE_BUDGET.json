@@ -1,0 +1,121 @@
+{
+  "stage": "11F",
+  "declared_at_utc": "2026-08-10T09:11:53Z",
+  "document": "214_Alia_ASTERUS / KM / 13АВ-РД-КМ-К2 / v001 (6 страниц, 11 блоков, 3 графических)",
+  "method": "оценка снята НЕ с промптов, а с ЖУРНАЛА ВЫЗОВОВ полного fake-прогона той же цепочки на том же документе (7 записей ledger, 0 indeterminate). Прогон выполнен дважды: на центре и на самом воркере .31 — обе цифры совпали.",
+  "stages": [
+    {
+      "stage": "crop_blocks",
+      "model_stage": false,
+      "provider": null,
+      "expected_calls": 0,
+      "why": "PyMuPDF-рендер и/или скачивание crop_url; модель не участвует",
+      "resume": "index.json + кеш render_profile; повторный прогон не рендерит заново"
+    },
+    {
+      "stage": "document_graph_v2",
+      "model_stage": false,
+      "provider": null,
+      "expected_calls": 0,
+      "why": "чистый Python по result.json + MD"
+    },
+    {
+      "stage": "block_context",
+      "model_stage": false,
+      "provider": null,
+      "expected_calls": 0,
+      "why": "детерминированный разбор вектор-слоя (Вектограф); 3/3 блока, 0 токенов",
+      "resume": "block_context_summary.json + validate_block_context_summary"
+    },
+    {
+      "stage": "block_analysis",
+      "model_stage": true,
+      "provider": "claude (ProviderAdapter, мультимодальный)",
+      "capability": "strong_audit",
+      "expected_calls": 3,
+      "why": "архитектура строго «один блок = один вызов» (single_block runtime plan). Блоков с кропом ровно 3. Ансамбль ensemble/gpt-codex (3 вызова на блок) на воркере НЕ применяется: при активном мосте транспорт один. Третья нога и детектор защит — флаги default OFF, а флаги .env до воркера не доезжают вовсе (feature_flags только сверяются по хэшу).",
+      "input": "PNG кропа байтами + текст блока + контекст листа",
+      "expected_output": "{\"findings\": [...]}",
+      "resume": "ключ вызова включает отпечаток вложения → повтор попытки отдаёт сохранённый ответ, не оплачивая заново"
+    },
+    {
+      "stage": "text_analysis",
+      "model_stage": true,
+      "provider": "claude (ProviderAdapter)",
+      "expected_calls": 1,
+      "why": "single-pass; MD 19 759 символов, нарезка не включается (порог провайдерского промпта не достигнут). Чанкинг Tier 2 существует только у codex-ветки.",
+      "resume": "02_text_analysis.json + журнал вызовов"
+    },
+    {
+      "stage": "findings_merge",
+      "model_stage": true,
+      "provider": "claude (ProviderAdapter)",
+      "expected_calls": 1,
+      "why": "один свод. Дополнительные targeted-пассы (1-3) существуют ТОЛЬКО у codex-модели findings_merge и здесь недостижимы",
+      "resume": "03_findings.json"
+    },
+    {
+      "stage": "findings_review",
+      "model_stage": "условно",
+      "provider": "claude (ProviderAdapter)",
+      "expected_calls": "0-1",
+      "why": "детерминированное ядро (критик 1/2/4 + корректор) вызовов не делает. LLM-фаза «страж отсутствия» запускается только при наличии absence-кандидатов; MD 19,7 КБ < порога чанкинга 300 000 символов → максимум один вызов. В fake-прогоне кандидатов не оказалось: 0 вызовов.",
+      "resume": "ключи findings_critic/findings_corrector в pipeline_log"
+    },
+    {
+      "stage": "optimization",
+      "model_stage": true,
+      "provider": "claude (ProviderAdapter)",
+      "expected_calls": 1,
+      "why": "ансамбль ensemble/claude-codex-opt (2 параллельных провайдера) на воркере не применяется — при активном мосте развилка стоит выше выбора транспорта",
+      "resume": "optimization.json"
+    },
+    {
+      "stage": "optimization_critic",
+      "model_stage": true,
+      "provider": "claude (ProviderAdapter)",
+      "expected_calls": 1,
+      "resume": "optimization_review.json"
+    },
+    {
+      "stage": "optimization_corrector",
+      "model_stage": "условно",
+      "provider": "claude (ProviderAdapter)",
+      "expected_calls": "0-1",
+      "why": "запускается ТОЛЬКО если критик нашёл проблемы (total_issues > 0). В fake-прогоне — skipped."
+    }
+  ],
+  "EXPECTED_NATURAL_CALLS": 7,
+  "EXPECTED_NATURAL_CALLS_WORST_CASE": 9,
+  "worst_case_breakdown": "7 подтверждённых + 1 страж отсутствия + 1 корректор оптимизации",
+  "hard_limit_from_task": 20,
+  "within_limit": true,
+  "desired_limit_from_task": 12,
+  "within_desired": true,
+  "ALLOWED_TECHNICAL_RETRIES": {
+    "total": 3,
+    "per_action": 1,
+    "used_before_real_run": 0
+  },
+  "quality_retries_allowed": 0,
+  "separate_line_items": [
+    {
+      "name": "capability_probe",
+      "calls": 1,
+      "spent": true,
+      "why": "§12 требует проверить фактическую возможность CLI передавать изображение ДО проектирования механизма. Синтетическая PNG, клиентских данных нет.",
+      "not_counted_in": "EXPECTED_NATURAL_CALLS"
+    }
+  ],
+  "attempt_ceiling": {
+    "max_inferences": 16,
+    "resolver_ceiling": 64,
+    "note": "потолок попытки поднят с 8 до 64 в рамках 11F: прежний отверг бы задание полного участка ещё до старта"
+  },
+  "hidden_repair_calls": {
+    "checked": true,
+    "found": "нет. Внутренних repair-вызовов у провайдерских путей нет: ответ либо проходит валидацию, либо этап отказывает. Единственный скрытый повтор в коде — retry пустого чанка в absence_guard.run_claude_verification_chunked, и он недостижим при MD < 300 000 символов."
+  },
+  "codex_calls_expected": 0,
+  "norm_verify_calls_expected": 0
+}

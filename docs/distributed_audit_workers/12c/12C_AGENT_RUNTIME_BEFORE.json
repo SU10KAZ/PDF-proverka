@@ -1,0 +1,13 @@
+{
+  "agent": "audit_worker.agent.WorkerAgent",
+  "executor": "audit_worker.executor (separate process)",
+  "durable_agent_executor_seam": "worker.db",
+  "event_outbox": "shared durable EventOutbox",
+  "result_package_path": "shared HTTPS uploader",
+  "control_transport_before": "polling_https",
+  "grpc_client_before": false,
+  "durable_connection_epoch_before": false,
+  "production_default_transport": "polling",
+  "verify_tls": true,
+  "real_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

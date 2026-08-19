@@ -1,0 +1,272 @@
+{
+  "authoritative_manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+  "authoritative_snapshot_id": "12f1c-authoritative-stable-disk-20260813T080518+0300-af0ccd9a",
+  "checks": [
+    {
+      "baseline_commit_state": "3614dcefef1f9f26b805b7c13edd0f65bf1d060dcb64b0029230ae956c4ddaf4",
+      "disk_state": "3614dcefef1f9f26b805b7c13edd0f65bf1d060dcb64b0029230ae956c4ddaf4",
+      "match": true,
+      "path": ".env.example"
+    },
+    {
+      "baseline_commit_state": "876d5c4fe2939d7f4c83f7f465f7f7ce6d28e127048683ae4f8652ad102802b4",
+      "disk_state": "876d5c4fe2939d7f4c83f7f465f7f7ce6d28e127048683ae4f8652ad102802b4",
+      "match": true,
+      "path": "backend/app/api/routers/stage_comparison.py"
+    },
+    {
+      "baseline_commit_state": "62d9cdcb1d7d157b469335085f1b92cdb42399206f6397282b72a00b675f1570",
+      "disk_state": "62d9cdcb1d7d157b469335085f1b92cdb42399206f6397282b72a00b675f1570",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/alignment.py"
+    },
+    {
+      "baseline_commit_state": "absent",
+      "disk_state": {
+        "target": null,
+        "type": "missing"
+      },
+      "match": true,
+      "path": "backend/app/services/stage_comparison/auto_match_jobs.py"
+    },
+    {
+      "baseline_commit_state": "d652c636b9787d4372f4f61c6d8bd372b939c0a1425a6c51be2874075b33c472",
+      "disk_state": "d652c636b9787d4372f4f61c6d8bd372b939c0a1425a6c51be2874075b33c472",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/blocks.py"
+    },
+    {
+      "baseline_commit_state": "f00e19dbaea583e96ec687e3dd8293dd0543d4974773f6f26e1183317ebcfe52",
+      "disk_state": "f00e19dbaea583e96ec687e3dd8293dd0543d4974773f6f26e1183317ebcfe52",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/change_detection.py"
+    },
+    {
+      "baseline_commit_state": "b8ea0f5d8d1ed2f3d152a759fb6d053b1595c82ee7dde7b2124b2a12406f0c45",
+      "disk_state": "b8ea0f5d8d1ed2f3d152a759fb6d053b1595c82ee7dde7b2124b2a12406f0c45",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/change_groups.py"
+    },
+    {
+      "baseline_commit_state": "fd426ac46465f58d3220141c342aa2968ab2649e1d432a6ace28fc8eea58bec8",
+      "disk_state": "fd426ac46465f58d3220141c342aa2968ab2649e1d432a6ace28fc8eea58bec8",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/change_regions.py"
+    },
+    {
+      "baseline_commit_state": "d3625789777d9f9e636b79e1b902af2aaa6e878c4ac78ed042b038135a33d36d",
+      "disk_state": "d3625789777d9f9e636b79e1b902af2aaa6e878c4ac78ed042b038135a33d36d",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/enriched_comparison.py"
+    },
+    {
+      "baseline_commit_state": "210c9d5aaa151b92cf2dd9f190729d68f10e13007e6a971c37a0d86ba9440621",
+      "disk_state": "210c9d5aaa151b92cf2dd9f190729d68f10e13007e6a971c37a0d86ba9440621",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/objects.py"
+    },
+    {
+      "baseline_commit_state": "absent",
+      "disk_state": {
+        "target": null,
+        "type": "missing"
+      },
+      "match": true,
+      "path": "backend/app/services/stage_comparison/pair_template.py"
+    },
+    {
+      "baseline_commit_state": "70a5a7c5896c3812d8c67b74b92b9b7ded462f6b148e3fe0ee7bd6b530973fa5",
+      "disk_state": "70a5a7c5896c3812d8c67b74b92b9b7ded462f6b148e3fe0ee7bd6b530973fa5",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/paths.py"
+    },
+    {
+      "baseline_commit_state": "d7c8d8edcc9b5c5c52aff44be1d6301ac7aed438d29384a4b42ed0928895403e",
+      "disk_state": "d7c8d8edcc9b5c5c52aff44be1d6301ac7aed438d29384a4b42ed0928895403e",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/pipeline_v2_graphic_vision_enrichment.py"
+    },
+    {
+      "baseline_commit_state": "e15b677673fcaaffed02b5a349189d25b71095e70a9f5666065b168dfa766594",
+      "disk_state": "e15b677673fcaaffed02b5a349189d25b71095e70a9f5666065b168dfa766594",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/prepared_document.py"
+    },
+    {
+      "baseline_commit_state": "b43dc818f30b11a1edc9de30b06db95cf9ddb6dbe3a9a08ad7f627361df75ced",
+      "disk_state": "b43dc818f30b11a1edc9de30b06db95cf9ddb6dbe3a9a08ad7f627361df75ced",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/saved_config.py"
+    },
+    {
+      "baseline_commit_state": "238306f4b162d8f9239ef679f317f3a204df6f661194307cd49437a6671312bf",
+      "disk_state": "238306f4b162d8f9239ef679f317f3a204df6f661194307cd49437a6671312bf",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/scanner.py"
+    },
+    {
+      "baseline_commit_state": "1667827039b86841c73cc1df4e22a1f9bd443da955eab59722de430f1850c22f",
+      "disk_state": "1667827039b86841c73cc1df4e22a1f9bd443da955eab59722de430f1850c22f",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/semantic_diff.py"
+    },
+    {
+      "baseline_commit_state": "cc33dbf3e91edf016288a800e4c40c83d8c07e0e90afdc7550513e0b78981303",
+      "disk_state": "cc33dbf3e91edf016288a800e4c40c83d8c07e0e90afdc7550513e0b78981303",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/semantic_diff_v6a1.py"
+    },
+    {
+      "baseline_commit_state": "09f8e808d3daed8985bdc38c98f2ed05fe1671785fbe90f95b7208a3cee382fc",
+      "disk_state": "09f8e808d3daed8985bdc38c98f2ed05fe1671785fbe90f95b7208a3cee382fc",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/semantic_diff_v6a2.py"
+    },
+    {
+      "baseline_commit_state": "ca8787a347b090fd9c2ac48425e469583bbbb4f420607ac766f0a9fcfb9eee84",
+      "disk_state": "ca8787a347b090fd9c2ac48425e469583bbbb4f420607ac766f0a9fcfb9eee84",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/sheet_alignment.py"
+    },
+    {
+      "baseline_commit_state": "d85e65eb8fc7db20899392a87924b8d1934a4aabf020495faa1900427e40eb7d",
+      "disk_state": "d85e65eb8fc7db20899392a87924b8d1934a4aabf020495faa1900427e40eb7d",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/sheet_identity.py"
+    },
+    {
+      "baseline_commit_state": "2063412f73bb4e04219a883d9ac1a7971c7dac3e9c00bd273a9b03fb421ce73d",
+      "disk_state": "2063412f73bb4e04219a883d9ac1a7971c7dac3e9c00bd273a9b03fb421ce73d",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/sheet_matcher.py"
+    },
+    {
+      "baseline_commit_state": "40025982c975d44c3dba6e535903c4302d2b6c86a4dd34cf485d5f2265639039",
+      "disk_state": "40025982c975d44c3dba6e535903c4302d2b6c86a4dd34cf485d5f2265639039",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/sheet_matching_diagnostic.py"
+    },
+    {
+      "baseline_commit_state": "479018a2fc804c4725e451a17a9ffda3d8817fb6b0598c95288767e2404ed01e",
+      "disk_state": "479018a2fc804c4725e451a17a9ffda3d8817fb6b0598c95288767e2404ed01e",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/stage_storage.py"
+    },
+    {
+      "baseline_commit_state": "b77b40da7e512bd75eac529ec60f99260a368fb7d4bd024dbe61a0fba5ffa6ca",
+      "disk_state": "b77b40da7e512bd75eac529ec60f99260a368fb7d4bd024dbe61a0fba5ffa6ca",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/stage_upload.py"
+    },
+    {
+      "baseline_commit_state": "absent",
+      "disk_state": {
+        "target": null,
+        "type": "missing"
+      },
+      "match": true,
+      "path": "backend/app/services/stage_comparison/stamp_auto_apply.py"
+    },
+    {
+      "baseline_commit_state": "absent",
+      "disk_state": {
+        "target": null,
+        "type": "missing"
+      },
+      "match": true,
+      "path": "backend/app/services/stage_comparison/stamp_llm_match.py"
+    },
+    {
+      "baseline_commit_state": "absent",
+      "disk_state": {
+        "target": null,
+        "type": "missing"
+      },
+      "match": true,
+      "path": "backend/app/services/stage_comparison/stamp_matching.py"
+    },
+    {
+      "baseline_commit_state": "2520d3783b1d041bdb2b66a61da035eafeb000d9c00eff28c1389ff5661a1710",
+      "disk_state": "2520d3783b1d041bdb2b66a61da035eafeb000d9c00eff28c1389ff5661a1710",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/store.py"
+    },
+    {
+      "baseline_commit_state": "92d6b90ddbeca394ff30741e0c501e5e37b68d57d79c568416a3c145c7e98997",
+      "disk_state": "92d6b90ddbeca394ff30741e0c501e5e37b68d57d79c568416a3c145c7e98997",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/unified_analysis.py"
+    },
+    {
+      "baseline_commit_state": "717aed70665d3590c96bc802e5fa319f683c67397d727a6708f4db4dc340749b",
+      "disk_state": "717aed70665d3590c96bc802e5fa319f683c67397d727a6708f4db4dc340749b",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/unified_findings.py"
+    },
+    {
+      "baseline_commit_state": "794d266f7919eae06eea58ea1503343e427f47a897818351e8ff1ec666dc1941",
+      "disk_state": "794d266f7919eae06eea58ea1503343e427f47a897818351e8ff1ec666dc1941",
+      "match": true,
+      "path": "backend/app/services/stage_comparison/visual_block_equivalence_jobs.py"
+    },
+    {
+      "baseline_commit_state": "021a88955b486e617d813a73d823e24f1ff2055f089bb4e2040edb92c3bde228",
+      "disk_state": "021a88955b486e617d813a73d823e24f1ff2055f089bb4e2040edb92c3bde228",
+      "match": true,
+      "path": "backend/scripts/run_semantic_diff_v6a1.py"
+    },
+    {
+      "baseline_commit_state": "63e9b27c60371c6bda3cdb267e551e5910d7bb46c30d109d7492d582af693659",
+      "disk_state": "63e9b27c60371c6bda3cdb267e551e5910d7bb46c30d109d7492d582af693659",
+      "match": true,
+      "path": "backend/tests/test_semantic_diff_v6a1.py"
+    },
+    {
+      "baseline_commit_state": "317e39627cf4158788afe13bc2adc72badd8d372d3ef3fa411993be638043aba",
+      "disk_state": "317e39627cf4158788afe13bc2adc72badd8d372d3ef3fa411993be638043aba",
+      "match": true,
+      "path": "backend/tests/test_semantic_diff_v6a2.py"
+    },
+    {
+      "baseline_commit_state": "bf34090c3092b0dea539a8181294227465554a38584f53a61e730eb989ef2b26",
+      "disk_state": "bf34090c3092b0dea539a8181294227465554a38584f53a61e730eb989ef2b26",
+      "match": true,
+      "path": "frontend/index.html"
+    },
+    {
+      "baseline_commit_state": "d9e1cf69f9456cc171fc30eb1f2e510475aabb096962996febb62d6646920e86",
+      "disk_state": "d9e1cf69f9456cc171fc30eb1f2e510475aabb096962996febb62d6646920e86",
+      "match": true,
+      "path": "frontend/static/css/styles.css"
+    },
+    {
+      "baseline_commit_state": "01c57bfc1c6625efc5a342de439102599b0daec130ad372446616ffed2f9a5fa",
+      "disk_state": "01c57bfc1c6625efc5a342de439102599b0daec130ad372446616ffed2f9a5fa",
+      "match": true,
+      "path": "frontend/static/js/app.js"
+    },
+    {
+      "baseline_commit_state": "b9974f4fd425830b0602d978d2c721a21edd6efc53e74f11f82d2c2f451c2f9e",
+      "disk_state": "b9974f4fd425830b0602d978d2c721a21edd6efc53e74f11f82d2c2f451c2f9e",
+      "match": true,
+      "path": "norms/norms_paragraphs.json"
+    }
+  ],
+  "excluded_old_inventory_paths": 66,
+  "excluded_paths_all_classified": true,
+  "final_baseline_commit": "46bcd527065aff074ca5fe730e3594e982d080d2",
+  "matched": 39,
+  "mismatched": 0,
+  "mismatches": [],
+  "new_post_snapshot_paths_reviewed": [
+    "backend/app/services/stage_comparison/semantic_diff_v6a1.py",
+    "backend/app/services/stage_comparison/semantic_diff_v6a2.py",
+    "backend/scripts/run_semantic_diff_v6a1.py",
+    "backend/tests/test_semantic_diff_v6a1.py",
+    "backend/tests/test_semantic_diff_v6a2.py"
+  ],
+  "result": "PASS",
+  "schema": "auditmanager.12f1c.baseline_equivalence.v1",
+  "selected_release_scope_paths": 39,
+  "unexplained_stable_source_diffs": 0
+}

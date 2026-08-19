@@ -1,0 +1,199 @@
+{
+  "stage": "11F",
+  "attempts": [
+    {
+      "task_id": "worker_slice_11f_real1",
+      "host": "andrewuzun3.hlab.kz",
+      "mode": "real",
+      "resumed": false,
+      "started_at": "2026-08-10T09:46:11Z",
+      "finished_at": "2026-08-10T09:49:34Z",
+      "exit_code": 1,
+      "duration_sec": 202.64,
+      "source_package": {
+        "sha256": "11d89f9f41078498efe935d7bcc9f54105162a0b9320bb33aeb68980ff39141a",
+        "project_id": "13АВ-РД-КМ-К2",
+        "version_id": "v001"
+      },
+      "provider": {
+        "grant_id": "g-worker_slice_11f_real1",
+        "model": "claude-opus-5",
+        "capability": "strong_audit",
+        "allowed_stages": [
+          "block_analysis",
+          "text_analysis",
+          "findings_merge",
+          "findings_review",
+          "optimization",
+          "optimization_critic",
+          "optimization_corrector"
+        ],
+        "max_inferences": 16,
+        "executable": "штатный путь установщика"
+      },
+      "audit_manifest": {
+        "worker_stage_plan": [
+          "crop_blocks",
+          "block_context",
+          "block_analysis",
+          "text_analysis",
+          "findings_merge",
+          "findings_review",
+          "optimization",
+          "optimization_review"
+        ],
+        "forbidden_stages_not_run": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ],
+        "discipline_id": "KM",
+        "profile": "remote_audit_pilot_v1",
+        "action": "full",
+        "pipeline_revision": "11f",
+        "provider_mode": "real",
+        "status": "failed",
+        "stage_completion": {
+          "crop_blocks": "done",
+          "block_context": "done",
+          "gemma_enrichment": "done",
+          "block_analysis": "error"
+        },
+        "resume_hint": "completed",
+        "central_only_stages": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ]
+      },
+      "result_package": {
+        "archive": "/home/coder/audit-worker-11f/sandbox/worker_slice_11f_real1/package_output/worker_slice_11f_real1-a1.tar.gz",
+        "sha256": "8d8cabad288062fe5b8b5663cc969852b7abd4264ea804e10dc9aba8c7af2bc7",
+        "bytes": 821597,
+        "files": 119,
+        "tree_hash": "sha256:0174f1ad9984b2c9c93349374262795242e37995e4188f7538323563102bd0fa",
+        "stage_completion": {
+          "crop_blocks": "done",
+          "block_context": "done",
+          "gemma_enrichment": "done",
+          "block_analysis": "error"
+        },
+        "resume_hint": "completed",
+        "forbidden_stages_not_run": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ]
+      }
+    },
+    {
+      "task_id": "worker_slice_11f_real2",
+      "host": "andrewuzun3.hlab.kz",
+      "mode": "real",
+      "resumed": false,
+      "started_at": "2026-08-10T09:52:16Z",
+      "finished_at": "2026-08-10T10:15:37Z",
+      "exit_code": 0,
+      "duration_sec": 1401.27,
+      "source_package": {
+        "sha256": "11d89f9f41078498efe935d7bcc9f54105162a0b9320bb33aeb68980ff39141a",
+        "project_id": "13АВ-РД-КМ-К2",
+        "version_id": "v001"
+      },
+      "provider": {
+        "grant_id": "g-worker_slice_11f_real2",
+        "model": "claude-opus-5",
+        "capability": "strong_audit",
+        "allowed_stages": [
+          "block_analysis",
+          "text_analysis",
+          "findings_merge",
+          "findings_review",
+          "optimization",
+          "optimization_critic",
+          "optimization_corrector"
+        ],
+        "max_inferences": 16,
+        "executable": "штатный путь установщика"
+      },
+      "audit_manifest": {
+        "worker_stage_plan": [
+          "crop_blocks",
+          "block_context",
+          "block_analysis",
+          "text_analysis",
+          "findings_merge",
+          "findings_review",
+          "optimization",
+          "optimization_review"
+        ],
+        "forbidden_stages_not_run": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ],
+        "discipline_id": "KM",
+        "profile": "remote_audit_pilot_v1",
+        "action": "full",
+        "pipeline_revision": "11f",
+        "provider_mode": "real",
+        "status": "completed",
+        "stage_completion": {
+          "crop_blocks": "done",
+          "block_context": "done",
+          "gemma_enrichment": "done",
+          "block_analysis": "done",
+          "block_retry": "skipped",
+          "text_analysis": "done",
+          "findings_merge": "done",
+          "findings_critic": "done",
+          "optimization": "done",
+          "findings_corrector": "done",
+          "critic_v2_triage": "skipped",
+          "optimization_critic": "done",
+          "optimization_corrector": "done"
+        },
+        "resume_hint": "completed",
+        "central_only_stages": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ]
+      },
+      "result_package": {
+        "archive": "/home/coder/audit-worker-11f/sandbox/worker_slice_11f_real2/package_output/worker_slice_11f_real2-a1.tar.gz",
+        "sha256": "9b08fb3bc6412c53a77bd396a6d326916e6786cf0a9ff6caa66a69362cb667bf",
+        "bytes": 957682,
+        "files": 143,
+        "tree_hash": "sha256:696c4ec0aa6cf238f11f84650e90ecd15a8e1c8ec6f75f46fa5ba373a65dd7a5",
+        "stage_completion": {
+          "crop_blocks": "done",
+          "block_context": "done",
+          "gemma_enrichment": "done",
+          "block_analysis": "done",
+          "block_retry": "skipped",
+          "text_analysis": "done",
+          "findings_merge": "done",
+          "findings_critic": "done",
+          "optimization": "done",
+          "findings_corrector": "done",
+          "critic_v2_triage": "skipped",
+          "optimization_critic": "done",
+          "optimization_corrector": "done"
+        },
+        "resume_hint": "completed",
+        "forbidden_stages_not_run": [
+          "norm_verify",
+          "decision_carryover",
+          "debt_control",
+          "excel"
+        ]
+      }
+    }
+  ]
+}

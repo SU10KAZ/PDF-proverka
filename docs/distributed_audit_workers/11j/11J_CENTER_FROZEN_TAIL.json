@@ -1,0 +1,19 @@
+{
+  "result": "PASS",
+  "job_A": {
+    "preset": "codex_exec",
+    "routing_plan_hash": "sha256:078a4dde6768ed599724d6ae2427fc9cb38ba967ba438f4114f744bca92d15be",
+    "center_handoff_state": "completed",
+    "log_marker": "FROZEN_ROUTING_PLAN FOUND"
+  },
+  "job_B": {
+    "preset": "claude_gpt_codex",
+    "routing_plan_hash": "sha256:7b978205cfc41b225b1301e86851bbe59a9975d50081d47169426c8a2609b611",
+    "center_handoff_state": "completed",
+    "log_marker": "FROZEN_ROUTING_PLAN FOUND"
+  },
+  "invalid_markers": 0,
+  "live_config_fallback_for_new_jobs": false,
+  "missing_or_invalid_new_job_plan": "FAIL_CLOSED",
+  "legacy_contract": "versioned v0 with explicit NOT_FOUND marker"
+}

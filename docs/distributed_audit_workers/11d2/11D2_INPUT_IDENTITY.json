@@ -1,0 +1,38 @@
+{
+  "kind": "11D.2 §6 — тождество входа с 11D",
+  "document": {
+    "logical_id": "213_Mosfilmovskaya_31A_KingSons / EOM / 133-23-ГК-ЭС / v001",
+    "object": "213_Mosfilmovskaya_31A_KingSons",
+    "discipline": "EOM",
+    "document_code": "133-23-ГК-ЭС",
+    "version_id": "v001",
+    "md_name": "133-23-ГК-ЭС_document.md",
+    "md_bytes": 19418,
+    "md_chars_on_disk": 11407,
+    "md_sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284"
+  },
+  "expected_from_11d_and_11d1": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+  "sha256_match_with_11d": true,
+  "verified_at": [
+    {
+      "where": "центр 176.12.77.128, корпус projects_v2 (источник)",
+      "path": "projects_v2/objects/213_Mosfilmovskaya_31A_KingSons/disciplines/EOM/documents/133-23-ГК-ЭС/versions/v001/01_input/133-23-ГК-ЭС_document.md",
+      "sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284"
+    },
+    {
+      "where": "воркер 176.12.77.31, копия 11D-рантайма (для сверки)",
+      "path": "/home/coder/audit-worker-11d/doc/133-23-ГК-ЭС_document.md",
+      "sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284"
+    },
+    {
+      "where": "воркер 176.12.77.31, НОВАЯ копия 11D.2 (вход прогона)",
+      "path": "/home/coder/audit-worker-11d2/doc/133-23-ГК-ЭС_document.md",
+      "sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284"
+    }
+  ],
+  "copy_provenance": "новая копия доставлена rsync'ом С ЦЕНТРА из корпуса, а не переложена из 11D-каталога: иначе сверялась бы копия с копией",
+  "unchanged_after_run": true,
+  "why_hash_and_not_size": "§6 задания: главный идентификатор — hash; 11,5 К символов из 11D — производная величина",
+  "md_chars_note": "11 407 — символов в файле; 11 544 — размер user-части промпта: боевой сборщик добавляет служебную строку «Below is the full text… Required output field: `\"text_source\": \"md\"`». Та же пара чисел зафиксирована в 11D.",
+  "committed_content": false
+}

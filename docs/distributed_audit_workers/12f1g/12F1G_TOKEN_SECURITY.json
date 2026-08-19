@@ -1,0 +1,22 @@
+{
+  "schema": "auditmanager.12f1g.token_security.v1",
+  "center_worker_token_count": 1,
+  "center_token_representation": "sha256 hash only",
+  "center_token_hash_column": "token_sha256",
+  "center_token_hash_length": 64,
+  "center_raw_runtime_credential_column_present": false,
+  "center_raw_runtime_credential_stored": false,
+  "center_raw_enrollment_secret_stored": false,
+  "worker_token_path_recorded": false,
+  "worker_token_mode": "0600",
+  "worker_token_owner_uid": 1002,
+  "worker_token_size_bytes": 47,
+  "worker_parent_boundary_protected": true,
+  "token_contents_read_by_coding_session": false,
+  "token_contents_in_logs_or_evidence": false,
+  "old_runtime_credential_imported": false,
+  "new_runtime_credential_active": true,
+  "destructive_test_on_only_production_credential": false,
+  "isolated_security_semantics_inherited_from_exact_patch_tests": true,
+  "verdict": "PASS"
+}

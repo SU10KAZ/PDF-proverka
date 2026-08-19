@@ -1,0 +1,30 @@
+{
+  "host": "176.12.77.31",
+  "checked_via": "SSH admin plane; boolean/status-only output",
+  "runtime_inference_calls": 0,
+  "claude": {
+    "ambient_cli_present": true,
+    "auth_configured": true,
+    "check": "claude --safe-mode auth status",
+    "zero_inference": true
+  },
+  "codex": {
+    "ambient_cli_present": true,
+    "auth_configured": true,
+    "check": "codex login status",
+    "zero_inference": true
+  },
+  "openrouter": {
+    "credential_configured": false,
+    "credential_content_read": false,
+    "network_call": false,
+    "verified": null
+  },
+  "test_runtime": {
+    "root": "/home/coder/audit-worker-11j1",
+    "agent_after_test": "inactive",
+    "executor_after_test": "inactive",
+    "test_secret_after_test": "absent"
+  },
+  "readiness": "NEEDS_OPENROUTER_PROVISIONING"
+}

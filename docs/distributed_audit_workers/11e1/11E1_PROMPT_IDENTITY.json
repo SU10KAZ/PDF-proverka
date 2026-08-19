@@ -1,0 +1,60 @@
+{
+  "kind": "11E.1 §6 — тождество model payload прогону 11E",
+  "how_measured": "промпт собран ОФЛАЙН, без обращения к модели: полный путь этапа прогнан в режиме fake (подставной CLI), сравнены отпечатки",
+  "rehearsal": {
+    "task_id": "findings_merge_11e1_dry",
+    "mode": "fake",
+    "model_calls": 0,
+    "result": "PASS"
+  },
+  "exact_hash_comparison": {
+    "prompt_sha256_11e": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e",
+    "prompt_sha256_11e1": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e",
+    "match": true,
+    "stdin_dump_sha256_11e": "2b5067e260b51638dfc22bb43a213f499834754c62731ed339113df588d49d34",
+    "stdin_dump_sha256_11e1": "2b5067e260b51638dfc22bb43a213f499834754c62731ed339113df588d49d34",
+    "match_dump": true,
+    "dump_bytes": 69966,
+    "note": "дамп + завершающий \\n = отпечаток, который считает конвейер (3b54ae46…) — та же особенность, что описана в 11E",
+    "conclusion": "payload ПОБАЙТОВО тот же. Устанавливать «детерминированную причину расхождения» не потребовалось: расхождения нет"
+  },
+  "task_id_not_part_of_payload": {
+    "checked": true,
+    "evidence": "task_id и путь каталога попытки в 11E.1 ДРУГИЕ (findings_merge_11e1_dry против findings_merge_11e_real), а отпечаток промпта совпал побайтово",
+    "consistent_with_11e": "в 11E то же доказано сравнением fake1/fake2"
+  },
+  "prompt_build_metrics": {
+    "system_chars": 12866,
+    "payload_chars": 38814,
+    "prompt_chars": 52816,
+    "filesystem_refs_stripped": 0,
+    "absolute_paths_remaining_in_instructions": 0,
+    "input_data_note_applied": true,
+    "transport_contract_applied": true,
+    "severity_semantics_applied": true,
+    "severity_semantics_anchor": "### Finding Fields",
+    "identical_to_11e": true
+  },
+  "semantic_recheck": {
+    "tool": "verify_11e_prompt_semantics.py (не изменялся)",
+    "content_removed": 0,
+    "unknown": 0,
+    "engineering_lost_vs_api": [],
+    "transport_leaked": [],
+    "input_missing_before_inference": [],
+    "passed": true,
+    "diff_vs_11e_report": "отчёт совпал с 11E_PROMPT_SEMANTIC_DIFF.json во всём, кроме имени временного каталога в ЦИТАТАХ заменяемого CLI-промпта (строки транспорта, в provider-промпт не попадают)",
+    "note": "смысловая сверка здесь избыточна: побайтовое равенство промпта сильнее любого поэлементного диффа. Прогнана для полноты"
+  },
+  "checked_items": {
+    "engineering_semantics_same": true,
+    "input_ordering_same": true,
+    "all_25_findings_present": true,
+    "severity_semantics_same": true,
+    "dedup_rules_same": true,
+    "evidence_source_rules_same": true,
+    "json_schema_same": true,
+    "transport_shell_same": true
+  },
+  "prompt_content_in_docs": false
+}

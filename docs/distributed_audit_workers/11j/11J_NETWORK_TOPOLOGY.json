@@ -1,0 +1,28 @@
+{
+  "result": "PASS",
+  "center": {
+    "host": "adm.hlab.kz",
+    "address_suffix": ".128",
+    "runtime": "isolated test-center",
+    "local_bind": "loopback behind ephemeral HTTPS tunnel"
+  },
+  "worker": {
+    "host": "andrewuzun3.hlab.kz",
+    "address": "176.12.77.31",
+    "worker_id": "wrk_726eb885",
+    "runtime_root": "/home/coder/audit-worker-11j1",
+    "outbound_https": true,
+    "inbound_runtime_port_opened": false
+  },
+  "center_endpoint": {
+    "scheme": "https",
+    "host": "vegetarian-floyd-thorough-exotic.trycloudflare.com",
+    "tls_verified": true,
+    "verify_false": false,
+    "curl_k": false
+  },
+  "transport": ["Agent poll", "claim", "source package download", "Executor", "EventOutbox", "result upload", "ACK", "central import"],
+  "ssh_used_for_job_transport": false,
+  "provider_transports": "fake only",
+  "real_provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "auditmanager.12f1d.worker_identity_before.v1",
+  "captured_at": "2026-08-13T11:02:11.275155031+03:00",
+  "capture_mode": "read_only_plus_prior_phaseb_evidence",
+  "host": "176.12.77.31",
+  "identity": {
+    "worker_id": "wrk_19c87718",
+    "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+    "install_root": "/home/auditworker_11l/audit-worker-11l",
+    "transport": "POLLING",
+    "center_url": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+    "connection_epoch": "NOT_FRESHLY_READABLE_FROM_ADMIN_USER"
+  },
+  "processes": {
+    "polling_agent": {
+      "pid": 2048874,
+      "user": "auditworker_11l",
+      "started_at": "2026-08-13T10:03:04+03:00",
+      "active_at_capture": true
+    },
+    "executor": {
+      "pid": 1384880,
+      "user": "auditworker_11l",
+      "started_at": "2026-08-11T14:31:30+03:00",
+      "active_at_capture": true
+    }
+  },
+  "credential_storage": {
+    "runtime_reference": "/home/auditworker_11l/audit-worker-11l/data/worker_token",
+    "claim_reference": "/home/auditworker_11l/audit-worker-11l/data/claim_secret",
+    "credential_contents_read": false,
+    "runtime_home_mode": "0750",
+    "runtime_home_owner": "auditworker_11l:auditworker_11l",
+    "live_file_metadata_visible_to_admin_ssh_user": false,
+    "implementation_required_mode": "0600",
+    "last_proven_config_mode": "0600"
+  },
+  "idle_preconditions_last_proven_in_phase_b": {
+    "active_attempts": 0,
+    "active_executor_jobs": 0,
+    "unwritten_event_outbox": 0,
+    "pending_cancel": 0,
+    "pending_result_center_visible": false,
+    "freshly_rechecked_in_12f1d": false,
+    "note": "The protected runtime home correctly denied the unprivileged admin SSH user. No enrollment mutation was attempted, so a privileged fresh idle check was not needed after the earlier canonical-contract hard stop."
+  },
+  "provider_status": {
+    "credential_or_login_state_changed_by_12f1d": false,
+    "live_status_freshly_probed": false,
+    "reason": "The canonical identity-preservation gate failed before any provider or runtime action."
+  },
+  "secrets_exposed": false
+}

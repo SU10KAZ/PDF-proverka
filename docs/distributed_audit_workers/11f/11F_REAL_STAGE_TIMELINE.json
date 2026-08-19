@@ -1,0 +1,113 @@
+{
+  "stage": "11F",
+  "attempts": [
+    {
+      "task_id": "worker_slice_11f_real1",
+      "exit_code": 1,
+      "duration_sec": 202.64,
+      "stages": [
+        {
+          "stage": "crop_blocks",
+          "status": "done",
+          "model_calls": 0,
+          "message": "Stage 01 crops ready",
+          "started_at": "2026-08-10T12:52:16.977263",
+          "duration_sec": 1
+        },
+        {
+          "stage": "block_context",
+          "status": "done",
+          "model_calls": 0,
+          "message": "Векторные графы блоков: 3/3; каталог 2026.08.04-legend; {'structured_structure': 3}",
+          "started_at": "2026-08-10T12:52:18.381262"
+        },
+        {
+          "stage": "gemma_enrichment",
+          "status": "done",
+          "model_calls": 0,
+          "message": "Векторные графы блоков: 3/3; каталог 2026.08.04-legend; {'structured_structure': 3}"
+        },
+        {
+          "stage": "block_analysis",
+          "status": "error",
+          "model_calls": 3,
+          "message": "OK (3/3 блоков, 152s, 14 findings, ~$0.000)",
+          "started_at": "2026-08-10T12:52:18.851657",
+          "duration_sec": 152
+        }
+      ]
+    },
+    {
+      "task_id": "worker_slice_11f_real2",
+      "exit_code": 0,
+      "duration_sec": 1401.27,
+      "stages": [
+        {
+          "stage": "crop_blocks",
+          "status": "done",
+          "model_calls": 0
+        },
+        {
+          "stage": "block_context",
+          "status": "done",
+          "model_calls": 0
+        },
+        {
+          "stage": "gemma_enrichment",
+          "status": "done",
+          "model_calls": 0
+        },
+        {
+          "stage": "block_analysis",
+          "status": "done",
+          "model_calls": 3
+        },
+        {
+          "stage": "block_retry",
+          "status": "skipped",
+          "model_calls": 0
+        },
+        {
+          "stage": "text_analysis",
+          "status": "done",
+          "model_calls": 1
+        },
+        {
+          "stage": "findings_merge",
+          "status": "done",
+          "model_calls": 1
+        },
+        {
+          "stage": "findings_critic",
+          "status": "done",
+          "model_calls": 0
+        },
+        {
+          "stage": "optimization",
+          "status": "done",
+          "model_calls": 1
+        },
+        {
+          "stage": "findings_corrector",
+          "status": "done",
+          "model_calls": 0
+        },
+        {
+          "stage": "critic_v2_triage",
+          "status": "skipped",
+          "model_calls": 0
+        },
+        {
+          "stage": "optimization_critic",
+          "status": "done",
+          "model_calls": 1
+        },
+        {
+          "stage": "optimization_corrector",
+          "status": "done",
+          "model_calls": 1
+        }
+      ]
+    }
+  ]
+}

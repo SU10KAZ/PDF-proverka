@@ -1,0 +1,421 @@
+{
+  "schema_version": 1,
+  "condition_evaluator_version": 1,
+  "preset_id": "claude_gpt_codex",
+  "pipeline_revision": "70938f2c",
+  "feature_flags": {
+    "AUDIT_CODEX_TARGETED_FINDINGS": "1",
+    "CLAUDE_DEFAULT_MODEL_CLASS": "cheap",
+    "NORM_CLAUSE_BINDING_ENABLED": "true",
+    "OPTIMIZATION_CRITIC_DETERMINISTIC": "true",
+    "PIPELINE_BLOCKS_BEFORE_TEXT_ENABLED": "true",
+    "PIPELINE_NORMS_AFTER_MERGE_ENABLED": "true",
+    "PIPELINE_VERIFIER_ENABLED": "true",
+    "STAGE01_DUAL_GAP_SEARCH_ENABLED": "true",
+    "STAGE01_DUAL_REVIEW_ENABLED": "true",
+    "STAGE01_THIRD_LEG_ENABLED": "true"
+  },
+  "stages": [
+    {
+      "stage_id": "block_batch",
+      "execution_scope": "worker",
+      "pipeline_stage": "block_analysis",
+      "actions": [
+        {
+          "action_id": "detector_openrouter",
+          "role": "detector",
+          "kind": "model",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_graphic_block"
+          },
+          "provider": "openrouter",
+          "capability": "block_detector",
+          "reasoning_effort": "low",
+          "parallel_group": "detectors",
+          "note": "внешний шлюз, единственный платный вызов конвейера"
+        },
+        {
+          "action_id": "detector_codex_standard",
+          "role": "detector",
+          "kind": "model",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_graphic_block"
+          },
+          "provider": "codex",
+          "capability": "block_detector",
+          "reasoning_effort": "low",
+          "parallel_group": "detectors"
+        },
+        {
+          "action_id": "detector_codex_strong",
+          "role": "detector",
+          "kind": "model",
+          "condition": {
+            "type": "feature_enabled",
+            "params": {
+              "flag": "STAGE01_THIRD_LEG_ENABLED"
+            }
+          },
+          "multiplicity": {
+            "type": "per_graphic_block"
+          },
+          "provider": "codex",
+          "capability": "block_detector_strong",
+          "reasoning_effort": "low",
+          "parallel_group": "detectors",
+          "note": "третья нога: другая модель ловит другие находки"
+        },
+        {
+          "action_id": "combine_detectors",
+          "role": "detector_combine",
+          "kind": "deterministic",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_graphic_block"
+          },
+          "depends_on": [
+            "detectors"
+          ],
+          "note": "combine_detector_results: объединение без дедупликации"
+        },
+        {
+          "action_id": "judge_gap_search",
+          "role": "judge_gap_search",
+          "kind": "model",
+          "condition": {
+            "type": "detectors_complete"
+          },
+          "multiplicity": {
+            "type": "per_graphic_block"
+          },
+          "provider": "codex",
+          "capability": "block_judge",
+          "depends_on": [
+            "combine_detectors"
+          ],
+          "note": "сопоставление находок И gap-search ОДНИМ обращением; reasoning effort не задаётся — действует умолчание CLI"
+        }
+      ],
+      "note": "этап одинаков в обоих пресетах: строка таблицы у них совпадает (ensemble/gpt-codex)"
+    },
+    {
+      "stage_id": "text_analysis",
+      "execution_scope": "worker",
+      "pipeline_stage": "text_analysis",
+      "actions": [
+        {
+          "action_id": "text_audit",
+          "role": "text_audit",
+          "kind": "model",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "provider": "claude",
+          "capability": "strong_audit",
+          "note": "агентный режим с файловыми инструментами, один вызов"
+        }
+      ]
+    },
+    {
+      "stage_id": "findings_merge",
+      "execution_scope": "worker",
+      "pipeline_stage": "findings_merge",
+      "actions": [
+        {
+          "action_id": "merge_base",
+          "role": "merge",
+          "kind": "model",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "provider": "claude",
+          "capability": "strong_audit"
+        }
+      ],
+      "note": "targeted-проходы существуют только на Codex-пути и идут строго последовательно после базового свода"
+    },
+    {
+      "stage_id": "findings_critic",
+      "execution_scope": "worker",
+      "pipeline_stage": "findings_review",
+      "actions": [
+        {
+          "action_id": "structural_checks",
+          "role": "structural_critic",
+          "kind": "deterministic",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "note": "run_deterministic_critic(llm_call=None): 0 обращений к модели"
+        }
+      ],
+      "note": "строка таблицы моделей для этого этапа не читается конвейером"
+    },
+    {
+      "stage_id": "findings_corrector",
+      "execution_scope": "worker",
+      "pipeline_stage": "findings_review",
+      "actions": [
+        {
+          "action_id": "apply_verdicts",
+          "role": "deterministic_fix",
+          "kind": "deterministic",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "note": "run_deterministic_corrector: применение вердиктов, 0 вызовов"
+        },
+        {
+          "action_id": "absence_guard",
+          "role": "absence_guard",
+          "kind": "model",
+          "condition": {
+            "type": "has_absence_candidates"
+          },
+          "multiplicity": {
+            "type": "per_chunk",
+            "params": {
+              "chunk_source": "md_chars"
+            }
+          },
+          "provider": "claude",
+          "capability": "cheap_review",
+          "depends_on": [
+            "apply_verdicts"
+          ],
+          "note": "модель берётся из глобальной ручки центра, а НЕ из строки таблицы: в «Full Codex» это тоже Claude"
+        }
+      ]
+    },
+    {
+      "stage_id": "norm_verify",
+      "execution_scope": "center",
+      "pipeline_stage": "norm_verify",
+      "actions": [
+        {
+          "action_id": "paragraph_verification",
+          "role": "norm_paragraph_verification",
+          "kind": "deterministic",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "note": "verify_paragraphs_native: локальный индекс норм, 0 вызовов. Ветка на модель существует только как обработка ИСКЛЮЧЕНИЯ native-пути и маршрутом не является"
+        },
+        {
+          "action_id": "clause_binding",
+          "role": "norm_binding",
+          "kind": "model",
+          "condition": {
+            "type": "has_clause_binding_targets"
+          },
+          "multiplicity": {
+            "type": "per_batch",
+            "params": {
+              "batch_size": 25,
+              "max_rounds": 2,
+              "target_source": "findings_without_clause"
+            }
+          },
+          "provider": "claude",
+          "capability": "strong_audit",
+          "note": "батчи по 25 целей последовательно, до 2 раундов на батч"
+        }
+      ]
+    },
+    {
+      "stage_id": "norm_fix",
+      "execution_scope": "center",
+      "pipeline_stage": "norm_verify",
+      "actions": [
+        {
+          "action_id": "review_findings",
+          "role": "norm_review_findings",
+          "kind": "model",
+          "condition": {
+            "type": "has_findings_needing_revision"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "provider": "claude",
+          "capability": "strong_audit"
+        },
+        {
+          "action_id": "review_optimization",
+          "role": "norm_review_optimization",
+          "kind": "model",
+          "condition": {
+            "type": "has_optimization_artifact"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "provider": "claude",
+          "capability": "strong_audit",
+          "depends_on": [
+            "review_findings"
+          ],
+          "note": "отдельной строки в таблице моделей у этого шага нет"
+        }
+      ]
+    },
+    {
+      "stage_id": "norm_requote",
+      "execution_scope": "center",
+      "pipeline_stage": "norm_verify",
+      "actions": [
+        {
+          "action_id": "requote_native",
+          "role": "norm_requote",
+          "kind": "deterministic",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "note": "requote_norms_native: локальный семантический поиск, 0 вызовов. Codex-fallback ЯВНО отключён, Claude-fallback — только обработка исключения"
+        }
+      ],
+      "note": "строки в интерфейсе нет, значение таблицы оператору не видно"
+    },
+    {
+      "stage_id": "optimization",
+      "execution_scope": "worker",
+      "pipeline_stage": "optimization",
+      "actions": [
+        {
+          "action_id": "optimization_primary",
+          "role": "optimization_primary",
+          "kind": "model",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "provider": "claude",
+          "capability": "strong_audit",
+          "parallel_group": "optimization_legs",
+          "note": "без изображений: ветка Claude визуальный контекст не собирает"
+        },
+        {
+          "action_id": "optimization_visual",
+          "role": "optimization_visual",
+          "kind": "model",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "provider": "codex",
+          "capability": "visual_reasoning",
+          "reasoning_effort": "xhigh",
+          "parallel_group": "optimization_legs",
+          "note": "с PNG графических блоков"
+        },
+        {
+          "action_id": "optimization_merge",
+          "role": "optimization_merge",
+          "kind": "deterministic",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "depends_on": [
+            "optimization_legs"
+          ],
+          "note": "merge_optimization_documents: консервативный дедуп, 0 вызовов"
+        }
+      ],
+      "note": "ансамбль одинаков в обоих пресетах, включая «Full Codex»"
+    },
+    {
+      "stage_id": "optimization_critic",
+      "execution_scope": "worker",
+      "pipeline_stage": "optimization_critic",
+      "actions": [
+        {
+          "action_id": "critic",
+          "role": "optimization_critic",
+          "kind": "model",
+          "condition": {
+            "type": "always"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "provider": "claude",
+          "capability": "cheap_review"
+        },
+        {
+          "action_id": "critic_augment",
+          "role": "critic_augment",
+          "kind": "deterministic",
+          "condition": {
+            "type": "feature_enabled",
+            "params": {
+              "flag": "OPTIMIZATION_CRITIC_DETERMINISTIC"
+            }
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "depends_on": [
+            "critic"
+          ],
+          "note": "run_deterministic_critic_augment: 100% покрытие вердиктами"
+        }
+      ]
+    },
+    {
+      "stage_id": "optimization_corrector",
+      "execution_scope": "worker",
+      "pipeline_stage": "optimization_corrector",
+      "actions": [
+        {
+          "action_id": "deterministic_fix",
+          "role": "deterministic_fix",
+          "kind": "deterministic",
+          "condition": {
+            "type": "has_critic_issues"
+          },
+          "multiplicity": {
+            "type": "per_document"
+          },
+          "note": "run_deterministic_corrector + ранний return: агентная ветка недостижима, строка таблицы не читается"
+        }
+      ],
+      "note": "строка таблицы моделей для этого этапа не читается конвейером"
+    }
+  ],
+  "routing_plan_id": "rp_8f07fb519ec24e2c",
+  "created_at": 1786394579.4129179,
+  "routing_plan_hash": "sha256:bd5488640d8574e834bf2ffdfd96fd5945ffeafb80b7af58cafbc442f7a6aa61"
+}

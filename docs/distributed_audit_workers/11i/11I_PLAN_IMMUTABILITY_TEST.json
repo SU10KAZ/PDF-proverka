@@ -1,0 +1,9 @@
+{
+  "scenario": "§42 задания: смена глобального пресета между заданиями",
+  "job_a_preset": "codex_exec",
+  "job_a_hash": "sha256:f6498507662be0dfc9d3066da155bdf9b42f348468cdf675d2caa2cb31bc3ae9",
+  "job_b_preset": "claude_gpt_codex",
+  "job_b_hash": "sha256:bd5488640d8574e834bf2ffdfd96fd5945ffeafb80b7af58cafbc442f7a6aa61",
+  "hashes_differ": true,
+  "test": "tests/test_audit_routing_plan_contract.py::test_p_global_preset_change_does_not_touch_created_job"
+}

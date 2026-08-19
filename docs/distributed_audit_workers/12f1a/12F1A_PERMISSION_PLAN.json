@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "status": "STAGED_NOT_APPLIED",
+  "service_identity": "operator decision: coder or dedicated non-root identity",
+  "required": {
+    "release_directories": "0755, immutable after build",
+    "release_files": "0644 or 0755 only where executable",
+    "service_nonsecret_config": "0640 or stricter",
+    "service_secret_file": "0600",
+    "bootstrap_or_issuer_private_material": "0600",
+    "persistent_workers_directory": "0700",
+    "workers_db": "0600",
+    "workers_db_wal": "0600",
+    "workers_db_shm": "0600",
+    "service_umask": "0077"
+  },
+  "live_production": {
+    "env_mode": "0664",
+    "process_umask": "0002",
+    "changed_by_12f1a": false
+  },
+  "staged_permission_tests_run": false,
+  "reason_not_run": "No baseline/candidate staged release may be built after the source-equivalence stop gate failed."
+}

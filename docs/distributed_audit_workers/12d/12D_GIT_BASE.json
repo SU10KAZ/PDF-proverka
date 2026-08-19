@@ -1,0 +1,8 @@
+{
+  "branch": "feat/distributed-audit-workers-mtls",
+  "worktree": ".claude/worktrees/distributed-audit-workers-mtls",
+  "base_commit": "0ba50e7cfcc3b495148b40b731660d3c46b85aaa",
+  "base_branch": "feat/distributed-audit-workers-agent-grpc-client",
+  "reviewed_12c_commit": "349c229940ad2e3562fb0d33d88670f3dfb955c6",
+  "verified_12c_chain": ["d1c4ce59", "21b40fab", "8e6e5c5e", "349c2299", "0ba50e7c"]
+}

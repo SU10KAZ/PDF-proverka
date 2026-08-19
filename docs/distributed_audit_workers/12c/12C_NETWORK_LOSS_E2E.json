@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "failure": "Gateway stopped during running fake Executor",
+  "executor_survived": true,
+  "gateway_restarted_same_port": true,
+  "higher_epoch": true,
+  "event_replay_without_duplicates": true,
+  "result_ack_after_reconnect": true
+}

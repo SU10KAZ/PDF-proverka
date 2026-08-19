@@ -1,0 +1,29 @@
+{
+  "schema": "auditmanager.12f.pki_idempotency_proof.v1",
+  "state": "PASS_ISOLATED_AND_READONLY_PRODUCTION_IDENTITY_KNOWN",
+  "scenario": [
+    "create one complete ephemeral root/issuer/server PKI set",
+    "simulate issuer launcher failure before active",
+    "run read-only complete-set validation twice",
+    "retry corrected immutable module launcher",
+    "issue one isolated Worker leaf",
+    "repeat identical request_id/CSR"
+  ],
+  "assertions": {
+    "all_eight_pki_file_sha256_unchanged": true,
+    "root_fingerprint_unchanged": true,
+    "issuer_fingerprint_unchanged": true,
+    "second_root_created": false,
+    "second_intermediate_created": false,
+    "duplicate_registry_row_created": false,
+    "same_request_returns_same_serial": true,
+    "validator_writes_files": false,
+    "incomplete_set_auto_regenerates": false
+  },
+  "production": {
+    "existing_material_disposition": "PRESERVE",
+    "new_ca_generated_in_recovery": false,
+    "production_leaf_issued": false,
+    "production_registry_rows": 0
+  }
+}

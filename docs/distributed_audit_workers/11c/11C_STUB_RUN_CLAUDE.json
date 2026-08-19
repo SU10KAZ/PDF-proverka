@@ -1,0 +1,605 @@
+{
+  "generated_at": 1786290976.685159,
+  "mode": "fake",
+  "provider": "claude",
+  "checks": [
+    {
+      "step": 1,
+      "title": "сетевой guard взведён: питон-процессы стенда не ходят вовне loopback",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 2,
+      "title": "каталог поддельных провайдеров помечен маркером",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 3,
+      "title": "контрольный файл на месте (снимок sha256/atime снят до прогона)",
+      "ok": true,
+      "detail": "canary не задан"
+    },
+    {
+      "step": 4,
+      "title": "синтетическая фикстура содержит числовое противоречие 10 против 12",
+      "ok": true,
+      "detail": "124 символов"
+    },
+    {
+      "step": 5,
+      "title": "изолированный центр обёрнут вокруг ПРОДОВОГО объекта приложения",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 6,
+      "title": "изолированный центр поднялся",
+      "ok": true,
+      "detail": "[config] Stage models loaded from stage_models.json\n[startup] распределённые audit-worker: ВКЛЮЧЕНЫ\n[startup] пул потоков to_thread: 64\n"
+    },
+    {
+      "step": 7,
+      "title": "оператор вошёл настоящей портальной аутентификацией",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 8,
+      "title": "воркер подал заявку на регистрацию по HTTP",
+      "ok": true,
+      "detail": "\nДальше: оператор одобряет воркер на экране «Аудит-воркеры» (POST /api/workers/<worker_id>/approve), после чего повторите `python -m audit_worker register` уже БЕЗ --bootstrap-secret.\n"
+    },
+    {
+      "step": 9,
+      "title": "администратор одобрил воркер через HTTP API",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "step": 10,
+      "title": "воркер обменял claim-secret на токен",
+      "ok": true,
+      "detail": "\nТокен получен. Запускайте `python -m audit_worker agent` (и отдельно `python -m audit_worker executor`).\n"
+    },
+    {
+      "step": 11,
+      "title": "агент и исполнитель — ОТДЕЛЬНЫЕ процессы",
+      "ok": true,
+      "detail": "agent=3897342 executor=3897343"
+    },
+    {
+      "step": 12,
+      "title": "воркер виден центру и шлёт heartbeat",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 13,
+      "title": "heartbeat: канал «конвейер → провайдер» разрешён администратором VPS",
+      "ok": true,
+      "detail": "[\"auth_mode\", \"inference_probe_allowed\", \"inference_probe_grant_remaining\", \"inference_probe_supported\", \"last_pipeline_inference\", \"parser_version\", \"pipeline_bridge_enabled\", \"pipeline_inference_gra"
+    },
+    {
+      "step": 14,
+      "title": "heartbeat: реальный вызов ЗАПРЕЩЁН — разрешения оператора ещё нет",
+      "ok": true,
+      "detail": "{\"grant_file_present\": false, \"error\": null, \"remaining_total\": 0}"
+    },
+    {
+      "step": 15,
+      "title": "центр считает воркер совместимым для аудита",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 16,
+      "title": "центр создал задание audit_pipeline_v1 (action=provider_selfcheck)",
+      "ok": true,
+      "detail": "{\"job_id\": \"3f9a5640-3e68-4e37-9ded-51bfe7b0becf\", \"attempt_id\": \"5cbe83f2-d5fa-40ca-a1a7-97b01db139ed\"}"
+    },
+    {
+      "step": 17,
+      "title": "оператор выписал разрешение на ОДИН вызов под это задание",
+      "ok": true,
+      "detail": "g-11c-claude-3f9a5640, TTL 3600 с"
+    },
+    {
+      "step": 18,
+      "title": "центр принял результат синтетической проверки",
+      "ok": true,
+      "detail": "состояние='completed'; [executor 18:55:58] исполнитель запущен: exe_75ab6e651f8a, pid=3897343\n[executor 18:56:06] разрешение g-11c-claude-3f9a5640 списано: 1/1 по claude\n[executor 18:56:06] привязка провайдера выписана: claude (isolated_provider_home), этапы ['provider_selfcheck']\n"
+    },
+    {
+      "step": 19,
+      "title": "привязка провайдера выписана исполнителем",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 20,
+      "title": "привязка ссылается на списанное разрешение оператора",
+      "ok": true,
+      "detail": "claude / g-11c-claude-3f9a5640"
+    },
+    {
+      "step": 21,
+      "title": "этап подтвердил результат сам: контракт + сверка с фрагментом",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 22,
+      "title": "режим авторизации результата совпадает с привязкой",
+      "ok": true,
+      "detail": "isolated_provider_home"
+    },
+    {
+      "step": 23,
+      "title": "вызов модели выполнен ИМЕННО В ЭТОМ прогоне (не replay)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 24,
+      "title": "модель нашла противоречие 10 против 12",
+      "ok": true,
+      "detail": "[10, 12]"
+    },
+    {
+      "step": 25,
+      "title": "манифест результата несёт действие и статус",
+      "ok": true,
+      "detail": "provider_selfcheck/completed"
+    },
+    {
+      "step": 26,
+      "title": "в манифест не попали контрольные литералы оператора",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 27,
+      "title": "I-P9: оплачиваемых вызовов ровно один",
+      "ok": true,
+      "detail": "{\"keys\": [{\"state\": \"replay\", \"key\": \"provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f\", \"claimed_at\": null, \"detail\": \"результат уже сохранён\", \"has_result\": true, \"performed_by_pid\": 3897413, \"completed_at\": 1786290966.6797366}], \"calls_started\": 1, \"calls_completed\": 1}"
+    },
+    {
+      "step": 28,
+      "title": "разрешение оператора исчерпано после прогона",
+      "ok": true,
+      "detail": "остаток 0"
+    },
+    {
+      "step": 29,
+      "title": "повторное чтение задания не меняет состояние",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 30,
+      "title": "рестарт исполнителя не породил нового вызова модели",
+      "ok": true,
+      "detail": "1 → 1"
+    },
+    {
+      "step": 31,
+      "title": "повторно списать исчерпанное разрешение невозможно",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 32,
+      "title": "результат ушёл на центр настоящими HTTP-запросами",
+      "ok": true,
+      "detail": "событий 5, загрузок 3"
+    },
+    {
+      "step": 33,
+      "title": "в записанных телах запросов нет секретов",
+      "ok": true,
+      "detail": "[\"authorization\", \"x-execution-token\"]"
+    },
+    {
+      "step": 34,
+      "title": "скан утечек: наружу не ушло ни секретов, ни контрольных строк",
+      "ok": true,
+      "detail": "{\"anthropic_key\": 0, \"openai_key\": 0, \"own_token\": 0, \"jwt\": 0, \"bearer\": 0, \"credentials_path\": 0, \"codex_auth_path\": 0, \"forbidden_literal\": 0}"
+    },
+    {
+      "step": 35,
+      "title": "execution-token попытки не ушёл ни в события, ни в артефакты, ни в тела запросов",
+      "ok": true,
+      "detail": "проверено файлов 24"
+    },
+    {
+      "step": 36,
+      "title": "ни один питон-процесс стенда не ходил вовне loopback",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "step": 37,
+      "title": "файл .env установленного репозитория не изменён",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "failed": false,
+  "job_id": "3f9a5640-3e68-4e37-9ded-51bfe7b0becf",
+  "attempt_id": "5cbe83f2-d5fa-40ca-a1a7-97b01db139ed",
+  "worker_id": "wrk_c9be66d5",
+  "binding": {
+    "schema_version": 1,
+    "provider": "claude",
+    "auth_mode": "isolated_provider_home",
+    "timeout_sec": 120.0,
+    "job_id": "3f9a5640-3e68-4e37-9ded-51bfe7b0becf",
+    "attempt_id": "5cbe83f2-d5fa-40ca-a1a7-97b01db139ed",
+    "task_id": "3f9a5640-3e68-4e37-9ded-51bfe7b0becf",
+    "grant_id": "g-11c-claude-3f9a5640",
+    "max_inferences": 1,
+    "allowed_stages": [
+      "provider_selfcheck"
+    ],
+    "model": null
+  },
+  "artifact": {
+    "stage": "provider_selfcheck",
+    "job_id": "3f9a5640-3e68-4e37-9ded-51bfe7b0becf",
+    "attempt_id": "5cbe83f2-d5fa-40ca-a1a7-97b01db139ed",
+    "project_id": "ТЕСТ-РД-11C-К1",
+    "started_at": 1786290966.6538224,
+    "finished_at": 1786290966.680605,
+    "cli_exit_code": 0,
+    "fragment_sha256": "42730836c1cac0036d5db514c8f850bf5d69a626f16bafb02917988c607ac793",
+    "fragment_chars": 124,
+    "prompt_chars": 895,
+    "expected_marker": "AUDIT_PIPELINE_11C_OK",
+    "grounding": {
+      "numbers_grounded": true,
+      "quotes_grounded": true,
+      "fragment_numbers": [
+        1.0,
+        10.0,
+        3.0,
+        32.0,
+        4.0,
+        1.0,
+        12.0,
+        3.0
+      ],
+      "reported_values": [
+        10.0,
+        12.0
+      ]
+    },
+    "performed": true,
+    "ledger": {
+      "state": "replay",
+      "key": "provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f",
+      "claimed_at": null,
+      "detail": "результат уже сохранён",
+      "has_result": true,
+      "performed_by_pid": 3897413,
+      "completed_at": 1786290966.6797366
+    },
+    "provider_result": {
+      "provider": "claude",
+      "model": "fake-model",
+      "status": "success",
+      "result": {
+        "contradiction_found": true,
+        "values": [
+          10,
+          12
+        ],
+        "unit": "м3/ч",
+        "source_quotes": [
+          "проектный расход 10 м3/ч",
+          "расход 12 м3/ч"
+        ],
+        "marker": "AUDIT_PIPELINE_11C_OK"
+      },
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 30
+      },
+      "duration_ms": 19,
+      "exit_code": 0,
+      "auth_mode": "isolated_provider_home",
+      "error_code": null,
+      "detail": null,
+      "raw_sha256": "c618b182e7319efbb9df110278c9bc8de9644df3de5d1fee8f8718ca1db50465",
+      "raw_bytes": 300
+    },
+    "validation": {
+      "passed": true,
+      "failed": [],
+      "checks": [
+        {
+          "name": "exit_code",
+          "passed": true,
+          "detail": "код возврата CLI: 0"
+        },
+        {
+          "name": "status",
+          "passed": true,
+          "detail": "status='success' error_code=None"
+        },
+        {
+          "name": "json_parsed",
+          "passed": true,
+          "detail": "ответ модели разобран как JSON-объект"
+        },
+        {
+          "name": "required_fields",
+          "passed": true,
+          "detail": "все поля на месте"
+        },
+        {
+          "name": "field_types",
+          "passed": true,
+          "detail": "типы полей верны"
+        },
+        {
+          "name": "expected_semantics",
+          "passed": true,
+          "detail": "смысловые ожидания выполнены"
+        },
+        {
+          "name": "no_credential_like",
+          "passed": true,
+          "detail": "форм учётных данных нет"
+        },
+        {
+          "name": "no_private_paths",
+          "passed": true,
+          "detail": "абсолютных приватных путей нет"
+        },
+        {
+          "name": "no_forbidden_literals",
+          "passed": true,
+          "detail": "проверено запрещённых литералов: 0"
+        },
+        {
+          "name": "provider_matches_task",
+          "passed": true,
+          "detail": "провайдер 'claude', ожидался 'claude'"
+        },
+        {
+          "name": "auth_mode_matches_task",
+          "passed": true,
+          "detail": "режим авторизации 'isolated_provider_home', ожидался 'isolated_provider_home'"
+        },
+        {
+          "name": "identity_matches_claim",
+          "passed": true,
+          "detail": "task_id='3f9a5640-3e68-4e37-9ded-51bfe7b0becf'/'3f9a5640-3e68-4e37-9ded-51bfe7b0becf' attempt_id='5cbe83f2-d5fa-40ca-a1a7-97b01db139ed'/'5cbe83f2-d5fa-40ca-a1a7-97b01db139ed'"
+        }
+      ]
+    }
+  },
+  "manifest": {
+    "worker_stage_plan": [
+      "provider_selfcheck"
+    ],
+    "completed_stages": [
+      "provider_selfcheck"
+    ],
+    "forbidden_stages_not_run": [
+      "norm_verify",
+      "decision_carryover",
+      "debt_control",
+      "excel"
+    ],
+    "applied_runtime_config": {
+      "runtime_snapshot_hash": "sha256:0ce026f0f83c560630b4eac92adf73f3239e2afa56927f327194157188b51fb6",
+      "snapshot_version": 2,
+      "execution_profile": "remote_audit_pilot_v1",
+      "pipeline_revision": "git:1111111111111111111111111111111111111111",
+      "declared_write_mode": "projects_v2_primary",
+      "applied_write_mode": "projects_v2_primary",
+      "provider_mode": "real",
+      "discipline_id": "VK",
+      "discipline_profile_hash": "sha256:9b83e58e2d829e56b7e7815a0f655bd54013b4316ce7150e47bd6c7e94235649",
+      "include_norms": false,
+      "project_layout_version": 2,
+      "path_policy_version": 2,
+      "environment_policy_version": 2,
+      "prompt_bundle_hash": "sha256:38f95c0c0c8cb83892fec37766cefdbbcd4d693ae1ba88a79eef834ecb17a799",
+      "model_config_hash": "sha256:5ef50ad9de5e28127f39e9783db5c2bcfd2b8bc9653b07539db4a903bda013f6",
+      "feature_flags_hash": "sha256:c76465b8e1167fe24e95505d11da77cf0257459e720c0be50fea4e1b93db744c",
+      "stage_model_mapping": {
+        "block_batch": "codex/gpt-5.4",
+        "findings_corrector": "claude-opus-5",
+        "findings_critic": "claude-opus-5",
+        "findings_merge": "claude-opus-5",
+        "norm_fix": "claude-opus-5",
+        "norm_requote": "claude-opus-5",
+        "norm_verify": "claude-opus-5",
+        "optimization": "claude-opus-5",
+        "optimization_corrector": "claude-opus-5",
+        "optimization_critic": "claude-opus-5",
+        "text_analysis": "claude-opus-5"
+      },
+      "host_write_mode_overridden": null,
+      "provider_mode_forced_by_snapshot": false
+    },
+    "applied_discipline_profile": {
+      "discipline_id": "VK",
+      "profile_dir": "VK",
+      "profile_version": "1",
+      "discipline_profile_hash": "sha256:9b83e58e2d829e56b7e7815a0f655bd54013b4316ce7150e47bd6c7e94235649",
+      "files_applied": 11,
+      "checklists": [
+        "discipline_checklists/VK.md",
+        "discipline_checklists_metadata/VK.json"
+      ],
+      "source_revision": "git:1111111111111111111111111111111111111111",
+      "role_chars": 1097,
+      "checklist_chars": 3009,
+      "loaded_code": "VK"
+    },
+    "discipline_id": "VK",
+    "discipline_profile_hash": "sha256:9b83e58e2d829e56b7e7815a0f655bd54013b4316ce7150e47bd6c7e94235649",
+    "job_id": "3f9a5640-3e68-4e37-9ded-51bfe7b0becf",
+    "attempt_id": "5cbe83f2-d5fa-40ca-a1a7-97b01db139ed",
+    "project_id": "ТЕСТ-РД-11C-К1",
+    "version_id": "v001",
+    "profile": "remote_audit_pilot_v1",
+    "action": "provider_selfcheck",
+    "pipeline_revision": "git:1111111111111111111111111111111111111111",
+    "provider_mode": "real",
+    "provider_bridge": {
+      "provider": "claude",
+      "auth_mode": "isolated_provider_home",
+      "model": null,
+      "max_inferences": 1,
+      "allowed_stages": [
+        "provider_selfcheck"
+      ],
+      "grant_id": "g-11c-claude-3f9a5640"
+    },
+    "status": "completed",
+    "error": null,
+    "stage_completion": {
+      "provider_selfcheck": "done"
+    },
+    "resume_hint": null,
+    "central_only_stages": [
+      "norm_verify",
+      "decision_carryover",
+      "debt_control",
+      "excel"
+    ],
+    "finished_at": 1786290966.6814737
+  },
+  "ledger": {
+    "keys": [
+      {
+        "state": "replay",
+        "key": "provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f",
+        "claimed_at": null,
+        "detail": "результат уже сохранён",
+        "has_result": true,
+        "performed_by_pid": 3897413,
+        "completed_at": 1786290966.6797366
+      }
+    ],
+    "calls_started": 1,
+    "calls_completed": 1
+  },
+  "idempotency": {
+    "ledger_before": {
+      "keys": [
+        {
+          "state": "replay",
+          "key": "provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f",
+          "claimed_at": null,
+          "detail": "результат уже сохранён",
+          "has_result": true,
+          "performed_by_pid": 3897413,
+          "completed_at": 1786290966.6797366
+        }
+      ],
+      "calls_started": 1,
+      "calls_completed": 1
+    },
+    "ledger_after": {
+      "keys": [
+        {
+          "state": "replay",
+          "key": "provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f",
+          "claimed_at": null,
+          "detail": "результат уже сохранён",
+          "has_result": true,
+          "performed_by_pid": 3897413,
+          "completed_at": 1786290966.6797366
+        }
+      ],
+      "calls_started": 1,
+      "calls_completed": 1
+    },
+    "grant_reconsumed": false
+  },
+  "transport": {
+    "worker_requests": 42,
+    "result_events": 5,
+    "upload_requests": 3,
+    "heartbeats": 4,
+    "masked_headers": [
+      "authorization",
+      "x-execution-token"
+    ],
+    "secrets_in_bodies": 0,
+    "sample_event_path": "/api/v1/worker/events",
+    "sample_event_keys": [
+      "attempt_id",
+      "count",
+      "events",
+      "first_seq",
+      "job_id"
+    ]
+  },
+  "canary": {
+    "before": {
+      "present": false
+    },
+    "after": {
+      "present": false
+    }
+  },
+  "leak_scan": {
+    "scanned_files": 24,
+    "hits": {
+      "anthropic_key": 0,
+      "openai_key": 0,
+      "own_token": 0,
+      "jwt": 0,
+      "bearer": 0,
+      "credentials_path": 0,
+      "codex_auth_path": 0,
+      "forbidden_literal": 0
+    },
+    "total": 0,
+    "location_types": [],
+    "verdict": "PASS"
+  },
+  "execution_token_scan": {
+    "scanned_files": 24,
+    "total": 0,
+    "location_types": [],
+    "verdict": "PASS",
+    "forbidden_literal": 0
+  },
+  "capability": {
+    "auth_mode": "isolated_provider_home",
+    "inference_probe_allowed": false,
+    "inference_probe_grant_remaining": 0,
+    "inference_probe_supported": true,
+    "last_pipeline_inference": null,
+    "parser_version": "claude-1",
+    "pipeline_bridge_enabled": true,
+    "pipeline_inference_grant": {
+      "grant_file_present": false,
+      "error": null,
+      "remaining_total": 0
+    },
+    "provider": "claude",
+    "provider_home": {
+      "layout": "worker_data_dir/providers/<provider>/{home,runtime,metadata}",
+      "auth_mode": "isolated_provider_home",
+      "home_exists": true,
+      "home_owned_by_worker": true,
+      "runtime_exists": true,
+      "metadata_exists": true
+    },
+    "quota_source_stability": "not_applicable",
+    "real_inference_allowed": false,
+    "structured_quota_source": "unavailable",
+    "zero_inference_auth_status": true,
+    "zero_inference_quota": false
+  }
+}

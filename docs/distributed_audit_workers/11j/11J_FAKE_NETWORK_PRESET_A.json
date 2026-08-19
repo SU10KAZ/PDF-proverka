@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "label": "Claude+GPT+Codex Job B",
+  "job_id": "d8e704e5-662a-49af-b616-c83c925e1c49",
+  "attempt_id": "15b6b2fb-ae0f-4860-bfc6-08a0e0baa918",
+  "worker_id": "wrk_726eb885",
+  "preset_id": "claude_gpt_codex",
+  "routing_plan_id": "rp_f215b09ef74540dc",
+  "routing_plan_hash": "sha256:7b978205cfc41b225b1301e86851bbe59a9975d50081d47169426c8a2609b611",
+  "graphic_blocks": 2,
+  "block_actions_per_block": ["detector_openrouter", "detector_codex_standard", "detector_codex_strong", "judge_gap_search"],
+  "text": "claude/strong_audit",
+  "merge": "claude/strong_audit; targeted actions absent",
+  "absence_guard": "claude/cheap_review",
+  "optimization": ["claude/strong_audit", "codex/visual_reasoning@xhigh"],
+  "optimization_critic": "claude/cheap_review",
+  "predicted": {"claude": 5, "codex": 7, "openrouter": 2, "total": 14},
+  "executed": {"claude": 5, "codex": 7, "openrouter": 2, "total": 14},
+  "deterministic_actions_created_model_calls": false,
+  "result_import_state": "applied",
+  "central_handoff_state": "completed",
+  "real_provider_calls": 0
+}

@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "gateway": "real loopback dynamic socket",
+  "agent": "real WorkerAgent",
+  "executor": "real Executor with approved test_pipeline_v1",
+  "flow": ["Hello", "Heartbeat", "JobOffer", "HTTPS source", "JobAccept", "Executor", "EventBatch/Ack", "HTTPS result", "ResultReady/Ack", "retention"],
+  "result_state": "completed",
+  "execution_token_in_proto": false,
+  "real_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

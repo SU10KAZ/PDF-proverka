@@ -1,0 +1,432 @@
+{
+  "preset_id": "claude_gpt_codex",
+  "routing_plan_hash": "sha256:bd5488640d8574e834bf2ffdfd96fd5945ffeafb80b7af58cafbc442f7a6aa61",
+  "model_actions": 13,
+  "trace": [
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_openrouter",
+      "role": "detector",
+      "kind": "model",
+      "provider": "openrouter",
+      "capability": "block_detector",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_codex_standard",
+      "role": "detector",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_detector",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_codex_strong",
+      "role": "detector",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_detector_strong",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "feature_enabled",
+        "params": {
+          "flag": "STAGE01_THIRD_LEG_ENABLED"
+        }
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "combine_detectors",
+      "role": "detector_combine",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "detectors"
+      ],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "judge_gap_search",
+      "role": "judge_gap_search",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_judge",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "combine_detectors"
+      ],
+      "condition": {
+        "type": "detectors_complete"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "text_analysis",
+      "pipeline_stage": "text_analysis",
+      "execution_scope": "worker",
+      "action_id": "text_audit",
+      "role": "text_audit",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "findings_merge",
+      "pipeline_stage": "findings_merge",
+      "execution_scope": "worker",
+      "action_id": "merge_base",
+      "role": "merge",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "findings_critic",
+      "pipeline_stage": "findings_review",
+      "execution_scope": "worker",
+      "action_id": "structural_checks",
+      "role": "structural_critic",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "findings_corrector",
+      "pipeline_stage": "findings_review",
+      "execution_scope": "worker",
+      "action_id": "apply_verdicts",
+      "role": "deterministic_fix",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "findings_corrector",
+      "pipeline_stage": "findings_review",
+      "execution_scope": "worker",
+      "action_id": "absence_guard",
+      "role": "absence_guard",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "cheap_review",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "apply_verdicts"
+      ],
+      "condition": {
+        "type": "has_absence_candidates"
+      },
+      "multiplicity": {
+        "type": "per_chunk",
+        "params": {
+          "chunk_source": "md_chars"
+        }
+      }
+    },
+    {
+      "stage_id": "norm_verify",
+      "pipeline_stage": "norm_verify",
+      "execution_scope": "center",
+      "action_id": "paragraph_verification",
+      "role": "norm_paragraph_verification",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "norm_verify",
+      "pipeline_stage": "norm_verify",
+      "execution_scope": "center",
+      "action_id": "clause_binding",
+      "role": "norm_binding",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "has_clause_binding_targets"
+      },
+      "multiplicity": {
+        "type": "per_batch",
+        "params": {
+          "batch_size": 25,
+          "max_rounds": 2,
+          "target_source": "findings_without_clause"
+        }
+      }
+    },
+    {
+      "stage_id": "norm_fix",
+      "pipeline_stage": "norm_verify",
+      "execution_scope": "center",
+      "action_id": "review_findings",
+      "role": "norm_review_findings",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "has_findings_needing_revision"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "norm_fix",
+      "pipeline_stage": "norm_verify",
+      "execution_scope": "center",
+      "action_id": "review_optimization",
+      "role": "norm_review_optimization",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "review_findings"
+      ],
+      "condition": {
+        "type": "has_optimization_artifact"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "norm_requote",
+      "pipeline_stage": "norm_verify",
+      "execution_scope": "center",
+      "action_id": "requote_native",
+      "role": "norm_requote",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_primary",
+      "role": "optimization_primary",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "strong_audit",
+      "reasoning_effort": null,
+      "parallel_group": "optimization_legs",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_visual",
+      "role": "optimization_visual",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "visual_reasoning",
+      "reasoning_effort": "xhigh",
+      "parallel_group": "optimization_legs",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization",
+      "pipeline_stage": "optimization",
+      "execution_scope": "worker",
+      "action_id": "optimization_merge",
+      "role": "optimization_merge",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "optimization_legs"
+      ],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_critic",
+      "pipeline_stage": "optimization_critic",
+      "execution_scope": "worker",
+      "action_id": "critic",
+      "role": "optimization_critic",
+      "kind": "model",
+      "provider": "claude",
+      "capability": "cheap_review",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_critic",
+      "pipeline_stage": "optimization_critic",
+      "execution_scope": "worker",
+      "action_id": "critic_augment",
+      "role": "critic_augment",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "critic"
+      ],
+      "condition": {
+        "type": "feature_enabled",
+        "params": {
+          "flag": "OPTIMIZATION_CRITIC_DETERMINISTIC"
+        }
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    },
+    {
+      "stage_id": "optimization_corrector",
+      "pipeline_stage": "optimization_corrector",
+      "execution_scope": "worker",
+      "action_id": "deterministic_fix",
+      "role": "deterministic_fix",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [],
+      "condition": {
+        "type": "has_critic_issues"
+      },
+      "multiplicity": {
+        "type": "per_document"
+      }
+    }
+  ]
+}

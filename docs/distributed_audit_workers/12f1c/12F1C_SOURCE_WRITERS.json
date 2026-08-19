@@ -1,0 +1,48 @@
+{
+  "schema": "auditmanager.12f1c.source_writers.v2",
+  "observed_at": "2026-08-13T08:55:37+03:00",
+  "production_root": "/home/coder/projects/PDF-proverka",
+  "production_branch": "feature/block-vector-graphs",
+  "production_status_path_count": 105,
+  "historical_writer_attribution": {
+    "writer_class": "PARALLEL_CODING_AGENT",
+    "tool": "Claude",
+    "pid": 1630609,
+    "started": "2026-08-12T07:22:24+03:00",
+    "working_directory": "/home/coder/projects/PDF-proverka",
+    "production_checkout": true,
+    "isolated_worktree": false,
+    "confidence": "HIGH",
+    "operator_confirmed_session_closed": true
+  },
+  "final_pid_1630609_classification": {
+    "process_present": true,
+    "class": "DORMANT_VSCODE_EXTENSION_DAEMON_NOT_ACTIVE_CODING_SESSION",
+    "wait_channel": "ep_poll",
+    "open_production_repository_files": 0,
+    "write_bytes_at_precheck": 823296,
+    "write_bytes_at_final_check": 823296,
+    "mutation_during_observation": false
+  },
+  "file_level_attribution": {
+    "all_seven_deltas_proven_written_by_pid_1630609": false,
+    "claim": "NOT_MADE",
+    "evidence": "Cwd and session identity prove a production-root coding agent existed, but no per-file audit/inotify record identifies the writer of every delta."
+  },
+  "other_claude_processes_final": [
+    {"pid": 1276831, "cwd": "/home/coder/Uzun/Uzun L/Normirovanie"},
+    {"pid": 1839408, "cwd": "/home/coder/projects/OSA/Repnikov"},
+    {"pid": 1868175, "cwd": "/home/coder/projects/OSA/Repnikov"},
+    {"pid": 2163858, "cwd": "/home/coder/projects/OSA/Grivapsch"},
+    {"pid": 2165003, "cwd": "/home/coder/projects/OSA/Alexandra"}
+  ],
+  "all_other_claude_open_production_repository_files": 0,
+  "quiescence_manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+  "quiescence_elapsed_seconds": 1200.106,
+  "post_build_manifest_sha256": "af0ccd9a6d3b41136d09b2fac324636f81db98a1c4f62d1bbb622e87d55a704a",
+  "parallel_production_coding_agent_stopped": true,
+  "other_source_writers_absent": true,
+  "production_source_writers_final_count": 0,
+  "production_source_quiescent": true,
+  "processes_signalled_or_killed_by_12f1c": false
+}

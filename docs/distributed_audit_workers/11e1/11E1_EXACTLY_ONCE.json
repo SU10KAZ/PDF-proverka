@@ -1,0 +1,61 @@
+{
+  "kind": "11E.1 §2/§18 — ровно один оплаченный вызов, второго не было",
+  "claude_real_inferences": 1,
+  "codex_inferences": 0,
+  "auto_retry_performed": false,
+  "manual_retry_performed": false,
+  "evidence": {
+    "ledger": {
+      "path": "sandbox/findings_merge_11e1_retry/inference/",
+      "keys": 1,
+      "key": "findings_merge-a877e438d07e7c05b0208f5a6eecf5b5",
+      "calls_started": 1,
+      "calls_completed": 1,
+      "performed_by_pid": 993178,
+      "performed_now": true,
+      "state_at_report_time": "replay — журнал отдал уже сохранённый результат отчётной сверке, повторного вызова это не значит"
+    },
+    "grant": {
+      "grant_id": "g-findings_merge_11e1_retry",
+      "max_uses": 1,
+      "used_after_run": 1,
+      "remaining_after_consume": 0,
+      "reusable_grant_found_after_run": false,
+      "consequence": "второй вызов под этим task_id теперь невозможен конструктивно"
+    },
+    "process_tree": {
+      "distinct_claude_processes_during_run": 1,
+      "pid": 993284,
+      "snapshots": 1433,
+      "note": "снимок брался каждые 2 с всё время прогона; второго процесса CLI не появлялось"
+    },
+    "usage_records": {
+      "count": 1,
+      "is_error": false,
+      "cost_usd": 0.98269
+    }
+  },
+  "zero_inference_activity_alongside": {
+    "rehearsal_fake_runs": 1,
+    "rehearsal_task_id": "findings_merge_11e1_dry",
+    "rehearsal_model_calls": 0,
+    "why_it_is_not_an_inference": "режим fake подставляет собственный исполняемый файл вместо CLI; сети и провайдера в этом пути нет",
+    "gate_runs": 2,
+    "gate_model_calls": 0
+  },
+  "other_stages_run": {
+    "text_analysis": 0,
+    "block_analysis": 0,
+    "norm_verify": 0,
+    "critic": 0,
+    "corrector": 0,
+    "optimization": 0,
+    "full_pipeline": 0,
+    "downstream": 0
+  },
+  "center_side": {
+    "additional_model_calls_during_live_call": 0,
+    "how": "на время боевого вызова центральная сессия ждала завершения фонового процесса и не порождала ни субагентов, ни параллельных обращений (§8)",
+    "architecture_changed_for_this": false
+  }
+}

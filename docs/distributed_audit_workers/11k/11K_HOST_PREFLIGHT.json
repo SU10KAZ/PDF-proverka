@@ -1,0 +1,7 @@
+{
+  "supported": {"os": ["Ubuntu", "Debian"], "arch": ["x86_64", "aarch64"], "python_min": "3.10", "runtime_user": "non-root"},
+  "hard_fail": {"cpu_min": 2, "disk_free_mb_min": 6000, "required_tools": ["python3", "tar", "sha256sum", "curl", "systemctl"], "tls_verify": true, "clock_skew_sec_max": 300, "user_systemd": true},
+  "warnings_not_invented_as_hard_limits": {"pilot_cpu": 4, "pilot_ram_mb": 8192, "pilot_total_disk_mb": 102400},
+  "inventory": ["hostname", "OS/version", "arch", "user/uid", "sudo", "CPU", "RAM", "disk", "Python", "Node", "git", "wget", "zstd", "DNS", "TLS", "clock", "linger", "ports", "existing Claude/Codex", "existing release", "namespaced units"],
+  "basis": "2 CPU and 6000 MB are the proven 11G smoke gates; 4 CPU/8 GiB/100 GiB is reported only as the documented pilot profile warning"
+}

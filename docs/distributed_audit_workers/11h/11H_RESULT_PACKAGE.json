@@ -1,0 +1,17 @@
+{
+ "stage": "11H",
+ "question": "что именно приехало на центр и прошло ли проверку",
+ "result_package_hash_prefix": "4b9d5212b434556d71b1edbe",
+ "import_state": "applied",
+ "validation": {
+  "hash_checked": true,
+  "worker_artifacts_complete": true,
+  "worker_artifacts_missing": [],
+  "central_artifacts_in_package": [],
+  "note_on_check_87": "проверка «центральных артефактов в результате нет» в этом режиме срабатывает ложно: она смотрит на дерево ПОСЛЕ центрального хвоста, а хвост как раз и создал norm_checks.json и 03a_norms_verified.json. Дефект проверки, не рантайма — см. 11H_TEST_REPORT.md"
+ },
+ "portable_paths": {
+  "absolute_worker_paths_in_package": 0,
+  "note": "контракт переносимости проверяется центром при импорте; отказ по нему был исправлен на 11G"
+ }
+}

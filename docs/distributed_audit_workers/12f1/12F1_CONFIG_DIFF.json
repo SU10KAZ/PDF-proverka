@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "status": "PLANNED_NOT_APPLIED",
+  "current_env": {
+    "path": "/home/coder/projects/PDF-proverka/.env",
+    "sha256": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+    "mode": "0664"
+  },
+  "preserve_unchanged": [
+    "all provider credentials and provider routing values",
+    "portal users and session secret",
+    "project, prompt, normative and comparison paths",
+    "mail, VPN, nginx, Caddy and cloudflared configuration"
+  ],
+  "planned_additions": {
+    "AUDIT_ROOT_DIR": "/home/coder/projects/PDF-proverka",
+    "AUDIT_APP_DATA_DIR": "/home/coder/projects/PDF-proverka/backend/app/data",
+    "AUDIT_PROJECTS_DIR": "/home/coder/projects/PDF-proverka/projects",
+    "AUDIT_PROMPTS_DIR": "/home/coder/projects/PDF-proverka/prompts",
+    "DISTRIBUTED_WORKERS_ENABLED": "true",
+    "DISTRIBUTED_WORKERS_DATA_DIR": "/home/coder/projects/PDF-proverka/backend/app/data/distributed_workers",
+    "DISTRIBUTED_WORKERS_ALLOW_INSECURE_ADMIN": "false",
+    "DISTRIBUTED_AUDIT_EXECUTION_ENABLED": "false",
+    "AUDIT_PIPELINE_REVISION": "UNRESOLVED_FINAL_CANDIDATE_COMMIT",
+    "DISTRIBUTED_WORKERS_BOOTSTRAP_SECRET": "GENERATE_OUTSIDE_GIT_DURING_AUTHORIZED_PHASE_B",
+    "DISTRIBUTED_WORKERS_VIEWER_SUBJECTS": "OPERATOR_ROLE_MAPPING_REQUIRED",
+    "DISTRIBUTED_WORKERS_OPERATOR_SUBJECTS": "OPERATOR_ROLE_MAPPING_REQUIRED",
+    "DISTRIBUTED_WORKERS_ADMIN_SUBJECTS": "OPERATOR_ROLE_MAPPING_REQUIRED"
+  },
+  "permission_changes_required": {
+    "/home/coder/projects/PDF-proverka/.env": "0600 coder:coder",
+    "distributed_data_dir": "0700 coder:coder",
+    "workers.db": "0600 coder:coder",
+    "process_umask": "0077"
+  },
+  "config_ready": false,
+  "config_applied": false,
+  "secrets_changed": false
+}

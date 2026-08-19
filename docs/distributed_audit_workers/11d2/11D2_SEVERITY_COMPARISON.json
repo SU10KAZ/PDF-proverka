@@ -1,0 +1,264 @@
+{
+  "kind": "11D.2 §16-17 — severity, контракт и сравнение с 11D",
+  "content_in_report": false,
+  "content_note": "Только счётчики, значения перечислений и флаги наличия тем. Текстов замечаний нет.",
+  "new_run": {
+    "label": "11D.2 (после правки 11D.1)",
+    "text_findings": 19,
+    "severity_histogram": {
+      "ЭКСПЛУАТАЦИОННОЕ": 6,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 6,
+      "ЭКОНОМИЧЕСКОЕ": 4,
+      "КРИТИЧЕСКОЕ": 2,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1
+    },
+    "unknown_severity_values": [],
+    "all_severity_in_enum": true,
+    "categories": {
+      "grounding": 10,
+      "documentation": 6,
+      "normative_refs": 2,
+      "cable": 1
+    },
+    "normative_refs_found": 6,
+    "findings_with_norm": 19,
+    "findings_with_norm_quote": 2,
+    "findings_with_source": 19,
+    "items_verified_from_blocks": 0,
+    "project_params_keys": [
+      "key_equipment",
+      "object_type",
+      "total_load_kw"
+    ],
+    "top_level_keys": [
+      "items_verified_from_blocks",
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "stage",
+      "text_findings",
+      "text_source",
+      "timestamp"
+    ],
+    "text_source": "md",
+    "stage": "02_text_analysis",
+    "ids_unique": true,
+    "ids_count": 19,
+    "duplicate_ids": [],
+    "malformed_findings": [],
+    "norm_docs_mentioned": [
+      "ГОСТ 103",
+      "ГОСТ 103-2006",
+      "ГОСТ 22483-2021",
+      "ГОСТ 30331.1-2013",
+      "ГОСТ 6323-79",
+      "ГОСТ 839-2019",
+      "ГОСТ Р 21.101-2020",
+      "ГОСТ Р 50462-2009",
+      "ГОСТ Р 50571",
+      "ГОСТ Р 50571.5.54",
+      "ПУЭ-6",
+      "ПУЭ-7",
+      "СНиП 3.05.06-85",
+      "СП 256.1325800.2016",
+      "СП 76.13330.2016"
+    ],
+    "themes": {
+      "pue_7_35": {
+        "present": true,
+        "findings_hit": [
+          {
+            "id": "T-015",
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          }
+        ]
+      },
+      "osup": {
+        "present": true,
+        "findings_hit": [
+          {
+            "id": "T-001",
+            "severity": "КРИТИЧЕСКОЕ"
+          }
+        ]
+      },
+      "dsup": {
+        "present": false,
+        "findings_hit": []
+      },
+      "grounding_system_type": {
+        "present": true,
+        "findings_hit": [
+          {
+            "id": "T-001",
+            "severity": "КРИТИЧЕСКОЕ"
+          }
+        ]
+      }
+    }
+  },
+  "old_run_11d": {
+    "label": "11D (до правки)",
+    "text_findings": 17,
+    "severity_histogram": {
+      "РЕКОМЕНДАТЕЛЬНОЕ": 11,
+      "ЭКОНОМИЧЕСКОЕ": 3,
+      "ЭКСПЛУАТАЦИОННОЕ": 3
+    },
+    "unknown_severity_values": [],
+    "all_severity_in_enum": true,
+    "categories": {
+      "documentation": 9,
+      "grounding": 5,
+      "normative_refs": 2,
+      "cable": 1
+    },
+    "normative_refs_found": 5,
+    "findings_with_norm": 17,
+    "findings_with_norm_quote": 4,
+    "findings_with_source": 17,
+    "items_verified_from_blocks": 0,
+    "project_params_keys": [
+      "key_equipment",
+      "object_type",
+      "total_load_kw"
+    ],
+    "top_level_keys": [
+      "items_verified_from_blocks",
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "stage",
+      "text_findings",
+      "text_source",
+      "timestamp"
+    ],
+    "text_source": "md",
+    "stage": "02_text_analysis",
+    "ids_unique": true,
+    "ids_count": 17,
+    "duplicate_ids": [],
+    "malformed_findings": [],
+    "norm_docs_mentioned": [
+      "ГОСТ 103",
+      "ГОСТ 103-2006",
+      "ГОСТ 6323",
+      "ГОСТ 6323-79",
+      "ГОСТ 838-75",
+      "ГОСТ Р 21.101-2020",
+      "ГОСТ Р 50571.5.54",
+      "ПУЭ-7",
+      "СП 256.1325800.2016",
+      "СП 76.13330.2016"
+    ],
+    "themes": {
+      "pue_7_35": {
+        "present": true,
+        "findings_hit": [
+          {
+            "id": "T-001",
+            "severity": "РЕКОМЕНДАТЕЛЬНОЕ"
+          }
+        ]
+      },
+      "osup": {
+        "present": true,
+        "findings_hit": [
+          {
+            "id": "T-004",
+            "severity": "ЭКСПЛУАТАЦИОННОЕ"
+          }
+        ]
+      },
+      "dsup": {
+        "present": false,
+        "findings_hit": []
+      },
+      "grounding_system_type": {
+        "present": false,
+        "findings_hit": []
+      }
+    }
+  },
+  "delta": {
+    "text_findings": 2,
+    "normative_refs_found": 1,
+    "severity_before": {
+      "РЕКОМЕНДАТЕЛЬНОЕ": 11,
+      "ЭКОНОМИЧЕСКОЕ": 3,
+      "ЭКСПЛУАТАЦИОННОЕ": 3
+    },
+    "severity_after": {
+      "ЭКСПЛУАТАЦИОННОЕ": 6,
+      "РЕКОМЕНДАТЕЛЬНОЕ": 6,
+      "ЭКОНОМИЧЕСКОЕ": 4,
+      "КРИТИЧЕСКОЕ": 2,
+      "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1
+    },
+    "categories_new_only": [],
+    "categories_gone": [],
+    "categories_shared": [
+      "cable",
+      "documentation",
+      "grounding",
+      "normative_refs"
+    ],
+    "norm_docs_new_only": [
+      "ГОСТ 22483-2021",
+      "ГОСТ 30331.1-2013",
+      "ГОСТ 839-2019",
+      "ГОСТ Р 50462-2009",
+      "ГОСТ Р 50571",
+      "ПУЭ-6",
+      "СНиП 3.05.06-85"
+    ],
+    "norm_docs_gone": [
+      "ГОСТ 6323",
+      "ГОСТ 838-75"
+    ],
+    "themes": {
+      "pue_7_35": {
+        "11d": true,
+        "11d2": true,
+        "11d_severities": [
+          "РЕКОМЕНДАТЕЛЬНОЕ"
+        ],
+        "11d2_severities": [
+          "РЕКОМЕНДАТЕЛЬНОЕ"
+        ]
+      },
+      "osup": {
+        "11d": true,
+        "11d2": true,
+        "11d_severities": [
+          "ЭКСПЛУАТАЦИОННОЕ"
+        ],
+        "11d2_severities": [
+          "КРИТИЧЕСКОЕ"
+        ]
+      },
+      "dsup": {
+        "11d": false,
+        "11d2": false,
+        "11d_severities": [],
+        "11d2_severities": []
+      },
+      "grounding_system_type": {
+        "11d": false,
+        "11d2": true,
+        "11d_severities": [],
+        "11d2_severities": [
+          "КРИТИЧЕСКОЕ"
+        ]
+      }
+    }
+  },
+  "pass_criteria_16": {
+    "all_severity_in_enum": true,
+    "unknown_severity_values": [],
+    "no_duplicate_ids": true,
+    "no_malformed_findings": true,
+    "text_source_is_md": true,
+    "note": "Число КРИТИЧЕСКИХ критерием НЕ является (§16, §20)."
+  }
+}

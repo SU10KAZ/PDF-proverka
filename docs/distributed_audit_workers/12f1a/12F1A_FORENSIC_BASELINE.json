@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "status": "DISK_FORENSIC_SNAPSHOT_ONLY",
+  "captured_at": "2026-08-12T18:04:34+03:00",
+  "production_root": "/home/coder/projects/PDF-proverka",
+  "production_head": "9168c3930c5e87e918f62c3812e19a8f924a3ade",
+  "file_manifest_fingerprint_sha256": "5ab9f0323094163d790ea82f503e42ff620891f1b3cb8840dd6593048ffa01e5",
+  "inventory_file_sha256": "e735ff0bc4316cc6e825b32c2d6e787954b3c363a54f1e27a8d228a7e2ad9b57",
+  "atomic_disk_capture": true,
+  "before_after_file_manifests_equal": true,
+  "restricted_external_artifacts": {
+    "directory": "/tmp/12f1a-forensic-20260812T180400",
+    "directory_mode": "0700",
+    "tracked_nonsecret_patch": {
+      "mode": "0600",
+      "size": 1133585,
+      "sha256": "4ec6b5839b8418386709c73612c445db7234a2d015862f4cf664fbcc66f6462a"
+    },
+    "untracked_safe_archive": {
+      "mode": "0600",
+      "size": 341085,
+      "sha256": "09c44bac0df47f29d93b76f60cc26cd4d87fa9b4b4709c4063e15321619b5f68"
+    },
+    "committed_to_git": false,
+    "delivered_to_user": false
+  },
+  "running_process": {
+    "pid": 1968811,
+    "started_at": "2026-08-12T17:31:06+03:00",
+    "command": "/opt/py312/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+    "cwd": "/home/coder/projects/PDF-proverka",
+    "python_executable": "/opt/cpython-3.12/bin/python3.12",
+    "umask": "0002"
+  },
+  "dependency_identity": {
+    "requirements_txt_sha256": "c75a7b25fbe0a71b2600f45e437efde4046068052435a6d7ede61f4f6224bd5b",
+    "pip_freeze_sha256": "89f8f24ef802c880bded75cf3d077dd55fba4fedb78e17bf48179eedfe17e5a2",
+    "pip_freeze_rows": 127,
+    "python": "3.12.13",
+    "fastapi": "0.115.6",
+    "uvicorn": "0.32.1",
+    "pydantic": "2.10.4",
+    "sqlite": "3.53.1"
+  },
+  "config_boundary": {
+    "live_env_sha256": "86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+    "live_env_mode": "0664",
+    "live_env_contents_copied": false,
+    "secret_contents_recorded": false
+  },
+  "equivalent_to_running_process": false,
+  "reason": "Loaded stage_comparison.py and store.py were overwritten after PID startup; the prior store.py source bytes are unavailable."
+}

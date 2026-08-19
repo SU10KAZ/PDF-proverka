@@ -1,0 +1,19 @@
+{
+  "schema": "auditmanager.12f.pki_fix_release_verify.v1",
+  "verified_at": "2026-08-14T07:23:22+03:00",
+  "release_id": "pki-shared-5e3750a2",
+  "path": "/home/coder/auditmanager/releases/pki-shared-5e3750a2",
+  "commit": "5e3750a26f65a884c1c644c6bc25c490f4b665ef",
+  "parent_commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "tree": "d9a9c42732337b567d4fe7efe6c339e0612dcc3c",
+  "manifest_sha256": "ab380c96b32eeb4406ce0484d6d69b1c21e7bf298a0788f26f0b093766881ce7",
+  "bundle_sha256": "2ecf5842b4b052bb7134fa3c429775143c51ba32fa627e8837b74ff7d9e7046b",
+  "dependency_freeze_sha256": "0f3b123e82b9ee78a20584dac911e2ce7bfb1f29d9b9cca0d06107aff781bd24",
+  "bundle_verified": true,
+  "bundle_requires_exact_parent": true,
+  "writable_non_symlink_paths": 0,
+  "release_specific_venv": true,
+  "rollback_release_physical_and_runnable": true,
+  "mutable_checkout_used_for_deploy": false,
+  "verdict": "PASS"
+}

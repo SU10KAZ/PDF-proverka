@@ -1,0 +1,102 @@
+{
+ "stage": "11H",
+ "question": "что в итоге получил AuditManager по этому документу",
+ "taken_at_utc": "2026-08-10T14:52:32Z",
+ "document": {
+  "code": "СТ26_01-14-АР5-2-РД_V1",
+  "object": "256. Примавера К14 (Спартак)",
+  "discipline": "AR",
+  "version": "v001",
+  "path": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-2-РД_V1/versions/v001"
+ },
+ "audit_status_before": "аудита не было (03_analysis/04_review/05_export пусты)",
+ "audit_status_after": "полный аудит: 19 артефактов в 03_analysis/latest + Excel в 05_export",
+ "platform_view": {
+  "source": "backend.app.services.common.project_service.get_project_status (штатный код)",
+  "findings_count": 29,
+  "findings_by_severity": {
+   "КРИТИЧЕСКОЕ": 11,
+   "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 3,
+   "ЭКОНОМИЧЕСКОЕ": 6,
+   "ЭКСПЛУАТАЦИОННОЕ": 1,
+   "РЕКОМЕНДАТЕЛЬНОЕ": 8
+  },
+  "optimization_count": 8,
+  "pipeline_issues": [],
+  "stages_done": [
+   "crop_blocks",
+   "block_context",
+   "block_analysis",
+   "text_analysis",
+   "findings_merge",
+   "findings_critic",
+   "findings_corrector",
+   "norm_verify",
+   "optimization",
+   "optimization_critic",
+   "excel"
+  ],
+  "stages_skipped": [
+   "block_retry",
+   "critic_v2_triage",
+   "optimization_corrector",
+   "debt_control",
+   "decision_carryover"
+  ]
+ },
+ "findings": {
+  "total": 29,
+  "severity": {
+   "КРИТИЧЕСКОЕ": 11,
+   "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 3,
+   "ЭКОНОМИЧЕСКОЕ": 6,
+   "ЭКСПЛУАТАЦИОННОЕ": 1,
+   "РЕКОМЕНДАТЕЛЬНОЕ": 8
+  },
+  "categories": {
+   "documentation": 20,
+   "normative_refs": 4,
+   "roof": 2,
+   "insulation": 2,
+   "facade": 1
+  },
+  "with_norm": 21,
+  "with_norm_quote": 4,
+  "with_clause": 0,
+  "clause_gap_note": "ни одно замечание не несёт НОМЕРА пункта нормы. Это известное свойство Codex на своде, измеренное ранее (Opus даёт пункт в 71% случаев, codex — в 0%), а не дефект распределённого контура",
+  "from_blocks": 20,
+  "pages_covered": 9
+ },
+ "optimization": {
+  "items": 8,
+  "by_type": {
+   "cheaper_analog": 2,
+   "faster_install": 3,
+   "simpler_design": 2,
+   "lifecycle": 1
+  }
+ },
+ "norm_verification": {
+  "checks": 17,
+  "executed_on": "центр"
+ },
+ "excel": {
+  "present": true,
+  "name": "audit_report_СТ26_01-14-АР5-2-РД_V1_7844ab76-b2ee-4ada-bb66-823d17143b4d.xlsx",
+  "bytes": 26672
+ },
+ "promotion": {
+  "from": "изолированная копия дерева версии в стенде",
+  "to": "продовое дерево projects_v2",
+  "sources_identical_check": true,
+  "production_had_audit_before": false,
+  "files_moved": {
+   "03_analysis": 176,
+   "04_review": 0,
+   "05_export": 1,
+   "99_service": 0
+  },
+  "backup_made": "не потребовался — терять было нечего"
+ },
+ "verdict": "AuditManager имеет пригодный к работе результат по документу"
+}

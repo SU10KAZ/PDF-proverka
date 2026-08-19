@@ -1,0 +1,21 @@
+{
+  "architecture_fake_profile": {
+    "provider_capabilities": {
+      "claude": ["cheap_review", "strong_audit"],
+      "codex": ["block_detector", "block_detector_strong", "block_judge", "cheap_review", "strong_audit", "visual_reasoning"],
+      "openrouter": ["block_detector"]
+    },
+    "claude_gpt_codex": "COMPATIBLE",
+    "codex_exec": "COMPATIBLE"
+  },
+  "real_worker_31": {
+    "claude_auth": "configured",
+    "codex_auth": "configured",
+    "openrouter_credential": "unconfigured",
+    "claude_gpt_codex": "NOT_READY",
+    "codex_exec": "NOT_READY",
+    "reason": "OPENROUTER_PROVISIONING_REQUIRED"
+  },
+  "architecture_ready": true,
+  "production_rollout_performed": false
+}

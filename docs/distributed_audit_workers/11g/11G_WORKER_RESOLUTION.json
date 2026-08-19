@@ -1,0 +1,121 @@
+{
+  "stage": "11G",
+  "question": "как воркер превращает требование центра в конкретный вызов",
+  "input_from_center": {
+    "provider": "claude",
+    "capability": "strong_audit",
+    "allowed_stages": [
+      "block_analysis",
+      "text_analysis",
+      "findings_merge",
+      "findings_review",
+      "optimization",
+      "optimization_critic",
+      "optimization_corrector"
+    ],
+    "max_inferences": 8,
+    "model": null
+  },
+  "steps": [
+    {
+      "n": 1,
+      "what": "рубеж формы",
+      "where": "audit_runner._validate_provider_requirement",
+      "checks": [
+        "набор ключей",
+        "длины",
+        "потолок [0,64]",
+        "capability и model взаимоисключимы",
+        "непустой model — отказ",
+        "max_inferences>0 без capability — отказ"
+      ]
+    },
+    {
+      "n": 2,
+      "what": "рубеж машины",
+      "where": "Executor.prepare_provider_binding",
+      "checks": [
+        "AUDIT_WORKER_PIPELINE_PROVIDER_ENABLED",
+        "AUDIT_WORKER_ALLOW_REAL_LLM"
+      ],
+      "note": "оба — решения администратора VPS, задание их изменить не может"
+    },
+    {
+      "n": 3,
+      "what": "автоматическое разрешение",
+      "where": "inference_grant.issue_for_job",
+      "checks": [
+        "потолок машины > 0",
+        "требование не больше потолка",
+        "capability назван"
+      ],
+      "idempotency": "grant_id = auto-<attempt_id>; повторный вход возвращает ту же запись с уже потраченным"
+    },
+    {
+      "n": 4,
+      "what": "списание",
+      "where": "inference_grant.consume",
+      "note": "под межпроцессной блокировкой; ищется ПРИГОДНАЯ запись, а не первая совпавшая"
+    },
+    {
+      "n": 5,
+      "what": "резолв",
+      "where": "ProviderResolver.resolve",
+      "checks": [
+        "провайдер поддерживается",
+        "не заблокирован политикой",
+        "auth_mode не unavailable",
+        "CLI установлен",
+        "auth_state == logged_in",
+        "capability покрыта локальной политикой",
+        "модель не пуста при разрешённых вызовах"
+      ]
+    },
+    {
+      "n": 6,
+      "what": "локальная политика",
+      "where": "model_policy.ProviderPolicy.resolve",
+      "file": "<worker_root>/provider_policy.json",
+      "result": {
+        "model": "claude-opus-5",
+        "accepted_reported_models": [
+          "claude-opus-5",
+          "claude-opus-5[1m]"
+        ]
+      },
+      "note": "умолчания нет намеренно: отсутствие записи — отказ, а не «возьмём какую-нибудь»"
+    },
+    {
+      "n": 7,
+      "what": "привязка",
+      "where": "ProviderBinding.write → metadata/provider_binding.json (0600)"
+    },
+    {
+      "n": 8,
+      "what": "сверка со спекой",
+      "where": "remote_audit_runner.bind_providers",
+      "checks": [
+        "fake-режим и привязка несовместимы",
+        "job_id и attempt_id совпадают",
+        "провайдер тот, которого потребовал центр"
+      ]
+    },
+    {
+      "n": 9,
+      "what": "argv",
+      "where": "claude_adapter._inference_argv",
+      "note": "--model=<из привязки>. Строка родом из файла администратора машины, не из задания (I-P5)"
+    }
+  ],
+  "live_result": {
+    "binding_model": "claude-opus-5",
+    "binding_capability": "strong_audit",
+    "source": "сверено с ФАЙЛОМ политики, а не с литералом скрипта",
+    "run": "audit-provider, проверки 114–118"
+  },
+  "same_account_limitation": {
+    "same_account": true,
+    "meaning": "Claude на центре и на .31 принадлежат одной подписке Claude Max. 11G НЕ доказывает независимых пулов квоты, независимых дат сброса и независимого потребления",
+    "impact_on_11g": "нулевой: центр в прогонах к модели не обращался вовсе (PAID_API_ENABLED=false, провайдеры центра — подделки)"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "auditmanager.12f.pki_fix_production_baseline.v1",
+  "captured_at": "2026-08-14T06:49:00+03:00",
+  "release": {
+    "path": "/home/coder/auditmanager/releases/reenrollment-e6015d33",
+    "release_id": "reenrollment-e6015d33",
+    "commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+    "tree": "00e75c545eb314ff0bac82990b9ad5f11050e476",
+    "manifest_sha256": "9c66b398f7cee0323c47d1e0e9d0a403aef60492713095b3b4a03ad81491580a"
+  },
+  "backend": {
+    "pid": 2379476,
+    "active": true,
+    "n_restarts": 0,
+    "process_cwd": "/home/coder/auditmanager/releases/reenrollment-e6015d33/app",
+    "api_info_http": 200,
+    "health_path_http": 302,
+    "health_path_note": "redirect; canonical read-only API health used /api/info"
+  },
+  "center_db": {
+    "path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "schema_version": 13,
+    "integrity": "ok",
+    "journal_mode": "wal",
+    "workers": 1,
+    "jobs": 0,
+    "attempts": 0,
+    "offers": 0,
+    "worker_certificates": 0
+  },
+  "scheduler": "DISABLED",
+  "worker_31": {
+    "agent_pid": 2212836,
+    "agent_process_active": true,
+    "agent_unit": "audit-worker-audit-worker-11l-30b5e4d544-agent.service",
+    "executor_pid": 1384880,
+    "executor_process_active": true,
+    "executor_unit": "audit-worker-audit-worker-11l-30b5e4d544-executor.service",
+    "transport": "POLLING",
+    "changed": false
+  },
+  "issuer": {"active": false, "main_pid": 0, "n_restarts_recorded": 12},
+  "gateway": {"active": false, "main_pid": 0, "enabled": false},
+  "listeners": {"127.0.0.1:8081": true, "tcp_8443": false, "tcp_9443": false},
+  "preexisting_cloudflared": {
+    "pid": 1263127,
+    "target": "http://127.0.0.1:8081",
+    "changed": false,
+    "used_by_12f_release_preparation": false
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "production_unchanged": true,
+  "verdict": "PASS"
+}

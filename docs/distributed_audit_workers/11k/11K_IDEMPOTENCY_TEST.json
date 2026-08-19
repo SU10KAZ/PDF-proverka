@@ -1,0 +1,11 @@
+{
+  "same_idempotency_key_same_request": "same session",
+  "fresh_session_same_target": "stable installation instance_id; no second worker identity",
+  "same_key_different_request": "rejected",
+  "resume_after_provider_action": "release/config/service not repeated",
+  "resume_after_failed_update_rollback": "redeploys target release",
+  "duplicate_registration": "existing runtime identity reused",
+  "provider_auth_hashes": "unchanged on update/repair/rollback",
+  "jobs_and_results": "preserved",
+  "result": "PASS"
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "auditmanager.12f1f.isolated_patch_boot.v1",
+  "commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "tree": "00e75c545eb314ff0bac82990b9ad5f11050e476",
+  "source": "exact git archive in /tmp; later byte-for-byte matched durable release app",
+  "python_environment": "pinned production-candidate venv; dependency manifests unchanged",
+  "first_boot": {
+    "listener": "127.0.0.1:18091",
+    "portal_auth_enabled": false,
+    "insecure_admin_dev_optin": false,
+    "core_api_info_http": 200,
+    "openapi_http": 200,
+    "worker_registration_route_mounted": true,
+    "operator_contour": "FAIL_CLOSED_AS_DESIGNED",
+    "shutdown": "CLEAN"
+  },
+  "production_like_operator_boot": {
+    "listener": "127.0.0.1:18092",
+    "state_roots": "isolated /tmp only",
+    "insecure_admin_dev_optin": true,
+    "scope": "localhost-only documented pilot mode",
+    "distributed_workers_enabled": true,
+    "distributed_audit_execution_enabled": false,
+    "real_llm_allowed": false,
+    "core_api_info_http": 200,
+    "openapi_http": 200,
+    "worker_identity_reenrollment_route_present": true,
+    "admin_authorization_create_route_present": true,
+    "admin_authorization_revoke_route_present": true,
+    "workers_status_http": 200,
+    "workers_list_http": 200,
+    "database_schema_after_lazy_init": 13,
+    "workers": 0,
+    "tokens": 0,
+    "authorizations": 0,
+    "shutdown": "CLEAN"
+  },
+  "listeners_18091_18092_final": "ABSENT",
+  "production_port_8081_used_by_isolated_boot": false,
+  "production_db_used": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "verdict": "PASS"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "reviewed_code_commit": "3376c7a88456764971a9f4afb46bb7fbbf28a158",
+  "base_commit": "069987d5a1968461ef7f690e445a6676f4d0447c",
+  "review_worktree": "/tmp/11j1-review-3376c7a8",
+  "detached": true,
+  "candidate_mutated_during_static_review": false,
+  "lenses": {
+    "routing_fidelity": "PASS",
+    "secret_handling": "PASS",
+    "multi_provider_exactly_once": "PASS",
+    "worker_center_boundary": "PASS",
+    "frozen_routing_plan": "PASS",
+    "network_package_contract": "PASS"
+  },
+  "confirmed_defects": [],
+  "result": "PASS",
+  "evidence_layer_note": "Последующий commit меняет только docs/11j; финальный detached verification его exact hash фиксируется в итоговом ответе."
+}

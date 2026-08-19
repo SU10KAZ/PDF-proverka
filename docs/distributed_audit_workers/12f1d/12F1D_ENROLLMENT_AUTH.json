@@ -1,0 +1,17 @@
+{
+  "schema": "auditmanager.12f1d.enrollment_auth.v1",
+  "status": "NOT_CREATED_BLOCKED_BEFORE_MUTATION",
+  "reason": "Exact production candidate cannot bind a one-time authorization to and preserve the requested worker_id; current token scope contains expected_instance_id only.",
+  "requested_worker_id": "wrk_19c87718",
+  "requested_instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+  "production_bootstrap_sessions_before": 0,
+  "production_bootstrap_sessions_after": 0,
+  "production_registration_tokens_before": 0,
+  "production_registration_tokens_after": 0,
+  "raw_token_generated": false,
+  "raw_token_stored_center": false,
+  "raw_token_delivered": false,
+  "ttl_seconds": null,
+  "single_use": null,
+  "worker_and_instance_scoped": false
+}

@@ -1,0 +1,90 @@
+{
+  "stage": "11F",
+  "generated_at_utc": "2026-08-10T08:10:13Z",
+  "question": "какой коммит является фактическим tip завершённого 11E.1",
+  "candidates_from_task": {
+    "896f1d2d": {
+      "full": "896f1d2d5971d1ada551ba3b1d7d19d261f553c0",
+      "subject": "docs(воркеры 11E.1): проставить хэш коммита артефактов в базу Git",
+      "date": "2026-08-10T10:43:21+03:00",
+      "is_branch_tip_of": "feat/distributed-audit-workers-findings-merge-retry",
+      "role": "ФАКТИЧЕСКИЙ TIP — потомок 05ff6baf"
+    },
+    "05ff6baf": {
+      "full": "05ff6baf25533b9c27ff2a99a5ddcf3853a16d6d",
+      "subject": "docs(воркеры 11E.1): повтор боевого свода — вызов прошёл, причина отказа 11E осталась неизвестной",
+      "date": "2026-08-10T10:43:00+03:00",
+      "role": "родитель tip'а, коммит артефактов 11E.1"
+    }
+  },
+  "ancestry_check": {
+    "05ff6baf_is_ancestor_of_896f1d2d": true,
+    "896f1d2d_is_ancestor_of_05ff6baf": false
+  },
+  "chosen_base": {
+    "commit": "896f1d2d5971d1ada551ba3b1d7d19d261f553c0",
+    "short": "896f1d2d",
+    "reason": "tip ветки 11E.1; содержит всю линию кода 11B→11C→11D→11D.1→11D.2→11E→11E.1 (код-коммиты 85cf7018, b68629da, 43d2437f и ранее), сверху только docs"
+  },
+  "code_commits_in_lineage": [
+    {
+      "c": "85cf7018 feat(воркеры 11E): боевой findings_merge через ProviderAdapter без файловых инструментов"
+    },
+    {
+      "c": "b68629da fix(воркеры 11E): убрать противоречие о нормативной базе в промпте свода"
+    },
+    {
+      "c": "43d2437f fix(воркеры): сохранять текст ошибки CLI провайдера, а не только её хэш"
+    },
+    {
+      "c": "322394f9 feat(воркеры 11D.2): контрольный боевой прогон — правка severity работает в живом ProviderAdapter"
+    },
+    {
+      "c": "9d6e06c2 feat(воркеры 11D.1): смысл severity перенесён в промпт, эквивалентность входа доказана"
+    },
+    {
+      "c": "bcb0e25c fix(воркеры 11D): закрыть дефекты состязательного разбора перед боевым вызовом"
+    },
+    {
+      "c": "67d46fc7 fix(воркеры 11D): убрать ложное «sha256 канарейки не изменился» + артефакты подготовки"
+    },
+    {
+      "c": "a0881dc5 feat(воркеры 11D): боевой text_analysis через ProviderAdapter без файловых инструментов"
+    },
+    {
+      "c": "99653d49 test(воркеры): 75 тестов пути к модели и сквозной прогон этапа 11C"
+    },
+    {
+      "c": "aef77357 feat(центр): логическое требование к провайдеру в контракте задания (11C)"
+    },
+    {
+      "c": "f0b5b856 feat(конвейер): audit_pipeline_v1 доходит до модели через ProviderAdapter (11C)"
+    },
+    {
+      "c": "f0f2acd6 feat(воркеры): исполнитель выбирает провайдера и выписывает привязку (этап 11C)"
+    },
+    {
+      "c": "66ddb595 feat(воркеры): рабочий вызов модели в провайдерском слое (этап 11C)"
+    }
+  ],
+  "relation_to_main": {
+    "main_tip": "abed113e feat(gemma): пропуск стадии Gemma для блоков с годным вектор-слоем (за флагом)",
+    "merge_base": "abed113e feat(gemma): пропуск стадии Gemma для блоков с годным вектор-слоем (за флагом)",
+    "commits_ahead_of_main": 274,
+    "commits_main_ahead": 0,
+    "note": "main отстал; ветка 11E.1 — строгий надмножество main"
+  },
+  "new_branch": "feat/distributed-audit-workers-full-worker-diagnostic",
+  "new_worktree": ".claude/worktrees/distributed-audit-workers-full-worker-diagnostic",
+  "new_branch_head_at_creation": "896f1d2d5971d1ada551ba3b1d7d19d261f553c0",
+  "forbidden_ops_performed": {
+    "reset": false,
+    "clean": false,
+    "rebase": false,
+    "force_checkout": false,
+    "force_push": false,
+    "push": false,
+    "worktree_removal": false
+  },
+  "other_worktrees_touched": false
+}

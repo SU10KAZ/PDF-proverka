@@ -1,0 +1,39 @@
+{
+  "schema": "auditmanager.12f1f.quiescence.v1",
+  "window_start": "2026-08-13T13:49:42+03:00",
+  "window_end": "2026-08-13T14:09:42+03:00",
+  "duration_seconds": 1200,
+  "sample_interval_seconds": 60,
+  "sample_count": 21,
+  "sample_indexes": "0..20 inclusive",
+  "sample_times": [
+    "13:49:42", "13:50:42", "13:51:42", "13:52:42", "13:53:42",
+    "13:54:42", "13:55:42", "13:56:42", "13:57:42", "13:58:42",
+    "13:59:42", "14:00:42", "14:01:42", "14:02:42", "14:03:42",
+    "14:04:42", "14:05:42", "14:06:42", "14:07:42", "14:08:42",
+    "14:09:42"
+  ],
+  "authoritative_source": {
+    "worktree": "/home/coder/projects/PDF-proverka/.claude/worktrees/final-production-candidate",
+    "head_all_samples": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+    "tree_all_samples": "e2d67c5c4b5b62b3921bff6443cbbe7d52f9a72a",
+    "status_sha256_all_samples": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diff_sha256_all_samples": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "production_all_samples": {
+    "pid": 2281536,
+    "n_restarts": 0,
+    "started_at": "2026-08-13T12:29:03+03:00",
+    "release_path": "/home/coder/auditmanager/releases/ui-e2b98c3b",
+    "release_manifest_sha256": "4434bd3e63f8ec72b37682078e787d04d9d82f13845a01b771acee66bd5177d2",
+    "health_http": 200
+  },
+  "source_changes": 0,
+  "new_source_paths": 0,
+  "removed_source_paths": 0,
+  "final_candidate_head_changes": 0,
+  "production_release_changes": 0,
+  "unexpected_backend_restarts": 0,
+  "health_failures": 0,
+  "verdict": "PASS"
+}

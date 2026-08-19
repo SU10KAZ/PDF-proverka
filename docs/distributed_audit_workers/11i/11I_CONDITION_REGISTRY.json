@@ -1,0 +1,85 @@
+{
+  "evaluator_version": 1,
+  "why_typed": "строка кода из нагрузки задания, попавшая в eval, — это удалённое исполнение произвольного кода на чужом VPS. Условий ровно столько, сколько перечислено",
+  "conditions": [
+    {
+      "type": "always",
+      "params": [],
+      "resolvable_at_creation": true
+    },
+    {
+      "type": "feature_enabled",
+      "params": [
+        "flag"
+      ],
+      "resolvable_at_creation": true
+    },
+    {
+      "type": "discipline_in",
+      "params": [
+        "disciplines"
+      ],
+      "resolvable_at_creation": true
+    },
+    {
+      "type": "has_absence_candidates",
+      "params": [],
+      "resolvable_at_creation": false
+    },
+    {
+      "type": "has_clause_binding_targets",
+      "params": [],
+      "resolvable_at_creation": false
+    },
+    {
+      "type": "has_findings_needing_revision",
+      "params": [],
+      "resolvable_at_creation": false
+    },
+    {
+      "type": "has_optimization_artifact",
+      "params": [],
+      "resolvable_at_creation": false
+    },
+    {
+      "type": "has_md_file",
+      "params": [],
+      "resolvable_at_creation": false
+    },
+    {
+      "type": "has_critic_issues",
+      "params": [],
+      "resolvable_at_creation": false
+    },
+    {
+      "type": "detectors_complete",
+      "params": [],
+      "resolvable_at_creation": false
+    }
+  ],
+  "multiplicity": [
+    {
+      "type": "per_document",
+      "params": []
+    },
+    {
+      "type": "per_graphic_block",
+      "params": []
+    },
+    {
+      "type": "per_chunk",
+      "params": [
+        "chunk_source",
+        "max_chunks"
+      ]
+    },
+    {
+      "type": "per_batch",
+      "params": [
+        "batch_size",
+        "max_rounds",
+        "target_source"
+      ]
+    }
+  ]
+}

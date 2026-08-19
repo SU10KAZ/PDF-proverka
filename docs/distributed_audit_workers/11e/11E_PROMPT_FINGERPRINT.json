@@ -1,0 +1,27 @@
+{
+  "kind": "11E §12 — отпечаток промпта и тождество отправленного текста",
+  "prompt_chars": 52815,
+  "instructions_chars": 12866,
+  "payload_chars": 38814,
+  "sha256_of_stdin_dump": "2b5067e260b51638dfc22bb43a213f499834754c62731ed339113df588d49d34",
+  "sha256_recorded_by_pipeline": "3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e",
+  "difference": "ровно один завершающий перевод строки",
+  "cause": "подделка CLI снимает stdin через STDIN=$(cat), а подстановка команды в bash срезает хвостовые переводы строки; боевой промпт оканчивается на \\n",
+  "proof": "sha256(дамп + \\n) = 3b54ae4665fc5f31319f61a49712543bf5f414edf566720dfbd70f5d6cf1745e — совпало с отпечатком в журнале попытки БОЕВОГО вызова",
+  "consequence": "все 93 проверки §23 относятся к тексту, который реально ушёл в подпроцесс боевого вызова",
+  "path_independence": {
+    "checked": true,
+    "attempts_compared": ["findings_merge_11e_fake1", "findings_merge_11e_fake2"],
+    "identical": true,
+    "note": "промпт не зависит от пути каталога попытки"
+  },
+  "prompt_build_map": {
+    "filesystem_refs_stripped": 0,
+    "absolute_paths_remaining_in_instructions": 0,
+    "input_data_note_applied": true,
+    "transport_contract_applied": true,
+    "severity_semantics_applied": true,
+    "severity_semantics_anchor": "### Finding Fields"
+  },
+  "prompt_content_in_docs": false
+}

@@ -1,0 +1,48 @@
+{
+  "kind": "11E §26 — учётные данные и изоляция",
+  "credential_leaks": 0,
+  "checked_surfaces": {
+    "argv_of_live_process": {"credentials_found": 0, "task_data_found": 0, "note": "промпт уходит через stdin; в argv ни байта данных задания"},
+    "process_environment_passed_to_cli": {
+      "variable_count": 11,
+      "variables": ["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC","CLAUDE_CONFIG_DIR","DISABLE_AUTOUPDATER","DISABLE_ERROR_REPORTING","DISABLE_TELEMETRY","HOME","LANG","LOGNAME","PATH","TMPDIR","USER"],
+      "secret_shaped_names": 0,
+      "worker_token_present": false,
+      "center_address_present": false,
+      "execution_token_present": false
+    },
+    "attempt_tree_scan": {"patterns": ["sk-ant-","oauth","refreshToken","accessToken"], "files_matched": 0},
+    "run_report": {"credentials": 0},
+    "ledger": {"credentials": 0},
+    "grant": {"credentials": 0},
+    "worker_db": {"not_touched": true},
+    "event_outbox": {"not_used_in_11e": true},
+    "heartbeat": {"not_used_in_11e": true},
+    "results": {"artifact_not_created": true}
+  },
+  "credentials_read_by_python": false,
+  "credentials_copied": false,
+  "credentials_sent_to_center": false,
+  "auth_check_performed": {"command": "claude auth status", "inference": 0, "relogin": false},
+  "filesystem_isolation": {
+    "tools_enabled": 0,
+    "tools_flag": "--tools=",
+    "disallowed_tools": ["Bash","Read","Edit","Write","Glob","Grep","WebFetch","WebSearch","Task","NotebookEdit","TodoWrite","AskUserQuestion"],
+    "max_turns": 1,
+    "cwd": "<попытка>/providers/claude/runtime",
+    "cwd_entries": 0,
+    "cwd_inside_attempt": true,
+    "tmpdir_inside_attempt": true,
+    "mcp_config_passed": false,
+    "personal_context_flags": ["--safe-mode","--strict-mcp-config","--disable-slash-commands","--no-session-persistence","--setting-sources="]
+  },
+  "claude_md": {
+    "project_level_reachable": false,
+    "user_level_exists_on_worker": true,
+    "user_level_contains_severity_definitions": false,
+    "suppression_mechanism": "--setting-sources= (наблюдался в argv живого процесса) + ноль инструментов",
+    "behavioural_corroboration": "11D.1 показал, что определения severity из CLAUDE.md в provider-режиме до модели НЕ доходят — именно поэтому их пришлось переносить явно"
+  },
+  "legacy_fallback_possible": false,
+  "canary_read": false
+}

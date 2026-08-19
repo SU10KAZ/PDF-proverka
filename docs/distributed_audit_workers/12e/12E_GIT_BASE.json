@@ -1,0 +1,11 @@
+{
+  "stage": "12E",
+  "branch": "feat/distributed-audit-workers-reliability-chaos",
+  "worktree": ".claude/worktrees/distributed-audit-workers-reliability-chaos",
+  "base_branch": "feat/distributed-audit-workers-mtls",
+  "base_commit": "1ff907211333682c5fcd7db914c8b9d306f1d30a",
+  "base_verification": "Resolved from the actual final tip of feat/distributed-audit-workers-mtls; not inferred from the short SHA alone.",
+  "cutover_performed": false,
+  "push_performed": false,
+  "merge_performed": false
+}

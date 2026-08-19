@@ -1,0 +1,17 @@
+{
+  "schema": "auditmanager.12f.permission_test_report.v1",
+  "working_tree_precommit": {"critical": "106 passed", "gateway": "49 passed"},
+  "exact_immutable_release": {"critical": "106 passed, 1 warning", "gateway": "49 passed"},
+  "unique_pytest_tests": 155,
+  "prior_recovery_subset_preserved": 100,
+  "new_permission_tests": 6,
+  "warnings": ["pytest-asyncio future default scope", "Python crypt deprecation"],
+  "corrected_harness_run": "An initial exact-release invocation from /tmp had 105 pass and one relative-path FileNotFound; rerun from the immutable app cwd passed 106/106. This was a harness cwd error, not a candidate failure.",
+  "real_systemd_scenarios": 3,
+  "old_EPERM_reproduced": true,
+  "fixed_authenticated_polling": true,
+  "unsafe_mode_startup_failure": true,
+  "rollback_proof": "PASS",
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "verdict": "PASS"
+}

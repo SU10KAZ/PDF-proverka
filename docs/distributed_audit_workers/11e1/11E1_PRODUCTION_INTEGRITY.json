@@ -1,0 +1,46 @@
+{
+  "kind": "11E.1 §20/§21 — боевые данные не тронуты",
+  "production_changed": false,
+  "center_corpus": {
+    "base": "projects_v2/objects/213_Mosfilmovskaya_31A_KingSons/disciplines/EOM/documents/133-23-ГК-ЭС/versions/v001",
+    "files": [
+      {"path": "01_input/133-23-ГК-ЭС_document.md", "sha256_11e": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284", "sha256_before_11e1": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284", "sha256_after_11e1": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284", "changed": false},
+      {"path": "03_analysis/latest/01_blocks_analysis.json", "sha256_11e": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a", "sha256_before_11e1": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a", "sha256_after_11e1": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a", "changed": false},
+      {"path": "03_analysis/latest/02_text_analysis.json", "sha256_11e": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7", "sha256_before_11e1": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7", "sha256_after_11e1": "1865e5ad947480768bdf92bd58f0e12daed1c0c1002a9cb0f1d0abd4841f93e7", "changed": false},
+      {"path": "03_analysis/latest/03_findings.json", "sha256_11e": "aa9fb85bdfaf978b0b66caeab0623ef96fab425aaeecab98781ac3a398cc6ae3", "sha256_before_11e1": "aa9fb85bdfaf978b0b66caeab0623ef96fab425aaeecab98781ac3a398cc6ae3", "sha256_after_11e1": "aa9fb85bdfaf978b0b66caeab0623ef96fab425aaeecab98781ac3a398cc6ae3", "changed": false, "note": "ИСТОРИЧЕСКИЙ свод. Выход 11E.1 в него не писался и его не заменял"},
+      {"path": "03_analysis/latest/document_graph.json", "sha256_11e": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857", "sha256_before_11e1": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857", "sha256_after_11e1": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857", "changed": false}
+    ],
+    "latest_dir_mtime": "2026-07-13 12:49:41 +0300 — не двигался",
+    "all_unchanged": true
+  },
+  "worker_inputs": {
+    "02_text_analysis.json": {"sha256": "70abe4757d3a6d24f3b67b9772d9a84ca387891dceb2a7daa43425104582bcad", "changed": false},
+    "01_blocks_analysis.json": {"sha256": "8516c260466e53c95011deec6f590ad381b4bf02f7ce873edcc3169875456c5a", "changed": false},
+    "document_graph.json": {"sha256": "55006431f4833a95ab2a44b04f80755696efb14f25b60d8c320127421ec04857", "changed": false},
+    "133-23-ГК-ЭС_document.md": {"sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284", "changed": false},
+    "runner_own_check": {"02_text_analysis.json": true, "01_blocks_analysis.json": true, "meaning": "рабочая копия внутри попытки побайтово равна нетронутому оригиналу"}
+  },
+  "not_touched": {
+    "source_md": true,
+    "production_text_analysis": true,
+    "production_block_analysis": true,
+    "historical_merge": true,
+    "project_metadata": true,
+    "downstream_outputs": true
+  },
+  "center_production_ingress": {"changed": false, "enabled": false},
+  "worker_state": {
+    "existing_install_11b": "не тронут",
+    "runtime_11d": "не тронут",
+    "runtime_11d2": "не тронут",
+    "runtime_11e": "использован; добавлены два каталога попыток (findings_merge_11e1_dry, findings_merge_11e1_retry), два разрешения, три файла в logs/",
+    "release_redeployed": false,
+    "os_python_node_cli_updated": false,
+    "model_policy_changed": false
+  },
+  "git": {
+    "code_commits_in_11e1": 0,
+    "files_changed_outside_docs": 0,
+    "push": "НЕ выполнялся"
+  }
+}

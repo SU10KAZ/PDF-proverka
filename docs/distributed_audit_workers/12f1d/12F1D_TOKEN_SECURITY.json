@@ -1,0 +1,23 @@
+{
+  "schema": "auditmanager.12f1d.token_security.v1",
+  "production_token_tests_executed": false,
+  "production_credentials_read_or_changed": false,
+  "isolated_checks": {
+    "registration_token_expiry_replay_wrong_instance": "PASS",
+    "secret_transport_stdin_not_argv": "PASS",
+    "test_count_passed_this_turn": 2,
+    "source_contract_raw_registration_token_center_storage": "SHA256_ONLY",
+    "source_contract_runtime_token_center_storage": "SHA256_ONLY",
+    "anonymous_heartbeat": "PREVIOUS_REGRESSION_EVIDENCE_ONLY_NOT_REEXECUTED",
+    "wrong_worker_registration_token": "UNSUPPORTED_CONTRACT_GAP",
+    "wrong_worker_detail": "The production token schema has expected_instance_id but no expected_worker_id; this is part of the identity-preservation blocker."
+  },
+  "additional_targeted_http_fixture_tests": {
+    "status": "INCONCLUSIVE_ENVIRONMENT_TERMINATION",
+    "production_impact": false,
+    "note": "The environment terminated the selected TestClient group during its first fixture; no production endpoint or DB was used. Existing reviewed regression evidence remains available, but it is not counted as a new pass."
+  },
+  "raw_enrollment_secret_in_artifacts": false,
+  "raw_runtime_credential_in_artifacts": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

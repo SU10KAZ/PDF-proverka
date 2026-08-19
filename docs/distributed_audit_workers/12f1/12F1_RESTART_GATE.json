@@ -1,0 +1,44 @@
+{
+  "schema": 2,
+  "updated_by": "12F.1A",
+  "ready_for_operator_restart": false,
+  "hard_conditions": {
+    "production_baseline_immutable": false,
+    "production_source_equivalence": false,
+    "unexplained_dirty_source_changes_zero": false,
+    "rollback_release_immutable": false,
+    "candidate_release_immutable": false,
+    "candidate_isolated_health": false,
+    "existing_auditmanager_regression": false,
+    "distributed_routes": false,
+    "workers_persistence": false,
+    "role_mapping": false,
+    "secret_storage_plan": true,
+    "permission_plan": true,
+    "stable_polling_endpoint": true,
+    "polling_compatibility": false,
+    "scheduler_safe_default": false,
+    "migration_safe": false,
+    "rollback_dry_run": false,
+    "tests_pass": false,
+    "baseline_immutable_review": false,
+    "candidate_immutable_review": false,
+    "operator_restart_authorization": false
+  },
+  "blockers": [
+    "Production working tree is not quiescent: semantic_diff.py changed again after the 12F.1A forensic point.",
+    "Running PID 1968811 loaded stage_comparison.py and store.py before their current disk bytes were written; old store.py source is unavailable.",
+    "Four post-start operator source/test changes remain UNKNOWN for baseline inclusion.",
+    "No immutable baseline, rollback release or integrated candidate exists.",
+    "Production human subject-to-role mapping and worker drain product policy are unresolved.",
+    "Canonical release-independent persistent state root is not operator-approved.",
+    "Reusable bootstrap-secret fallback must be removed from the future candidate."
+  ],
+  "resolved_since_12f1": {
+    "stable_polling_endpoint": "https://auditmanager.app",
+    "worker31_dns_tcp_tls_health_read_only": true,
+    "quick_tunnel_required": false
+  },
+  "production_restart_performed": false,
+  "production_deploy_performed": false
+}

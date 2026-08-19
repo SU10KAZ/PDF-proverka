@@ -1,0 +1,78 @@
+{
+  "schema": "auditmanager.12f1.phaseb.after.v1",
+  "captured_at": "2026-08-13T10:10:16.748360148+03:00",
+  "center": {
+    "backend_pid": 2214574,
+    "service": "auditmanager-backend.service",
+    "service_state": "active/running",
+    "service_n_restarts": 0,
+    "listener": "127.0.0.1:8081",
+    "release_path": "/home/coder/auditmanager/releases/candidate-4767d0bf",
+    "release_commit": "4767d0bf83fcb99ee69267d94324495b92954b41",
+    "release_manifest_sha256": "fc865d5159316f8ae52228e192d2bf8d112e3e41f15a20ce60e086ee39df379f",
+    "api_info_http": 200,
+    "external_api_info_http": 200,
+    "external_base_dir_matches_candidate": true,
+    "core_api_smoke": "PASS",
+    "distributed_router_smoke": "PASS"
+  },
+  "restart": {
+    "method": "graceful SIGTERM of historical PID followed by systemd user service start",
+    "old_pid": 1968811,
+    "stop_requested_at": "2026-08-13T09:58:24.417599964+03:00",
+    "old_process_exited_at": "2026-08-13T09:58:25.426295182+03:00",
+    "listener_down_at": "2026-08-13T09:58:25.475149538+03:00",
+    "candidate_healthy_at": "2026-08-13T09:58:27.565699942+03:00",
+    "actual_listener_downtime_seconds": 2.091,
+    "rollback_executed": false
+  },
+  "observation": {
+    "from_service_start": "2026-08-13T09:58:25+03:00",
+    "final_snapshot": "2026-08-13T10:10:16.748360148+03:00",
+    "duration_seconds_at_least": 711,
+    "required_seconds": 600,
+    "service_restart_count": 0,
+    "warning_or_higher_journal_entries": 0,
+    "verdict": "PASS"
+  },
+  "distributed_state": {
+    "root": "/var/lib/auditmanager/distributed_workers",
+    "root_mode": "0700",
+    "db_path": "/var/lib/auditmanager/distributed_workers/workers.db",
+    "db_mode": "0600",
+    "owner": "coder:coder",
+    "schema_version": 12,
+    "journal_mode": "wal",
+    "integrity_check": "ok",
+    "application_tables": 27,
+    "worker_rows": 0,
+    "token_rows": 0,
+    "job_rows": 0,
+    "attempt_rows": 0,
+    "certificate_rows": 0,
+    "offer_rows": 0,
+    "pending_command_rows": 0,
+    "isolated_12d_12e_state_imported": false
+  },
+  "safe_default": {
+    "distributed_enabled": true,
+    "remote_execution_enabled": false,
+    "automatic_provider_dispatch": false,
+    "unexpected_jobs": 0,
+    "unexpected_offers": 0,
+    "unexpected_admin_actions": 0,
+    "scheduler": "DISABLED"
+  },
+  "worker_31": {
+    "transport": "POLLING",
+    "agent_pid": 2048874,
+    "agent_active": true,
+    "executor_pid": 1384880,
+    "executor_untouched": true,
+    "final_endpoint": "https://conviction-medicaid-coupled-tricks.trycloudflare.com",
+    "fresh_authenticated_heartbeat": false,
+    "not_connected_reason": "preserved worker identity/token absent from new production Center DB"
+  },
+  "listeners": {"8081": "127.0.0.1 LISTEN", "8443": "ABSENT", "9443": "ABSENT"},
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

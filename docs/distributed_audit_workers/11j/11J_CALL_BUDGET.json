@@ -1,0 +1,11 @@
+{
+  "status": "SUPERSEDED_BY_NETWORK_COMPARISON",
+  "scope": "worker",
+  "authoritative_artifact": "11J_CALL_BUDGET_NETWORK_COMPARISON.json",
+  "reason": "Предыдущая таблица смешивала worker и center scopes; 11J.1 сравнивает worker predicted calls с фактическим network ledger.",
+  "network_fixture_equal": true,
+  "B40_third_leg_on": {
+    "claude_gpt_codex": {"claude": 5, "codex": 121, "openrouter": 40, "total": 166},
+    "codex_exec": {"claude": 2, "codex": 127, "openrouter": 40, "total": 169}
+  }
+}

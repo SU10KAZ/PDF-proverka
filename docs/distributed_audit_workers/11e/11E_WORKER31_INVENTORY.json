@@ -1,0 +1,61 @@
+{
+  "kind": "11E §3 — состояние пилотного воркера на момент этапа",
+  "captured_at": "2026-08-10",
+  "host": {
+    "ip": "176.12.77.31",
+    "hostname": "andrewuzun3.hlab.kz",
+    "user": "coder",
+    "uid": 1001,
+    "os": "Ubuntu 24.04.4 LTS",
+    "kernel": "6.8.0-136-generic",
+    "mount_options_home": "rw,relatime,quota,usrquota,grpquota"
+  },
+  "toolchain": {
+    "python_system": "3.12.3",
+    "python_venv_used": "/home/coder/audit-worker/venv/bin/python (3.12.3, ЧТЕНИЕ чужого venv, второй не создавался)",
+    "node": "v20.20.2",
+    "claude_cli": "2.1.220 (Claude Code), /home/coder/.local/bin/claude → /home/coder/.local/share/claude/versions/2.1.220",
+    "codex_cli": "codex-cli 0.147.0 (в 11E НЕ используется)"
+  },
+  "claude_auth_zero_inference": {
+    "command": "claude auth status",
+    "loggedIn": true,
+    "authMethod": "claude.ai",
+    "apiProvider": "firstParty",
+    "subscriptionType": "max",
+    "note": "повторный вход не выполнялся; файлы учётных данных Python-кодом не читались"
+  },
+  "account_sharing": {
+    "same_account_as_center": true,
+    "consequence": "§39 задания: НЕ утверждать, что .31 имеет независимый пул квоты. Одна учётная запись = одна subscription/account_group, а не два независимых лимита",
+    "relevance_to_this_stage": "во время боевого вызова 11E на той же учётной записи активно работала центральная сессия Claude Code — это входит в число возможных причин отказа CLI (см. 11E_RUN.json и раздел «Известные проблемы»)"
+  },
+  "runtime_roots": {
+    "existing_install_11b": {
+      "path": "~/audit-worker",
+      "current": "app/20260809T140821-c1070168cda4",
+      "touched_by_11e": false
+    },
+    "runtime_11d": {"path": "~/audit-worker-11d", "current": "app/20260809T175252-b44146f141ed", "touched_by_11e": false},
+    "runtime_11d2": {"path": "~/audit-worker-11d2", "current": "app/20260809T210739-6e764b890b75", "touched_by_11e": "только ЧТЕНИЕ артефакта 02_text_analysis.json"},
+    "runtime_11e": {"path": "~/audit-worker-11e", "created_by_this_stage": true}
+  },
+  "systemd_worker_units": 0,
+  "running_audit_worker_processes": 0,
+  "canary": {
+    "path": "/home/coder/provider-auth-canary/DO_NOT_READ.txt",
+    "exists": true,
+    "size_bytes": 664,
+    "mode": "600",
+    "sha256_taken_by_operator_before_run": "a4e4db09c4e66e2ceb49a6cb5730e32bc09ae1cac640991119f703f075dbb98e",
+    "marker_passed_as_forbidden_literal": true,
+    "marker_value_in_docs": false
+  },
+  "claude_md_on_worker": {
+    "user_level": {"path": "/home/coder/.claude/CLAUDE.md", "exists": true, "bytes": 226,
+      "contains_severity_definitions": false},
+    "project_level": {"path": "~/audit-worker-11e/current/CLAUDE.md", "exists": false,
+      "why": "denylist сборщика артефакта не пускает CLAUDE.md в релиз"},
+    "suppressed_by": "--setting-sources= --strict-mcp-config --disable-slash-commands --no-session-persistence (наблюдалось в argv живого процесса)"
+  }
+}

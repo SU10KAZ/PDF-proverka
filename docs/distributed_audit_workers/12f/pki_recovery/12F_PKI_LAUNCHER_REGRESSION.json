@@ -1,0 +1,28 @@
+{
+  "schema": "auditmanager.12f.pki_launcher_regression.v1",
+  "test_file": "tests/test_pki_recovery_12f.py",
+  "test_file_sha256": "befee7c055adb4926afcd62261659974a9e107c451e547af08556f90eaa24105",
+  "new_tests": 8,
+  "result": "8 passed",
+  "proof": {
+    "production_like_minimal_environment": true,
+    "arbitrary_caller_cwd": true,
+    "explicit_immutable_pythonpath": true,
+    "read_only_immutable_app_copy": true,
+    "developer_checkout_not_on_child_pythonpath": true,
+    "exact_python_module_launcher": "python -m backend.app.security.issuer_service",
+    "process_stayed_active": true,
+    "clean_sigterm_exit": true
+  },
+  "sandbox_note": "managed network sandbox denied child AF_UNIX bind with EPERM; authorized isolated rerun outside that sandbox passed",
+  "related_regression": {
+    "command_scope": "recovery + mTLS + Center + identity reenrollment",
+    "result": "100 passed, 1 warning",
+    "duration_sec": 6.98
+  },
+  "broad_suite": {
+    "result": "1292 passed, 1 skipped, 3 failed",
+    "duration_sec": 276.37,
+    "failures_classification": "three pre-existing current-branch integration failures outside changed files; one HEAD test/import mismatch and two reproducible polling multi-process timeouts with zero local queue/process rows"
+  }
+}

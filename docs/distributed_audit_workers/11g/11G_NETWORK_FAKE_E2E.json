@@ -1,0 +1,1870 @@
+{
+  "stage": "11G",
+  "question": "что доказал первый ПОЛНЫЙ сетевой прогон .128 ↔ .31 на подделках провайдеров",
+  "mode": "audit-fake",
+  "center": "изолированный тест-центр на 176.12.77.128, публичный HTTPS через временный cloudflared",
+  "worker": "176.12.77.31, релиз 20260810T112228-6e1fac79ab71, ревизия 11g",
+  "totals": {
+    "checks": 114,
+    "passed": 106,
+    "failed": 8
+  },
+  "real_model_calls": 0,
+  "verdict": "транспорт, устойчивость и приём доказаны; найден дефект переносимости `md_file`, из-за которого пакет результата отвергался целиком",
+  "failures_explained": [
+    {
+      "checks": [
+        9,
+        10
+      ],
+      "why": "проверка утверждала «настоящего CLI на машине нет». На .31 claude 2.1.220 стоит с 11F; прежняя формулировка проходила лишь потому, что смотрела в PATH, где ~/.local/bin нет. Утверждение заменено справкой — доказательство «модель не звали» даёт журнал подделок (проверки 106–107), а не отсутствие бинаря",
+      "status": "проверка исправлена, дефекта продукта нет"
+    },
+    {
+      "checks": [
+        100,
+        101,
+        110,
+        111,
+        112,
+        113
+      ],
+      "why": "следствие ОДНОГО дефекта: импорт отверг пакет целиком — `01_text_prescan.json` несёт поле `md_file` с абсолютным путём каталога попытки, а контракт переносимости знал соседнее имя `md_path`. Отказ был правильным; недоставало строки в таблице",
+      "status": "исправлено (portable_paths.RELATIVIZE_KEYS += md_file) + регрессионный тест"
+    }
+  ],
+  "checks": [
+    {
+      "n": 1,
+      "ok": true,
+      "section": "Преflight центра",
+      "title": "python центра ≥ 3.11",
+      "detail": "3.12.13"
+    },
+    {
+      "n": 2,
+      "ok": true,
+      "section": "Преflight центра",
+      "title": "ревизия конвейера задана",
+      "detail": "11g"
+    },
+    {
+      "n": 3,
+      "ok": true,
+      "section": "Преflight центра",
+      "title": "каталог подделок центра валиден",
+      "detail": "/tmp/claude-1001/-home-coder-projects-PDF-proverka/766f0e2c-1363-4e3b-b034-b0b111d25806/scratchpad/run/stand_fake/fake_providers"
+    },
+    {
+      "n": 4,
+      "ok": true,
+      "section": "Преflight центра",
+      "title": "настоящие CLI на центре (справочно)",
+      "detail": "claude"
+    },
+    {
+      "n": 5,
+      "ok": true,
+      "section": "Преflight центра",
+      "title": "контракт семантической проекции цел",
+      "detail": ""
+    },
+    {
+      "n": 6,
+      "ok": true,
+      "section": "Преflight воркера (только чтение)",
+      "title": "SSH к воркеру работает",
+      "detail": "coder@176.12.77.31"
+    },
+    {
+      "n": 7,
+      "ok": true,
+      "section": "Преflight воркера (только чтение)",
+      "title": "релиз установлен",
+      "detail": "20260810T112228-6e1fac79ab71"
+    },
+    {
+      "n": 8,
+      "ok": true,
+      "section": "Преflight воркера (только чтение)",
+      "title": "pipeline_revision релиза совпадает с центром",
+      "detail": "воркер=11g центр=11g"
+    },
+    {
+      "n": 9,
+      "ok": false,
+      "section": "Преflight воркера (только чтение)",
+      "title": "настоящий claude на воркере отсутствует",
+      "detail": "/home/coder/.local/bin/claude"
+    },
+    {
+      "n": 10,
+      "ok": false,
+      "section": "Преflight воркера (только чтение)",
+      "title": "настоящий codex на воркере отсутствует",
+      "detail": "/home/coder/.local/bin/codex"
+    },
+    {
+      "n": 11,
+      "ok": true,
+      "section": "Преflight воркера (только чтение)",
+      "title": "ядер хватает на слот (нужно ≥2)",
+      "detail": "8"
+    },
+    {
+      "n": 12,
+      "ok": true,
+      "section": "Преflight воркера (только чтение)",
+      "title": "свободного диска хватает (нужно ≥5.5 ГБ)",
+      "detail": "58435 МБ"
+    },
+    {
+      "n": 13,
+      "ok": true,
+      "section": "Подъём пилотного центра",
+      "title": "пилотный backend поднялся",
+      "detail": "http://127.0.0.1:56861"
+    },
+    {
+      "n": 14,
+      "ok": true,
+      "section": "Подъём пилотного центра",
+      "title": "центр доступен по публичному HTTPS",
+      "detail": "https://phys-winds-hub-locally.trycloudflare.com"
+    },
+    {
+      "n": 15,
+      "ok": true,
+      "section": "Транспорт центр ↔ воркер",
+      "title": "адрес центра",
+      "detail": "HTTPS (verify_tls в воркере зашит константой) — https://phys-winds-hub-locally.trycloudflare.com"
+    },
+    {
+      "n": 16,
+      "ok": true,
+      "section": "Транспорт центр ↔ воркер",
+      "title": "агентский префикс /api/v1/worker/ достижим с воркера",
+      "detail": "HTTP 405"
+    },
+    {
+      "n": 17,
+      "ok": true,
+      "section": "Транспорт центр ↔ воркер",
+      "title": "портальный контур достижим с воркера",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 18,
+      "ok": true,
+      "section": "Транспорт центр ↔ воркер",
+      "title": "сертификат центра проверен воркером штатно (verify=0)",
+      "detail": "ssl_verify_result=0 при HTTP 405"
+    },
+    {
+      "n": 19,
+      "ok": true,
+      "section": "Транспорт центр ↔ воркер",
+      "title": "оператор авторизован на центре",
+      "detail": "realvps_operator"
+    },
+    {
+      "n": 20,
+      "ok": true,
+      "section": "Конфигурация воркера",
+      "title": "worker.env и юниты установлены",
+      "detail": ""
+    },
+    {
+      "n": 21,
+      "ok": true,
+      "section": "Конфигурация воркера",
+      "title": "каталог подделок создан и валиден",
+      "detail": ""
+    },
+    {
+      "n": 22,
+      "ok": true,
+      "section": "Конфигурация воркера",
+      "title": "worker.env доступен только владельцу (0600)",
+      "detail": "['ENV_MODE=600']"
+    },
+    {
+      "n": 23,
+      "ok": true,
+      "section": "Регистрация воркера",
+      "title": "заявка на регистрацию принята",
+      "detail": "worker_id=wrk_b6693c35"
+    },
+    {
+      "n": 24,
+      "ok": true,
+      "section": "Регистрация воркера",
+      "title": "воркер одобрен оператором",
+      "detail": "HTTP 200 {\"worker\":{\"worker_id\":\"wrk_b6693c35\",\"executor\":{\"status\":\"unknown\"},\"disk\":{\"level\":\"unknown\"},\"slots\":{\"effective_limit\":1,\"limit_binding\":\"center_configured\",\"limit_co"
+    },
+    {
+      "n": 25,
+      "ok": true,
+      "section": "Регистрация воркера",
+      "title": "worker-token получен и защищён (0600)",
+      "detail": "['TOKEN_MODE=600']"
+    },
+    {
+      "n": 26,
+      "ok": true,
+      "section": "Запуск Agent и Executor",
+      "title": "юниты подняты: Agent active",
+      "detail": "1091873"
+    },
+    {
+      "n": 27,
+      "ok": true,
+      "section": "Запуск Agent и Executor",
+      "title": "юниты подняты: Executor active",
+      "detail": "1091816"
+    },
+    {
+      "n": 28,
+      "ok": true,
+      "section": "Запуск Agent и Executor",
+      "title": "Agent и Executor",
+      "detail": "разные процессы — agent=1091873 executor=1091816"
+    },
+    {
+      "n": 29,
+      "ok": true,
+      "section": "Heartbeat на центре",
+      "title": "центр видит воркер как online и получил от него ревизию",
+      "detail": "connection_status=online pipeline_revision=11g"
+    },
+    {
+      "n": 30,
+      "ok": true,
+      "section": "Heartbeat на центре",
+      "title": "центр видит Executor воркера",
+      "detail": "online"
+    },
+    {
+      "n": 31,
+      "ok": true,
+      "section": "Heartbeat на центре",
+      "title": "заявлена способность audit_pipeline_v1",
+      "detail": "{\"providers\": [\"fake_claude_cli\", \"fake_codex_cli\"], \"compressions\": [\"gzip\", \"none\"], \"job_types\": [\"test_pipeline_v1\", \"audit_pipeline_v1\"], \"python\": \"3.12.3"
+    },
+    {
+      "n": 32,
+      "ok": true,
+      "section": "Heartbeat на центре",
+      "title": "GET /api/workers/audit/targets отвечает",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 33,
+      "ok": true,
+      "section": "Heartbeat на центре",
+      "title": "удалённое исполнение включено на центре",
+      "detail": ""
+    },
+    {
+      "n": 34,
+      "ok": true,
+      "section": "Heartbeat на центре",
+      "title": "воркер признан совместимым",
+      "detail": "[]"
+    },
+    {
+      "n": 35,
+      "ok": true,
+      "section": "test_pipeline_v1 через настоящую сеть",
+      "title": "тестовое задание создано",
+      "detail": "ead40079-5d67-48be-a831-7871154adfc9"
+    },
+    {
+      "n": 36,
+      "ok": true,
+      "section": "test_pipeline_v1 через настоящую сеть",
+      "title": "задание доведено до completed",
+      "detail": "state=completed за 9.9 с"
+    },
+    {
+      "n": 37,
+      "ok": true,
+      "section": "test_pipeline_v1 через настоящую сеть",
+      "title": "события задания доехали до центра",
+      "detail": "18 шт."
+    },
+    {
+      "n": 38,
+      "ok": true,
+      "section": "test_pipeline_v1 через настоящую сеть",
+      "title": "логи задания доступны на центре",
+      "detail": "HTTP 200"
+    },
+    {
+      "n": 39,
+      "ok": true,
+      "section": "test_pipeline_v1 через настоящую сеть",
+      "title": "результат принят с SHA-256",
+      "detail": "46ebaf62a3c408d052e82431"
+    },
+    {
+      "n": 40,
+      "ok": true,
+      "section": "test_pipeline_v1 через настоящую сеть",
+      "title": "срок хранения выставлен после подтверждения приёма",
+      "detail": "1788953260.4349189"
+    },
+    {
+      "n": 41,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "длинное задание создано",
+      "detail": "dacf6199-6a7b-4b33-a850-3b0bb0e15cce"
+    },
+    {
+      "n": 42,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "задание пошло в работу до обрыва",
+      "detail": "running"
+    },
+    {
+      "n": 43,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "центр действительно недоступен",
+      "detail": ""
+    },
+    {
+      "n": 44,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "Executor жив при недоступном центре",
+      "detail": ""
+    },
+    {
+      "n": 45,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "события копятся в дисковом outbox, а не теряются",
+      "detail": "36 → 62"
+    },
+    {
+      "n": 46,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "центр поднялся после обрыва",
+      "detail": ""
+    },
+    {
+      "n": 47,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "задание доехало до completed после восстановления связи",
+      "detail": "state=completed"
+    },
+    {
+      "n": 48,
+      "ok": true,
+      "section": "Обрыв связи с центром посреди задания",
+      "title": "накопленные события досланы центру",
+      "detail": "43 шт."
+    },
+    {
+      "n": 49,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "до рестарта: Agent active",
+      "detail": "1091873"
+    },
+    {
+      "n": 50,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "до рестарта: Executor active",
+      "detail": "1091816"
+    },
+    {
+      "n": 51,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "Agent и Executor",
+      "detail": "разные процессы — agent=1091873 executor=1091816"
+    },
+    {
+      "n": 52,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "задание пошло в работу",
+      "detail": ""
+    },
+    {
+      "n": 53,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "после рестарта агента: Agent active",
+      "detail": "1092454"
+    },
+    {
+      "n": 54,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "после рестарта агента: Executor active",
+      "detail": "1091816"
+    },
+    {
+      "n": 55,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "Agent и Executor",
+      "detail": "разные процессы — agent=1092454 executor=1091816"
+    },
+    {
+      "n": 56,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "Executor НЕ перезапустился вместе с агентом",
+      "detail": "1091816 → 1091816"
+    },
+    {
+      "n": 57,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "Agent действительно перезапущен",
+      "detail": "1091873 → 1092454"
+    },
+    {
+      "n": 58,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "результат доехал несмотря на рестарт агента",
+      "detail": "completed"
+    },
+    {
+      "n": 59,
+      "ok": true,
+      "section": "Рестарт Agent посреди задания",
+      "title": "дубля попытки не появилось",
+      "detail": "1 попытк(а/и)"
+    },
+    {
+      "n": 60,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "задание пошло в работу",
+      "detail": ""
+    },
+    {
+      "n": 61,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "до рестарта исполнителя: Agent active",
+      "detail": "1092454"
+    },
+    {
+      "n": 62,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "до рестарта исполнителя: Executor active",
+      "detail": "1091816"
+    },
+    {
+      "n": 63,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "Agent и Executor",
+      "detail": "разные процессы — agent=1092454 executor=1091816"
+    },
+    {
+      "n": 64,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "после рестарта исполнителя: Agent active",
+      "detail": "1092454"
+    },
+    {
+      "n": 65,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "после рестарта исполнителя: Executor active",
+      "detail": "1092753"
+    },
+    {
+      "n": 66,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "Agent и Executor",
+      "detail": "разные процессы — agent=1092454 executor=1092753"
+    },
+    {
+      "n": 67,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "Agent НЕ перезапустился вместе с исполнителем",
+      "detail": "1092454 → 1092454"
+    },
+    {
+      "n": 68,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "второго исполнителя не появилось",
+      "detail": "1 процесс(ов)"
+    },
+    {
+      "n": 69,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "судьба задания после рестарта исполнителя определилась",
+      "detail": "completed"
+    },
+    {
+      "n": 70,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "задание пережило рестарт исполнителя (KillMode=process)",
+      "detail": ""
+    },
+    {
+      "n": 71,
+      "ok": true,
+      "section": "Рестарт Executor посреди задания",
+      "title": "дубля дочернего процесса/попытки нет",
+      "detail": "1"
+    },
+    {
+      "n": 72,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "задание cancel-online пошло в работу",
+      "detail": "running"
+    },
+    {
+      "n": 73,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "команда отмены принята центром",
+      "detail": "HTTP 200 {\"outcome\":\"cancel_requested\",\"state\":\"cancel_requested\",\"command_id\":\"cmd_c688bac7\",\"command_status\":\"pending\",\"message\":\"Отмена запрошена. Если VPS сейчас офлайн, команд"
+    },
+    {
+      "n": 74,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "центр отвечает «запрошена отмена», а не «отменено»",
+      "detail": "cancel_requested"
+    },
+    {
+      "n": 75,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "задание остановлено на воркере и отмечено отменённым",
+      "detail": "cancelled"
+    },
+    {
+      "n": 76,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "дочерний процесс отменённого задания не остался",
+      "detail": "процессов нет"
+    },
+    {
+      "n": 77,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "задание cancel-offline пошло в работу",
+      "detail": "running"
+    },
+    {
+      "n": 78,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "агент остановлен",
+      "detail": "inactive active"
+    },
+    {
+      "n": 79,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "исполнитель при этом жив",
+      "detail": "inactive active"
+    },
+    {
+      "n": 80,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "команда отмены принята при недоступном агенте",
+      "detail": "HTTP 200 {\"outcome\":\"cancel_requested\",\"state\":\"cancel_requested\",\"command_id\":\"cmd_6354ddc4\",\"command_status\":\"pending\",\"message\":\"Отмена запрошена. Если VPS сейчас офлайн, команд"
+    },
+    {
+      "n": 81,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "пока агент молчит, отмена остаётся невыполненной",
+      "detail": "cancel_requested"
+    },
+    {
+      "n": 82,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "отложенная команда доставлена и выполнена после возвращения связи",
+      "detail": "cancelled"
+    },
+    {
+      "n": 83,
+      "ok": true,
+      "section": "Отмена задания через сеть",
+      "title": "после offline-отмены дочерних процессов не осталось",
+      "detail": "процессов нет"
+    },
+    {
+      "n": 84,
+      "ok": true,
+      "section": "Retention (сухой прогон)",
+      "title": "физическое удаление выключено (сухой прогон)",
+      "detail": "delete_enabled=False"
+    },
+    {
+      "n": 85,
+      "ok": true,
+      "section": "Retention (сухой прогон)",
+      "title": "снимок диска собран",
+      "detail": "{\"total_bytes\": 126711623680.0, \"used_bytes\": 58991935488.0, \"free_bytes\": 61266173952.0, \"jobs_bytes\": 135277.0, \"confirmed_results_bytes\": 115356.0, \"unconfir"
+    },
+    {
+      "n": 86,
+      "ok": true,
+      "section": "Retention (сухой прогон)",
+      "title": "кандидаты на удаление посчитаны",
+      "detail": "0 шт."
+    },
+    {
+      "n": 87,
+      "ok": true,
+      "section": "Retention (сухой прогон)",
+      "title": "неподтверждённые результаты НЕ попали в кандидаты на удаление",
+      "detail": "неподтверждённых 0, из них в кандидатах 0"
+    },
+    {
+      "n": 88,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "исходное дерево версии посчитано",
+      "detail": "sha256:e67417a33620fa9f9…"
+    },
+    {
+      "n": 89,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "оператор запустил удалённый аудит по HTTP",
+      "detail": "HTTP 200: {\"status\":\"queued\",\"job\":{\"job_id\":\"2d830f78-df85-465b-99c5-7b842231aa67\",\"project_id\":\"ТЕСТ-РД-ВК1-К1\",\"object_id\":\"obj-e2e-0001\",\"version_id\":\"v001\",\"stage\":\"prepare\",\""
+    },
+    {
+      "n": 90,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "API прямо сообщает: нормативный этап остаётся на центре",
+      "detail": "center"
+    },
+    {
+      "n": 91,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "центр собрал исходный пакет проекта",
+      "detail": ""
+    },
+    {
+      "n": 92,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "манифест пакета несёт правильный discipline_id (не EOM)",
+      "detail": "VK"
+    },
+    {
+      "n": 93,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "профиля EOM в пакете НЕТ",
+      "detail": ""
+    },
+    {
+      "n": 94,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "манифест несёт хэш снимка runtime-конфигурации",
+      "detail": ""
+    },
+    {
+      "n": 95,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "воркер применил профиль дисциплины из пакета",
+      "detail": ""
+    },
+    {
+      "n": 96,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "на воркере применён профиль ИМЕННО нужной дисциплины",
+      "detail": "VK"
+    },
+    {
+      "n": 97,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "конвейер воркера ЗАГРУЗИЛ этот профиль, а не подставил EOM",
+      "detail": "VK"
+    },
+    {
+      "n": 98,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "хэш применённого профиля совпал с отправленным",
+      "detail": ""
+    },
+    {
+      "n": 99,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "снимок центра пересилил настройку хоста воркера",
+      "detail": "projects_v2_primary"
+    },
+    {
+      "n": 100,
+      "ok": false,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "ось центрального хвоста дошла до completed",
+      "detail": "central_handoff_state=failed state=completed"
+    },
+    {
+      "n": 101,
+      "ok": false,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "результат импортирован центром",
+      "detail": "None"
+    },
+    {
+      "n": 102,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "результат принят с SHA-256",
+      "detail": "2e5aaa6dba6db2dd1e2f6821"
+    },
+    {
+      "n": 103,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "исходный пакет принадлежит именно этому логическому заданию",
+      "detail": "пакет=97436011-8171-47e9-bc46-6b7f6f4c9725 задание=97436011-8171-47e9-bc46-6b7f6f4c9725"
+    },
+    {
+      "n": 104,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "манифест результата воркера: provider_mode=fake",
+      "detail": "fake"
+    },
+    {
+      "n": 105,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "центральные этапы на воркере не выполнялись",
+      "detail": "[\"debt_control\", \"decision_carryover\", \"excel\", \"norm_verify\"]"
+    },
+    {
+      "n": 106,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "журнал вызовов подделок на воркере непуст",
+      "detail": "6 шт."
+    },
+    {
+      "n": 107,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "все вызовы ушли в подделки claude/codex",
+      "detail": "claude, codex"
+    },
+    {
+      "n": 108,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "локальный эталон прошёл ПОЛНЫЙ аудит",
+      "detail": ""
+    },
+    {
+      "n": 109,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "дисциплина обеих сторон прочитана независимо и совпала",
+      "detail": "local='VK' remote='VK'"
+    },
+    {
+      "n": 110,
+      "ok": false,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "удалённый результат содержит ВСЕ обязательные артефакты",
+      "detail": "нет: 01_blocks_analysis.json, 02_text_analysis.json, 03_findings.json, 03_findings_review.json, 03a_norms_verified.json, norm_checks.json, optimization.json, optimization_review.js"
+    },
+    {
+      "n": 111,
+      "ok": false,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "финальный Excel создан ЦЕНТРОМ после приёма результата",
+      "detail": ""
+    },
+    {
+      "n": 112,
+      "ok": false,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "семантическая проекция local ↔ remote совпала",
+      "detail": "artifacts.01_blocks_analysis.json: тип dict ≠ NoneType; artifacts.02_text_analysis.json: тип dict ≠ NoneType; artifacts.03_findings.json: тип dict ≠ NoneType; artifacts.03_findings"
+    },
+    {
+      "n": 113,
+      "ok": false,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "сравнение было СОДЕРЖАТЕЛЬНЫМ, а не сравнением пустого с пустым",
+      "detail": "артефактов 9, замечаний 0, этапов 0"
+    },
+    {
+      "n": 114,
+      "ok": true,
+      "section": "audit_pipeline_v1 (fake providers) через настоящую сеть",
+      "title": "исходное дерево версии не изменилось за прогон",
+      "detail": ""
+    }
+  ],
+  "bridge_run": {
+    "stage": "11G",
+    "question": "доказана ли цепочка «требование центра → способность → локальная модель → привязка → разрешение → вызов» ЧЕРЕЗ НАСТОЯЩУЮ СЕТЬ",
+    "mode": "audit-provider",
+    "what_is_faked": "ТОЛЬКО бинарь claude (provider_bridge_stub). Мост, резолвер, привязка, разрешение, журнал вызовов, argv с --model — боевые",
+    "center": {
+      "host": "176.12.77.128",
+      "instance": "изолированный тест-центр",
+      "ingress": "временный cloudflared quick tunnel (HTTPS, verify=True)"
+    },
+    "worker": {
+      "host": "176.12.77.31",
+      "release": "20260810T121536-44d172044f78",
+      "revision": "11g",
+      "units": [
+        "audit-worker-11g-agent.service",
+        "audit-worker-11g-executor.service"
+      ]
+    },
+    "totals": {
+      "checks": 139,
+      "passed": 139,
+      "failed": 0
+    },
+    "key_evidence": {
+      "job_payload_requirement": {
+        "provider": "claude",
+        "capability": "strong_audit",
+        "model": null,
+        "max_inferences": 8,
+        "allowed_stages_count": 7
+      },
+      "exact_model_in_center_payload": false,
+      "binding_model_source": "локальная политика воркера provider_policy.json (сверено с ФАЙЛОМ, не с литералом)",
+      "grant_id": "auto-<attempt_id> — выписан рантаймом",
+      "grant_note": "auto:11G job=… attempt=… capability=strong_audit inferences=8/24",
+      "operator_created_binding_or_grant": false,
+      "ledger": {
+        "started": 6,
+        "completed": 6,
+        "indeterminate": 0
+      },
+      "stub_calls": 6,
+      "calls_matched_ledger": true,
+      "real_model_calls": 0,
+      "codex_calls": 0,
+      "worker_forbidden_stages_not_run": [
+        "debt_control",
+        "decision_carryover",
+        "excel",
+        "norm_verify"
+      ],
+      "boundary_violations": 0,
+      "center_next_stage": "norm_verify",
+      "norm_verify_executed": false,
+      "excel_created": false,
+      "source_tree_unchanged": true
+    },
+    "checks": [
+      {
+        "n": 1,
+        "ok": true,
+        "section": "Преflight центра",
+        "title": "python центра ≥ 3.11",
+        "detail": "3.12.13"
+      },
+      {
+        "n": 2,
+        "ok": true,
+        "section": "Преflight центра",
+        "title": "ревизия конвейера задана",
+        "detail": "11g"
+      },
+      {
+        "n": 3,
+        "ok": true,
+        "section": "Преflight центра",
+        "title": "каталог подделок центра валиден",
+        "detail": "/tmp/claude-1001/-home-coder-projects-PDF-proverka/766f0e2c-1363-4e3b-b034-b0b111d25806/scratchpad/run/stand_prov2/fake_providers"
+      },
+      {
+        "n": 4,
+        "ok": true,
+        "section": "Преflight центра",
+        "title": "настоящие CLI на центре (справочно)",
+        "detail": "claude"
+      },
+      {
+        "n": 5,
+        "ok": true,
+        "section": "Преflight центра",
+        "title": "контракт семантической проекции цел",
+        "detail": ""
+      },
+      {
+        "n": 6,
+        "ok": true,
+        "section": "Преflight воркера (только чтение)",
+        "title": "SSH к воркеру работает",
+        "detail": "coder@176.12.77.31"
+      },
+      {
+        "n": 7,
+        "ok": true,
+        "section": "Преflight воркера (только чтение)",
+        "title": "релиз установлен",
+        "detail": "20260810T121536-44d172044f78"
+      },
+      {
+        "n": 8,
+        "ok": true,
+        "section": "Преflight воркера (только чтение)",
+        "title": "pipeline_revision релиза совпадает с центром",
+        "detail": "воркер=11g центр=11g"
+      },
+      {
+        "n": 9,
+        "ok": true,
+        "section": "Преflight воркера (только чтение)",
+        "title": "настоящий claude на воркере установлен",
+        "detail": "/home/coder/.local/bin/claude"
+      },
+      {
+        "n": 10,
+        "ok": true,
+        "section": "Преflight воркера (только чтение)",
+        "title": "ядер хватает на слот (нужно ≥2)",
+        "detail": "8"
+      },
+      {
+        "n": 11,
+        "ok": true,
+        "section": "Преflight воркера (только чтение)",
+        "title": "свободного диска хватает (нужно ≥5.5 ГБ)",
+        "detail": "58408 МБ"
+      },
+      {
+        "n": 12,
+        "ok": true,
+        "section": "Подъём пилотного центра",
+        "title": "пилотный backend поднялся",
+        "detail": "http://127.0.0.1:56919"
+      },
+      {
+        "n": 13,
+        "ok": true,
+        "section": "Подъём пилотного центра",
+        "title": "центр доступен по публичному HTTPS",
+        "detail": "https://pdf-serious-dreams-sheet.trycloudflare.com"
+      },
+      {
+        "n": 14,
+        "ok": true,
+        "section": "Транспорт центр ↔ воркер",
+        "title": "адрес центра",
+        "detail": "HTTPS (verify_tls в воркере зашит константой) — https://pdf-serious-dreams-sheet.trycloudflare.com"
+      },
+      {
+        "n": 15,
+        "ok": true,
+        "section": "Транспорт центр ↔ воркер",
+        "title": "агентский префикс /api/v1/worker/ достижим с воркера",
+        "detail": "HTTP 405"
+      },
+      {
+        "n": 16,
+        "ok": true,
+        "section": "Транспорт центр ↔ воркер",
+        "title": "портальный контур достижим с воркера",
+        "detail": "HTTP 200"
+      },
+      {
+        "n": 17,
+        "ok": true,
+        "section": "Транспорт центр ↔ воркер",
+        "title": "сертификат центра проверен воркером штатно (verify=0)",
+        "detail": "ssl_verify_result=0 при HTTP 405"
+      },
+      {
+        "n": 18,
+        "ok": true,
+        "section": "Транспорт центр ↔ воркер",
+        "title": "оператор авторизован на центре",
+        "detail": "realvps_operator"
+      },
+      {
+        "n": 19,
+        "ok": true,
+        "section": "Конфигурация воркера",
+        "title": "worker.env и юниты установлены",
+        "detail": ""
+      },
+      {
+        "n": 20,
+        "ok": true,
+        "section": "Конфигурация воркера",
+        "title": "локальная политика моделей установлена и разбирается",
+        "detail": "POLICY_OK model=claude-opus-5 mode=600"
+      },
+      {
+        "n": 21,
+        "ok": true,
+        "section": "Конфигурация воркера",
+        "title": "политика сопоставила strong_audit требуемой модели",
+        "detail": "POLICY_OK model=claude-opus-5 mode=600"
+      },
+      {
+        "n": 22,
+        "ok": true,
+        "section": "Конфигурация воркера",
+        "title": "в worker.env нет каталога подделок (иначе мост несовместим с fake)",
+        "detail": "FAKEDIR_IN_ENV=0"
+      },
+      {
+        "n": 23,
+        "ok": true,
+        "section": "Конфигурация воркера",
+        "title": "заглушка CLI разложена и прошла looks_like_stub",
+        "detail": "STUB_OK path=/home/coder/audit-worker-11g/provider_stub/claude mode=711"
+      },
+      {
+        "n": 24,
+        "ok": true,
+        "section": "Конфигурация воркера",
+        "title": "обёртка заглушки исполняема и закрыта от посторонних (0700)",
+        "detail": "WRAPPER_MODE=700"
+      },
+      {
+        "n": 25,
+        "ok": true,
+        "section": "Конфигурация воркера",
+        "title": "worker.env доступен только владельцу (0600)",
+        "detail": "['ENV_MODE=600']"
+      },
+      {
+        "n": 26,
+        "ok": true,
+        "section": "Регистрация воркера",
+        "title": "заявка на регистрацию принята",
+        "detail": "worker_id=wrk_c65632fa"
+      },
+      {
+        "n": 27,
+        "ok": true,
+        "section": "Регистрация воркера",
+        "title": "воркер одобрен оператором",
+        "detail": "HTTP 200 {\"worker\":{\"worker_id\":\"wrk_c65632fa\",\"executor\":{\"status\":\"unknown\"},\"disk\":{\"level\":\"unknown\"},\"slots\":{\"effective_limit\":1,\"limit_binding\":\"center_configured\",\"limit_components\":{\"center_c"
+      },
+      {
+        "n": 28,
+        "ok": true,
+        "section": "Регистрация воркера",
+        "title": "worker-token получен и защищён (0600)",
+        "detail": "['TOKEN_MODE=600']"
+      },
+      {
+        "n": 29,
+        "ok": true,
+        "section": "Запуск Agent и Executor",
+        "title": "юниты подняты: Agent active",
+        "detail": "1102500"
+      },
+      {
+        "n": 30,
+        "ok": true,
+        "section": "Запуск Agent и Executor",
+        "title": "юниты подняты: Executor active",
+        "detail": "1102449"
+      },
+      {
+        "n": 31,
+        "ok": true,
+        "section": "Запуск Agent и Executor",
+        "title": "Agent и Executor",
+        "detail": "разные процессы — agent=1102500 executor=1102449"
+      },
+      {
+        "n": 32,
+        "ok": true,
+        "section": "Heartbeat на центре",
+        "title": "центр видит воркер как online и получил от него ревизию",
+        "detail": "connection_status=online pipeline_revision=11g"
+      },
+      {
+        "n": 33,
+        "ok": true,
+        "section": "Heartbeat на центре",
+        "title": "центр видит Executor воркера",
+        "detail": "online"
+      },
+      {
+        "n": 34,
+        "ok": true,
+        "section": "Heartbeat на центре",
+        "title": "заявлена способность audit_pipeline_v1",
+        "detail": "{\"providers\": [\"claude_cli\", \"codex_cli\"], \"compressions\": [\"gzip\", \"none\"], \"job_types\": [\"test_pipeline_v1\", \"audit_pipeline_v1\"], \"python\": \"3.12.3\", \"os\": \""
+      },
+      {
+        "n": 35,
+        "ok": true,
+        "section": "Heartbeat на центре",
+        "title": "GET /api/workers/audit/targets отвечает",
+        "detail": "HTTP 200"
+      },
+      {
+        "n": 36,
+        "ok": true,
+        "section": "Heartbeat на центре",
+        "title": "удалённое исполнение включено на центре",
+        "detail": ""
+      },
+      {
+        "n": 37,
+        "ok": true,
+        "section": "Heartbeat на центре",
+        "title": "воркер признан совместимым",
+        "detail": "[]"
+      },
+      {
+        "n": 38,
+        "ok": true,
+        "section": "test_pipeline_v1 через настоящую сеть",
+        "title": "тестовое задание создано",
+        "detail": "3d1a2bb8-c88e-4228-b07d-651b5c27cd30"
+      },
+      {
+        "n": 39,
+        "ok": true,
+        "section": "test_pipeline_v1 через настоящую сеть",
+        "title": "задание доведено до completed",
+        "detail": "state=completed за 9.9 с"
+      },
+      {
+        "n": 40,
+        "ok": true,
+        "section": "test_pipeline_v1 через настоящую сеть",
+        "title": "события задания доехали до центра",
+        "detail": "18 шт."
+      },
+      {
+        "n": 41,
+        "ok": true,
+        "section": "test_pipeline_v1 через настоящую сеть",
+        "title": "логи задания доступны на центре",
+        "detail": "HTTP 200"
+      },
+      {
+        "n": 42,
+        "ok": true,
+        "section": "test_pipeline_v1 через настоящую сеть",
+        "title": "результат принят с SHA-256",
+        "detail": "382f3d603608abf07f1519d7"
+      },
+      {
+        "n": 43,
+        "ok": true,
+        "section": "test_pipeline_v1 через настоящую сеть",
+        "title": "срок хранения выставлен после подтверждения приёма",
+        "detail": "1788956195.5640113"
+      },
+      {
+        "n": 44,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "длинное задание создано",
+        "detail": "da9bf7e9-1e7c-48e3-b01d-5e1f1f3cec61"
+      },
+      {
+        "n": 45,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "задание пошло в работу до обрыва",
+        "detail": "running"
+      },
+      {
+        "n": 46,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "центр действительно недоступен",
+        "detail": ""
+      },
+      {
+        "n": 47,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "Executor жив при недоступном центре",
+        "detail": ""
+      },
+      {
+        "n": 48,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "события копятся в дисковом outbox, а не теряются",
+        "detail": "636 → 662"
+      },
+      {
+        "n": 49,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "центр поднялся после обрыва",
+        "detail": ""
+      },
+      {
+        "n": 50,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "задание доехало до completed после восстановления связи",
+        "detail": "state=completed"
+      },
+      {
+        "n": 51,
+        "ok": true,
+        "section": "Обрыв связи с центром посреди задания",
+        "title": "накопленные события досланы центру",
+        "detail": "43 шт."
+      },
+      {
+        "n": 52,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "до рестарта: Agent active",
+        "detail": "1102500"
+      },
+      {
+        "n": 53,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "до рестарта: Executor active",
+        "detail": "1102449"
+      },
+      {
+        "n": 54,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "Agent и Executor",
+        "detail": "разные процессы — agent=1102500 executor=1102449"
+      },
+      {
+        "n": 55,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "задание пошло в работу",
+        "detail": ""
+      },
+      {
+        "n": 56,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "после рестарта агента: Agent active",
+        "detail": "1103009"
+      },
+      {
+        "n": 57,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "после рестарта агента: Executor active",
+        "detail": "1102449"
+      },
+      {
+        "n": 58,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "Agent и Executor",
+        "detail": "разные процессы — agent=1103009 executor=1102449"
+      },
+      {
+        "n": 59,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "Executor НЕ перезапустился вместе с агентом",
+        "detail": "1102449 → 1102449"
+      },
+      {
+        "n": 60,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "Agent действительно перезапущен",
+        "detail": "1102500 → 1103009"
+      },
+      {
+        "n": 61,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "результат доехал несмотря на рестарт агента",
+        "detail": "completed"
+      },
+      {
+        "n": 62,
+        "ok": true,
+        "section": "Рестарт Agent посреди задания",
+        "title": "дубля попытки не появилось",
+        "detail": "1 попытк(а/и)"
+      },
+      {
+        "n": 63,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "задание пошло в работу",
+        "detail": ""
+      },
+      {
+        "n": 64,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "до рестарта исполнителя: Agent active",
+        "detail": "1103009"
+      },
+      {
+        "n": 65,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "до рестарта исполнителя: Executor active",
+        "detail": "1102449"
+      },
+      {
+        "n": 66,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "Agent и Executor",
+        "detail": "разные процессы — agent=1103009 executor=1102449"
+      },
+      {
+        "n": 67,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "после рестарта исполнителя: Agent active",
+        "detail": "1103009"
+      },
+      {
+        "n": 68,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "после рестарта исполнителя: Executor active",
+        "detail": "1103333"
+      },
+      {
+        "n": 69,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "Agent и Executor",
+        "detail": "разные процессы — agent=1103009 executor=1103333"
+      },
+      {
+        "n": 70,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "Agent НЕ перезапустился вместе с исполнителем",
+        "detail": "1103009 → 1103009"
+      },
+      {
+        "n": 71,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "второго исполнителя не появилось",
+        "detail": "1 процесс(ов)"
+      },
+      {
+        "n": 72,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "судьба задания после рестарта исполнителя определилась",
+        "detail": "completed"
+      },
+      {
+        "n": 73,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "задание пережило рестарт исполнителя (KillMode=process)",
+        "detail": ""
+      },
+      {
+        "n": 74,
+        "ok": true,
+        "section": "Рестарт Executor посреди задания",
+        "title": "дубля дочернего процесса/попытки нет",
+        "detail": "1"
+      },
+      {
+        "n": 75,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "задание cancel-online пошло в работу",
+        "detail": "running"
+      },
+      {
+        "n": 76,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "команда отмены принята центром",
+        "detail": "HTTP 200 {\"outcome\":\"cancel_requested\",\"state\":\"cancel_requested\",\"command_id\":\"cmd_ac324727\",\"command_status\":\"pending\",\"message\":\"Отмена запрошена. Если VPS сейчас офлайн, команда будет доставлена п"
+      },
+      {
+        "n": 77,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "центр отвечает «запрошена отмена», а не «отменено»",
+        "detail": "cancel_requested"
+      },
+      {
+        "n": 78,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "задание остановлено на воркере и отмечено отменённым",
+        "detail": "cancelled"
+      },
+      {
+        "n": 79,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "дочерний процесс отменённого задания не остался",
+        "detail": "процессов нет"
+      },
+      {
+        "n": 80,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "задание cancel-offline пошло в работу",
+        "detail": "running"
+      },
+      {
+        "n": 81,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "агент остановлен",
+        "detail": "inactive active"
+      },
+      {
+        "n": 82,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "исполнитель при этом жив",
+        "detail": "inactive active"
+      },
+      {
+        "n": 83,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "команда отмены принята при недоступном агенте",
+        "detail": "HTTP 200 {\"outcome\":\"cancel_requested\",\"state\":\"cancel_requested\",\"command_id\":\"cmd_4dc4ae2d\",\"command_status\":\"pending\",\"message\":\"Отмена запрошена. Если VPS сейчас офлайн, команда будет доставлена п"
+      },
+      {
+        "n": 84,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "пока агент молчит, отмена остаётся невыполненной",
+        "detail": "cancel_requested"
+      },
+      {
+        "n": 85,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "отложенная команда доставлена и выполнена после возвращения связи",
+        "detail": "cancelled"
+      },
+      {
+        "n": 86,
+        "ok": true,
+        "section": "Отмена задания через сеть",
+        "title": "после offline-отмены дочерних процессов не осталось",
+        "detail": "процессов нет"
+      },
+      {
+        "n": 87,
+        "ok": true,
+        "section": "Retention (сухой прогон)",
+        "title": "физическое удаление выключено (сухой прогон)",
+        "detail": "delete_enabled=False"
+      },
+      {
+        "n": 88,
+        "ok": true,
+        "section": "Retention (сухой прогон)",
+        "title": "снимок диска собран",
+        "detail": "{\"total_bytes\": 126711623680.0, \"used_bytes\": 59027480576.0, \"free_bytes\": 61230628864.0, \"jobs_bytes\": 1898220.0, \"confirmed_results_bytes\": 1797758.0, \"unconf"
+      },
+      {
+        "n": 89,
+        "ok": true,
+        "section": "Retention (сухой прогон)",
+        "title": "кандидаты на удаление посчитаны",
+        "detail": "0 шт."
+      },
+      {
+        "n": 90,
+        "ok": true,
+        "section": "Retention (сухой прогон)",
+        "title": "неподтверждённые результаты НЕ попали в кандидаты на удаление",
+        "detail": "неподтверждённых 1, из них в кандидатах 0"
+      },
+      {
+        "n": 91,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "исходное дерево версии посчитано",
+        "detail": "sha256:cd28f2905e38a9cfd…"
+      },
+      {
+        "n": 92,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "оператор запустил удалённый аудит по HTTP",
+        "detail": "HTTP 200: {\"status\":\"queued\",\"job\":{\"job_id\":\"fc88d5cf-8b0c-4f86-8514-382c1e86eb90\",\"project_id\":\"ТЕСТ-РД-ВК1-К1\",\"object_id\":\"obj-e2e-0001\",\"version_id\":\"v001\",\"stage\":\"prepare\",\"status\":\"queued\",\"st"
+      },
+      {
+        "n": 93,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "API прямо сообщает: нормативный этап остаётся на центре",
+        "detail": "center"
+      },
+      {
+        "n": 94,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "центр собрал исходный пакет проекта",
+        "detail": ""
+      },
+      {
+        "n": 95,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "манифест пакета несёт правильный discipline_id (не EOM)",
+        "detail": "VK"
+      },
+      {
+        "n": 96,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "профиля EOM в пакете НЕТ",
+        "detail": ""
+      },
+      {
+        "n": 97,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "манифест несёт хэш снимка runtime-конфигурации",
+        "detail": ""
+      },
+      {
+        "n": 98,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "воркер применил профиль дисциплины из пакета",
+        "detail": ""
+      },
+      {
+        "n": 99,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "на воркере применён профиль ИМЕННО нужной дисциплины",
+        "detail": "VK"
+      },
+      {
+        "n": 100,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "конвейер воркера ЗАГРУЗИЛ этот профиль, а не подставил EOM",
+        "detail": "VK"
+      },
+      {
+        "n": 101,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "хэш применённого профиля совпал с отправленным",
+        "detail": ""
+      },
+      {
+        "n": 102,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "снимок центра пересилил настройку хоста воркера",
+        "detail": "projects_v2_primary"
+      },
+      {
+        "n": 103,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "центр импортировал результат и дошёл до границы",
+        "detail": "import=applied handoff=central_resume_running"
+      },
+      {
+        "n": 104,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "центр встал в точке остановки ПЕРЕД центральными этапами",
+        "detail": "/tmp/claude-1001/-home-coder-projects-PDF-proverka/766f0e2c-1363-4e3b-b034-b0b111d25806/scratchpad/run/stand_prov2/evidence/handoff_pause/paused_before_central_tail.json"
+      },
+      {
+        "n": 105,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "ось хвоста НЕ доведена до completed",
+        "detail": "этап 11G туда не идёт — central_resume_running"
+      },
+      {
+        "n": 106,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "результат импортирован центром",
+        "detail": "applied"
+      },
+      {
+        "n": 107,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "результат принят с SHA-256",
+        "detail": "e0eb140de4e95c3e2451778f"
+      },
+      {
+        "n": 108,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "исходный пакет принадлежит именно этому логическому заданию",
+        "detail": "пакет=959dcc60-0ed6-4ba8-bf3b-12795ac9a3fd задание=959dcc60-0ed6-4ba8-bf3b-12795ac9a3fd"
+      },
+      {
+        "n": 109,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "центр назвал попытку этого задания",
+        "detail": "job=959dcc60-0ed6-4ba8-bf3b-12795ac9a3fd attempt=aed68130-ada3-42a4-9957-ca844b254732"
+      },
+      {
+        "n": 110,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "в нагрузке задания есть provider_requirement",
+        "detail": "{\"provider\": \"claude\", \"capability\": \"strong_audit\", \"model\": null, \"allowed_stages\": [\"block_analysis\", \"text_analysis\", \"findings_merge\", \"findings_review\", \"optimization\", \"optimization_critic\", \"o"
+      },
+      {
+        "n": 111,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "центр потребовал провайдера claude и способность strong_audit",
+        "detail": "provider='claude' capability='strong_audit'"
+      },
+      {
+        "n": 112,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "требование несёт положительный потолок обращений к модели",
+        "detail": "8"
+      },
+      {
+        "n": 113,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "имени модели в нагрузке задания нет ни в каком виде (I-P5)",
+        "detail": "провайдер назван, модель — нет"
+      },
+      {
+        "n": 114,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "воркер выписал привязку провайдера на попытку",
+        "detail": "1 файл(ов)"
+      },
+      {
+        "n": 115,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "привязка относится ИМЕННО к этому заданию и этой попытке",
+        "detail": "job='959dcc60-0ed6-4ba8-bf3b-12795ac9a3fd' attempt='aed68130-ada3-42a4-9957-ca844b254732'"
+      },
+      {
+        "n": 116,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "привязка относится к тому же провайдеру и той же способности",
+        "detail": "provider='claude' capability='strong_audit'"
+      },
+      {
+        "n": 117,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "модель привязки взята из ЛОКАЛЬНОЙ политики воркера",
+        "detail": "привязка='claude-opus-5' политика='claude-opus-5'"
+      },
+      {
+        "n": 118,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "политика воркера описывает ту модель, которую задал администратор",
+        "detail": "'claude-opus-5' vs 'claude-opus-5'"
+      },
+      {
+        "n": 119,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "в файле разрешений есть запись под это задание",
+        "detail": "задание 959dcc60-0ed6-4ba8-bf3b-12795ac9a3fd, записей всего 2"
+      },
+      {
+        "n": 120,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "все разрешения под это задание выписаны автоматом (auto-*)",
+        "detail": "auto-aed68130-ada3-42a4-9957-ca844b254732"
+      },
+      {
+        "n": 121,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "заметка разрешения называет задание и способность",
+        "detail": "auto:11G job=959dcc60-0ed6-4ba8-bf3b-12795ac9a3fd attempt=aed68130-ada3-42a4-9957-ca844b254732 capability=strong_audit inferences=8/24"
+      },
+      {
+        "n": 122,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "идентификатор разрешения детерминирован по ПОПЫТКЕ",
+        "detail": "ожидали auto-aed68130-ada3-42a4-9957-ca844b254732"
+      },
+      {
+        "n": 123,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "сам прогон разрешений не выписывает (проверка по исходнику)",
+        "detail": "вызовов выписки в скрипте нет"
+      },
+      {
+        "n": 124,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "модель звали: журнал попытки непуст",
+        "detail": "начато 6, завершено 6"
+      },
+      {
+        "n": 125,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "все начатые вызовы завершены, неизвестных исходов нет (I-P9)",
+        "detail": "6 → 6, неизвестных 0"
+      },
+      {
+        "n": 126,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "число вызовов не вышло за потолок требования",
+        "detail": "6 ≤ 8"
+      },
+      {
+        "n": 127,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "журнал заглушки на воркере непуст",
+        "detail": "18 запис(ь/и)"
+      },
+      {
+        "n": 128,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "обращений к заглушке ровно столько же, сколько вызовов в журнале",
+        "detail": "заглушка 6, журнал 6"
+      },
+      {
+        "n": 129,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "манифест результата воркера: provider_mode=real",
+        "detail": "real"
+      },
+      {
+        "n": 130,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "манифест результата несёт публичный вид привязки",
+        "detail": "{\"provider\": \"claude\", \"auth_mode\": \"ambient_user\", \"model\": \"claude-opus-5\", \"capability\": \"strong_audit\", \"accepted_reported_models\": [\"claude-opus-5\", \"claud"
+      },
+      {
+        "n": 131,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "центральные этапы на воркере не выполнялись",
+        "detail": "[\"debt_control\", \"decision_carryover\", \"excel\", \"norm_verify\"]"
+      },
+      {
+        "n": 132,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "нарушений границы «воркер/центр» нет",
+        "detail": "0"
+      },
+      {
+        "n": 133,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "следующий по решению ЦЕНТРА этап",
+        "detail": "центральный (норм-верификация) — центр='norm_verify' (подсказка воркера была 'norm_verify')"
+      },
+      {
+        "n": 134,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "и он на воркере действительно не выполнялся",
+        "detail": "norm_verify"
+      },
+      {
+        "n": 135,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "результат несёт все артефакты WORKER-участка",
+        "detail": "нет: "
+      },
+      {
+        "n": 136,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "центральных артефактов в результате нет",
+        "detail": "нормативный этап не запускался — лишнее: "
+      },
+      {
+        "n": 137,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "финального Excel нет",
+        "detail": "центральный хвост остановлен на границе (§38) — Excel найден: центральные этапы всё-таки выполнились"
+      },
+      {
+        "n": 138,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "результат содержателен, а не пуст",
+        "detail": "замечаний 1, этапов 13"
+      },
+      {
+        "n": 139,
+        "ok": true,
+        "section": "audit_pipeline_v1 через мост провайдера (заглушка CLI)",
+        "title": "исходное дерево версии не изменилось за прогон",
+        "detail": ""
+      }
+    ]
+  }
+}

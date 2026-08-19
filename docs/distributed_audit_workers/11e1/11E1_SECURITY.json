@@ -1,0 +1,53 @@
+{
+  "kind": "11E.1 §19 — утечки учётных данных и данных заказчика",
+  "credential_leaks": {
+    "total": 0,
+    "scanned_places": [
+      {"place": "argv процесса CLI", "result": "чисто; промпт идёт через stdin, в argv его нет"},
+      {"place": "argv раннера", "result": "чисто; единственное чувствительное значение — маркер канарейки, он передаётся ОПЕРАТОРОМ намеренно и данными заказчика не является"},
+      {"place": "журналы попытки (logs/stage.log)", "result": "чисто"},
+      {"place": "журнал вызовов (inference/*.claim.json, *.result.json)", "result": "чисто"},
+      {"place": "файл разрешений (data/config/allow_synthetic_inference)", "result": "чисто"},
+      {"place": "привязка провайдера (metadata/provider_binding.json, права 0600)", "result": "чисто"},
+      {"place": "отчёт прогона 11E1_RUN.json", "result": "чисто"},
+      {"place": "снимок дерева процессов", "result": "чисто"},
+      {"place": "перенесённые на центр артефакты docs/…/11e1/*", "result": "чисто"}
+    ],
+    "patterns_searched": ["sk-ant-", "ANTHROPIC_API_KEY", "Bearer <20+>", "refresh_token", "access_token", "BEGIN … PRIVATE KEY"],
+    "validator_check": "no_credential_like — passed (форм учётных данных в ответе модели нет)",
+    "credential_files_read_by_code": false,
+    "credential_values_printed": false
+  },
+  "event_outbox_and_db": {
+    "outbox_records_produced": 0,
+    "db_files": 0,
+    "note": "найденные event_outbox.py — это КОД в распакованных релизах, данных исходящей очереди нет: центральный ingress в 11E.1 не включался"
+  },
+  "client_data_containment": {
+    "full_merge_prompt": {"in_git": false, "in_operational_reports": false, "where_it_exists": "только stdin процесса CLI на воркере; дамп промпта пишется лишь в режиме fake, внутрь каталога попытки"},
+    "full_text_artifact": {"in_git": false, "in_reports": false, "fingerprint_only": "sha256 70abe475…"},
+    "full_block_artifact": {"in_git": false, "in_reports": false, "fingerprint_only": "sha256 8516c260…"},
+    "model_response": {"in_git": false, "in_reports": false, "fingerprint_only": "sha256 03868b2f…, 80793 байт"},
+    "output_findings": {"in_git": false, "where_it_exists": "каталог попытки на воркере: project/doc/v1/_output/03_findings.json и inference/*.result.json", "fingerprint_in_docs": "sha256 1138a192…"},
+    "run_report_content_check": {"prompt_text_present": false, "finding_text_present": false, "content_excluded_flag": true, "report_chars": 8994}
+  },
+  "sanitized_cli_error": {
+    "produced": false,
+    "why": "вызов завершился успешно — ошибки, которую надо было бы санировать, не возникло",
+    "mechanism_status": "развёрнут (43d2437f), ограничение 400 символов, оба потока проходят redaction.redact"
+  },
+  "tools_and_context": {
+    "tools": 0, "Read": 0, "Write": 0, "Bash": 0, "Grep": 0, "Glob": 0,
+    "argv_flags": "--tools= --disallowed-tools=Bash,Read,Edit,Write,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit,TodoWrite,AskUserQuestion --permission-mode dontAsk --max-turns 1",
+    "claude_md_used": false,
+    "personal_project_memory_used": false,
+    "mcp_hooks_skills": "--strict-mcp-config --disable-slash-commands --no-session-persistence --setting-sources=",
+    "cwd": "controlled: providers/claude/runtime внутри каталога попытки"
+  },
+  "ssh_boundary": {
+    "role": "административный: доставка, запуск локального раннера, осмотр процессов, забор диагностики",
+    "used_as_inference_transport": false,
+    "proof": "процесс CLI — потомок раннера на .31 (ppid 993178), читает промпт со своего stdin; схемы «промпт → SSH → claude → stdout → центр» нет"
+  },
+  "verdict": "PASS"
+}

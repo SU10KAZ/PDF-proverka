@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rollback_executed": false,
+  "reason": "No production cutover or mutation occurred; rollback was unnecessary.",
+  "final_transport": "POLLING_UNCHANGED",
+  "polling_agent_active": true,
+  "polling_control_health": "CENTER_UNREACHABLE_PRE_EXISTING",
+  "executor_active": true,
+  "active_attempts": 0,
+  "grpc_ownership_acquired": false
+}

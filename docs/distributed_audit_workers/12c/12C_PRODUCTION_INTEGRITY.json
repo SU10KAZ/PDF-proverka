@@ -1,0 +1,13 @@
+{
+  "production_transport_default_before": "polling",
+  "production_transport_default_after": "polling",
+  "requirements_worker_contains_grpc": false,
+  "grpc_dependencies_optional_overlay": true,
+  "https_tls_verification": true,
+  "production_service_enabled": false,
+  "production_worker_switched": false,
+  "firewall_changed": false,
+  "caddy_or_nginx_changed": false,
+  "real_audit_started": false,
+  "real_provider_inference": 0
+}

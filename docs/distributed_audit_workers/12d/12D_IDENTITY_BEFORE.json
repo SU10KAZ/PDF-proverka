@@ -1,0 +1,14 @@
+{
+  "captured_at": "2026-08-11T23:00:00+03:00",
+  "worker_id": "wrk_19c87718",
+  "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+  "unix_user": "auditworker_11l",
+  "install_root": "/home/auditworker_11l/audit-worker-11l",
+  "agent_unit": "active",
+  "executor_unit": "active",
+  "token_mode": "0600",
+  "worker_env_mode": "0600",
+  "certificate_present": false,
+  "private_key_present": false,
+  "provider_auth_repeated": false
+}

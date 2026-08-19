@@ -1,0 +1,33 @@
+{
+  "schema": "auditmanager.12f1g.center_registry.v1",
+  "captured_at": "2026-08-13T22:20:01+03:00",
+  "workers": 1,
+  "runtime_tokens": 1,
+  "worker": {
+    "worker_id": "wrk_19c87718",
+    "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+    "registration_status": "approved",
+    "connection_status": "online",
+    "worker_state": "idle",
+    "last_seen_fresh": true,
+    "active_local_jobs": 0,
+    "running_processes": 0,
+    "configured_max_slots": 1,
+    "calculated_free_slots": 1,
+    "pipeline_revision": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+    "worker_version": "0.1.0",
+    "protocol_version": 1
+  },
+  "event_ack": {
+    "visible_from_worker_read_only_diagnostics": true,
+    "last_event_ack": 22,
+    "outbox_pending_count": 0,
+    "pending_result_count": 0,
+    "pending_cancel_count": 0
+  },
+  "jobs": 0,
+  "offers": 0,
+  "commands": 0,
+  "secrets_returned_by_registry_api": false,
+  "verdict": "PASS"
+}

@@ -1,0 +1,34 @@
+{
+ "stage": "11H",
+ "question": "временная шкала ЦЕНТРАЛЬНОГО участка",
+ "source": "pipeline_log.json итогового дерева версии",
+ "stages": [
+  {
+   "stage": "norm_verify",
+   "status": "done",
+   "duration_sec": 0,
+   "message": "OK",
+   "host": "центр .128"
+  },
+  {
+   "stage": "debt_control",
+   "status": "skipped",
+   "duration_sec": 0,
+   "host": "центр .128"
+  },
+  {
+   "stage": "decision_carryover",
+   "status": "skipped",
+   "duration_sec": 0,
+   "host": "центр .128"
+  },
+  {
+   "stage": "excel",
+   "status": "done",
+   "duration_sec": 0,
+   "message": "OK",
+   "host": "центр .128"
+  }
+ ],
+ "note": "нулевые длительности — округление журнала: нормативный этап уложился в секунды, потому что проверял 17 ссылок по локальной базе"
+}

@@ -1,0 +1,62 @@
+[Unit]
+Description=audit-worker-agent — сетевой агент распределённого аудита
+Documentation=file:///opt/audit-worker/docs/distributed_audit_workers/04_step0_hardening.md
+# ВАЖНО: связи с executor нет намеренно. Ни Requires=, ни PartOf=, ни BindsTo=:
+# любая из них означала бы, что рестарт агента останавливает работу, ради
+# разделения с которой всё и делалось (инвариант I-02).
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=audit-worker
+Group=audit-worker
+WorkingDirectory=/opt/audit-worker
+Environment=PYTHONUNBUFFERED=1
+Environment=AUDIT_WORKER_ROOT=/var/lib/audit-worker
+# Адрес центра. HTTPS обязателен: HTTP разрешён только к localhost и только
+# с явным AUDIT_WORKER_ALLOW_INSECURE_LOCALHOST=true (dev).
+Environment=AUDIT_WORKER_DISPATCHER_URL=https://auditmanager.example
+# Optional separate HTTPS origin for source/result package bytes. Omit to keep
+# the production-compatible default above.
+# Environment=AUDIT_WORKER_DATA_PLANE_BASE_URL=https://data.auditmanager.example
+# Environment=AUDIT_WORKER_DATA_PLANE_CA_BUNDLE=/etc/audit-worker/data-plane-ca.pem
+Environment=AUDIT_WORKER_NAME=%H
+# Число слотов ставится в ОБОИХ юнитах и должно совпадать. С этапа
+# пред-пайплайнового гейта агент отдаёт своё значение центру в heartbeat, а
+# центр берёт минимум из «что одобрил оператор» и «что заявила сборка
+# воркера». Если здесь оставить 1, а у исполнителя поставить 2 — эффективным
+# лимитом станет 1, и второй слот будет недостижим при внешне верной
+# настройке. Доказанный потолок — 2 (см. 05_pre_pipeline_gate.md).
+Environment=AUDIT_WORKER_MAX_SLOTS=1
+
+# Секреты — ТОЛЬКО агенту и только файлами. В командной строке их нет:
+# /proc/<pid>/cmdline читается любым пользователем системы.
+# Файлы /var/lib/audit-worker/token и .../claim_secret создаются самим агентом
+# с правами 0600; никакой другой юнит их не читает.
+
+ExecStart=/opt/audit-worker/venv/bin/python -m audit_worker agent
+Restart=always
+RestartSec=5
+# Убиваем ТОЛЬКО сам агент. KillMode=process критичен: control-group у агента
+# общая с ничем, но при KillMode=control-group systemd прибил бы всё, что
+# агент когда-либо породил.
+KillMode=process
+TimeoutStopSec=30
+
+# Изоляция. ReadWritePaths — только каталог данных воркера.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/audit-worker
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+StandardOutput=append:/var/log/audit-worker/agent.log
+StandardError=append:/var/log/audit-worker/agent.log
+
+[Install]
+WantedBy=multi-user.target

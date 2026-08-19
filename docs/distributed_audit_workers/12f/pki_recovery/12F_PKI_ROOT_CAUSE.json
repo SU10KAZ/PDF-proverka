@@ -1,0 +1,23 @@
+{
+  "schema": "auditmanager.12f.pki_root_cause.v1",
+  "captured_at": "2026-08-14T00:43:07+03:00",
+  "root_cause_exact": true,
+  "was_pythonpath_or_working_directory": false,
+  "module_loaded_from": "/opt/auditmanager/releases/reenrollment-e6015d33/app/backend/app/security/issuer_service.py",
+  "service_working_directory": "/opt/auditmanager/releases/reenrollment-e6015d33/app",
+  "exact_exception": "PermissionError: [Errno 13] Permission denied: '/etc/auditmanager/pki/issuer/issuing-ca-key.pem'",
+  "exact_location": "backend/app/security/issuer_service.py:36 key_path.is_symlink()",
+  "primary_permission_defect": {
+    "/etc/auditmanager": "root:root 0700",
+    "/etc/auditmanager/pki": "root:root 0700",
+    "effect": "web-ocr-cert-issuer cannot traverse to its owner-only mode-0600 signing key"
+  },
+  "second_deterministic_gate": {
+    "active_release": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+    "behavior": "database.ensure_ready() chmods state directories 0700 and workers.db 0600",
+    "observed_acl_effect": "issuer and Gateway named ACL entries on the state root exist but are effective --- because mask is ---",
+    "effect": "issuer/Gateway cannot share the production certificate registry with the backend"
+  },
+  "classification": "launcher shell defect was fixed; production service DAC/shared-state design remained defective",
+  "diagnostic_script_sha256": "9477c8dd6dceef94d9931e94ebb6dc25f653262d89caaa5415e1ef8fa9ed2970"
+}

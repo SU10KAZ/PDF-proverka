@@ -1,0 +1,56 @@
+{
+  "invariant": "I-P9: одна попытка + один вызов = не больше одного оплаченного обращения",
+  "grant": {
+    "grant_id": "g-11d-real-1",
+    "issued_max_uses": 1,
+    "remaining_after_consume": 0,
+    "reusable_grant_found_after_run": false,
+    "issued_by": "ОТДЕЛЬНЫЙ операторский запуск --issue-grant (прогон разрешения себе не выписывает)",
+    "consumed_before_call": true,
+    "reissue_of_used_grant": "запрещено кодом: inference_grant.issue отказывается перевыписать использованный идентификатор"
+  },
+  "ledger": {
+    "keys": [
+      {
+        "state": "replay",
+        "key": "text_analysis-b63520314d6bccf23f48d8078b710bb9",
+        "claimed_at": null,
+        "detail": "результат уже сохранён",
+        "has_result": true,
+        "performed_by_pid": 884186,
+        "completed_at": 1786298317.4540827
+      }
+    ],
+    "calls_started": 1,
+    "calls_completed": 1
+  },
+  "calls_started": 1,
+  "calls_completed": 1,
+  "performed_now": true,
+  "cap": {
+    "max_inferences": 1,
+    "respected": true
+  },
+  "replay_policy": {
+    "same_prompt_same_attempt": "STATE_REPLAY — модель не вызывается, отдаётся сохранённый результат",
+    "tested": "test_aa_grant_consumed_once, test_ab_replay_reports_not_performed"
+  },
+  "crash_policy": {
+    "exception_after_claim": "mark_indeterminate; автоповтор запрещён, решает оператор",
+    "result_received_but_not_saved": "тоже mark_indeterminate (исправлено на 11D: complete() был вне защиты)",
+    "unreachable_call": "заявка НЕ создаётся вовсе (адаптер и гейты проверяются до begin) — попытка не съедается",
+    "tested": "test_ac_crash_after_inference_is_not_auto_retried, test_unreachable_call_does_not_consume_the_ledger"
+  },
+  "no_fallback": {
+    "rule": "отказ моста = отказ этапа; возврата к прежнему транспорту нет ни в одной ветке",
+    "hardened_on_11d": "active() при заданной переменной без файла теперь БРОСАЕТ, а не возвращает False; _provider_bridge() ловит только ModuleNotFoundError",
+    "tested": "test_b2, test_b3, test_a2_stage_outside_whitelist_fails_without_fallback"
+  },
+  "totals": {
+    "model_resolution_inference": 0,
+    "text_analysis_inference": 1,
+    "technical_retries": 0,
+    "total_real_claude_calls": 1,
+    "total_codex_calls": 0
+  }
+}

@@ -1,0 +1,39 @@
+{
+ "stage": "11H",
+ "question": "где и как выполнена нормативная верификация",
+ "executed_on": "ЦЕНТР (.128), hostname adm.hlab.kz",
+ "executed_on_worker": false,
+ "proof_of_boundary": [
+  "манифест результата воркера: forbidden_stages_not_run включает norm_verify",
+  "сверка журнала этапов ПОСЛЕ прогона на воркере: нарушений 0",
+  "norm_checks.json появился в дереве версии только после импорта результата на центре"
+ ],
+ "why_center_only": "база норм (norms_db.json, norms_paragraphs.json) на воркер не передаётся: в пакете include_norms=false",
+ "model": "codex/gpt-5.4 (модель ЦЕНТРА, задана stage_models стенда)",
+ "results": {
+  "checks": 17,
+  "paragraph_checks": 0,
+  "meta": {
+   "project_id": "СТ26_01-14-АР5-2-РД_V1",
+   "check_date": "2026-08-10T17:46:25.619703",
+   "total_checked": 17,
+   "authoritative": 0,
+   "missing": 17,
+   "unsupported": 0,
+   "paragraphs_trusted_skipped": 0,
+   "paragraphs_legacy_ignored": 0,
+   "policy_violations": [],
+   "source": "norms_main_status_index",
+   "results": {
+    "active": 0,
+    "outdated_edition": 0,
+    "replaced": 0,
+    "cancelled": 0,
+    "not_found": 17,
+    "unknown": 0
+   }
+  }
+ },
+ "findings_with_norm": 21,
+ "findings_total": 29
+}

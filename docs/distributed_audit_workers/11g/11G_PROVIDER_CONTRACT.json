@@ -1,0 +1,57 @@
+{
+  "stage": "11G",
+  "question": "что именно центр теперь передаёт воркеру о провайдере и чего не передаёт",
+  "before": {
+    "model": "backend/app/models/distributed_workers.py:ProviderRequirementPayload",
+    "fields": [
+      "provider",
+      "model",
+      "allowed_stages",
+      "max_inferences"
+    ],
+    "capability": "ОТСУТСТВОВАЛА — главный блокер 11G",
+    "extra": "forbid — значит ключ capability отвергался бы вместе со всей нагрузкой",
+    "who_filled_it": "никто на штатном пути: RemoteWorkerExecutionBackend.prepare не передавал требование в create_audit_job вовсе",
+    "worker_side": "audit_worker уже понимал capability с 11D (audit_runner._validate_provider_requirement, providers/resolver.py) — рассинхрон контракта был односторонним"
+  },
+  "after": {
+    "fields": [
+      "provider",
+      "capability",
+      "model (только пустое)",
+      "allowed_stages",
+      "max_inferences"
+    ],
+    "capability_registry": {
+      "center": "backend/app/models/distributed_workers.py:KNOWN_CAPABILITIES = ('strong_audit',)",
+      "worker": "audit_worker/providers/model_policy.py:KNOWN_CAPABILITIES = ('strong_audit',)",
+      "consistency_test": "tests/test_distributed_workers_network_e2e_11g.py::test_center_capabilities_are_a_subset_of_the_worker_policy"
+    },
+    "exact_model_prohibited": {
+      "where": "ProviderRequirementPayload._reject_exact_model (валидатор в САМОЙ схеме, не в вызывающем коде)",
+      "why_in_schema": "иначе «центр не присылает модель» было бы свойством одного места вызова, и следующий вызывающий восстановил бы канал, ничего не нарушив формально",
+      "second_gate_worker": "audit_worker/audit_runner.py:_validate_provider_requirement + providers/resolver.py:from_payload"
+    },
+    "fail_closed_without_capability": {
+      "center": "ProviderRequirementPayload._check_capability_required (max_inferences>0 → capability обязателен)",
+      "worker_form": "audit_runner._validate_provider_requirement",
+      "worker_meaning": "resolver.ProviderRequirement.from_payload + resolver.resolve (второй рубеж для требований, собранных кодом)",
+      "why": "требование «зови модель, но чем — не скажу» даёт привязку с model=None, адаптер не передаёт --model, и вызов уходит на модель учётной записи по умолчанию (дефект 11C: ожидали claude-opus-5, ответил claude-opus-4-8[1m])"
+    },
+    "backward_compatibility": {
+      "old_payload_without_requirement": "разбирается (provider_requirement=None)",
+      "old_payload_with_model_null": "разбирается: поле оставлено в схеме ради этого",
+      "old_payload_with_nonempty_model": "ОТВЕРГАЕТСЯ намеренно — это и есть запрещаемый канал",
+      "test": "test_b_pre_11g_payload_without_capability_still_parses / test_b_params_without_provider_requirement_still_parse"
+    }
+  },
+  "what_center_never_sends": [
+    "точный идентификатор модели",
+    "путь к бинарю CLI",
+    "argv",
+    "переменные окружения",
+    "промпт",
+    "учётные данные любого рода"
+  ],
+  "who_decides_the_model": "ЛОКАЛЬНАЯ политика воркера audit_worker/providers/model_policy.py по файлу <worker_root>/provider_policy.json; администратор VPS, не центр"
+}

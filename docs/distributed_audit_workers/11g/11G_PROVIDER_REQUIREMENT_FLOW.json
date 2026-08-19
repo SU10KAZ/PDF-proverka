@@ -1,0 +1,95 @@
+{
+  "stage": "11G",
+  "question": "round-trip требования: объект → JSON → БД → API → DTO воркера → привязка",
+  "hops": [
+    {
+      "n": 1,
+      "where": "центр",
+      "function": "RemoteWorkerExecutionBackend.prepare",
+      "file": "backend/app/pipeline/execution/remote.py",
+      "does": "зовёт _provider_requirement(worker_id, version_dir, action) и передаёт результат в create_audit_job",
+      "before_11g": "требование не передавалось вовсе"
+    },
+    {
+      "n": 2,
+      "where": "центр",
+      "function": "RemoteWorkerExecutionBackend._provider_requirement",
+      "file": "backend/app/pipeline/execution/remote.py",
+      "does": "читает строку воркера; real_llm_enabled=false → None (поведение до 11C сохранено); иначе build_audit_requirement",
+      "fail_closed": "ExecutionError, если воркер не объявил способность"
+    },
+    {
+      "n": 3,
+      "where": "центр",
+      "function": "provider_requirement.build_audit_requirement",
+      "file": "backend/app/services/distributed_workers/provider_requirement.py",
+      "does": "provider=claude, capability=strong_audit, allowed_stages=7 модельных этапов, max_inferences из структуры документа"
+    },
+    {
+      "n": 4,
+      "where": "центр",
+      "function": "provider_requirement.worker_supports",
+      "file": "backend/app/services/distributed_workers/provider_requirement.py",
+      "does": "сверяет требование с capabilities.provider_capabilities воркера ДО создания задания",
+      "silence_is_refusal": true
+    },
+    {
+      "n": 5,
+      "where": "центр",
+      "function": "audit_job_service.create_audit_job",
+      "file": "backend/app/services/distributed_workers/audit_job_service.py",
+      "does": "валидирует требование через AuditPipelineParams (pydantic) и кладёт в payload логического задания; wants_inference → runtime_snapshot.provider_mode='real'"
+    },
+    {
+      "n": 6,
+      "where": "центр/БД",
+      "function": "repositories.create_job",
+      "file": "backend/app/services/distributed_workers/repositories.py",
+      "does": "payload={'params': params.model_dump()} в logical_jobs.payload (JSON-текст)"
+    },
+    {
+      "n": 7,
+      "where": "центр/API",
+      "function": "audit_worker_agent._assignment_params → JobAssignment",
+      "file": "backend/app/api/routers/audit_worker_agent.py",
+      "does": "перепарсивает payload в AuditPipelineParams и отдаёт воркеру по POST /api/v1/worker/jobs/next"
+    },
+    {
+      "n": 8,
+      "where": "воркер",
+      "function": "audit_runner.validate_params → _validate_provider_requirement",
+      "file": "audit_worker/audit_runner.py",
+      "does": "рубеж ФОРМЫ: набор ключей, длины, потолок, взаимоисключимость capability/model, fail closed без capability"
+    },
+    {
+      "n": 9,
+      "where": "воркер",
+      "function": "Executor.prepare_provider_binding",
+      "file": "audit_worker/executor.py",
+      "does": "рубеж машины → auto-grant → consume → ProviderResolver.resolve → запись привязки в metadata/provider_binding.json"
+    },
+    {
+      "n": 10,
+      "where": "воркер",
+      "function": "resolver.ProviderRequirement.from_payload → ProviderResolver.resolve",
+      "file": "audit_worker/providers/resolver.py",
+      "does": "рубеж СМЫСЛА: провайдер поддерживается/не заблокирован/установлен/авторизован; capability → точная модель по локальной политике"
+    },
+    {
+      "n": 11,
+      "where": "воркер",
+      "function": "remote_audit_runner.bind_providers",
+      "file": "backend/app/pipeline/remote_audit_runner.py",
+      "does": "сверяет привязку со спекой: fake+привязка запрещены, job_id/attempt_id совпадают, провайдер тот же"
+    },
+    {
+      "n": 12,
+      "where": "воркер",
+      "function": "claude_adapter._inference_argv",
+      "file": "audit_worker/providers/claude_adapter.py",
+      "does": "--model=<из привязки>; строка родом из ФАЙЛА ПОЛИТИКИ машины, не из задания (I-P5)"
+    }
+  ],
+  "roundtrip_test": "tests/test_distributed_workers_network_e2e_11g.py::test_a_capability_survives_the_center_to_worker_roundtrip",
+  "live_proof": "фаза phase_audit_provider сетевого прогона: проверки (a) требование в нагрузке, (b) имени модели нет, (c) привязка от локальной политики"
+}

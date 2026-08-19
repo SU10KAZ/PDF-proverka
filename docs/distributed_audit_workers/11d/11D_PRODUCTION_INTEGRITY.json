@@ -1,0 +1,69 @@
+{
+  "production_document": {
+    "version_dir": "projects_v2/objects/213_Mosfilmovskaya_31A_KingSons/disciplines/EOM/documents/133-23-ГК-ЭС/versions/v001",
+    "files_before": 87,
+    "files_after": 87,
+    "changed_content": [],
+    "touched_mtime_only": [],
+    "removed": [],
+    "added": [],
+    "verdict": "PASS",
+    "method": "пофайловый sha256+mtime снимок до прогона и после, 87 файлов",
+    "covered": [
+      "01_input/*_document.md (исходный MD)",
+      "01_input/*_result.json",
+      "01_input/*_ocr.html",
+      "01_input/project_info.json",
+      "02_work/*",
+      "03_analysis/latest/02_text_analysis.json (исторический)",
+      "03_analysis/latest/01_blocks_analysis.json",
+      "03_analysis/latest/03_findings.json",
+      "03_analysis/latest/norm_checks.json",
+      "03_analysis/latest/optimization.json",
+      "04_review/*",
+      "05_export/*",
+      "version.json"
+    ]
+  },
+  "worker_existing_install": {
+    "root": "/home/coder/audit-worker",
+    "release_before": "20260809T140821-c1070168cda4",
+    "release_after": "20260809T140821-c1070168cda4",
+    "worker_db_bytes_before": 401408,
+    "worker_db_bytes_after": 401408,
+    "worker_db_mtime_before": 1786256692,
+    "worker_db_mtime_after": 1786256692,
+    "worker_state_mtime_before": 1786256798,
+    "worker_state_mtime_after": 1786256798,
+    "jobs_before": 37,
+    "jobs_after": 37,
+    "new_pyc_in_venv": 0,
+    "verdict": "не тронута"
+  },
+  "deployed_11d_release": {
+    "new_pycache_dirs": 0,
+    "note": "PYTHONDONTWRITEBYTECODE=1 + python -B: tree_hash артефакта не разъехался"
+  },
+  "owner_claude_home": {
+    "path": "/home/coder/.claude",
+    "diff": "изменился ТОЛЬКО mtime каталога sessions/ (1786283760 → 1786298317)",
+    "counts_unchanged": [
+      "sessions",
+      "projects",
+      "file-history",
+      "session-env",
+      "telemetry"
+    ],
+    "interpretation": "CLI создал и убрал за собой временную запись сеанса — ожидаемое следствие ambient-режима, где CLAUDE_CONFIG_DIR указывает на личный каталог владельца ради поиска авторизации. Ни один файл не добавился и не исчез; настройки, CLAUDE.md, hooks и skills владельца не менялись.",
+    "honest_note": "Это единственный след прогона за пределами песочницы. Он неизбежен, пока авторизация ambient: CLI обязан читать ~/.claude, чтобы найти учётные данные."
+  },
+  "center": {
+    "production_ingress_enabled": false,
+    "production_env_changed": false,
+    "nginx_firewall_backend_changed": false,
+    "note": "Центр использовался только как источник кода и как SSH-администратор"
+  },
+  "downstream_stages_run": [],
+  "norm_verification_on_worker": false,
+  "codex_invocations": 0
+}

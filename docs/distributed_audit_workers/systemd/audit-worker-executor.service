@@ -1,0 +1,62 @@
+[Unit]
+Description=audit-worker-executor — локальный исполнитель заданий аудита
+Documentation=file:///opt/audit-worker/docs/distributed_audit_workers/04_step0_hardening.md
+# Сети не требует: исполнитель к центру не ходит вовсе. Связи с агентом нет —
+# перезапуск любого из юнитов не должен трогать второй (I-02, I-03).
+
+[Service]
+Type=simple
+User=audit-worker
+Group=audit-worker
+WorkingDirectory=/opt/audit-worker
+Environment=PYTHONUNBUFFERED=1
+Environment=AUDIT_WORKER_ROOT=/var/lib/audit-worker
+
+# Адреса центра здесь НЕТ намеренно: исполнителю он не нужен и знать его
+# незачем. Токена и bootstrap-секрета в окружении тоже нет — файлы с ними
+# читает только агент.
+
+# Хранение локальных данных. По умолчанию менеджер работает СУХИМ ПРОГОНОМ:
+# считает кандидатов и показывает выигрыш, но ничего не стирает.
+Environment=AUDIT_WORKER_RETENTION_ENABLED=true
+Environment=AUDIT_WORKER_RETENTION_DELETE_ENABLED=false
+Environment=AUDIT_WORKER_RETENTION_DAYS=30
+Environment=AUDIT_WORKER_RETENTION_SCAN_INTERVAL_SEC=3600
+Environment=AUDIT_WORKER_DISK_WARNING_FREE_BYTES=5368709120
+Environment=AUDIT_WORKER_DISK_CRITICAL_FREE_BYTES=1073741824
+
+# Число слотов задаёт исполнитель — именно он физически ограничивает
+# параллелизм. Но с этапа пред-пайплайнового гейта то же значение обязано
+# стоять и в юните АГЕНТА: агент шлёт его центру, а центр берёт минимум из
+# одобренного оператором и заявленного воркером. Значение только здесь —
+# исполнитель готов на 2, а центр выдаёт 1. Оба юнита + `approve` на центре
+# должны говорить одно и то же. Доказанный потолок — 2.
+Environment=AUDIT_WORKER_MAX_SLOTS=1
+
+ExecStart=/opt/audit-worker/venv/bin/python -m audit_worker executor
+Restart=always
+RestartSec=5
+# KillMode=process: процессы аудита живут в СВОИХ сессиях (setsid), и рестарт
+# исполнителя не должен их убивать. Останавливать аудит вправе только
+# операторская отмена, идущая через проверку принадлежности процесса.
+KillMode=process
+TimeoutStopSec=60
+
+NoNewPrivileges=true
+# PrivateTmp=false ОСОЗНАННО: у исполнителя приватный /tmp означал бы, что
+# процессы аудита, пережившие рестарт юнита, остаются с /tmp прежнего
+# воплощения — а новый исполнитель их временных файлов уже не увидит.
+PrivateTmp=false
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/audit-worker
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+StandardOutput=append:/var/log/audit-worker/executor.log
+StandardError=append:/var/log/audit-worker/executor.log
+
+[Install]
+WantedBy=multi-user.target

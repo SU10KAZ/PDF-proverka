@@ -1,0 +1,42 @@
+{
+  "schema": "auditmanager.12f.pki_fix_observation.v1",
+  "kind": "post-rollback production stability observation",
+  "started_at": "2026-08-14T07:29:03+03:00",
+  "completed_at": "2026-08-14T07:39:07+03:00",
+  "duration_sec": 604.114,
+  "samples": 11,
+  "interval_sec": 60,
+  "raw_evidence": "/tmp/12f_pki_fix_rollback_observation.jsonl",
+  "raw_evidence_sha256": "43ab3083cb2615300fa28909d600d59cf98abbb837ec5a213332d571e1c815eb",
+  "invariants": {
+    "backend_pid_2522606_all_samples": true,
+    "backend_n_restarts_zero_all_samples": true,
+    "health_http_200_all_samples": true,
+    "exact_rollback_release_all_samples": true,
+    "worker_online_all_samples": true,
+    "worker_transport_polling_all_samples": true,
+    "jobs_offers_commands_zero_all_samples": true,
+    "active_attempts_zero_all_samples": true,
+    "event_outbox_unwritten_zero_all_samples": true,
+    "issuer_inactive_all_samples": true,
+    "gateway_inactive_all_samples": true,
+    "listeners_8443_9443_absent_all_samples": true
+  },
+  "worker_last_seen": {
+    "first": 1786681703.8255024,
+    "final": 1786682305.3251896,
+    "advanced": true
+  },
+  "journal_since_rollback": {
+    "authenticated_worker_poll_http_200": 653,
+    "authenticated_worker_poll_http_500": 0,
+    "error_or_traceback_lines": 0
+  },
+  "candidate_failure_journal": {
+    "authenticated_worker_poll_http_500": 44,
+    "root_cause_lines": 55
+  },
+  "cpu_ram_anomaly_observed": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "verdict": "ROLLBACK_STABLE_PASS"
+}

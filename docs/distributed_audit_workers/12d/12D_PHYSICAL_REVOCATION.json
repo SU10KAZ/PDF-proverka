@@ -1,0 +1,22 @@
+{
+  "worker": "176.12.77.31 / wrk_19c87718",
+  "old_certificate_a_serial": "23523e3b3f639b03242f6347592fdfbe002d7227",
+  "old_certificate_a_registry_status": "REVOKED",
+  "old_certificate_a_revocation_reason": "ADMIN_REVOKED",
+  "old_certificate_a_authenticated_rpc": "REJECTED_UNAUTHENTICATED",
+  "current_certificate_b_serial": "1537971d8aa0afc18d614c0700304b2f2d481f00",
+  "current_certificate_b_registry_status": "ACTIVE",
+  "current_certificate_b_authenticated_rpc": "ACCEPTED",
+  "certificate_b_revoked": false,
+  "safe_recovery_backup_a_cleanup": "REMOVED_AFTER_PROOF",
+  "negative_identity_test": {
+    "certificate": "B",
+    "claimed_worker_id": "wrk_a55031f2",
+    "grpc_status": "PERMISSION_DENIED",
+    "reason": "AgentHello identity does not match client certificate",
+    "transport_session_created": false,
+    "job_offer_created": false,
+    "security_event": "IDENTITY_MISMATCH"
+  },
+  "verdict": "PASS"
+}

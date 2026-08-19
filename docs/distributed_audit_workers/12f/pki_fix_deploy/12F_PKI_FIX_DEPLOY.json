@@ -1,0 +1,32 @@
+{
+  "schema": "auditmanager.12f.pki_fix_deploy.v1",
+  "attempt_started": "2026-08-14T07:26:13.681391483+03:00",
+  "restart_invoked": "2026-08-14T07:26:13.693777515+03:00",
+  "candidate_first_api_200": "2026-08-14T07:26:37.431634062+03:00",
+  "candidate_restart_to_first_200_ms": 23731,
+  "previous_commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "candidate_commit": "5e3750a26f65a884c1c644c6bc25c490f4b665ef",
+  "previous_pid": 2379476,
+  "candidate_pid": 2521866,
+  "candidate_runtime_path_verified": true,
+  "candidate_tree_verified": true,
+  "candidate_manifest_verified": true,
+  "scheduler_remained_disabled": true,
+  "issuer_remained_inactive": true,
+  "gateway_remained_inactive": true,
+  "listener_8443_absent": true,
+  "listener_9443_absent": true,
+  "pki_preparation_executed": false,
+  "ca_generated": false,
+  "failure": {
+    "detected_at": "2026-08-14T07:26:55+03:00",
+    "surface": "authenticated production polling GET /api/v1/worker/commands",
+    "http": 500,
+    "exception": "RuntimeError: cannot enforce distributed Worker state mode 2770: /var/lib/auditmanager/distributed_workers",
+    "cause": "candidate unconditionally calls chmod(02770) inside the hardened backend unit; RestrictSUIDSGID=true rejects setting the setgid bit with EPERM",
+    "test_gap": "isolated shared-state tests ran on caller-owned temporary directories outside the hardened systemd sandbox"
+  },
+  "rollback_trigger": "Worker polling auth/control request failed because of the new release",
+  "rollback_executed": true,
+  "final_verdict": "FAIL_ROLLED_BACK"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "auditmanager.12f1d.production_integrity.v1",
+  "checked_at": "2026-08-13T11:05:17.694709293+03:00",
+  "center": {
+    "pid": 2214574,
+    "release": "/home/coder/auditmanager/releases/candidate-4767d0bf",
+    "commit": "4767d0bf83fcb99ee69267d94324495b92954b41",
+    "active": true,
+    "n_restarts": 0,
+    "api_info_http": 200,
+    "restarted_or_signalled_by_12f1d": false
+  },
+  "worker": {
+    "agent_pid": 2048874,
+    "agent_restarted_or_signalled_by_12f1d": false,
+    "executor_pid": 1384880,
+    "executor_restarted_or_signalled_by_12f1d": false,
+    "config_or_credentials_changed_by_12f1d": false
+  },
+  "distributed_db": {
+    "integrity": "ok",
+    "workers": 0,
+    "tokens": 0,
+    "bootstrap_sessions": 0,
+    "bootstrap_tokens": 0,
+    "mutated_by_12f1d": false
+  },
+  "scheduler": "DISABLED",
+  "unexpected_jobs_offers_actions": "0/0/0",
+  "listeners": {"8081": "127.0.0.1 LISTEN", "8443": "ABSENT", "9443": "ABSENT"},
+  "cloudflared": {
+    "pid": 1263127,
+    "target": "http://127.0.0.1:8081",
+    "changed": false
+  },
+  "ufw_changed": false,
+  "nginx_changed": false,
+  "caddy_changed": false,
+  "gateway_started": false,
+  "real_audit_started": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "unexplained_production_changes": 0,
+  "verdict": "PASS_NO_MUTATION"
+}

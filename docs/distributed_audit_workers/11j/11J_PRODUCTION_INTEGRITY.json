@@ -1,0 +1,45 @@
+{
+  "result": "PASS_WITH_CONCURRENT_CHANGE_NOTED",
+  "changed_by_11J1": false,
+  "before_after": {
+    "production_env": {
+      "before": "sha256:86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+      "after": "sha256:86da6cd6fff908da5d2da8cc69d6f6be58f62bced1e430c26cd4f56d3116cce6",
+      "equal": true
+    },
+    "nginx_tree": {
+      "before": "sha256:e07372ede07c94e3ab60ca6f1469724f8c5a3bf1a061981305b6db5492037e95",
+      "after": "sha256:e07372ede07c94e3ab60ca6f1469724f8c5a3bf1a061981305b6db5492037e95",
+      "equal": true
+    },
+    "batch_queue": {
+      "before": "sha256:731668d2a9921e2c05c9d877f14ca17b37252b57b14b33bc7f751a49c3f46c76",
+      "after": "sha256:731668d2a9921e2c05c9d877f14ca17b37252b57b14b33bc7f751a49c3f46c76",
+      "equal": true
+    },
+    "projects_v2_metadata": {
+      "before": "sha256:1b552f0467126def92e499fb68da93d2788671c00d56591a555d0ad393517843",
+      "after": "sha256:1b552f0467126def92e499fb68da93d2788671c00d56591a555d0ad393517843",
+      "files": 238941,
+      "bytes": 40962192255,
+      "equal": true
+    },
+    "worker_registry": {"before": "absent", "after": "absent", "equal": true},
+    "nginx_service": {"after": "active"},
+    "production_backend": {"preexisting_start": "2026-08-11T07:19:58+03:00", "alive_after_test": true, "restarted_by_test": false}
+  },
+  "test_mutation_roots": [
+    "/tmp/11j1-network-integrity-3376c7a8",
+    "/home/coder/audit-worker-11j1",
+    "/home/coder/.config/audit-worker-11j1-test-secrets"
+  ],
+  "production_worker_units_restarted": false,
+  "concurrent_unrelated_change": {
+    "observed": true,
+    "surface": "main worktree Git HEAD only",
+    "before": "a62856d21e3fe8912bc7b078fe9cd64cd3233029",
+    "after": "9168c3930c5e87e918f62c3812e19a8f924a3ade",
+    "attribution": "separate concurrent commit on feature/block-vector-graphs; not made from the 11J worktree",
+    "preserved": true
+  }
+}

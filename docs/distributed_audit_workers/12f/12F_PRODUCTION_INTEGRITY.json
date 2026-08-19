@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "verified_at": "2026-08-12T16:41:36+03:00",
+  "production_backend": {
+    "pid": 1931160,
+    "active": true,
+    "http_health": "PASS",
+    "signalled_by_12f": false,
+    "restarted_by_12f": false
+  },
+  "production_worker": {
+    "polling_agent_pid": 1575036,
+    "polling_agent_active": true,
+    "polling_agent_signalled_by_12f": false,
+    "executor_pid": 1384880,
+    "executor_active": true,
+    "executor_signalled_by_12f": false,
+    "transport_changed": false,
+    "job_created": false
+  },
+  "network": {
+    "gateway_8443_started": false,
+    "listener_8443": false,
+    "listener_9443": false,
+    "ufw_changed": false,
+    "ssh_forwarding_used": false,
+    "tunnel_used_by_12f": false
+  },
+  "pre_existing_cloudflared": {
+    "pid": 1263127,
+    "target": "127.0.0.1:8081",
+    "modified_by_12f": false
+  },
+  "nginx_changed": false,
+  "caddy_changed": false,
+  "production_db_changed": false,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

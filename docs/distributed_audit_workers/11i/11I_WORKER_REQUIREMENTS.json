@@ -1,0 +1,250 @@
+{
+  "preset_claude_gpt_codex": [
+    {
+      "provider": "claude",
+      "capabilities": [
+        {
+          "capability": "cheap_review",
+          "required_always": true
+        },
+        {
+          "capability": "strong_audit",
+          "required_always": true
+        }
+      ]
+    },
+    {
+      "provider": "codex",
+      "capabilities": [
+        {
+          "capability": "block_detector",
+          "required_always": true
+        },
+        {
+          "capability": "block_detector_strong",
+          "required_always": true
+        },
+        {
+          "capability": "block_judge",
+          "required_always": false
+        },
+        {
+          "capability": "visual_reasoning",
+          "required_always": true
+        }
+      ]
+    },
+    {
+      "provider": "openrouter",
+      "capabilities": [
+        {
+          "capability": "block_detector",
+          "required_always": true
+        }
+      ]
+    }
+  ],
+  "preset_full_codex": [
+    {
+      "provider": "claude",
+      "capabilities": [
+        {
+          "capability": "cheap_review",
+          "required_always": false
+        },
+        {
+          "capability": "strong_audit",
+          "required_always": true
+        }
+      ]
+    },
+    {
+      "provider": "codex",
+      "capabilities": [
+        {
+          "capability": "block_detector",
+          "required_always": true
+        },
+        {
+          "capability": "block_detector_strong",
+          "required_always": true
+        },
+        {
+          "capability": "block_judge",
+          "required_always": false
+        },
+        {
+          "capability": "strong_audit",
+          "required_always": true
+        },
+        {
+          "capability": "visual_reasoning",
+          "required_always": true
+        }
+      ]
+    },
+    {
+      "provider": "openrouter",
+      "capabilities": [
+        {
+          "capability": "block_detector",
+          "required_always": true
+        }
+      ]
+    }
+  ],
+  "worker_capability_flag": "routing_plan_v1",
+  "verdict_all_capabilities_present": {
+    "compatible": true,
+    "missing": [],
+    "satisfied": [
+      {
+        "provider": "claude",
+        "capability": "cheap_review",
+        "required_always": false,
+        "actions": [
+          "findings_corrector.absence_guard"
+        ]
+      },
+      {
+        "provider": "claude",
+        "capability": "strong_audit",
+        "required_always": true,
+        "actions": [
+          "optimization.optimization_primary"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "block_detector",
+        "required_always": true,
+        "actions": [
+          "block_batch.detector_codex_standard"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "block_detector_strong",
+        "required_always": true,
+        "actions": [
+          "block_batch.detector_codex_strong"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "block_judge",
+        "required_always": false,
+        "actions": [
+          "block_batch.judge_gap_search"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "strong_audit",
+        "required_always": true,
+        "actions": [
+          "findings_merge.merge_base",
+          "findings_merge.targeted_discipline",
+          "findings_merge.targeted_docnorm",
+          "optimization_critic.critic",
+          "text_analysis.text_audit"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "visual_reasoning",
+        "required_always": true,
+        "actions": [
+          "optimization.optimization_visual"
+        ]
+      },
+      {
+        "provider": "openrouter",
+        "capability": "block_detector",
+        "required_always": true,
+        "actions": [
+          "block_batch.detector_openrouter"
+        ]
+      }
+    ],
+    "reasons": []
+  },
+  "verdict_without_openrouter": {
+    "compatible": false,
+    "missing": [
+      {
+        "provider": "openrouter",
+        "capability": "block_detector",
+        "required_always": true,
+        "actions": [
+          "block_batch.detector_openrouter"
+        ]
+      }
+    ],
+    "satisfied": [
+      {
+        "provider": "claude",
+        "capability": "cheap_review",
+        "required_always": false,
+        "actions": [
+          "findings_corrector.absence_guard"
+        ]
+      },
+      {
+        "provider": "claude",
+        "capability": "strong_audit",
+        "required_always": true,
+        "actions": [
+          "optimization.optimization_primary"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "block_detector",
+        "required_always": true,
+        "actions": [
+          "block_batch.detector_codex_standard"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "block_detector_strong",
+        "required_always": true,
+        "actions": [
+          "block_batch.detector_codex_strong"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "block_judge",
+        "required_always": false,
+        "actions": [
+          "block_batch.judge_gap_search"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "strong_audit",
+        "required_always": true,
+        "actions": [
+          "findings_merge.merge_base",
+          "findings_merge.targeted_discipline",
+          "findings_merge.targeted_docnorm",
+          "optimization_critic.critic",
+          "text_analysis.text_audit"
+        ]
+      },
+      {
+        "provider": "codex",
+        "capability": "visual_reasoning",
+        "required_always": true,
+        "actions": [
+          "optimization.optimization_visual"
+        ]
+      }
+    ],
+    "reasons": [
+      "воркер не объявляет способность 'block_detector' для провайдера 'openrouter' — она нужна действиям block_batch.detector_openrouter"
+    ]
+  }
+}

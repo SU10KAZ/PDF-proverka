@@ -1,0 +1,15 @@
+{
+  "kind": "11E §32 — сравнение с историческим сводом",
+  "performed": false,
+  "why_not": "§32 разрешает открывать исторический результат ТОЛЬКО после нового успешного прогона. Прогон не дал пригодного результата, значит и открывать нечего — сравнивать было бы не с чем, а чтение историю обесценило бы для следующей попытки",
+  "historical_output": {
+    "exists": true,
+    "path_relative": "projects_v2/.../133-23-ГК-ЭС/versions/v001/03_analysis/latest/03_findings.json",
+    "sha256": "aa9fb85bdfaf978b0b66caeab0623ef96fab425aaeecab98781ac3a398cc6ae3",
+    "bytes": 64579,
+    "content_opened": false,
+    "counts_read": false,
+    "severity_read": false
+  },
+  "read_policy_compliance": "до прогона зафиксирован только факт наличия, размер и хэш — ровно то, что §22 разрешает"
+}

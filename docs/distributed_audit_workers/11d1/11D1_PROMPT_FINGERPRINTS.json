@@ -1,0 +1,83 @@
+{
+  "kind": "отпечатки промптов, собранных ОФЛАЙН без обращения к модели",
+  "built_at_commit": "537c08a5042cd8ad422836ce0e25ca7399ce6d88",
+  "document": {
+    "logical_id": "213_Mosfilmovskaya_31A_KingSons / EOM / 133-23-ГК-ЭС / v001",
+    "md_sha256": "4ea96076b9bddd1e56ec3de138e480387e4d269cb78af3e62e75baad3e7fa284",
+    "md_bytes": 19418,
+    "md_chars": 11407
+  },
+  "legacy_branch_b": {
+    "builder": "task_builder.prepare_text_analysis_task",
+    "transport": "claude -p --allowedTools Read,Write,Grep,Glob,WebSearch,WebFetch",
+    "prompt_chars": 10894,
+    "prompt_sha256": "ba976f25f1233d59b45c9f547593578617db2f8a29de3ec2b6202a24a0bebf1e",
+    "document_inlined": false,
+    "document_delivered_as": "результат вызова Read моделью",
+    "norms_inlined": false,
+    "norms_delivered_as": "путь {DISCIPLINE_NORMS_FILE} + Read моделью",
+    "abs_paths_in_prompt": 6
+  },
+  "api_branch_c": {
+    "builder": "prompt_builder.build_text_analysis_messages",
+    "transport": "llm_runner.run_llm (OpenRouter HTTP)",
+    "system_chars": 18260,
+    "user_chars": 11544,
+    "system_sha256": "b56286c3bead01b6dfb8e242fb50306067bf47ce98ebbd865506f59643a3a404",
+    "user_sha256": "ec0df32574ac41d4cb23fe12105b21add5c7e5339245d3a450f34c446a41b633",
+    "norms_inlined": true
+  },
+  "provider_11d": {
+    "builder": "build_text_analysis_messages -> provider_transport.build_provider_prompt",
+    "transport": "ProviderAdapter -> claude -p --tools= --max-turns 1",
+    "prompt_chars": 31175,
+    "system_chars": 18780,
+    "document_chars": 11544,
+    "prompt_sha256": "de3bc164344037b05ed0393033f5c98e9d0c09263b91631cf3b211b2aba562e3",
+    "norms_inlined": true,
+    "filesystem_refs_stripped": 2,
+    "abs_paths_remaining": 0
+  },
+  "reproduction_of_real_11d_run": {
+    "claim": "промпт боевого прогона 09.08.2026 воспроизведён на центре ПОБАЙТОВО, без обращения к модели",
+    "real_run_prompt_sha256": "de3bc164344037b05ed0393033f5c98e9d0c09263b91631cf3b211b2aba562e3",
+    "offline_rebuild_prompt_sha256": "de3bc164344037b05ed0393033f5c98e9d0c09263b91631cf3b211b2aba562e3",
+    "sha256_match": true,
+    "real_run_sizes": {
+      "system_chars": 18780,
+      "document_chars": 11544,
+      "prompt_chars": 31175,
+      "filesystem_refs_stripped": 2,
+      "absolute_paths_remaining_in_instructions": 0
+    },
+    "offline_rebuild_sizes": {
+      "system_chars": 18780,
+      "document_chars": 11544,
+      "prompt_chars": 31175,
+      "filesystem_refs_stripped": 2,
+      "absolute_paths_remaining_in_instructions": 0
+    },
+    "why_it_is_possible": "strip_filesystem_references заменяет все абсолютные пути инструкций фиксированным плейсхолдером, а тело документа побайтово то же — поэтому промпт не зависит от того, в каком каталоге собран.",
+    "why_it_matters": "Дальнейший разбор ведётся не по «похожему» промпту, а по ТОМУ САМОМУ тексту, который ушёл в stdin CLI на воркере."
+  },
+  "flags_at_build_time": {
+    "PIPELINE_ABSENCE_GUARD_ENABLED": false,
+    "MD_MIRROR_RECONCILE_ENABLED": false,
+    "stage_model_text_analysis": "claude-opus-5",
+    "TEXT_ANALYSIS_TOOLS": "Read,Write,Grep,Glob,WebSearch,WebFetch"
+  },
+  "provider_11d1_after_fix": {
+    "what_changed": "добавлен блок «## Severity Semantics» и уточнена одна фраза «## OUTPUT TRANSPORT»",
+    "prompt_chars": 31990,
+    "system_chars": 19432,
+    "document_chars": 11544,
+    "delta_chars_vs_11d": 815,
+    "delta_breakdown": {
+      "severity_semantics_block": 652,
+      "transport_contract_precision": 163
+    },
+    "document_untouched": true,
+    "abs_paths_remaining": 0,
+    "note": "Отпечаток промпта после правки НЕ сравним с боевым прогоном 11D — правка сделана ПОСЛЕ него и на модели не проверялась (реальные вызовы в 11D.1 запрещены)."
+  }
+}

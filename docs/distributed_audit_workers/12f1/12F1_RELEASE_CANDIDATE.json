@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "status": "NOT_FINAL_BLOCKED",
+  "candidate_commit": null,
+  "candidate_release_id": null,
+  "blocking_reason": "No immutable production baseline exists to integrate with 12A-12E without potentially dropping live AuditManager behavior.",
+  "reference_runtime": {
+    "commit": "dc2cfb92ec4f910e7f49dbb905dc36a6553d5080",
+    "runtime_equivalent_commit": "73486e7af4f193d2f6efd73c5bf069c14bfbf764",
+    "git_tree": "080f1875c63b2cf6f2f0e58403630146dbd0fe66",
+    "runtime_tree": "de4022e3fc7000cc2b538991af662dd32a51e390",
+    "deterministic_git_archive_sha256": "569a90754ad4f1eccb2c140937cda36d34f1def024e283d34c23e47f620804aa",
+    "dependency_files_sha256": "a03ab5b1d39b19e1f63e3db250f857cc75caadf642adbcaf7dd52b64d7367fc6",
+    "migration_version": 11,
+    "config_schema_version": "12f1-planned-v1",
+    "tracked_files": 2194,
+    "tracked_bytes": 101788250,
+    "python": "3.12.13",
+    "fastapi": "0.115.6",
+    "uvicorn": "0.32.1",
+    "pydantic": "2.10.4",
+    "sqlite": "3.53.1",
+    "isolated_tests": "658 passed, 1 skipped",
+    "deployable_as_final_production_candidate": false
+  },
+  "production_integration_required": {
+    "committed_production_only_commits": 11,
+    "tracked_runtime_worktree_changes": 23,
+    "untracked_runtime_files": 20,
+    "operator_owned_mutable_delta_must_be_resolved_first": true
+  }
+}

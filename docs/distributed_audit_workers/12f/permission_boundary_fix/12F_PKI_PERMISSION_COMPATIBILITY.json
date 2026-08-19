@@ -1,0 +1,19 @@
+{
+  "schema": "auditmanager.12f.pki_permission_compatibility.v1",
+  "exact_critical_suite": "106 passed",
+  "pki_recovery_tests": 8,
+  "mtls_tests": 27,
+  "isolated_issuer_start": "PASS",
+  "signing_e2e": "PASS",
+  "same_request_same_serial": true,
+  "partial_state_validation_runs": 2,
+  "existing_ca_bytes_preserved": true,
+  "duplicate_root_count": 0,
+  "duplicate_intermediate_count": 0,
+  "gateway_signing_key_access": false,
+  "issuer_key_mode": "0600 issuer-owned",
+  "gateway_key_mode": "0600 gateway-owned",
+  "production_pki_read_or_mutated_by_phase_a": false,
+  "pki_preparation_executed": false,
+  "verdict": "PASS"
+}

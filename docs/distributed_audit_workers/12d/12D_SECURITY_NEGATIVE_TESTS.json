@@ -1,0 +1,19 @@
+{
+  "combined_local_suite": {
+    "tests": 186,
+    "passed": 186,
+    "failed": 0
+  },
+  "physical": {
+    "no_client_certificate": "REJECTED",
+    "untrusted_client_certificate": "REJECTED",
+    "valid_certificate_b": "ACCEPTED",
+    "revoked_certificate_a_authenticated_rpc": "REJECTED_UNAUTHENTICATED",
+    "certificate_b_hello_other_worker": "REJECTED_PERMISSION_DENIED",
+    "identity_mismatch_session_created": false,
+    "identity_mismatch_job_offer_created": false,
+    "cross_worker_https_transfer": "REJECTED_HTTP_403"
+  },
+  "public_insecure_fallback": false,
+  "verdict": "PASS"
+}

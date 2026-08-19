@@ -1,0 +1,13 @@
+{
+  "registration_lookup": {"domain": "registration_service.update_registration / repositories.get_worker", "persistence": "workers"},
+  "heartbeat": {"domain": "worker_registry.record_heartbeat", "persistence": "workers and worker runtime snapshots"},
+  "capabilities": {"domain": "registration_service.update_registration / provider_accounts.record_worker_providers", "persistence": "workers and worker_provider_accounts"},
+  "job_claim": {"domain": "repositories.claim_next_job_for_worker", "persistence": "job_attempts, transitions, gateway_job_offers in one transaction"},
+  "job_transition": {"domain": "job_service.transition", "persistence": "job_attempts and job_transitions"},
+  "progress": {"domain": "gateway_repository.record_progress against authoritative attempt", "persistence": "job_attempts.progress_json"},
+  "events": {"domain": "event_service.ingest_batch", "persistence": "worker_events and event cursors atomically"},
+  "cancel": {"domain": "repositories.pending_commands / ack_command; attempt_service.apply_cancel_ack", "persistence": "worker_commands and job_attempts"},
+  "result": {"domain": "existing HTTPS upload/finalize/validation; gateway observes persisted outcome", "persistence": "upload_sessions and job_attempts"},
+  "resume": {"domain": "repositories.cursors_for_worker", "persistence": "durable event cursors"},
+  "connection_fence": {"domain": "gateway_repository.accept_connection", "persistence": "worker_transport_sessions"}
+}

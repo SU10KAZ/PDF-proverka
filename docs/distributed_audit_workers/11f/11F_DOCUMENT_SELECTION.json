@@ -1,0 +1,78 @@
+{
+  "stage": "11F",
+  "question": "какой НАСТОЯЩИЙ документ прогнать через весь worker slice, уложившись в бюджет вызовов",
+  "requested_first_choice": {
+    "document": "133-23-ГК-ЭС",
+    "object": "213 Мосфильмовская 31А (King&Sons)",
+    "discipline": "EOM",
+    "version": "v001",
+    "verdict": "ОТКЛОНЁН",
+    "why": [
+      "в 01_input/ и 02_work/ НЕТ PDF — только *_document.md, *_ocr.html, *_result.json. Стадия crop_blocks не имеет офлайн-фолбэка",
+      "все 10 crop_url ведут в мёртвый объект R2: HTTP 404 (проверено curl'ом с центра). Скачать кропы нечем",
+      "PNG-кропов нет ни в latest/, ни в runs/, ни в LRU-кэше центра — восстанавливать не из чего",
+      "итог: block_analysis для этого документа физически невыполним ни на воркере, ни на центре, а он входит в worker slice (§26 запрещает подсовывать готовый артефакт)"
+    ],
+    "what_remains_valid": "исторические 02_text_analysis.json и 01_blocks_analysis.json этого документа остаются доказательной базой 11D/11E; 11F их не переиспользует"
+  },
+  "selected": {
+    "document": "13АВ-РД-КМ-К2",
+    "object": "214_Alia_ASTERUS",
+    "discipline": "KM (Конструкции металлические)",
+    "version": "v001",
+    "version_dir": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v001",
+    "metrics": {
+      "pages": 6,
+      "blocks_total": 11,
+      "image_blocks_with_crop_url": 3,
+      "pdf": "02_work/document.pdf, 0.54 МБ — офлайн-рендер кропов возможен",
+      "md_chars": 19759,
+      "md_chunking": "не требуется (порог чанкинга absence guard — 300 000 символов)",
+      "version_tree_files": 116,
+      "version_tree_bytes_mb": 3.0
+    },
+    "integrity": {
+      "quartet_complete": true,
+      "crop_urls_alive": "3/3, HTTP 200 — проверено И с центра, И с воркера 176.12.77.31",
+      "local_pdf_fallback": true,
+      "historical_full_route": "есть полный набор артефактов production-прогона: 01_blocks_analysis.json (3 блока), 02_text_analysis.json (13 текстовых), 03_findings.json (16), optimization.json (8), norm_checks.json — есть с чем сверять смысл",
+      "damage": "не обнаружено"
+    },
+    "why_this_one": [
+      "настоящий документ реального объекта, а не синтетика",
+      "минимальное число графических блоков среди документов с ПОЛНЫМ комплектом (3) → минимальный бюджет block_analysis",
+      "есть локальный PDF → crop_blocks доказуемо работает офлайн, пакет самодостаточен",
+      "есть и живые crop_url → проверяем ОБА пути кропа, а не один",
+      "MD 19,7 КБ помещается в один вызов на всех текстовых стадиях — чанкинг не искажает замер",
+      "профиль дисциплины KM существует в prompts/disciplines/ (все 14 дисциплин имеют профиль)",
+      "есть исторический production-прогон для смысловой сверки"
+    ],
+    "deliberate_tradeoff": "3 графических блока — немного. Этого достаточно, чтобы ДОКАЗАТЬ механизм мультимодального вызова, но недостаточно, чтобы делать выводы о качестве анализа графики. Качество — не предмет 11F."
+  },
+  "alternatives_with_estimates": [
+    {"rank": 2, "document": "13АВ-РД-ГП1 V1", "discipline": "GP", "pages": 7, "blocks_with_crop": 3, "md_chars": 21251, "expected_natural_calls": 9, "note": "тот же бюджет, но PDF 5,26 МБ — пакет тяжелее без выигрыша"},
+    {"rank": 3, "document": "13АВ-РД-КМ-К1", "discipline": "KM", "pages": 6, "blocks_with_crop": 4, "md_chars": 19615, "expected_natural_calls": 10},
+    {"rank": 4, "document": "13АВ-РД-ОВ2-ТП1-ТП2 V1", "discipline": "OV", "pages": 9, "blocks_with_crop": 4, "md_chars": 20897, "expected_natural_calls": 10, "note": "OV — дисциплина с полным профилем (role/checklist/norms_reference)"},
+    {"rank": 5, "document": "13АВ-РД-АР1.1-К7", "discipline": "AR", "pages": 6, "blocks_with_crop": 5, "md_chars": 26112, "expected_natural_calls": 11}
+  ],
+  "eom_continuity_option": {
+    "document": "13АВ-РД-ЭМ2-ПА V1",
+    "discipline": "EOM",
+    "pages": 15,
+    "blocks_with_crop": 10,
+    "expected_natural_calls": "≈16",
+    "verdict": "не выбран",
+    "why": "сохранил бы преемственность дисциплины с 11D/11E, но 16 вызовов против 9 — при пожелании ≤12 из §6. Преемственность дисциплины не является требованием ни одного пункта задания."
+  },
+  "corpus_scan": {
+    "versions_scanned": 559,
+    "with_pdf_and_md_and_png": 402,
+    "method": "обход projects_v2/objects/*/disciplines/*/documents/*/versions/*, подсчёт страниц и блоков по 02_work/result.json, наличие 02_work/document.pdf и document.md, подсчёт PNG в 03_analysis/{latest,runs/*}/blocks*",
+    "client_content_read": false
+  },
+  "production_integrity": {
+    "production_tree_untouched": true,
+    "method": "снят sha256 всех 116 файлов версии ДО работы (evidence/production_snapshot_before.json), затем сделана копия в отдельный sandbox /home/coder/11f_diagnostic/sandbox/projects_v2/ с переносимой раскладкой projects_v2; повторная сверка после копирования — 116/116 совпали",
+    "sandbox_root": "/home/coder/11f_diagnostic/"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schema": 2,
+  "12f_allowed": true,
+  "decision_state": "ALLOWED",
+  "hard_gates": {
+    "12a_pass": true,
+    "12b_pass": true,
+    "12c_pass": true,
+    "12d_pass": true,
+    "chaos_critical_pass": true,
+    "zero_job_loss": true,
+    "zero_duplicate_executor": true,
+    "zero_premature_retention": true,
+    "eventoutbox_converges": true,
+    "cancel_recovery_pass": true,
+    "result_ack_recovery_pass": true,
+    "source_resume_pass": true,
+    "result_resume_pass": true,
+    "mtls_recovery_pass": true,
+    "cert_rotation_under_job_pass": true,
+    "ownership_fencing_pass": true,
+    "no_auto_fallback": true,
+    "rollback_runbook_ready": true,
+    "cutover_runbook_ready": true,
+    "observability_ready": true,
+    "production_integrity_pass": true,
+    "provider_inference_zero": true,
+    "immutable_review_pass": true
+  },
+  "blockers": [],
+  "note": "ALLOWED means eligible to begin a separately authorized 12F preflight; it never authorizes production cutover by itself."
+}

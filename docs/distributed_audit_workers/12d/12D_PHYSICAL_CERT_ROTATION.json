@@ -1,0 +1,25 @@
+{
+  "worker": "176.12.77.31 / wrk_19c87718",
+  "old_certificate_a": {
+    "serial": "23523e3b3f639b03242f6347592fdfbe002d7227",
+    "fingerprint_sha256": "b22c9af9c92c1f81807e10e99f41bf59ab844833acc97389c6100ddfdfe23fb5"
+  },
+  "new_certificate_b": {
+    "serial": "1537971d8aa0afc18d614c0700304b2f2d481f00",
+    "fingerprint_sha256": "95e461bf480aca4f8fe91146817d9503cdf3dca4b363c15ee77748ed545c7228",
+    "registry_status": "ACTIVE"
+  },
+  "new_key_generated_locally_on_31": true,
+  "new_private_key_received_by_center": false,
+  "new_key_file_mode": "0600",
+  "csr_b_authenticated_renewal": "PASS",
+  "candidate_b_mtls_validation_before_activation": "PASS",
+  "atomic_identity_switch": "PASS",
+  "worker_identity_unchanged": true,
+  "connection_epoch_before": 10,
+  "connection_epoch_after": 11,
+  "new_certificate_reconnect": "PASS",
+  "duplicate_staging_private_key_cleanup": "REMOVED",
+  "current_b_private_key_final_location": "worker only",
+  "verdict": "PASS"
+}

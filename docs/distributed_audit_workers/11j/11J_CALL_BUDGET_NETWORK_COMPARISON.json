@@ -1,0 +1,34 @@
+{
+  "result": "PASS",
+  "scope": "worker",
+  "fixture": "AR + MD present + optional mark_system enabled",
+  "third_leg_on": {
+    "claude_gpt_codex": {
+      "B=1": {"claude": 5, "codex": 4, "openrouter": 1, "total": 10},
+      "B=3": {"claude": 5, "codex": 10, "openrouter": 3, "total": 18},
+      "B=40": {"claude": 5, "codex": 121, "openrouter": 40, "total": 166}
+    },
+    "codex_exec": {
+      "B=1": {"claude": 2, "codex": 10, "openrouter": 1, "total": 13},
+      "B=3": {"claude": 2, "codex": 16, "openrouter": 3, "total": 21},
+      "B=40": {"claude": 2, "codex": 127, "openrouter": 40, "total": 169}
+    }
+  },
+  "third_leg_off": {
+    "claude_gpt_codex": {
+      "B=1": {"claude": 5, "codex": 3, "openrouter": 1, "total": 9},
+      "B=3": {"claude": 5, "codex": 7, "openrouter": 3, "total": 15},
+      "B=40": {"claude": 5, "codex": 81, "openrouter": 40, "total": 126}
+    },
+    "codex_exec": {
+      "B=1": {"claude": 2, "codex": 9, "openrouter": 1, "total": 12},
+      "B=3": {"claude": 2, "codex": 13, "openrouter": 3, "total": 18},
+      "B=40": {"claude": 2, "codex": 87, "openrouter": 40, "total": 129}
+    }
+  },
+  "network_fixture_B=2": {
+    "claude_gpt_codex": {"predicted": 14, "executed": 14, "per_provider_equal": true},
+    "codex_exec": {"predicted": 17, "executed": 17, "per_provider_equal": true}
+  },
+  "old_cap_64_used": false
+}

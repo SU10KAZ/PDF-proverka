@@ -1,0 +1,50 @@
+{
+  "kind": "11E.1 §12 — задание единственного оплаченного вызова",
+  "purpose": "findings_merge_real_document_11e1_retry",
+  "task_id": "findings_merge_11e1_retry",
+  "attempt_id": "findings_merge_11e1_retry-a1",
+  "stage": "findings_merge",
+  "provider": "claude",
+  "capability": "strong_audit",
+  "auth_mode": "ambient_user",
+  "grant": {
+    "grant_id": "g-findings_merge_11e1_retry",
+    "issued_by": "оператор, ОТДЕЛЬНЫМ запуском --issue-grant (прогон разрешения себе не выписывает)",
+    "max_uses": 1,
+    "ttl_sec": 3600,
+    "used_at_issue": 0,
+    "remaining_at_issue": 1
+  },
+  "identifiers_from_11e_reused": {
+    "task_id": false,
+    "attempt_id": false,
+    "grant_id": false,
+    "old_grant_state": "g-findings_merge_11e_real: max_uses=1, used=1, remaining=0 — окончательно закрыт"
+  },
+  "auxiliary_zero_inference_task": {
+    "task_id": "findings_merge_11e1_dry",
+    "grant_id": "g-findings_merge_11e1_dry",
+    "mode": "fake",
+    "real_model_calls": 0,
+    "why_separate_grant": "путь этапа списывает разрешение и в режиме fake; смешивать репетицию с оплаченной попыткой нельзя"
+  },
+  "binding": {
+    "allowed_stages": ["findings_merge"],
+    "max_inferences": 1,
+    "model": "claude-opus-5",
+    "accepted_reported_models": ["claude-opus-5", "claude-opus-5[1m]"],
+    "forbidden_literals_count": 1,
+    "forbidden_literal_values_in_docs": false
+  },
+  "timeout_sec": 3000,
+  "sandbox_root": "/home/coder/audit-worker-11e/sandbox",
+  "attempt_dir": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e1_retry",
+  "worker_root": "/home/coder/audit-worker-11e/data",
+  "prompts_dir": "/home/coder/audit-worker-11e/prompts/prompts_snapshot",
+  "deployed_release": "20260810T054528-56f0b6efe13f",
+  "deployed_commit": "43d2437f5eb53a03f0eaa4c0a5429064dfc64497",
+  "deployed_code_equals_11e_final": true,
+  "center_ingress_enabled": false,
+  "codex_available": false,
+  "auto_retry": "запрещён конструкцией: max_uses=1, второй запуск упрётся в исчерпанное разрешение"
+}

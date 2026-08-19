@@ -1,0 +1,88 @@
+{
+  "kind": "11E.1 §16 — проверка полученного артефакта свода",
+  "verdict": "PASS",
+  "production_validator": {
+    "ran": true,
+    "which": "боевые validate_and_repair_json + normalize_findings_schema внутри runner.py (раннер не изменялся)",
+    "repairs_needed": false,
+    "stage_result": {"success": true, "cancelled": false, "error": null, "findings_count": 23, "excluded_count": 0, "duration_sec": 337.403},
+    "pipeline_log": [{"status": "running"}, {"status": "done", "message": "OK"}]
+  },
+  "provider_validation": {
+    "passed": true,
+    "failed": [],
+    "checks_total": 13,
+    "checks_passed": 13,
+    "notable": [
+      "exit_code: 0",
+      "status: success",
+      "json_parsed: разобран как JSON-объект",
+      "required_fields: все поля на месте",
+      "model_matches_policy: назначено 'claude-opus-5', фактически 'claude-opus-5'",
+      "no_credential_like / no_private_paths / no_forbidden_literals: чисто",
+      "identity_matches_claim: task_id и attempt_id 11E.1"
+    ],
+    "soft_contract": {"present": ["meta"], "missing": []}
+  },
+  "artifact": {
+    "written_by": "конвейер (модель файлов не пишет — инструментов у неё ноль)",
+    "path": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e1_retry/project/doc/v1/_output/03_findings.json",
+    "inside_attempt_dir": true,
+    "outside_writes": 0,
+    "production_output_path_used": false,
+    "sha256": "1138a192357fdfabf04ae07cb8cee3c313867ad51f1b11b9dee0d26743dd6f0e",
+    "bytes": 98917,
+    "parsed_independently": true,
+    "top_level_keys": ["analysis_coverage", "findings", "meta"]
+  },
+  "findings": {
+    "count": 23,
+    "ids": ["F-001","F-002","F-003","F-004","F-005","F-006","F-007","F-008","F-009","F-010","F-011","F-012","F-013","F-014","F-015","F-016","F-017","F-018","F-019","F-020","F-021","F-022","F-023"],
+    "ids_unique": true,
+    "numbering_contiguous": true,
+    "missing_required_fields": [],
+    "meta_total_findings": 23,
+    "meta_matches_array": true
+  },
+  "severity_histogram": {
+    "КРИТИЧЕСКОЕ": 3,
+    "ЭКСПЛУАТАЦИОННОЕ": 8,
+    "ЭКОНОМИЧЕСКОЕ": 4,
+    "РЕКОМЕНДАТЕЛЬНОЕ": 7,
+    "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1,
+    "sum": 23,
+    "meta_by_severity_consistent": true,
+    "note": "смысл шкалы был вложен в промпт (severity_semantics_applied) — модель им пользовалась: представлены все пять уровней"
+  },
+  "category_histogram": {"grounding": 14, "cable": 1, "documentation": 6, "normative_refs": 2},
+  "provenance_coverage": {
+    "referenced_source_ids": 25,
+    "expected_source_ids": 25,
+    "coverage": "25/25 = 100%",
+    "meaning": "каждое входное замечание (19 T + 6 G) названо источником хотя бы одного выходного — потерянных при сведе́нии входов нет",
+    "example_merge": "F-002 сведено из T-002 + G-004 + G-005 — свод действительно объединяет, а не пересказывает",
+    "with_source_finding_ids": 23,
+    "with_block_links": 23,
+    "with_evidence": 23,
+    "with_norm": 23,
+    "with_norm_quote": 5
+  },
+  "post_merge_passes": {
+    "ran": true,
+    "evidence": "выход несёт поля, которых в ответе модели нет: highlight_regions, source_block_ids, quality, meta.finding_source_counts, meta.analysis_coverage",
+    "sheet_field": {
+      "value_for_all_findings": null,
+      "is_regression": false,
+      "proof": "в БОЕВОМ историческом 03_findings.json того же документа sheet тоже null у всех 15 замечаний — свойство документа (штамп не разобран), а не следствие переноса на воркер",
+      "page_field_populated": true,
+      "pages_seen": ["1", "2", "3", "[1, 2]", "[1, 3]", "[1, 2, 3]"]
+    }
+  },
+  "comparison_with_historical_production_run": {
+    "historical": {"findings": 15, "by_severity": {"КРИТИЧЕСКОЕ": 6, "ЭКОНОМИЧЕСКОЕ": 1, "ЭКСПЛУАТАЦИОННОЕ": 2, "РЕКОМЕНДАТЕЛЬНОЕ": 4, "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 2}},
+    "11e1": {"findings": 23, "by_severity": {"КРИТИЧЕСКОЕ": 3, "ЭКОНОМИЧЕСКОЕ": 4, "ЭКСПЛУАТАЦИОННОЕ": 8, "РЕКОМЕНДАТЕЛЬНОЕ": 7, "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 1}},
+    "comparable": false,
+    "why_not": "исторический прогон шёл на ДРУГОМ входе (02_text_analysis.json корпуса, sha 1865e5ad…, а не выход 11D.2 70abe475…) и другим поколением конвейера. Сравнение чисел здесь ничего не измеряет и выводом этапа не является",
+    "in_scope_of_11e1": false
+  }
+}

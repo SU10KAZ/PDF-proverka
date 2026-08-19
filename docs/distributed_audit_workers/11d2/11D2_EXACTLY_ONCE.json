@@ -1,0 +1,62 @@
+{
+  "kind": "11D.2 §11 — ровно один оплаченный вызов",
+  "invariant": "I-P9: одна попытка + один вызов = не больше одного оплаченного обращения",
+  "grant": {
+    "grant_id": "g-text_analysis_11d2_semantic_live_check",
+    "purpose": "text_analysis_11d2_semantic_live_check",
+    "provider": "claude",
+    "capability": "strong_audit",
+    "issued_max_uses": 1,
+    "used_after_run": 1,
+    "remaining_after_consume": 0,
+    "reusable_grant_found_after_run": false,
+    "issued_by": "ОТДЕЛЬНЫЙ операторский запуск --issue-grant; прогон разрешений себе не выписывает",
+    "reused_11d_grant": false,
+    "note_field_is_hardcoded": "поле note раннера зашито строкой «11D text_analysis real_document»; менять код до прогона запрещал §3, поэтому цель закодирована в grant_id/task_id"
+  },
+  "new_identity": {
+    "task_id": "text_analysis_11d2_semantic_live_check",
+    "attempt_id": "text_analysis_11d2_semantic_live_check-a1",
+    "distinct_from_11d": true,
+    "11d_task_id": "11d-real-1"
+  },
+  "ledger": {
+    "keys": [
+      {
+        "state": "replay",
+        "key": "text_analysis-657af1dca56027546ead4ef7986dcd22",
+        "claimed_at": null,
+        "detail": "результат уже сохранён",
+        "has_result": true,
+        "performed_by_pid": 922066,
+        "completed_at": 1786310684.5462773
+      }
+    ],
+    "calls_started": 1,
+    "calls_completed": 1
+  },
+  "ledger_files_on_worker": [
+    "inference/text_analysis-657af1dca56027546ead4ef7986dcd22.claim.json",
+    "inference/text_analysis-657af1dca56027546ead4ef7986dcd22.result.json"
+  ],
+  "calls_started": 1,
+  "calls_completed": 1,
+  "performed_now": true,
+  "cap": {
+    "max_inferences": 1,
+    "respected": true
+  },
+  "totals": {
+    "model_resolution_inference": 0,
+    "provider_selfcheck_inference": 0,
+    "rehearsal_inference": 0,
+    "text_analysis_inference": 1,
+    "technical_retries": 0,
+    "repair_calls": 0,
+    "total_real_claude_calls": 1,
+    "total_codex_calls": 0,
+    "openrouter_calls": 0,
+    "api_fallback_calls": 0
+  },
+  "second_call_attempted": false
+}

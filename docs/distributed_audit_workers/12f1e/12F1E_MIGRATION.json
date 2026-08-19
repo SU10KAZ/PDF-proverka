@@ -1,0 +1,20 @@
+{
+  "schema": "auditmanager.12f1e.migration.v1",
+  "base_schema_version": 12,
+  "target_schema_version": 13,
+  "canonical_migration": "_MIGRATION_13",
+  "schema_file_sha256": "10d94b31d5d6396bed86ef4e74231da23ff336300f7fe8e6b08c07d4c0729ae9",
+  "additive_tables": [
+    "worker_identity_reenrollment_authorizations",
+    "worker_identity_reenrollment_events"
+  ],
+  "modified_existing_tables": [],
+  "destructive_statements": 0,
+  "raw_authorization_token_columns": 0,
+  "raw_runtime_token_columns": 0,
+  "fresh_database_test": "PASS",
+  "populated_v12_to_v13_test": "PASS",
+  "populated_row_preservation": "PASS",
+  "rollback_compatibility": "v12 application ignores additive v13 tables; do not downgrade/delete the DB",
+  "production_db_migrated_in_phase_a": false
+}

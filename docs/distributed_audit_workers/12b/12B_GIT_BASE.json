@@ -1,0 +1,10 @@
+{
+  "task": "12B Agent Gateway",
+  "base_branch": "feat/distributed-audit-workers-agent-stream-contract-v1",
+  "base_commit": "052423e4fab84611ce3fd1687c36322ed48f325a",
+  "branch": "feat/distributed-audit-workers-agent-gateway",
+  "worktree": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-agent-gateway",
+  "main_worktree_touched": false,
+  "push_performed": false,
+  "merge_performed": false
+}

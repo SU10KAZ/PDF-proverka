@@ -1,0 +1,20 @@
+{
+  "schema": "auditmanager.12f1g.db_migration.v1",
+  "database": "/var/lib/auditmanager/distributed_workers/workers.db",
+  "schema_before": 12,
+  "schema_after": 13,
+  "migration": "additive identity-preserving reenrollment schema",
+  "mechanism": "exact-patch backend.app.services.distributed_workers.database.ensure_ready() under the effective production service environment",
+  "startup_lazy_migration_observation": "startup itself did not touch a route requiring lazy initialization; the canonical application initializer was then invoked explicitly",
+  "raw_sql_or_manual_alter_used": false,
+  "integrity_after": "ok",
+  "foreign_key_check_failures": 0,
+  "journal_mode": "wal",
+  "mode_after": "0600",
+  "owner_uid": 1001,
+  "size_after": 425984,
+  "database_file_sha256_after_migration": "0c76221891f59d1d763370a186d7d3a8bcb6e48a1488fa71d6728d28c325db59",
+  "identity_authorization_table_present": true,
+  "identity_event_table_present": true,
+  "verdict": "PASS"
+}

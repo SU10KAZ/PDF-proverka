@@ -1,0 +1,163 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Audit Routing Plan v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "preset_id",
+    "stages"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "condition_evaluator_version": {
+      "type": "integer"
+    },
+    "preset_id": {
+      "type": "string",
+      "enum": [
+        "claude_gpt_codex",
+        "codex_exec",
+        "custom"
+      ]
+    },
+    "pipeline_revision": {
+      "type": "string"
+    },
+    "feature_flags": {
+      "type": "object"
+    },
+    "routing_plan_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "number"
+    },
+    "routing_plan_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "stage_id",
+          "execution_scope",
+          "actions"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "stage_id": {
+            "type": "string"
+          },
+          "pipeline_stage": {
+            "type": "string"
+          },
+          "execution_scope": {
+            "enum": [
+              "worker",
+              "center"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "action_id",
+                "role",
+                "kind"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "action_id": {
+                  "type": "string"
+                },
+                "role": {
+                  "enum": [
+                    "detector",
+                    "judge_gap_search",
+                    "text_audit",
+                    "merge",
+                    "targeted_discipline",
+                    "targeted_docnorm",
+                    "targeted_mark_system",
+                    "absence_guard",
+                    "norm_binding",
+                    "norm_review_findings",
+                    "norm_review_optimization",
+                    "optimization_primary",
+                    "optimization_visual",
+                    "optimization_critic",
+                    "detector_combine",
+                    "structural_critic",
+                    "optimization_merge",
+                    "deterministic_fix",
+                    "norm_paragraph_verification",
+                    "norm_requote",
+                    "critic_augment"
+                  ]
+                },
+                "kind": {
+                  "enum": [
+                    "model",
+                    "deterministic"
+                  ]
+                },
+                "provider": {
+                  "enum": [
+                    "claude",
+                    "codex",
+                    "openrouter"
+                  ]
+                },
+                "capability": {
+                  "enum": [
+                    "strong_audit",
+                    "cheap_review",
+                    "block_detector",
+                    "block_detector_strong",
+                    "block_judge",
+                    "visual_reasoning"
+                  ]
+                },
+                "reasoning_effort": {
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high",
+                    "xhigh"
+                  ]
+                },
+                "parallel_group": {
+                  "type": "string"
+                },
+                "depends_on": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "condition": {
+                  "type": "object"
+                },
+                "multiplicity": {
+                  "type": "object"
+                },
+                "note": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "unexplained_orphan_count": 0,
+  "checks": {
+    "stuck_assigned_or_created": 0,
+    "offered_forever": 0,
+    "running_without_local_attempt": 0,
+    "local_live_attempt_without_center": 0,
+    "uploaded_result_without_central_status": 0,
+    "completed_result_without_ack": 0,
+    "unacked_eventoutbox_rows": 0,
+    "stale_connection_ownership": 0,
+    "partial_transfer_files": 0
+  },
+  "explained_terminal_states": 2,
+  "note": "C31 cancel and the never-offered initial harness precondition are terminal cancelled states with audit reasons; neither is an orphan."
+}

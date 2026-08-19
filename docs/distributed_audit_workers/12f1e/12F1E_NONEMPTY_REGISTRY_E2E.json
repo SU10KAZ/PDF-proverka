@@ -1,0 +1,12 @@
+{
+  "schema": "auditmanager.12f1e.nonempty_registry_e2e.v1",
+  "environment": "isolated populated temporary SQLite",
+  "preexisting_worker_preserved": true,
+  "preexisting_token_hash_preserved": true,
+  "exact_reenrolled_pair_created": true,
+  "worker_id_other_instance_conflict": "REJECTED",
+  "instance_id_other_worker_conflict": "REJECTED",
+  "automatic_reassignment": false,
+  "production_used": false,
+  "verdict": "PASS"
+}

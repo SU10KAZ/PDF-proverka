@@ -1,0 +1,39 @@
+{
+  "schema": "auditmanager.12f.permission_fix.v1",
+  "commit": "dd8c760e1bf21abcb061557efe2bfe436108ee51",
+  "parent": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "tree": "955940d56e38ee5c2bb7f15d1e745d34a4f874c0",
+  "supersedes_failed_candidate": "5e3750a26f65a884c1c644c6bc25c490f4b665ef",
+  "relationship": "direct child of production e6015d33 containing the reviewed PKI changes plus the permission-boundary correction; not a descendant of the failed deployment",
+  "root_cause": "request-time database.ensure_ready unconditionally called chmod(02770), which RestrictSUIDSGID=true rejected with EPERM",
+  "changed_runtime_files": [
+    "backend/app/main.py",
+    "backend/app/services/distributed_workers/database.py",
+    "backend/app/services/distributed_workers/settings.py",
+    "backend/app/services/distributed_workers/state_permissions.py",
+    "deploy/systemd/agent-gateway.env.example",
+    "deploy/systemd/web-ocr-agent-gateway.service",
+    "deploy/systemd/web-ocr-worker-cert-issuer.service",
+    "deploy/systemd/worker-issuer.env.example",
+    "scripts/manage_distributed_worker_state.py",
+    "scripts/manage_worker_pki.py"
+  ],
+  "changed_test_files": [
+    "tests/test_permission_boundary_12f.py",
+    "tests/test_pki_recovery_12f.py"
+  ],
+  "unexpected_files": 0,
+  "shared_directory_mode": "02770",
+  "shared_file_mode": "0660",
+  "shared_owner_uid_typed": true,
+  "shared_gid_typed": true,
+  "startup_validation": true,
+  "runtime_chown": false,
+  "runtime_directory_chmod": false,
+  "request_path_chmod_02770": false,
+  "unsafe_permission_fail_closed": true,
+  "db_schema": {"before": 13, "after": 13, "migration": "none"},
+  "systemd_hardening_weakened": false,
+  "RestrictSUIDSGID": true,
+  "verdict": "PASS"
+}

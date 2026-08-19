@@ -1,0 +1,11 @@
+{
+  "outbound_queue_type": "asyncio.Queue",
+  "outbound_queue_bound": 128,
+  "inbound_transport_bound_bytes": 1048576,
+  "event_batch_bound": 256,
+  "scenario": "one fake agent writes 50 EventBatch messages before reading any EventAck",
+  "durable_highest_contiguous_sequence": 50,
+  "oversized_behavior": "gRPC RESOURCE_EXHAUSTED or bounded protocol error",
+  "high_cardinality_metric_labels_rejected": true,
+  "result": "PASS"
+}

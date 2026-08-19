@@ -1,0 +1,24 @@
+{
+  "schema": "auditmanager.12f.pki_isolated_service_proof.v1",
+  "state": "PASS",
+  "production_material_used": false,
+  "production_database_used": false,
+  "network_listener_used": false,
+  "unix_socket": "pytest temporary directory only",
+  "first_simulated_start": "expected fail before socket because allowed UID set was empty",
+  "retry": {
+    "same_ephemeral_root_ca": true,
+    "same_ephemeral_issuing_ca": true,
+    "issuer_process_active": true,
+    "issuer_socket_present": true,
+    "csr_signed": true,
+    "leaf_identity_matches_worker": true,
+    "leaf_eku": "clientAuth only",
+    "leaf_is_ca": false,
+    "registry_rows": 1,
+    "same_request_retry_same_serial": true,
+    "clean_shutdown": true,
+    "exit_code": 0
+  },
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

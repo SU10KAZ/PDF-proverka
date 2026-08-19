@@ -1,0 +1,38 @@
+{
+  "stage": "11G",
+  "question": "кто и когда выписывает привязку провайдера",
+  "before_11g": "оператор — руками, диагностическим скриптом (11F: ProviderBinding(...) конструировался напрямую, минуя ProviderResolver и его проверки)",
+  "after_11g": "Executor.prepare_provider_binding по требованию центра; ProviderResolver со всеми проверками",
+  "artifact": {
+    "path": "<job_dir>/metadata/provider_binding.json",
+    "mode": "0600",
+    "why_0600": "секретов нет, но есть абсолютные пути чужой машины и контрольные литералы оператора"
+  },
+  "content_public_view": [
+    "provider",
+    "auth_mode",
+    "model",
+    "capability",
+    "accepted_reported_models",
+    "max_inferences",
+    "allowed_stages",
+    "grant_id"
+  ],
+  "what_never_appears": [
+    "учётные данные",
+    "токен воркера",
+    "HOME",
+    "промпт"
+  ],
+  "live_evidence": {
+    "run": "audit-provider 139/139",
+    "checks": [
+      "[114] привязка выписана",
+      "[115] относится к этой попытке",
+      "[116] тот же провайдер и способность",
+      "[117] модель из локальной политики",
+      "[130] публичный вид привязки в манифесте результата"
+    ]
+  },
+  "operator_steps_required": 0
+}

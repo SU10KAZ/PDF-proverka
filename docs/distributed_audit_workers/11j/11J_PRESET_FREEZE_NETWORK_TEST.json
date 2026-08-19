@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "job_A": {
+    "preset_at_create": "codex_exec",
+    "claimed_before_switch": true,
+    "routing_plan_hash": "sha256:078a4dde6768ed599724d6ae2427fc9cb38ba967ba438f4114f744bca92d15be",
+    "worker_preset_after_switch": "codex_exec",
+    "center_tail_preset_after_switch": "codex_exec"
+  },
+  "global_switch": {"target": "claude_gpt_codex", "http_status": 200},
+  "job_B": {
+    "preset_at_create": "claude_gpt_codex",
+    "routing_plan_hash": "sha256:7b978205cfc41b225b1301e86851bbe59a9975d50081d47169426c8a2609b611"
+  },
+  "hash_A_differs_from_hash_B": true,
+  "running_job_changed": false,
+  "network_path": true
+}

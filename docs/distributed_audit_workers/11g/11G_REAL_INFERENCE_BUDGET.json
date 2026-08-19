@@ -1,0 +1,42 @@
+{
+  "stage": "11G",
+  "question": "сколько НАСТОЯЩИХ обращений к модели допускает боевой сетевой прогон",
+  "method": "потолок считает ЦЕНТР детерминированной функцией из структуры документа (provider_requirement.estimate_inferences), а не оператор круглым числом; машина зажимает его своим потолком",
+  "center_estimate": {
+    "graphic_blocks": 3,
+    "blind_estimate": false,
+    "natural_calls": 9,
+    "technical_retry_headroom": 2,
+    "center_ceiling": 24,
+    "max_inferences": 11,
+    "formula": "3 графических блоков + 6 текстовых этапов + 2 на технические повторы, зажато потолком центра 24"
+  },
+  "per_stage_expectation_from_11f": {
+    "crop_blocks": 0,
+    "document_graph": 0,
+    "block_context": 0,
+    "block_analysis": 3,
+    "text_analysis": 1,
+    "findings_merge": 1,
+    "findings_review": 0,
+    "optimization": 1,
+    "optimization_critic": 1,
+    "optimization_corrector": 1,
+    "total_natural_11f_actual": 8
+  },
+  "limits": {
+    "task_hard_limit": 12,
+    "task_desired": "<= 10",
+    "center_requirement_max_inferences": 11,
+    "center_ceiling_constant": 24,
+    "machine_ceiling_env": "AUDIT_WORKER_PIPELINE_PROVIDER_MAX_INFERENCES (владелец VPS)",
+    "verdict": "11 ≤ 12 — HARD LIMIT задания не превышается даже при полном расходе потолка"
+  },
+  "retries": {
+    "technical_allowed": 2,
+    "quality_allowed": 0,
+    "why_grant_max_uses_is_not_the_budget": "разрешение считает ВХОДЫ в оплачиваемый канал (GRANT_MAX_ENTRIES_PER_ATTEMPT=3), обращения считает binding.max_inferences и журнал вызовов I-P9"
+  },
+  "codex_calls_allowed": 0,
+  "norm_verify_calls_allowed": 0
+}

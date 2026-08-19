@@ -1,0 +1,54 @@
+{
+  "где": "audit_worker/providers/manager.py::heartbeat_payload → capability",
+  "новые_поля": {
+    "pipeline_bridge_enabled": "разрешил ли АДМИНИСТРАТОР VPS каналу существовать",
+    "pipeline_inference_grant": "{grant_file_present, error, remaining_total} — по ЭТОМУ провайдеру",
+    "last_pipeline_inference": "{observed_at, provider, calls_started, calls_completed}",
+    "real_inference_allowed": "конъюнкция первых двух; False по умолчанию"
+  },
+  "почему_в_capability": "санитайзер центра собирает верхний уровень перечислением полей и новый ключ молча отбросил бы, а capability_json сохраняется целиком",
+  "чего_НЕ_уходит": [
+    "имя пользователя",
+    "e-mail",
+    "домашний каталог",
+    "путь к учётным данным",
+    "task_id разрешения",
+    "заметка оператора",
+    "промпт",
+    "ответ модели"
+  ],
+  "снимок_из_прогона": {
+    "auth_mode": "ambient_user",
+    "inference_probe_allowed": false,
+    "inference_probe_grant_remaining": 0,
+    "inference_probe_supported": true,
+    "last_pipeline_inference": null,
+    "parser_version": "claude-1",
+    "pipeline_bridge_enabled": true,
+    "pipeline_inference_grant": {
+      "grant_file_present": false,
+      "error": null,
+      "remaining_total": 0
+    },
+    "provider": "claude",
+    "provider_home": {
+      "layout": "ambient_user_home/{.claude|.codex}",
+      "auth_mode": "ambient_user",
+      "home_exists": true,
+      "home_owned_by_worker": false,
+      "runtime_exists": true,
+      "metadata_exists": true
+    },
+    "quota_source_stability": "not_applicable",
+    "real_inference_allowed": false,
+    "structured_quota_source": "unavailable",
+    "zero_inference_auth_status": true,
+    "zero_inference_quota": false
+  },
+  "проверено_тестами": [
+    "test_capability_reports_bridge_and_grant",
+    "test_real_inference_stays_forbidden_without_a_grant",
+    "test_heartbeat_carries_no_paths_or_task_ids",
+    "test_pipeline_status_marker_roundtrip"
+  ]
+}

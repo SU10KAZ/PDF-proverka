@@ -1,0 +1,36 @@
+{
+  "schema": "auditmanager.12f.pki_operator_action.v1",
+  "recovery_fix_commit": "f0a293f3d6c49efeea700b4acdd0f443e56a1b66",
+  "ready_for_pki_operator_retry": false,
+  "operator_root_retry_authorization": false,
+  "old_script": {
+    "path": "/tmp/12f_prepare_production_pki.sh",
+    "superseded_sha256": "c40ca0c757c2ebb3f00620c12f80182e755d92e763da6581c03b2544934ac659",
+    "must_not_run": true
+  },
+  "current_guard": {
+    "path": "/tmp/12f_prepare_production_pki.sh",
+    "sha256": "0cde6ea58f82ac4a15b71207dcc2f593578cc8158e779c9209a8785d1ba95550",
+    "behavior": "exits 78 before any mutation with 12F_PKI_PREP_BLOCKED",
+    "safe_to_repeat": true,
+    "is_successful_pki_prep_action": false
+  },
+  "expected_operator_command": null,
+  "expected_success_output": "12F_PKI_PREP_PASS",
+  "expected_success_receipt": "/tmp/12f_pki_prepare_receipt.json",
+  "blockers": [
+    "derive the recovery patch onto the exact active e6015d33 production lineage",
+    "build and review a new immutable release",
+    "obtain separate authorization for controlled production backend deploy/restart",
+    "activate DISTRIBUTED_WORKERS_SHARED_STATE=true in that backend",
+    "prepare and hash a new idempotent root script bound to the exact immutable release",
+    "production issuer unit is currently enabled/inactive and should remain stopped until the above gates pass"
+  ],
+  "forbidden_until_unblocked": [
+    "start or restart production issuer",
+    "issue production Worker certificate",
+    "start production Gateway",
+    "switch production Worker to grpc_stream",
+    "run canary"
+  ]
+}

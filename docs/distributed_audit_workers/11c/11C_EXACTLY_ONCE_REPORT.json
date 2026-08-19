@@ -1,0 +1,185 @@
+{
+  "инвариант": "I-P9 — inference exactly-once per attempt",
+  "формулировка": "одна попытка + один вызов = не более одного оплачиваемого обращения к модели, при любом числе перезапусков, повторных доставок и replay'ев",
+  "почему_не_хватало_прежних": {
+    "grant": "защищает от второго ПРОГОНА, но не от повторного вызова внутри одного",
+    "I-04 last_seen_seq": "защищает от двойного ПРИМЕНЕНИЯ события, но событие идёт ПОСЛЕ вызова",
+    "I-17 completed.marker": "различает «отработал»/«исчез», но пишется в конце, а деньги тратятся в середине"
+  },
+  "протокол": {
+    "claim": "<job_dir>/inference/<key>.claim.json, O_CREAT|O_EXCL, СОЗДАЁТСЯ ДО вызова",
+    "result": "<key>.result.json, атомарная запись сразу после вызова",
+    "indeterminate": "claim без result → повтор ЗАПРЕЩЁН, решение за оператором"
+  },
+  "runtime_доказательства": {
+    "claude": {
+      "ledger": {
+        "keys": [
+          {
+            "state": "replay",
+            "key": "provider_selfcheck-015ce441a78dbe38ccc3a018d9f0f2ff",
+            "claimed_at": null,
+            "detail": "результат уже сохранён",
+            "has_result": true,
+            "performed_by_pid": 3901762,
+            "completed_at": 1786291282.6062343
+          }
+        ],
+        "calls_started": 1,
+        "calls_completed": 1
+      },
+      "рестарт_исполнителя": {
+        "ledger_before": {
+          "keys": [
+            {
+              "state": "replay",
+              "key": "provider_selfcheck-015ce441a78dbe38ccc3a018d9f0f2ff",
+              "claimed_at": null,
+              "detail": "результат уже сохранён",
+              "has_result": true,
+              "performed_by_pid": 3901762,
+              "completed_at": 1786291282.6062343
+            }
+          ],
+          "calls_started": 1,
+          "calls_completed": 1
+        },
+        "ledger_after": {
+          "keys": [
+            {
+              "state": "replay",
+              "key": "provider_selfcheck-015ce441a78dbe38ccc3a018d9f0f2ff",
+              "claimed_at": null,
+              "detail": "результат уже сохранён",
+              "has_result": true,
+              "performed_by_pid": 3901762,
+              "completed_at": 1786291282.6062343
+            }
+          ],
+          "calls_started": 1,
+          "calls_completed": 1
+        },
+        "grant_reconsumed": false
+      },
+      "повторное_списание_разрешения": false
+    },
+    "codex": {
+      "ledger": {
+        "keys": [
+          {
+            "state": "replay",
+            "key": "provider_selfcheck-63f9b1964964ce46a9e6924af3754938",
+            "claimed_at": null,
+            "detail": "результат уже сохранён",
+            "has_result": true,
+            "performed_by_pid": 3902996,
+            "completed_at": 1786291340.495805
+          }
+        ],
+        "calls_started": 1,
+        "calls_completed": 1
+      },
+      "рестарт_исполнителя": {
+        "ledger_before": {
+          "keys": [
+            {
+              "state": "replay",
+              "key": "provider_selfcheck-63f9b1964964ce46a9e6924af3754938",
+              "claimed_at": null,
+              "detail": "результат уже сохранён",
+              "has_result": true,
+              "performed_by_pid": 3902996,
+              "completed_at": 1786291340.495805
+            }
+          ],
+          "calls_started": 1,
+          "calls_completed": 1
+        },
+        "ledger_after": {
+          "keys": [
+            {
+              "state": "replay",
+              "key": "provider_selfcheck-63f9b1964964ce46a9e6924af3754938",
+              "claimed_at": null,
+              "detail": "результат уже сохранён",
+              "has_result": true,
+              "performed_by_pid": 3902996,
+              "completed_at": 1786291340.495805
+            }
+          ],
+          "calls_started": 1,
+          "calls_completed": 1
+        },
+        "grant_reconsumed": false
+      },
+      "повторное_списание_разрешения": false
+    },
+    "stub": {
+      "ledger": {
+        "keys": [
+          {
+            "state": "replay",
+            "key": "provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f",
+            "claimed_at": null,
+            "detail": "результат уже сохранён",
+            "has_result": true,
+            "performed_by_pid": 3897413,
+            "completed_at": 1786290966.6797366
+          }
+        ],
+        "calls_started": 1,
+        "calls_completed": 1
+      },
+      "рестарт_исполнителя": {
+        "ledger_before": {
+          "keys": [
+            {
+              "state": "replay",
+              "key": "provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f",
+              "claimed_at": null,
+              "detail": "результат уже сохранён",
+              "has_result": true,
+              "performed_by_pid": 3897413,
+              "completed_at": 1786290966.6797366
+            }
+          ],
+          "calls_started": 1,
+          "calls_completed": 1
+        },
+        "ledger_after": {
+          "keys": [
+            {
+              "state": "replay",
+              "key": "provider_selfcheck-5d0f8cfbdc7016778cd810cc9f4bc49f",
+              "claimed_at": null,
+              "detail": "результат уже сохранён",
+              "has_result": true,
+              "performed_by_pid": 3897413,
+              "completed_at": 1786290966.6797366
+            }
+          ],
+          "calls_started": 1,
+          "calls_completed": 1
+        },
+        "grant_reconsumed": false
+      },
+      "повторное_списание_разрешения": false
+    }
+  },
+  "тесты": [
+    "test_claim_blocks_the_second_call",
+    "test_saved_result_is_replayed_not_recomputed",
+    "test_error_result_is_also_recorded",
+    "test_bridge_replays_instead_of_calling_the_model",
+    "test_crash_after_call_forbids_an_automatic_retry",
+    "test_ceiling_of_calls_per_attempt",
+    "test_ledger_survives_a_process_restart",
+    "test_timed_out_call_is_still_recorded_in_the_ledger",
+    "test_concurrent_consumption_yields_a_single_winner"
+  ],
+  "фактическое_число_вызовов": {
+    "claude": 1,
+    "codex": 1,
+    "stub": 1
+  }
+}

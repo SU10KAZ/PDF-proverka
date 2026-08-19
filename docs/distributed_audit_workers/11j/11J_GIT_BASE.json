@@ -1,0 +1,24 @@
+{
+  "head_11J": "687483dca1ef1f2b5c66895e0688cfb41b2826ff",
+  "merge": "не выполнялся (запрещён заданием, §46)",
+  "push": "не выполнялся (запрещён заданием, §46)",
+  "worktree": "/home/coder/projects/PDF-proverka/.claude/worktrees/distributed-audit-workers-executable-routing-plan",
+  "база_11H": "de2f84f2afb3da5568362001facc255e3716972e",
+  "база_11I": {
+    "commit": "58584de65fd943af0b1652d9f69cfd494d5bbd81",
+    "ветка": "feat/distributed-audit-workers-routing-plan",
+    "заголовок": "docs(маршрутизация 11I): отчёт о состязательном ревью и финальные числа",
+    "короткий": "58584de6",
+    "проверено": "git rev-parse feat/distributed-audit-workers-routing-plan"
+  },
+  "ветка_11J": "feat/distributed-audit-workers-executable-routing-plan",
+  "коммитов_поверх_базы": 6,
+  "коммиты": [
+    "687483dc fix(маршрутизация 11J): план не имеет права подменять окружение воркера",
+    "e717c598 fix(маршрутизация 11J): targeted-проходы не имеют права ронять оплаченный свод",
+    "b73fb325 fix(маршрутизация 11J): дефекты, найденные состязательным ревью",
+    "dc39cb98 test(маршрутизация 11J): ансамбль этапа 01 исполняется тремя провайдерами на самом деле",
+    "a08925ae test(маршрутизация 11J): §37 и §38 — провайдер, секрет, топология исполнения",
+    "3187ffed feat(маршрутизация 11J): OpenRouter как полноценный провайдер воркера"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "kind": "11E §31 — результат этапа",
+  "verdict": "PARTIAL",
+  "artifact": {
+    "expected_path": "/home/coder/audit-worker-11e/sandbox/findings_merge_11e_real/project/doc/v1/_output/03_findings.json",
+    "exists": false,
+    "why": "провайдер вернул ошибку; артефакт НЕ пишется — непринятый результат не имеет права выглядеть как выполненный этап"
+  },
+  "provider_result": {
+    "provider": "claude",
+    "auth_mode": "ambient_user",
+    "status": "error",
+    "error_code": "unknown",
+    "detail_at_call_time": "CLI завершился ошибкой",
+    "exit_code": 1,
+    "duration_ms": 32321,
+    "model_reported": null,
+    "raw_answer_bytes": 99,
+    "raw_answer_sha256": "d9758eb9e672f6182ebaa38bc90670da5510cf4b55c596534e6262e82212d122",
+    "usage": {"input_tokens": 0, "output_tokens": 0, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0, "total_cost_usd": 0, "num_turns": 1}
+  },
+  "validation": {
+    "passed": false,
+    "failed": ["exit_code", "status", "json_parsed", "required_fields", "model_matches_policy"],
+    "note": "все пять — следствия одного факта: полезного ответа не было. Валидатор отработал штатно и fail-closed"
+  },
+  "stage_result": {"success": false, "cancelled": false, "error": "Свод замечаний: код 1", "findings_count": 0, "duration_sec": 32.649},
+  "output_findings_count": 0,
+  "severity_histogram": null,
+  "dedup_counts": null,
+  "output_dir_listing": ["01_blocks_analysis.json", "02_text_analysis.json", "document_graph.json", "findings_merge_provider_run.json"],
+  "post_merge_passes_executed": 0,
+  "what_DID_work": [
+    "боевой раннер этапа стартовал и дошёл до вызова",
+    "конвейер сам разрешил и прочитал оба обязательных входа",
+    "конвейер сам собрал промпт боевым сборщиком",
+    "полнота входа 25/25 подтверждена ДО вызова",
+    "ProviderAdapter реально вызван, argv и cwd наблюдались в живом процессе",
+    "журнал попытки записал заявку и результат ровно один раз",
+    "отказ обработан fail-closed: артефакт не создан, фолбэка на прежний транспорт не было",
+    "отчёт о прогоне записан и при отказе тоже"
+  ],
+  "what_did_NOT_happen": [
+    "модель не вернула structured JSON",
+    "production-валидатор не принял результат",
+    "конвейер не записал 03_findings.json",
+    "post-merge проходы не выполнялись",
+    "сравнение с историческим сводом не выполнялось (§22 разрешает его только ПОСЛЕ успешного прогона)"
+  ]
+}

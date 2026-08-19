@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "jobs": {
+    "full_codex": {"predicted": 17, "executed": 17, "unique_ledger_keys": 17, "duplicates": 0},
+    "claude_gpt_codex": {"predicted": 14, "executed": 14, "unique_ledger_keys": 14, "duplicates": 0}
+  },
+  "ledger_identity_fields": ["stage_id", "action_id", "logical_invocation_identity", "block_identity", "provider", "capability"],
+  "per_block_proof": {
+    "blocks": 2,
+    "actions_each": ["detector_openrouter", "detector_codex_standard", "detector_codex_strong", "judge_gap_search"],
+    "independent_keys_each": 4,
+    "judge_block_identity_matches_detector_block_identity": true
+  },
+  "cross_leg_replay_possible": false,
+  "indeterminate_rows": 0
+}

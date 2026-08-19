@@ -1,0 +1,71 @@
+{
+ "stage": "11H",
+ "question": "сколько обращений к модели естественно требует ЭТОТ документ и где runaway-порог",
+ "document": "СТ26_01-14-АР5-2-РД_V1 (256_Primavera_K14_Spartak / AR / v001)",
+ "size": {
+  "pages": 15,
+  "md_chars": 191850,
+  "blocks_total": 92,
+  "image_blocks": 54,
+  "stamps_filtered_out": 13,
+  "graphic_blocks_to_stage02": 41
+ },
+ "per_stage_natural": {
+  "block_analysis": {
+   "calls": 41,
+   "why": "архитектура Stage 02 — один блок = один вызов (single-block runtime plan)"
+  },
+  "text_analysis": {
+   "calls": 1,
+   "why": "single-pass; MD 191 850 символов — чанкинга у провайдерского пути нет"
+  },
+  "findings_merge": {
+   "calls": 1
+  },
+  "findings_review": {
+   "calls": "0..1",
+   "why": "ядро детерминированное; модель зовёт только страж отсутствия и только при наличии кандидатов. MD < 300 000 → чанкинга не будет"
+  },
+  "optimization": {
+   "calls": 1
+  },
+  "optimization_critic": {
+   "calls": 1
+  },
+  "optimization_corrector": {
+   "calls": "0..1",
+   "why": "условен: только если критик нашёл дефекты"
+  },
+  "provider_selfcheck": {
+   "calls": 0,
+   "why": "отдельный action, в WORKER_STAGE_PLAN не входит"
+  }
+ },
+ "center_estimate": {
+  "graphic_blocks": 41,
+  "blind_estimate": false,
+  "natural_calls": 47,
+  "technical_retry_headroom": 5,
+  "center_ceiling": 64,
+  "max_inferences": 52,
+  "clamped_by_ceiling": false,
+  "formula": "41 графических блоков + 6 текстовых этапов + 5 на технические повторы (max(3, ceil(N×0.10))), зажато потолком центра 64"
+ },
+ "budget": {
+  "natural_N": 47,
+  "technical_retry_allowance": 5,
+  "formula_from_task": "max(3, ceil(N × 0.10))",
+  "check": "max(3, ceil(47×0.10)) = 5",
+  "hard_runaway_threshold": 52,
+  "quality_retries_allowed": 0
+ },
+ "worker_side_ceiling": {
+  "AUDIT_WORKER_PIPELINE_PROVIDER_MAX_INFERENCES": "выставляется стендом в верхнюю границу центра, иначе машина отказала бы требованию, которое центр вправе прислать",
+  "note": "фактический потолок попытки = min(потолок центра, потолок машины); мост считает начатые вызовы, а не успешные"
+ },
+ "time_estimate": {
+  "per_block_sec": "90..180 (по замерам 11F на Claude; для Codex цифра неизвестна до первого прогона)",
+  "total_hint": "41 блок последовательно (STAGE01_CODEX_PARALLELISM=1) — порядка 1,5–3 часов"
+ },
+ "stop_rule": "если фактическое число начатых вызовов превысит hard_runaway_threshold — остановка задания до продолжения"
+}

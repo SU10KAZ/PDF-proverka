@@ -1,0 +1,29 @@
+{
+  "schema": "auditmanager.12f1f.registration_security.v1",
+  "generic_registration_accepts_worker_id": false,
+  "generic_registration_worker_id_source": "Center-generated random identifier",
+  "generic_registration_can_claim_target_worker_id": false,
+  "identity_reenrollment_is_separate_typed_operation": true,
+  "authorization_creation_role": "ADMIN_ONLY",
+  "exact_binding": ["worker_id", "instance_id"],
+  "machine_capacity_is_identity_authority": false,
+  "authorization_token": {
+    "default_ttl_seconds": 300,
+    "minimum_ttl_seconds": 30,
+    "maximum_ttl_seconds": 3600,
+    "single_use": true,
+    "stored_raw": false,
+    "hash_at_rest": true,
+    "constant_time_compare": true
+  },
+  "runtime_credential": {
+    "new_credential_issued": true,
+    "stored_raw_at_center": false,
+    "old_credential_imported": false,
+    "exact_retry_replays_raw_credential": false
+  },
+  "arbitrary_worker_id_claim_possible": false,
+  "transaction_atomic": true,
+  "idempotency_safe": true,
+  "verdict": "PASS"
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "auditmanager.12f1g.production_integrity.v1",
+  "checked_at": "2026-08-13T22:24:59+03:00",
+  "intended_changes": [
+    "production current pointer moved from exact e2b98c3b baseline to exact e6015d33 patch release",
+    "one controlled backend restart",
+    "canonical additive workers.db migration 12 to 13",
+    "one exact-pair ADMIN reenrollment authorization and one new hash-only runtime credential",
+    "physical Worker exact patch release plus two-field config update",
+    "one controlled polling Agent restart"
+  ],
+  "production_source_root_modified": false,
+  "production_source_writers_final": 0,
+  "backend_pid": 2379476,
+  "backend_n_restarts": 0,
+  "executor_pid_before": 1384880,
+  "executor_pid_after": 1384880,
+  "executor_untouched": true,
+  "scheduler": "DISABLED",
+  "real_audit_started": false,
+  "gateway_started": false,
+  "listeners": {
+    "127.0.0.1:8081": "LISTEN pid 2379476",
+    ":8443": "ABSENT",
+    ":9443": "ABSENT"
+  },
+  "firewall": {
+    "changed_by_12f1g": false,
+    "ipv4_rules_sha256_before": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ipv4_rules_sha256_after": "cc25d5b0f86a2f15108fbf4f97f176989c3c08f36afb4c7b0017648ad0398aff",
+    "ipv6_rules_sha256_before": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "ipv6_rules_sha256_after": "a6dc5a5e24bf5eaf10d7bb8cb9b7cb1ccc2672a73b871ebd9f3ce79ff952a6a1",
+    "source_scoped_8443_rule": "176.12.77.31 only",
+    "global_8443_allow": false,
+    "tcp_9443_rule": false,
+    "ufw_status_note": "sudo -n required interactive authentication; persisted rules, hashes, mtime and listeners were verified read-only"
+  },
+  "cloudflared": {
+    "pid_before": 1263127,
+    "pid_after": 1263127,
+    "started_at": "2026-08-11T19:52:01+03:00",
+    "target": "http://127.0.0.1:8081",
+    "changed_or_restarted": false
+  },
+  "nginx": {
+    "pid_before": 57095,
+    "pid_after": 57095,
+    "active": true,
+    "n_restarts": 0,
+    "changed_or_restarted": false
+  },
+  "caddy": {"installed_unit": false, "active": false, "changed": false},
+  "unrelated_preexisting_listener_note": "0.0.0.0:8099 belongs to PID 3677363 started 2026-08-08 in an old /tmp Claude scratchpad; it predates and was not touched by 12F.1G",
+  "unexpected_jobs": 0,
+  "unexpected_offers": 0,
+  "unexpected_actions": 0,
+  "provider_inference": {"claude": 0, "codex": 0, "openrouter": 0},
+  "unexplained_production_changes": 0,
+  "production_integrity": "PASS",
+  "verdict": "PASS"
+}

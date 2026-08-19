@@ -1,0 +1,59 @@
+{
+  "stage": "11F",
+  "source": "fake-прогон fake4 (тот же вход, что у боевого)",
+  "blocks_total_in_index": 3,
+  "blocks": [
+    {
+      "block_id": "PTKX-YJL3-UFH",
+      "page": 5,
+      "file": "block_PTKX-YJL3-UFH.png",
+      "size_kb": 58.7,
+      "source": "cloud",
+      "crop_sha256": "847adaa2ec2801e5f3fcbde2030985e7ce82eb6c1a1bb4cc56b9379d553a77c7",
+      "render_size": [
+        800,
+        405
+      ]
+    },
+    {
+      "block_id": "JTQC-EA63-RQC",
+      "page": 6,
+      "file": "block_JTQC-EA63-RQC.png",
+      "size_kb": 59.6,
+      "source": "cloud",
+      "crop_sha256": "44c322ee3054b8c0d7dc2821f3f1519491169059ca580a4bd1bce6efbafe21ec",
+      "render_size": [
+        800,
+        404
+      ]
+    },
+    {
+      "block_id": "6WV7-PJVK-GMF",
+      "page": 6,
+      "file": "block_6WV7-PJVK-GMF.png",
+      "size_kb": 86.6,
+      "source": "cloud",
+      "crop_sha256": "5b366213a8da0e785924e4281e6776a13614f041afd201b27d1449b3a03d6bf1",
+      "render_size": [
+        1007,
+        1314
+      ]
+    }
+  ],
+  "block_context": {
+    "blocks_total": 3,
+    "blocks_ready": 3,
+    "blocks_failed": 0,
+    "source_counts": {
+      "structured_structure": 3
+    },
+    "profile_counts": {
+      "km_ladder_drawing": 1,
+      "km_layout_plan": 2
+    }
+  },
+  "skipped_blocks": [],
+  "skip_reasons": "отсева на этапе Stage 01 нет: отбор image-блоков и штампов сделан раньше, на кропе (crop_blocks). Смоук-переменные AUDIT_STAGE02_MAX_BLOCKS не заданы.",
+  "expected_model_calls": 3,
+  "note": "ручного сокращения числа блоков не производилось"
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "auditmanager.12f.pki_operator_retry_gate.v1",
+  "new_release_active": false,
+  "exact_commit_verified_during_candidate": true,
+  "backend_health_candidate": true,
+  "core_api_candidate": true,
+  "distributed_api_candidate": false,
+  "workers_db_integrity": true,
+  "worker_identity_preserved": true,
+  "polling_heartbeat_pass_candidate": false,
+  "polling_heartbeat_recovered_after_rollback": true,
+  "scheduler_disabled": true,
+  "issuer_inactive": true,
+  "gateway_inactive": true,
+  "shared_state_fix_active": false,
+  "partial_pki_state_safe": true,
+  "operator_script_sha_verified": true,
+  "operator_script_release_guard_satisfied": false,
+  "operator_script_shared_state_guard_satisfied": false,
+  "provider_inference_zero": true,
+  "production_integrity_after_rollback": true,
+  "ready_for_pki_operator_retry": false,
+  "blockers": [
+    "candidate 5e3750a2 failed production polling and was rolled back",
+    "DISTRIBUTED_WORKERS_SHARED_STATE=true is not active after rollback",
+    "operator script expected-release/running-backend guards correctly reject e6015d33",
+    "shared-state permission enforcement must be redesigned or proven under RestrictSUIDSGID=true before another deploy"
+  ],
+  "verdict": "BLOCKED"
+}

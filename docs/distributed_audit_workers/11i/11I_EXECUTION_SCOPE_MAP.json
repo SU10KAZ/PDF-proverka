@@ -1,0 +1,41 @@
+{
+  "stage_model_key_to_pipeline_stage": {
+    "block_batch": "block_analysis",
+    "text_analysis": "text_analysis",
+    "findings_merge": "findings_merge",
+    "findings_critic": "findings_review",
+    "findings_corrector": "findings_review",
+    "norm_verify": "norm_verify",
+    "norm_fix": "norm_verify",
+    "norm_requote": "norm_verify",
+    "optimization": "optimization",
+    "optimization_critic": "optimization_critic",
+    "optimization_corrector": "optimization_corrector"
+  },
+  "pipeline_stage_scope": {
+    "block_analysis": "worker",
+    "text_analysis": "worker",
+    "findings_merge": "worker",
+    "findings_review": "worker",
+    "optimization": "worker",
+    "optimization_critic": "worker",
+    "optimization_corrector": "worker",
+    "norm_verify": "center"
+  },
+  "center_only_pipeline_stages": [
+    "norm_verify",
+    "debt_control",
+    "decision_carryover",
+    "excel"
+  ],
+  "worker_whitelist_center_contract": [
+    "block_analysis",
+    "text_analysis",
+    "findings_merge",
+    "findings_review",
+    "optimization",
+    "optimization_critic",
+    "optimization_corrector"
+  ],
+  "note": "одна стадия конвейера обслуживает несколько строк таблицы моделей: findings_critic и findings_corrector — фазы findings_review, norm_fix и norm_requote — шаги внутри norm_verify"
+}

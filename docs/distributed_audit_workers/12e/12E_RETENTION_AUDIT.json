@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "accepted_results": 24,
+  "accepted_results_with_result_ack_timestamp": 24,
+  "accepted_results_with_retention_until": 24,
+  "accepted_results_with_validated_storage": 24,
+  "completed_without_ack": 0,
+  "premature_result_deletion": 0,
+  "cancelled_attempts_with_retention_timer": 0,
+  "lost_ack_replay": "PASS",
+  "duplicate_ack_deadline_drift": 0,
+  "physical_cleanup_deleted_result_artifacts": false
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "auditmanager.12f1g.git_base.v1",
+  "captured_at": "2026-08-13T22:24:59+03:00",
+  "evidence_branch": "feat/distributed-audit-workers-production-canary",
+  "evidence_head_before": "f00af91d774c4adacd9fd5be254b3b700cbbaa51",
+  "authoritative_production_baseline": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+  "baseline_tree": "e2d67c5c4b5b62b3921bff6443cbbe7d52f9a72a",
+  "reenrollment_patch_commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f",
+  "reenrollment_patch_parent": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+  "reenrollment_patch_tree": "00e75c545eb314ff0bac82990b9ad5f11050e476",
+  "production_source_root_modified_by_12f1g": false,
+  "production_source_writers_final": 0,
+  "push": false,
+  "merge": false,
+  "verdict": "PASS"
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "auditmanager.12f1g.center_acceptance.v1",
+  "checked_at": "2026-08-13T22:24:59+03:00",
+  "process": {
+    "active": true,
+    "pid": 2379476,
+    "n_restarts": 0,
+    "release_commit": "e6015d33bf4fa6b8986a21fa4b9e33c10ec3139f"
+  },
+  "listener_127_0_0_1_8081": true,
+  "local_api_info_http": 200,
+  "public_api_info_http": 200,
+  "admin_workers_unauth_http": 401,
+  "worker_router_unauth_http": 401,
+  "core_api": "PASS",
+  "distributed_router": "PASS",
+  "worker_registry": "PASS",
+  "identity_reenrollment_routes": "PASS",
+  "rbac": "PASS",
+  "scheduler": "DISABLED",
+  "unexpected_jobs": 0,
+  "unexpected_offers": 0,
+  "unexpected_actions": 0,
+  "exact_patch_regression_evidence": {
+    "source": "12F.1F exact immutable release revalidation",
+    "passed": 272,
+    "failed": 0
+  },
+  "rollback_required": false,
+  "verdict": "PASS"
+}

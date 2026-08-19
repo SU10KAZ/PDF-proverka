@@ -1,0 +1,107 @@
+{
+ "stage": "11H",
+ "question": "проходит ли ВЕСЬ сетевой контур центр→воркер→центр с провайдером codex, без единого обращения к модели",
+ "mode": "audit-provider (боевой мост, подделан только бинарь CLI)",
+ "provider": "codex",
+ "worker": "176.12.77.31, корень /home/coder/audit-worker-11h, ревизия 11h",
+ "center": "изолированный тест-центр на .128 + cloudflared quick-tunnel",
+ "real_model_calls": 0,
+ "result": {
+  "passed": 162,
+  "failed": 1,
+  "total": 163
+ },
+ "failed_checks": [
+  {
+   "id": 71,
+   "title": "второго исполнителя не появилось",
+   "verdict": "ДЕФЕКТ ПРОВЕРКИ, не рантайма",
+   "why": "подсчёт шёл по слову «executor» среди ВСЕХ процессов audit_worker машины, а на .31 работает исполнитель корня 11g со своим центром и своей worker.db; чужой процесс объявлялся дублем. Тот же класс, что и коллизия имён юнитов, исправленная на 11G",
+   "fixed": "признак дополнен корнем установки (worker.root в argv) и точной формой ' -m audit_worker executor'"
+  }
+ ],
+ "chain_evidence": {
+  "center_requirement": {
+   "provider": "codex",
+   "capability": "strong_audit",
+   "model": null,
+   "allowed_stages": [
+    "block_analysis",
+    "text_analysis",
+    "findings_merge",
+    "findings_review",
+    "optimization",
+    "optimization_critic",
+    "optimization_corrector"
+   ],
+   "max_inferences": 11
+  },
+  "center_payload_has_exact_model": false,
+  "worker_binding": {
+   "provider": "codex",
+   "auth_mode": "ambient_user",
+   "capability": "strong_audit",
+   "model": "gpt-5.6-sol",
+   "accepted_reported_models": [
+    "gpt-5.6-sol",
+    "gpt-5.6-sol[1m]"
+   ],
+   "executable": "/home/coder/audit-worker-11h/provider_stub/codex-with-call-log",
+   "job_id": "69eb19fd-ab37-45ce-b89b-d412e16f2909",
+   "attempt_id": "5ac39dad-b05c-4d6c-803c-806244de2565",
+   "max_inferences": 11,
+   "allowed_stages": [
+    "block_analysis",
+    "text_analysis",
+    "findings_merge",
+    "findings_review",
+    "optimization",
+    "optimization_critic",
+    "optimization_corrector"
+   ]
+  },
+  "grants": [
+   {
+    "grant_id": "auto-5ac39dad-b05c-4d6c-803c-806244de2565",
+    "provider": "codex",
+    "task_id": "69eb19fd-ab37-45ce-b89b-d412e16f2909",
+    "max_uses": 3,
+    "used": 1,
+    "expires_at": 1786391974.9228451,
+    "note": "auto:11G job=69eb19fd-ab37-45ce-b89b-d412e16f2909 attempt=5ac39dad-b05c-4d6c-803c-806244de2565 capability=strong_audit inferences=11/64"
+   }
+  ],
+  "grant_issued_by": "рантайм воркера (grant_id=auto-<attempt_id>); оператор разрешений не выписывал",
+  "ledger": {
+   "calls_started": 6,
+   "calls_completed": 6,
+   "indeterminate": []
+  },
+  "stub_calls": {
+   "total": 22,
+   "inference": 6
+  },
+  "calls_match": "обращений к заглушке (inference) = вызовов в журнале попытки → ни один вызов не ушёл мимо",
+  "center_next_stage": "norm_verify",
+  "worker_resume_hint": "norm_verify",
+  "scope": "замечаний 1, этапов 13"
+ },
+ "what_this_proves": [
+  "центр штатным путём (PipelineManager → RemoteWorkerExecutionBackend) кладёт в задание provider=codex + capability=strong_audit",
+  "точной модели в нагрузке задания нет",
+  "воркер сам разрешает способность в модель ЛОКАЛЬНОЙ политикой (gpt-5.6-sol) и сам выписывает привязку и разрешение",
+  "мультимодальный путь Codex работает: вложение доходит до CLI файлом и читается им",
+  "граница worker/center соблюдена: следующий этап по решению ЦЕНТРА — norm_verify",
+  "exactly-once: начато = завершено, неизвестных исходов ноль"
+ ],
+ "what_this_does_not_prove": [
+  "качество ответов настоящей модели",
+  "поведение при исчерпании подписки",
+  "работу центрального хвоста (в этом прогоне центр останавливался на границе)"
+ ],
+ "artifacts": {
+  "stand": "/tmp/claude-1001/-home-coder-projects-PDF-proverka/d403d5d2-afb5-4da6-8887-c5954ec40d3d/scratchpad/11h/stand_provider",
+  "report": "/tmp/claude-1001/-home-coder-projects-PDF-proverka/d403d5d2-afb5-4da6-8887-c5954ec40d3d/scratchpad/11h/stand_provider/evidence/report.json",
+  "stub_call_log": "/tmp/claude-1001/-home-coder-projects-PDF-proverka/d403d5d2-afb5-4da6-8887-c5954ec40d3d/scratchpad/11h/stand_provider/evidence/provider_stub_calls.jsonl"
+ }
+}

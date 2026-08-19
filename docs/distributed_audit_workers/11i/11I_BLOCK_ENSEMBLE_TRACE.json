@@ -1,0 +1,216 @@
+{
+  "claim": "этап 01 одинаков в обоих пресетах: 3 детектора ‖ + детерминированное объединение + судья",
+  "claude_gpt_codex": [
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_openrouter",
+      "role": "detector",
+      "kind": "model",
+      "provider": "openrouter",
+      "capability": "block_detector",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_codex_standard",
+      "role": "detector",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_detector",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_codex_strong",
+      "role": "detector",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_detector_strong",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "feature_enabled",
+        "params": {
+          "flag": "STAGE01_THIRD_LEG_ENABLED"
+        }
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "combine_detectors",
+      "role": "detector_combine",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "detectors"
+      ],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "judge_gap_search",
+      "role": "judge_gap_search",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_judge",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "combine_detectors"
+      ],
+      "condition": {
+        "type": "detectors_complete"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    }
+  ],
+  "full_codex": [
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_openrouter",
+      "role": "detector",
+      "kind": "model",
+      "provider": "openrouter",
+      "capability": "block_detector",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_codex_standard",
+      "role": "detector",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_detector",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "detector_codex_strong",
+      "role": "detector",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_detector_strong",
+      "reasoning_effort": "low",
+      "parallel_group": "detectors",
+      "depends_on": [],
+      "condition": {
+        "type": "feature_enabled",
+        "params": {
+          "flag": "STAGE01_THIRD_LEG_ENABLED"
+        }
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "combine_detectors",
+      "role": "detector_combine",
+      "kind": "deterministic",
+      "provider": null,
+      "capability": null,
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "detectors"
+      ],
+      "condition": {
+        "type": "always"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    },
+    {
+      "stage_id": "block_batch",
+      "pipeline_stage": "block_analysis",
+      "execution_scope": "worker",
+      "action_id": "judge_gap_search",
+      "role": "judge_gap_search",
+      "kind": "model",
+      "provider": "codex",
+      "capability": "block_judge",
+      "reasoning_effort": null,
+      "parallel_group": null,
+      "depends_on": [
+        "combine_detectors"
+      ],
+      "condition": {
+        "type": "detectors_complete"
+      },
+      "multiplicity": {
+        "type": "per_graphic_block"
+      }
+    }
+  ],
+  "calls_per_block": {
+    "third_leg_on": 4,
+    "third_leg_off": 3,
+    "deterministic_actions": "0 обращений к модели"
+  }
+}

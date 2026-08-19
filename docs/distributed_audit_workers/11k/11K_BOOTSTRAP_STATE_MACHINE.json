@@ -1,0 +1,12 @@
+{
+  "states": ["queued", "running", "action_required", "succeeded", "failed"],
+  "ordered_steps": [
+    "created", "ssh_enrollment", "preflight", "release_install", "self_test",
+    "configuration", "providers", "registration", "starting",
+    "network_self_test", "ready"
+  ],
+  "action_steps": ["waiting_claude_auth", "waiting_codex_auth", "waiting_openrouter_secret", "provider_auth"],
+  "recovery_steps": ["rolling_back", "rollback_complete"],
+  "resume": "same session_id; completed release/config/service steps are skipped",
+  "persistent_secrets": false
+}

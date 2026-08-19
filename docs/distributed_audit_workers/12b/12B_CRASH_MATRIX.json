@@ -1,0 +1,10 @@
+{
+  "A_claim_persisted_crash_before_offer": "reconnect redelivery or expired lease recovery to assigned",
+  "B_offer_sent_crash_before_accept": "no accepted state; same durable offer recovery",
+  "C_accept_received_crash_before_persistence": "worker reconnects and repeats idempotent JobAccept; no false acceptance ACK exists",
+  "D_event_persisted_crash_before_ack": "replay is deduplicated by event id/sequence and returns persisted contiguous cursor",
+  "E_result_validated_crash_before_ack": "pending notification joins authoritative completed/superseded attempt and regenerates ResultAck",
+  "F_result_ack_sent_crash_before_close": "duplicate ResultAck after reconnect is safe and carries identical hash/retention",
+  "cancel_before_delivery": "pending command remains durable and is delivered with the same command_id",
+  "gateway_restart_active_attempt": "connection becomes offline; attempt is not failed"
+}

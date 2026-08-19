@@ -1,0 +1,10 @@
+{
+  "schema": "auditmanager.12f1d.provider_status.v1",
+  "live_status_freshly_probed": false,
+  "provider_auth_or_config_changed": false,
+  "claude": "PRESERVED_NOT_REPROBED",
+  "codex": "PRESERVED_NOT_REPROBED",
+  "openrouter": "PRESERVED_NOT_REPROBED",
+  "reason": "The required identity-preservation contract failed before enrollment, Agent restart or any provider step.",
+  "inference": {"claude": 0, "codex": 0, "openrouter": 0}
+}

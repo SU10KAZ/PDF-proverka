@@ -1,0 +1,27 @@
+{
+  "kind": "11E §33 — покрытие источников",
+  "before_model": {
+    "measured": true,
+    "expected_input_findings": 25,
+    "text_findings": 19,
+    "block_findings": 6,
+    "encoded_in_prompt": 25,
+    "missing_before_inference": 0,
+    "coverage": 1.0,
+    "verdict": "транспорт входа 100% — требование §11 выполнено"
+  },
+  "after_model": {
+    "measured": false,
+    "why": "модель не вернула пригодного ответа; выходных замечаний нет, соотносить не с чем",
+    "preserved": null,
+    "merged": null,
+    "deduplicated": null,
+    "disappeared_without_trace": null
+  },
+  "provenance_capability_of_production_contract": {
+    "output_carries_source_ids": true,
+    "field": "findings[].source_finding_ids",
+    "note": "контракт позволяет детерминированно восстановить связь F-NNN → T-NNN/G-NNN, поэтому на успешном прогоне выходное покрытие будет измеримо без догадок"
+  },
+  "limitation_recorded": "выходное покрытие не обязано быть 100% и на успешном прогоне: смысл этапа — объединение и дедупликация"
+}

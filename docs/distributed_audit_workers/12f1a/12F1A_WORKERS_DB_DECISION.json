@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "status": "OPERATOR_DECISION_REQUIRED",
+  "current_12e_default": "AUDIT_APP_DATA_DIR/distributed_workers/workers.db",
+  "current_production_expansion": "/home/coder/projects/PDF-proverka/backend/app/data/distributed_workers/workers.db",
+  "problem": "The expansion is inside the mutable developer/production checkout and is not safe as an implicit default for atomic immutable release switching.",
+  "typed_override_exists": "DISTRIBUTED_WORKERS_DATA_DIR",
+  "required_property": "explicit persistent path outside immutable release directories; retained across candidate/rollback",
+  "proposed_layout_not_approved": "/home/coder/auditmanager/persistent/distributed_workers/workers.db",
+  "live_db_created": false,
+  "release_independent_proven": false,
+  "operator_decision": "Approve the canonical persistent root before candidate config is committed."
+}

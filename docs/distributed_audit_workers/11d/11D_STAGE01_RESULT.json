@@ -1,0 +1,52 @@
+{
+  "stage_artifact_name": "11D_STAGE01_RESULT.json",
+  "production_stage": "text_analysis",
+  "artifact": {
+    "path": "/home/coder/audit-worker-11d/sandbox/11d-real-1/project/doc/v1/_output/02_text_analysis.json",
+    "exists": true,
+    "sha256": "9e3a566d7f4674a87ff990ac77bce63e8aacf9110eefc7e6b5d0d439e5775a0f",
+    "bytes": 29208,
+    "inside_attempt_dir": true,
+    "text_findings": 17,
+    "normative_refs": 5,
+    "text_source": "md",
+    "keys": [
+      "items_verified_from_blocks",
+      "normative_refs_found",
+      "project_id",
+      "project_params",
+      "stage",
+      "text_findings",
+      "text_source",
+      "timestamp"
+    ]
+  },
+  "written_by": "конвейер (_write_json в claude_runner), НЕ модель",
+  "validated_by": [
+    "audit_worker.providers.inference.validate_inference — 13 именованных проверок",
+    "stages/text_analysis/runner.py — validate_and_repair_json + обязательный список text_findings",
+    "md_prescan.augment_text_analysis_file — детерминированное дообогащение"
+  ],
+  "content_summary": {
+    "text_findings": 17,
+    "severity_distribution": {
+      "РЕКОМЕНДАТЕЛЬНОЕ": 11,
+      "ЭКОНОМИЧЕСКОЕ": 3,
+      "ЭКСПЛУАТАЦИОННОЕ": 3
+    },
+    "normative_refs_found": 5,
+    "findings_with_norm": 17,
+    "findings_with_norm_quote": 4,
+    "findings_with_source": 17,
+    "items_verified_from_blocks": 0,
+    "project_params_keys": [
+      "key_equipment",
+      "object_type",
+      "total_load_kw"
+    ],
+    "stage": "02_text_analysis",
+    "project_id": "EOM/11d",
+    "text_source": "md"
+  },
+  "content_not_committed": "Сам артефакт содержит замечания по документу заказчика и в репозиторий не кладётся (§15, §32). Здесь только счётчики и хэш."
+}

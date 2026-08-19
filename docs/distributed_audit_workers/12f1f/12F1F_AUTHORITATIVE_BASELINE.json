@@ -1,0 +1,24 @@
+{
+  "schema": "auditmanager.12f1f.authoritative_baseline.v1",
+  "accepted_at": "2026-08-13T14:09:42+03:00",
+  "acceptance_basis": "running immutable release identity plus 20-minute source/deploy quiescence",
+  "commit": "e2b98c3b5b290f97257ddcb914e71a65289c26bb",
+  "tree": "e2d67c5c4b5b62b3921bff6443cbbe7d52f9a72a",
+  "release_id": "ui-e2b98c3b",
+  "release_path": "/home/coder/auditmanager/releases/ui-e2b98c3b",
+  "release_manifest_sha256": "4434bd3e63f8ec72b37682078e787d04d9d82f13845a01b771acee66bd5177d2",
+  "git_archive_tar_sha256": "b35d8bc3f6e04beb82b37e048454bf9482f4fce69984e8eb8be061c64c64e83d",
+  "dependency_freeze_sha256": "0f3b123e82b9ee78a20584dac911e2ce7bfb1f29d9b9cca0d06107aff781bd24",
+  "dependency_count": 132,
+  "venv_canonical_tar_sha256": "6622538cbcd590182471318d362f0c959026f17b54dfab524c04821a943d0571",
+  "database_schema": 12,
+  "config_schema": {
+    "distributed_workers_enabled": true,
+    "distributed_audit_execution_enabled": false,
+    "scheduler": "DISABLED"
+  },
+  "immutable_directory_mode": "0555",
+  "main_dirty_root_defines_production_identity": false,
+  "authoritative_production_baseline": true,
+  "verdict": "PASS"
+}

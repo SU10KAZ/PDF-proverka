@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "agent_stopped_while_executor_running": true,
+  "executor_survived": true,
+  "new_agent_adopted_attempt": true,
+  "same_executor_pid": true,
+  "duplicate_executor": false,
+  "higher_epoch": true,
+  "result_ack": true
+}

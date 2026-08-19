@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "status": "SAFE_IN_REFERENCE_NOT_AUTHORIZED",
+  "migrations": [
+    {
+      "target": "new workers.db schema 0 -> 11",
+      "before": "file absent",
+      "after": "schema v11, 27 application tables, WAL",
+      "mechanism": "database.ensure_ready() / schema.migrate()",
+      "transactional": true,
+      "destructive_to_existing_production_data": false,
+      "reversible": "code rollback ignores and retains the separate DB",
+      "estimated_reference_seconds": 0.006006593001075089
+    },
+    {
+      "target": "existing AuditManager project/app state",
+      "before": "filesystem/JSON production state",
+      "after": "unchanged",
+      "mechanism": "none",
+      "transactional": null,
+      "destructive_to_existing_production_data": false,
+      "reversible": "not applicable"
+    }
+  ],
+  "test_state_import": false,
+  "certificate_registry": "created empty in schema v11; no isolated PKI rows copied",
+  "migration_safe": true,
+  "migration_executed_in_production": false
+}

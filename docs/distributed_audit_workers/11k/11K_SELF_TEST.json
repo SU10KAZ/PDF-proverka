@@ -1,0 +1,7 @@
+{
+  "pre_switch": ["agent import", "pipeline import", "PyMuPDF import", "audit_worker selftest"],
+  "post_start": ["Agent active", "Executor active", "heartbeat online", "revision match", "routing_plan_v1 advertised", "test_pipeline_v1 completed and ACKed"],
+  "real_provider_calls": {"claude": 0, "codex": 0, "openrouter": 0},
+  "immutable_candidate_tests": "26 passed",
+  "ready_requires_all": true
+}

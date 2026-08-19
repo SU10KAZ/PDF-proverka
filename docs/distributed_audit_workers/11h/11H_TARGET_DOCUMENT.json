@@ -1,0 +1,89 @@
+{
+ "stage": "11H",
+ "question": "какой именно объект AuditManager обрабатывается",
+ "requested_name": "СТ26_01-14-АР5-2-РД_V1",
+ "resolver": "backend.app.services.storage.projects_v2_adapter.ProjectsV2Adapter.find_document_by_project_id + list_documents (штатный код, не угадывание по имени)",
+ "storage_backend": "projects_v2 (AUDIT_STORAGE_BACKEND=projects_v2 в .env центра)",
+ "documents_scanned": 476,
+ "exact_matches": 1,
+ "ambiguity_check": {
+  "loose_matches": 1,
+  "near_miss_rejected": {
+   "document_code": "0000-СТ26-01-14-АР5-2-РД",
+   "why_not_target": "другой document_code (префикс 0000-, дефисы вместо подчёркиваний, нет суффикса _V1), другой legacy_project_path и другая дата миграции 2026-07-29 против 2026-08-07; точного совпадения с запрошенным именем не даёт",
+   "important_finding": "у этого документа СОВПАДАЕТ pdf_sha256 с целевым (24341c64…): это тот же самый чертёж, загруженный на портал 29.07.2026 под другим именем. По ИМЕНИ цель однозначна (одно точное совпадение из 476 документов), но по СОДЕРЖИМОМУ в хранилище есть дубликат",
+   "has_completed_audit": true,
+   "why_it_matters": "1) целевой документ обрабатывать всё равно нужно — аудита у него нет; 2) у дубликата есть ЗАВЕРШЁННЫЙ аудит от 29.07.2026 (62 замечания, 9 критических), и он даёт честную базу для сравнения качества Codex (§34) — по тому же PDF, а не «примерно похожему»; 3) старый результат лежит в ДРУГОМ каталоге документа и прогоном 11H не затрагивается вовсе"
+  }
+ },
+ "resolved": {
+  "object_folder": "256_Primavera_K14_Spartak",
+  "object_id": "7a49eb10",
+  "discipline": "AR",
+  "document_code": "СТ26_01-14-АР5-2-РД_V1",
+  "project_id": "AR/СТ26_01-14-АР5-2-РД_V1",
+  "version_id": "v001",
+  "version_label": "V1",
+  "current_version": "v001",
+  "version_count": 1,
+  "doc_dir": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-2-РД_V1",
+  "version_dir": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-2-РД_V1/versions/v001"
+ },
+ "source": {
+  "pdf": "СТ26_01-14-АР5-2-РД_V1.pdf",
+  "pdf_sha256": "24341c648bddbe2ea0eef9d2dc1ea0da475d09291840e8845e828bb7981efbdb",
+  "md_file": "СТ26_01-14-АР5-2-РД_V1_results.md",
+  "blocks_json_file": "СТ26_01-14-АР5-2-РД_V1_blocks.json",
+  "bundle_fingerprint": "b5deb4ea1343a21f4e4bdcfcb0fc00b33bf30af2e0857d6a6c8c75f48c3acb96",
+  "upload_format": "новый 3-файловый комплект портала (pdf + _results.md + _results.html) + _blocks.json"
+ },
+ "size": {
+  "pages": 15,
+  "md_chars": 191850,
+  "blocks_total_result_json": 92,
+  "image_blocks_result_json": 54,
+  "stamp_blocks": 13,
+  "image_blocks_after_stamp_filter": 41,
+  "image_blocks_with_crop_url": 41,
+  "blocks_json_types": {
+   "image": 41,
+   "text": 38,
+   "stamp": 13
+  },
+  "note": "result.json объявляет штампы как block_type=image + category_code=stamp; фильтр кропинга (crop_blocks/blocks.py) отсеивает их по category_code, поэтому в Stage 02 идёт 41 блок"
+ },
+ "text_source": "md (обязателен; fallback на extracted_text запрещён)",
+ "historical_audit_for_comparison": {
+  "document_code": "0000-СТ26-01-14-АР5-2-РД",
+  "version_id": "v001",
+  "run_id": "run_20260729T132112",
+  "date": "2026-07-29",
+  "same_pdf_sha256": true,
+  "findings": 62,
+  "severity": {
+   "КРИТИЧЕСКОЕ": 9,
+   "ЭКСПЛУАТАЦИОННОЕ": 18,
+   "ЭКОНОМИЧЕСКОЕ": 22,
+   "ПРОВЕРИТЬ ПО СМЕЖНЫМ": 10,
+   "РЕКОМЕНДАТЕЛЬНОЕ": 3
+  },
+  "with_norm": 62,
+  "with_clause": 54,
+  "optimization_items": 25,
+  "stages_done": [
+   "crop_blocks",
+   "block_context",
+   "gemma_enrichment",
+   "block_value_grounding",
+   "block_analysis",
+   "text_analysis",
+   "findings_merge",
+   "findings_critic",
+   "findings_corrector",
+   "critic_v2_triage",
+   "norm_verify",
+   "excel"
+  ],
+  "caveat": "прогон 29.07 шёл ДРУГИМ конвейером: с локальным обогащением Gemma (с тех пор удалено с платформы) и ансамблем Claude+Codex на оптимизации. Прямое сравнение чисел — это сравнение двух РАЗНЫХ конвейеров, а не двух моделей"
+ }
+}

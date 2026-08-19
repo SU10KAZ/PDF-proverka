@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "captured_at": "2026-08-12T16:41:36+03:00",
+  "capture_mode": "read_only",
+  "base_12e_commit": "73486e7af4f193d2f6efd73c5bf069c14bfbf764",
+  "center": {
+    "host": "176.12.77.128",
+    "backend": {
+      "pid": 1931160,
+      "started_at": "2026-08-12T16:28:23+03:00",
+      "bind": "127.0.0.1:8081",
+      "command": "/opt/py312/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8081",
+      "http_health": "PASS",
+      "runtime_tree": "/home/coder/projects/PDF-proverka",
+      "runtime_commit": "9168c3930c5e87e918f62c3812e19a8f924a3ade",
+      "runtime_branch": "feature/block-vector-graphs",
+      "signalled_or_restarted_by_12f": false
+    },
+    "distributed_control_plane": {
+      "enabled_env_present": false,
+      "enabled_default": false,
+      "router_registered_in_runtime_main": false,
+      "configured_data_dir": null,
+      "default_data_dir": "/home/coder/projects/PDF-proverka/backend/app/data/distributed_workers",
+      "data_dir_exists": false,
+      "workers_db_exists": false,
+      "worker_record_verified": false,
+      "queue_verified": false,
+      "ownership_verified": false,
+      "pending_results_verified": false,
+      "pending_cancels_verified": false
+    },
+    "listeners": {
+      "127.0.0.1:8081": "LISTEN",
+      ":8443": "ABSENT",
+      ":9443": "ABSENT"
+    },
+    "ufw": {
+      "status": "active",
+      "worker_8443_rule": "176.12.77.31 -> TCP/8443 ALLOW IN",
+      "worldwide_8443_rule": false,
+      "rule_9443": false,
+      "changed_by_12f": false
+    },
+    "cloudflared": {
+      "pid": 1263127,
+      "started_at": "2026-08-11T19:52:01+03:00",
+      "target": "http://127.0.0.1:8081",
+      "modified_by_12f": false
+    },
+    "nginx": "active",
+    "caddy": "inactive",
+    "disk": {
+      "total_bytes": 317134012416,
+      "used_bytes": 103112634368,
+      "free_bytes": 197904568320,
+      "used_percent_df": 35
+    },
+    "memory": {
+      "total_bytes": 67314040832,
+      "available_bytes": 39862226944,
+      "swap_total_bytes": 4294963200,
+      "swap_used_bytes": 3850297344
+    }
+  },
+  "worker": {
+    "host": "176.12.77.31",
+    "user": "auditworker_11l",
+    "install_root": "/home/auditworker_11l/audit-worker-11l",
+    "data_root": "/home/auditworker_11l/audit-worker-11l/data",
+    "worker_id": "wrk_19c87718",
+    "instance_id": "inst_boot_e129036dddf5c59049080ddd15624e72",
+    "polling_agent": {
+      "pid": 1575036,
+      "started_at": "2026-08-12T04:47:12+03:00",
+      "service": "audit-worker-audit-worker-11l-30b5e4d544-agent.service",
+      "status": "active",
+      "dispatcher_scheme": "https",
+      "dispatcher_class": "pre-existing Quick Tunnel URL",
+      "center_state": "center_unreachable",
+      "last_error_class": "DNS resolution failure",
+      "signalled_or_restarted_by_12f": false
+    },
+    "executor": {
+      "pid": 1384880,
+      "started_at": "2026-08-11T14:31:30+03:00",
+      "service": "audit-worker-audit-worker-11l-30b5e4d544-executor.service",
+      "status": "active",
+      "signalled_or_restarted_by_12f": false
+    },
+    "identity": {
+      "registration_status": "approved",
+      "claim_status": "claimed",
+      "connection_epoch": 2
+    },
+    "release": {
+      "release_id": "20260811T055247-743dfe7fa00e",
+      "pipeline_revision": "e05f44ef4a0f732d8c3fb3b30e7dc8ed11939f4e",
+      "archive_sha256": "ed522e20c5f4ff7772ddcdfac99213920e1f09e89a83567119688844b04305ca"
+    },
+    "local_state": {
+      "active_execution_attempts": 0,
+      "active_process_registry_rows": 0,
+      "pending_local_commands": 0,
+      "finished_execution_rows": 1,
+      "event_journal_rows": 24,
+      "event_journal_written_rows": 24,
+      "eventoutbox_schema_present": false,
+      "known_center_ack_cursor": null,
+      "pending_result_verified": false,
+      "unresolved_lease_local": 0
+    },
+    "configured_max_slots": 1,
+    "configured_real_audit_max_slots": 1,
+    "configured_provider_max_inferences": 256,
+    "provider_live_status": "NOT_EVALUATED_AFTER_UPSTREAM_HARD_GATE_FAILED",
+    "production_mtls_status": "NOT_CONFIGURED_OR_NOT_EVIDENCED_IN_CURRENT_WORKER_CONFIG",
+    "inbound_8081_8443_9443_listener": false,
+    "disk": {
+      "total_bytes": 126711623680,
+      "used_bytes": 62938120192,
+      "free_bytes": 57319989248,
+      "used_percent": 53
+    },
+    "memory": {
+      "total_bytes": 12433424384,
+      "available_bytes": 9434206208,
+      "swap_used_bytes": 684408832
+    }
+  },
+  "provider_inference_by_12f": {
+    "claude": 0,
+    "codex": 0,
+    "openrouter": 0
+  }
+}

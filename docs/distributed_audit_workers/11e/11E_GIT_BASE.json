@@ -1,0 +1,48 @@
+{
+  "kind": "11E §5 — фактическая база ветки, установленная по Git, а не по номеру из задания",
+  "requested_base_in_task": "3b5a9bb277d0c22077f28ee88e3ba39e18a24588",
+  "branch_examined": "feat/distributed-audit-workers-text-analysis-live-semantic-check",
+  "actual_branch_tip": "3b5a9bb277d0c22077f28ee88e3ba39e18a24588",
+  "tip_matches_task_number": true,
+  "ancestry": {
+    "322394f92d4fe2be0f71f10005fe52fc3fac56d2": {
+      "role": "боевой прогон 11D.2 (код + артефакты)",
+      "committed": "2026-08-10 00:35:53 +0300",
+      "relation_to_tip": "РОДИТЕЛЬ tip'а",
+      "subject": "feat(воркеры 11D.2): контрольный боевой прогон — правка severity работает в живом ProviderAdapter"
+    },
+    "3b5a9bb277d0c22077f28ee88e3ba39e18a24588": {
+      "role": "tip ветки 11D.2",
+      "committed": "2026-08-10 00:36:06 +0300",
+      "relation_to_tip": "сам tip",
+      "subject": "docs(воркеры 11D.2): проставить хэш коммита артефактов в финальный отчёт"
+    }
+  },
+  "order_determined_by": "git log ветки, а не порядком упоминания в задании",
+  "chosen_base": "3b5a9bb277d0c22077f28ee88e3ba39e18a24588",
+  "why": "tip ветки содержит и доказанный код 11D.2 (322394f9), и относящуюся к нему правку отчёта; расхождения с номером из задания нет",
+  "working_branch": "feat/distributed-audit-workers-findings-merge-provider",
+  "worktree": ".claude/worktrees/distributed-audit-workers-findings-merge-provider",
+  "commits_of_11e": [
+    {
+      "sha": "85cf70185c4600558b4f1b4e7c45460b1e9483e0",
+      "subject": "feat(воркеры 11E): боевой findings_merge через ProviderAdapter без файловых инструментов"
+    },
+    {
+      "sha": "b68629da899a4a8b2438b2bfc12f8b50a8849e23",
+      "subject": "fix(воркеры 11E): убрать противоречие о нормативной базе в промпте свода"
+    },
+    {
+      "sha": "43d2437f5eb53a03f0eaa4c0a5429064dfc64497",
+      "subject": "fix(воркеры): сохранять текст ошибки CLI провайдера, а не только её хэш"
+    },
+    {
+      "sha": "48ffce30",
+      "subject": "docs(воркеры 11E): отчёт этапа — перенос свода доказан до границы оплаты, вызов отказал"
+    }
+  ],
+  "forbidden_git_ops_performed": [],
+  "push_performed": false,
+  "other_worktrees_touched": false,
+  "final_commit_note": "хэш коммита артефактов проставлен отдельной правкой — сам коммит не может содержать собственный хэш"
+}

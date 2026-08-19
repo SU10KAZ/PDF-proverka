@@ -1,0 +1,67 @@
+{
+  "kind": "11D.2 §19 — проверки после единственного вызова",
+  "credential_leaks": {
+    "count": 0,
+    "validator_check": "no_credential_like — passed",
+    "leak_scan_over_attempt_dir": {
+      "hits": {
+        "forbidden_literal_0": []
+      },
+      "total": 0
+    },
+    "own_token_searched": "AUDIT_WORKER_TOKEN в окружении прогона отсутствует, поэтому в иглы не попал",
+    "auth_identity_in_reports": "email / orgId / orgName нигде не выведены (§5)",
+    "ambient_credentials_file": "/home/coder/.claude/.credentials.json обновлён самим CLI (режим ambient_user). Содержимое не читалось, в артефакты не попало"
+  },
+  "prompt_and_document_leaks": {
+    "full_prompt_in_operational_report": false,
+    "full_prompt_committed": false,
+    "prompt_representation_in_git": "только sha256, размеры, перечень заголовков и флаги наличия",
+    "full_md_in_committed_artifacts": false,
+    "md_leak_scan_of_run_report": "0 из 72 длинных строк MD найдено в отчёте прогона",
+    "raw_model_response_committed": false,
+    "raw_response_representation": "eed7cb61402d53169e017e3b41f724c342248fbcf2fae69c15548b06dd5911d5",
+    "prompt_dump_on_worker": "~/audit-worker-11d2/sandbox/11d2-fake-*/logs/prompt.txt — остаётся НА ВОРКЕРЕ, в репозиторий не копировался"
+  },
+  "canary_read": false,
+  "model_tools": {
+    "count": 0,
+    "evidence_argv": "--tools= плюс поимённый --disallowed-tools=Bash,Read,Edit,Write,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit,TodoWrite,AskUserQuestion",
+    "observed_in_live_process": true,
+    "snapshots": 148,
+    "read_write_bash_grep_glob": 0
+  },
+  "prompt_tool_requirements": {
+    "no_read": true,
+    "no_write": true,
+    "no_bash": true,
+    "no_grep": true,
+    "no_glob": true,
+    "no_generic_tool_requirement": {
+      "allowed-tools": true,
+      "allowedTools": true,
+      "You have access to the following tools": true,
+      "DO NOT output to chat": true,
+      "After writing, output a brief summary": true,
+      "Use the tool": true,
+      "call the tool": true
+    }
+  },
+  "claude_md_used": {
+    "in_prompt": false,
+    "cli_setting_sources": "--setting-sources= (пусто) + --safe-mode + --strict-mcp-config + --no-session-persistence",
+    "cwd_of_cli": "<попытка>/providers/claude/runtime — не корень репозитория",
+    "conclusion": "проектной памяти CLI взяться неоткуда; определения severity пришли ЯВНЫМ блоком промпта"
+  },
+  "silent_legacy_fallback": {
+    "count": 0,
+    "rule": "отказ моста = отказ этапа; возврата к прежнему транспорту нет ни в одной ветке",
+    "transport_recorded": "provider_adapter"
+  },
+  "ssh_inference_transport": {
+    "count": 0,
+    "role_of_ssh": "только административная плоскость: развёртывание, инвентарь, запуск локального процесса, сбор логов",
+    "ssh_scp_rsync_in_process_tree_during_call": 0
+  },
+  "production_files_changed": false
+}
