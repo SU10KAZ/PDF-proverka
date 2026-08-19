@@ -11914,6 +11914,12 @@ const app = createApp({
         const scCanvasRefs     = reactive({});       // legacy (single img ref)
         const scCanvasNat      = reactive({left: null, right: null});
         // Slot-based refs
+        // Стороны просмотрщика «Связь блоков»: две панели страниц + колонка
+        // расхождений диагностического режима. Слот-скролл у всех общий.
+        const _SC_PANE_SIDES   = ['left', 'right', 'diff'];
+        // Инициировать синхронизацию могут только панели страниц: если это
+        // разрешить и колонке расхождений, её программная прокрутка поднимет
+        // собственное scroll-событие и панели начнут двигать друг друга по кругу.
         const scPaneRefs       = reactive({});       // {left,right: scrollable container}
         const scSlotRefs       = reactive({});       // 'left:1' | 'right:1' → DOM-node
         // Per-slot content heights (left/right img clientHeight). Используется чтобы
@@ -13667,6 +13673,7 @@ const app = createApp({
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scNpData.value = data;
                 scNpLoadedFor.value = pid;
+                if (data.available && scTab.value === 'links') scNpAlignDiffColumn();
                 if (!data.available) {
                     scNpError.value = 'Артефакты новой цепочки для этой пары недоступны: ' + (data.reason || 'причина не указана');
                 }
@@ -13680,7 +13687,13 @@ const app = createApp({
 
         function scNpToggleMode() {
             scNpMode.value = !scNpMode.value;
-            if (scNpMode.value) scNpLoad(false);
+            if (scNpMode.value) {
+                scNpLoad(false);
+            } else {
+                // Выключили диагностику — на страницах не должно остаться ни
+                // подсветки области, ни плашки от неё.
+                scNpHighlight.value = null;
+            }
         }
 
         const scNpItems = computed(() => (scNpData.value && scNpData.value.items) || []);
@@ -13792,6 +13805,101 @@ const app = createApp({
             }, 120);
         }
         function scNpClearHighlight() { scNpHighlight.value = null; }
+
+        // ── Колонка расхождений напротив листов («Связь блоков») ───────────
+        //
+        // Третья панель просмотрщика: для каждого slot'а показывает change
+        // groups именно этой пары листов. Скроллится синхронно с панелями
+        // страниц через тот же слот-механизм, поэтому карточки всегда стоят
+        // ровно напротив своих листов.
+
+        // Группы, относящиеся к конкретному slot'у карты страниц.
+        function scNpSlotGroups(slot) {
+            if (!slot) return [];
+            const rows = scNpItems.value;
+            if (!rows.length) return [];
+            const bySlot = rows.filter(r => r.alignment_slot === slot.slot);
+            if (bySlot.length) return bySlot;
+            // Карту могли поправить руками после расчёта — тогда сопоставляем
+            // по номерам страниц, а не по слоту.
+            return rows.filter(r => r.left_page === slot.left_page && r.right_page === slot.right_page);
+        }
+
+        // Высота карточки slot'а в колонке расхождений ЖЁСТКО равна высоте
+        // листов: если дать ей расти по содержимому, слот со списком из 19
+        // групп станет в разы выше своей пары страниц и колонка уедет вниз.
+        // Поэтому height (а не min-height) + прокрутка внутри списка.
+        function scNpDiffSlotStyle(slot) {
+            const sized = scSlotContainerStyle('diff', slot);
+            const height = (sized && sized.minHeight)
+                // Страницы уже отрисованы — берём их фактическую высоту.
+                ? sized.minHeight
+                // Слот ещё виртуализован: страницы показывают placeholder,
+                // повторяем его высоту вместе с обвязкой заголовка.
+                : (parseFloat(scSlotPlaceholderStyle().minHeight) + _SC_SLOT_CHROME_PX) + 'px';
+            return {height: height, minHeight: height, maxHeight: height, overflow: 'hidden'};
+        }
+
+        // Клик по карточке в колонке: подсветить группу, не уходя со страницы.
+        function scNpFocusGroup(item) {
+            const current = scNpHighlight.value;
+            if (current && current.id === item.id) { scNpHighlight.value = null; return; }
+            scNpHighlight.value = {
+                id: item.id, group_id: item.group_id,
+                left_page: item.left_page, right_page: item.right_page,
+                bbox_norm_left: item.bbox_norm_left, bbox_norm_right: item.bbox_norm_right,
+                atomic_regions: item.atomic_regions || [], evidence_level: item.evidence_level,
+            };
+        }
+        // Колесо над колонкой расхождений прокручивает панель страниц:
+        // собственного скролла у колонки нет, она следует за листами.
+        // Колонка появляется уже после того, как панели прокручены (включили
+        // режим, перешли на вкладку) — её надо один раз подвести к текущему
+        // листу, иначе она стартует с самого верха.
+        function scNpAlignDiffColumn() {
+            nextTick(() => {
+                setTimeout(() => {
+                    if (!scPaneRefs['diff']) return;
+                    if (scPaneRefs['left']) scOnPaneScroll('left', null);
+                    else if (scPaneRefs['right']) scOnPaneScroll('right', null);
+                }, 60);
+            });
+        }
+
+        function scNpDiffWheel(ev) {
+            const pane = scPaneRefs['left'] || scPaneRefs['right'];
+            if (!pane) return;
+            pane.scrollTop += ev.deltaY;
+            scOnPaneScroll(scPaneRefs['left'] ? 'left' : 'right', ev);
+        }
+
+        function scNpIsFocused(item) {
+            return !!(scNpHighlight.value && scNpHighlight.value.id === item.id);
+        }
+
+        // Сводка по slot'у для заголовка карточки.
+        function scNpSlotSummary(slot) {
+            const rows = scNpSlotGroups(slot);
+            const by = {exact: 0, strong: 0, contextual: 0, insufficient: 0};
+            for (const r of rows) if (by[r.evidence_level] !== undefined) by[r.evidence_level] += 1;
+            return {total: rows.length, ...by};
+        }
+
+        // Слоты, по которым расчёт не проводился: лист не совместился на 5А
+        // либо пары просто нет. Молчать об этом нельзя — иначе пустая колонка
+        // читается как «изменений нет».
+        function scNpSlotNotice(slot) {
+            if (!scNpData.value || !scNpData.value.available) return null;
+            if (scNpSlotGroups(slot).length) return null;
+            if (!slot.left_page || !slot.right_page) return 'Лист есть только с одной стороны — не сравнивался.';
+            const fallback = (scNpData.value.requires_alignment_fallback || [])
+                .find(f => f.left_page === slot.left_page && f.right_page === slot.right_page);
+            if (fallback) {
+                return `Листы не совместились (${fallback.status}) — изменения не рассчитывались.`;
+            }
+            return 'Изменений не найдено.';
+        }
+
 
         // Прямоугольники подсветки для конкретного slot'а во вкладке «Связь блоков».
         function scNpSlotOverlays(side, slot) {
@@ -14311,17 +14419,22 @@ const app = createApp({
             if (!scSyncScroll.value) return;
             if (scIsSyncing.value) return;
             const info = _scTopSlotInfo(side);
-            const other = side === 'left' ? 'right' : 'left';
             const pane = scPaneRefs[side];
-            const otherPane = scPaneRefs[other];
+            // Панелей может быть три: left, right и колонка расхождений
+            // диагностического режима. Слоты у всех одни и те же, поэтому
+            // синхронизируем сразу все остальные, а не только «вторую».
+            const others = _SC_PANE_SIDES.filter(name => name !== side && scPaneRefs[name]);
             scIsSyncing.value = true;
             try {
-                // Slot Id в обоих панелях одинаковый — это карта по вертикали.
-                if (info) _scScrollToSlot(other, info.slot, info.rel);
-                // Горизонталь: зум общий → картинки одинаковой ширины,
-                // повторяем scrollLeft 1:1.
-                if (pane && otherPane) {
-                    otherPane.scrollLeft = pane.scrollLeft;
+                for (const other of others) {
+                    // Slot Id во всех панелях одинаковый — это карта по вертикали.
+                    if (info) _scScrollToSlot(other, info.slot, info.rel);
+                    // Горизонталь: зум общий → картинки одинаковой ширины,
+                    // повторяем scrollLeft 1:1. Колонка расхождений по
+                    // горизонтали не ездит — её пропускаем.
+                    if (pane && other !== 'diff' && side !== 'diff') {
+                        scPaneRefs[other].scrollLeft = pane.scrollLeft;
+                    }
                 }
             } finally {
                 // Снимаем флаг в следующем тике, чтобы scroll event'ы успели отработать
@@ -16681,6 +16794,19 @@ const app = createApp({
             scNpData.value = null;
             if (scNpMode.value && newPid) scNpLoad(true);
         });
+
+        // Колонка расхождений живёт на вкладке «Связь блоков», а включается
+        // тумблером на «Расхождениях» — поэтому данные подтягиваем при заходе
+        // на любую из двух вкладок.
+        watch(() => scTab.value, (tab) => {
+            if (!scNpMode.value) return;
+            if (tab === 'links' || tab === 'diffs') scNpLoad(false);
+            if (tab === 'links') scNpAlignDiffColumn();
+        });
+        // Включили/выключили режим, находясь на «Связи блоков».
+        watch(() => scNpMode.value, (on) => {
+            if (on && scTab.value === 'links') scNpAlignDiffColumn();
+        });
         // ── Computed filters для unified flat ─────────────────────────────
         const scUnifiedPairOptions = computed(() => {
             const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
@@ -17896,6 +18022,8 @@ const app = createApp({
             scNpExpanded, scNpToggleExpand, scNpCropSide, scNpSetCropSide, scNpActiveCropSide,
             scNpCropUrl, scNpCropAvailable, scNpCropSource,
             scNpGoto, scNpHighlight, scNpClearHighlight, scNpSlotOverlays, scNpOverlayStyle,
+            scNpSlotGroups, scNpDiffSlotStyle, scNpFocusGroup, scNpIsFocused, scNpDiffWheel, scNpAlignDiffColumn,
+            scNpSlotSummary, scNpSlotNotice,
             scCanvasRefs, scCanvasNat,
             scTextLLMDiff, scTextLLMConfig,
             scLoadTextLLMDiff, scLoadTextLLMConfig,

@@ -5705,13 +5705,20 @@
                                           :title="scPairExpertBadge(p.id).title"
                                           style="font-size:11px; white-space:nowrap">{{ scPairExpertBadge(p.id).label }}</span>
                                 </td>
-                                <td style="padding:8px; text-align:right; white-space:nowrap">
+                                <!-- Действия пары. Кнопок много (обработка + пять
+                                     диагностических этапов), в одну строку они
+                                     вылезали за таблицу — поэтому колонка. -->
+                                <td class="sc-pair-actions" style="padding:8px; text-align:right">
+                                    <div style="display:flex; flex-direction:column; align-items:stretch; gap:4px; width:230px; margin-left:auto">
+                                    <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end">
                                     <input type="checkbox" v-model="scQOSelected[p.id]" :disabled="!p.left || !p.right"
-                                           :title="'Выбрать пару для обработки'" style="vertical-align:middle; margin-right:6px">
+                                           :title="'Выбрать пару для обработки'" style="vertical-align:middle; margin:0">
                                     <span v-if="scQOPairBadge(p.id)" :title="scQOPairBadge(p.id).title"
                                           :style="{fontSize:'10px', marginRight:'6px', whiteSpace:'nowrap', fontWeight:600, color: scQOPairBadge(p.id).color}">{{ scQOPairBadge(p.id).label }}</span>
                                     <button class="btn btn-sm btn-primary" :disabled="!p.left || !p.right || scQORunning || scQOPreflighting"
                                             @click="scQOProcessPair(p.id)" title="Запустить сравнение Opus для этой пары">{{ scQOPreflighting ? '…' : 'Обработать' }}</button>
+                                    </div>
+                                    <!-- Диагностические этапы новой цепочки, по порядку выполнения -->
                                     <button class="btn btn-sm btn-secondary" :disabled="!p.left || !p.right || scSheetMatchingBusy[p.id]"
                                             @click="scRunSheetMatching(p)"
                                             title="Консервативно строит карту листов по PreparedDocument; ручную карту не перезаписывает">
@@ -5737,25 +5744,27 @@
                                             title="Запускает canonical diff → atomic regions → change groups для всех aligned-пар; расхождения не создаёт">
                                         {{ scChangeGroupsBusy[p.id] ? 'Расчёт областей…' : 'Рассчитать области изменений' }}
                                     </button>
-                                    <button class="btn btn-sm" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
-                                    <button class="btn btn-sm"
-                                            :class="scPv2RunState(p.id)==='idle' ? 'btn-secondary' : ''"
-                                            :disabled="!p.left || !p.right || scPv2RunState(p.id)==='running'"
-                                            @click="scPv2RunOpenModal(p)"
-                                            :title="scPv2RunBtnTitle(p.id)"
-                                            style="margin-left:4px">{{ scPv2RunBtnLabel(p.id) }}</button>
+                                    <div style="display:flex; gap:4px; margin-top:2px">
+                                        <button class="btn btn-sm" style="flex:1" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
+                                        <button class="btn btn-sm" style="flex:1"
+                                                :class="scPv2RunState(p.id)==='idle' ? 'btn-secondary' : ''"
+                                                :disabled="!p.left || !p.right || scPv2RunState(p.id)==='running'"
+                                                @click="scPv2RunOpenModal(p)"
+                                                :title="scPv2RunBtnTitle(p.id)">{{ scPv2RunBtnLabel(p.id) }}</button>
+                                    </div>
                                     <div v-if="scPv2RunErrorFor(p.id)"
-                                         style="color:#b91c1c; font-size:10px; max-width:170px; white-space:normal; margin-top:2px; text-align:right">{{ scPv2RunErrorFor(p.id) }}</div>
+                                         style="color:#b91c1c; font-size:10px; white-space:normal; margin-top:2px; text-align:right">{{ scPv2RunErrorFor(p.id) }}</div>
                                     <div v-if="scSheetMatchingInfo[p.id]"
-                                         style="font-size:10px; max-width:260px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scSheetMatchingInfo[p.id] }}</div>
+                                         style="font-size:10px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scSheetMatchingInfo[p.id] }}</div>
                                     <div v-if="scSheetIdentityInfo[p.id]"
-                                         style="font-size:10px; max-width:260px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scSheetIdentityInfo[p.id] }}</div>
+                                         style="font-size:10px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scSheetIdentityInfo[p.id] }}</div>
                                     <div v-if="scSheetAlignmentInfo[p.id]"
-                                         style="font-size:10px; max-width:260px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scSheetAlignmentInfo[p.id] }}</div>
+                                         style="font-size:10px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scSheetAlignmentInfo[p.id] }}</div>
                                     <div v-if="scChangeRegionsInfo[p.id]"
-                                         style="font-size:10px; max-width:260px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scChangeRegionsInfo[p.id] }}</div>
+                                         style="font-size:10px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scChangeRegionsInfo[p.id] }}</div>
                                     <div v-if="scChangeGroupsInfo[p.id]"
-                                         style="font-size:10px; max-width:260px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scChangeGroupsInfo[p.id] }}</div>
+                                         style="font-size:10px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scChangeGroupsInfo[p.id] }}</div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -5861,7 +5870,8 @@
                 </div>
 
                 <!-- Per-pane page toolbars (icon-only): добавить пустой лист / переместить страницу ↑↓ -->
-                <div v-if="!scShowMd" class="sc-pane-toolbars" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px">
+                <div v-if="!scShowMd" class="sc-pane-toolbars"
+                     :style="{display:'grid', gridTemplateColumns: (scNpMode && scNpData && scNpData.available) ? '1fr 1fr 340px' : '1fr 1fr', gap:'10px', marginBottom:'6px'}">
                     <div v-for="side in ['left','right']" :key="'pane-tb-'+side" class="sc-pane-toolbar"
                          :title="side==='left' ? 'Действия для левой стадии (slot ' + scCurrentSlotForSide('left') + ')' : 'Действия для правой стадии (slot ' + scCurrentSlotForSide('right') + ')'"
                          style="display:flex; gap:6px; align-items:center; padding:4px 8px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; font-size:13px">
@@ -5885,6 +5895,12 @@
                             <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс масштаба">100%</button>
                         </template>
                         <span v-if="scAlignmentActionError && side==='left'" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
+                    </div>
+                    <!-- Шапка колонки расхождений — держит ту же высоту, что и тулбары панелей -->
+                    <div v-if="scNpMode && scNpData && scNpData.available"
+                         style="display:flex; gap:8px; align-items:center; padding:4px 8px; border:1px solid #e9d5ff; border-radius:6px; background:#fdf4ff; font-size:12px; color:#6b21a8">
+                        <strong>🧪 Расхождения (диагностика)</strong>
+                        <span style="margin-left:auto; font-variant-numeric:tabular-nums">{{ scNpCounts.total }}</span>
                     </div>
                 </div>
 
@@ -5926,7 +5942,8 @@
                 </div>
 
                 <!-- Двухпанельный синхронный viewer (slot-based) -->
-                <div v-if="!scShowMd" class="sc-viewer sc-viewer--scroll" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                <div v-if="!scShowMd" class="sc-viewer sc-viewer--scroll"
+                     :style="{display:'grid', gridTemplateColumns: (scNpMode && scNpData && scNpData.available) ? '1fr 1fr 340px' : '1fr 1fr', gap:'10px'}">
                     <div v-for="side in ['left','right']" :key="'pane-'+side"
                          class="sc-viewer__pane"
                          :ref="el => { if (el) scPaneRefs[side] = el }"
@@ -5997,6 +6014,73 @@
                             </template>
                             <div v-else class="sc-slot-placeholder" :style="scSlotPlaceholderStyle()">
                                 <span style="opacity:.4; font-size:11px">Лист загрузится при прокрутке</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ════════════════════════════════════════════════════
+                         Колонка расхождений НАПРОТИВ листов (диагностика).
+                         Третья панель того же слот-механизма: карточка slot'а
+                         здесь всегда одной высоты со страницами слева и
+                         справа, поэтому расхождения стоят ровно напротив
+                         своей пары листов и едут вместе с ними.
+                         ════════════════════════════════════════════════════ -->
+                    <div v-if="scNpMode && scNpData && scNpData.available"
+                         class="sc-viewer__pane sc-np-diff-pane"
+                         :ref="el => { if (el) scPaneRefs['diff'] = el }"
+                         @wheel.prevent="scNpDiffWheel($event)"
+                         title="Колонка следует за листами: прокручивайте страницы, расхождения едут вместе с ними"
+                         style="border:1px solid #e5e7eb; border-radius:6px; background:#fafafa; height:calc(100vh - 280px); overflow:hidden; position:relative">
+                        <div v-for="slot in scAlignmentItems" :key="'diff-slot-'+slot.slot"
+                             class="sc-slot"
+                             :id="'sc-slot-diff-' + slot.slot"
+                             :ref="el => { scSetSlotRef('diff', slot.slot, el) }"
+                             :data-slot="slot.slot"
+                             :style="scNpDiffSlotStyle(slot)"
+                             style="margin:8px; border:1px solid #e5e7eb; border-radius:4px; background:#fff; display:flex; flex-direction:column; box-sizing:border-box">
+                            <!-- Заголовок: те же листы, что и в панелях страниц -->
+                            <div style="flex:0 0 auto; padding:4px 10px; background:#f1f5f9; font-size:11px; display:flex; justify-content:space-between; align-items:center; gap:6px; border-bottom:1px solid #e5e7eb">
+                                <span style="opacity:.7">slot {{ slot.slot }}</span>
+                                <strong style="white-space:nowrap">
+                                    Лист {{ slot.left_page || '—' }} → {{ slot.right_page || '—' }}
+                                </strong>
+                                <span :style="{fontWeight:700, color: scNpSlotSummary(slot).total ? '#b91c1c' : '#94a3b8'}"
+                                      :title="'Расхождений новой цепочки на этой паре листов'">{{ scNpSlotSummary(slot).total }}</span>
+                            </div>
+                            <!-- Пусто/не считалось — говорим прямо -->
+                            <div v-if="!scNpSlotGroups(slot).length"
+                                 style="flex:1 1 0; min-height:0; display:flex; align-items:center; justify-content:center; padding:10px; text-align:center; font-size:11px; color:#94a3b8; line-height:1.5">
+                                {{ scNpSlotNotice(slot) }}
+                            </div>
+                            <!-- Карточки групп: клик подсвечивает область на обеих страницах -->
+                            <div v-else style="flex:1 1 0; min-height:0; overflow-y:auto; padding:6px">
+                                <div v-for="it in scNpSlotGroups(slot)" :key="'diff-'+it.id"
+                                     @click="scNpFocusGroup(it)"
+                                     :title="'Показать область на обеих страницах'"
+                                     :style="{
+                                        cursor:'pointer', marginBottom:'5px', padding:'5px 7px', borderRadius:'4px',
+                                        border: scNpIsFocused(it) ? '2px solid #dc2626' : '1px solid #e5e7eb',
+                                        background: scNpIsFocused(it) ? '#fef2f2' : '#fff',
+                                        fontSize:'11px', lineHeight:'1.45'
+                                     }">
+                                    <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; margin-bottom:2px">
+                                        <span :style="'font-size:9px; padding:0 6px; border-radius:999px; font-weight:700; ' + scNpEvidenceStyle(it.evidence_level)"
+                                              :title="scNpEvidenceMeta(it.evidence_level).title">{{ it.evidence_level }}</span>
+                                        <span style="font-size:9px; padding:0 6px; border-radius:999px; background:#eef2ff; color:#3730a3">{{ scNpTypeLabel(it.semantic_type) }}</span>
+                                        <span v-if="(it.same_semantic_result_as_other_groups||0) > 0"
+                                              style="font-size:9px; padding:0 6px; border-radius:999px; background:#ffedd5; color:#9a3412; font-weight:600"
+                                              :title="'Тот же результат «Было → Стало», что и у других групп: ' + (it.same_semantic_result_group_ids||[]).join(', ')">⧉ {{ it.same_semantic_result_as_other_groups }}</span>
+                                        <span style="margin-left:auto; opacity:.5; font-size:9px">{{ it.group_id }}</span>
+                                    </div>
+                                    <div style="font-weight:600; color:#0f172a">{{ it.change_summary || '—' }}</div>
+                                    <div style="display:grid; grid-template-columns:34px 1fr; gap:1px 5px; margin-top:3px; color:#475569">
+                                        <span style="opacity:.6">Было</span><span style="color:#b91c1c; word-break:break-word">{{ (it.before || '—').slice(0, 140) }}</span>
+                                        <span style="opacity:.6">Стало</span><span style="color:#15803d; word-break:break-word">{{ (it.after || '—').slice(0, 140) }}</span>
+                                    </div>
+                                    <div v-if="it.requires_human_review || it.next_analysis" style="margin-top:3px; font-size:9px; color:#b45309">
+                                        <span v-if="it.requires_human_review">требует проверки</span><span v-if="it.requires_human_review && it.next_analysis"> · </span><span v-if="it.next_analysis">дальше: {{ scNpNextLabel(it.next_analysis) }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
