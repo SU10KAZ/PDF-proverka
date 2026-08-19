@@ -2674,7 +2674,12 @@ const app = createApp({
                 const code = decodeURIComponent(hash.match(/^\/section\/(.+)$/)[1]);
                 currentView.value = 'dashboard';
                 sidebarFilterSection.value = code;
-                sidebarSectionsOpen.value = true;
+                // Конкретный раздел — список раскрываем, чтобы было видно, где
+                // мы находимся. «Все разделы» — состояние подменю НЕ трогаем:
+                // этот маршрут открывает сама кнопка «Разделы», которая тем же
+                // кликом сворачивает/разворачивает список (иначе роутер тут же
+                // раскрывал бы его обратно).
+                if (code !== '__all__') sidebarSectionsOpen.value = true;
                 connectGlobalWS();
                 refreshProjects();
             } else if (hash.match(/^\/project\/(.+)\/findings$/)) {
@@ -5849,6 +5854,15 @@ const app = createApp({
 
         function setSectionOptimizationTab(tab) {
             sectionOptimizationTab.value = tab;
+        }
+
+        // Кнопка «Разделы» в сайдбаре: одним кликом открывает страницу
+        // «Разделы проекта» и сворачивает/разворачивает список разделов под
+        // собой. Отдельный пункт «Все разделы» удалён — он дублировал ту же
+        // страницу и уводил бейджи на строку ниже.
+        function toggleSectionsNav() {
+            sidebarSectionsOpen.value = !sidebarSectionsOpen.value;
+            navigate('/section/__all__');
         }
 
         function navigateToSectionOptimization(sectionCode, tab = 'specifications') {
@@ -17429,7 +17443,7 @@ const app = createApp({
             // Disciplines
             supportedDisciplines, getDisciplineColor, disciplineLabel, disciplineBadgeStyle,
             objectName, projectsBySection, collapsedSections, toggleSection,
-            sidebarSectionsOpen, sidebarFilterSection,
+            sidebarSectionsOpen, sidebarFilterSection, toggleSectionsNav,
             allSectionsCollapsed, toggleAllSections,
             showEditSection, editSectionCode, editSectionName, editSectionColor,
             openEditSection, saveEditSection, deleteSection,

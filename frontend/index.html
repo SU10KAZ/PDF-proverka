@@ -50,30 +50,28 @@
                     </svg>
                     График работ
                 </div>
-                <div class="nav-item-parent" :class="{open: sidebarSectionsOpen}" @click="sidebarSectionsOpen = !sidebarSectionsOpen">
+                <div class="nav-item-parent"
+                     :class="{open: sidebarSectionsOpen, active: currentView === 'dashboard' && sidebarFilterSection === '__all__'}"
+                     @click="toggleSectionsNav()"
+                     title="Открыть «Разделы проекта» и свернуть/развернуть список разделов">
                     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="1" y="3" width="6" height="10" rx="1.5"/>
                         <rect x="9" y="3" width="6" height="10" rx="1.5"/>
                     </svg>
-                    Разделы
+                    <span class="nav-parent-label">Разделы</span>
+                    <span class="nav-sub-badges nav-parent-badges">
+                        <span v-if="expertUncheckedCount(projects) > 0"
+                              class="nav-sub-badge nav-sub-badge--expert-unchecked"
+                              :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
+                            {{ expertUncheckedCount(projects) }}
+                        </span>
+                        <span class="nav-sub-badge" :title="'Всего проектов: ' + uniqueProjectCount(projects) + ' (версии одного проекта считаются один раз)'">{{ uniqueProjectCount(projects) }}</span>
+                    </span>
                     <svg class="nav-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M4 6l4 4 4-4"/>
                     </svg>
                 </div>
                 <div class="nav-submenu" :class="{open: sidebarSectionsOpen}">
-                    <div class="nav-sub-item" @click="navigate('/section/__all__')"
-                         :class="{active: currentView === 'dashboard' && sidebarFilterSection === '__all__'}">
-                        <div class="nav-sub-dot"></div>
-                        Все разделы
-                        <span class="nav-sub-badges">
-                            <span v-if="expertUncheckedCount(projects) > 0"
-                                  class="nav-sub-badge nav-sub-badge--expert-unchecked"
-                                  :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
-                                {{ expertUncheckedCount(projects) }}
-                            </span>
-                            <span class="nav-sub-badge" :title="'Всего проектов: ' + uniqueProjectCount(projects) + ' (версии одного проекта считаются один раз)'">{{ uniqueProjectCount(projects) }}</span>
-                        </span>
-                    </div>
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
                          class="nav-sub-item"
                          @click="navigate('/section/' + encodeURIComponent(code))"
