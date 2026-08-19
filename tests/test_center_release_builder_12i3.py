@@ -593,3 +593,77 @@ def test_donor_release_from_a_foreign_branch_is_refused(tmp_path, monkeypatch):
     with pytest.raises(SystemExit) as caught:
         builder.build(base_release="base", kind="k", notes="n", releases_dir=releases)
     assert "не является предком" in str(caught.value)
+
+
+# ═════ Инцидент 19.08.2026: сборка по символической ссылке ═══════════════════
+# Донор был ССЫЛКОЙ на боевой релиз центра. `cp -a` скопировал ссылку, а не
+# дерево, и вся сборка выполнилась внутри работающего релиза: каталог
+# `ui-real-9b1dbedd` стал содержать дерево другого коммита, а `current`
+# продолжал на него указывать. Простоя не случилось только потому, что процесс
+# уже держал прежний код в памяти.
+def test_builder_refuses_symlinked_base(tmp_path, monkeypatch):
+    import subprocess
+    import sys
+
+    from scripts import build_center_release as builder
+
+    real = tmp_path / "real-release"
+    (real / "app").mkdir(parents=True)
+    (real / "release-manifest.json").write_text(
+        '{"release_id": "ui-real-deadbeef", "commit": "deadbeef"}', encoding="utf-8"
+    )
+    releases = tmp_path / "releases"
+    releases.mkdir()
+    (releases / "ui-real-deadbeef").symlink_to(real)
+
+    result = subprocess.run(
+        [sys.executable, str(builder.__file__.replace(".pyc", ".py")),
+         "--base", "ui-real-deadbeef", "--kind", "ui-real",
+         "--releases-dir", str(releases)],
+        capture_output=True, text=True, cwd=str(builder.REPO_ROOT),
+    )
+    assert result.returncode != 0
+    assert "символическая ссылка" in (result.stdout + result.stderr)
+    # И, главное, чужое дерево осталось нетронутым.
+    assert (real / "app").is_dir()
+
+
+def test_builder_refuses_symlinked_releases_dir(tmp_path):
+    import subprocess
+    import sys
+
+    from scripts import build_center_release as builder
+
+    real_dir = tmp_path / "real-releases"
+    real_dir.mkdir()
+    link = tmp_path / "linked-releases"
+    link.symlink_to(real_dir)
+
+    result = subprocess.run(
+        [sys.executable, str(builder.__file__.replace(".pyc", ".py")),
+         "--base", "whatever", "--kind", "ui-real", "--releases-dir", str(link)],
+        capture_output=True, text=True, cwd=str(builder.REPO_ROOT),
+    )
+    assert result.returncode != 0
+    assert "символическая ссылка" in (result.stdout + result.stderr)
+
+
+def test_verify_release_catches_non_executable_python(tmp_path):
+    """Неисполняемый интерпретатор обязан ловиться ДО выкатки.
+
+    Проверка существовала и раньше; тест закрепляет её как обязательную часть
+    контракта сборщика: релиз, из которого нельзя запустить python, не должен
+    доживать до момента остановки боевого шлюза.
+    """
+    from scripts.build_center_release import verify_release
+
+    release = tmp_path / "rel"
+    (release / "app").mkdir(parents=True)
+    (release / "venv" / "bin").mkdir(parents=True)
+    (release / "release-manifest.json").write_text("{}", encoding="utf-8")
+    broken = release / "venv" / "bin" / "python"
+    broken.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    broken.chmod(0o644)
+
+    problems = verify_release(release, base=release)
+    assert any("не симлинк" in p or "не проходит -x" in p for p in problems), problems
