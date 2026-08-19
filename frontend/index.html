@@ -5893,6 +5893,18 @@
                             <span style="min-width:44px; text-align:center; font-weight:600; font-size:12px">{{ Math.round(scZoom*100) }}%</span>
                             <button class="btn btn-sm btn-secondary" @click="scZoomBy(1.18)" title="Увеличить (Ctrl+колесо)">+</button>
                             <button class="btn btn-sm btn-secondary" @click="scZoomReset()" title="Сброс масштаба">100%</button>
+                            <span style="width:1px; background:#e5e7eb; align-self:stretch; margin:0 2px"></span>
+                            <!-- Вектор против растра. Растр 1400px на лист 2384x3370 pt даёт
+                                 0.42 пикселя на пункт — на зуме чертёж мылится. SVG рисуется
+                                 браузером под нужное разрешение на любом масштабе. -->
+                            <button class="btn btn-sm"
+                                    :class="scVectorPages ? 'btn-primary' : 'btn-secondary'"
+                                    @click="scToggleVectorPages()"
+                                    :title="scVectorPages
+                                        ? 'Листы отрисованы в векторе — чёткие на любом увеличении. Нажмите, чтобы вернуться к растру.'
+                                        : 'Листы отрисованы растром 1400px и мылятся на зуме. Нажмите, чтобы включить вектор.'">
+                                {{ scVectorPages ? '⬡ Вектор' : '▦ Растр' }}
+                            </button>
                         </template>
                         <span v-if="scAlignmentActionError && side==='left'" style="color:#b91c1c; font-size:11px; margin-left:8px">{{ scAlignmentActionError }}</span>
                     </div>
@@ -5978,8 +5990,9 @@
                                      class="sc-canvas-wrap"
                                      :style="{width:(scZoom*100)+'%'}"
                                      style="position:relative; user-select:none">
-                                    <img :src="scPageImageUrl(side, side==='left' ? slot.left_page : slot.right_page)"
+                                    <img :src="scPageSrcUrl(side, side==='left' ? slot.left_page : slot.right_page)"
                                          @load="scOnPageImageLoad(side, slot, $event)"
+                                         @error="scOnPageImageError(side, side==='left' ? slot.left_page : slot.right_page)"
                                          loading="lazy" decoding="async"
                                          :style="{display:'block', width:'100%', height:'auto'}" />
                                     <div v-for="b in scSlotBlocks(side, slot)" :key="side+'-'+slot.slot+'-'+b.id"

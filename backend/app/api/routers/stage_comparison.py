@@ -23,10 +23,11 @@ import io
 import json
 import logging
 import re
+import gzip
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from pydantic import BaseModel, Field
@@ -655,6 +656,42 @@ async def get_page_image(
         logger.exception("page-image render failed")
         raise HTTPException(500, f"Ошибка рендера PDF: {exc}") from exc
     return FileResponse(str(png), media_type="image/png")
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/page-svg")
+async def get_page_svg(
+    request: Request,
+    session_id: str,
+    pair_id: str,
+    side: str = Query(..., pattern="^(left|right)$"),
+    page: int = Query(1, ge=1),
+):
+    """Страница PDF в векторе — чтобы чертёж не мылился на зуме.
+
+    Растровый `page-image` остаётся: фронтенд переключается на него тумблером
+    и падает обратно на растр, если вектор для листа не отдался.
+    """
+    try:
+        cached = await run_in_threadpool(store.render_pdf_page_svg, session_id, pair_id, side, page)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("page-svg render failed")
+        raise HTTPException(500, f"Ошибка векторного рендера страницы: {exc}") from exc
+
+    payload = await run_in_threadpool(Path(cached).read_bytes)
+    headers = {"Cache-Control": "private, max-age=3600"}
+    if "gzip" in (request.headers.get("accept-encoding") or "").lower():
+        # Кэш уже лежит сжатым — отдаём как есть, не пережимая на каждый
+        # запрос. Content-Encoding заодно удерживает GZipMiddleware от
+        # повторного сжатия.
+        headers["Content-Encoding"] = "gzip"
+        return Response(content=payload, media_type="image/svg+xml", headers=headers)
+    return Response(content=gzip.decompress(payload), media_type="image/svg+xml", headers=headers)
 
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/block-image")

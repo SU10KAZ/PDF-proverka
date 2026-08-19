@@ -22,6 +22,7 @@
 """
 from __future__ import annotations
 
+import gzip
 import json
 import logging
 import os
@@ -1356,6 +1357,60 @@ def render_pdf_page(
         pix.save(str(out))
     finally:
         doc.close()
+    return out
+
+
+def render_pdf_page_svg(session_id: str, pair_id: str, side: str, page: int) -> Path:
+    """Отдать страницу PDF как SVG и закэшировать рядом с PNG-страницами.
+
+    Зачем вектор: листы формата 2384x3370 pt отдавались растром 1400 px, то
+    есть 0.42 пикселя на пункт — на зуме 400% чертёж превращался в кашу.
+    SVG рисуется браузером с нужным разрешением на любом масштабе.
+
+    Важные свойства (проверены на боевых листах):
+      * ``viewBox`` совпадает с ``page.rect``, поэтому системы координат
+        block-оверлеев и change groups остаются прежними;
+      * ``text_as_path=True`` превращает шрифты в контуры — CAD-гарнитуры
+        (ISOCPEUR/GOST) больше не зависят от наличия шрифта у клиента,
+        внешних ссылок в файле нет;
+      * встроенные растры (скан-листы, QR, логотипы) переносятся как есть,
+        причём в ИСХОДНОМ разрешении — это лучше нынешней копии 1400 px.
+
+    Страницы без вектор-слоя тут не отсекаются: даже для скана SVG отдаёт
+    оригинальный растр целиком. Решение «вектор или PNG» принимает вызывающий.
+    """
+    if side not in ("left", "right"):
+        raise ValueError("side must be 'left' or 'right'")
+    if page < 1:
+        raise ValueError("page must be >= 1")
+
+    pair = _find_pair_meta(session_id, pair_id)
+    if pair is None:
+        raise KeyError("pair_not_found")
+    pdf_p = _resolve_pdf_path(pair, side)
+
+    # Кэш хранится СЖАТЫМ: несжатый SVG плотного листа — 3.6 МБ, на пару
+    # выходило 53 МБ. Заодно снимается повторное сжатие на каждый запрос:
+    # готовые байты уходят клиенту как есть.
+    out = paths_mod.pages_dir(session_id, pair_id, side) / f"page_{page:04d}.svg.gz"
+    if out.exists():
+        return out
+
+    fitz = _import_fitz()
+    doc = fitz.open(str(pdf_p))
+    try:
+        if page > doc.page_count:
+            raise ValueError(f"page_out_of_range:{page}>doc:{doc.page_count}")
+        svg = doc[page - 1].get_svg_image(text_as_path=True)
+    finally:
+        doc.close()
+
+    # Атомарная запись: недописанный файл не должен попасть в кэш и уехать
+    # клиенту как «готовая» страница.
+    tmp = out.with_name(out.name + ".tmp")
+    with gzip.open(tmp, "wb", compresslevel=6) as handle:
+        handle.write(svg.encode("utf-8"))
+    tmp.replace(out)
     return out
 
 

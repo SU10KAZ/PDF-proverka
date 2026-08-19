@@ -360,6 +360,12 @@ const app = createApp({
             } catch (_) { /* SSR / sandboxed iframe */ }
             return false;
         }
+        function _readScVectorPagesFlag() {
+            try {
+                const raw = localStorage.getItem('sc_vector_pages');
+                return raw === null ? true : raw !== '0';
+            } catch (e) { return true; }
+        }
         const scDevTools = ref(_readScDevFlag());
         if (typeof window !== 'undefined') {
             window.scEnableDev = function () {
@@ -12068,6 +12074,13 @@ const app = createApp({
         const scExpertPerPair         = ref({});
         // Sync scroll/zoom (sync zoom toggle убран — масштаб всегда общий)
         const scZoom           = ref(1.0);
+        // Векторная отрисовка листов. Растр 1400px на лист 2384x3370 pt — это
+        // 0.42 пикселя на пункт, и на зуме чертёж превращался в кашу. SVG
+        // рисуется браузером под нужное разрешение на любом масштабе.
+        // По умолчанию включён; растр остаётся по тумблеру и как фолбэк.
+        const scVectorPages    = ref(_readScVectorPagesFlag());
+        // Страницы, для которых вектор не отдался: 'left:7' → рисуем растром.
+        const scVectorFailed   = reactive({});
         const scSyncScroll     = ref(true);
         const scIsSyncing      = { value: false };  // mutex (не ref — внутренний)
         // Виртуализация: какие slot'ы реально отрендерены
@@ -13937,6 +13950,34 @@ const app = createApp({
             if (!scSession.value || !scActivePair.value) return '';
             if (!page) return '';
             return `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-image?side=${side}&page=${page}&target_long_side=1400`;
+        }
+
+        // Источник страницы: вектор, если он включён и для этого листа не
+        // сорвался. Оверлеи считаются в долях контейнера, поэтому смена
+        // источника на их геометрию не влияет — viewBox SVG равен page.rect.
+        function scPageSrcUrl(side, page) {
+            if (!scSession.value || !scActivePair.value || !page) return '';
+            if (!scVectorPages.value || scVectorFailed[side + ':' + page]) {
+                return scPageImageUrl(side, page);
+            }
+            return `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(scActivePair.value.id)}/page-svg?side=${side}&page=${page}`;
+        }
+
+        // Вектор для листа не отдался — молча уводим ЭТОТ лист на растр,
+        // остальные продолжают рисоваться вектором.
+        function scOnPageImageError(side, page) {
+            if (!scVectorPages.value || !page) return;
+            const key = side + ':' + page;
+            if (scVectorFailed[key]) return;
+            scVectorFailed[key] = true;
+        }
+
+        function scToggleVectorPages() {
+            scVectorPages.value = !scVectorPages.value;
+            // Повторная попытка вектора после ручного переключения: прошлые
+            // сбои могли быть разовыми.
+            for (const key of Object.keys(scVectorFailed)) delete scVectorFailed[key];
+            try { localStorage.setItem('sc_vector_pages', scVectorPages.value ? '1' : '0'); } catch (e) {}
         }
 
         // Загрузка содержимого left_enriched.md / right_enriched.md для MD-вьювера.
@@ -18024,6 +18065,7 @@ const app = createApp({
             scNpGoto, scNpHighlight, scNpClearHighlight, scNpSlotOverlays, scNpOverlayStyle,
             scNpSlotGroups, scNpDiffSlotStyle, scNpFocusGroup, scNpIsFocused, scNpDiffWheel, scNpAlignDiffColumn,
             scNpSlotSummary, scNpSlotNotice,
+            scVectorPages, scVectorFailed, scPageSrcUrl, scOnPageImageError, scToggleVectorPages,
             scCanvasRefs, scCanvasNat,
             scTextLLMDiff, scTextLLMConfig,
             scLoadTextLLMDiff, scLoadTextLLMConfig,
