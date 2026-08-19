@@ -1,0 +1,85 @@
+{
+  "generated": "2026-08-10",
+  "variables": {
+    "B": "number of graphic blocks that reach Stage 01 (entries in _output/blocks_gemma_100/index.json with block context)",
+    "T": "number of findings without a normative clause number (clause binding targets)",
+    "P": "number of norm quotes queued for paragraph verification",
+    "K_md": "number of absence-guard MD chunks = 1 if md_chars <= 300000 else ceil(md_chars / (130000 * 2.2))",
+    "A": "1 if there is at least one unverified absence-claim finding AND the MD file is readable, else 0",
+    "F": "1 if norm_checks contains at least one needs_revision entry, else 0",
+    "O": "1 if optimization.json has proposals whose norms changed, else 0",
+    "N_txt": "number of codex text_analysis chunks (1 unless the prompt exceeds CODEX_TEXT_INPUT_BUDGET)",
+    "G": "number of codex targeted findings passes = 1 (docnorm) + 1 if section in {AR,EOM,SS,KM} + 1 if FINDING_EVIDENCE_OCR_OBSERVER_ENABLED",
+    "R": "clause-binding rounds, 1..2 (second round only for clause numbers rejected by the norms index)"
+  },
+
+  "preset_claude_gpt_codex": {
+    "per_block": {
+      "formula": "3 detector legs + 1 judge = 4",
+      "breakdown": [
+        {"call": "openai/gpt-5.4 (openrouter)", "count": 1, "parallel_group": "legs"},
+        {"call": "codex/gpt-5.4", "count": 1, "parallel_group": "legs"},
+        {"call": "codex/gpt-5.6-sol (third leg, env-gated ON)", "count": 1, "parallel_group": "legs"},
+        {"call": "codex/gpt-5.6-sol (judge + gap-search, same call)", "count": 1, "parallel_group": "after legs"}
+      ],
+      "degraded": "3 when any leg fails (judge skipped); with STAGE01_ABORT_ON_LEG_FAILURE_ENABLED=true the stage then stops"
+    },
+    "fixed_calls": [
+      {"stage": "text_analysis", "model": "claude-opus-5", "count": 1},
+      {"stage": "findings_merge", "model": "claude-opus-5", "count": 1},
+      {"stage": "optimization leg claude", "model": "claude-opus-5", "count": 1},
+      {"stage": "optimization leg codex", "model": "codex/gpt-5.6-sol", "count": 1},
+      {"stage": "optimization_critic", "model": "claude-sonnet-5", "count": 1}
+    ],
+    "fixed_total": 5,
+    "conditional_calls": [
+      {"stage": "absence_guard", "model": "claude-sonnet-5", "count": "A * K_md"},
+      {"stage": "norm clause_binding", "model": "claude-opus-5", "count": "ceil(T/25) * R"},
+      {"stage": "norm_fix findings", "model": "claude-opus-5", "count": "F"},
+      {"stage": "norm_fix optimizations", "model": "claude-opus-5", "count": "O"},
+      {"stage": "norm paragraph verification", "model": "claude-opus-5", "count": "0 normally; ceil(P/15) only if verify_paragraphs_native raises"},
+      {"stage": "norm_requote", "model": "claude-opus-5", "count": "0 normally; 1 only if requote_norms_native raises"}
+    ],
+    "zero_call_stages": ["findings_critic", "findings_corrector (deterministic part)", "optimization merge", "optimization_corrector"],
+    "total": "4*B + 5 + A*K_md + ceil(T/25)*R + F + O",
+    "example_B40_T30_A1_Kmd1_F1_O1_R1": 169
+  },
+
+  "preset_codex_exec": {
+    "per_block": {
+      "formula": "identical to claude_gpt_codex = 4",
+      "note": "Stage 01 is not affected by the preset switch"
+    },
+    "fixed_calls": [
+      {"stage": "text_analysis", "model": "codex/gpt-5.4", "count": "N_txt"},
+      {"stage": "findings_merge base", "model": "codex/gpt-5.4", "count": 1},
+      {"stage": "findings_merge targeted", "model": "codex/gpt-5.4", "count": "G (1..3)"},
+      {"stage": "optimization leg claude", "model": "claude-opus-5", "count": 1},
+      {"stage": "optimization leg codex", "model": "codex/gpt-5.6-sol", "count": 1},
+      {"stage": "optimization_critic", "model": "codex/gpt-5.4", "count": 1}
+    ],
+    "fixed_total": "5 + N_txt - 1 + G  → 6..9 typical",
+    "conditional_calls": [
+      {"stage": "absence_guard", "model": "claude-sonnet-5 (NOT codex)", "count": "A * K_md"},
+      {"stage": "norm clause_binding", "model": "codex/gpt-5.4", "count": "ceil(T/25) * R"},
+      {"stage": "norm_fix findings", "model": "codex/gpt-5.4", "count": "F"},
+      {"stage": "norm_fix optimizations", "model": "codex/gpt-5.4", "count": "O"},
+      {"stage": "norm_requote", "model": "none", "count": 0}
+    ],
+    "retry_multiplier": {
+      "scope": "every codex JSON-mode stage (text_analysis, findings_merge and its targeted passes, norm_verify, optimization_critic)",
+      "factor": "up to AUDIT_CODEX_JSON_ATTEMPTS = 3, triggered only by error_message == 'codex_json_not_found'"
+    },
+    "zero_call_stages": ["findings_critic", "optimization merge", "optimization_corrector"],
+    "total": "4*B + N_txt + 1 + G + 2 + 1 + A*K_md + ceil(T/25)*R + F + O",
+    "example_B40_Ntxt1_G2_T30_A1_Kmd1_F1_O1_R1": 172
+  },
+
+  "shared_observations": {
+    "stage01_dominance": "at B=40, Stage 01 is 160 of ~170 calls (94%) in both presets",
+    "preset_switch_cost_delta": "roughly +1..+4 calls for Full Codex (targeted passes), not a structural change",
+    "block_concurrency": "AUDIT_STAGE02_CODEX_PARALLELISM=2 -> at most 2 blocks x 3 legs = 6 concurrent inferences from Stage 01",
+    "global_process_budgets": {"BUDGET_CLAUDE_CLI": 6, "BUDGET_CODEX_CLI": 20, "BUDGET_NORMS_MCP": 5, "BATCH_MAX_PARALLEL": 5},
+    "paid_calls": "only the openrouter leg of Stage 01 is metered money (B calls); everything else runs on Claude/Codex subscriptions"
+  }
+}
