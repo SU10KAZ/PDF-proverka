@@ -226,6 +226,46 @@ body {
   opacity: 0.5;
 }
 .nav-item-parent.open .nav-arrow { transform: rotate(180deg); opacity: 1; }
+/* «Разделы» — одновременно кнопка страницы «Разделы проекта» и переключатель
+   списка, поэтому у неё есть активное состояние, как у обычного пункта. */
+.nav-item-parent.active {
+  background: var(--teal-light);
+  color: var(--teal);
+}
+/* Бейджи прижаты вправо, стрелка остаётся последней: `margin-left:auto`
+   у обоих сразу отдал бы весь зазор бейджам и оторвал бы от них стрелку. */
+.nav-parent-badges { margin-left: auto; flex-shrink: 0; }
+.nav-item-parent .nav-parent-badges + .nav-arrow { margin-left: 2px; }
+/* 214px сайдбара: иконка + подпись + два бейджа + стрелка помещаются впритык,
+   поэтому подпись сжимается первой, а бейджи и стрелка не выдавливаются
+   за пределы плашки. */
+.nav-parent-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Сайдбар — 214px, и в строку «Разделы» теперь встают ещё два бейджа. Поэтому
+   пункт-родитель ужат против обычного: иначе подпись обрезалась бы в «Ра…»,
+   а шеврон уезжал за пределы плашки. */
+.nav-item-parent { gap: 6px; padding: 7px 8px; }
+/* Размер шеврона задан правилом `.nav-item-parent svg` (15px) — оно перебивает
+   `.nav-arrow` по специфичности; возвращаем задуманные 12px и экономим место. */
+.nav-item-parent .nav-arrow { width: 12px; height: 12px; }
+.nav-item-parent .nav-parent-badges { gap: 3px; }
+.nav-item-parent .nav-parent-badges .nav-sub-badge {
+  width: auto;
+  height: auto;
+  min-width: 0;
+  padding: 2px 4px;
+  font-size: 9px;
+}
+.nav-item-parent.active .nav-parent-badges .nav-sub-badge {
+  background: var(--card-bg);
+  color: var(--teal);
+  border-color: var(--teal-border);
+}
+.nav-item-parent.active .nav-parent-badges .nav-sub-badge--expert-unchecked {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  color: var(--red);
+}
 
 .nav-submenu {
   overflow: hidden;
