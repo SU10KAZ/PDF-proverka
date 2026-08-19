@@ -3442,11 +3442,28 @@ const app = createApp({
             return !hasBothExpertChecks(p);
         }
 
+        // Ключ логического проекта: карточки «X V1» и «X_V1» — один проект.
+        // Считает бэкенд (`base_project_key`), фронт только группирует; для
+        // источников без поля ключом остаётся project_id (счёт как раньше).
+        function projectBaseKey(p) {
+            return (p && (p.base_project_key || p.project_id)) || '';
+        }
+
+        // Счётчики «всего проектов» и «не проверено» считают УНИКАЛЬНЫЕ проекты:
+        // проект, загруженный несколькими карточками-версиями, — это один
+        // проект, а не два-три (запрос Андрея Ивановича 2026-08-19).
+        function uniqueProjectCount(items) {
+            const keys = new Set();
+            for (const p of items || []) keys.add(projectBaseKey(p));
+            return keys.size;
+        }
+
         function expertUncheckedCount(items) {
-            return (items || []).reduce(
-                (count, p) => count + (isProjectReviewPending(p) ? 1 : 0),
-                0,
-            );
+            const keys = new Set();
+            for (const p of items || []) {
+                if (isProjectReviewPending(p)) keys.add(projectBaseKey(p));
+            }
+            return keys.size;
         }
 
         // Порядок карточек в разделе: 0 — проверенные экспертом, 1 — обработанные
@@ -4853,10 +4870,14 @@ const app = createApp({
 
         // Число «не проверенных» проектов текущего раздела — для надписи
         // «Не проверено (N)» и её скрытия, когда все проекты проверены.
+        // Число в шапке раздела — по уникальным проектам (как и бейдж сайдбара).
+        // `sectionUnreviewedPids` остаётся списком КАРТОЧЕК: флажок выделяет их
+        // все, включая карточки-версии одного проекта.
         const sectionUnreviewedCount = computed(() => {
             const sec = sidebarFilterSection.value;
             if (!sec || sec === '__all__') return 0;
-            return sectionUnreviewedPids(sec).length;
+            return expertUncheckedCount(
+                projects.value.filter(p => (p.section || 'OTHER') === sec));
         });
 
         const PROJECT_SCOPED_VIEWS = new Set([
@@ -17360,7 +17381,7 @@ const app = createApp({
             toggleProjectSelection, toggleSelectAll, isProjectSelected,
             isSectionSelected, toggleSectionSelection,
             toggleUnanalyzedSelection, isUnanalyzedSelected,
-            expertUncheckedCount,
+            expertUncheckedCount, uniqueProjectCount,
             sectionUnreviewedCount, isSectionUnreviewedSelected, toggleSectionUnreviewedSelection,
             sectionExcelLoading, exportSectionExcel,
             openBatchModal, confirmBatchAction, startBatchAction, cancelBatch, addToBatch,

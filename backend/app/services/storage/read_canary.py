@@ -605,6 +605,12 @@ def _v2_batch_counts(a, doc_dir, vid):
     return total, completed
 
 
+def _base_project_key(project_id: str) -> str:
+    """Ключ логического проекта (см. project_service.base_project_key)."""
+    from backend.app.services.common.project_service import base_project_key
+    return base_project_key(project_id)
+
+
 def _review_incomplete(findings_count, opt_count, freview, oreview) -> bool:
     """Есть ли незакрытая проверка: категория без элементов галочку не блокирует.
 
@@ -761,6 +767,7 @@ def _v2_project_status(a, doc, ver=None) -> dict:
         optimization_review_status=oreview_status,
         review_pending=review_pending,
         review_status_version_id=review_vid,
+        base_project_key=_base_project_key(doc["document_code"]),
         version_id=_denorm_vid(vid_raw),
         version_no=(meta.get("version_no") or _vno(vid_raw)),
         version_label=(meta.get("label") or ("V%d" % _vno(vid_raw))),

@@ -97,6 +97,10 @@ class ProjectStatus(BaseModel):
     review_pending: Optional[bool] = None
     # Версия, по статусам которой посчитан review_pending (диагностика/тултип).
     review_status_version_id: Optional[str] = None
+    # Ключ логического проекта: имя без версионного суффикса («… V2», «…_V1»).
+    # Счётчики «всего проектов» считают УНИКАЛЬНЫЕ ключи, поэтому проект,
+    # загруженный несколькими карточками-версиями, считается один раз.
+    base_project_key: Optional[str] = None
     # ─── Версионность проекта ───────────────────────────────────
     # Для legacy-проектов без project_versions.json: v1 / 1 / "V1".
     version_id: str = "v1"

@@ -148,3 +148,49 @@ def test_review_status_version_id_points_at_counted_version(v2env):
     assert rows["PENDING-FROM-V1"]["version_id"] == "v2"
     # текущая версия с результатами — указана она
     assert rows["PENDING-CURRENT"]["review_status_version_id"] == "v1"
+
+
+# ── ключ логического проекта: счётчики считают уникальные проекты ──────────
+
+def test_base_project_key_strips_version_suffix():
+    """Карточки «X V1» / «X_V1» / «X» — один логический проект."""
+    from backend.app.services.common.project_service import base_project_key
+
+    assert (base_project_key("13АВ-РД-ВК2-К6 V1")
+            == base_project_key("13АВ-РД-ВК2-К6_V1")
+            == base_project_key("13АВ-РД-ВК2-К6"))
+    assert base_project_key("13АВ-РД-ВК1-К2 V2") == base_project_key("13АВ-РД-ВК1-К2")
+    assert base_project_key("13АВ-РД-АК-К5_(Книга_1)_V2") == "13ав-рд-ак-к5_(книга_1)"
+
+
+def test_base_project_key_keeps_cyrillic_shifr():
+    """Кириллическая «В» с цифрой — часть шифра раздела, а не версия.
+
+    «133-23-ГК-ОВ3» не должен схлопнуться с «133-23-ГК-О»: снятие кириллического
+    суффикса склеило бы разные проекты (на корпусе 522 карточек такой случай
+    ровно один, и он реальный).
+    """
+    from backend.app.services.common.project_service import base_project_key
+
+    assert base_project_key("133-23-ГК-ОВ3") == "133-23-гк-ов3"
+    # разделитель обязателен: «…ХV1» без пробела/подчёркивания не трогаем
+    assert base_project_key("ABCV1") == "abcv1"
+
+
+def test_api_returns_base_project_key(v2env):
+    rows = {r["project_id"]: r for r in client.get("/api/projects").json()["projects"]}
+    assert rows["PENDING-CURRENT"]["base_project_key"] == "pending-current"
+
+
+def test_version_cards_collapse_into_one_project(v2env, tmp_path):
+    """Две карточки одного проекта («X» и «X V2») дают один уникальный проект."""
+    from backend.app.services.common.project_service import base_project_key
+
+    _doc(v2env, "DUP-CARD", [(2, 0)])
+    _doc(v2env, "DUP-CARD V2", [(2, 0)])
+    rows = client.get("/api/projects").json()["projects"]
+    keys = {r["base_project_key"] for r in rows}
+    ids = {r["project_id"] for r in rows}
+    assert {"DUP-CARD", "DUP-CARD V2"} <= ids          # карточки видны обе
+    assert len(keys) == len(ids) - 1                    # а проект считается один
+    assert base_project_key("DUP-CARD V2") in keys

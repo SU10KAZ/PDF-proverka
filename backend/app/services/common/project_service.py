@@ -447,6 +447,26 @@ def _resolve_pdf_suffixed_dir(project_id: str, projects_dir: Path) -> Optional[P
     return None
 
 
+# Версионный суффикс имени проекта: «13АВ-РД-ВК2-К6 V1», «13АВ-РД-АПН-НС_V2».
+# Разделитель ОБЯЗАТЕЛЕН и буква только ЛАТИНСКАЯ: кириллическая «В» с цифрой —
+# часть шифра раздела («133-23-ГК-ОВ3»), и её снятие склеило бы разные проекты.
+# На корпусе из 522 карточек все 326 версионных суффиксов имеют разделитель.
+_VERSION_SUFFIX_RE = re.compile(r"[\s_\-]+[Vv]\s*\d+\s*$")
+
+
+def base_project_key(project_id: str) -> str:
+    """Ключ логического проекта: имя без версионного суффикса, casefold.
+
+    Нужен счётчикам «всего проектов»: карточки `X V1` и `X_V1` — один проект,
+    а не два. Имя без суффикса возвращается как есть (только casefold), поэтому
+    у проектов без версий ключ = сам id.
+    """
+    if not project_id:
+        return ""
+    base = _VERSION_SUFFIX_RE.sub("", str(project_id)).strip(" _-")
+    return (base or str(project_id)).casefold()
+
+
 def resolve_project_dir(
     project_id: str,
     *,
@@ -1325,6 +1345,7 @@ def get_project_status(
                           or optimization_review_status == "complete"))
         ),
         review_status_version_id=(version_entry["version_id"] if total_items > 0 else None),
+        base_project_key=base_project_key(project_id),
         expert_review_status=expert_review_status,
         findings_review_status=findings_review_status,
         optimization_review_status=optimization_review_status,

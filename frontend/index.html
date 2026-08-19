@@ -71,7 +71,7 @@
                                   :title="'Не проверено экспертами: ' + expertUncheckedCount(projects) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
                                 {{ expertUncheckedCount(projects) }}
                             </span>
-                            <span class="nav-sub-badge" :title="'Всего проектов: ' + projects.length">{{ projects.length }}</span>
+                            <span class="nav-sub-badge" :title="'Всего проектов: ' + uniqueProjectCount(projects) + ' (версии одного проекта считаются один раз)'">{{ uniqueProjectCount(projects) }}</span>
                         </span>
                     </div>
                     <div v-for="[code, items] in projectsBySection" :key="'sb-'+code"
@@ -86,7 +86,7 @@
                                   :title="'Не проверено экспертами: ' + expertUncheckedCount(items) + '. Считается последняя версия С РЕЗУЛЬТАТАМИ аудита; проект уходит из счётчика после обеих галочек. Версии без аудита не считаются'">
                                 {{ expertUncheckedCount(items) }}
                             </span>
-                            <span class="nav-sub-badge" :title="'Всего проектов: ' + items.length">{{ items.length }}</span>
+                            <span class="nav-sub-badge" :title="'Всего проектов: ' + uniqueProjectCount(items) + ' (версии одного проекта считаются один раз)'">{{ uniqueProjectCount(items) }}</span>
                         </span>
                     </div>
                 </div>
@@ -648,7 +648,8 @@
                     <a href="#" @click.prevent="sidebarFilterSection = '__all__'" class="dash-back-link">&larr;</a>
                     <span class="section-badge" :style="disciplineBadgeStyle(sidebarFilterSection)">{{ sidebarFilterSection }}</span>
                     {{ disciplineLabel(sidebarFilterSection) }}
-                    <span class="dashboard-header__count">({{ filteredSectionProjects.length }})</span>
+                    <span class="dashboard-header__count"
+                          :title="'Уникальных проектов в разделе; версии одного проекта считаются один раз'">({{ uniqueProjectCount(filteredSectionProjects) }})</span>
                     <label class="section-select-all" @click.stop title="Выбрать все проекты раздела">
                         <input type="checkbox" :checked="isSectionSelected(sidebarFilterSection)"
                                @change="toggleSectionSelection(sidebarFilterSection)">
