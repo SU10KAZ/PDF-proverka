@@ -36,7 +36,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
-from audit_worker.providers import errors
+from audit_worker.providers import errors, runtime_state
 from audit_worker.providers.auth_mode import (
     AUTH_MODE_AMBIENT_USER,
     resolve_ambient_home,
@@ -515,6 +515,20 @@ def run_stage_inference(
         # Помечаем явно и не даём повторить автоматически.
         ledger.mark_indeterminate(key, reason=f"{type(exc).__name__}: {exc}")
         raise
+    # Исход рабочего вызова — такое же наблюдение о пригодности провайдера,
+    # как и контрольный запрос. Без этой записи «организация отключила доступ»
+    # узнавалось бы только через ручной probe, то есть после того, как о неё
+    # уже споткнулось задание.
+    try:
+        runtime_state.record_at_provider_root(
+            Path(binding.provider_root),
+            result.provider,
+            success=result.ok,
+            error_code=result.error_code,
+        )
+    except Exception:                               # noqa: BLE001
+        # Заметка не имеет права провалить оплаченный вызов.
+        pass
     try:
         ledger.complete(key, result)
     except BaseException as exc:                    # noqa: BLE001

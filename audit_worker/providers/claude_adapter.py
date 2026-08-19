@@ -472,6 +472,13 @@ class ClaudeProviderAdapter(ProviderAdapter):
             model = _model_from_envelope(payload)
         else:
             text = result.stdout or ""
+        # Отказ САМОГО ПРОВАЙДЕРА виден только в конверте ответа: CLI может
+        # завершиться нулём, при этом внутри стоять `is_error: true` и
+        # `api_error_status: 403`. Раньше сюда смотрел лишь код возврата, и
+        # 403 «организация отключила доступ» доезжал как `unknown` — то есть
+        # неотличимо от сетевого сбоя.
+        envelope_code = _provider_refusal_code(payload)
+        failed = bool(envelope_code) or not result.ok
         return ProbeResult(
             provider=self.provider,
             allowed=True,
@@ -482,8 +489,12 @@ class ClaudeProviderAdapter(ProviderAdapter):
             model=model,
             matched_expected=PROBE_EXPECTED in text,
             usage=usage,
-            error_code=None if result.ok else result.error_code(),
-            detail=None if result.ok else "контрольный запрос завершился ошибкой",
+            error_code=(envelope_code or result.error_code()) if failed else None,
+            detail=(
+                "провайдер отказал в доступе учётной записи"
+                if envelope_code == errors.ERR_ENTITLEMENT_BLOCKED
+                else ("контрольный запрос завершился ошибкой" if failed else None)
+            ),
         )
 
     # ─── Рабочий вызов (этап 11C) ────────────────────────────────────────────
@@ -738,10 +749,18 @@ class ClaudeProviderAdapter(ProviderAdapter):
             error_code=(
                 None if ok
                 else (
-                    result.error_code() if not result.ok
-                    else (
-                        errors.ERR_MODEL_MISMATCH if model_mismatch
-                        else errors.ERR_MALFORMED_STATUS
+                    # Отказ провайдера — первым: он объясняет причину точнее
+                    # любого кода возврата. 403 «организация отключила доступ»
+                    # иначе доехал бы как `unknown` (если CLI вернул ненулевой
+                    # код) или как `malformed_status` (если нулевой), и в обоих
+                    # случаях оператор искал бы поломку не там.
+                    _provider_refusal_code(envelope)
+                    or (
+                        result.error_code() if not result.ok
+                        else (
+                            errors.ERR_MODEL_MISMATCH if model_mismatch
+                            else errors.ERR_MALFORMED_STATUS
+                        )
                     )
                 )
             ),
@@ -873,6 +892,46 @@ def _snapshot_from_local_usage(
         reason_code=quota.REASON_LOCAL_CACHE_AVAILABLE,
     )
     return quota.apply_low_threshold(snapshot, low_threshold_pct=low_threshold_pct)
+
+
+def _provider_refusal_code(payload: Any) -> Optional[str]:
+    """Код отказа ПРОВАЙДЕРА из конверта ответа CLI.
+
+    Два поля, и оба нужны. `api_error_status` говорит, что ответил не CLI, а
+    сервер; текст в `result` говорит, ЧТО именно ответил. Судить по одному
+    статусу нельзя: 403 бывает и от истёкшего входа, и от запрета организации,
+    а действия оператора в этих случаях противоположные — перелогиниться либо
+    идти к администратору.
+
+    Возвращает `None`, когда отказа провайдера в конверте нет: тогда исход
+    решает код возврата процесса, как и раньше.
+    """
+    if not isinstance(payload, dict):
+        return None
+    status = payload.get("api_error_status")
+    is_error = bool(payload.get("is_error")) or str(
+        payload.get("terminal_reason") or ""
+    ) == "api_error"
+    if not is_error and status is None:
+        return None
+    text = " ".join(
+        str(payload.get(key) or "")
+        for key in ("result", "error", "message", "terminal_reason")
+    )
+    code = errors.classify_text(text)
+    if code:
+        return code
+    if isinstance(status, (int, float)) and not isinstance(status, bool):
+        number = int(status)
+        if number in (401, 403):
+            # Сервер отказал, но словами, которых мы не знаем. `auth_required`
+            # здесь честнее `unknown`: он хотя бы указывает на учётную запись.
+            return errors.ERR_AUTH_REQUIRED
+        if number == 429:
+            return errors.ERR_RATE_LIMITED
+        if number >= 500:
+            return errors.ERR_PROVIDER_UNAVAILABLE
+    return errors.ERR_UNKNOWN if is_error else None
 
 
 def _cli_failure_detail(result: Any, answer_text: str) -> str:

@@ -36,6 +36,7 @@ from audit_worker.providers import (
     inference_grant,
     pipeline_status,
     probe_grant,
+    runtime_state,
     quota,
 )
 from audit_worker.providers.auth_mode import AUTH_MODE_UNAVAILABLE, DEFAULT_AUTH_MODE
@@ -323,7 +324,15 @@ class ProviderManager:
                     "policy_state": POLICY_ALLOWED,
                     "inference_allowed": False,
                 })
+            runtime = runtime_state.read(self.worker_root, name)
+            snapshot = _entitlement_applied(
+                snapshot, runtime, provider=name, identity=identity, now=moment
+            )
             payload["quota"] = snapshot.as_dict() if snapshot is not None else None
+            # Верхним ключом — для HTTP-пути и локальной диагностики; ниже то же
+            # состояние кладётся в `capability`, потому что санитайзер центра
+            # собирает верхний уровень перечислением известных полей.
+            payload["runtime"] = runtime.as_dict()
             payload["last_auth_check_at"] = self._auth_checked_at.get(name)
             payload["last_quota_check_at"] = self._quota_checked_at.get(name)
             # Остаток разрешений на реальный контрольный запрос. Кладётся в
@@ -338,6 +347,8 @@ class ProviderManager:
             # проверить, ни отозвать вовремя: оператор узнаёт о нём по счёту.
             capability = payload.get("capability")
             if isinstance(capability, dict):
+                capability["runtime_state"] = runtime.state
+                capability["runtime_last_success_at"] = runtime.last_success_at
                 capability["inference_probe_grant_remaining"] = (
                     probe_grant.read_state(self.worker_root, name).remaining
                 )
@@ -507,6 +518,14 @@ class ProviderManager:
         before = self.quota(provider)
         result = adapter.minimal_probe(confirmed_by_operator=confirmed_by_operator)
         if result.performed:
+            # Исход НАСТОЯЩЕГО обращения — единственное доказательство того,
+            # что провайдер вообще работает. Записывается ДО пересборки
+            # снимка, чтобы та уже учла новое состояние.
+            self.record_runtime_result(
+                provider,
+                success=result.error_code is None,
+                error_code=result.error_code,
+            )
             # После настоящего вызова снимок заведомо устарел: пересобираем.
             self.refresh(force=True)
         after = self.quota(provider)
@@ -521,9 +540,76 @@ class ProviderManager:
         )
         return result
 
+    def record_runtime_result(
+        self,
+        provider: str,
+        *,
+        success: bool,
+        error_code: Optional[str] = None,
+    ) -> None:
+        """Зафиксировать исход настоящего обращения к провайдеру.
+
+        Вызывается и контрольным запросом, и мостом конвейера: любой реальный
+        вызов — это наблюдение о пригодности провайдера, и терять его нельзя.
+        Состояние переживает перезапуск процесса намеренно (см. шапку
+        `runtime_state`).
+        """
+        if provider not in self.adapters:
+            return
+        runtime_state.record(
+            self.worker_root, provider, success=success, error_code=error_code
+        )
+
+    def runtime_result(self, provider: str) -> runtime_state.RuntimeResult:
+        return runtime_state.read(self.worker_root, provider)
+
     def last_probe(self, provider: str) -> Optional[ProbeResult]:
         with self._lock:
             return self._last_probe.get(provider)
+
+
+def _entitlement_applied(
+    snapshot: Optional[quota.ProviderQuotaSnapshot],
+    runtime: runtime_state.RuntimeResult,
+    *,
+    provider: str,
+    identity: Any,
+    now: float,
+) -> Optional[quota.ProviderQuotaSnapshot]:
+    """Доказанный отказ провайдера перекрывает любые сведения о квоте.
+
+    Почему именно так, а не отдельным полем рядом. Проводной снимок несёт
+    состояние квоты, состояние установки, состояние входа и состояние политики —
+    и ни одно из них не выражает «вход есть, а работать не дают». Пока это не
+    выражено, центр видит `installed` + `logged_in` и объявляет провайдера
+    доступным, то есть ровно ту неправду, из-за которой задание и появилось.
+
+    Из четырёх полей подходит одно: `quota_state = policy_blocked` означает
+    «использовать нельзя, и это доказано», а не «лимит исчерпан». Отличить его
+    от запрета НАШЕЙ политики центр может по `policy_state`, который едет
+    отдельным полем и остаётся `allowed`. Остаток при этом обнуляется
+    осознанно: показывать «осталось 84 %» рядом с «работать нельзя» значит
+    предлагать оператору ресурс, которого у него нет.
+    """
+    if not runtime.blocked:
+        return snapshot
+    auth_state = getattr(identity, "auth_state", None) or (
+        snapshot.auth_state if snapshot is not None else AUTH_UNKNOWN
+    )
+    return quota.unknown_snapshot(
+        provider,
+        auth_state=auth_state,
+        quota_state=quota.QUOTA_POLICY_BLOCKED,
+        reason=(
+            "провайдер отказал в доступе учётной записи: вход выполнен, но "
+            "работа с Claude Code запрещена владельцем организации. Повторный "
+            "вход не поможет — нужен доступ от администратора организации либо "
+            "другая учётная запись"
+        ),
+        observed_at=runtime.observed_at or now,
+        probe_error_code=errors.ERR_ENTITLEMENT_BLOCKED,
+        cli_version=snapshot.cli_version if snapshot is not None else None,
+    )
 
 
 def _staleness_applied(

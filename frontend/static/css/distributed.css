@@ -105,6 +105,9 @@
 /* Остальные окна: недельный лимит не имеет права прятаться за пятичасовым. */
 .distributed-quota__windows { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
 .distributed-quota__windows li { display: flex; justify-content: space-between; gap: 6px; color: var(--text3); font-size: 8px; }
+/* Запрет организации — не «мало осталось», а «работать нельзя». Цвет отказа,
+   а не предупреждения: полутон читался бы как временная просадка лимита. */
+.distributed-quota__blocked { color: var(--red); font-size: 9px; font-weight: 700; }
 .distributed-quota__age { color: var(--text3); font-size: 8px; margin-top: 3px; }
 .distributed-quota__age--stale { color: var(--amber); }
 /* Причина. Показывается и при успехе: «откуда число» — часть самого числа. */

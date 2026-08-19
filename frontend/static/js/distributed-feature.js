@@ -28,6 +28,7 @@
      * недокументированный источник не выдаётся за официальный.
      */
     const QUOTA_REASON_TEXT = Object.freeze({
+        organization_subscription_access_disabled: 'Вход выполнен, но владелец организации запретил доступ Claude Code для этой учётной записи. Повторный вход не поможет: нужен доступ от администратора организации либо другая учётная запись.',
         local_cache_available: 'Локальные данные Claude Code. Официального машиночитаемого остатка у Claude Code нет — показано то, что CLI сохранил у себя.',
         local_cache_stale: 'Локальные данные Claude Code, уже неактуальные: показано последнее известное значение, а не текущее.',
         local_cache_missing: 'Локальные данные об использовании Claude пока не появились — они возникают после обращений к модели на этом воркере.',
@@ -511,21 +512,28 @@
                 reasonText() { return quotaReasonText(this.quota); },
                 ageText() { return quotaAgeText(this.quota); },
                 undocumented() { return this.quota && this.quota.sourceStability === 'undocumented'; },
+                // Доказанный отказ провайдера: авторизация исправна, работать
+                // нельзя. Показывается вместо процента — числа тут нет и быть
+                // не может, а «Остаток недоступен» увело бы к поиску квоты.
+                entitlementBlocked() { return this.quota && this.quota.status === 'entitlement_blocked'; },
             },
             template: `
                 <div class="distributed-quota" :class="'distributed-quota--' + (quota.status || 'unknown')">
                     <div class="distributed-quota__top">
                         <span class="distributed-quota__name">{{ label }}</span>
-                        <strong v-if="Number.isFinite(quota.percentageRemaining)">{{ quota.percentageRemaining }}% <small>осталось</small></strong>
+                        <strong v-if="entitlementBlocked" class="distributed-quota__blocked">Доступ запрещён организацией</strong>
+                        <strong v-else-if="Number.isFinite(quota.percentageRemaining)">{{ quota.percentageRemaining }}% <small>осталось</small></strong>
                         <strong v-else>Остаток недоступен</strong>
                     </div>
-                    <div v-if="primaryWindow" class="distributed-quota__window">{{ primaryWindow.label }}</div>
-                    <div v-if="Number.isFinite(quota.percentageRemaining)" class="distributed-progress distributed-progress--quota" role="progressbar" :aria-label="label + ': осталось ' + quota.percentageRemaining + '%'" :aria-valuenow="quota.percentageRemaining" aria-valuemin="0" aria-valuemax="100">
+                    <div v-if="entitlementBlocked" class="distributed-quota__window">Вход выполнен · работа запрещена</div>
+                    <div v-else-if="primaryWindow" class="distributed-quota__window">{{ primaryWindow.label }}</div>
+                    <div v-if="entitlementBlocked" class="distributed-progress distributed-progress--unavailable" aria-label="Доступ запрещён организацией"><span></span></div>
+                    <div v-else-if="Number.isFinite(quota.percentageRemaining)" class="distributed-progress distributed-progress--quota" role="progressbar" :aria-label="label + ': осталось ' + quota.percentageRemaining + '%'" :aria-valuenow="quota.percentageRemaining" aria-valuemin="0" aria-valuemax="100">
                         <span :style="{width: quota.percentageRemaining + '%'}"></span>
                     </div>
                     <div v-else class="distributed-progress distributed-progress--unavailable" aria-label="Остаток недоступен"><span></span></div>
                     <div class="distributed-quota__reset">
-                        <span>{{ stale ? 'Последние известные данные' : quota.resetIn ? 'Сброс через ' + quota.resetIn : 'Дата сброса недоступна' }}</span>
+                        <span>{{ entitlementBlocked ? 'Задания этому провайдеру не назначаются' : stale ? 'Последние известные данные' : quota.resetIn ? 'Сброс через ' + quota.resetIn : 'Дата сброса недоступна' }}</span>
                         <span v-if="quota.isEstimated" title="Провайдер передаёт приблизительное значение">≈ оценка</span>
                     </div>
                     <ul v-if="otherWindows.length" class="distributed-quota__windows">

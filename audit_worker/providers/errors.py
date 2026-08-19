@@ -30,6 +30,16 @@ ERR_TIMEOUT = "timeout"
 #: реакция на это другая (оператор смотрит на подписку и на версию CLI, а не на
 #: конфигурацию запретов).
 ERR_MODEL_MISMATCH = "model_mismatch"
+#: Вход выполнен, но провайдер ОТКАЗАЛ в доступе самой учётной записи:
+#: организация отключила доступ Claude Code для подписки (HTTP 403). Это не
+#: `auth_required` — повторный вход ничего не изменит, потому что учётные
+#: данные верны, а запрет стоит на стороне владельца организации. И не
+#: `policy_blocked` — наша политика ничего не блокировала.
+#:
+#: Отдельный код нужен ради действия оператора: при `auth_required` он идёт
+#: логиниться, при `entitlement_blocked` — к администратору организации либо
+#: меняет учётную запись воркера.
+ERR_ENTITLEMENT_BLOCKED = "entitlement_blocked"
 ERR_UNKNOWN = "unknown"
 
 PROVIDER_ERROR_CODES: tuple[str, ...] = (
@@ -44,6 +54,7 @@ PROVIDER_ERROR_CODES: tuple[str, ...] = (
     ERR_POLICY_BLOCKED,
     ERR_TIMEOUT,
     ERR_MODEL_MISMATCH,
+    ERR_ENTITLEMENT_BLOCKED,
     ERR_UNKNOWN,
 )
 
@@ -51,6 +62,15 @@ PROVIDER_ERROR_CODES: tuple[str, ...] = (
 #: limit» проверяется до «limit», иначе безобидное «context limit» уехало бы в
 #: rate_limited и оператор увидел бы исчерпанную подписку там, где её нет.
 _TEXT_PATTERNS: tuple[tuple[str, "re.Pattern[str]"], ...] = (
+    # ПЕРВЫМ. Текст отказа по entitlement содержит «Use an Anthropic API key
+    # instead», и общий шаблон авторизации увёл бы его в `auth_required` —
+    # то есть отправил бы оператора логиниться там, где вход и так выполнен.
+    (ERR_ENTITLEMENT_BLOCKED, re.compile(
+        r"(?i)(organization has disabled|disabled .{0,40}subscription access|"
+        r"subscription access .{0,40}disabled|"
+        r"ask your admin to enable access|"
+        r"not (?:been )?granted access to claude code)"
+    )),
     (ERR_AUTH_REQUIRED, re.compile(
         r"(?i)\b(not logged in|log ?in required|login expired|unauthorized|"
         r"authentication required|authentication failed|invalid api key|"

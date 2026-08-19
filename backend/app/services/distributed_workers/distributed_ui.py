@@ -539,6 +539,7 @@ def _quota_reason(
     remaining: Optional[float],
     stale: bool,
     blocked: bool,
+    entitlement_blocked: bool = False,
 ) -> Optional[str]:
     """Код причины для интерфейса.
 
@@ -552,6 +553,8 @@ def _quota_reason(
     reported = _safe_text(quota.get("reason_code"), limit=64)
     if reported in provider_accounts.QUOTA_REASON_CODES:
         return reported
+    if entitlement_blocked:
+        return "organization_subscription_access_disabled"
     source = str(quota.get("source") or "")
     if remaining is not None and source == "local_usage_statistics":
         return "local_cache_stale" if stale else "local_cache_available"
@@ -625,8 +628,18 @@ def _provider_quota(
 
     remaining = _percent(quota.get("estimated_remaining_pct"))
     reset = _finite_number(quota.get("next_reset_at"))
+    # ДОКАЗАННЫЙ отказ провайдера отличается от запрета нашей политики ровно
+    # одним полем: `policy_state` остаётся `allowed`, а квота приходит
+    # заблокированной. Различать обязательно — оператору нужны разные действия:
+    # снять собственный запрет либо идти к администратору организации.
+    entitlement_blocked = (
+        quota_state == "policy_blocked" and policy == "allowed"
+        and auth in {"logged_in", "ready"}
+    )
     status = "unknown"
-    if blocked:
+    if entitlement_blocked:
+        status = "entitlement_blocked"
+    elif blocked:
         status = "unavailable"
     elif not_observed:
         status = "not_observed"
@@ -666,7 +679,13 @@ def _provider_quota(
             remaining=remaining,
             stale=stale,
             blocked=blocked,
+            entitlement_blocked=entitlement_blocked,
         ),
+        # Вход выполнен, а работать нельзя — это ДВА разных факта, и интерфейс
+        # обязан показать оба. Свернув их в «недоступен», мы отправили бы
+        # оператора чинить авторизацию, которая исправна.
+        "loggedIn": auth in {"logged_in", "ready"},
+        "routeReady": not blocked and not entitlement_blocked,
         # «Оценка» — это когда число выведено нами, а не сообщено провайдером.
         # Контракт квот (quota.py) запрещает процент без
         # `raw_remaining_supported`, поэтому любое дошедшее сюда число —

@@ -141,3 +141,56 @@ describe('Claude local usage cache in the distributed UI', () => {
     expect(values.undocumented).toBe(false);
   });
 });
+
+// ── 12J: «вход есть, работать нельзя» ──────────────────────────────────────
+// Отдельный блок, потому что это другая новость, чем пустая квота: провайдер
+// авторизован, но провайдер же и отказал. Экран обязан назвать причину, а не
+// показывать «Остаток недоступен» — иначе оператор пойдёт искать лимиты.
+const ENTITLEMENT_BLOCKED_QUOTA = Object.freeze({
+  availability: 'unavailable',
+  percentageRemaining: null,
+  status: 'entitlement_blocked',
+  quotaState: 'policy_blocked',
+  source: 'unavailable',
+  confidence: 'none',
+  isEstimated: false,
+  stale: false,
+  loggedIn: true,
+  routeReady: false,
+  reason: 'organization_subscription_access_disabled',
+  windows: [],
+});
+
+describe('Claude entitlement block in the distributed UI', () => {
+  it('says the access is forbidden instead of "остаток недоступен"', () => {
+    const values = computedFor(ENTITLEMENT_BLOCKED_QUOTA);
+    expect(values.entitlementBlocked).toBe(true);
+    const component = quotaComponent();
+    expect(component.template).toContain('Доступ запрещён организацией');
+    expect(component.template).toContain('Вход выполнен · работа запрещена');
+  });
+
+  it('explains what to do and never blames the login', () => {
+    const { DistributedFeature } = loadRuntime();
+    const text = DistributedFeature.quotaReasonText(ENTITLEMENT_BLOCKED_QUOTA);
+    expect(text).toContain('Вход выполнен');
+    expect(text).toContain('администратора организации');
+    expect(text).not.toContain('Остаток');
+  });
+
+  it('never shows a quota bar or a reset for a blocked provider', () => {
+    const component = quotaComponent();
+    // Полоса остатка и «сброс через» подменяются собственными ветками.
+    expect(component.template).toContain('Задания этому провайдеру не назначаются');
+    expect(component.template).toMatch(/entitlementBlocked[\s\S]*distributed-progress--unavailable/);
+  });
+
+  it('marks the worker row on the limits screen', () => {
+    expect(pageSource).toContain("'вход есть · доступ запрещён'");
+  });
+
+  it('keeps a healthy provider free of the blocked styling', () => {
+    const values = computedFor(LOCAL_CACHE_QUOTA);
+    expect(values.entitlementBlocked).toBe(false);
+  });
+});

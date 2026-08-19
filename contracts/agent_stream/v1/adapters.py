@@ -303,6 +303,61 @@ def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) ->
     }
 
 
+#: Какие провайдеры обязаны РАБОТАТЬ для каждого профиля маршрутизации.
+#: Не «настроены» и не «авторизованы» — именно работать: профиль, чей провайдер
+#: отказывает, приведёт задание к падению на первом же вызове.
+ROUTING_PRESET_PROVIDERS: dict[str, tuple[str, ...]] = {
+    "claude_gpt_codex": ("claude",),
+    "codex_exec": ("codex",),
+}
+
+#: Состояния квоты, означающие ДОКАЗАННУЮ непригодность провайдера, а не
+#: временную неизвестность. `policy_blocked` попадает сюда потому, что воркер
+#: ставит его в двух случаях: запрет нашей политики и отказ провайдера в
+#: доступе учётной записи. Оба означают «сейчас работать нельзя».
+_UNUSABLE_QUOTA_STATES: frozenset[str] = frozenset({"policy_blocked"})
+
+
+def usable_routing_compatibility(
+    declared: Iterable[Any], snapshots_by_provider: Mapping[str, Mapping[str, Any]]
+) -> list[str]:
+    """Оставить только те профили, чьи провайдеры действительно применимы.
+
+    Зачем фильтр вообще. Список профилей — это ОБЕЩАНИЕ воркера центру: «такие
+    задания я потяну». Обещание, выданное по конфигурации, ничего не знает о
+    том, что провайдер отказывает прямо сейчас, и центр честно отправит сюда
+    Claude-задание, которое упадёт на первом вызове. Дешевле не обещать.
+
+    Фильтр консервативен: профиль убирается только при ДОКАЗАННОЙ непригодности
+    (провайдер сообщил отказ) либо при отсутствующем CLI. «Ещё не опрашивали» и
+    «лимит неизвестен» профиль не снимают — незнание не повод отказываться от
+    работы.
+    """
+    out: list[str] = []
+    for item in declared:
+        name = str(item)
+        required = ROUTING_PRESET_PROVIDERS.get(name, ())
+        blocked = False
+        for provider in required:
+            snapshot = snapshots_by_provider.get(provider)
+            if not isinstance(snapshot, Mapping):
+                continue
+            quota = snapshot.get("quota")
+            state = str((quota or {}).get("quota_state") or "") if isinstance(quota, Mapping) else ""
+            if state in _UNUSABLE_QUOTA_STATES:
+                blocked = True
+                break
+            if str(snapshot.get("policy_state") or "allowed") != "allowed":
+                blocked = True
+                break
+            if str(snapshot.get("installation_status") or "") == "broken":
+                blocked = True
+                break
+        if not blocked:
+            out.append(name)
+    return out
+
+
 def capabilities_from_domain(
     capabilities: Mapping[str, Any],
     *,
@@ -349,9 +404,9 @@ def capabilities_from_domain(
         provider_policy_sha256=str(capabilities.get("provider_policy_sha256") or ""),
         job_types=[str(item) for item in capabilities.get("job_types") or []],
         compressions=[str(item) for item in capabilities.get("compressions") or []],
-        routing_compatibility=[
-            str(item) for item in capabilities.get("routing_compatibility") or []
-        ],
+        routing_compatibility=usable_routing_compatibility(
+            capabilities.get("routing_compatibility") or [], by_name
+        ),
         providers=providers,
         routing_plan_v1=bool(capabilities.get("routing_plan_v1", False)),
         accepting_jobs=accepting_jobs,
