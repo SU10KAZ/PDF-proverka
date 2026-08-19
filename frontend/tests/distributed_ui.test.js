@@ -129,7 +129,13 @@ describe('distributed UI integration', () => {
     for (const label of ['Claude · средний остаток', 'Codex · средний остаток', 'Ближайший сброс', 'Больше всего Claude', 'Больше всего Codex']) {
       expect(pageSource).toContain(label);
     }
-    expect(pageSource).toContain('Использовано сегодня');
+    // «Использовано сегодня» убрано осознанно: центр такого поля не отдаёт
+    // (`usedToday` всегда null), и строка была мёртвой — оператор видел
+    // «Расход за сегодня недоступен» на каждом воркере всегда. На её месте
+    // теперь возраст данных: он приходит по-настоящему и отвечает на вопрос,
+    // которому число процентов без времени не отвечает.
+    expect(pageSource).toContain('distributed.quotaAgeText(item[provider.key])');
+    expect(pageSource).toContain('Возраст данных недоступен');
   });
 
   it('renders safe diagnostics and never places credential fields in the diagnostic model', async () => {
