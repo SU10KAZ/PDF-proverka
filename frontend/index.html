@@ -5912,6 +5912,7 @@
                     <div v-if="scNpMode && scNpData && scNpData.available"
                          style="display:flex; gap:8px; align-items:center; padding:4px 8px; border:1px solid #e9d5ff; border-radius:6px; background:#fdf4ff; font-size:12px; color:#6b21a8">
                         <strong>🧪 Расхождения (диагностика)</strong>
+                        <span style="opacity:.75; font-size:11px">своя прокрутка</span>
                         <span style="margin-left:auto; font-variant-numeric:tabular-nums">{{ scNpCounts.total }}</span>
                     </div>
                 </div>
@@ -6042,19 +6043,23 @@
                     <div v-if="scNpMode && scNpData && scNpData.available"
                          class="sc-viewer__pane sc-np-diff-pane"
                          :ref="el => { if (el) scPaneRefs['diff'] = el }"
-                         @wheel.prevent="scNpDiffWheel($event)"
-                         title="Колонка следует за листами: прокручивайте страницы, расхождения едут вместе с ними"
-                         style="border:1px solid #e5e7eb; border-radius:6px; background:#fafafa; height:calc(100vh - 280px); overflow:hidden; position:relative">
+                         @wheel="scNpDiffWheel($event)"
+                         title="Свой список с отдельной прокруткой. Листы можно крутить независимо — колонка переключится, когда вы перейдёте на другой лист."
+                         style="border:1px solid #e5e7eb; border-radius:6px; background:#fafafa; height:calc(100vh - 280px); overflow-y:auto; position:relative">
                         <div v-for="slot in scAlignmentItems" :key="'diff-slot-'+slot.slot"
                              class="sc-slot"
                              :id="'sc-slot-diff-' + slot.slot"
                              :ref="el => { scSetSlotRef('diff', slot.slot, el) }"
                              :data-slot="slot.slot"
                              :style="scNpDiffSlotStyle(slot)"
-                             style="margin:8px; border:1px solid #e5e7eb; border-radius:4px; background:#fff; display:flex; flex-direction:column; box-sizing:border-box">
+                             style="margin:8px; border-radius:4px; background:#fff; display:flex; flex-direction:column; box-sizing:border-box">
                             <!-- Заголовок: те же листы, что и в панелях страниц -->
-                            <div style="flex:0 0 auto; padding:4px 10px; background:#f1f5f9; font-size:11px; display:flex; justify-content:space-between; align-items:center; gap:6px; border-bottom:1px solid #e5e7eb">
-                                <span style="opacity:.7">slot {{ slot.slot }}</span>
+                            <div :style="scNpIsCurrentSlot(slot) ? 'background:#ede9fe; color:#5b21b6' : 'background:#f1f5f9'"
+                                 style="position:sticky; top:0; z-index:2; flex:0 0 auto; padding:4px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center; gap:6px; border-bottom:1px solid #e5e7eb">
+                                <span style="opacity:.7">
+                                    <template v-if="scNpIsCurrentSlot(slot)">● на экране</template>
+                                    <template v-else>slot {{ slot.slot }}</template>
+                                </span>
                                 <strong style="white-space:nowrap">
                                     Лист {{ slot.left_page || '—' }} → {{ slot.right_page || '—' }}
                                 </strong>
@@ -6063,11 +6068,11 @@
                             </div>
                             <!-- Пусто/не считалось — говорим прямо -->
                             <div v-if="!scNpSlotGroups(slot).length"
-                                 style="flex:1 1 0; min-height:0; display:flex; align-items:center; justify-content:center; padding:10px; text-align:center; font-size:11px; color:#94a3b8; line-height:1.5">
+                                 style="padding:14px 10px; text-align:center; font-size:11px; color:#94a3b8; line-height:1.5">
                                 {{ scNpSlotNotice(slot) }}
                             </div>
                             <!-- Карточки групп: клик подсвечивает область на обеих страницах -->
-                            <div v-else style="flex:1 1 0; min-height:0; overflow-y:auto; padding:6px">
+                            <div v-else style="padding:6px">
                                 <div v-for="it in scNpSlotGroups(slot)" :key="'diff-'+it.id"
                                      @click="scNpFocusGroup(it)"
                                      :title="'Показать область на обеих страницах'"

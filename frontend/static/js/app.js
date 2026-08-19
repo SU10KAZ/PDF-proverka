@@ -11979,9 +11979,13 @@ const app = createApp({
         const scCanvasRefs     = reactive({});       // legacy (single img ref)
         const scCanvasNat      = reactive({left: null, right: null});
         // Slot-based refs
-        // Стороны просмотрщика «Связь блоков»: две панели страниц + колонка
-        // расхождений диагностического режима. Слот-скролл у всех общий.
-        const _SC_PANE_SIDES   = ['left', 'right', 'diff'];
+        // Панели, у которых прокрутка и зум СИНХРОННЫ — только листы.
+        //
+        // Колонка расхождений сюда не входит намеренно: пока она ехала за
+        // листами попиксельно, её дёргало от любой прокрутки внутри одного
+        // листа. Теперь у неё собственный ползунок, а к нужному разделу она
+        // подъезжает только при переходе на другой лист.
+        const _SC_PANE_SIDES   = ['left', 'right'];
         // Инициировать синхронизацию могут только панели страниц: если это
         // разрешить и колонке расхождений, её программная прокрутка поднимет
         // собственное scroll-событие и панели начнут двигать друг друга по кругу.
@@ -13951,19 +13955,31 @@ const app = createApp({
             return rows.filter(r => r.left_page === slot.left_page && r.right_page === slot.right_page);
         }
 
-        // Высота карточки slot'а в колонке расхождений ЖЁСТКО равна высоте
-        // листов: если дать ей расти по содержимому, слот со списком из 19
-        // групп станет в разы выше своей пары страниц и колонка уедет вниз.
-        // Поэтому height (а не min-height) + прокрутка внутри списка.
+        // Карточка слота растёт по содержимому: подгонять её под высоту листа
+        // больше незачем — колонка не едет за листами. Текущий лист выделяем
+        // рамкой, чтобы в общем списке было видно, где вы находитесь.
         function scNpDiffSlotStyle(slot) {
-            const sized = scSlotContainerStyle('diff', slot);
-            const height = (sized && sized.minHeight)
-                // Страницы уже отрисованы — берём их фактическую высоту.
-                ? sized.minHeight
-                // Слот ещё виртуализован: страницы показывают placeholder,
-                // повторяем его высоту вместе с обвязкой заголовка.
-                : (parseFloat(scSlotPlaceholderStyle().minHeight) + _SC_SLOT_CHROME_PX) + 'px';
-            return {height: height, minHeight: height, maxHeight: height, overflow: 'hidden'};
+            // Рамку задаём целиком здесь: сокращённая запись border в
+            // статическом style перебивала бы одиночный borderColor.
+            return scNpIsCurrentSlot(slot)
+                ? {border: '1px solid #7c3aed', boxShadow: '0 0 0 2px rgba(124,58,237,.18)'}
+                : {border: '1px solid #e5e7eb'};
+        }
+
+        // Лист, который сейчас перед глазами (по центру левой панели).
+        function scNpIsCurrentSlot(slot) {
+            return !!slot && slot.slot === scVisibleSlotLeft.value;
+        }
+
+        // Подвести колонку к разделу нужного листа. Вызывается ТОЛЬКО при
+        // смене листа — прокрутка внутри одного листа колонку не трогает.
+        function scNpDiffScrollToSlot(slotId) {
+            const pane = scPaneRefs['diff'];
+            if (!pane) return;
+            const node = document.getElementById('sc-slot-diff-' + slotId);
+            if (!node) return;
+            const max = Math.max(0, pane.scrollHeight - pane.clientHeight);
+            pane.scrollTo({top: Math.max(0, Math.min(node.offsetTop - 8, max)), behavior: 'smooth'});
         }
 
         // Клик по карточке в колонке: подсветить группу, не уходя со страницы.
@@ -13986,34 +14002,29 @@ const app = createApp({
         // листу, иначе она стартует с самого верха.
         function scNpAlignDiffColumn() {
             nextTick(() => {
-                setTimeout(() => {
-                    if (!scPaneRefs['diff']) return;
-                    if (scPaneRefs['left']) scOnPaneScroll('left', null);
-                    else if (scPaneRefs['right']) scOnPaneScroll('right', null);
-                }, 60);
+                setTimeout(() => scNpDiffScrollToSlot(scVisibleSlotLeft.value), 80);
             });
         }
 
         // Ctrl+колесо здесь ОБЯЗАН оставаться зумом. Иначе выходит ловушка:
         // пользователь ведёт курсор к списку расхождений, продолжает крутить
         // с зажатым Ctrl — и вместо изменения масштаба листы уезжают вниз.
+        // Обычное колесо над колонкой крутит САМУ КОЛОНКУ (её собственный
+        // ползунок), листы при этом стоят. Ctrl+колесо остаётся зумом листов —
+        // иначе выходит ловушка: курсор увели к списку, крутят с зажатым
+        // Ctrl, а масштаб не меняется.
         function scNpDiffWheel(ev) {
+            if (!(ev.ctrlKey || ev.metaKey)) return;   // обычное колесо — родная прокрутка колонки
+            ev.preventDefault();
             const side = scPaneRefs['left'] ? 'left' : (scPaneRefs['right'] ? 'right' : null);
             if (!side) return;
-            if (ev.ctrlKey || ev.metaKey) {
-                // Зумим панель страниц так, будто курсор в её центре: над
-                // колонкой привязываться к точке чертежа не к чему.
-                const rect = scPaneRefs[side].getBoundingClientRect();
-                scOnPaneWheel(side, {
-                    ctrlKey: true, metaKey: false, deltaY: ev.deltaY,
-                    clientX: rect.left + rect.width / 2,
-                    clientY: rect.top + rect.height / 2,
-                    preventDefault() {},
-                });
-                return;
-            }
-            scPaneRefs[side].scrollTop += ev.deltaY;
-            scOnPaneScroll(side, ev);
+            const rect = scPaneRefs[side].getBoundingClientRect();
+            scOnPaneWheel(side, {
+                ctrlKey: true, metaKey: false, deltaY: ev.deltaY,
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                preventDefault() {},
+            });
         }
 
         function scNpIsFocused(item) {
@@ -14432,9 +14443,11 @@ const app = createApp({
         watch(scMdRenderMode, scScheduleMdPageAlignment);
 
         let _scSlotRO = null;
+        let _scSlotROTimer = null;
         function _scEnsureSlotRO() {
             if (_scSlotRO || typeof ResizeObserver === 'undefined') return _scSlotRO;
             _scSlotRO = new ResizeObserver((entries) => {
+                let changed = false;
                 for (const e of entries) {
                     const el = e.target;
                     const side = el.dataset.scSide;
@@ -14445,7 +14458,17 @@ const app = createApp({
                     const prev = scSlotHeights[slotId] || {};
                     if (prev[side] !== h) {
                         scSlotHeights[slotId] = {...prev, [side]: h};
+                        changed = true;
                     }
+                }
+                // Высоты слотов доезжают ПОСЛЕ прокрутки: картинки грузятся и
+                // растут уже потом. Пока пересчёт видимого листа висел только
+                // на событии прокрутки, «текущий лист» оставался тем, каким его
+                // застали до раскладки — и колонка расхождений показывала
+                // соседний лист. Пересчитываем, когда вёрстка устоялась.
+                if (changed) {
+                    clearTimeout(_scSlotROTimer);
+                    _scSlotROTimer = setTimeout(_scUpdateVisibleSlot, 120);
                 }
             });
             return _scSlotRO;
@@ -17022,6 +17045,15 @@ const app = createApp({
         watch(() => scNpMode.value, (on) => {
             if (on && scTab.value === 'links') scNpAlignDiffColumn();
         });
+
+        // ЕДИНСТВЕННЫЙ триггер движения колонки: сменился лист под глазами.
+        // Прокрутка вверх-вниз внутри одного листа колонку не трогает — она
+        // живёт на своём ползунке.
+        watch(() => scVisibleSlotLeft.value, (slotId, prev) => {
+            if (slotId === prev) return;
+            if (!scNpMode.value || scTab.value !== 'links') return;
+            scNpDiffScrollToSlot(slotId);
+        });
         // ── Computed filters для unified flat ─────────────────────────────
         const scUnifiedPairOptions = computed(() => {
             const items = (scUnifiedFlat.value && scUnifiedFlat.value.items) || [];
@@ -18238,6 +18270,7 @@ const app = createApp({
             scNpCropUrl, scNpCropAvailable, scNpCropSource,
             scNpGoto, scNpHighlight, scNpClearHighlight, scNpSlotOverlays, scNpOverlayStyle, scNpRevealHighlight,
             scNpSlotGroups, scNpDiffSlotStyle, scNpFocusGroup, scNpIsFocused, scNpDiffWheel, scNpAlignDiffColumn,
+            scNpIsCurrentSlot, scNpDiffScrollToSlot,
             scNpSlotSummary, scNpSlotNotice,
             scVectorPages, scVectorFailed, scPageSrcUrl, scOnPageImageError, scToggleVectorPages,
             scCanvasRefs, scCanvasNat,
