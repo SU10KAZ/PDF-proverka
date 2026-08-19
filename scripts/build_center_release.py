@@ -337,11 +337,12 @@ def build(
             return _build(tmp, base=base, final=final, release_id=release_id,
                           commit=commit, parent=parent, tree=tree,
                           parent_tree=parent_tree, base_manifest=base_manifest,
-                          kind=kind, notes=notes, tests=tests)
+                          kind=kind, notes=notes, tests=tests,
+                          source_receipt=source_receipt)
 
 
 def _build(tmp, *, base, final, release_id, commit, parent, tree, parent_tree,
-           base_manifest, kind, notes, tests) -> dict[str, object]:
+           base_manifest, kind, notes, tests, source_receipt) -> dict[str, object]:
     staging = tmp / release_id
     subprocess.run(["cp", "-a", str(base), str(staging)], check=True)
     make_writable(staging)
