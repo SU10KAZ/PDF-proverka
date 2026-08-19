@@ -3413,12 +3413,15 @@ const app = createApp({
             selectAllChecked.value = s.size === projects.value.length && s.size > 0;
         }
 
-        // Единый критерий «проект не обработан» (аудит не проводился): нет ни
-        // одного замечания. Им пользуются и кнопка «Выделить необработанные»,
-        // и столбцы «Необработаны»/«Обработаны» на главной — чтобы цифра в
-        // столбце и число выделяемых по клику проектов не разъезжались.
+        // Единый критерий «на проверку не запускали»: у карточки нет ни одного
+        // результата аудита — ни замечаний, ни оптимизаций. Им пользуются и
+        // кнопка «Выделить необработанные», и столбец «Не запускались на
+        // проверку» на главной — чтобы цифра в столбце и число выделяемых по
+        // клику проектов не разъезжались. Оптимизации учитываются наравне с
+        // замечаниями: аудит, нашедший только оптимизации, — запускался.
         function isProjectUnanalyzed(p) {
-            return !(p.findings_count > 0);
+            if (!p) return true;
+            return !((p.findings_count > 0) || (p.optimization_count > 0));
         }
 
         // Проект отработан экспертом полностью — обе галочки на карточке.
@@ -3475,6 +3478,55 @@ const app = createApp({
                 if (isProjectReviewPending(p)) keys.add(projectBaseKey(p));
             }
             return keys.size;
+        }
+
+        // Номер версии из имени карточки («X V2», «X_V2») — зеркало
+        // `base_project_key` на бэкенде, который этот же суффикс срезает.
+        // Карточка без суффикса получает 0: в паре «X» и «X V2» последней
+        // считается «X V2».
+        const _VERSION_SUFFIX_RE = /[\s_\-]+[Vv]\s*(\d+)\s*$/;
+        function cardVersionRank(p) {
+            const m = _VERSION_SUFFIX_RE.exec(String((p && p.project_id) || ''));
+            return m ? parseInt(m[1], 10) : 0;
+        }
+
+        // Последняя карточка каждого логического проекта: сводка разделов
+        // считает ПРОЕКТЫ по их последней версии, а не карточки-версии.
+        // Внутри одной карточки версия и так последняя — список проектов
+        // отдаёт статус `current_version`, а он в v2 всегда старший.
+        // Между карточками-версиями («X V1» и «X V2» — два документа)
+        // старшинство решает суффикс имени, при равенстве — version_no.
+        function latestProjectCards(items) {
+            const byKey = new Map();
+            for (const p of items || []) {
+                const key = projectBaseKey(p);
+                const prev = byKey.get(key);
+                if (!prev) { byKey.set(key, p); continue; }
+                const d = cardVersionRank(p) - cardVersionRank(prev);
+                if (d > 0 || (d === 0 && (p.version_no || 1) > (prev.version_no || 1))) {
+                    byKey.set(key, p);
+                }
+            }
+            return Array.from(byKey.values());
+        }
+
+        // Эксперт полностью закрыл проект — СТРОГО по этой версии (решение
+        // Андрея Ивановича 2026-08-19: «всегда ориентируемся на последний
+        // проект»). Отличия от `isProjectReviewPending`, который спускается к
+        // предыдущей версии с результатами: непроверенная свежая версия
+        // обнуляет проверку проекта.
+        // Пустая категория галочку не блокирует — зеркало `_review_incomplete`
+        // на бэкенде: проект без оптимизаций иначе никогда не станет
+        // проверенным (их статус остаётся пустым).
+        function isProjectExpertResolved(p) {
+            if (!p || isProjectUnanalyzed(p)) return false;   // проверять нечего
+            const findingsOk = !(p.findings_count > 0)
+                || p.findings_review_status === 'complete';
+            const optOk = !(p.optimization_count > 0)
+                || p.optimization_review_status === 'complete';
+            if (findingsOk && optOk) return true;
+            // fallback для источников, отдающих только сводный статус
+            return p.expert_review_status === 'complete';
         }
 
         // Порядок карточек в разделе: 0 — проверенные экспертом, 1 — обработанные
@@ -4818,31 +4870,37 @@ const app = createApp({
                 .reduce((sum, p) => sum + (p.findings_count || 0), 0);
         }
 
-        // Сводка по разделу для «Главной». Определения совпадают с галочками
-        // на карточке проекта в разделе:
-        //   unanalyzed — аудит НЕ проводился (isProjectUnanalyzed) — те же
-        //                проекты, что выделяет «Выделить необработанные»;
-        //   analyzed   — аудит проводился (total - unanalyzed);
-        //   checked    — эксперт отработал проект ПОЛНОСТЬЮ (обе галочки:
-        //                замечания + оптимизации) → expert_review_status==='complete';
-        //   total      — общее число проектов раздела;
-        //   findings   — суммарно замечаний.
+        // Сводка по разделу для «Главной». Все столбцы считают УНИКАЛЬНЫЕ
+        // проекты (карточки-версии одного проекта = один проект) и смотрят на
+        // ПОСЛЕДНЮЮ версию — постановка Андрея Ивановича 2026-08-19:
+        //   notStarted  — «Не запускались на проверку»: у последней версии нет
+        //                 результатов аудита (isProjectUnanalyzed); те же
+        //                 проекты выделяет «Выделить необработанные»;
+        //   noDecisions — «Нет решений эксперта»: всё, что эксперт не закрыл
+        //                 полностью, включая ни разу не проверенные проекты
+        //                 (total − expertChecked);
+        //   expertChecked — «Проверено Экспертом»: эксперт закрыл ПОСЛЕДНЮЮ
+        //                 версию (isProjectExpertResolved); проверенные старые
+        //                 версии не считаются, пока не проверена последняя;
+        //   total       — уникальных проектов в разделе;
+        //   findings    — замечания последних версий.
         // Ключуется тем же группированием, что projectsBySection, чтобы цифры
-        // совпадали с items.length и с карточками раздела.
+        // совпадали с карточками раздела.
         const sectionStatsMap = computed(() => {
             const m = {};
             for (const [code, items] of projectsBySection.value) {
-                let checked = 0, unanalyzed = 0, findings = 0;
-                for (const p of items) {
-                    if (p.expert_review_status === 'complete') checked++;
-                    if (isProjectUnanalyzed(p)) unanalyzed++;
+                const latest = latestProjectCards(items);
+                let expertChecked = 0, notStarted = 0, findings = 0;
+                for (const p of latest) {
+                    if (isProjectExpertResolved(p)) expertChecked++;
+                    if (isProjectUnanalyzed(p)) notStarted++;
                     findings += (p.findings_count || 0);
                 }
                 m[code] = {
-                    total: items.length,
-                    unanalyzed,
-                    analyzed: items.length - unanalyzed,
-                    checked,
+                    total: latest.length,
+                    notStarted,
+                    noDecisions: latest.length - expertChecked,
+                    expertChecked,
                     findings,
                 };
             }
@@ -4852,12 +4910,12 @@ const app = createApp({
         // Итого по всем разделам — сумма каждого числового столбца для
         // строки «Итого» внизу таблицы «Разделы проекта».
         const sectionStatsTotals = computed(() => {
-            const t = { unanalyzed: 0, analyzed: 0, checked: 0, total: 0, findings: 0 };
+            const t = { notStarted: 0, noDecisions: 0, expertChecked: 0, total: 0, findings: 0 };
             for (const code in sectionStatsMap.value) {
                 const s = sectionStatsMap.value[code];
-                t.unanalyzed += s.unanalyzed;
-                t.analyzed += s.analyzed;
-                t.checked += s.checked;
+                t.notStarted += s.notStarted;
+                t.noDecisions += s.noDecisions;
+                t.expertChecked += s.expertChecked;
                 t.total += s.total;
                 t.findings += s.findings;
             }
@@ -4870,7 +4928,8 @@ const app = createApp({
         });
 
         // Есть ли в текущем разделе необработанные (без аудита) проекты —
-        // критерий тот же, что у isProjectUnanalyzed: findings_count == 0.
+        // критерий тот же, что у isProjectUnanalyzed: нет ни замечаний,
+        // ни оптимизаций.
         const sectionHasUnanalyzed = computed(() => {
             const sec = sidebarFilterSection.value;
             if (!sec || sec === '__all__') return false;

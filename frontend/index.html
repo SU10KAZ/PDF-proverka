@@ -584,10 +584,10 @@
                 <div class="dash-sections-head">
                     <span class="dash-sections-head__name">Раздел</span>
                     <div class="dash-section-row__stats">
-                        <span class="dash-stat__head" title="Проектов без аудита — нажмите на цифру в строке, чтобы выделить их">Необработаны</span>
-                        <span class="dash-stat__head" title="Проектов, по которым аудит уже проводился">Обработаны</span>
-                        <span class="dash-stat__head" title="Проектов полностью отработано экспертом (обе галочки: замечания + оптимизации)">Проверено</span>
-                        <span class="dash-stat__head" title="Всего проектов в разделе">Всего</span>
+                        <span class="dash-stat__head" title="Проектов, у которых на последней версии аудит ни разу не запускался — нажмите на цифру в строке, чтобы выделить их">Не запускались на проверку</span>
+                        <span class="dash-stat__head" title="Проектов, которые эксперт не отработал полностью на последней версии (включая те, где аудит не запускался)">Нет решений эксперта</span>
+                        <span class="dash-stat__head" title="Проектов, где эксперт закрыл ПОСЛЕДНЮЮ версию (обе галочки: замечания + оптимизации)">Проверено Экспертом</span>
+                        <span class="dash-stat__head" title="Всего проектов в разделе (версии одного проекта считаются один раз)">Всего</span>
                         <span class="dash-stat__head" title="Суммарно замечаний по разделу">Замечаний</span>
                     </div>
                     <span class="dash-sections-head__arrow"></span>
@@ -600,17 +600,17 @@
                         <span class="dash-section-row__name">{{ disciplineLabel(code) }}</span>
                         <div class="dash-section-row__stats">
                             <span class="dash-stat dash-stat--todo"
-                                  :class="{ 'dash-stat--clickable': sectionStatsMap[code].unanalyzed > 0,
+                                  :class="{ 'dash-stat--clickable': sectionStatsMap[code].notStarted > 0,
                                             'dash-stat--picked': isUnanalyzedSelected(code) }"
                                   @click.stop="toggleUnanalyzedSelection(code)"
-                                  :title="sectionStatsMap[code].unanalyzed === 0
-                                          ? 'Необработанных проектов нет'
+                                  :title="sectionStatsMap[code].notStarted === 0
+                                          ? 'Проектов без запуска проверки нет'
                                           : (isUnanalyzedSelected(code)
-                                             ? 'Необработанные выделены — нажмите, чтобы снять выделение'
-                                             : 'Проектов без аудита — нажмите, чтобы выделить их (как «Выделить необработанные»)')">{{ sectionStatsMap[code].unanalyzed }}</span>
-                            <span class="dash-stat dash-stat--proc" title="Проектов, по которым аудит уже проводился">{{ sectionStatsMap[code].analyzed }}</span>
-                            <span class="dash-stat dash-stat--done" title="Полностью отработано экспертом (обе галочки)">{{ sectionStatsMap[code].checked }}</span>
-                            <span class="dash-stat dash-stat--total" title="Всего проектов в разделе">{{ sectionStatsMap[code].total }}</span>
+                                             ? 'Они выделены — нажмите, чтобы снять выделение'
+                                             : 'Проектов, на которых аудит не запускался — нажмите, чтобы выделить их (как «Выделить необработанные»)')">{{ sectionStatsMap[code].notStarted }}</span>
+                            <span class="dash-stat dash-stat--proc" title="Эксперт не закрыл последнюю версию полностью (включая проекты без аудита)">{{ sectionStatsMap[code].noDecisions }}</span>
+                            <span class="dash-stat dash-stat--done" title="Эксперт закрыл последнюю версию (обе галочки)">{{ sectionStatsMap[code].expertChecked }}</span>
+                            <span class="dash-stat dash-stat--total" title="Всего проектов в разделе (версии считаются один раз)">{{ sectionStatsMap[code].total }}</span>
                             <span class="dash-stat dash-stat--find" title="Суммарно замечаний по разделу">{{ sectionStatsMap[code].findings }}</span>
                         </div>
                         <svg class="dash-section-row__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
@@ -620,16 +620,16 @@
                         <span class="dash-section-row__name">Итого</span>
                         <div class="dash-section-row__stats">
                             <span class="dash-stat dash-stat--todo"
-                                  :class="{ 'dash-stat--clickable': sectionStatsTotals.unanalyzed > 0,
+                                  :class="{ 'dash-stat--clickable': sectionStatsTotals.notStarted > 0,
                                             'dash-stat--picked': isUnanalyzedSelected('__all__') }"
                                   @click.stop="toggleUnanalyzedSelection('__all__')"
-                                  :title="sectionStatsTotals.unanalyzed === 0
-                                          ? 'Необработанных проектов нет'
+                                  :title="sectionStatsTotals.notStarted === 0
+                                          ? 'Проектов без запуска проверки нет'
                                           : (isUnanalyzedSelected('__all__')
-                                             ? 'Все необработанные выделены — нажмите, чтобы снять выделение'
-                                             : 'Всего проектов без аудита — нажмите, чтобы выделить их во всех разделах')">{{ sectionStatsTotals.unanalyzed }}</span>
-                            <span class="dash-stat dash-stat--proc" title="Всего проектов, по которым аудит уже проводился">{{ sectionStatsTotals.analyzed }}</span>
-                            <span class="dash-stat dash-stat--done" title="Всего полностью отработано экспертом">{{ sectionStatsTotals.checked }}</span>
+                                             ? 'Все они выделены — нажмите, чтобы снять выделение'
+                                             : 'Всего проектов, на которых аудит не запускался — нажмите, чтобы выделить их во всех разделах')">{{ sectionStatsTotals.notStarted }}</span>
+                            <span class="dash-stat dash-stat--proc" title="Всего проектов, которые эксперт не закрыл полностью">{{ sectionStatsTotals.noDecisions }}</span>
+                            <span class="dash-stat dash-stat--done" title="Всего проектов с проверенной последней версией">{{ sectionStatsTotals.expertChecked }}</span>
                             <span class="dash-stat dash-stat--total" title="Всего проектов">{{ sectionStatsTotals.total }}</span>
                             <span class="dash-stat dash-stat--find" title="Всего замечаний">{{ sectionStatsTotals.findings }}</span>
                         </div>

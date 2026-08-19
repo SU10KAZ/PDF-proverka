@@ -3024,7 +3024,7 @@ tr.row-rejected td.sc-cell-goto {
 /* Группа из 5 выровненных по столбцам мини-метрик */
 .dash-section-row__stats { display: flex; gap: 12px; flex-shrink: 0; }
 .dash-stat {
-    width: 96px; text-align: center; font-size: 15px; font-weight: 700;
+    width: 118px; text-align: center; font-size: 15px; font-weight: 700;
     color: var(--text); font-variant-numeric: tabular-nums;
 }
 .dash-stat--todo  { color: var(--amber); }
@@ -3048,13 +3048,15 @@ tr.row-rejected td.sc-cell-goto {
 }
 /* Шапка столбцов — те же ширины, что у .dash-stat, чтобы цифры стояли в колонку */
 .dash-sections-head {
-    display: flex; align-items: center; gap: 12px; padding: 2px 16px 6px;
+    display: flex; align-items: flex-end; gap: 12px; padding: 2px 16px 6px;
 }
 .dash-sections-head__name { flex: 1; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .03em; }
+/* Заголовки длинные («Не запускались на проверку») — переносим их по словам,
+   а не растягиваем строку: nowrap уводил цифры из-под своих подписей. */
 .dash-stat__head {
-    width: 96px; text-align: center; font-size: 11px; font-weight: 600;
+    width: 118px; text-align: center; font-size: 11px; font-weight: 600;
     color: var(--text3); text-transform: uppercase; letter-spacing: .02em;
-    white-space: nowrap;
+    white-space: normal; line-height: 1.25; overflow-wrap: break-word;
 }
 .dash-sections-head__arrow { width: 16px; flex-shrink: 0; }
 .dash-section-row__arrow { color: var(--text3); flex-shrink: 0; }
