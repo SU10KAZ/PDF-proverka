@@ -38,16 +38,16 @@ disciplines/
   _registry.json          ← реестр: код, название, цвет, order, folder_patterns
   EOM/, OV/               ← полные профили (role.md, checklist.md, norms_reference.md)
 
-webapp/                   ← FastAPI + Vue 3 (legacy, порт 8081)
-backend/                  ← НОВЫЙ backend (FastAPI, порт 8081)
+backend/                  ← backend (FastAPI, порт 8081)
   app/main.py             ← entrypoint: uvicorn backend.app.main:app --port 8081
   app/core/config.py      ← все пути (ROOT_DIR, PROJECTS_DIR и др.)
   app/api/routers/        ← REST API /api/...
   app/services/           ← common/, llm/, findings/, knowledge_base/, discussions/, export/
   app/pipeline/           ← manager.py + stages/ (prepare, crop_blocks, gemma_enrichment и др.)
 frontend/                 ← Vue 3 SPA (Vite, порт 5173 → proxy :8081)
-norms_db.json             ← статус норм (176+ записей)
-norms_paragraphs.json     ← проверенные цитаты пунктов
+norms/                    ← пакет норм (CLI `python -m norms._core`)
+  norms_db.json           ← статус норм (176+ записей)
+  norms_paragraphs.json   ← проверенные цитаты пунктов
 .claude/
   *_task.md               ← шаблоны задач для каждого этапа
   settings.json           ← разрешения инструментов
@@ -62,8 +62,7 @@ norms_paragraphs.json     ← проверенные цитаты пунктов
 |------|-----------|
 | `process_project.py` | Подготовка: проверка MD, метаданные, document_graph.json |
 | `blocks.py` | `crop` (по crop_url) / `batches` / `merge` |
-| `norms.py` | `verify` (извлечь нормы) / `update` (обновить кеш) |
-| `query_project.py` | Быстрый поиск по JSON-конвейеру |
+| `python -m norms._core` | `verify` (извлечь нормы) / `update` (обновить кеш) |
 | `generate_excel_report.py` | Excel-сводка всех проектов |
 
 ## Команды
@@ -77,27 +76,15 @@ python blocks.py crop projects/<name>
 python blocks.py batches projects/<name>
 python blocks.py merge projects/<name> [--cleanup]
 
-# Запросы
-python query_project.py projects/<name>           # все замечания
-python query_project.py projects/<name> --critical
-python query_project.py projects/<name> --cat cable
-python query_project.py projects/<name> --sheet 7
-python query_project.py projects/<name> --id F-001
-python query_project.py projects/<name> --status
-python query_project.py                           # обзор всех
-
 # Нормы
-python norms.py verify projects/<name> --extract-only
-python norms.py update --all
-python norms.py update --stats
+python -m norms._core verify projects/<name> --extract-only
+python -m norms._core update --all
+python -m norms._core update --stats
 
 # Excel-отчёт
 python generate_excel_report.py
 
-# Веб (старый способ — webapp)
-cd webapp && python main.py    # http://localhost:8081
-
-# Веб (новый backend — из корня)
+# Веб (backend — из корня)
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8081 --reload
 
 # Frontend (Vite dev-сервер с proxy → :8081)

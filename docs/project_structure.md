@@ -180,10 +180,7 @@ python gemma_enrich.py projects/<name> --force
 # Отчёт
 python generate_excel_report.py
 
-# Веб-приложение (старый способ — из папки webapp)
-cd webapp && python main.py    # http://localhost:8081
-
-# Веб-приложение (новый способ — из корня)
+# Веб-приложение (из корня)
 uvicorn backend.app.main:app --port 8081 --reload
 ```
 
@@ -193,17 +190,12 @@ uvicorn backend.app.main:app --port 8081 --reload
 - `norms/vault/` — PDF-файлы нормативов
 - `norms/norms_db.json` — статус 176+ нормативных документов
 - `norms/norms_paragraphs.json` — верифицированные цитаты пунктов
-- `webapp/data/` → теперь `backend/app/data/` — персистентные конфиги
+- `backend/app/data/` — персистентные конфиги (бывш. `webapp/data/`)
 - `.env` — секреты (никогда не коммитить)
 
 ## Обратная совместимость
 
-Старый `webapp/` **не удалён** — продолжает работать:
-```bash
-cd webapp && python main.py
-```
-
-Новый backend работает параллельно через:
+Старый `webapp/` **удалён** — единственный вход:
 ```bash
 uvicorn backend.app.main:app --port 8081
 ```
