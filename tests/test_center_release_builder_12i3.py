@@ -33,7 +33,7 @@ _FAKE_SOURCE_RECEIPT = {
     "source_commit": "a" * 40,
     "source_tree": "c" * 40,
     "canonical_remote": "origin",
-    "canonical_branch": "feature/block-vector-graphs",
+    "canonical_branch": "main",
     "canonical_remote_head": "a" * 40,
     "reachable_from_canonical_remote": True,
     "local_behind_remote": 0,

@@ -76,8 +76,14 @@ from typing import Iterable, Optional, Sequence
 #: Значения переопределяются окружением ради тестов и ради второй инсталляции,
 #: но НЕ ради обхода: подмена ветки видна в квитанции стража.
 CANONICAL_REMOTE = os.environ.get("AUDITMANAGER_CANONICAL_PRODUCTION_REMOTE", "origin")
+#: С 19.08.2026 прод-истина — `main`. До этого ею была
+#: `feature/block-vector-graphs`: production authority на ветке с именем
+#: «feature/…» — ровно тот беспорядок, из которого выросли инциденты 18.08
+#: (непонятно, куда пушить и что считается опубликованным). Старая ветка
+#: БОЛЬШЕ НЕ ДАЁТ права на выкатку: коммит, лежащий только в ней, страж
+#: отвергает так же, как любой неопубликованный.
 CANONICAL_BRANCH = os.environ.get(
-    "AUDITMANAGER_CANONICAL_PRODUCTION_BRANCH", "feature/block-vector-graphs"
+    "AUDITMANAGER_CANONICAL_PRODUCTION_BRANCH", "main"
 )
 
 #: Каталоги и файлы, попадающие в прод-артефакты (дерево релиза центра =

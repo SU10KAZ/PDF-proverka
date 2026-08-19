@@ -29,7 +29,11 @@ from scripts.production_source_guard import (  # noqa: E402
     verify_production_source,
 )
 
-CANONICAL_BRANCH = "feature/block-vector-graphs"
+#: Каноническая ветка прод-истины. С 19.08.2026 — `main`; фикстуры создают
+#: ветку именно с этим именем, чтобы тест ломался, если умолчание стража
+#: разъедется с реальностью.
+CANONICAL_BRANCH = "main"
+OLD_CANONICAL_BRANCH = "feature/block-vector-graphs"
 
 
 def _git(cwd: Path, *args: str) -> str:
@@ -398,3 +402,70 @@ def test_release_source_wrapper_forwards_manifest_commit(
                         lambda repo, **kw: seen.update(kw) or {"ok": True})
     deployer._verify_release_source(rel)
     assert seen["commit"] == "08666e4d" + "0" * 32
+
+
+# ═════ Смена канонической ветки на main (19.08.2026) ═══════════════════════
+
+def test_default_canonical_branch_is_main() -> None:
+    """Умолчание стража — `main`, а не старая production feature-ветка.
+
+    Проверяется исходник, а не импортированная константа: модуль читает
+    окружение при импорте, и в сеансе с выставленной переменной тест был бы
+    зелёным при любом умолчании.
+    """
+    src = (REPO_ROOT / "scripts" / "production_source_guard.py").read_text(encoding="utf-8")
+    assert '"AUDITMANAGER_CANONICAL_PRODUCTION_BRANCH", "main"' in src
+    assert '"AUDITMANAGER_CANONICAL_PRODUCTION_BRANCH", "feature/block-vector-graphs"' not in src
+
+
+def test_commit_only_in_old_feature_branch_is_refused(fixture_repo: Path) -> None:
+    """Старая прод-ветка больше НЕ даёт права на выкатку.
+
+    Это главный смысл миграции: пока `feature/block-vector-graphs` считалась
+    авторитетом, туда можно было запушить и сразу собрать релиз. Теперь такой
+    коммит опубликован, но не канонический — отказ.
+    """
+    _git(fixture_repo, "checkout", "-q", "-b", OLD_CANONICAL_BRANCH)
+    (fixture_repo / "backend" / "app.py").write_text("print('old-branch')\n", encoding="utf-8")
+    _git(fixture_repo, "commit", "-aqm", "правка на старой прод-ветке")
+    _git(fixture_repo, "push", "-q", "origin", OLD_CANONICAL_BRANCH)
+    old_commit = _git(fixture_repo, "rev-parse", "HEAD")
+
+    with pytest.raises(ProductionSourceNotCanonical) as exc:
+        _verify(fixture_repo, commit=old_commit)
+    assert exc.value.reason == "commit_not_published"
+
+    # А после слияния в main и push — тот же коммит проходит.
+    _git(fixture_repo, "checkout", "-q", CANONICAL_BRANCH)
+    _git(fixture_repo, "merge", "-q", "--no-edit", old_commit)
+    _git(fixture_repo, "push", "-q", "origin", CANONICAL_BRANCH)
+    assert _verify(fixture_repo, commit=old_commit)["reachable_from_canonical_remote"] is True
+
+
+def test_no_production_tooling_still_treats_the_old_branch_as_authority() -> None:
+    """Ни один боевой инструмент не должен считать старую ветку авторитетом."""
+    tools = [
+        REPO_ROOT / "scripts" / "production_source_guard.py",
+        REPO_ROOT / "scripts" / "build_center_release.py",
+        REPO_ROOT / "scripts" / "deploy_center_release.py",
+        REPO_ROOT / "scripts" / "deploy_audit_worker.py",
+        REPO_ROOT / "scripts" / "deploy_lock.py",
+    ]
+    offenders = []
+    for tool in tools:
+        src = tool.read_text(encoding="utf-8")
+        for line in src.splitlines():
+            stripped = line.strip()
+            if "feature/block-vector-graphs" not in stripped:
+                continue
+            # Упоминание в комментарии-истории допустимо; исполняемая строка — нет.
+            if stripped.startswith("#") or stripped.startswith("#:"):
+                continue
+            offenders.append(f"{tool.name}: {stripped[:120]}")
+    assert not offenders, "старая ветка осталась авторитетом: " + "; ".join(offenders)
+
+
+def test_main_authority_is_documented() -> None:
+    doc = (REPO_ROOT / "docs" / "production_source_guard.md").read_text(encoding="utf-8")
+    assert "origin/main" in doc
+    assert "умолчание `main`" in doc
