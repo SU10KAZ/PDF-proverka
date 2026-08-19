@@ -269,7 +269,17 @@ def provider_status_digest(snapshots: Any) -> str:
 
 def provider_capability_to_center(item: common_pb.ProviderCapabilitySnapshot) -> dict[str, Any]:
     remaining = None
-    if item.raw_remaining_supported and item.remaining_pct_milli:
+    # `remaining_pct_milli` СРАВНИВАЕТСЯ С НУЛЁМ, а не проверяется на
+    # истинность. Разница не стилистическая: ноль — это «лимит выбран
+    # полностью», самое важное число на этом экране, и прежняя проверка
+    # `and item.remaining_pct_milli` молча превращала его в «остаток
+    # недоступен». Наблюдалось вживую 19.08.2026: Codex сообщал 0 %, карточка
+    # писала «нет данных», и исчерпанный провайдер выглядел просто неопрошенным.
+    #
+    # Признаком наличия числа служит `raw_remaining_supported`: воркер ставит
+    # его только вместе с настоящим ответом источника, и другого способа
+    # отличить «ноль» от «поля не было» в proto3 нет.
+    if item.raw_remaining_supported and item.remaining_pct_milli >= 0:
         remaining = round(item.remaining_pct_milli / 1000.0, 1)
     observed = epoch_from_timestamp(item.observed_at) if item.HasField("observed_at") else None
     reset = epoch_from_timestamp(item.next_reset_at) if item.HasField("next_reset_at") else None

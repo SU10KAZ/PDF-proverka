@@ -314,3 +314,45 @@ def test_codex_untouched_by_all_of_this():
     assert view["routeReady"] is True
     assert view["reason"] is None
     assert view["isEstimated"] is False
+
+
+# ─── 10. Ноль процентов — это число, а не отсутствие данных ────────────────
+
+def test_zero_remaining_survives_the_wire():
+    """Наблюдалось вживую: Codex сообщил 0 %, карточка написала «нет данных».
+
+    Ноль — самое важное значение на этом экране: провайдер выбран полностью.
+    Проверка на истинность вместо сравнения с нулём стирала именно его, и
+    исчерпанный провайдер выглядел просто неопрошенным.
+    """
+    pytest.importorskip("google.protobuf")
+    from contracts.agent_stream.v1 import adapters
+
+    def roundtrip(remaining, supported=True):
+        snap = {
+            "provider": "codex", "installation_status": "installed",
+            "auth_state": "logged_in", "policy_state": "allowed",
+            "inference_allowed": False, "credential_present": True,
+            "cli_version": "0.147.0", "observed_at": 1.0,
+            "quota": {
+                "quota_state": "ready", "source": "official_app_server_rpc",
+                "confidence": "high", "estimated_remaining_pct": remaining,
+                "raw_remaining_supported": supported,
+            },
+        }
+        proto = adapters._provider_snapshot_to_proto(snap)
+        return adapters.provider_capability_to_center(proto)["quota"]
+
+    assert roundtrip(0.0)["estimated_remaining_pct"] == 0.0
+    assert roundtrip(3.0)["estimated_remaining_pct"] == 3.0
+    # А вот отсутствие числа обязано остаться отсутствием.
+    assert roundtrip(None, supported=False)["estimated_remaining_pct"] is None
+
+
+def test_zero_remaining_shows_as_critical_not_unknown():
+    view, _ = _center_view(
+        quota_state="ready", remaining=0.0,
+        source="official_app_server_rpc", confidence="high",
+    )
+    assert view["percentageRemaining"] == 0.0
+    assert view["status"] == "critical"
