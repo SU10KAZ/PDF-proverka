@@ -5381,7 +5381,7 @@
             <div class="page-header sc-shell__header">
                 <div>
                     <h2>Сравнение документации</h2>
-                    <p>Каркас будущего сравнения П → РД</p>
+                    <p>Быстрое сопоставление листов П → РД по Markdown с ручной корректировкой</p>
                 </div>
             </div>
 
@@ -5479,9 +5479,18 @@
                                 @click="scOpenSelectedPair()">
                             {{ scPairLoading ? 'Открытие…' : 'Открыть пару' }}
                         </button>
-                        <button class="btn btn-secondary" disabled title="Анализ будет реализован в новой архитектуре">Обработать</button>
-                        <button class="btn btn-secondary" disabled title="Анализ будет реализован в новой архитектуре">Обработать выбранные</button>
+                        <button class="btn btn-secondary"
+                                :disabled="!scSelectedPdf.left || !scSelectedPdf.right || scProcessing"
+                                @click="scProcessCurrentSelection()">
+                            {{ scProcessing ? 'Обработка…' : 'Обработать' }}
+                        </button>
+                        <button class="btn btn-secondary"
+                                :disabled="!scPairs.some(pair => scSelectedPairIds[pair.id]) || scProcessing"
+                                @click="scProcessCheckedPairs()">
+                            Обработать выбранные
+                        </button>
                     </div>
+                    <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                 </section>
 
                 <section v-if="scPairs.length" class="sc-shell-card">
@@ -5490,7 +5499,7 @@
                     </div>
                     <div class="sc-pair-list">
                         <div v-for="pair in scPairs" :key="pair.id" class="sc-pair-list__row">
-                            <input type="checkbox" disabled aria-label="Выбрать пару для будущей обработки">
+                            <input type="checkbox" v-model="scSelectedPairIds[pair.id]" aria-label="Выбрать пару для обработки">
                             <span>{{ pair.left.filename }}</span>
                             <span class="sc-pair-list__arrow">→</span>
                             <span>{{ pair.right.filename }}</span>
@@ -5505,6 +5514,20 @@
                     Выберите пару документов на вкладке «Загрузка документации»
                 </div>
                 <template v-else>
+                    <section v-if="scMatchState && scMatchState.suggestions" class="sc-match-summary">
+                        <div><strong>{{ scMatchSummary.auto_high }}</strong><span>автоматически уверенно</span></div>
+                        <div><strong>{{ scMatchSummary.needs_review }}</strong><span>требуют проверки</span></div>
+                        <div><strong>{{ scMatchSummary.manual_links }}</strong><span>ручных связей</span></div>
+                        <div><strong>{{ scMatchSummary.unmatched_left }}</strong><span>не сопоставлены П</span></div>
+                        <div><strong>{{ scMatchSummary.unmatched_right }}</strong><span>не сопоставлены РД</span></div>
+                    </section>
+                    <section v-else class="sc-empty-state">
+                        <p>Предложения соответствия ещё не построены.</p>
+                        <button class="btn btn-primary" :disabled="scProcessing" @click="scProcessCurrentSelection()">
+                            Обработать
+                        </button>
+                    </section>
+                    <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-toolbar">
                         <label><input type="checkbox" v-model="scSyncScroll"> Синхронная прокрутка</label>
                         <span class="sc-viewer-toolbar__spacer"></span>
@@ -5533,6 +5556,90 @@
                             </div>
                         </section>
                     </div>
+                    <section v-if="scMatchState && scMatchState.suggestions" class="sc-link-editor-card">
+                        <div class="sc-link-editor-card__head">
+                            <div>
+                                <span class="sc-shell-kicker">Текущая связь</span>
+                                <strong>П: PDF стр. {{ scCurrentPage.left }}</strong>
+                            </div>
+                            <span class="sc-match-status" :class="'sc-match-status--' + scCurrentStatus.tone">
+                                {{ scCurrentStatus.label }}
+                            </span>
+                        </div>
+
+                        <div class="sc-link-passports">
+                            <div>
+                                <span>Лист П</span>
+                                <strong>{{ scPassportLabel(scPassportFor('left', scCurrentPage.left)) }}</strong>
+                                <small v-if="scPassportFor('left', scCurrentPage.left) && scPassportFor('left', scCurrentPage.left).sheet_number">
+                                    Лист {{ scPassportFor('left', scCurrentPage.left).sheet_number }}
+                                </small>
+                            </div>
+                            <span class="sc-link-passports__arrow">↔</span>
+                            <div>
+                                <span>Лист РД</span>
+                                <strong v-if="scCurrentRightPages.length">
+                                    PDF стр. {{ scCurrentRightPages.join(', ') }}
+                                </strong>
+                                <strong v-else>Соответствие не выбрано</strong>
+                                <small v-if="scCurrentRightPages.length">
+                                    {{ scPassportLabel(scPassportFor('right', scCurrentPage.right)) }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <div v-if="scCurrentRightPages.length > 1" class="sc-linked-pages">
+                            <span>Связанные листы РД:</span>
+                            <button v-for="page in scCurrentRightPages" :key="'right-link-'+page"
+                                    class="btn btn-sm" :class="{'btn-primary': scCurrentPage.right === page}"
+                                    @click="scSwitchRightPage(page)">PDF {{ page }}</button>
+                        </div>
+
+                        <div v-if="scLeftSuggestion && scLeftSuggestion.reason.length" class="sc-match-reason">
+                            Причина: {{ scLeftSuggestion.reason.map(scReasonLabel).join(' + ') }}
+                        </div>
+                        <div v-if="scCurrentExplicitLinks.some(link => link.source === 'manual')
+                                   && scLeftSuggestion && scLeftSuggestion.primary_right_page
+                                   && !scCurrentRightPages.includes(Number(scLeftSuggestion.primary_right_page))"
+                             class="sc-match-conflict">
+                            Новое автопредложение отличается: РД PDF {{ scLeftSuggestion.primary_right_page }}.
+                            Ручная связь сохранена.
+                        </div>
+
+                        <div class="sc-shell-actions">
+                            <button v-if="scLeftSuggestion && scLeftSuggestion.primary_right_page"
+                                    class="btn btn-primary" :disabled="scLinkSaving" @click="scAcceptSuggestion()">✓ Оставить</button>
+                            <button class="btn btn-secondary" :disabled="scLinkSaving" @click="scOpenLinkEditor('replace')">Изменить</button>
+                            <button class="btn btn-secondary" :disabled="scLinkSaving" @click="scOpenLinkEditor('add')">+ Добавить лист РД</button>
+                            <button class="btn btn-secondary" :disabled="scLinkSaving" @click="scDeleteCurrentLink()">Удалить связь</button>
+                        </div>
+
+                        <div v-if="scLinkEditorOpen" class="sc-link-picker">
+                            <label for="sc-right-page-picker">
+                                {{ scLinkEditorMode === 'add' ? 'Добавить лист РД' : 'Выбрать лист РД' }}
+                            </label>
+                            <select id="sc-right-page-picker" v-model="scLinkEditorRightPage" class="form-control">
+                                <option v-for="passport in scRightOptions" :key="'candidate-'+passport.pdf_page"
+                                        :value="String(passport.pdf_page)">
+                                    PDF {{ passport.pdf_page }} · Лист {{ passport.sheet_number || '—' }} · {{ scPassportLabel(passport) }}
+                                </option>
+                            </select>
+                            <button class="btn btn-primary" :disabled="!scLinkEditorRightPage || scLinkSaving"
+                                    @click="scApplyLinkEditor()">Сохранить</button>
+                            <button class="btn btn-sm" @click="scLinkEditorOpen=false">Отмена</button>
+                        </div>
+
+                        <div v-if="scMatchSummary.unmatched_left_pages.length" class="sc-unmatched-pages">
+                            <span>Не сопоставлены П:</span>
+                            <button v-for="page in scMatchSummary.unmatched_left_pages" :key="'unmatched-left-'+page"
+                                    class="btn btn-sm" @click="scFocusLeftPage(page)">PDF {{ page }}</button>
+                        </div>
+                        <div v-if="scMatchSummary.unmatched_right_pages.length" class="sc-unmatched-pages">
+                            <span>Не сопоставлены РД:</span>
+                            <button v-for="page in scMatchSummary.unmatched_right_pages" :key="'unmatched-right-'+page"
+                                    class="btn btn-sm" @click="scChooseUnmatchedRight(page)">PDF {{ page }}</button>
+                        </div>
+                    </section>
                 </template>
             </div>
 

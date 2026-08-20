@@ -28,6 +28,20 @@ class CreatePairRequest(BaseModel):
     right_pdf: str = Field(min_length=1)
 
 
+class SheetLinkRequest(BaseModel):
+    id: str | None = None
+    left_pages: list[int]
+    right_pages: list[int]
+    source: str = "manual"
+    confidence: str = "manual"
+    reason: list[str] = Field(default_factory=list)
+
+
+class SaveSheetLinksRequest(BaseModel):
+    links: list[SheetLinkRequest] = Field(default_factory=list)
+    unlinked_left_pages: list[int] = Field(default_factory=list)
+
+
 @router.get("/objects")
 async def list_comparison_objects():
     return objects_mod.list_objects()
@@ -128,6 +142,44 @@ async def get_pair(session_id: str, pair_id: str):
     if pair is None:
         raise HTTPException(404, "Пара не найдена")
     return pair
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-match-suggestions")
+async def rebuild_sheet_match_suggestions(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(store.run_sheet_matching, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except (OSError, UnicodeDecodeError) as exc:
+        raise HTTPException(400, f"Не удалось прочитать Markdown: {exc}") from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/sheet-matches")
+async def get_sheet_matches(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(store.get_sheet_matching_state, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.put("/sessions/{session_id}/pairs/{pair_id}/sheet-links")
+async def save_sheet_links(session_id: str, pair_id: str, request: SaveSheetLinksRequest):
+    try:
+        return await run_in_threadpool(
+            store.save_sheet_links,
+            session_id,
+            pair_id,
+            [link.model_dump() for link in request.links],
+            request.unlinked_left_pages,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
 
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-svg")

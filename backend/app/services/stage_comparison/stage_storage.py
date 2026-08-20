@@ -372,6 +372,7 @@ def iter_current_documents(stage_dir: Path):
         pdf = version_dir / "02_work" / "document.pdf"
         if not pdf.is_file():
             continue
+        md = version_dir / "02_work" / "document.md"
         info = _load_json(version_dir / "01_input" / "project_info.json")
         yield {
             "document": document,
@@ -379,6 +380,7 @@ def iter_current_documents(stage_dir: Path):
             "version_id": version_id,
             "version_dir": version_dir,
             "pdf_path": pdf,
+            "md_path": md if md.is_file() else None,
             "source_filename": info.get("pdf_file") or f"{document.get('document_code')}.pdf",
         }
 

@@ -62,6 +62,8 @@ def test_stage_1_and_stage_2_upload_preserve_sources(comparison_dir):
         input_names = {path.name for path in (version_dir / "01_input").iterdir()}
         assert {f"{stem}.pdf", f"{stem}.md", f"{stem}.html", f"{stem}.json", f"{stem}.blocks.json"} <= input_names
         assert (version_dir / "02_work" / "document.pdf").is_file()
+        assert (version_dir / "02_work" / "document.md").is_file()
+        assert entries[0].md_path == version_dir / "02_work" / "document.md"
 
 
 def test_repeat_upload_creates_a_new_version(comparison_dir):

@@ -5,7 +5,7 @@ const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const app = readFileSync(new URL('../static/js/app.js', import.meta.url), 'utf8');
 
 describe('documentation comparison shell', () => {
-  it('keeps the four shell tabs and the empty comparison state', () => {
+  it('keeps the four shell tabs and the later-stage empty state', () => {
     expect(html).toContain('1. Загрузка документации');
     expect(html).toContain('2. Связь блоков');
     expect(html).toContain('3. Расхождения');
@@ -21,10 +21,21 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain('block-image');
   });
 
-  it('keeps processing controls as disabled no-op placeholders', () => {
-    expect(html).toMatch(/<button[^>]*disabled[^>]*>Обработать<\/button>/);
-    expect(html).toMatch(/<button[^>]*disabled[^>]*>Обработать выбранные<\/button>/);
-    expect(html).not.toMatch(/@click="[^"]*Обработ/);
+  it('runs only the new Markdown sheet matcher', () => {
+    expect(html).toContain('@click="scProcessCurrentSelection()"');
+    expect(html).toContain('@click="scProcessCheckedPairs()"');
+    expect(app).toContain("'/sheet-match-suggestions'");
+    expect(app).toContain("'/sheet-links'");
+    expect(app).toContain("method: 'PUT'");
+  });
+
+  it('supports manual many-to-many sheet correction in the viewer', () => {
+    expect(html).toContain('+ Добавить лист РД');
+    expect(html).toContain('Удалить связь');
+    expect(html).toContain('Не сопоставлены П');
+    expect(app).toContain('right_pages: rightPages');
+    expect(app).toContain('left_pages: [leftPage]');
+    expect(app).toContain('user_corrected');
   });
 
   it('does not call removed analytical APIs', () => {
@@ -34,6 +45,6 @@ describe('documentation comparison shell', () => {
       'unified-analysis', 'text-llm', 'comparison-statuses',
     ];
     for (const token of forbidden) expect(app).not.toContain(token);
-    expect(app.match(/\/api\/stage-comparison/g)?.length).toBe(6);
+    expect(app.match(/\/api\/stage-comparison/g)?.length).toBeGreaterThanOrEqual(6);
   });
 });

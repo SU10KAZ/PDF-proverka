@@ -1,9 +1,4 @@
-"""Persistence and vector viewing for the minimal comparison shell.
-
-The store knows about source PDF lists and user-selected document pairs only.
-It intentionally does not read or create text, block, page-alignment, diff,
-finding, report or diagnostic artifacts.
-"""
+"""Persistence for PDF pairs, text-only sheet suggestions and user links."""
 from __future__ import annotations
 
 import hashlib
@@ -17,6 +12,7 @@ from typing import Any
 
 from . import paths as paths_mod
 from . import scanner as scanner_mod
+from . import sheet_matching
 
 
 SHELL_KIND = "stage_comparison_shell"
@@ -146,8 +142,12 @@ def _source_signature(stage_a_path: str, stage_b_path: str, left: list[dict], ri
     compact = {
         "stage_a_path": str(Path(stage_a_path).expanduser().resolve()),
         "stage_b_path": str(Path(stage_b_path).expanduser().resolve()),
-        "stage_1": [(item["pdf_path"], item.get("version_id")) for item in left],
-        "stage_2": [(item["pdf_path"], item.get("version_id")) for item in right],
+        "stage_1": [
+            (item["pdf_path"], item.get("md_path"), item.get("version_id")) for item in left
+        ],
+        "stage_2": [
+            (item["pdf_path"], item.get("md_path"), item.get("version_id")) for item in right
+        ],
     }
     raw = json.dumps(compact, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -249,7 +249,175 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "pair": pair,
         "left_page_count": _page_count((pair["left"] or {})["pdf_path"]),
         "right_page_count": _page_count((pair["right"] or {})["pdf_path"]),
+        "sheet_matching": get_sheet_matching_state(session_id, pair_id),
     }
+
+
+def _empty_sheet_links(pair_id: str) -> dict:
+    return {
+        "version": 1,
+        "pair_id": pair_id,
+        "links": [],
+        "unlinked_left_pages": [],
+        "updated_at": None,
+    }
+
+
+def _load_sheet_suggestions(session_id: str, pair_id: str) -> dict | None:
+    payload = _read_json(paths_mod.sheet_match_suggestions_path(session_id, pair_id))
+    if not isinstance(payload, dict) or payload.get("version") != 1:
+        return None
+    return payload
+
+
+def _load_sheet_links(session_id: str, pair_id: str) -> dict:
+    payload = _read_json(paths_mod.sheet_links_path(session_id, pair_id))
+    if not isinstance(payload, dict) or payload.get("version") != 1:
+        return _empty_sheet_links(pair_id)
+    if not isinstance(payload.get("links"), list):
+        return _empty_sheet_links(pair_id)
+    payload.setdefault("unlinked_left_pages", [])
+    return payload
+
+
+def _matching_summary(suggestions: dict | None, links: dict) -> dict:
+    left_passports = (suggestions or {}).get("left_passports") or []
+    right_passports = (suggestions or {}).get("right_passports") or []
+    linked_left: set[int] = set()
+    linked_right: set[int] = set()
+    manual_links = 0
+    high = 0
+    review = 0
+    for link in links.get("links") or []:
+        linked_left.update(int(page) for page in link.get("left_pages") or [])
+        linked_right.update(int(page) for page in link.get("right_pages") or [])
+        if link.get("source") == "manual":
+            manual_links += 1
+        elif link.get("confidence") == "high":
+            high += len(link.get("left_pages") or [])
+        else:
+            review += len(link.get("left_pages") or [])
+    explicitly_unlinked = {int(page) for page in links.get("unlinked_left_pages") or []}
+    effective_left = set(linked_left)
+    effective_right = set(linked_right)
+    for suggestion in (suggestions or {}).get("suggestions") or []:
+        left_page = int(suggestion["left_page"])
+        if left_page in linked_left or left_page in explicitly_unlinked:
+            continue
+        right_page = suggestion.get("primary_right_page")
+        if right_page is None:
+            continue
+        effective_left.add(left_page)
+        effective_right.add(int(right_page))
+        if suggestion.get("confidence") == "high":
+            high += 1
+        else:
+            review += 1
+    all_left = {int(item["pdf_page"]) for item in left_passports}
+    all_right = {int(item["pdf_page"]) for item in right_passports}
+    return {
+        "auto_high": high,
+        "needs_review": review,
+        "manual_links": manual_links,
+        "unmatched_left": len(all_left - effective_left),
+        "unmatched_right": len(all_right - effective_right),
+        "unmatched_left_pages": sorted(all_left - effective_left),
+        "unmatched_right_pages": sorted(all_right - effective_right),
+    }
+
+
+def get_sheet_matching_state(session_id: str, pair_id: str) -> dict:
+    if _load_session_meta(session_id) is None or _load_pair(session_id, pair_id) is None:
+        raise KeyError("pair_not_found")
+    suggestions = _load_sheet_suggestions(session_id, pair_id)
+    links = _load_sheet_links(session_id, pair_id)
+    return {
+        "suggestions": suggestions,
+        "links": links,
+        "summary": _matching_summary(suggestions, links),
+    }
+
+
+def run_sheet_matching(session_id: str, pair_id: str) -> dict:
+    """Rebuild disposable suggestions without changing the user's link file."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        markdown: dict[str, str] = {}
+        for side in ("left", "right"):
+            md_path = Path(str((pair.get(side) or {}).get("md_path") or ""))
+            if not md_path.is_file():
+                raise FileNotFoundError(f"markdown_not_found:{side}")
+            markdown[side] = md_path.read_text(encoding="utf-8")
+        left_passports = sheet_matching.build_sheet_passports(markdown["left"])
+        right_passports = sheet_matching.build_sheet_passports(markdown["right"])
+        if not left_passports:
+            raise ValueError("markdown_pages_not_found:left")
+        if not right_passports:
+            raise ValueError("markdown_pages_not_found:right")
+        result = sheet_matching.suggest_sheet_matches(left_passports, right_passports)
+        payload = {
+            "version": 1,
+            "pair_id": pair_id,
+            "generated_at": _utc_now(),
+            **result,
+        }
+        _atomic_write_json(paths_mod.sheet_match_suggestions_path(session_id, pair_id), payload)
+        return get_sheet_matching_state(session_id, pair_id)
+
+
+def save_sheet_links(
+    session_id: str,
+    pair_id: str,
+    links: list[dict],
+    unlinked_left_pages: list[int] | None = None,
+) -> dict:
+    """Replace the explicit user decision while permitting many-to-many links."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_count = _page_count(str((pair.get("left") or {})["pdf_path"]))
+        right_count = _page_count(str((pair.get("right") or {})["pdf_path"]))
+        normalized = []
+        for raw in links:
+            if not isinstance(raw, dict):
+                raise ValueError("link_must_be_object")
+            left_pages = sorted({int(page) for page in raw.get("left_pages") or []})
+            right_pages = sorted({int(page) for page in raw.get("right_pages") or []})
+            if not left_pages or not right_pages:
+                raise ValueError("link_pages_must_be_non_empty_arrays")
+            if left_pages[0] < 1 or left_pages[-1] > left_count:
+                raise ValueError("left_page_out_of_range")
+            if right_pages[0] < 1 or right_pages[-1] > right_count:
+                raise ValueError("right_page_out_of_range")
+            source = str(raw.get("source") or "manual")
+            if source not in {"auto", "manual"}:
+                raise ValueError("invalid_link_source")
+            confidence = str(raw.get("confidence") or ("manual" if source == "manual" else "medium"))
+            reason = [str(item) for item in raw.get("reason") or [] if str(item)]
+            normalized.append({
+                "id": str(raw.get("id") or _new_id("link_", 12)),
+                "left_pages": left_pages,
+                "right_pages": right_pages,
+                "source": source,
+                "confidence": confidence,
+                "reason": reason,
+            })
+        unlinked = sorted({int(page) for page in unlinked_left_pages or []})
+        if unlinked and (unlinked[0] < 1 or unlinked[-1] > left_count):
+            raise ValueError("unlinked_left_page_out_of_range")
+        linked_left = {page for link in normalized for page in link["left_pages"]}
+        payload = {
+            "version": 1,
+            "pair_id": pair_id,
+            "links": normalized,
+            "unlinked_left_pages": [page for page in unlinked if page not in linked_left],
+            "updated_at": _utc_now(),
+        }
+        _atomic_write_json(paths_mod.sheet_links_path(session_id, pair_id), payload)
+        return get_sheet_matching_state(session_id, pair_id)
 
 
 def render_pdf_page_svg(session_id: str, pair_id: str, side: str, page: int) -> bytes:
@@ -307,6 +475,9 @@ __all__ = [
     "get_session",
     "create_pair",
     "get_pair_view",
+    "get_sheet_matching_state",
+    "run_sheet_matching",
+    "save_sheet_links",
     "render_pdf_page_svg",
     "assert_path_in_allowlist",
 ]

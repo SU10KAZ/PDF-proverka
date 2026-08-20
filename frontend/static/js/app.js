@@ -11823,6 +11823,14 @@ const app = createApp({
         const scActivePair = ref(null);
         const scPairData = ref(null);
         const scPairLoading = ref(false);
+        const scProcessing = ref(false);
+        const scProcessingError = ref('');
+        const scSelectedPairIds = reactive({});
+        const scMatchState = ref(null);
+        const scLinkSaving = ref(false);
+        const scLinkEditorOpen = ref(false);
+        const scLinkEditorMode = ref('replace');
+        const scLinkEditorRightPage = ref('');
         const scCurrentPage = reactive({left: 1, right: 1});
         const scZoom = ref(1);
         const scSyncScroll = ref(true);
@@ -11853,6 +11861,61 @@ const app = createApp({
             scStageFolderCandidates.value.filter(candidate => candidate.status === 'error').length
         );
         const scPairs = computed(() => (scSession.value && scSession.value.pairs) || []);
+        const scSuggestions = computed(() =>
+            (scMatchState.value && scMatchState.value.suggestions
+                && scMatchState.value.suggestions.suggestions) || []
+        );
+        const scLeftSuggestion = computed(() =>
+            scSuggestions.value.find(item => Number(item.left_page) === Number(scCurrentPage.left)) || null
+        );
+        const scSheetLinks = computed(() =>
+            (scMatchState.value && scMatchState.value.links && scMatchState.value.links.links) || []
+        );
+        const scUnlinkedLeftPages = computed(() =>
+            (scMatchState.value && scMatchState.value.links
+                && scMatchState.value.links.unlinked_left_pages) || []
+        );
+        const scCurrentExplicitLinks = computed(() => scSheetLinks.value.filter(link =>
+            (link.left_pages || []).map(Number).includes(Number(scCurrentPage.left))
+        ));
+        const scCurrentRightPages = computed(() => {
+            if (scUnlinkedLeftPages.value.map(Number).includes(Number(scCurrentPage.left))) return [];
+            const explicit = [...new Set(scCurrentExplicitLinks.value.flatMap(link => link.right_pages || []).map(Number))];
+            if (explicit.length) return explicit.sort((a, b) => a - b);
+            const primary = scLeftSuggestion.value && scLeftSuggestion.value.primary_right_page;
+            return primary ? [Number(primary)] : [];
+        });
+        const scMatchSummary = computed(() => (scMatchState.value && scMatchState.value.summary) || {
+            auto_high: 0, needs_review: 0, manual_links: 0, unmatched_left: 0, unmatched_right: 0,
+            unmatched_left_pages: [], unmatched_right_pages: [],
+        });
+        const scCurrentStatus = computed(() => {
+            if (scUnlinkedLeftPages.value.map(Number).includes(Number(scCurrentPage.left))) {
+                return {tone: 'unmatched', label: 'Не сопоставлено'};
+            }
+            if (scCurrentExplicitLinks.value.some(link => link.source === 'manual')) {
+                return {tone: 'manual', label: 'Вручную'};
+            }
+            const suggestion = scLeftSuggestion.value;
+            if (suggestion && suggestion.primary_right_page && suggestion.confidence === 'high') {
+                return {tone: 'high', label: 'Автоматически — высокая уверенность'};
+            }
+            if (suggestion && suggestion.primary_right_page) {
+                return {tone: 'review', label: 'Предложение — проверить'};
+            }
+            return {tone: 'unmatched', label: 'Не сопоставлено'};
+        });
+        const scRightOptions = computed(() => {
+            const suggestionsPayload = scMatchState.value && scMatchState.value.suggestions;
+            const all = (suggestionsPayload && suggestionsPayload.right_passports) || [];
+            const suggestion = scLeftSuggestion.value;
+            const orderedPages = [];
+            if (suggestion && suggestion.primary_right_page) orderedPages.push(Number(suggestion.primary_right_page));
+            for (const item of (suggestion && suggestion.alternatives) || []) orderedPages.push(Number(item.right_page));
+            for (const passport of all) orderedPages.push(Number(passport.pdf_page));
+            const byPage = new Map(all.map(passport => [Number(passport.pdf_page), passport]));
+            return [...new Set(orderedPages)].map(page => byPage.get(page)).filter(Boolean);
+        });
 
         function scStageInfo(stageName) {
             const object = scSelectedObject.value;
@@ -11878,6 +11941,7 @@ const app = createApp({
                 scSession.value = null;
                 scActivePair.value = null;
                 scPairData.value = null;
+                scMatchState.value = null;
                 return;
             }
             scSessionLoading.value = true;
@@ -11896,6 +11960,7 @@ const app = createApp({
                 if (activeId && !scPairs.value.some(pair => pair.id === activeId)) {
                     scActivePair.value = null;
                     scPairData.value = null;
+                    scMatchState.value = null;
                 }
             } catch (error) {
                 scSessionError.value = String(error.message || error);
@@ -12170,12 +12235,15 @@ const app = createApp({
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scPairData.value = data;
                 scActivePair.value = data.pair;
+                scMatchState.value = data.sheet_matching || null;
                 if (!scPairs.value.some(pair => pair.id === data.pair.id)) {
                     scSession.value.pairs = [...scPairs.value, data.pair];
                 }
                 scCurrentPage.left = 1;
                 scCurrentPage.right = 1;
                 scTab.value = 'links';
+                scFocusLeftPage(1);
+                return data;
             } catch (error) {
                 scSessionError.value = String(error.message || error);
             } finally {
@@ -12194,16 +12262,190 @@ const app = createApp({
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scPairData.value = data;
                 scActivePair.value = data.pair;
+                scMatchState.value = data.sheet_matching || null;
                 scSelectedPdf.left = data.pair.left.pdf_path;
                 scSelectedPdf.right = data.pair.right.pdf_path;
                 scCurrentPage.left = 1;
                 scCurrentPage.right = 1;
                 scTab.value = 'links';
+                scFocusLeftPage(1);
+                return data;
             } catch (error) {
                 scSessionError.value = String(error.message || error);
             } finally {
                 scPairLoading.value = false;
             }
+        }
+
+        function scPairUrl(pairId, suffix) {
+            if (!scSession.value) return '';
+            return `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}`
+                + `/pairs/${encodeURIComponent(pairId)}${suffix}`;
+        }
+
+        async function scProcessPair(pair) {
+            if (!pair) return null;
+            const response = await fetch(scPairUrl(pair.id, '/sheet-match-suggestions'), {method: 'POST'});
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+            if (scActivePair.value && scActivePair.value.id === pair.id) {
+                scMatchState.value = data;
+                scFocusLeftPage(scCurrentPage.left);
+            }
+            return data;
+        }
+
+        async function scProcessCurrentSelection() {
+            scProcessing.value = true;
+            scProcessingError.value = '';
+            try {
+                const data = await scOpenSelectedPair();
+                if (!data) return;
+                await scProcessPair(data.pair);
+                scTab.value = 'links';
+            } catch (error) {
+                scProcessingError.value = String(error.message || error);
+            } finally {
+                scProcessing.value = false;
+            }
+        }
+
+        async function scProcessCheckedPairs() {
+            const selected = scPairs.value.filter(pair => scSelectedPairIds[pair.id]);
+            if (!selected.length) return;
+            scProcessing.value = true;
+            scProcessingError.value = '';
+            try {
+                for (const pair of selected) await scProcessPair(pair);
+                await scOpenPair(selected[0]);
+            } catch (error) {
+                scProcessingError.value = String(error.message || error);
+            } finally {
+                scProcessing.value = false;
+            }
+        }
+
+        function scPassportFor(side, page) {
+            const payload = scMatchState.value && scMatchState.value.suggestions;
+            const passports = payload && payload[`${side}_passports`] || [];
+            return passports.find(item => Number(item.pdf_page) === Number(page)) || null;
+        }
+
+        function scPassportLabel(passport) {
+            if (!passport) return 'Признаки листа не извлечены';
+            const parts = [];
+            if ((passport.buildings || []).length) {
+                parts.push((passport.buildings.length > 1 ? 'Корпуса ' : 'Корпус ') + passport.buildings.join(', '));
+            }
+            if (passport.roof) parts.push('План кровли');
+            else if (passport.floor) parts.push(`План ${passport.floor} этажа`);
+            else if (passport.title_hint) parts.push(passport.title_hint);
+            if (passport.level) parts.push(`уровень ${passport.level}`);
+            return parts.join(' · ') || 'Лист без распознанного названия';
+        }
+
+        function scReasonLabel(reason) {
+            const labels = {
+                same_buildings: 'корпус', same_floor: 'этаж', same_level: 'уровень',
+                same_kind: 'тип', same_sheet_number: 'номер листа', order_neighbor: 'порядок',
+                user_corrected: 'исправлено инженером', user_accepted: 'принято инженером',
+            };
+            return labels[reason] || reason;
+        }
+
+        function scFocusLeftPage(page) {
+            scCurrentPage.left = Math.min(scPageCount('left') || 1, Math.max(1, Number(page) || 1));
+            const rightPages = scCurrentRightPages.value;
+            if (rightPages.length) scCurrentPage.right = rightPages[0];
+            scLinkEditorOpen.value = false;
+        }
+
+        function scSwitchRightPage(page) {
+            scCurrentPage.right = Math.min(scPageCount('right') || 1, Math.max(1, Number(page) || 1));
+        }
+
+        function scOpenLinkEditor(mode) {
+            scLinkEditorMode.value = mode;
+            const existing = scCurrentRightPages.value[0];
+            const suggested = scLeftSuggestion.value && scLeftSuggestion.value.primary_right_page;
+            scLinkEditorRightPage.value = String(existing || suggested || (scRightOptions.value[0] || {}).pdf_page || '');
+            scLinkEditorOpen.value = true;
+        }
+
+        function scChooseUnmatchedRight(page) {
+            scSwitchRightPage(page);
+            scLinkEditorMode.value = 'add';
+            scLinkEditorRightPage.value = String(page);
+            scLinkEditorOpen.value = true;
+        }
+
+        function scWithoutLeft(links, leftPage) {
+            const output = [];
+            for (const link of links) {
+                if (!(link.left_pages || []).map(Number).includes(Number(leftPage))) {
+                    output.push(link);
+                    continue;
+                }
+                const remaining = (link.left_pages || []).map(Number).filter(page => page !== Number(leftPage));
+                if (remaining.length) output.push({...link, left_pages: remaining});
+            }
+            return output;
+        }
+
+        async function scPersistLinks(links, unlinkedLeftPages) {
+            if (!scActivePair.value) return;
+            scLinkSaving.value = true;
+            scProcessingError.value = '';
+            try {
+                const response = await fetch(scPairUrl(scActivePair.value.id, '/sheet-links'), {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({links, unlinked_left_pages: unlinkedLeftPages}),
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scMatchState.value = data;
+                scFocusLeftPage(scCurrentPage.left);
+            } catch (error) {
+                scProcessingError.value = String(error.message || error);
+            } finally {
+                scLinkSaving.value = false;
+            }
+        }
+
+        async function scAcceptSuggestion() {
+            const suggestion = scLeftSuggestion.value;
+            if (!suggestion || !suggestion.primary_right_page) return;
+            const leftPage = Number(scCurrentPage.left);
+            const links = scWithoutLeft(scSheetLinks.value.map(link => ({...link})), leftPage);
+            links.push({
+                left_pages: [leftPage], right_pages: [Number(suggestion.primary_right_page)],
+                source: 'auto', confidence: suggestion.confidence,
+                reason: [...(suggestion.reason || []), 'user_accepted'],
+            });
+            await scPersistLinks(links, scUnlinkedLeftPages.value.filter(page => Number(page) !== leftPage));
+        }
+
+        async function scApplyLinkEditor() {
+            const selected = Number(scLinkEditorRightPage.value);
+            if (!selected) return;
+            const leftPage = Number(scCurrentPage.left);
+            const rightPages = scLinkEditorMode.value === 'add'
+                ? [...new Set([...scCurrentRightPages.value, selected])]
+                : [selected];
+            const links = scWithoutLeft(scSheetLinks.value.map(link => ({...link})), leftPage);
+            links.push({
+                left_pages: [leftPage], right_pages: rightPages,
+                source: 'manual', confidence: 'manual', reason: ['user_corrected'],
+            });
+            await scPersistLinks(links, scUnlinkedLeftPages.value.filter(page => Number(page) !== leftPage));
+        }
+
+        async function scDeleteCurrentLink() {
+            const leftPage = Number(scCurrentPage.left);
+            const links = scWithoutLeft(scSheetLinks.value.map(link => ({...link})), leftPage);
+            const unlinked = [...new Set([...scUnlinkedLeftPages.value.map(Number), leftPage])];
+            await scPersistLinks(links, unlinked);
         }
 
         function scPageCount(side) {
@@ -12220,6 +12462,7 @@ const app = createApp({
         function scChangePage(side, delta) {
             const limit = scPageCount(side);
             scCurrentPage[side] = Math.min(limit || 1, Math.max(1, scCurrentPage[side] + delta));
+            if (side === 'left') scFocusLeftPage(scCurrentPage.left);
             const pane = scPaneRefs[side];
             if (pane) pane.scrollTo({top: 0, left: 0});
         }
@@ -12605,7 +12848,16 @@ const app = createApp({
             scSessionLoading, scSession, scSessionError,
             scDocumentsLeft, scDocumentsRight, scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
+            scProcessing, scProcessingError, scSelectedPairIds,
+            scMatchState, scMatchSummary, scSuggestions, scLeftSuggestion,
+            scSheetLinks, scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
+            scRightOptions, scUnlinkedLeftPages, scLinkSaving,
+            scLinkEditorOpen, scLinkEditorMode, scLinkEditorRightPage,
             scLoadObjects, scOpenSelectedPair, scOpenPair,
+            scProcessCurrentSelection, scProcessCheckedPairs,
+            scPassportFor, scPassportLabel, scReasonLabel,
+            scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,
+            scAcceptSuggestion, scApplyLinkEditor, scDeleteCurrentLink,
             scCurrentPage, scPageCount, scPageSrcUrl, scChangePage,
             scZoom, scSyncScroll, scZoomBy, scZoomReset,
             scSetPaneRef, scOnViewerScroll,

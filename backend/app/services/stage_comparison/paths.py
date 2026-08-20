@@ -1,9 +1,4 @@
-"""Filesystem paths for the minimal documentation-comparison shell.
-
-Only session metadata and manually selected PDF pairs are stored here. The
-module deliberately has no paths for analysis, findings, links, crops or
-diagnostic artifacts.
-"""
+"""Filesystem paths for comparison sessions, suggestions and user links."""
 from __future__ import annotations
 
 import os
@@ -54,6 +49,14 @@ def pair_json_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "pair.json"
 
 
+def sheet_match_suggestions_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "sheet_match_suggestions.json"
+
+
+def sheet_links_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "sheet_links.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -67,5 +70,7 @@ __all__ = [
     "pairs_root",
     "pair_dir",
     "pair_json_path",
+    "sheet_match_suggestions_path",
+    "sheet_links_path",
     "index_json_path",
 ]

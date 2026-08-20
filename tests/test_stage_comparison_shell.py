@@ -47,8 +47,14 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     right_pdf = stage_2 / "working.pdf"
     left_pdf.write_bytes(_pdf_bytes("stage 1"))
     right_pdf.write_bytes(_pdf_bytes("stage 2"))
-    # Neighbouring source data must not be interpreted by the shell scanner.
-    (stage_1 / "project.md").write_text("ignored source text", encoding="utf-8")
+    # Markdown is indexed for the small sheet matcher; unrelated JSON is not.
+    md_page = (
+        "## Page 1\n"
+        "> **Stamp:** Code: X | Sheet: 7 | Name: Корпус 4. План 1 этажа | Org: X\n"
+        "Корпус 4. План 1 этажа\n"
+    )
+    (stage_1 / "project.md").write_text(md_page, encoding="utf-8")
+    (stage_2 / "working.md").write_text(md_page.replace("Sheet: 7", "Sheet: 99"), encoding="utf-8")
     (stage_2 / "blocks.json").write_text("not-json-on-purpose", encoding="utf-8")
     monkeypatch.setenv("COMPARISON_ROOT", str(comparison_root))
     monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(tmp_path))
@@ -62,7 +68,7 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     session = created.json()
     assert [item["filename"] for item in session["documents"]["stage_1"]] == ["project.pdf"]
     assert [item["filename"] for item in session["documents"]["stage_2"]] == ["working.pdf"]
-    assert "md_path" not in session["documents"]["stage_1"][0]
+    assert session["documents"]["stage_1"][0]["md_path"] == str(stage_1 / "project.md")
 
     pair_response = client.post(
         f"/api/stage-comparison/sessions/{session['id']}/pairs",
@@ -82,6 +88,25 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     assert vector.headers["content-type"].startswith("image/svg+xml")
     assert b"<svg" in vector.content
 
+    processed = client.post(
+        f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/sheet-match-suggestions"
+    )
+    assert processed.status_code == 200
+    assert processed.json()["suggestions"]["suggestions"][0]["primary_right_page"] == 1
+
+    saved = client.put(
+        f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/sheet-links",
+        json={
+            "links": [{
+                "left_pages": [1], "right_pages": [1], "source": "manual",
+                "confidence": "manual", "reason": ["user_corrected"],
+            }],
+            "unlinked_left_pages": [],
+        },
+    )
+    assert saved.status_code == 200
+    assert saved.json()["links"]["links"][0]["source"] == "manual"
+
     removed_paths = [
         f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/page-image?side=left&page=1",
         f"/api/stage-comparison/sessions/{session['id']}/comparison-statuses",
@@ -97,8 +122,6 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
 
     stored = list(comparison_root.rglob("*.json"))
     assert stored
-    assert not any(
-        token in path.as_posix()
-        for path in stored
-        for token in ("links", "findings", "diagnostic", "analysis")
-    )
+    assert any(path.name == "sheet_match_suggestions.json" for path in stored)
+    assert any(path.name == "sheet_links.json" for path in stored)
+    assert not any(token in path.as_posix() for path in stored for token in ("findings", "diagnostic"))
