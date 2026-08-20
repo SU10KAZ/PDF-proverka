@@ -38,8 +38,6 @@ from backend.app.services.stage_comparison import text_llm_provider as text_llm_
 from backend.app.services.stage_comparison import text_llm_preflight as text_llm_preflight_mod
 from backend.app.services.stage_comparison import text_llm_flat as text_llm_flat_mod
 from backend.app.services.stage_comparison import md_image_enrichment as md_enrichment_mod
-from backend.app.services.stage_comparison import pipeline_v2_payload_service as pipeline_v2_payload_mod
-from backend.app.services.stage_comparison import pipeline_v2_run_jobs as pipeline_v2_run_jobs_mod
 from backend.app.services.stage_comparison import visual_block_equivalence_jobs as vbe_jobs_mod
 from backend.app.services.stage_comparison import clear_analysis as clear_analysis_mod
 from backend.app.services.stage_comparison import opus_only as opus_only_mod
@@ -54,7 +52,6 @@ from backend.app.services.stage_comparison import review_transfer as review_tran
 from backend.app.services.stage_comparison import paths as sc_paths_mod
 from backend.app.services.stage_comparison import saved_config as saved_config_mod
 from backend.app.services.stage_comparison import stage_upload as stage_upload_mod
-from backend.app.services.stage_comparison import diagnostic_new_pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -785,39 +782,6 @@ async def run_sheet_matching_endpoint(session_id: str, pair_id: str):
         raise HTTPException(400, str(exc)) from exc
 
 
-@router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-identity")
-async def run_sheet_identity_endpoint(session_id: str, pair_id: str):
-    """Проверить принятые пары на идентичность без изменения карты и findings."""
-    try:
-        return store.run_sheet_identity(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-alignment")
-async def run_sheet_alignment_endpoint(session_id: str, pair_id: str):
-    """Построить V3→V2 transform для принятых пар, без diff/findings."""
-    try:
-        return store.run_sheet_alignment(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/change-regions-pilot")
-async def run_change_regions_pilot_endpoint(session_id: str, pair_id: str):
-    """Запустить изолированный пилот 5Б для трёх aligned-пар."""
-    try:
-        return store.run_change_regions_pilot(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
 @router.post("/sessions/{session_id}/pairs/{pair_id}/change-regions-cleanup-pilot")
 async def run_change_regions_cleanup_pilot_endpoint(session_id: str, pair_id: str):
     try:
@@ -833,17 +797,6 @@ async def run_change_groups_pilot_endpoint(session_id: str, pair_id: str):
     """5Б.3: построить change groups поверх atomic regions трёх пилотов."""
     try:
         return store.run_change_groups_pilot(session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.post("/sessions/{session_id}/pairs/{pair_id}/change-detection")
-async def run_change_detection_endpoint(session_id: str, pair_id: str):
-    """5Б.4: цепочка canonical diff → atomic regions → groups для aligned."""
-    try:
-        return store.run_change_detection(session_id, pair_id)
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except ValueError as exc:
@@ -881,68 +834,6 @@ async def run_semantic_diff_v6a2_mass_endpoint(session_id: str, pair_id: str):
         raise HTTPException(404, str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
-
-
-# ─── Диагностика новой цепочки сравнения (read-only) ──────────────────────
-#
-# Витрина уже посчитанных артефактов 5Б.4 + 6А.2 для режима
-# «Новый алгоритм (диагностика)» во вкладке «Расхождения». Эти endpoint'ы:
-#   • ничего не запускают и ничего не записывают;
-#   • не читают и не меняют comparison_result.json, findings и решения эксперта;
-#   • не вызывают LLM, Vision и OCR; влияние не считают;
-#   • не дедуплицируют результат — одинаковые «Было → Стало» видны все.
-# Выключается флагом STAGE_COMPARISON_NEW_PIPELINE_DIAGNOSTIC_ENABLED=0.
-
-
-@router.get("/sessions/{session_id}/pairs/{pair_id}/diagnostic/new-pipeline")
-async def get_new_pipeline_diagnostic_endpoint(session_id: str, pair_id: str):
-    """Все change groups новой цепочки со смыслом 6А.2, как есть."""
-    if not diagnostic_new_pipeline.is_enabled():
-        return {
-            "available": False,
-            "reason": "disabled_by_flag:STAGE_COMPARISON_NEW_PIPELINE_DIAGNOSTIC_ENABLED",
-            "items": [], "summary": {},
-        }
-    try:
-        return await run_in_threadpool(store.get_new_pipeline_diagnostic, session_id, pair_id)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/sessions/{session_id}/pairs/{pair_id}/diagnostic/new-pipeline/crop")
-async def get_new_pipeline_crop_endpoint(
-    session_id: str,
-    pair_id: str,
-    left_page: int = Query(..., ge=1),
-    right_page: int = Query(..., ge=1),
-    group_id: str = Query(...),
-    side: str = Query(..., pattern="^(v2|v3|overlay)$"),
-    target_long_side: int = Query(1100, ge=300, le=2600),
-):
-    """Кроп change group: готовый пилотный PNG либо рендер из PDF в память."""
-    if not diagnostic_new_pipeline.is_enabled():
-        raise HTTPException(403, "disabled_by_flag:STAGE_COMPARISON_NEW_PIPELINE_DIAGNOSTIC_ENABLED")
-    try:
-        png, source = await run_in_threadpool(
-            store.render_new_pipeline_crop, session_id, pair_id,
-            left_page=left_page, right_page=right_page, group_id=group_id,
-            side=side, target_long_side=target_long_side,
-        )
-    except KeyError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except FileNotFoundError as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("new-pipeline crop failed")
-        raise HTTPException(500, f"Ошибка кропа change group: {exc}") from exc
-    headers = {"X-Crop-Source": source, "Cache-Control": "private, max-age=600"}
-    if isinstance(png, (bytes, bytearray)):
-        return Response(content=bytes(png), media_type="image/png", headers=headers)
-    return FileResponse(str(png), media_type="image/png", headers=headers)
 
 
 # ─── Visual block equivalence recompute (Stage 3B, mark-only, flag-gated) ──
@@ -1280,8 +1171,6 @@ async def text_llm_config_endpoint(session_id: str):
 # ─── MD enrichment (Qwen image descriptions для enriched MD) ─────────────
 
 
-
-
 def _md_enrichment_pair_payload(
     session_id: str, pair_id: str, pair: dict,
 ) -> dict:
@@ -1416,12 +1305,6 @@ async def get_enriched_md_content_endpoint(
     }
 
 
-
-
-
-
-
-
 class ClearAnalysisRequest(BaseModel):
     pair_ids: list[str] = Field(default_factory=list)
     clear_findings: bool = True
@@ -1501,10 +1384,6 @@ async def opus_only_endpoint(session_id: str, req: OpusOnlyRequest):
         unified_jobs_mod.start_job_in_background(session_id, job["id"])
     return {"ok": True, "job_id": job.get("id"), "started_pairs": eligible,
             "skipped": prep.get("skipped") or [], "backups": prep.get("backups") or {}}
-
-
-
-
 
 
 class UnifiedAnalysisPreflightRequest(BaseModel):
@@ -2638,8 +2517,6 @@ async def _call_graphic_llm(
     return text, cost, result.text
 
 
-
-
 @router.post("/sessions/{session_id}/pairs/{pair_id}/graphic-diff")
 async def graphic_diff_endpoint(
     session_id: str,
@@ -2862,132 +2739,3 @@ async def cancel_graphic_diff_job(session_id: str, job_id: str):
 #     сводку согласованных расхождений (см. unified-diff-flat/export.xlsx
 #     ?accepted_only=true). ───────────────────────────────────────────────
 
-
-# ─── Pipeline V2 (controlled integration): read-only UI payload ────────────
-#
-# Endpoint НИЧЕГО не запускает (ни Pipeline V2, ни Qwen/Opus/LLM, ни jobs)
-# и НИЧЕГО не пишет: отдаёт готовый pipeline_v2_ui_payload.json или собирает
-# payload из готовых артефактов dry-run. Отсутствие артефактов — обычный
-# JSON-ответ {"status": "not_found", ...}, не 404 (контракт для портала).
-# Дисковое I/O уведено в threadpool (sync-тяжёлый handler в event loop
-# блокирует /api/info и провоцирует watchdog-restart).
-
-
-@router.get("/pipeline-v2/{session_id}/ui-payload")
-async def get_pipeline_v2_ui_payload_endpoint(session_id: str,
-                                              pair_id: Optional[str] = None):
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_pipeline_v2_payload,
-            session_id, pair_id)
-    except ValueError as exc:
-        # невалидный session_id/pair_id (path traversal и т.п.)
-        raise HTTPException(400, str(exc)) from exc
-
-
-@router.get("/pipeline-v2/{session_id}/graphic-vision-grounding")
-async def get_pipeline_v2_grounding_detail_endpoint(
-        session_id: str, pair_id: Optional[str] = None,
-        kind: str = "all", status: str = "all",
-        item_id: Optional[str] = None, limit: int = 100, offset: int = 0):
-    """Read-only детализация graphic_vision_grounding_report.json.
-
-    Отдаёт конкретные grounded/weakly_grounded/ungrounded/rejected_* сущности и
-    изменения карточками (value/status/reason/anchor/source/page/fact_level).
-    НИЧЕГО не запускает и не пишет; отсутствие отчёта — обычный JSON
-    {"status":"not_found"}, битый — {"status":"error"}, не 500.
-    """
-    try:
-        return await run_in_threadpool(
-            pipeline_v2_payload_mod.discover_graphic_vision_grounding_detail,
-            session_id, pair_id, kind=kind, status=status, item_id=item_id,
-            limit=limit, offset=offset)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-
-
-# ─── Pipeline V2: controlled operator-triggered run («Запустить V2») ──────
-# State-changing: запускает существующий dry-run runner в фоновом job'е.
-# read-only ui-payload сервис этим НЕ затрагивается.
-
-class PipelineV2RunRequest(BaseModel):
-    """Тело POST .../pairs/{pair_id}/run."""
-    mode: str = Field(default="dry_run")
-    confirm: bool = Field(default=False)
-    confirm_session_id: Optional[str] = Field(default=None)
-    confirm_pair_id: Optional[str] = Field(default=None)
-    rerun_existing: bool = Field(default=False)
-    create_backup: bool = Field(default=True)
-    operator_note: Optional[str] = Field(default=None)
-
-
-def _pipeline_v2_run_payload(job: dict) -> dict:
-    """Компактный accepted-ответ для UI."""
-    return {
-        "ok": True,
-        "job_id": job.get("id"),
-        "session_id": job.get("session_id"),
-        "pair_id": job.get("pair_id"),
-        "status": job.get("status"),
-        "status_url": pipeline_v2_run_jobs_mod.status_url(
-            job.get("session_id"), job.get("pair_id"), job.get("id")),
-        "message": "Pipeline V2 run accepted",
-    }
-
-
-@router.post("/pipeline-v2/{session_id}/pairs/{pair_id}/run")
-async def post_pipeline_v2_run_endpoint(
-        session_id: str, pair_id: str, req: PipelineV2RunRequest):
-    """Запустить controlled Pipeline V2 run для пары (operator-triggered).
-
-    Запускает СУЩЕСТВУЮЩИЙ ``run_pipeline_v2_dry_run`` в фоновом job'е
-    (offline: ``llm_runner=None``/``vision_runner=None`` → модели НЕ
-    задействуются). Гейты: confirm + confirm_session_id/pair_id (422);
-    сессия/пара существуют (404); артефакты уже есть без ``rerun_existing``
-    (409); уже идёт run на эту пару (409). При rerun создаётся backup
-    ``pipeline_v2_backup_before_ui_run_<TS>``. Пишет ТОЛЬКО артефакты
-    pipeline_v2 этой пары + job-статус + manifest. ui-payload остаётся
-    read-only.
-    """
-    payload = req.model_dump()
-    try:
-        job = await run_in_threadpool(
-            pipeline_v2_run_jobs_mod.create_run_job, session_id, pair_id, payload)
-    except pipeline_v2_run_jobs_mod.PipelineV2RunConfirmError as exc:
-        raise HTTPException(422, str(exc)) from exc
-    except pipeline_v2_run_jobs_mod.PipelineV2RunNotFound as exc:
-        raise HTTPException(404, str(exc)) from exc
-    except pipeline_v2_run_jobs_mod.PipelineV2RunConflict as exc:
-        raise HTTPException(409, str(exc)) from exc
-    except pipeline_v2_run_jobs_mod.PipelineV2RunError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    except ValueError as exc:  # невалидный session_id/pair_id (_safe_id отверг)
-        raise HTTPException(400, str(exc)) from exc
-    pipeline_v2_run_jobs_mod.start_job_in_background(session_id, job["id"])
-    return _pipeline_v2_run_payload(job)
-
-
-@router.get("/pipeline-v2/{session_id}/pairs/{pair_id}/run-status/{job_id}")
-async def get_pipeline_v2_run_status_endpoint(
-        session_id: str, pair_id: str, job_id: str):
-    """Статус controlled Pipeline V2 run job'а (для polling'а UI)."""
-    try:
-        job = await run_in_threadpool(
-            pipeline_v2_run_jobs_mod.get_job, session_id, job_id)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    if job is None or job.get("pair_id") != pair_id:
-        raise HTTPException(404, "run_job_not_found")
-    return job
-
-
-@router.get("/pipeline-v2/{session_id}/pairs/{pair_id}/run-active")
-async def get_pipeline_v2_run_active_endpoint(
-        session_id: str, pair_id: str):
-    """Активный (running/queued) run job по паре — для восстановления UI."""
-    try:
-        job = await run_in_threadpool(
-            pipeline_v2_run_jobs_mod.find_active_pair_job, session_id, pair_id)
-    except ValueError as exc:
-        raise HTTPException(400, str(exc)) from exc
-    return {"job": job}

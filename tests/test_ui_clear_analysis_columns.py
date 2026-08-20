@@ -2,8 +2,8 @@
 
 После удаления локальных LLM-мощностей в таблице пар осталась одна колонка
 времени — 🟪 Opus; колонка 🟦 Qwen убрана вместе с полосой распознавания.
-Очистка анализа (/pairs/clear-analysis) к локальным моделям не относится и
-сохранена.
+Очистка анализа (/pairs/clear-analysis) вызывалась только из диалога запуска
+кнопки «Обработать» — вместе с ним из фронтенда убрана.
 
 Source of truth — `frontend/`.
 """
@@ -29,7 +29,8 @@ def test_js_lane_cell_status_glyphs():
         assert token in JS, token
 
 
-def test_js_calls_clear_analysis_endpoint():
-    assert "function scQOClearAnalysis(" in JS
-    assert "/pairs/clear-analysis" in JS
-    assert '"clear_findings": true' in JS or "clear_findings: true" in JS
+def test_js_no_longer_calls_clear_analysis_endpoint():
+    # Единственным вызывающим была модалка запуска Opus; кнопки «Обработать»
+    # остались на месте, но ничего не запускают.
+    assert "scQOClearAnalysis" not in JS
+    assert "/pairs/clear-analysis" not in JS

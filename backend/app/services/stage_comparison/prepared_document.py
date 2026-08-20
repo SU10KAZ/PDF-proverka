@@ -23,7 +23,7 @@ from backend.app.services.common.blocks_json import load_blocks_json
 from backend.app.services.common.results_md import ResultsMdDocument, parse_results_md
 
 from . import stage_storage
-from .pipeline_v2_prepared_ingest import classify_block_semantic_type
+from .block_semantic_type import classify_block_semantic_type
 
 
 SCHEMA_VERSION = 1

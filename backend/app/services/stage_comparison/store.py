@@ -735,86 +735,6 @@ def run_sheet_matching(session_id: str, pair_id: str) -> dict:
         }
 
 
-def run_sheet_identity(session_id: str, pair_id: str) -> dict:
-    """Проверить только принятые matcher/manual пары на фактическую идентичность.
-
-    Эта операция не пишет в page_alignment, links или вкладку расхождений.
-    """
-    with _lock:
-        pair = _find_pair_meta(session_id, pair_id)
-        if pair is None:
-            raise KeyError("pair_not_found")
-        left, _, comparison_left = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
-        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
-        if comparison_left != comparison_right:
-            raise ValueError("pair_documents_belong_to_different_comparison_objects")
-        matching = _read_json(comparison_left / "diagnostics" / "sheet_matching.json")
-        if not isinstance(matching, dict) or matching.get("kind") != "stage_comparison_sheet_matching":
-            raise ValueError("sheet_matching_result_missing_run_sheet_matcher_first")
-        alignment = _ensure_alignment(session_id, pair_id, persist=False)
-        report = sheet_identity_mod.evaluate_sheet_identity(
-            left, right,
-            left_pdf=(pair.get("left") or {}).get("pdf_path"),
-            right_pdf=(pair.get("right") or {}).get("pdf_path"),
-            sheet_matching=matching,
-            alignment_items=alignment.get("items") or [],
-        )
-        json_path, md_path = sheet_identity_mod.write_sheet_identity_report(comparison_left / "diagnostics", report)
-        return {"ok": True, "sheet_identity": report, "result_path": str(json_path), "report_path": str(md_path)}
-
-
-def run_sheet_alignment(session_id: str, pair_id: str) -> dict:
-    """Диагностически совместить только уже принятые пары листов.
-
-    Не меняет карту страниц, links, findings или вкладку расхождений. Матрицы
-    сохраняются рядом с PreparedDocument как вход для следующего этапа.
-    """
-    with _lock:
-        pair = _find_pair_meta(session_id, pair_id)
-        if pair is None:
-            raise KeyError("pair_not_found")
-        left, _, comparison_left = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
-        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
-        if comparison_left != comparison_right:
-            raise ValueError("pair_documents_belong_to_different_comparison_objects")
-        matching = _read_json(comparison_left / "diagnostics" / "sheet_matching.json")
-        if not isinstance(matching, dict) or matching.get("kind") != "stage_comparison_sheet_matching":
-            raise ValueError("sheet_matching_result_missing_run_sheet_matcher_first")
-        alignment = _ensure_alignment(session_id, pair_id, persist=False)
-        diagnostics = comparison_left / "diagnostics"
-        report = sheet_alignment_mod.evaluate_sheet_alignment(
-            left, right,
-            left_pdf=(pair.get("left") or {}).get("pdf_path"),
-            right_pdf=(pair.get("right") or {}).get("pdf_path"),
-            sheet_matching=matching,
-            alignment_items=alignment.get("items") or [],
-            diagnostics_dir=diagnostics / "sheet_alignment",
-        )
-        json_path, md_path = sheet_alignment_mod.write_sheet_alignment_report(diagnostics, report)
-        return {"ok": True, "sheet_alignment": report, "result_path": str(json_path), "report_path": str(md_path)}
-
-
-def run_change_regions_pilot(session_id: str, pair_id: str) -> dict:
-    """Этап 5Б: только три показательные aligned-пары, без findings."""
-    with _lock:
-        pair = _find_pair_meta(session_id, pair_id)
-        if pair is None:
-            raise KeyError("pair_not_found")
-        left, _, comparison_left = _prepared_document_for_comparison_pdf((pair.get("left") or {}).get("pdf_path"))
-        right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
-        if comparison_left != comparison_right:
-            raise ValueError("pair_documents_belong_to_different_comparison_objects")
-        alignment_report = _read_json(comparison_left / "diagnostics" / "sheet_alignment.json")
-        if not isinstance(alignment_report, dict) or alignment_report.get("kind") != "stage_comparison_sheet_alignment":
-            raise ValueError("sheet_alignment_result_missing_run_sheet_alignment_first")
-        report = change_regions_mod.run_pilot(
-            (pair.get("left") or {}).get("pdf_path"), (pair.get("right") or {}).get("pdf_path"),
-            left, right, alignment_report, comparison_left / "change_regions",
-        )
-        json_path, md_path = change_regions_mod.write_report(comparison_left / "change_regions", report)
-        return {"ok": True, "change_regions": report, "result_path": str(json_path), "report_path": str(md_path)}
-
-
 def run_change_regions_cleanup_pilot(session_id: str, pair_id: str) -> dict:
     """Этап 5Б.1: canonical vector evidence для тех же трёх пилотных пар."""
     with _lock:
@@ -868,28 +788,6 @@ def run_change_groups_pilot(session_id: str, pair_id: str) -> dict:
         change_groups_mod.write_diagnostics(destination / "diagnostics", report, (pair.get("left") or {}).get("pdf_path"))
         json_path, md_path = change_groups_mod.write_report(destination, report)
         return {"ok": True, "change_groups": report, "result_path": str(json_path), "report_path": str(md_path)}
-
-
-def run_change_detection(session_id: str, pair_id: str) -> dict:
-    """Этап 5Б.4: массово обработать все и только aligned пары листов."""
-    with _lock:
-        pair = _find_pair_meta(session_id, pair_id)
-        if pair is None:
-            raise KeyError("pair_not_found")
-        left_pdf, right_pdf = (pair.get("left") or {}).get("pdf_path"), (pair.get("right") or {}).get("pdf_path")
-        left, _, comparison = _prepared_document_for_comparison_pdf(left_pdf)
-        right, _, comparison_right = _prepared_document_for_comparison_pdf(right_pdf)
-        if comparison != comparison_right:
-            raise ValueError("pair_documents_belong_to_different_comparison_objects")
-        alignment_path = comparison / "diagnostics" / "sheet_alignment.json"
-        alignment = _read_json(alignment_path)
-        if not isinstance(alignment, dict) or alignment.get("kind") != "stage_comparison_sheet_alignment":
-            raise ValueError("sheet_alignment_result_missing_run_sheet_alignment_first")
-        report = change_detection_mod.run_change_detection(left_pdf, right_pdf, left, right, alignment)
-        destination = comparison / "change_detection"
-        change_detection_mod.write_diagnostics(destination / "diagnostics", report, left_pdf)
-        json_path, md_path = change_detection_mod.write_report(destination, report)
-        return {"ok": True, "change_detection": report, "result_path": str(json_path), "report_path": str(md_path)}
 
 
 def run_semantic_diff_pilot(session_id: str, pair_id: str) -> dict:

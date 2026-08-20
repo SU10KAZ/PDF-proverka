@@ -1,8 +1,9 @@
-"""Static smoke: диалог «Обработать выбранные» после удаления локальных LLM.
+"""Static smoke: кнопки «Обработать» остались, запуск сравнения из UI убран.
 
-Распознавание графики (Qwen) удалено с платформы, поэтому в mode-селекторе
-(scQOMode) остались только Opus-режимы, а запуск идёт через endpoint
-/pairs/opus-only по уже готовым enriched MD.
+Пользовательский запрос: кнопки «Обработать» и «Обработать выбранные»
+должны остаться на месте и быть активными, но клик по ним ничего не делает.
+Вся пусковая цепочка (preflight → модалка выбора режима → POST
+/pairs/opus-only и /pairs/clear-analysis) удалена из фронтенда.
 """
 from __future__ import annotations
 
@@ -13,47 +14,42 @@ JS = (_ROOT / "frontend" / "static" / "js" / "app.js").read_text(encoding="utf-8
 HTML = (_ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
 
 
-def test_mode_ref_and_function_exist():
-    assert "const scQOMode = ref('opus_only')" in JS
-    assert "async function scQOStartOpusOnly(" in JS
-    assert "scQOMode, scQOClearing" in JS  # exposed в setup return
+def test_buttons_remain_in_markup():
+    assert "Обработать выбранные ({{ scQOSelectedCount }})" in HTML
+    assert ">Обработать</button>" in HTML
 
 
-def test_opus_only_calls_dedicated_endpoint():
-    sc = JS[JS.index("async function scQOStartOpusOnly("):]
-    sc = sc[: sc.index("\n        async function ", 1)] if "\n        async function " in sc else sc[:4000]
-    assert "/pairs/opus-only" in sc
-    assert "force_qwen" not in sc
-    assert "prebuild_large_sheets" not in sc
-    assert "clear_comparison_result" in sc
+def test_buttons_have_no_click_handler():
+    for handler in ("scQOProcessPair", "scQOOpenConfirm", "scQOStartConfirmed"):
+        assert handler not in HTML, handler
 
 
-def test_start_confirmed_runs_opus_only():
-    sc = JS[JS.index("async function scQOStartConfirmed("):]
-    sc = sc[: sc.index("async function scQOStartOpusOnly(")]
-    assert "scQOMode.value" in sc
-    assert "'clear_result_opus_only'" in sc
-    assert "await scQOStartOpusOnly(" in sc
+def test_launch_chain_removed_from_js():
+    for name in (
+        "scQOPreflight",
+        "scQOOpenConfirm",
+        "scQOProcessPair",
+        "scQOStartConfirmed",
+        "scQOStartOpusOnly",
+        "scQOClearAnalysis",
+    ):
+        assert name not in JS, name
 
 
-def test_dialog_has_only_opus_mode_radios():
-    for val in ("opus_only", "clear_result_opus_only"):
-        assert f'value="{val}" v-model="scQOMode"' in HTML, val
-    for gone in ("normal", "clear_and_run"):
-        assert f'value="{gone}" v-model="scQOMode"' not in HTML, gone
-
-
-def test_opus_only_copy_mentions_ready_enriched_md():
-    assert "Сравнение Opus по уже готовым enriched MD" in HTML
-
-
-def test_button_label_adapts_to_mode():
-    assert "Запустить Opus" in HTML
-    assert "Очистить результат и запустить Opus" in HTML
-
-
-def test_local_llm_endpoints_are_gone():
+def test_launch_endpoints_are_gone():
+    assert "/pairs/opus-only" not in JS
+    assert "/pairs/clear-analysis" not in JS
     assert "/pipeline-qwen-opus" not in JS
     assert "/md-enrichment-jobs" not in JS
-    # clear-analysis остаётся — он не про локальные модели
-    assert "/pairs/clear-analysis" in JS
+
+
+def test_mode_dialog_removed():
+    assert "scQOMode" not in JS
+    assert "scQOMode" not in HTML
+    assert "Запустить сравнение Opus" not in HTML
+
+
+def test_selection_ui_still_works():
+    # Чекбоксы выбора пар и счётчик остаются — их убирать не просили.
+    assert "scQOSelected[p.id]" in HTML
+    assert "const scQOSelectedCount = computed(" in JS
