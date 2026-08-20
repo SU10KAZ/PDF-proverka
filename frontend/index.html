@@ -5664,30 +5664,25 @@
                                           :title="scPairExpertBadge(p.id).title"
                                           style="font-size:11px; white-space:nowrap">{{ scPairExpertBadge(p.id).label }}</span>
                                 </td>
-                                <!-- Действия пары. Кнопок много (обработка + пять
-                                     диагностических этапов), в одну строку они
-                                     вылезали за таблицу — поэтому колонка. -->
+                                <!-- Действия пары: чекбокс и три кнопки в один ряд,
+                                     подпись о сопоставлении листов — строкой ниже. -->
                                 <td class="sc-pair-actions" style="padding:8px; text-align:right">
-                                    <div style="display:flex; flex-direction:column; align-items:stretch; gap:4px; width:230px; margin-left:auto">
-                                    <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end">
+                                    <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end; flex-wrap:nowrap">
                                     <input type="checkbox" v-model="scQOSelected[p.id]" :disabled="!p.left || !p.right"
                                            :title="'Выбрать пару для обработки'" style="vertical-align:middle; margin:0">
                                     <span v-if="scQOPairBadge(p.id)" :title="scQOPairBadge(p.id).title"
-                                          :style="{fontSize:'10px', marginRight:'6px', whiteSpace:'nowrap', fontWeight:600, color: scQOPairBadge(p.id).color}">{{ scQOPairBadge(p.id).label }}</span>
-                                    <button class="btn btn-sm btn-primary">Обработать</button>
-                                    </div>
-                                    <!-- Диагностические этапы новой цепочки, по порядку выполнения -->
-                                    <button class="btn btn-sm btn-secondary" :disabled="!p.left || !p.right || scSheetMatchingBusy[p.id]"
+                                          :style="{fontSize:'10px', whiteSpace:'nowrap', fontWeight:600, color: scQOPairBadge(p.id).color}">{{ scQOPairBadge(p.id).label }}</span>
+                                    <button class="btn btn-sm btn-primary" style="white-space:nowrap">Обработать</button>
+                                    <button class="btn btn-sm btn-secondary" style="white-space:nowrap"
+                                            :disabled="!p.left || !p.right || scSheetMatchingBusy[p.id]"
                                             @click="scRunSheetMatching(p)"
                                             title="Консервативно строит карту листов по PreparedDocument; ручную карту не перезаписывает">
-                                        {{ scSheetMatchingBusy[p.id] ? 'Сопоставление…' : 'Автоматически сопоставить листы' }}
+                                        {{ scSheetMatchingBusy[p.id] ? 'Сопоставление…' : 'Сопоставить листы' }}
                                     </button>
-                                    <div style="display:flex; gap:4px; margin-top:2px">
-                                        <button class="btn btn-sm" style="flex:1" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
-                                        </div>
-                                    <div v-if="scSheetMatchingInfo[p.id]"
-                                         style="font-size:10px; white-space:normal; margin-top:2px; text-align:right; color:#475569">{{ scSheetMatchingInfo[p.id] }}</div>
+                                    <button class="btn btn-sm" style="white-space:nowrap" :disabled="!p.left || !p.right" @click="scOpenPair(p)">Открыть</button>
                                     </div>
+                                    <div v-if="scSheetMatchingInfo[p.id]"
+                                         style="font-size:10px; white-space:normal; margin-top:4px; text-align:right; color:#475569">{{ scSheetMatchingInfo[p.id] }}</div>
                                 </td>
                             </tr>
                         </tbody>
