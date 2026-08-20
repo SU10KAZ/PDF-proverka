@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import fitz
+import pytest
 
 from backend.app.services.stage_comparison import sheet_matching, store
 
@@ -48,6 +49,9 @@ def test_split_markdown_pages_and_extract_small_passport():
     assert passports[0].floor == "2"
     assert passports[0].level == "+15.000"
     assert passports[0].kind == "plan"
+    assert passports[0].sheet_title == "Корпуса 3, 3.1. План 2 этажа"
+    assert passports[0].sheet_title_source == "stamp"
+    assert passports[0].sheet_title_reliable is True
     assert passports[1].roof is True
     assert passports[1].kind == "roof"
 
@@ -67,6 +71,103 @@ def test_underground_and_contents_title_are_plain_md_signals():
     assert passport.underground_level == 2
     assert passport.level == "-9.600"
     assert passport.source["contents_title"].startswith("Корпуса 1, 2")
+    assert passport.sheet_title_source == "contents"
+
+
+def test_canonicalize_sheet_title_is_cosmetic_only():
+    canonical = sheet_matching.canonicalize_sheet_title
+
+    assert canonical(" Архитектурные решения.  Кладочные планы. ") == (
+        "архитектурные решения. кладочные планы"
+    )
+    assert canonical("Кладочный план - 1 этажа") == canonical("Кладочный план –1 этажа")
+    assert canonical("Оси Ё.1 — Ё.4") == "оси е.1-е.4"
+
+
+def test_exact_title_and_same_sheet_is_high():
+    result = sheet_matching.suggest_sheet_matches(
+        [_passport(1, "Архитектурные решения. Кладочные планы.", "2")],
+        [_passport(8, "Архитектурные решения. Кладочные планы", "2")],
+    )
+
+    suggestion = result["suggestions"][0]
+    assert suggestion["confidence"] == "high"
+    assert suggestion["reason"][:2] == ["same_sheet_title", "same_sheet_number"]
+
+
+def test_exact_unique_title_without_sheet_is_high():
+    result = sheet_matching.suggest_sheet_matches(
+        [_passport(1, "Узел устройства стойки фахверка", "")],
+        [_passport(9, "Узел устройства стойки фахверка", "")],
+    )
+
+    suggestion = result["suggestions"][0]
+    assert suggestion["confidence"] == "high"
+    assert suggestion["reason"][0] == "same_unique_sheet_title"
+
+
+def test_minus_one_spacing_matches_as_the_same_title():
+    result = sheet_matching.suggest_sheet_matches(
+        [_passport(1, "Кладочный план -1 этажа", "4")],
+        [_passport(2, "Кладочный план - 1 этажа", "4")],
+    )
+
+    assert result["suggestions"][0]["confidence"] == "high"
+    assert result["suggestions"][0]["reason"][0] == "same_sheet_title"
+
+
+def test_repeated_title_is_disambiguated_by_matching_sheet():
+    title = "Архитектурные решения. Кладочные планы"
+    left = sheet_matching.build_sheet_passports(
+        _page(1, sheet="1", name=title) + _page(2, sheet="2", name=title)
+    )
+    right = sheet_matching.build_sheet_passports(
+        _page(11, sheet="2", name=title) + _page(12, sheet="1", name=title)
+    )
+
+    result = sheet_matching.suggest_sheet_matches(left, right)
+
+    assert [item["primary_right_page"] for item in result["suggestions"]] == [12, 11]
+    assert all(item["confidence"] == "high" for item in result["suggestions"])
+
+
+@pytest.mark.parametrize(("left_title", "right_title"), [
+    ("Архитектурный план этажа", "План с маркировкой отверстий"),
+    (
+        "Кладочный план -1 этажа подземной автостоянки в осях П.1-П.12",
+        "План с маркировкой отверстий -1 этажа подземной автостоянки в осях П.1-П.12",
+    ),
+])
+def test_title_conflict_caps_passport_match_at_medium(left_title, right_title):
+    def passport(page: int, title: str) -> sheet_matching.SheetPassport:
+        return sheet_matching.extract_sheet_passport(
+            page,
+            f"> **Stamp:** Code: X | Sheet: 5 | Name: {title} | Org: X\n"
+            "Корпус 4. План 1 этажа\n**[IMAGE]** | Type: План | Level: +3,000",
+        )
+
+    result = sheet_matching.suggest_sheet_matches(
+        [passport(1, left_title)],
+        [passport(2, right_title)],
+    )
+
+    suggestion = result["suggestions"][0]
+    assert suggestion["confidence"] == "medium"
+    assert "title_conflict" in suggestion["reason"]
+
+
+@pytest.mark.parametrize("bad_title", [
+    "Verification: Проверить соответствие осей",
+    "Summary: Фрагмент архитектурного плана этажа",
+    "Description: На изображении показан план",
+])
+def test_generated_metadata_is_not_a_sheet_title(bad_title):
+    passport = _passport(1, bad_title)
+
+    assert passport.sheet_title is None
+    assert passport.canonical_sheet_title is None
+    assert passport.sheet_title_source == "none"
+    assert passport.sheet_title_reliable is False
 
 
 def test_high_match_uses_content_and_sheet_number_cannot_override_conflict():
@@ -79,7 +180,7 @@ def test_high_match_uses_content_and_sheet_number_cannot_override_conflict():
 
     assert suggestion["primary_right_page"] == 31
     assert suggestion["confidence"] == "high"
-    assert suggestion["reason"][:3] == ["same_buildings", "same_floor", "same_kind"]
+    assert suggestion["reason"][0] == "same_unique_sheet_title"
 
 
 def test_top_three_alternatives_and_unmatched_pages_are_kept():

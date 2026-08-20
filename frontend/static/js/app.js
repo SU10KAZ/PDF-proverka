@@ -12806,26 +12806,35 @@ const app = createApp({
         function scPassportLabel(passport) {
             if (!passport) return 'Признаки листа не извлечены';
             const parts = [];
+            if (passport.sheet_title_reliable && passport.sheet_title) {
+                parts.push(String(passport.sheet_title));
+            }
             if ((passport.buildings || []).length) {
                 parts.push((passport.buildings.length > 1 ? 'Корпуса ' : 'Корпус ') + passport.buildings.join(', '));
             }
             if (passport.roof) parts.push('План кровли');
             else if (passport.floor) parts.push(`План ${passport.floor} этажа`);
-            else if (passport.title_hint) parts.push(passport.title_hint);
+            else if (!passport.sheet_title_reliable) {
+                const kindLabels = {
+                    plan: 'План', section: 'Разрез', facade: 'Фасад', scheme: 'Схема',
+                    specification: 'Спецификация', table: 'Таблица', contents: 'Содержание',
+                };
+                if (kindLabels[passport.kind]) parts.push(kindLabels[passport.kind]);
+            }
             if (passport.level) parts.push(`уровень ${passport.level}`);
-            return parts.join(' · ') || 'Лист без распознанного названия';
+            return parts.join(' · ') || 'Без названия';
         }
 
         function scPassportShortTitle(passport) {
-            if (!passport) return '';
-            const fallback = scPassportLabel(passport);
-            let title = String(passport.title_hint || fallback || '')
-                .replace(/^\s*(?:summary|описание)\s*:\s*/i, '')
+            if (!passport) return 'Без названия';
+            const reliableTitle = passport.sheet_title_reliable && passport.sheet_title
+                ? passport.sheet_title
+                : '';
+            let title = String(reliableTitle || scPassportLabel(passport) || 'Без названия')
                 .replace(/\s+/g, ' ')
                 .replace(/[.;,\s]+$/g, '')
                 .trim();
-            if (title === 'Лист без распознанного названия'
-                    || title === 'Признаки листа не извлечены') return '';
+            if (!title || title === 'Признаки листа не извлечены') title = 'Без названия';
             if (title.length > 72) title = title.slice(0, 69).trimEnd() + '…';
             return title;
         }
@@ -12878,6 +12887,11 @@ const app = createApp({
 
         function scReasonLabel(reason) {
             const labels = {
+                same_sheet_title: 'название листа',
+                same_unique_sheet_title: 'уникальное название листа',
+                similar_sheet_title: 'похожее название листа',
+                title_conflict: 'названия различаются',
+                same_page_number: 'номер страницы',
                 same_buildings: 'корпус', same_floor: 'этаж', same_level: 'уровень',
                 same_kind: 'тип', same_sheet_number: 'номер листа', order_neighbor: 'порядок',
                 user_corrected: 'исправлено инженером', user_accepted: 'принято инженером',
