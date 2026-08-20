@@ -3964,7 +3964,13 @@ tr.row-rejected td.sc-cell-goto {
 .extreg-status--unmatched    { background:#f3f4f6; color:#6b7280; }
 
 /* ─── Documentation comparison: clean shell + vector PDF viewer ─── */
-.sc-shell__header { margin-bottom: 12px; }
+.sc-shell__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
 .sc-shell__header p { margin: 5px 0 0; color: var(--text3); }
 .sc-steps-bar { margin-bottom: 16px; }
 .sc-shell { display: grid; gap: 16px; }
@@ -3975,7 +3981,6 @@ tr.row-rejected td.sc-cell-goto {
     background: var(--surface, #fff);
 }
 .sc-shell-card__head,
-.sc-upload-stage,
 .sc-pair-list__row,
 .sc-viewer-toolbar,
 .sc-vector-pane-head {
@@ -3985,7 +3990,6 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-shell-card__head { justify-content: space-between; margin-bottom: 16px; }
 .sc-shell-card__head > div,
-.sc-upload-stage > div,
 .sc-vector-pane-head > div:first-child { display: grid; gap: 3px; }
 .sc-shell-kicker {
     color: var(--text3);
@@ -3995,16 +3999,8 @@ tr.row-rejected td.sc-cell-goto {
     text-transform: uppercase;
 }
 .sc-shell-muted { color: var(--text3); font-size: 12px; }
-.sc-upload-grid,
 .sc-source-grid,
 .sc-vector-viewer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.sc-upload-stage {
-    justify-content: space-between;
-    padding: 14px;
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-}
-.sc-upload-stage small { color: var(--text3); }
 .sc-upload-button { position: relative; overflow: hidden; }
 .sc-upload-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
 .sc-upload-button.is-disabled { opacity: .55; pointer-events: none; }
@@ -4129,7 +4125,6 @@ tr.row-rejected td.sc-cell-goto {
 .sc-linked-pages > span { color: var(--text3); font-size: 12px; font-weight: 700; }
 
 @media (max-width: 900px) {
-    .sc-upload-grid,
     .sc-source-grid,
     .sc-vector-viewer { grid-template-columns: 1fr; }
     .sc-vector-pane { height: 60vh; }
@@ -4589,8 +4584,11 @@ tr.row-rejected td.sc-cell-goto {
     border-radius: var(--radius);
     background: var(--bg2, #f8f9fa);
 }
-.sc-stage-upload-context span { color: var(--text3); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.sc-stage-upload-context span,
+.sc-stage-upload-context label:not(.btn) { color: var(--text3); font-size: 10px; font-weight: 700; text-transform: uppercase; }
 .sc-stage-upload-context strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-stage-upload-context .sc-upload-button { justify-self: start; }
+.sc-stage-upload-folder-name { font-size: 11px; }
 .sc-stage-upload-selectbar {
     display: flex;
     align-items: center;
@@ -4613,6 +4611,15 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 12px;
 }
 .sc-stage-upload-error { margin: 0 16px 10px; }
+.sc-stage-upload-empty {
+    display: grid;
+    min-height: 180px;
+    place-items: center;
+    padding: 24px;
+    border-block: 1px solid var(--border2);
+    color: var(--text3);
+    text-align: center;
+}
 .sc-stage-upload-table-wrap { min-height: 180px; max-height: 52vh; overflow: auto; border-block: 1px solid var(--border2); }
 .sc-stage-upload-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .sc-stage-upload-table th,

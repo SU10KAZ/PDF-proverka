@@ -11860,6 +11860,9 @@ const app = createApp({
         const scStageFolderErrorCount = computed(() =>
             scStageFolderCandidates.value.filter(candidate => candidate.status === 'error').length
         );
+        const scStageUploadIsBusy = computed(() =>
+            scStageUploadBusy.stage_1 || scStageUploadBusy.stage_2
+        );
         const scPairs = computed(() => (scSession.value && scSession.value.pairs) || []);
         const scSuggestions = computed(() =>
             (scMatchState.value && scMatchState.value.suggestions
@@ -12088,15 +12091,27 @@ const app = createApp({
             });
         }
 
-        function scCloseStageFolderDialog() {
-            const stageName = scStageFolderDialogStage.value;
-            if (stageName && scStageUploadBusy[stageName]) return;
-            scStageFolderDialogOpen.value = false;
+        function scResetStageFolderDialog() {
+            scStageFolderDialogStage.value = '';
+            scStageFolderDialogName.value = '';
             scStageFolderCandidates.value = [];
+            scStageUploadError.value = '';
             if (scStageFolderInput.value) scStageFolderInput.value.value = '';
             scStageFolderInput.value = null;
             scStageBatchCurrent.value = 0;
             scStageBatchTotal.value = 0;
+        }
+
+        function scOpenStageFolderDialog() {
+            if (!currentObjectId.value || scStageUploadIsBusy.value) return;
+            scResetStageFolderDialog();
+            scStageFolderDialogOpen.value = true;
+        }
+
+        function scCloseStageFolderDialog() {
+            if (scStageUploadIsBusy.value) return;
+            scStageFolderDialogOpen.value = false;
+            scResetStageFolderDialog();
         }
 
         function scUploadStageCandidate(objectId, stageName, candidate, retainBackup) {
@@ -12145,21 +12160,20 @@ const app = createApp({
             });
         }
 
-        async function scUploadStageFolder(stageName, event) {
+        async function scUploadStageFolder(event) {
             const input = event && event.target;
             const files = Array.from((input && input.files) || []);
             if (!currentObjectId.value || !files.length) return;
             const relativePaths = files.map(file => file.webkitRelativePath || file.name);
             const folderName = String(relativePaths[0] || '').split('/')[0] || 'folder';
             const candidates = scBuildStageFolderCandidates(files, folderName);
-            scStageFolderDialogStage.value = stageName;
             scStageFolderDialogName.value = folderName;
             scStageFolderCandidates.value = candidates;
             scStageFolderInput.value = input;
             scStageUploadError.value = candidates.length
                 ? ''
                 : 'В выбранной папке не найдены PDF или ZIP-проекты.';
-            scStageFolderDialogOpen.value = candidates.length > 0;
+            scStageFolderDialogOpen.value = true;
         }
 
         async function scSubmitSelectedStageProjects() {
@@ -12182,6 +12196,7 @@ const app = createApp({
             scStageBatchTotal.value = selected.length;
             let successful = 0;
             let retainBackup = true;
+            let closeAfterSuccess = false;
             try {
                 for (let index = 0; index < selected.length; index += 1) {
                     const candidate = selected[index];
@@ -12212,9 +12227,11 @@ const app = createApp({
                 if (failed) {
                     scStageUploadError.value = `Не загружено проектов: ${failed}. Подробности указаны в строках.`;
                 }
+                closeAfterSuccess = failed === 0;
             } finally {
                 scStageUploadBusy[stageName] = false;
                 if (scStageFolderInput.value) scStageFolderInput.value.value = '';
+                if (closeAfterSuccess) scCloseStageFolderDialog();
             }
         }
 
@@ -12838,7 +12855,8 @@ const app = createApp({
             findingExtRegBadge,
             // Documentation comparison shell
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
-            scStageInfo, scStageUploadBusy, scStageUploadError, scUploadStageFolder,
+            scStageInfo, scStageUploadBusy, scStageUploadIsBusy, scStageUploadError,
+            scOpenStageFolderDialog, scUploadStageFolder,
             scStageFolderDialogOpen, scStageFolderDialogStage, scStageFolderDialogName,
             scStageFolderCandidates, scStageFolderSelectedCount, scStageFolderSelectableCount,
             scStageFolderDoneCount, scStageFolderErrorCount,

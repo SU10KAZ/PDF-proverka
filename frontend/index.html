@@ -5383,6 +5383,11 @@
                     <h2>Сравнение документации</h2>
                     <p>Быстрое сопоставление листов П → РД по Markdown с ручной корректировкой</p>
                 </div>
+                <button class="btn btn-primary"
+                        :disabled="!currentObjectId || scStageUploadIsBusy"
+                        @click="scOpenStageFolderDialog()">
+                    {{ scStageUploadIsBusy ? 'Загрузка…' : 'Загрузить проекты' }}
+                </button>
             </div>
 
             <div class="sc-steps-bar">
@@ -5403,36 +5408,9 @@
             </div>
 
             <div v-if="scTab==='upload'" class="sc-shell">
-                <section class="sc-shell-card">
-                    <div class="sc-shell-card__head">
-                        <div>
-                            <span class="sc-shell-kicker">Выбранный объект</span>
-                            <strong>{{ objectName || 'Выберите объект в верхней панели' }}</strong>
-                        </div>
-                        <span v-if="scObjectsLoading || scSessionLoading" class="sc-shell-muted">Обновление…</span>
-                    </div>
-
-                    <div class="sc-upload-grid">
-                        <div v-for="stageName in ['stage_1', 'stage_2']" :key="stageName" class="sc-upload-stage">
-                            <div>
-                                <span class="sc-shell-kicker">{{ stageName }}</span>
-                                <strong>{{ stageName === 'stage_1' ? 'Стадия П' : 'Стадия РД' }}</strong>
-                                <small>{{ (scStageInfo(stageName) && scStageInfo(stageName).pdf_count) || 0 }} PDF</small>
-                            </div>
-                            <label class="btn btn-primary sc-upload-button"
-                                   :class="{'is-disabled': !currentObjectId || scStageUploadBusy[stageName]}">
-                                {{ scStageUploadBusy[stageName] ? 'Загрузка…' : 'Загрузить папку' }}
-                                <input type="file" webkitdirectory directory multiple
-                                       :disabled="!currentObjectId || scStageUploadBusy[stageName]"
-                                       @change="scUploadStageFolder(stageName, $event)">
-                            </label>
-                        </div>
-                    </div>
-
-                    <div v-if="scObjectsError || scStageUploadError || scSessionError" class="sc-shell-error">
-                        {{ scObjectsError || scStageUploadError || scSessionError }}
-                    </div>
-                </section>
+                <div v-if="scObjectsError || scSessionError" class="sc-shell-error">
+                    {{ scObjectsError || scSessionError }}
+                </div>
 
                 <section v-if="scSession" class="sc-shell-card">
                     <div class="sc-shell-card__head">
@@ -5657,24 +5635,44 @@
              role="dialog" aria-modal="true" aria-labelledby="sc-stage-upload-title"
              @click.self="scCloseStageFolderDialog()">
             <div class="modal-card sc-stage-upload-dialog">
-                <button class="modal-close" :disabled="scStageUploadBusy[scStageFolderDialogStage]"
+                <button class="modal-close" :disabled="scStageUploadIsBusy"
                         aria-label="Закрыть" @click="scCloseStageFolderDialog()">&times;</button>
                 <header class="sc-stage-upload-dialog__head">
-                    <h3 id="sc-stage-upload-title">Загрузить проекты в {{ scStageFolderDialogStage }}</h3>
+                    <h3 id="sc-stage-upload-title">Загрузить проекты</h3>
                     <p>Каждый проект загружается отдельно. Ошибка одного проекта не останавливает остальные.</p>
                 </header>
 
                 <div class="sc-stage-upload-context">
                     <div><span>Объект</span><strong>{{ objectName || '—' }}</strong></div>
-                    <div><span>Стадия</span><strong>{{ scStageFolderDialogStage }}</strong></div>
-                    <div><span>Родительская папка</span><strong>{{ scStageFolderDialogName || '—' }}</strong></div>
+                    <div>
+                        <label for="sc-stage-upload-stage">Стадия</label>
+                        <select id="sc-stage-upload-stage" v-model="scStageFolderDialogStage"
+                                class="form-control" :disabled="scStageUploadIsBusy">
+                            <option value="" disabled>Выберите stage</option>
+                            <option value="stage_1">stage_1 · Стадия П</option>
+                            <option value="stage_2">stage_2 · Стадия РД</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span>Папка проектов</span>
+                        <label class="btn btn-secondary sc-upload-button"
+                               :class="{'is-disabled': scStageUploadIsBusy}">
+                            {{ scStageFolderDialogName ? 'Выбрать другую' : 'Выбрать папку' }}
+                            <input type="file" webkitdirectory directory multiple
+                                   :disabled="scStageUploadIsBusy"
+                                   @change="scUploadStageFolder($event)">
+                        </label>
+                        <strong v-if="scStageFolderDialogName" class="sc-stage-upload-folder-name">
+                            {{ scStageFolderDialogName }}
+                        </strong>
+                    </div>
                 </div>
 
-                <div class="sc-stage-upload-selectbar">
+                <div v-if="scStageFolderCandidates.length" class="sc-stage-upload-selectbar">
                     <label>
                         <input type="checkbox"
                                :checked="scStageFolderSelectableCount > 0 && scStageFolderSelectedCount === scStageFolderSelectableCount"
-                               :disabled="scStageUploadBusy[scStageFolderDialogStage] || !scStageFolderSelectableCount"
+                               :disabled="scStageUploadIsBusy || !scStageFolderSelectableCount"
                                @change="scToggleAllStageCandidates($event.target.checked)">
                         Выбрать все
                     </label>
@@ -5687,14 +5685,18 @@
                     </span>
                 </div>
 
-                <div v-if="scStageUploadBusy[scStageFolderDialogStage]" class="sc-stage-upload-batch">
+                <div v-if="scStageUploadIsBusy" class="sc-stage-upload-batch">
                     Загружается проект {{ scStageBatchCurrent }} из {{ scStageBatchTotal }}. Не закрывайте окно.
                 </div>
                 <div v-if="scStageUploadError" class="sc-shell-error sc-stage-upload-error">
                     {{ scStageUploadError }}
                 </div>
 
-                <div class="sc-stage-upload-table-wrap">
+                <div v-if="!scStageFolderCandidates.length" class="sc-stage-upload-empty">
+                    Выберите stage и папку с проектами для загрузки.
+                </div>
+
+                <div v-else class="sc-stage-upload-table-wrap">
                     <table class="sc-stage-upload-table">
                         <thead>
                             <tr>
@@ -5710,7 +5712,7 @@
                                 :class="'sc-stage-upload-row--' + candidate.status">
                                 <td>
                                     <input type="checkbox" v-model="candidate.checked"
-                                           :disabled="scStageUploadBusy[scStageFolderDialogStage] || candidate.status === 'done'"
+                                           :disabled="scStageUploadIsBusy || candidate.status === 'done'"
                                            :aria-label="'Выбрать проект ' + candidate.name">
                                 </td>
                                 <td><strong>{{ candidate.name }}</strong></td>
@@ -5739,14 +5741,14 @@
 
                 <footer class="sc-stage-upload-footer">
                     <button class="btn btn-secondary"
-                            :disabled="scStageUploadBusy[scStageFolderDialogStage]"
+                            :disabled="scStageUploadIsBusy"
                             @click="scCloseStageFolderDialog()">
                         {{ scStageFolderDoneCount || scStageFolderErrorCount ? 'Закрыть' : 'Отмена' }}
                     </button>
                     <button class="btn btn-primary"
-                            :disabled="scStageUploadBusy[scStageFolderDialogStage] || !scStageFolderSelectedCount"
+                            :disabled="scStageUploadIsBusy || !scStageFolderDialogStage || !scStageFolderSelectedCount"
                             @click="scSubmitSelectedStageProjects()">
-                        {{ scStageUploadBusy[scStageFolderDialogStage]
+                        {{ scStageUploadIsBusy
                             ? 'Загрузка ' + scStageBatchCurrent + ' / ' + scStageBatchTotal
                             : 'Загрузить выбранные (' + scStageFolderSelectedCount + ')' }}
                     </button>
