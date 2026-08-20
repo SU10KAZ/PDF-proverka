@@ -87,11 +87,11 @@ autodetect на deploy = неполный data root.
 | `projects_count == 0` | **dangerous** (пустой data root) |
 | `comparison_root` не существует | **dangerous** |
 | `objects_count < 3` / `projects_count < 100` | warning |
-| Pipeline V2 артефакты эталонной пары отсутствуют | warning |
+| ~~Pipeline V2 артефакты эталонной пары отсутствуют~~ | чек снят 20.08.2026 вместе с Pipeline V2 |
 | всё в норме | ok |
 
 CLI-обёртка [scripts/check_production_data_roots.sh](../scripts/check_production_data_roots.sh)
-собирает live `/api/info` + `/api/objects` + `/api/projects` + Pipeline V2
+собирает live `/api/info` + `/api/objects` + `/api/projects`
 ui-payload и печатает вердикт. Exit code: `0` ok / `1` warning / `2` dangerous /
 `3` unreachable.
 

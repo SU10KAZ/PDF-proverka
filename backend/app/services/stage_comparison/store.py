@@ -744,7 +744,7 @@ def run_change_regions_cleanup_pilot(session_id: str, pair_id: str) -> dict:
         right, _, comparison_right = _prepared_document_for_comparison_pdf((pair.get("right") or {}).get("pdf_path"))
         if comparison != comparison_right: raise ValueError("pair_documents_belong_to_different_comparison_objects")
         alignment = _read_json(comparison / "diagnostics" / "sheet_alignment.json")
-        if not isinstance(alignment, dict): raise ValueError("sheet_alignment_result_missing_run_sheet_alignment_first")
+        if not isinstance(alignment, dict): raise ValueError("sheet_alignment_result_missing")
         before = _read_json(comparison / "change_regions" / "change_regions.json") or {}
         destination = comparison / "change_regions_v5b1"
         report = change_regions_mod.run_pilot((pair.get("left") or {}).get("pdf_path"),(pair.get("right") or {}).get("pdf_path"),left,right,alignment,destination,canonical_vectors=True)

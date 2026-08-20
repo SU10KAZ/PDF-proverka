@@ -6435,7 +6435,7 @@
                     <!-- Empty state: pair выбрана, но анализ ещё не запускался -->
                     <div v-if="!scUnifiedFlatLoading && !scUnifiedShowAllPairs && scActivePair && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
                          class="empty-state" style="padding:14px 0; font-size:13px; opacity:.85">
-                        Для выбранной PDF-пары анализ ещё не запускался. Перейдите на этап «1. Загрузка документации», выберите пары и нажмите «Обработать выбранные».
+                        Для выбранной PDF-пары анализ ещё не запускался. Запуск сравнения из интерфейса снят — расхождения появятся здесь, когда анализ будет выполнен.
                     </div>
 
 
@@ -6453,7 +6453,7 @@
                     <!-- Empty state (для всей сессии — фолбэк) -->
                     <div v-if="scUnifiedShowAllPairs && scUnifiedFlat && (!scUnifiedFlat.items || !scUnifiedFlat.items.length)"
                          class="empty-state" style="padding:14px 0; font-size:13px">
-                        Расхождений пока нет. Перейдите на этап «1. Загрузка документации», выберите пары и запустите «Обработать выбранные».
+                        Расхождений пока нет. Запуск сравнения из интерфейса снят — список заполнится, когда анализ будет выполнен.
                     </div>
 
                     <!-- Unified Excel-style table (номер / место / изменение / было / стало / влияние) -->
