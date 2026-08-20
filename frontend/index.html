@@ -5545,6 +5545,108 @@
             </div>
         </div>
 
+        <div v-if="currentView === 'stage-comparison' && scStageFolderDialogOpen"
+             class="modal-backdrop sc-stage-upload-backdrop"
+             role="dialog" aria-modal="true" aria-labelledby="sc-stage-upload-title"
+             @click.self="scCloseStageFolderDialog()">
+            <div class="modal-card sc-stage-upload-dialog">
+                <button class="modal-close" :disabled="scStageUploadBusy[scStageFolderDialogStage]"
+                        aria-label="Закрыть" @click="scCloseStageFolderDialog()">&times;</button>
+                <header class="sc-stage-upload-dialog__head">
+                    <h3 id="sc-stage-upload-title">Загрузить проекты в {{ scStageFolderDialogStage }}</h3>
+                    <p>Каждый проект загружается отдельно. Ошибка одного проекта не останавливает остальные.</p>
+                </header>
+
+                <div class="sc-stage-upload-context">
+                    <div><span>Объект</span><strong>{{ objectName || '—' }}</strong></div>
+                    <div><span>Стадия</span><strong>{{ scStageFolderDialogStage }}</strong></div>
+                    <div><span>Родительская папка</span><strong>{{ scStageFolderDialogName || '—' }}</strong></div>
+                </div>
+
+                <div class="sc-stage-upload-selectbar">
+                    <label>
+                        <input type="checkbox"
+                               :checked="scStageFolderSelectableCount > 0 && scStageFolderSelectedCount === scStageFolderSelectableCount"
+                               :disabled="scStageUploadBusy[scStageFolderDialogStage] || !scStageFolderSelectableCount"
+                               @change="scToggleAllStageCandidates($event.target.checked)">
+                        Выбрать все
+                    </label>
+                    <span>Найдено проектов: <strong>{{ scStageFolderCandidates.length }}</strong></span>
+                    <span v-if="scStageFolderDoneCount" class="sc-stage-upload-count--done">
+                        Загружено: {{ scStageFolderDoneCount }}
+                    </span>
+                    <span v-if="scStageFolderErrorCount" class="sc-stage-upload-count--error">
+                        Ошибок: {{ scStageFolderErrorCount }}
+                    </span>
+                </div>
+
+                <div v-if="scStageUploadBusy[scStageFolderDialogStage]" class="sc-stage-upload-batch">
+                    Загружается проект {{ scStageBatchCurrent }} из {{ scStageBatchTotal }}. Не закрывайте окно.
+                </div>
+                <div v-if="scStageUploadError" class="sc-shell-error sc-stage-upload-error">
+                    {{ scStageUploadError }}
+                </div>
+
+                <div class="sc-stage-upload-table-wrap">
+                    <table class="sc-stage-upload-table">
+                        <thead>
+                            <tr>
+                                <th aria-label="Выбор"></th>
+                                <th>Проект</th>
+                                <th>Источник</th>
+                                <th>Содержимое</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="candidate in scStageFolderCandidates" :key="candidate.id"
+                                :class="'sc-stage-upload-row--' + candidate.status">
+                                <td>
+                                    <input type="checkbox" v-model="candidate.checked"
+                                           :disabled="scStageUploadBusy[scStageFolderDialogStage] || candidate.status === 'done'"
+                                           :aria-label="'Выбрать проект ' + candidate.name">
+                                </td>
+                                <td><strong>{{ candidate.name }}</strong></td>
+                                <td>{{ candidate.source }}</td>
+                                <td>
+                                    {{ candidate.kind }} · файлов: {{ candidate.files.length }}
+                                    <small>{{ fmtSize(candidate.totalBytes) }}</small>
+                                </td>
+                                <td class="sc-stage-upload-status-cell">
+                                    <span class="sc-stage-upload-status"
+                                          :class="'sc-stage-upload-status--' + candidate.status">
+                                        {{ scStageCandidateStatusText(candidate) }}
+                                    </span>
+                                    <div v-if="candidate.status === 'uploading' || candidate.status === 'processing'"
+                                         class="sc-stage-upload-progress">
+                                        <i :style="{width: candidate.progress + '%'}"></i>
+                                    </div>
+                                    <small v-if="candidate.message" :class="{'is-error': candidate.status === 'error'}">
+                                        {{ candidate.message }}
+                                    </small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <footer class="sc-stage-upload-footer">
+                    <button class="btn btn-secondary"
+                            :disabled="scStageUploadBusy[scStageFolderDialogStage]"
+                            @click="scCloseStageFolderDialog()">
+                        {{ scStageFolderDoneCount || scStageFolderErrorCount ? 'Закрыть' : 'Отмена' }}
+                    </button>
+                    <button class="btn btn-primary"
+                            :disabled="scStageUploadBusy[scStageFolderDialogStage] || !scStageFolderSelectedCount"
+                            @click="scSubmitSelectedStageProjects()">
+                        {{ scStageUploadBusy[scStageFolderDialogStage]
+                            ? 'Загрузка ' + scStageBatchCurrent + ' / ' + scStageBatchTotal
+                            : 'Загрузить выбранные (' + scStageFolderSelectedCount + ')' }}
+                    </button>
+                </footer>
+            </div>
+        </div>
+
         </div><!-- /main-area -->
     </div>
 

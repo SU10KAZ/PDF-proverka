@@ -296,7 +296,10 @@ def _copy_selected_folder(
         if bundle_dir.exists():
             bundle_dir = zip_path.parent / f"{_safe_object_dir_name(zip_path.stem)}_bundle"
         bundle_dir.mkdir(parents=True)
-        zip_stats = _extract_checked(zip_path, bundle_dir)
+        try:
+            zip_stats = _extract_checked(zip_path, bundle_dir)
+        except StageUploadError as exc:
+            raise StageUploadError(f"{zip_path.name}: {exc}") from exc
         unpacked += int(zip_stats["unpacked_bytes"])
         if unpacked > _max_unpacked_bytes():
             raise StageUploadError("Папка слишком большая для загрузки")
@@ -355,6 +358,7 @@ def _commit_extracted_stage(
     work_root: Path,
     upload_filename: str | None,
     transfer_stats: dict,
+    retain_backup: bool = True,
 ) -> dict:
     """Импортировать проверенное дерево и атомарно переключить stage."""
     backup_path: Path | None = None
@@ -409,6 +413,13 @@ def _commit_extracted_stage(
         elif previous_scaffold is not None and previous_scaffold.exists() and not target.exists():
             os.replace(previous_scaffold, target)
         raise
+
+    # При поэлементной загрузке папки достаточно одной резервной копии до
+    # начала пачки. Промежуточные копии после каждого проекта только занимают
+    # место и заметно замедляют длинные очереди.
+    if backup_path is not None and not retain_backup:
+        shutil.rmtree(backup_path, ignore_errors=True)
+        backup_path = None
 
     stage_paths = {name: str(object_dir / name) for name in sorted(VALID_STAGES)}
     stage_pdf_counts = {
@@ -469,6 +480,7 @@ def replace_stage_from_folder(
     stage_name: str,
     uploads: list[tuple[BinaryIO, str]],
     folder_name: str | None = None,
+    retain_backup: bool = True,
 ) -> dict:
     """Импортировать целиком папку, выбранную в браузере."""
     obj, object_dir, target, target_was_versioned, previous_pdf_count = (
@@ -487,6 +499,7 @@ def replace_stage_from_folder(
             extracted=extracted, structured=structured, work_root=temp_root,
             upload_filename=folder_name or "browser_folder_upload",
             transfer_stats={"upload_type": "folder", **stats},
+            retain_backup=retain_backup,
         )
     finally:
         shutil.rmtree(temp_root, ignore_errors=True)

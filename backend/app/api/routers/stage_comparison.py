@@ -55,6 +55,7 @@ async def upload_stage_folder(
     files: list[UploadFile] = File(...),
     relative_paths: str = Form("[]"),
     folder_name: str = Form(""),
+    retain_backup: bool = Form(True),
 ):
     if stage_name not in stage_upload_mod.VALID_STAGES:
         raise HTTPException(400, "Разрешены только stage_1 и stage_2")
@@ -72,6 +73,7 @@ async def upload_stage_folder(
             stage_name,
             uploads,
             folder_name,
+            retain_backup,
         )
     except stage_upload_mod.StageUploadError as exc:
         raise HTTPException(400, str(exc)) from exc

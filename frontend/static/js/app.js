@@ -11809,6 +11809,13 @@ const app = createApp({
         const scObjectsError = ref('');
         const scStageUploadBusy = reactive({stage_1: false, stage_2: false});
         const scStageUploadError = ref('');
+        const scStageFolderDialogOpen = ref(false);
+        const scStageFolderDialogStage = ref('');
+        const scStageFolderDialogName = ref('');
+        const scStageFolderCandidates = ref([]);
+        const scStageFolderInput = ref(null);
+        const scStageBatchCurrent = ref(0);
+        const scStageBatchTotal = ref(0);
         const scSessionLoading = ref(false);
         const scSession = ref(null);
         const scSessionError = ref('');
@@ -11830,6 +11837,20 @@ const app = createApp({
         );
         const scDocumentsRight = computed(() =>
             (scSession.value && scSession.value.documents && scSession.value.documents.stage_2) || []
+        );
+        const scStageFolderSelectedCount = computed(() =>
+            scStageFolderCandidates.value.filter(candidate =>
+                candidate.checked && candidate.status !== 'done'
+            ).length
+        );
+        const scStageFolderSelectableCount = computed(() =>
+            scStageFolderCandidates.value.filter(candidate => candidate.status !== 'done').length
+        );
+        const scStageFolderDoneCount = computed(() =>
+            scStageFolderCandidates.value.filter(candidate => candidate.status === 'done').length
+        );
+        const scStageFolderErrorCount = computed(() =>
+            scStageFolderCandidates.value.filter(candidate => candidate.status === 'error').length
         );
         const scPairs = computed(() => (scSession.value && scSession.value.pairs) || []);
 
@@ -11899,33 +11920,236 @@ const app = createApp({
             }
         }
 
+        function scBuildStageFolderCandidates(files, rootName) {
+            const prepared = files.map((file, index) => {
+                const full = file.webkitRelativePath || file.name;
+                const parts = String(full).split('/').filter(Boolean);
+                const relative = parts[0] === rootName ? parts.slice(1) : parts;
+                return {
+                    file, index, full, relative,
+                    name: relative[relative.length - 1] || file.name,
+                };
+            });
+            const candidates = [];
+            const used = new Set();
+            const makeCandidate = (payload) => Object.assign({
+                checked: true,
+                status: 'ready',
+                progress: 0,
+                message: '',
+                result: null,
+                totalBytes: payload.files.reduce(
+                    (sum, item) => sum + Number(item.file.size || 0), 0,
+                ),
+            }, payload);
+
+            // Каждый ZIP портала — самостоятельный проект и отдельный HTTP-запрос.
+            for (const item of prepared) {
+                if (!item.name.toLowerCase().endsWith('.zip')) continue;
+                used.add(item.index);
+                candidates.push(makeCandidate({
+                    id: 'zip:' + item.index,
+                    name: item.name.replace(/\.zip$/i, ''),
+                    source: item.name,
+                    kind: 'ZIP-комплект',
+                    pdfCount: null,
+                    files: [item],
+                }));
+            }
+
+            // Подпапка с PDF считается одним проектом вместе с соседними файлами.
+            const nested = new Map();
+            for (const item of prepared) {
+                if (used.has(item.index) || item.relative.length < 2) continue;
+                const key = item.relative[0];
+                if (!nested.has(key)) nested.set(key, []);
+                nested.get(key).push(item);
+            }
+            for (const [name, items] of nested.entries()) {
+                const pdfCount = items.filter(item => item.name.toLowerCase().endsWith('.pdf')).length;
+                if (!pdfCount) continue;
+                items.forEach(item => used.add(item.index));
+                candidates.push(makeCandidate({
+                    id: 'folder:' + name,
+                    name,
+                    source: name,
+                    kind: 'папка проекта',
+                    pdfCount,
+                    files: items,
+                }));
+            }
+
+            // PDF в корне — самостоятельный проект; одноимённые артефакты идут с ним.
+            const rootFiles = prepared.filter(item =>
+                !used.has(item.index) && item.relative.length === 1
+            );
+            const rootPdfs = rootFiles.filter(item => item.name.toLowerCase().endsWith('.pdf'));
+            for (const pdf of rootPdfs) {
+                const stem = pdf.name.replace(/\.pdf$/i, '').toLowerCase();
+                const related = rootFiles.filter(item => {
+                    if (used.has(item.index)) return false;
+                    const low = item.name.toLowerCase();
+                    return item === pdf || low.startsWith(stem)
+                        || (rootPdfs.length === 1 && /^(document\.|result\.json|ocr\.)/.test(low));
+                });
+                related.forEach(item => used.add(item.index));
+                candidates.push(makeCandidate({
+                    id: 'pdf:' + pdf.index,
+                    name: pdf.name.replace(/\.pdf$/i, ''),
+                    source: pdf.name,
+                    kind: 'PDF-проект',
+                    pdfCount: 1,
+                    files: related,
+                }));
+            }
+            return candidates.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+        }
+
+        function scStageCandidateStatusText(candidate) {
+            const labels = {
+                queued: 'в очереди',
+                processing: 'обработка',
+                done: 'загружен',
+                error: 'ошибка',
+            };
+            if (candidate.status === 'uploading') return `загрузка ${candidate.progress || 0}%`;
+            if (candidate.status === 'ready') return candidate.checked ? 'выбран' : 'не выбран';
+            return labels[candidate.status] || candidate.status;
+        }
+
+        function scToggleAllStageCandidates(checked) {
+            scStageFolderCandidates.value.forEach(candidate => {
+                if (candidate.status !== 'done') candidate.checked = checked;
+            });
+        }
+
+        function scCloseStageFolderDialog() {
+            const stageName = scStageFolderDialogStage.value;
+            if (stageName && scStageUploadBusy[stageName]) return;
+            scStageFolderDialogOpen.value = false;
+            scStageFolderCandidates.value = [];
+            if (scStageFolderInput.value) scStageFolderInput.value.value = '';
+            scStageFolderInput.value = null;
+            scStageBatchCurrent.value = 0;
+            scStageBatchTotal.value = 0;
+        }
+
+        function scUploadStageCandidate(objectId, stageName, candidate, retainBackup) {
+            const form = new FormData();
+            candidate.files.forEach(item => form.append('files', item.file, item.file.name));
+            form.append('relative_paths', JSON.stringify(candidate.files.map(item => item.full)));
+            form.append('folder_name', candidate.name);
+            form.append('retain_backup', retainBackup ? 'true' : 'false');
+            const url = `/api/stage-comparison/objects/${encodeURIComponent(objectId)}/stages/${stageName}/upload-folder`;
+
+            candidate.status = 'uploading';
+            candidate.progress = 0;
+            candidate.message = '';
+            candidate.result = null;
+            return new Promise((resolve, reject) => {
+                const request = new XMLHttpRequest();
+                request.open('POST', url);
+                request.responseType = 'json';
+                request.upload.onprogress = (event) => {
+                    if (!event.lengthComputable) return;
+                    candidate.progress = Math.min(99, Math.round((event.loaded / event.total) * 100));
+                };
+                request.upload.onload = () => {
+                    candidate.progress = 100;
+                    candidate.status = 'processing';
+                };
+                request.onload = () => {
+                    let data = request.response;
+                    let responseText = '';
+                    try { responseText = request.responseText || ''; } catch (_) { responseText = ''; }
+                    if (!data && responseText) {
+                        try { data = JSON.parse(responseText); } catch (_) { data = {}; }
+                    }
+                    data = data || {};
+                    if (request.status >= 200 && request.status < 300) resolve(data);
+                    else {
+                        const fallback = request.status === 413
+                            ? 'Проект превышает допустимый размер сервера (HTTP 413)'
+                            : ('HTTP ' + request.status);
+                        reject(new Error(data.detail || fallback));
+                    }
+                };
+                request.onerror = () => reject(new Error('Сетевая ошибка при передаче проекта'));
+                request.onabort = () => reject(new Error('Загрузка отменена'));
+                request.send(form);
+            });
+        }
+
         async function scUploadStageFolder(stageName, event) {
             const input = event && event.target;
             const files = Array.from((input && input.files) || []);
             if (!currentObjectId.value || !files.length) return;
             const relativePaths = files.map(file => file.webkitRelativePath || file.name);
             const folderName = String(relativePaths[0] || '').split('/')[0] || 'folder';
-            const form = new FormData();
-            files.forEach(file => form.append('files', file, file.name));
-            form.append('relative_paths', JSON.stringify(relativePaths));
-            form.append('folder_name', folderName);
+            const candidates = scBuildStageFolderCandidates(files, folderName);
+            scStageFolderDialogStage.value = stageName;
+            scStageFolderDialogName.value = folderName;
+            scStageFolderCandidates.value = candidates;
+            scStageFolderInput.value = input;
+            scStageUploadError.value = candidates.length
+                ? ''
+                : 'В выбранной папке не найдены PDF или ZIP-проекты.';
+            scStageFolderDialogOpen.value = candidates.length > 0;
+        }
+
+        async function scSubmitSelectedStageProjects() {
+            const selected = scStageFolderCandidates.value.filter(candidate =>
+                candidate.checked && candidate.status !== 'done'
+            );
+            if (!selected.length) return;
+            const stageName = scStageFolderDialogStage.value;
+            const objectId = currentObjectId.value;
+            if (!objectId || !['stage_1', 'stage_2'].includes(stageName)) return;
+
+            selected.forEach(candidate => {
+                candidate.status = 'queued';
+                candidate.progress = 0;
+                candidate.message = '';
+            });
             scStageUploadBusy[stageName] = true;
             scStageUploadError.value = '';
+            scStageBatchCurrent.value = 0;
+            scStageBatchTotal.value = selected.length;
+            let successful = 0;
+            let retainBackup = true;
             try {
-                const response = await fetch(
-                    `/api/stage-comparison/objects/${encodeURIComponent(currentObjectId.value)}/stages/${stageName}/upload-folder`,
-                    {method: 'POST', body: form},
-                );
-                const data = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
-                scActivePair.value = null;
-                scPairData.value = null;
-                await scLoadObjects();
-            } catch (error) {
-                scStageUploadError.value = String(error.message || error);
+                for (let index = 0; index < selected.length; index += 1) {
+                    const candidate = selected[index];
+                    scStageBatchCurrent.value = index + 1;
+                    try {
+                        const result = await scUploadStageCandidate(
+                            objectId, stageName, candidate, retainBackup,
+                        );
+                        candidate.status = 'done';
+                        candidate.progress = 100;
+                        candidate.checked = false;
+                        candidate.result = result;
+                        candidate.message = `${Number(result.documents_imported || result.pdf_count || 0)} PDF`;
+                        successful += 1;
+                        if (result.backup_path) retainBackup = false;
+                    } catch (error) {
+                        candidate.status = 'error';
+                        candidate.progress = 0;
+                        candidate.message = String(error.message || error);
+                    }
+                }
+                if (successful) {
+                    scActivePair.value = null;
+                    scPairData.value = null;
+                    await scLoadObjects();
+                }
+                const failed = selected.length - successful;
+                if (failed) {
+                    scStageUploadError.value = `Не загружено проектов: ${failed}. Подробности указаны в строках.`;
+                }
             } finally {
                 scStageUploadBusy[stageName] = false;
-                if (input) input.value = '';
+                if (scStageFolderInput.value) scStageFolderInput.value.value = '';
             }
         }
 
@@ -12372,6 +12596,12 @@ const app = createApp({
             // Documentation comparison shell
             scTab, scObjects, scObjectsLoading, scObjectsError, scSelectedObject,
             scStageInfo, scStageUploadBusy, scStageUploadError, scUploadStageFolder,
+            scStageFolderDialogOpen, scStageFolderDialogStage, scStageFolderDialogName,
+            scStageFolderCandidates, scStageFolderSelectedCount, scStageFolderSelectableCount,
+            scStageFolderDoneCount, scStageFolderErrorCount,
+            scStageBatchCurrent, scStageBatchTotal,
+            scStageCandidateStatusText, scToggleAllStageCandidates,
+            scCloseStageFolderDialog, scSubmitSelectedStageProjects,
             scSessionLoading, scSession, scSessionError,
             scDocumentsLeft, scDocumentsRight, scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
