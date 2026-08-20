@@ -12128,11 +12128,6 @@ const app = createApp({
             } catch (_) {}
         }
 
-        function scResetDocumentOrder() {
-            scInitializeDocumentOrder(false);
-            scPersistDocumentOrder();
-        }
-
         function scStartDocumentDrag(event, side, index) {
             const row = scPairRows.value[index];
             if (!['left', 'right'].includes(side) || !scDocumentOrder[side][index]
@@ -13464,7 +13459,7 @@ const app = createApp({
             scLinkEditorLeftPages, scLinkEditorRightPages,
             scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow,
             scProcessCurrentSelection, scProcessPairRow,
-            scResetDocumentOrder, scStartDocumentDrag, scDragDocumentOver,
+            scStartDocumentDrag, scDragDocumentOver,
             scDropDocument, scFinishDocumentDrag, scIsDraggingDocument,
             scStartPairRowDrag, scDragPairRowOver, scDropPairRow,
             scFinishPairRowDrag, scIsDraggingPairRow,

@@ -20,6 +20,7 @@ describe('documentation comparison shell', () => {
     expect(html).not.toContain('Пары документов');
     expect(html).not.toContain('Выставьте соответствующие проекты друг напротив друга');
     expect(html).not.toContain('Нажмите проект в одной колонке');
+    expect(html).not.toContain('Сбросить порядок');
     expect(html).not.toContain('{{ scSession.id }}');
   });
 

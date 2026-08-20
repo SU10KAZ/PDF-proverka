@@ -4012,7 +4012,6 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-shell-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .sc-pair-workbench { min-width: 0; }
-.sc-pair-workbench__toolbar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
 .sc-pair-board {
     max-height: min(72vh, 900px);
     overflow: auto;
