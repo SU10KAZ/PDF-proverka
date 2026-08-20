@@ -60,12 +60,31 @@ describe('documentation comparison shell', () => {
     expect(css).toContain('border-color: #2563eb');
   });
 
-  it('supports manual many-to-many sheet correction in the viewer', () => {
-    expect(html).toContain('+ Добавить лист РД');
-    expect(html).toContain('Удалить связь');
-    expect(html).toContain('Не сопоставлены П');
-    expect(app).toContain('right_pages: rightPages');
-    expect(app).toContain('left_pages: [leftPage]');
+  it('renders one ordered sheet map instead of summary cards and unmatched chips', () => {
+    expect(html).toContain('Карта листов');
+    expect(html).toContain('v-for="row in scSheetMapRows"');
+    expect(html).toContain("scSheetMapSideLabel(row.leftPages, 'left')");
+    expect(html).toContain("scSheetMapSideLabel(row.rightPages, 'right')");
+    expect(html).toContain('@click="scOpenSheetMapRow(row)"');
+    expect(html).not.toContain('class="sc-match-summary"');
+    expect(html).not.toContain('Текущая связь');
+    expect(html).not.toContain('Не сопоставлены П:');
+    expect(html).not.toContain('Не сопоставлены РД:');
+    expect(css).not.toContain('.sc-match-summary');
+    expect(css).not.toContain('.sc-link-passports');
+  });
+
+  it('keeps compact actions and manual many-to-many rows in the sheet map', () => {
+    expect(html).toContain("scOpenSheetMapEditor(row, 'replace')");
+    expect(html).toContain("scOpenSheetMapEditor(row, 'add')");
+    expect(html).toContain('@click="scDeleteSheetMapRow(row)"');
+    expect(html).toContain('>Изменить</button>');
+    expect(html).toContain('>+ Добавить</button>');
+    expect(html).toContain('>Удалить</button>');
+    expect(app).toContain('leftPages: link.left_pages || []');
+    expect(app).toContain('rightPages: link.right_pages || []');
+    expect(app).toContain('return `Листы ${uniquePages.map(sheetNumber).join(\', \')}`');
+    expect(app).toContain('left_pages: leftPages, right_pages: rightPages');
     expect(app).toContain('user_corrected');
   });
 

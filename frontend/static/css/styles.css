@@ -4163,78 +4163,103 @@ tr.row-rejected td.sc-cell-goto {
     text-align: center;
 }
 .sc-empty-state--large { min-height: 220px; display: grid; place-items: center; }
-.sc-match-summary {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
+.sc-sheet-map {
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface, #fff);
 }
-.sc-match-summary > div {
-    display: grid;
-    gap: 2px;
+.sc-sheet-map__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     padding: 10px 12px;
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    background: var(--surface, #fff);
+    border-bottom: 1px solid var(--border2);
 }
-.sc-match-summary strong { font-size: 20px; }
-.sc-match-summary span { color: var(--text3); font-size: 11px; }
-.sc-link-editor-card {
-    padding: 16px;
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
+.sc-sheet-map__head span { color: var(--text3); font-size: 11px; }
+.sc-sheet-map__list { max-height: min(42vh, 520px); overflow: auto; }
+.sc-sheet-map__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 42px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border2);
     background: var(--surface, #fff);
+    cursor: pointer;
 }
-.sc-link-editor-card__head,
-.sc-linked-pages,
-.sc-link-picker,
-.sc-unmatched-pages {
+.sc-sheet-map__row:last-child { border-bottom: 0; }
+.sc-sheet-map__row:hover { background: var(--bg2, #f8f9fa); }
+.sc-sheet-map__row.is-active {
+    background: rgba(15, 159, 143, .08);
+    box-shadow: inset 3px 0 0 var(--accent, #0f9f8f);
+}
+.sc-sheet-map__row:focus-visible { outline: 2px solid #60a5fa; outline-offset: -2px; }
+.sc-sheet-map__relation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+}
+.sc-sheet-map__relation span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-sheet-map__relation b { color: var(--text3); font-size: 14px; }
+.sc-sheet-map__badge {
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.sc-sheet-map__badge--high { color: #166534; background: #dcfce7; }
+.sc-sheet-map__badge--review { color: #92400e; background: #fef3c7; }
+.sc-sheet-map__badge--manual { color: #1d4ed8; background: #dbeafe; }
+.sc-sheet-map__badge--unmatched { color: #6b7280; background: #f3f4f6; }
+.sc-sheet-map__actions {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+.sc-sheet-map__actions button {
+    padding: 2px 7px;
+    border: 0;
+    border-left: 1px solid var(--border2);
+    color: var(--accent, #0f766e);
+    background: transparent;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+.sc-sheet-map__actions button:first-child { border-left: 0; }
+.sc-sheet-map__actions button:hover:not(:disabled) { text-decoration: underline; }
+.sc-sheet-map__actions button.is-danger { color: #b91c1c; }
+.sc-sheet-map__actions button:disabled { color: var(--text3); cursor: default; opacity: .55; }
+.sc-sheet-map__empty { padding: 24px; color: var(--text3); text-align: center; }
+.sc-link-picker {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
+    padding: 10px 12px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--bg2, #f8f9fa);
 }
-.sc-link-editor-card__head { justify-content: space-between; }
-.sc-link-editor-card__head > div { display: grid; gap: 3px; }
-.sc-match-status {
-    padding: 4px 9px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-.sc-match-status--high { color: #166534; background: #dcfce7; }
-.sc-match-status--review { color: #92400e; background: #fef3c7; }
-.sc-match-status--manual { color: #1d4ed8; background: #dbeafe; }
-.sc-match-status--unmatched { color: #6b7280; background: #f3f4f6; }
-.sc-link-passports {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    gap: 18px;
-    align-items: center;
-    margin-top: 14px;
-}
-.sc-link-passports > div { display: grid; gap: 4px; padding: 12px; border: 1px solid var(--border2); border-radius: var(--radius); }
-.sc-link-passports span,
-.sc-link-passports small { color: var(--text3); }
-.sc-link-passports__arrow { font-size: 24px; }
-.sc-linked-pages,
-.sc-match-reason,
-.sc-match-conflict,
-.sc-link-picker,
-.sc-unmatched-pages { margin-top: 12px; }
-.sc-match-reason { color: var(--text2); font-size: 13px; }
-.sc-match-conflict { padding: 9px 10px; border-radius: var(--radius); color: #92400e; background: #fffbeb; }
-.sc-link-picker { padding: 12px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--bg2, #f8f9fa); }
-.sc-link-picker label { font-weight: 700; }
-.sc-link-picker select { flex: 1; min-width: 260px; }
-.sc-unmatched-pages > span,
-.sc-linked-pages > span { color: var(--text3); font-size: 12px; font-weight: 700; }
+.sc-sheet-map-editor > div { display: grid; gap: 2px; min-width: 170px; }
+.sc-sheet-map-editor small { color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-sheet-map-editor select { flex: 1; min-width: 260px; }
 
 @media (max-width: 900px) {
     .sc-vector-viewer { grid-template-columns: 1fr; }
     .sc-vector-pane { height: 60vh; }
-    .sc-match-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .sc-link-passports { grid-template-columns: 1fr; }
-    .sc-link-passports__arrow { transform: rotate(90deg); justify-self: center; }
+    .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; }
+    .sc-sheet-map__actions { grid-column: 1 / -1; justify-content: flex-end; }
+    .sc-link-picker { align-items: stretch; flex-direction: column; }
+    .sc-sheet-map-editor select { min-width: 0; width: 100%; }
 }
 
 /* ─── Upload folder from computer (browser folder upload) ─── */
