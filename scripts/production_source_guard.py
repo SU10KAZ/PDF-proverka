@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Страж происхождения прод-кода: выкатывать можно только опубликованный коммит.
+"""Страж происхождения прод-кода: сборка может опережать push, deploy — нет.
 
 Зачем это существует
 ────────────────────
@@ -11,18 +11,22 @@
 восстановление стоило отдельной сессии, и оба раза потеря `/tmp` уничтожила бы
 исходник работающего прода.
 
-Дисциплина «сначала запушь» не работает: она держится на внимательности
-оператора, а оператор в этот момент занят инцидентом. Поэтому здесь запрет
-технический — до сборки и до переключения релиза.
+Дисциплина «перед deploy обязательно запушь» не работает: она держится на
+внимательности оператора, а оператор в этот момент занят инцидентом. Поэтому
+перед переключением релиза запрет технический. При этом иммутабельный кандидат
+центра можно заранее собрать из чистого локального HEAD ветки main, если он —
+линейное продолжение свежего origin/main. Перед deploy тот же коммит повторно
+проверяется уже без такого допуска.
 
 Что именно требуется
 ────────────────────
 1. Удалённая ветка проверяется СЕЙЧАС (`git fetch`), а не по устаревшему
    remote-tracking ref. Иначе страж подтвердит достижимость по снимку,
    сделанному вчера, и снова пропустит неопубликованный коммит.
-2. Коммит-источник обязан быть ДОСТИЖИМ из канонической удалённой ветки.
-   Проверка именно на достижимость, а не на равенство: прод часто отстаёт от
-   головы ветки на несколько коммитов, и это нормально.
+2. Для deploy коммит-источник обязан быть ДОСТИЖИМ из канонической удалённой
+   ветки. Для предварительной сборки центра допустим только чистый локальный
+   HEAD самой канонической ветки, если свежий remote HEAD является его
+   предком. Посторонняя ветка и разошедшаяся история остаются отказом.
 3. Дерево-источник обязано быть чистым по ОТСЛЕЖИВАЕМЫМ файлам. Это не
    формальность: `scripts/deploy_audit_worker.py` собирает bundle из РАБОЧЕГО
    ДЕРЕВА (по allowlist'у отслеживаемых путей), поэтому изменённый, но не
@@ -44,8 +48,9 @@
 Не подменяет замок выкатки (`scripts/deploy_lock.py`). Порядок обязателен и
 именно такой:
 
-    fetch → страж происхождения → страж чистоты → тесты/проверки релиза
-    → замок выкатки → гейт живой работы → мутация прода
+    BUILD:  fetch → страж кандидата → страж чистоты → тесты/проверки релиза
+    DEPLOY: fetch → строгий страж публикации → замок выкатки
+            → гейт живой работы → мутация прода
 
 Сначала дешёвые и безопасные отказы, и только потом захват общего ресурса:
 падать после взятия замка значит держать чужую выкатку в отказе на время
@@ -56,9 +61,11 @@
     # из дерева-источника
     python scripts/production_source_guard.py
     python scripts/production_source_guard.py --commit <sha> --json
+    python scripts/production_source_guard.py --build-candidate --json
     python scripts/production_source_guard.py --repo /path/to/tree
 
-Код возврата: 0 — можно выкатывать; 4 — PRODUCTION_SOURCE_NOT_CANONICAL.
+Код возврата: 0 — источник допустим для выбранного режима; 4 —
+PRODUCTION_SOURCE_NOT_CANONICAL. Режим build-candidate не даёт права на deploy.
 Четвёрка выбрана намеренно: у установщика шлюза 4 уже означает
 PRECHECK_FAILED — «живой прод не тронут».
 """
@@ -243,13 +250,18 @@ def verify_production_source(
     branch: str = "",
     fetch: bool = True,
     require_clean: bool = True,
+    allow_local_ahead_build: bool = False,
     allow_untracked: Sequence[str] = (),
 ) -> dict[str, object]:
-    """Разрешить прод-сборку/выкатку или отказать ДО любой мутации.
+    """Проверить источник сборки/выкладки или отказать ДО любой мутации.
 
     Возвращает квитанцию для release-manifest / deploy-receipt. Бросает
     `ProductionSourceNotCanonical` при любом сомнении: страж обязан падать
     закрыто, потому что цена ложного разрешения — снова прод из `/tmp`.
+
+    ``allow_local_ahead_build`` разрешает только предварительную сборку
+    иммутабельного кандидата из чистого HEAD локальной канонической ветки.
+    Строгий вызов без флага по-прежнему обязателен перед deploy.
     """
     repo = Path(repo).resolve()
     remote = remote or CANONICAL_REMOTE
@@ -293,21 +305,41 @@ def verify_production_source(
         ["git", "merge-base", "--is-ancestor", source, remote_head],
         cwd=str(repo), capture_output=True,
     ).returncode == 0
-    if not reachable:
+    local_head = _git(repo, "rev-parse", "HEAD")
+    source_branch = _git(repo, "rev-parse", "--abbrev-ref", "HEAD", check=False)
+    remote_is_source_ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", remote_head, source],
+        cwd=str(repo), capture_output=True,
+    ).returncode == 0
+    local_build_candidate = bool(
+        allow_local_ahead_build
+        and source == local_head
+        and source_branch == branch
+        and remote_is_source_ancestor
+    )
+    if not reachable and not local_build_candidate:
         subject = _git(repo, "log", "-1", "--format=%s", source, check=False)
+        build_hint = (
+            " Предварительная сборка без push разрешена только для чистого "
+            f"HEAD ветки {branch}, линейно продолжающего свежий {remote}/{branch}."
+            if allow_local_ahead_build else ""
+        )
         raise ProductionSourceNotCanonical(
             "commit_not_published",
             f"коммит {source[:12]} («{subject[:80]}») НЕ достижим из "
             f"{remote}/{branch} ({remote_head[:12]}). Порядок обязателен: "
-            "COMMIT → TEST → PUSH в каноническую ветку → BUILD → DEPLOY. "
-            "Соберите коммит в каноническую ветку и запушьте, затем повторите.",
+            "COMMIT → BUILD → PUSH в каноническую ветку → DEPLOY. "
+            "Перед deploy опубликуйте коммит и повторите строгую проверку."
+            + build_hint,
         )
 
     # Не отказ, а сведение: локальная ветка может отставать от remote, и это
     # само по себе прод не ломает — но в квитанции это должно быть видно.
-    local_head = _git(repo, "rev-parse", "HEAD")
     behind = _git(
         repo, "rev-list", "--count", f"{local_head}..{remote_head}", check=False
+    ) or "0"
+    ahead = _git(
+        repo, "rev-list", "--count", f"{remote_head}..{source}", check=False
     ) or "0"
 
     return {
@@ -315,11 +347,14 @@ def verify_production_source(
         "source_repo": str(repo),
         "source_commit": source,
         "source_tree": tree,
-        "source_branch": _git(repo, "rev-parse", "--abbrev-ref", "HEAD", check=False),
+        "source_branch": source_branch,
         "canonical_remote": remote,
         "canonical_branch": branch,
         "canonical_remote_head": remote_head,
-        "reachable_from_canonical_remote": True,
+        "reachable_from_canonical_remote": reachable,
+        "local_build_candidate": local_build_candidate,
+        "publication_required_before_deploy": not reachable,
+        "local_ahead_remote": int(ahead),
         "local_behind_remote": int(behind),
         "remote_freshly_fetched": bool(fetch),
         "clean_tree": clean_report,
@@ -328,8 +363,8 @@ def verify_production_source(
 
 def main(argv: Optional[Iterable[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Страж происхождения прод-кода: коммит обязан быть в "
-                    "канонической удалённой ветке, дерево — чистым.",
+        description="Страж происхождения прод-кода: deploy требует публикацию; "
+                    "предварительная сборка допускает чистый локальный main.",
     )
     parser.add_argument("--repo", default=".", help="дерево-источник сборки")
     parser.add_argument(
@@ -343,6 +378,11 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     parser.add_argument("--branch", default="")
     parser.add_argument("--no-fetch", action="store_true",
                         help="ТОЛЬКО для тестов: не обновлять remote")
+    parser.add_argument(
+        "--build-candidate", action="store_true",
+        help="разрешить чистый локальный HEAD ветки main для предварительной "
+             "сборки; deploy всё равно потребует push",
+    )
     parser.add_argument("--skip-clean-check", action="store_true",
                         help="ТОЛЬКО для проверки происхождения без дерева")
     parser.add_argument("--allow-untracked", action="append", default=[])
@@ -356,6 +396,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
             branch=args.branch,
             fetch=not args.no_fetch,
             require_clean=not args.skip_clean_check,
+            allow_local_ahead_build=args.build_candidate,
             allow_untracked=args.allow_untracked,
         )
         if args.component:
@@ -366,7 +407,9 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     if args.json:
         print(json.dumps(receipt, ensure_ascii=False, indent=1))
     else:
-        print(f"PRODUCTION_SOURCE_CANONICAL=YES "
+        status = ("LOCAL_BUILD_CANDIDATE" if receipt["local_build_candidate"]
+                  else "CANONICAL")
+        print(f"PRODUCTION_SOURCE_{status}=YES "
               f"commit={receipt['source_commit'][:12]} "
               f"{receipt['canonical_remote']}/{receipt['canonical_branch']}="
               f"{str(receipt['canonical_remote_head'])[:12]}")

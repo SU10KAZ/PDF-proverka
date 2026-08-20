@@ -112,6 +112,61 @@ def test_b_unpublished_local_commit_is_refused(fixture_repo: Path) -> None:
     assert "PUSH" in str(exc.value)
 
 
+def test_b_unpublished_main_head_is_allowed_only_as_build_candidate(
+    fixture_repo: Path,
+) -> None:
+    (fixture_repo / "backend" / "app.py").write_text(
+        "print('local build')\n", encoding="utf-8"
+    )
+    _git(fixture_repo, "commit", "-aqm", "локальный кандидат сборки")
+
+    receipt = _verify(fixture_repo, allow_local_ahead_build=True)
+
+    assert receipt["reachable_from_canonical_remote"] is False
+    assert receipt["local_build_candidate"] is True
+    assert receipt["publication_required_before_deploy"] is True
+    assert receipt["local_ahead_remote"] == 1
+
+
+def test_b_build_candidate_rejects_unpublished_feature_head(
+    fixture_repo: Path,
+) -> None:
+    _git(fixture_repo, "checkout", "-q", "-b", "feat/local-build")
+    (fixture_repo / "backend" / "app.py").write_text(
+        "print('feature')\n", encoding="utf-8"
+    )
+    _git(fixture_repo, "commit", "-aqm", "кандидат не из main")
+
+    with pytest.raises(ProductionSourceNotCanonical) as exc:
+        _verify(fixture_repo, allow_local_ahead_build=True)
+    assert exc.value.reason == "commit_not_published"
+
+
+def test_b_build_candidate_rejects_diverged_main(
+    fixture_repo: Path, tmp_path: Path,
+) -> None:
+    clone = tmp_path / "publisher"
+    origin = _git(fixture_repo, "remote", "get-url", "origin")
+    subprocess.run(
+        ["git", "clone", "-q", "-b", CANONICAL_BRANCH, origin, str(clone)],
+        check=True,
+    )
+    _git(clone, "config", "user.email", "publisher@test")
+    _git(clone, "config", "user.name", "publisher")
+    (clone / "backend" / "remote.py").write_text("remote = 1\n", encoding="utf-8")
+    _git(clone, "add", "backend/remote.py")
+    _git(clone, "commit", "-qm", "удалённое изменение")
+    _git(clone, "push", "-q", "origin", CANONICAL_BRANCH)
+
+    (fixture_repo / "backend" / "local.py").write_text("local = 1\n", encoding="utf-8")
+    _git(fixture_repo, "add", "backend/local.py")
+    _git(fixture_repo, "commit", "-qm", "локальное изменение")
+
+    with pytest.raises(ProductionSourceNotCanonical) as exc:
+        _verify(fixture_repo, allow_local_ahead_build=True)
+    assert exc.value.reason == "commit_not_published"
+
+
 # ─────────────────── C. коммит на посторонней feature-ветке ─────────────────
 
 def test_c_commit_on_unrelated_branch_is_refused(fixture_repo: Path) -> None:
@@ -353,6 +408,7 @@ def test_guard_runs_before_the_deploy_lock_in_center_build() -> None:
     src = (REPO_ROOT / "scripts" / "build_center_release.py").read_text(encoding="utf-8")
     body = src[src.index("def build("):]
     assert body.index("verify_production_source(") < body.index("deploy_lock(")
+    assert "allow_local_ahead_build=True" in body
 
 
 def test_guard_module_has_no_environment_bypass() -> None:
@@ -402,6 +458,7 @@ def test_release_source_wrapper_forwards_manifest_commit(
                         lambda repo, **kw: seen.update(kw) or {"ok": True})
     deployer._verify_release_source(rel)
     assert seen["commit"] == "08666e4d" + "0" * 32
+    assert seen.get("allow_local_ahead_build", False) is False
 
 
 # ═════ Смена канонической ветки на main (19.08.2026) ═══════════════════════

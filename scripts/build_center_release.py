@@ -274,12 +274,14 @@ def build(
     commit = run("git", "rev-parse", "HEAD")
     if run("git", "status", "--porcelain"):
         raise SystemExit("рабочее дерево грязное: релиз собирается только из коммита")
-    # Страж происхождения — ПЕРВЫМ делом и до захвата замка. Дважды 18.08.2026
-    # релиз центра собирался из локального коммита, которого не было на origin
-    # (78199ef7, затем 08666e4d), и боевой исходник оставался только в клоне под
-    # /tmp. Проверка стоит здесь, а не в deploy: собранный, но непубликуемый
-    # релиз — это уже готовая к переключению ловушка.
-    source_receipt = verify_production_source(REPO_ROOT, commit=commit)
+    # Страж происхождения — ПЕРВЫМ делом и до захвата замка. Сборщик может
+    # запечатать чистый локальный HEAD ветки main до push, но лишь когда он
+    # линейно продолжает свежий origin/main. В манифест попадёт отметка
+    # publication_required_before_deploy; переключатель релиза повторит
+    # строгую проверку и не тронет production, пока коммит не опубликован.
+    source_receipt = verify_production_source(
+        REPO_ROOT, commit=commit, allow_local_ahead_build=True
+    )
     parent = run("git", "rev-parse", "HEAD^")
     tree = run("git", "rev-parse", "HEAD^{tree}")
     release_id = f"ui-real-{commit[:8]}"
