@@ -11823,6 +11823,8 @@ const app = createApp({
         const scDocumentOrder = reactive({left: [], right: []});
         const scDraggingDocument = ref(null);
         const scDocumentDragOver = reactive({left: null, right: null});
+        const scDraggingPairRow = ref(null);
+        const scPairRowDragOver = ref(null);
         const scPendingPairSelection = ref(null);
         const scConfirmedDocumentPairs = reactive({});
         const scPairRowStates = reactive({});
@@ -12135,6 +12137,7 @@ const app = createApp({
             const row = scPairRows.value[index];
             if (!['left', 'right'].includes(side) || !scDocumentOrder[side][index]
                     || (row && scPairRowBusy(row))) return;
+            scFinishPairRowDrag();
             scDraggingDocument.value = {side, index};
             scPendingPairSelection.value = null;
             if (event.dataTransfer) {
@@ -12177,6 +12180,56 @@ const app = createApp({
         function scIsDraggingDocument(side, index) {
             const dragging = scDraggingDocument.value;
             return Boolean(dragging && dragging.side === side && dragging.index === index);
+        }
+
+        function scStartPairRowDrag(event, row) {
+            if (!row || scPairRowBusy(row)) return;
+            scFinishDocumentDrag();
+            scPendingPairSelection.value = null;
+            scDraggingPairRow.value = row.index;
+            if (event.dataTransfer) {
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', `pair:${row.index}`);
+            }
+        }
+
+        function scDragPairRowOver(event, index) {
+            const sourceIndex = scDraggingPairRow.value;
+            if (sourceIndex === null || sourceIndex === undefined) return;
+            const targetRow = scPairRows.value[index];
+            if (targetRow && scPairRowBusy(targetRow)) return;
+            if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+            scPairRowDragOver.value = index;
+        }
+
+        function scDropPairRow(index) {
+            const sourceIndex = scDraggingPairRow.value;
+            if (sourceIndex === null || sourceIndex === undefined) return;
+            const sourceRow = scPairRows.value[sourceIndex];
+            const targetRow = scPairRows.value[index];
+            if ((sourceRow && scPairRowBusy(sourceRow)) || (targetRow && scPairRowBusy(targetRow))) {
+                scFinishPairRowDrag();
+                return;
+            }
+            if (sourceIndex !== index) {
+                for (const side of ['left', 'right']) {
+                    const values = [...scDocumentOrder[side]];
+                    const [document] = values.splice(sourceIndex, 1);
+                    values.splice(index, 0, document);
+                    scDocumentOrder[side] = values;
+                }
+                scPersistDocumentOrder();
+            }
+            scFinishPairRowDrag();
+        }
+
+        function scFinishPairRowDrag() {
+            scDraggingPairRow.value = null;
+            scPairRowDragOver.value = null;
+        }
+
+        function scIsDraggingPairRow(index) {
+            return scDraggingPairRow.value === index;
         }
 
         function scPairRowKey(row) {
@@ -12308,6 +12361,7 @@ const app = createApp({
                 scPendingPairSelection.value = null;
                 scClearConfirmedDocumentPairs();
                 scFinishDocumentDrag();
+                scFinishPairRowDrag();
                 scActivePair.value = null;
                 scPairData.value = null;
                 scMatchState.value = null;
@@ -13398,6 +13452,7 @@ const app = createApp({
             scSessionLoading, scSession, scSessionError,
             scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows,
             scDraggingDocument, scDocumentDragOver,
+            scDraggingPairRow, scPairRowDragOver,
             scPendingPairSelection, scConfirmedDocumentPairs,
             scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
@@ -13411,6 +13466,8 @@ const app = createApp({
             scProcessCurrentSelection, scProcessPairRow,
             scResetDocumentOrder, scStartDocumentDrag, scDragDocumentOver,
             scDropDocument, scFinishDocumentDrag, scIsDraggingDocument,
+            scStartPairRowDrag, scDragPairRowOver, scDropPairRow,
+            scFinishPairRowDrag, scIsDraggingPairRow,
             scSelectPairDocument, scIsPairDocumentPending, scIsPairRowConfirmed,
             scPairRowStatus, scPairRowBusy, scPairRowError,
             scPassportFor, scPassportLabel, scPassportShortTitle, scReasonLabel,

@@ -17,6 +17,9 @@ describe('documentation comparison shell', () => {
   it('does not expose the source-card heading or internal session id', () => {
     expect(html).not.toContain('Исходные документы');
     expect(html).not.toContain('Выберите PDF с каждой стадии');
+    expect(html).not.toContain('Пары документов');
+    expect(html).not.toContain('Выставьте соответствующие проекты друг напротив друга');
+    expect(html).not.toContain('Нажмите проект в одной колонке');
     expect(html).not.toContain('{{ scSession.id }}');
   });
 
@@ -58,6 +61,15 @@ describe('documentation comparison shell', () => {
     expect(app).toContain('scConfirmedDocumentPairs[scPairPathsKey(leftPdf, rightPdf)]');
     expect(css).toContain('.sc-pair-document.is-confirmed');
     expect(css).toContain('border-color: #2563eb');
+  });
+
+  it('moves a whole pair vertically from the row handle', () => {
+    expect(html).toContain('@dragstart="scStartPairRowDrag($event, row)"');
+    expect(html).toContain('@dragover.prevent="scDragPairRowOver($event, row.index)"');
+    expect(html).toContain('@drop.prevent="scDropPairRow(row.index)"');
+    expect(app).toContain("for (const side of ['left', 'right'])");
+    expect(app).toContain('values.splice(index, 0, document)');
+    expect(css).toContain('.sc-pair-row-handle');
   });
 
   it('renders one ordered sheet map instead of summary cards and unmatched chips', () => {

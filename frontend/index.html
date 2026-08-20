@@ -5413,15 +5413,7 @@
                 </div>
 
                 <section v-if="scSession" class="sc-shell-card sc-pair-workbench">
-                    <div class="sc-shell-card__head">
-                        <div>
-                            <span class="sc-shell-kicker">Пары документов</span>
-                            <strong>Выставьте соответствующие проекты друг напротив друга</strong>
-                            <small class="sc-shell-muted">
-                                Нажмите проект в одной колонке, затем его пару в другой — оба останутся выделены синим.
-                                Документы также можно перетаскивать; сопоставление сохранится в этом браузере.
-                            </small>
-                        </div>
+                    <div class="sc-pair-workbench__toolbar">
                         <button class="btn btn-sm btn-secondary" @click="scResetDocumentOrder()">
                             Сбросить порядок
                         </button>
@@ -5440,8 +5432,18 @@
                              :class="{
                                  'is-active': row.pair && scActivePair && row.pair.id === scActivePair.id,
                                  'is-confirmed': scIsPairRowConfirmed(row),
-                             }">
-                            <span class="sc-pair-board__number">{{ row.index + 1 }}</span>
+                                 'is-pair-dragging': scIsDraggingPairRow(row.index),
+                                 'is-pair-drag-over': scPairRowDragOver === row.index,
+                             }"
+                             @dragover.prevent="scDragPairRowOver($event, row.index)"
+                             @drop.prevent="scDropPairRow(row.index)">
+                            <span class="sc-pair-board__number sc-pair-row-handle"
+                                  :draggable="!scPairRowBusy(row)"
+                                  title="Перетащите всю пару выше или ниже"
+                                  @dragstart="scStartPairRowDrag($event, row)"
+                                  @dragend="scFinishPairRowDrag()">
+                                <small>{{ row.index + 1 }}</small><i>⠿</i>
+                            </span>
 
                             <div class="sc-pair-slot"
                                  :class="{'is-drag-over': scDocumentDragOver.left === row.index}"
