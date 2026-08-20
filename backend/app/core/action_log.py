@@ -162,14 +162,7 @@ _NOISE_PATTERNS = [
     r"^/api/audit/.+/log$",  # live-лог аудита тянется в цикле
     r"^/api/document/.+/page/",              # рендер страниц при листании PDF
     r"^/api/tiles/.+/blocks/(image|region-image)/",
-    r"-jobs/[^/]+$",         # поллинг статуса job'ов stage-comparison
-    r"/pipeline-qwen-opus/[^/]+$",  # GET-статус qwen-opus job (POST не фильтруется)
-    r"/auto-match/[^/]+$",
-    r"/auto-match-last$",
-    r"/run-active$",
-    r"/run-status/",
-    r"/comparison-statuses$",
-    r"/pairs/[^/]+/(page-image|block-image)$",  # картинки пар stage-comparison
+    r"/pairs/[^/]+/page-svg$",  # векторные страницы comparison viewer
 ]
 
 _NOISE_RE: re.Pattern | None = None

@@ -73,8 +73,8 @@ findings перенумеровал (F-005 → F-007, F-006 нет) → исто
 - **сигнатура сути**: `normalize_problem_pattern(problem)` **+ ключевые числа**
   из текста. Якорь на числах (например `14,8`) делает фингерпринт устойчивым к
   перефразировке. В текущем коде уже есть основа:
-  - `findings_service._normalize_problem_pattern` (`backend/app/services/findings/findings_service.py:1345`),
-  - `_salient_numbers` (`backend/app/services/stage_comparison/text_norm.py`).
+  - `findings_service._normalize_problem_pattern` (`backend/app/services/findings/findings_service.py:1345`);
+  - числовые токены извлекаются локально в реализации идентификатора.
 
 Фингерпринт = детерминированный хеш кортежа якорей (canonical-сериализация → SHA-256,
 первые N hex). Версия алгоритма фингерпринта хранится рядом (`fp_algo: v1`), чтобы

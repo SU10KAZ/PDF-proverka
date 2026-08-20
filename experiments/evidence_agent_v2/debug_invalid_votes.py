@@ -10,8 +10,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
-os.environ["STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL"] = "https://louvred-madie-gigglier.ngrok-free.dev"
-os.environ["STAGE_COMPARISON_GRAPHIC_LLM_AUTH"] = "basic"
+os.environ["EVIDENCE_LOCAL_VISION_BASE_URL"] = "https://louvred-madie-gigglier.ngrok-free.dev"
+os.environ["EVIDENCE_LOCAL_VISION_AUTH"] = "basic"
 
 from experiments.evidence_agent_v2 import ngrok_guard
 from experiments.evidence_agent_v2.context import load_context
@@ -22,10 +22,10 @@ from experiments.evidence_agent_v2.extract import _select_prompt, _finding_text,
 
 async def one(png, prompt, model, ls, max_tokens):
     import httpx
-    from backend.app.services.stage_comparison.graphic_llm_local import (
-        load_local_graphic_llm_config, _build_headers,
+    from backend.app.services.common.local_vision_provider import (
+        load_local_vision_config, _build_headers,
         _resize_png_to_long_side, _png_bytes_to_data_url)
-    cfg = load_local_graphic_llm_config()
+    cfg = load_local_vision_config()
     url = _png_bytes_to_data_url(_resize_png_to_long_side(Path(png), ls))
     payload = {"model": model, "max_tokens": max_tokens, "temperature": float(cfg.temperature),
                "chat_template_kwargs": {"enable_thinking": True},

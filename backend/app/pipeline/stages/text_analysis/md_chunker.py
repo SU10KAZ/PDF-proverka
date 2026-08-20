@@ -13,9 +13,9 @@ Codex CLI на один ход (1 048 576 символов входа → turn/s
            нагрузок, спецификация). Скелет сохраняет перекрёстную сверку
            (ПЗ↔таблицы↔спецификация), которая иначе умерла бы между чанками.
 
-Разбор MD на листы переиспользует `build_fact_index` из evidence_first_fallback:
-текстовые сводные листы (без image-блоков) классифицируются как section_class
-== "pz" — это и есть кандидаты в скелет.
+Разбор MD на листы использует общий ``md_page_index``: текстовые сводные листы
+(без image-блоков) классифицируются как ``section_class == "pz"`` и становятся
+кандидатами в скелет.
 
 Склейка частичных ответов — `merge_text_analysis_parts`: конкатенация
 text_findings с дедупом по (source+суть+норма) и сквозной перенумерацией
@@ -116,13 +116,9 @@ def plan_text_analysis_chunks(
     if system_len + len(md) + wrapper_overhead <= total_budget:
         return None
 
-    # Разбор MD на листы (переиспользуем детерминированный парсер evidence_first).
-    from backend.app.services.stage_comparison.evidence_first_fallback import (
-        build_fact_index,
-    )
+    from backend.app.services.common.md_page_index import index_markdown_pages
 
-    fi = build_fact_index("text", md)
-    pages = fi.pages
+    pages = index_markdown_pages(md)
     bodies = [p.body for p in pages]
 
     # Скелет = сводные текстовые листы (ПЗ/содержание/ведомости/таблицы/спец).

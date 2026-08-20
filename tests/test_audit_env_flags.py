@@ -81,7 +81,7 @@ def test_real_repo_registry_v2_flags_not_false_orphans():
     reg = aef.build_registry()
     orphans = set(reg["orphan_in_env"])
     # Эти точно читаются в коде через _env_* — orphan'ом быть не могут.
-    for live in ("PAID_API_ENABLED", "STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS"):
+    for live in ("PAID_API_ENABLED", "STAGE_COMPARISON_UPLOAD_MAX_MEMBERS"):
         assert live not in orphans, f"{live} ложно помечен orphan"
     # Реальных orphan мало (узкий список), а не десятки.
     assert reg["summary"]["orphan_in_env"] < 10

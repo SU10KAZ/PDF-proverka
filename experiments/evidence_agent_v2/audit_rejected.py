@@ -202,7 +202,7 @@ async def audit_vision_reasonaware_async(rec: RejRecord, *, model: str) -> Optio
     if not ctx or not ctx.primary_png:
         return None
 
-    from backend.app.services.stage_comparison.graphic_llm_local import describe_image_local
+    from backend.app.services.common.local_vision_provider import describe_image_local
     ocr = "\n".join(f"{b.block_id}: {b.gemma_text[:1500]}" for b in ctx.blocks if b.gemma_text) or "(нет OCR)"
     prompt = _AUDIT_PROMPT.format(
         problem=(finding.get("problem") or finding.get("description") or "")[:600],

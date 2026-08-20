@@ -109,12 +109,7 @@ def test_day_cap_stops_writes(log_dir, monkeypatch):
     "/api/lms/health",
     "/api/document/ЭОМ/К1/page/12",
     "/api/tiles/ЭОМ/К1/blocks/image/6L97",
-    "/api/stage-comparison/sessions/s1/md-enrichment-jobs/j42",
-    "/api/stage-comparison/pipeline-v2/s1/pairs/p1/run-active",
-    "/api/stage-comparison/sessions/s1/comparison-statuses",
-    "/api/stage-comparison/sessions/s1/pipeline-qwen-opus/j42",
-    "/api/stage-comparison/sessions/s1/pairs/p1/page-image",
-    "/api/stage-comparison/sessions/s1/pairs/p1/block-image",
+    "/api/stage-comparison/sessions/s1/pairs/p1/page-svg",
 ])
 def test_noise_paths(path):
     assert action_log.is_noise_path(path), path

@@ -35,9 +35,9 @@ from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
 
 # --- режим: живой старый ngrok (basic) + прямой путь + reasoning; .env не трогаем ---
-os.environ["STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL"] = os.environ.get(
+os.environ["EVIDENCE_LOCAL_VISION_BASE_URL"] = os.environ.get(
     "EV2_NGROK_BASE_URL", "https://louvred-madie-gigglier.ngrok-free.dev")
-os.environ["STAGE_COMPARISON_GRAPHIC_LLM_AUTH"] = "basic"
+os.environ["EVIDENCE_LOCAL_VISION_AUTH"] = "basic"
 os.environ["EV2_DIRECT_NOTHINK"] = "1"       # прямой путь (чтение content)
 os.environ.setdefault("EV2_PROMPT", "b")      # тот же prompt B, что baseline
 

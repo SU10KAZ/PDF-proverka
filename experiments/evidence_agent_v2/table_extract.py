@@ -71,7 +71,7 @@ def extract_table_values(block: dict, output_dir: Path) -> TableExtraction:
         return te
     # офлайн text-layer
     try:
-        from backend.app.services.stage_comparison.block_pdf_source import (
+        from backend.app.services.common.block_pdf_source import (
             extract_block_text_layer,
         )
         rj = _find_result_json_text(output_dir, bid)

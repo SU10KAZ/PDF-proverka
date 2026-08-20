@@ -42,7 +42,6 @@ Safe production checks passed:
   directory.
 
 The pre-deploy regression evidence remains the exact-reviewed 12F.1C suite:
-core `1687 passed / 14 skipped / 11 deselected`, stage-comparison
 `1527 passed / 57 skipped`, direct semantic group `8 passed`, guard group
 `5 passed`, polling/routes `181 passed`, distributed critical `122 passed`,
 and reliability `90 passed`. These groups overlap and are not summed.

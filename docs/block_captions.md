@@ -85,8 +85,6 @@ Merge-LLM вставляла внутренние block_id в видимые т�
 
 ### 3. Точечные Python-правки
 
-- `stage_comparison/findings.py` — summary `stale_link` без сырых ID
-  (страницы вместо `{lid}↔{rid}`); ID остаются в структурных `left/right/source`.
 - `optimization/context_builder.py` — title автопрескан-кандидата
   «Проверить альтернативу: <summary>» вместо «…для блока {block_id}».
 

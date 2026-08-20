@@ -276,11 +276,11 @@ async def _describe_direct(png_path, prompt: str, model: str, scale: Optional[fl
     Переиспользует прод-конфиг/auth/энкод. Fail-soft → '' (кейс уйдёт в needs_human).
     """
     import httpx
-    from backend.app.services.stage_comparison.graphic_llm_local import (
-        load_local_graphic_llm_config, _build_headers,
+    from backend.app.services.common.local_vision_provider import (
+        load_local_vision_config, _build_headers,
         _resize_png_to_long_side, _png_bytes_to_data_url,
     )
-    cfg = load_local_graphic_llm_config()
+    cfg = load_local_vision_config()
     long_side = int(long_side_abs) if long_side_abs else int(cfg.image_long_side * (scale or 1.0))
     long_side = max(64, long_side)
     try:
@@ -318,7 +318,7 @@ async def perceive_async(
     enable_thinking: Optional[bool] = None,
     max_tokens_override: Optional[int] = None,
 ) -> Perception:
-    from backend.app.services.stage_comparison.graphic_llm_local import describe_image_local
+    from backend.app.services.common.local_vision_provider import describe_image_local
 
     # png_override — подать high-res рендер вместо gemma-кропа (эксперимент high-res).
     png = png_override or ctx.primary_png
@@ -368,7 +368,7 @@ async def perceive_async(
     except Exception as exc:
         return _to_perception(None, model, error=f"call_error:{exc}")
 
-    # ВАЖНО: describe_image_local парсит ответ как stage-comparison DIFF JSON.
+    # ВАЖНО: describe_image_local парсит ответ как local provider response JSON.
     # Наш ответ — не diff (объект contradicts_finding), поэтому status часто
     # "invalid_json", но сырой текст лежит в full_raw_response. Берём его.
     raw_text = (result.full_raw_response or result.raw_response_excerpt or "").strip()

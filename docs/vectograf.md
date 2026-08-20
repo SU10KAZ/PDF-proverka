@@ -99,4 +99,4 @@
 
 - Панель во фронте: `frontend/index.html` (блок `singleline_graph` / `singleline_graph_markdown`),
   `frontend/static/js/app.js` (`loadBlockLlmText`, `blockRegionRects`).
-- Профили графических блоков (обобщение на другие типы схем): `docs/stage_comparison_block_pdf_source.md`.
+- Общая маршрутизация профилей: `backend/app/services/common/graphic_profile_classifier.py`.

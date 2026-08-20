@@ -425,7 +425,7 @@ def _per_block_profile_route(
     canonical_type = _canonical_graphic_block_type(block_type)
     graphic_profile_id = None
     try:
-        from backend.app.services.stage_comparison.graphic_profiles import (
+        from backend.app.services.common.graphic_profile_classifier import (
             classify_graphic_profile,
         )
 
