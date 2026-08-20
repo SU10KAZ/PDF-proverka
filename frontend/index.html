@@ -5415,7 +5415,7 @@
                 <section v-if="scSession" class="sc-shell-card">
                     <div class="sc-source-grid">
                         <div>
-                            <label for="sc-left-pdf">stage_1 · Стадия П</label>
+                            <label for="sc-left-pdf">stage_1</label>
                             <select id="sc-left-pdf" v-model="scSelectedPdf.left" class="form-control">
                                 <option value="" disabled>Выберите PDF</option>
                                 <option v-for="document in scDocumentsLeft" :key="document.pdf_path" :value="document.pdf_path">
@@ -5429,7 +5429,7 @@
                             </ul>
                         </div>
                         <div>
-                            <label for="sc-right-pdf">stage_2 · Стадия РД</label>
+                            <label for="sc-right-pdf">stage_2</label>
                             <select id="sc-right-pdf" v-model="scSelectedPdf.right" class="form-control">
                                 <option value="" disabled>Выберите PDF</option>
                                 <option v-for="document in scDocumentsRight" :key="document.pdf_path" :value="document.pdf_path">
@@ -5510,7 +5510,7 @@
                         <section v-for="side in ['left', 'right']" :key="side" class="sc-vector-pane-wrap">
                             <div class="sc-vector-pane-head">
                                 <div>
-                                    <span>{{ side === 'left' ? 'stage_1 · Стадия П' : 'stage_2 · Стадия РД' }}</span>
+                                    <span>{{ side === 'left' ? 'stage_1' : 'stage_2' }}</span>
                                     <strong>{{ scActivePair[side].filename }}</strong>
                                 </div>
                                 <div class="sc-page-controls">
@@ -5641,8 +5641,8 @@
                         <select id="sc-stage-upload-stage" v-model="scStageFolderDialogStage"
                                 class="form-control" :disabled="scStageUploadIsBusy">
                             <option value="" disabled>Выберите stage</option>
-                            <option value="stage_1">stage_1 · Стадия П</option>
-                            <option value="stage_2">stage_2 · Стадия РД</option>
+                            <option value="stage_1">stage_1</option>
+                            <option value="stage_2">stage_2</option>
                         </select>
                     </div>
                     <div>
