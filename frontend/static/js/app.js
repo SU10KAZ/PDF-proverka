@@ -11820,12 +11820,15 @@ const app = createApp({
         const scSession = ref(null);
         const scSessionError = ref('');
         const scSelectedPdf = reactive({left: '', right: ''});
+        const scDocumentOrder = reactive({left: [], right: []});
+        const scDraggingDocument = ref(null);
+        const scDocumentDragOver = reactive({left: null, right: null});
+        const scPairRowStates = reactive({});
         const scActivePair = ref(null);
         const scPairData = ref(null);
         const scPairLoading = ref(false);
         const scProcessing = ref(false);
         const scProcessingError = ref('');
-        const scSelectedPairIds = reactive({});
         const scMatchState = ref(null);
         const scLinkSaving = ref(false);
         const scLinkEditorOpen = ref(false);
@@ -11864,6 +11867,24 @@ const app = createApp({
             scStageUploadBusy.stage_1 || scStageUploadBusy.stage_2
         );
         const scPairs = computed(() => (scSession.value && scSession.value.pairs) || []);
+        const scPairRows = computed(() => {
+            const documents = {
+                left: new Map(scDocumentsLeft.value.map(item => [item.pdf_path, item])),
+                right: new Map(scDocumentsRight.value.map(item => [item.pdf_path, item])),
+            };
+            const length = Math.max(scDocumentOrder.left.length, scDocumentOrder.right.length);
+            return Array.from({length}, (_, index) => {
+                const left = documents.left.get(scDocumentOrder.left[index]) || null;
+                const right = documents.right.get(scDocumentOrder.right[index]) || null;
+                const pair = left && right
+                    ? scPairs.value.find(item =>
+                        (item.left || {}).pdf_path === left.pdf_path
+                        && (item.right || {}).pdf_path === right.pdf_path
+                    ) || null
+                    : null;
+                return {index, left, right, pair};
+            });
+        });
         const scSuggestions = computed(() =>
             (scMatchState.value && scMatchState.value.suggestions
                 && scMatchState.value.suggestions.suggestions) || []
@@ -11925,14 +11946,154 @@ const app = createApp({
             return object && (object.stages || []).find(stage => stage.name === stageName) || null;
         }
 
+        function scPairOrderStorageKey() {
+            return scSession.value ? `stage-comparison:pair-order:${scSession.value.id}` : '';
+        }
+
+        function scReconcileDocumentOrder(saved, documents) {
+            const available = new Set(documents.map(item => item.pdf_path));
+            const used = new Set();
+            const order = [];
+            if (Array.isArray(saved)) {
+                saved.forEach(path => {
+                    if (path && available.has(path) && !used.has(path)) {
+                        order.push(path);
+                        used.add(path);
+                    } else {
+                        order.push(null);
+                    }
+                });
+            }
+            for (const document of documents) {
+                if (used.has(document.pdf_path)) continue;
+                const emptyIndex = order.indexOf(null);
+                if (emptyIndex >= 0) order[emptyIndex] = document.pdf_path;
+                else order.push(document.pdf_path);
+                used.add(document.pdf_path);
+            }
+            return order;
+        }
+
+        function scInitializeDocumentOrder(useSaved = true) {
+            let saved = {};
+            const storageKey = scPairOrderStorageKey();
+            if (useSaved && storageKey) {
+                try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (_) { saved = {}; }
+            }
+            const left = scReconcileDocumentOrder(saved.left, scDocumentsLeft.value);
+            const right = scReconcileDocumentOrder(saved.right, scDocumentsRight.value);
+            const length = Math.max(left.length, right.length);
+            while (left.length < length) left.push(null);
+            while (right.length < length) right.push(null);
+            scDocumentOrder.left = left;
+            scDocumentOrder.right = right;
+        }
+
+        function scPersistDocumentOrder() {
+            const storageKey = scPairOrderStorageKey();
+            if (!storageKey) return;
+            try {
+                localStorage.setItem(storageKey, JSON.stringify({
+                    left: scDocumentOrder.left,
+                    right: scDocumentOrder.right,
+                }));
+            } catch (_) {}
+        }
+
+        function scResetDocumentOrder() {
+            scInitializeDocumentOrder(false);
+            scPersistDocumentOrder();
+        }
+
+        function scStartDocumentDrag(event, side, index) {
+            const row = scPairRows.value[index];
+            if (!['left', 'right'].includes(side) || !scDocumentOrder[side][index]
+                    || (row && scPairRowBusy(row))) return;
+            scDraggingDocument.value = {side, index};
+            if (event.dataTransfer) {
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', `${side}:${index}`);
+            }
+        }
+
+        function scDragDocumentOver(event, side, index) {
+            const dragging = scDraggingDocument.value;
+            if (!dragging || dragging.side !== side) return;
+            const sourceRow = scPairRows.value[dragging.index];
+            const targetRow = scPairRows.value[index];
+            if ((sourceRow && scPairRowBusy(sourceRow)) || (targetRow && scPairRowBusy(targetRow))) return;
+            if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+            scDocumentDragOver[side] = index;
+        }
+
+        function scDropDocument(side, index) {
+            const dragging = scDraggingDocument.value;
+            if (!dragging || dragging.side !== side) return;
+            const sourceRow = scPairRows.value[dragging.index];
+            const targetRow = scPairRows.value[index];
+            if ((sourceRow && scPairRowBusy(sourceRow)) || (targetRow && scPairRowBusy(targetRow))) return;
+            const values = [...scDocumentOrder[side]];
+            while (values.length <= index) values.push(null);
+            [values[dragging.index], values[index]] = [values[index], values[dragging.index]];
+            scDocumentOrder[side] = values;
+            scPersistDocumentOrder();
+            scFinishDocumentDrag();
+        }
+
+        function scFinishDocumentDrag() {
+            scDraggingDocument.value = null;
+            scDocumentDragOver.left = null;
+            scDocumentDragOver.right = null;
+        }
+
+        function scIsDraggingDocument(side, index) {
+            const dragging = scDraggingDocument.value;
+            return Boolean(dragging && dragging.side === side && dragging.index === index);
+        }
+
+        function scPairRowKey(row) {
+            if (!row || !row.left || !row.right) return `incomplete:${row ? row.index : 'none'}`;
+            return `${row.left.pdf_path}::${row.right.pdf_path}`;
+        }
+
+        function scMutablePairRowState(row) {
+            const key = scPairRowKey(row);
+            if (!scPairRowStates[key]) scPairRowStates[key] = {status: 'idle', error: ''};
+            return scPairRowStates[key];
+        }
+
+        function scPairRowStatus(row) {
+            if (!row.left || !row.right) return {tone: 'incomplete', label: 'Нужен документ с обеих сторон'};
+            const state = scPairRowStates[scPairRowKey(row)];
+            if (state && state.status === 'opening') return {tone: 'running', label: 'Открытие…'};
+            if (state && state.status === 'processing') return {tone: 'running', label: 'Идёт сравнение…'};
+            if (state && state.status === 'error') return {tone: 'error', label: 'Ошибка'};
+            if (state && state.status === 'done') return {tone: 'done', label: 'Сравнение готово'};
+            if (state && state.status === 'opened') return {tone: 'opened', label: 'Пара открыта'};
+            if (row.pair) return {tone: 'saved', label: 'Пара сохранена'};
+            return {tone: 'idle', label: 'Не запускалось'};
+        }
+
+        function scPairRowBusy(row) {
+            const state = scPairRowStates[scPairRowKey(row)];
+            return Boolean(state && ['opening', 'processing'].includes(state.status));
+        }
+
+        function scPairRowError(row) {
+            const state = scPairRowStates[scPairRowKey(row)];
+            return state && state.status === 'error' ? state.error : '';
+        }
+
         function scApplyDocumentDefaults() {
             const leftPaths = new Set(scDocumentsLeft.value.map(item => item.pdf_path));
             const rightPaths = new Set(scDocumentsRight.value.map(item => item.pdf_path));
             if (!leftPaths.has(scSelectedPdf.left)) {
-                scSelectedPdf.left = scDocumentsLeft.value[0] ? scDocumentsLeft.value[0].pdf_path : '';
+                scSelectedPdf.left = scDocumentOrder.left.find(Boolean)
+                    || (scDocumentsLeft.value[0] ? scDocumentsLeft.value[0].pdf_path : '');
             }
             if (!rightPaths.has(scSelectedPdf.right)) {
-                scSelectedPdf.right = scDocumentsRight.value[0] ? scDocumentsRight.value[0].pdf_path : '';
+                scSelectedPdf.right = scDocumentOrder.right.find(Boolean)
+                    || (scDocumentsRight.value[0] ? scDocumentsRight.value[0].pdf_path : '');
             }
         }
 
@@ -11942,6 +12103,9 @@ const app = createApp({
             const right = object && (object.stages || []).find(stage => stage.name === 'stage_2');
             if (!left || !right || !left.pdf_count || !right.pdf_count) {
                 scSession.value = null;
+                scDocumentOrder.left = [];
+                scDocumentOrder.right = [];
+                scFinishDocumentDrag();
                 scActivePair.value = null;
                 scPairData.value = null;
                 scMatchState.value = null;
@@ -11957,7 +12121,12 @@ const app = createApp({
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                const previousSessionId = scSession.value && scSession.value.id;
                 scSession.value = data;
+                if (previousSessionId !== data.id) {
+                    Object.keys(scPairRowStates).forEach(key => { delete scPairRowStates[key]; });
+                }
+                scInitializeDocumentOrder(true);
                 scApplyDocumentDefaults();
                 const activeId = scActivePair.value && scActivePair.value.id;
                 if (activeId && !scPairs.value.some(pair => pair.id === activeId)) {
@@ -12235,36 +12404,87 @@ const app = createApp({
             }
         }
 
+        function scRememberPair(pair) {
+            if (!pair || !scSession.value) return;
+            if (!scPairs.value.some(item => item.id === pair.id)) {
+                scSession.value.pairs = [...scPairs.value, pair];
+            }
+        }
+
+        function scActivatePairData(data) {
+            if (!data || !data.pair) return;
+            scRememberPair(data.pair);
+            scPairData.value = data;
+            scActivePair.value = data.pair;
+            scMatchState.value = data.sheet_matching || null;
+            scSelectedPdf.left = data.pair.left.pdf_path;
+            scSelectedPdf.right = data.pair.right.pdf_path;
+            scCurrentPage.left = 1;
+            scCurrentPage.right = 1;
+            scTab.value = 'links';
+            scFocusLeftPage(1);
+        }
+
+        async function scCreatePairForDocuments(leftPdf, rightPdf) {
+            if (!scSession.value || !leftPdf || !rightPdf) return null;
+            const response = await fetch(
+                `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs`,
+                {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({left_pdf: leftPdf, right_pdf: rightPdf}),
+                },
+            );
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+            scRememberPair(data.pair);
+            return data;
+        }
+
         async function scOpenSelectedPair() {
             if (!scSession.value || !scSelectedPdf.left || !scSelectedPdf.right) return;
             scPairLoading.value = true;
             scSessionError.value = '';
             try {
-                const response = await fetch(
-                    `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs`,
-                    {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({left_pdf: scSelectedPdf.left, right_pdf: scSelectedPdf.right}),
-                    },
-                );
-                const data = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
-                scPairData.value = data;
-                scActivePair.value = data.pair;
-                scMatchState.value = data.sheet_matching || null;
-                if (!scPairs.value.some(pair => pair.id === data.pair.id)) {
-                    scSession.value.pairs = [...scPairs.value, data.pair];
-                }
-                scCurrentPage.left = 1;
-                scCurrentPage.right = 1;
-                scTab.value = 'links';
-                scFocusLeftPage(1);
+                const data = await scCreatePairForDocuments(scSelectedPdf.left, scSelectedPdf.right);
+                scActivatePairData(data);
                 return data;
             } catch (error) {
                 scSessionError.value = String(error.message || error);
             } finally {
                 scPairLoading.value = false;
+            }
+        }
+
+        async function scOpenPairRow(row) {
+            if (!row || !row.left || !row.right || scPairRowBusy(row)) return;
+            const state = scMutablePairRowState(row);
+            state.status = 'opening';
+            state.error = '';
+            try {
+                const data = await scCreatePairForDocuments(row.left.pdf_path, row.right.pdf_path);
+                scActivatePairData(data);
+                state.status = data.sheet_matching && data.sheet_matching.suggestions ? 'done' : 'opened';
+            } catch (error) {
+                state.status = 'error';
+                state.error = String(error.message || error);
+            }
+        }
+
+        async function scProcessPairRow(row) {
+            if (!row || !row.left || !row.right || scPairRowBusy(row)) return;
+            const state = scMutablePairRowState(row);
+            state.status = 'processing';
+            state.error = '';
+            try {
+                const data = await scCreatePairForDocuments(row.left.pdf_path, row.right.pdf_path);
+                const matching = await scProcessPair(data.pair);
+                data.sheet_matching = matching;
+                scActivatePairData(data);
+                state.status = 'done';
+            } catch (error) {
+                state.status = 'error';
+                state.error = String(error.message || error);
             }
         }
 
@@ -12277,15 +12497,14 @@ const app = createApp({
                 );
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
-                scPairData.value = data;
-                scActivePair.value = data.pair;
-                scMatchState.value = data.sheet_matching || null;
-                scSelectedPdf.left = data.pair.left.pdf_path;
-                scSelectedPdf.right = data.pair.right.pdf_path;
-                scCurrentPage.left = 1;
-                scCurrentPage.right = 1;
-                scTab.value = 'links';
-                scFocusLeftPage(1);
+                scActivatePairData(data);
+                const state = scMutablePairRowState({
+                    index: -1,
+                    left: data.pair.left,
+                    right: data.pair.right,
+                });
+                state.status = data.sheet_matching && data.sheet_matching.suggestions ? 'done' : 'opened';
+                state.error = '';
                 return data;
             } catch (error) {
                 scSessionError.value = String(error.message || error);
@@ -12320,21 +12539,6 @@ const app = createApp({
                 if (!data) return;
                 await scProcessPair(data.pair);
                 scTab.value = 'links';
-            } catch (error) {
-                scProcessingError.value = String(error.message || error);
-            } finally {
-                scProcessing.value = false;
-            }
-        }
-
-        async function scProcessCheckedPairs() {
-            const selected = scPairs.value.filter(pair => scSelectedPairIds[pair.id]);
-            if (!selected.length) return;
-            scProcessing.value = true;
-            scProcessingError.value = '';
-            try {
-                for (const pair of selected) await scProcessPair(pair);
-                await scOpenPair(selected[0]);
             } catch (error) {
                 scProcessingError.value = String(error.message || error);
             } finally {
@@ -12864,15 +13068,20 @@ const app = createApp({
             scStageCandidateStatusText, scToggleAllStageCandidates,
             scCloseStageFolderDialog, scSubmitSelectedStageProjects,
             scSessionLoading, scSession, scSessionError,
-            scDocumentsLeft, scDocumentsRight, scPairs, scSelectedPdf,
+            scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows,
+            scDraggingDocument, scDocumentDragOver,
+            scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
-            scProcessing, scProcessingError, scSelectedPairIds,
+            scProcessing, scProcessingError,
             scMatchState, scMatchSummary, scSuggestions, scLeftSuggestion,
             scSheetLinks, scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,
             scLinkEditorOpen, scLinkEditorMode, scLinkEditorRightPage,
-            scLoadObjects, scOpenSelectedPair, scOpenPair,
-            scProcessCurrentSelection, scProcessCheckedPairs,
+            scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow,
+            scProcessCurrentSelection, scProcessPairRow,
+            scResetDocumentOrder, scStartDocumentDrag, scDragDocumentOver,
+            scDropDocument, scFinishDocumentDrag, scIsDraggingDocument,
+            scPairRowStatus, scPairRowBusy, scPairRowError,
             scPassportFor, scPassportLabel, scReasonLabel,
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,
             scAcceptSuggestion, scApplyLinkEditor, scDeleteCurrentLink,

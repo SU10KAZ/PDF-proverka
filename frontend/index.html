@@ -5412,68 +5412,81 @@
                     {{ scObjectsError || scSessionError }}
                 </div>
 
-                <section v-if="scSession" class="sc-shell-card">
-                    <div class="sc-source-grid">
-                        <div>
-                            <label for="sc-left-pdf">stage_1</label>
-                            <select id="sc-left-pdf" v-model="scSelectedPdf.left" class="form-control">
-                                <option value="" disabled>Выберите PDF</option>
-                                <option v-for="document in scDocumentsLeft" :key="document.pdf_path" :value="document.pdf_path">
-                                    {{ document.filename }}{{ document.version_id ? ' · ' + document.version_id : '' }}
-                                </option>
-                            </select>
-                            <ul class="sc-source-list">
-                                <li v-for="document in scDocumentsLeft" :key="'left-'+document.pdf_path">
-                                    <span>{{ document.filename }}</span><small>{{ document.version_id || 'source' }}</small>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <label for="sc-right-pdf">stage_2</label>
-                            <select id="sc-right-pdf" v-model="scSelectedPdf.right" class="form-control">
-                                <option value="" disabled>Выберите PDF</option>
-                                <option v-for="document in scDocumentsRight" :key="document.pdf_path" :value="document.pdf_path">
-                                    {{ document.filename }}{{ document.version_id ? ' · ' + document.version_id : '' }}
-                                </option>
-                            </select>
-                            <ul class="sc-source-list">
-                                <li v-for="document in scDocumentsRight" :key="'right-'+document.pdf_path">
-                                    <span>{{ document.filename }}</span><small>{{ document.version_id || 'source' }}</small>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="sc-shell-actions">
-                        <button class="btn btn-primary" :disabled="!scSelectedPdf.left || !scSelectedPdf.right || scPairLoading"
-                                @click="scOpenSelectedPair()">
-                            {{ scPairLoading ? 'Открытие…' : 'Открыть пару' }}
-                        </button>
-                        <button class="btn btn-secondary"
-                                :disabled="!scSelectedPdf.left || !scSelectedPdf.right || scProcessing"
-                                @click="scProcessCurrentSelection()">
-                            {{ scProcessing ? 'Обработка…' : 'Обработать' }}
-                        </button>
-                        <button class="btn btn-secondary"
-                                :disabled="!scPairs.some(pair => scSelectedPairIds[pair.id]) || scProcessing"
-                                @click="scProcessCheckedPairs()">
-                            Обработать выбранные
-                        </button>
-                    </div>
-                    <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
-                </section>
-
-                <section v-if="scPairs.length" class="sc-shell-card">
+                <section v-if="scSession" class="sc-shell-card sc-pair-workbench">
                     <div class="sc-shell-card__head">
-                        <strong>Сохранённые пары</strong>
+                        <div>
+                            <span class="sc-shell-kicker">Пары документов</span>
+                            <strong>Выставьте соответствующие проекты друг напротив друга</strong>
+                            <small class="sc-shell-muted">
+                                Перетаскивайте документы независимо в колонках П и РД. Порядок сохранится в этом браузере.
+                            </small>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" @click="scResetDocumentOrder()">
+                            Сбросить порядок
+                        </button>
                     </div>
-                    <div class="sc-pair-list">
-                        <div v-for="pair in scPairs" :key="pair.id" class="sc-pair-list__row">
-                            <input type="checkbox" v-model="scSelectedPairIds[pair.id]" aria-label="Выбрать пару для обработки">
-                            <span>{{ pair.left.filename }}</span>
-                            <span class="sc-pair-list__arrow">→</span>
-                            <span>{{ pair.right.filename }}</span>
-                            <button class="btn btn-sm" @click="scOpenPair(pair)">Открыть</button>
+
+                    <div class="sc-pair-board">
+                        <div class="sc-pair-board__header">
+                            <span>№</span>
+                            <strong>stage_1</strong>
+                            <span></span>
+                            <strong>stage_2</strong>
+                            <strong>Управление парой</strong>
+                        </div>
+
+                        <div v-for="row in scPairRows" :key="'pair-row-'+row.index" class="sc-pair-board__row"
+                             :class="{'is-active': row.pair && scActivePair && row.pair.id === scActivePair.id}">
+                            <span class="sc-pair-board__number">{{ row.index + 1 }}</span>
+
+                            <div class="sc-pair-slot"
+                                 :class="{'is-drag-over': scDocumentDragOver.left === row.index}"
+                                 @dragover.prevent="scDragDocumentOver($event, 'left', row.index)"
+                                 @drop.prevent="scDropDocument('left', row.index)">
+                                <div v-if="row.left" class="sc-pair-document" :draggable="!scPairRowBusy(row)"
+                                     :class="{'is-dragging': scIsDraggingDocument('left', row.index)}"
+                                     @dragstart="scStartDocumentDrag($event, 'left', row.index)"
+                                     @dragend="scFinishDocumentDrag()">
+                                    <span class="sc-pair-document__grip" title="Перетащите для изменения позиции">⠿</span>
+                                    <span class="sc-pair-document__name" :title="row.left.filename">{{ row.left.filename }}</span>
+                                    <small>{{ row.left.version_id || 'source' }}</small>
+                                </div>
+                                <span v-else class="sc-pair-slot__empty">Перетащите сюда документ П</span>
+                            </div>
+
+                            <span class="sc-pair-board__arrow">↔</span>
+
+                            <div class="sc-pair-slot"
+                                 :class="{'is-drag-over': scDocumentDragOver.right === row.index}"
+                                 @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
+                                 @drop.prevent="scDropDocument('right', row.index)">
+                                <div v-if="row.right" class="sc-pair-document" :draggable="!scPairRowBusy(row)"
+                                     :class="{'is-dragging': scIsDraggingDocument('right', row.index)}"
+                                     @dragstart="scStartDocumentDrag($event, 'right', row.index)"
+                                     @dragend="scFinishDocumentDrag()">
+                                    <span class="sc-pair-document__grip" title="Перетащите для изменения позиции">⠿</span>
+                                    <span class="sc-pair-document__name" :title="row.right.filename">{{ row.right.filename }}</span>
+                                    <small>{{ row.right.version_id || 'source' }}</small>
+                                </div>
+                                <span v-else class="sc-pair-slot__empty">Перетащите сюда документ РД</span>
+                            </div>
+
+                            <div class="sc-pair-row-actions">
+                                <span class="sc-pair-row-status" :class="'sc-pair-row-status--' + scPairRowStatus(row).tone">
+                                    {{ scPairRowStatus(row).label }}
+                                </span>
+                                <div>
+                                    <button class="btn btn-sm btn-secondary"
+                                            :disabled="!row.left || !row.right || scPairRowBusy(row)"
+                                            @click="scOpenPairRow(row)">Открыть</button>
+                                    <button class="btn btn-sm btn-primary"
+                                            :disabled="!row.left || !row.right || scPairRowBusy(row)"
+                                            @click="scProcessPairRow(row)">Запустить сравнение</button>
+                                </div>
+                                <small v-if="scPairRowError(row)" class="sc-pair-row-error" :title="scPairRowError(row)">
+                                    {{ scPairRowError(row) }}
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </section>

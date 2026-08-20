@@ -28,11 +28,25 @@ describe('documentation comparison shell', () => {
   });
 
   it('runs only the new Markdown sheet matcher', () => {
-    expect(html).toContain('@click="scProcessCurrentSelection()"');
-    expect(html).toContain('@click="scProcessCheckedPairs()"');
+    expect(html).toContain('@click="scProcessPairRow(row)"');
+    expect(html).toContain('Запустить сравнение');
     expect(app).toContain("'/sheet-match-suggestions'");
     expect(app).toContain("'/sheet-links'");
     expect(app).toContain("method: 'PUT'");
+  });
+
+  it('manages every PDF pair in its own draggable row', () => {
+    expect(html).not.toContain('id="sc-left-pdf"');
+    expect(html).not.toContain('id="sc-right-pdf"');
+    expect(html).toContain('v-for="row in scPairRows"');
+    expect(html).toContain("scStartDocumentDrag($event, 'left', row.index)");
+    expect(html).toContain("scStartDocumentDrag($event, 'right', row.index)");
+    expect(html).toContain("scDropDocument('left', row.index)");
+    expect(html).toContain("scDropDocument('right', row.index)");
+    expect(html).toContain('@click="scOpenPairRow(row)">Открыть</button>');
+    expect(app).toContain('stage-comparison:pair-order:');
+    expect(app).toContain('scPersistDocumentOrder');
+    expect(app).toContain('scPairRowStates');
   });
 
   it('supports manual many-to-many sheet correction in the viewer', () => {
