@@ -25,7 +25,7 @@ import shutil
 import sys
 from collections import Counter, defaultdict
 from difflib import SequenceMatcher
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Optional, Sequence
@@ -215,6 +215,49 @@ def parse_month(
         end = datetime(year + 1, 1, 1, tzinfo=tz)
     else:
         end = datetime(year, mon + 1, 1, tzinfo=tz)
+    return start, end
+
+
+def parse_audit_interval(
+    month: str,
+    timezone_name: str = "Europe/Moscow",
+    *,
+    date_from: str = "",
+    date_to: str = "",
+) -> tuple[datetime, datetime]:
+    """Return an inclusive calendar-date slice constrained to ``month``.
+
+    Empty bounds preserve the complete calendar-month behaviour.  Explicit
+    bounds are useful when an audit request is for a weekly slice, while the
+    canonical collector remains month-oriented for its report layout.
+    """
+    month_start, month_end = parse_month(month, timezone_name)
+
+    def parse_day(value: str, label: str) -> date | None:
+        raw = str(value or "").strip()
+        if not raw:
+            return None
+        try:
+            return date.fromisoformat(raw)
+        except ValueError as exc:
+            raise ValueError(f"{label} must have YYYY-MM-DD format") from exc
+
+    start_day = parse_day(date_from, "date_from")
+    end_day = parse_day(date_to, "date_to")
+    start = (
+        datetime.combine(start_day, datetime.min.time(), tzinfo=month_start.tzinfo)
+        if start_day
+        else month_start
+    )
+    end = (
+        datetime.combine(end_day + timedelta(days=1), datetime.min.time(), tzinfo=month_start.tzinfo)
+        if end_day
+        else month_end
+    )
+    if start >= end:
+        raise ValueError("date_from must not be after date_to")
+    if start < month_start or end > month_end:
+        raise ValueError("date range must be contained in the requested month")
     return start, end
 
 
@@ -4174,9 +4217,16 @@ def collect_rejected_cases(
     object_ids: Optional[set[str]] = None,
     disciplines: Optional[set[str]] = None,
     reviewers: Optional[set[str]] = None,
+    date_from: str = "",
+    date_to: str = "",
 ) -> tuple[list[dict], dict]:
-    """Build version-correct case snapshots for a calendar month."""
-    start, end = parse_month(month, timezone_name)
+    """Build version-correct case snapshots for a calendar month or date slice."""
+    start, end = parse_audit_interval(
+        month,
+        timezone_name,
+        date_from=date_from,
+        date_to=date_to,
+    )
     root = Path(projects_v2_root)
     pattern = "objects/*/disciplines/*/documents/*/versions/*/04_review/expert_review.json"
     review_paths = sorted(root.glob(pattern))
@@ -4359,6 +4409,8 @@ def collect_rejected_cases(
         "filters": {
             "explicit_carried_over_excluded": not include_carried_over,
             "include_optimizations": include_optimizations,
+            "date_from": str(date_from or ""),
+            "date_to": str(date_to or ""),
             "object_ids": sorted(object_ids or []),
             "disciplines": sorted(disciplines or []),
             "reviewers": sorted(reviewers or []),

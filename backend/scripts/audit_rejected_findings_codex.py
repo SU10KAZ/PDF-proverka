@@ -179,6 +179,10 @@ def _frozen_scope_errors(
                 f"current={AUDIT_CONTRACT_VERSION!r}; prepare a new output directory"
             )
         filters = inventory.get("filters") or {}
+        if str(filters.get("date_from") or "") != str(args.date_from or ""):
+            errors.append("date_from filter differs from frozen manifest")
+        if str(filters.get("date_to") or "") != str(args.date_to or ""):
+            errors.append("date_to filter differs from frozen manifest")
         expected_objects = _csv_set(args.objects)
         expected_disciplines = _csv_set(args.disciplines, upper=True)
         expected_reviewers = _csv_set(args.reviewers)
@@ -208,6 +212,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--month", required=True, help="Календарный месяц YYYY-MM, например 2026-07")
     parser.add_argument("--timezone", default="Europe/Moscow", help="Часовой пояс календарного месяца")
+    parser.add_argument(
+        "--date-from",
+        default="",
+        help="Начальная дата среза YYYY-MM-DD включительно; должна быть в --month",
+    )
+    parser.add_argument(
+        "--date-to",
+        default="",
+        help="Конечная дата среза YYYY-MM-DD включительно; должна быть в --month",
+    )
     parser.add_argument("--projects-v2-root", type=Path, default=DEFAULT_PROJECTS_V2_ROOT)
     parser.add_argument(
         "--output-dir",
@@ -280,6 +294,8 @@ def _prepare(args: argparse.Namespace, output_dir: Path) -> list[dict]:
         object_ids=_csv_set(args.objects) or None,
         disciplines=_csv_set(args.disciplines, upper=True) or None,
         reviewers=_csv_set(args.reviewers) or None,
+        date_from=args.date_from,
+        date_to=args.date_to,
     )
     manifest_path, inventory_path = write_manifest(output_dir, cases, inventory)
     counts = inventory.get("counts") or {}
