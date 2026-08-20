@@ -13,6 +13,12 @@ describe('documentation comparison shell', () => {
     expect(html).toContain('Сравнение ещё не выполнено');
   });
 
+  it('does not expose the source-card heading or internal session id', () => {
+    expect(html).not.toContain('Исходные документы');
+    expect(html).not.toContain('Выберите PDF с каждой стадии');
+    expect(html).not.toContain('{{ scSession.id }}');
+  });
+
   it('renders only the vector PDF endpoint', () => {
     expect(app).toContain('/page-svg?side=${side}&page=${scCurrentPage[side]}');
     expect(html).toContain('<img :src="scPageSrcUrl(side)"');
