@@ -5418,7 +5418,8 @@
                             <span class="sc-shell-kicker">Пары документов</span>
                             <strong>Выставьте соответствующие проекты друг напротив друга</strong>
                             <small class="sc-shell-muted">
-                                Перетаскивайте документы независимо в колонках П и РД. Порядок сохранится в этом браузере.
+                                Нажмите проект в одной колонке, затем его пару в другой — оба останутся выделены синим.
+                                Документы также можно перетаскивать; сопоставление сохранится в этом браузере.
                             </small>
                         </div>
                         <button class="btn btn-sm btn-secondary" @click="scResetDocumentOrder()">
@@ -5436,7 +5437,10 @@
                         </div>
 
                         <div v-for="row in scPairRows" :key="'pair-row-'+row.index" class="sc-pair-board__row"
-                             :class="{'is-active': row.pair && scActivePair && row.pair.id === scActivePair.id}">
+                             :class="{
+                                 'is-active': row.pair && scActivePair && row.pair.id === scActivePair.id,
+                                 'is-confirmed': scIsPairRowConfirmed(row),
+                             }">
                             <span class="sc-pair-board__number">{{ row.index + 1 }}</span>
 
                             <div class="sc-pair-slot"
@@ -5444,7 +5448,15 @@
                                  @dragover.prevent="scDragDocumentOver($event, 'left', row.index)"
                                  @drop.prevent="scDropDocument('left', row.index)">
                                 <div v-if="row.left" class="sc-pair-document" :draggable="!scPairRowBusy(row)"
-                                     :class="{'is-dragging': scIsDraggingDocument('left', row.index)}"
+                                     role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
+                                     :class="{
+                                         'is-dragging': scIsDraggingDocument('left', row.index),
+                                         'is-pending': scIsPairDocumentPending('left', row),
+                                         'is-confirmed': scIsPairRowConfirmed(row),
+                                     }"
+                                     @click="scSelectPairDocument('left', row)"
+                                     @keydown.enter.prevent="scSelectPairDocument('left', row)"
+                                     @keydown.space.prevent="scSelectPairDocument('left', row)"
                                      @dragstart="scStartDocumentDrag($event, 'left', row.index)"
                                      @dragend="scFinishDocumentDrag()">
                                     <span class="sc-pair-document__grip" title="Перетащите для изменения позиции">⠿</span>
@@ -5461,7 +5473,15 @@
                                  @dragover.prevent="scDragDocumentOver($event, 'right', row.index)"
                                  @drop.prevent="scDropDocument('right', row.index)">
                                 <div v-if="row.right" class="sc-pair-document" :draggable="!scPairRowBusy(row)"
-                                     :class="{'is-dragging': scIsDraggingDocument('right', row.index)}"
+                                     role="button" tabindex="0" :aria-pressed="scIsPairRowConfirmed(row)"
+                                     :class="{
+                                         'is-dragging': scIsDraggingDocument('right', row.index),
+                                         'is-pending': scIsPairDocumentPending('right', row),
+                                         'is-confirmed': scIsPairRowConfirmed(row),
+                                     }"
+                                     @click="scSelectPairDocument('right', row)"
+                                     @keydown.enter.prevent="scSelectPairDocument('right', row)"
+                                     @keydown.space.prevent="scSelectPairDocument('right', row)"
                                      @dragstart="scStartDocumentDrag($event, 'right', row.index)"
                                      @dragend="scFinishDocumentDrag()">
                                     <span class="sc-pair-document__grip" title="Перетащите для изменения позиции">⠿</span>

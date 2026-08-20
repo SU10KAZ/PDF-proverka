@@ -11823,6 +11823,8 @@ const app = createApp({
         const scDocumentOrder = reactive({left: [], right: []});
         const scDraggingDocument = ref(null);
         const scDocumentDragOver = reactive({left: null, right: null});
+        const scPendingPairSelection = ref(null);
+        const scConfirmedDocumentPairs = reactive({});
         const scPairRowStates = reactive({});
         const scActivePair = ref(null);
         const scPairData = ref(null);
@@ -11950,6 +11952,35 @@ const app = createApp({
             return scSession.value ? `stage-comparison:pair-order:${scSession.value.id}` : '';
         }
 
+        function scPairPathsKey(leftPdf, rightPdf) {
+            return `${leftPdf}::${rightPdf}`;
+        }
+
+        function scClearConfirmedDocumentPairs() {
+            Object.keys(scConfirmedDocumentPairs).forEach(key => {
+                delete scConfirmedDocumentPairs[key];
+            });
+        }
+
+        function scRestoreConfirmedDocumentPairs(savedPairs) {
+            scClearConfirmedDocumentPairs();
+            const leftIndexes = new Map();
+            const rightIndexes = new Map();
+            scDocumentOrder.left.forEach((path, index) => {
+                if (path) leftIndexes.set(path, index);
+            });
+            scDocumentOrder.right.forEach((path, index) => {
+                if (path) rightIndexes.set(path, index);
+            });
+            if (!Array.isArray(savedPairs)) return;
+            savedPairs.forEach(pair => {
+                const leftPdf = pair && pair.leftPdf;
+                const rightPdf = pair && pair.rightPdf;
+                if (!leftPdf || !rightPdf || leftIndexes.get(leftPdf) !== rightIndexes.get(rightPdf)) return;
+                scConfirmedDocumentPairs[scPairPathsKey(leftPdf, rightPdf)] = {leftPdf, rightPdf};
+            });
+        }
+
         function scReconcileDocumentOrder(saved, documents) {
             const available = new Set(documents.map(item => item.pdf_path));
             const used = new Set();
@@ -11987,6 +12018,8 @@ const app = createApp({
             while (right.length < length) right.push(null);
             scDocumentOrder.left = left;
             scDocumentOrder.right = right;
+            scPendingPairSelection.value = null;
+            scRestoreConfirmedDocumentPairs(useSaved ? saved.confirmedPairs : []);
         }
 
         function scPersistDocumentOrder() {
@@ -11996,6 +12029,7 @@ const app = createApp({
                 localStorage.setItem(storageKey, JSON.stringify({
                     left: scDocumentOrder.left,
                     right: scDocumentOrder.right,
+                    confirmedPairs: Object.values(scConfirmedDocumentPairs),
                 }));
             } catch (_) {}
         }
@@ -12010,6 +12044,7 @@ const app = createApp({
             if (!['left', 'right'].includes(side) || !scDocumentOrder[side][index]
                     || (row && scPairRowBusy(row))) return;
             scDraggingDocument.value = {side, index};
+            scPendingPairSelection.value = null;
             if (event.dataTransfer) {
                 event.dataTransfer.effectAllowed = 'move';
                 event.dataTransfer.setData('text/plain', `${side}:${index}`);
@@ -12034,6 +12069,7 @@ const app = createApp({
             if ((sourceRow && scPairRowBusy(sourceRow)) || (targetRow && scPairRowBusy(targetRow))) return;
             const values = [...scDocumentOrder[side]];
             while (values.length <= index) values.push(null);
+            scRemoveConfirmedPairsForPaths([values[dragging.index], values[index]]);
             [values[dragging.index], values[index]] = [values[index], values[dragging.index]];
             scDocumentOrder[side] = values;
             scPersistDocumentOrder();
@@ -12053,7 +12089,78 @@ const app = createApp({
 
         function scPairRowKey(row) {
             if (!row || !row.left || !row.right) return `incomplete:${row ? row.index : 'none'}`;
-            return `${row.left.pdf_path}::${row.right.pdf_path}`;
+            return scPairPathsKey(row.left.pdf_path, row.right.pdf_path);
+        }
+
+        function scRemoveConfirmedPairsForPaths(paths) {
+            const affected = new Set((paths || []).filter(Boolean));
+            Object.entries(scConfirmedDocumentPairs).forEach(([key, pair]) => {
+                if (affected.has(pair.leftPdf) || affected.has(pair.rightPdf)) {
+                    delete scConfirmedDocumentPairs[key];
+                }
+            });
+        }
+
+        function scIsPairRowConfirmed(row) {
+            return Boolean(row && row.left && row.right && scConfirmedDocumentPairs[scPairRowKey(row)]);
+        }
+
+        function scIsPairDocumentPending(side, row) {
+            const pending = scPendingPairSelection.value;
+            const document = row && row[side];
+            return Boolean(pending && document && pending.side === side
+                && pending.pdfPath === document.pdf_path);
+        }
+
+        function scSelectPairDocument(side, row) {
+            if (!['left', 'right'].includes(side) || !row || !row[side] || scPairRowBusy(row)) return;
+            const document = row[side];
+            const clicked = {side, index: row.index, pdfPath: document.pdf_path};
+            const pending = scPendingPairSelection.value;
+            const rowWasConfirmed = scIsPairRowConfirmed(row);
+
+            if (pending && pending.side === side && pending.pdfPath === clicked.pdfPath) {
+                scPendingPairSelection.value = null;
+                return;
+            }
+            if (!pending || pending.side === side) {
+                if (rowWasConfirmed) {
+                    scRemoveConfirmedPairsForPaths([
+                        row.left && row.left.pdf_path,
+                        row.right && row.right.pdf_path,
+                    ]);
+                    scPersistDocumentOrder();
+                }
+                scPendingPairSelection.value = clicked;
+                return;
+            }
+
+            const anchorRow = scPairRows.value[pending.index];
+            if (!anchorRow || scPairRowBusy(anchorRow)
+                    || scDocumentOrder[pending.side][pending.index] !== pending.pdfPath) {
+                scPendingPairSelection.value = clicked;
+                return;
+            }
+
+            const affectedPaths = [
+                anchorRow.left && anchorRow.left.pdf_path,
+                anchorRow.right && anchorRow.right.pdf_path,
+                row.left && row.left.pdf_path,
+                row.right && row.right.pdf_path,
+            ];
+            scRemoveConfirmedPairsForPaths(affectedPaths);
+
+            if (row.index !== pending.index) {
+                const values = [...scDocumentOrder[side]];
+                [values[pending.index], values[row.index]] = [values[row.index], values[pending.index]];
+                scDocumentOrder[side] = values;
+            }
+
+            const leftPdf = pending.side === 'left' ? pending.pdfPath : clicked.pdfPath;
+            const rightPdf = pending.side === 'right' ? pending.pdfPath : clicked.pdfPath;
+            scConfirmedDocumentPairs[scPairPathsKey(leftPdf, rightPdf)] = {leftPdf, rightPdf};
+            scPendingPairSelection.value = null;
+            scPersistDocumentOrder();
         }
 
         function scMutablePairRowState(row) {
@@ -12070,6 +12177,7 @@ const app = createApp({
             if (state && state.status === 'error') return {tone: 'error', label: 'Ошибка'};
             if (state && state.status === 'done') return {tone: 'done', label: 'Сравнение готово'};
             if (state && state.status === 'opened') return {tone: 'opened', label: 'Пара открыта'};
+            if (scIsPairRowConfirmed(row)) return {tone: 'confirmed', label: 'Пара сопоставлена'};
             if (row.pair) return {tone: 'saved', label: 'Пара сохранена'};
             return {tone: 'idle', label: 'Не запускалось'};
         }
@@ -12105,6 +12213,8 @@ const app = createApp({
                 scSession.value = null;
                 scDocumentOrder.left = [];
                 scDocumentOrder.right = [];
+                scPendingPairSelection.value = null;
+                scClearConfirmedDocumentPairs();
                 scFinishDocumentDrag();
                 scActivePair.value = null;
                 scPairData.value = null;
@@ -13070,6 +13180,7 @@ const app = createApp({
             scSessionLoading, scSession, scSessionError,
             scDocumentsLeft, scDocumentsRight, scDocumentOrder, scPairRows,
             scDraggingDocument, scDocumentDragOver,
+            scPendingPairSelection, scConfirmedDocumentPairs,
             scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
             scProcessing, scProcessingError,
@@ -13081,6 +13192,7 @@ const app = createApp({
             scProcessCurrentSelection, scProcessPairRow,
             scResetDocumentOrder, scStartDocumentDrag, scDragDocumentOver,
             scDropDocument, scFinishDocumentDrag, scIsDraggingDocument,
+            scSelectPairDocument, scIsPairDocumentPending, scIsPairRowConfirmed,
             scPairRowStatus, scPairRowBusy, scPairRowError,
             scPassportFor, scPassportLabel, scReasonLabel,
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,

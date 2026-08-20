@@ -4045,6 +4045,10 @@ tr.row-rejected td.sc-cell-goto {
 .sc-pair-board__row:last-child { border-bottom: 0; }
 .sc-pair-board__row:hover { background: var(--bg2, #f8f9fa); }
 .sc-pair-board__row.is-active { box-shadow: inset 3px 0 0 var(--accent, #0f9f8f); }
+.sc-pair-board__row.is-confirmed {
+    background: rgba(37, 99, 235, .035);
+    box-shadow: inset 3px 0 0 #2563eb;
+}
 .sc-pair-board__number,
 .sc-pair-board__arrow {
     display: grid;
@@ -4076,12 +4080,23 @@ tr.row-rejected td.sc-cell-goto {
     border: 1px solid var(--border2);
     border-radius: var(--radius);
     background: var(--surface, #fff);
-    cursor: grab;
+    cursor: pointer;
     user-select: none;
 }
-.sc-pair-document:active { cursor: grabbing; }
+.sc-pair-document:focus-visible { outline: 2px solid #60a5fa; outline-offset: 1px; }
 .sc-pair-document.is-dragging { opacity: .38; }
-.sc-pair-document__grip { color: var(--text3); font-size: 15px; line-height: 1; text-align: center; }
+.sc-pair-document.is-pending {
+    border-color: #60a5fa;
+    background: #eff6ff;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, .32);
+}
+.sc-pair-document.is-confirmed {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: 0 0 0 1px #2563eb;
+}
+.sc-pair-document__grip { color: var(--text3); cursor: grab; font-size: 15px; line-height: 1; text-align: center; }
+.sc-pair-document__grip:active { cursor: grabbing; }
 .sc-pair-document__name { overflow: hidden; color: var(--text); font-size: 12px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .sc-pair-document small { color: var(--text3); font-size: 10px; }
 .sc-pair-slot__empty {
@@ -4117,7 +4132,8 @@ tr.row-rejected td.sc-cell-goto {
 .sc-pair-row-status--running { color: #0369a1; background: #e0f2fe; }
 .sc-pair-row-status--done { color: #047857; background: #d1fae5; }
 .sc-pair-row-status--opened,
-.sc-pair-row-status--saved { color: #1d4ed8; background: #dbeafe; }
+.sc-pair-row-status--saved,
+.sc-pair-row-status--confirmed { color: #1d4ed8; background: #dbeafe; }
 .sc-pair-row-status--error { color: #b91c1c; background: #fee2e2; }
 .sc-pair-row-status--incomplete { color: #92400e; background: #fef3c7; }
 .sc-pair-row-error { grid-column: 1 / -1; overflow: hidden; color: #b91c1c; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }

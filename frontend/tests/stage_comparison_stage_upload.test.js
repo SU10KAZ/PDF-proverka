@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const app = readFileSync(new URL('../static/js/app.js', import.meta.url), 'utf8');
+const css = readFileSync(new URL('../static/css/styles.css', import.meta.url), 'utf8');
 
 describe('documentation comparison shell', () => {
   it('keeps the four shell tabs and the later-stage empty state', () => {
@@ -47,6 +48,16 @@ describe('documentation comparison shell', () => {
     expect(app).toContain('stage-comparison:pair-order:');
     expect(app).toContain('scPersistDocumentOrder');
     expect(app).toContain('scPairRowStates');
+  });
+
+  it('confirms pairs by clicking both documents and keeps them blue', () => {
+    expect(html).toContain("@click=\"scSelectPairDocument('left', row)\"");
+    expect(html).toContain("@click=\"scSelectPairDocument('right', row)\"");
+    expect(html).toContain("'is-confirmed': scIsPairRowConfirmed(row)");
+    expect(app).toContain('confirmedPairs: Object.values(scConfirmedDocumentPairs)');
+    expect(app).toContain('scConfirmedDocumentPairs[scPairPathsKey(leftPdf, rightPdf)]');
+    expect(css).toContain('.sc-pair-document.is-confirmed');
+    expect(css).toContain('border-color: #2563eb');
   });
 
   it('supports manual many-to-many sheet correction in the viewer', () => {
