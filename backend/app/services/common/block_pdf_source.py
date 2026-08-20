@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Universal block-PDF source helper for stage-comparison image/imagine blocks.
+"""Universal block-PDF source helper for image/imagine blocks.
 
-Architecture (см. docs/stage_comparison_block_pdf_source.md):
+This helper belongs to the shared audit pipeline and is independent from the
+documentation-comparison section.
 
     block (result.json)
       → resolve_block_pdf_source()   # crop_url PDF > image_file PDF > none

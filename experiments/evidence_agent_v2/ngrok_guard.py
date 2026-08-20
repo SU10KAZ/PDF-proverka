@@ -32,7 +32,7 @@ def loaded_models_snapshot() -> list[dict]:
     Работает и вне, и внутри уже запущенного event loop (в последнем случае —
     отдельный поток со своим loop'ом, чтобы не падать на вложенном asyncio.run)."""
     try:
-        from backend.app.services.stage_comparison.graphic_llm_local import (
+        from backend.app.services.common.local_vision_provider import (
             snapshot_loaded_models,
         )
     except Exception:

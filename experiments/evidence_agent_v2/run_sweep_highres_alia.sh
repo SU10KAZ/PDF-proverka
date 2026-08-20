@@ -3,9 +3,9 @@
 # qwen видит только чёткий рендер из PDF (без gemma-OCR). Каждая дисциплина = отдельный
 # процесс (resilient). ENABLE_MODEL_LOAD=true (переживает eviction). От малых к большим.
 cd /home/coder/projects/PDF-proverka || exit 1
-export STAGE_COMPARISON_GRAPHIC_LLM_MAX_CONTINUATIONS=0
-export STAGE_COMPARISON_GRAPHIC_LLM_MAX_TOKENS=1200
-export STAGE_COMPARISON_GRAPHIC_LLM_TIMEOUT_SEC=60
+export EVIDENCE_LOCAL_VISION_MAX_CONTINUATIONS=0
+export EVIDENCE_LOCAL_VISION_MAX_TOKENS=1200
+export EVIDENCE_LOCAL_VISION_TIMEOUT_SEC=60
 export EV2_PROMPT=c
 RES=experiments/evidence_agent_v2/results/audit_alia
 SWEEP_LOG=$RES/sweep_highres_progress.log

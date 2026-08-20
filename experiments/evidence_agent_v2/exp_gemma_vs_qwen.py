@@ -86,7 +86,7 @@ async def main_async():
             break
     print(f"[exp] выборка {len(sample)} блоков из {len(cands)} кандидатов", flush=True)
 
-    from backend.app.services.stage_comparison.graphic_llm_local import describe_image_local
+    from backend.app.services.common.local_vision_provider import describe_image_local
     ngrok_guard.preflight(require_idle=False)
     results = []
     with ngrok_guard.LocalLLMLock(owner="ev2", note="exp_gemma_qwen"):

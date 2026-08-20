@@ -2184,7 +2184,7 @@ def _materialize_retrieval_graphic(
 
     try:
         _import_fitz()
-        from backend.app.services.stage_comparison.block_pdf_source import (
+        from backend.app.services.common.block_pdf_source import (
             render_block_pdf,
             resolve_block_pdf_source,
         )

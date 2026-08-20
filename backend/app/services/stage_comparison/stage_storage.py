@@ -11,8 +11,6 @@ Layout повторяет полезную часть ``projects_v2``::
           version.json
           01_input/       # неизменяемые оригиналы загрузки
           02_work/        # канонические document.pdf/.md/result.json
-          03_analysis/latest/
-          03_analysis/runs/
           99_service/
 
 Контуры findings/optimization/review/export намеренно отсутствуют.
@@ -124,15 +122,6 @@ def is_versioned_stage(stage_dir: Path) -> bool:
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return False
     return data.get("storage_profile") == STORAGE_PROFILE
-
-
-def _read_text(path: Path | None, limit: int = 20_000) -> str:
-    if path is None:
-        return ""
-    try:
-        return path.read_text(encoding="utf-8", errors="ignore")[:limit]
-    except OSError:
-        return ""
 
 
 def _candidate_files(pdf: Path, all_pdfs_in_folder: int) -> list[Path]:
@@ -249,12 +238,11 @@ def import_extracted_tree(
     for pdf in pdfs:
         sources = _candidate_files(pdf, per_folder[pdf.parent])
         consumed.update(sources)
-        md = _pick(sources, suffixes=("_document.md", "_results.md", ".md"), exact=("document.md",))
         rel_parent = str(pdf.parent.relative_to(extracted_root)) if pdf.parent != extracted_root else ""
         detected = discipline_service.detect_discipline_detailed(
             folder_name=rel_parent,
             pdf_name=pdf.name,
-            doc_text=_read_text(md),
+            doc_text="",
         )
         discipline = _safe_component(detected.get("code") or "EOM", "EOM").upper()
         code = _safe_component(pdf.stem)
@@ -264,8 +252,6 @@ def import_extracted_tree(
         for subdir in (
             version_dir / "01_input",
             version_dir / "02_work",
-            version_dir / "03_analysis" / "latest",
-            version_dir / "03_analysis" / "runs",
             version_dir / "99_service",
         ):
             subdir.mkdir(parents=True, exist_ok=True)
@@ -393,8 +379,6 @@ def iter_current_documents(stage_dir: Path):
             "version_id": version_id,
             "version_dir": version_dir,
             "pdf_path": pdf,
-            "md_path": (version_dir / "02_work" / "document.md"),
-            "result_json_path": (version_dir / "02_work" / "result.json"),
             "source_filename": info.get("pdf_file") or f"{document.get('document_code')}.pdf",
         }
 

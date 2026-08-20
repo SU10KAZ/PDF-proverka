@@ -49,7 +49,7 @@ OUT_DIR = ROOT / "experiments" / "evidence_agent_v2" / "results"
 
 # Реально доступные на LM Studio vision-кандидаты (см. /v1/models).
 DEFAULT_MODELS = [
-    "qwen/qwen3.6-35b-a3b",     # прод stage-comparison
+    "qwen/qwen3.6-35b-a3b",     # локальный benchmark профиль
     "qwen/qwen3.6-27b",         # меньше/быстрее
     "google/gemma-4-26b-a4b",   # gemma vision
 ]

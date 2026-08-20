@@ -289,7 +289,6 @@ $ norms/tools/venv/bin/python -c "import mcp"  → ModuleNotFoundError
 | Контур | Где | Своё состояние | Отношение к воркерам |
 |---|---|---|---|
 | **Сводная оптимизация раздела** | `services/section_optimization_{service,pipeline_service,agent_service,graphics_agent_service,replication_service}.py`; роутер `optimization.py:80,99,113,142,172,200,225,241` | свой in-memory реестр `_ACTIVE_TASKS` ([section_optimization_pipeline_service.py:33](../../backend/app/services/section_optimization_pipeline_service.py#L33)), запуск `asyncio.create_task` (`:409`), состояние в `APP_DATA_DIR/section_optimization*` | гоняет **Codex** (`agent_service.py:358 run_codex_json_messages`), **не берёт** `resource_budget` и не регистрируется в `_active_processes`. 🔴 **Кросс-проектный по замыслу**: `collect_section_optimization_data()` собирает ВСЕ проекты объекта и фильтрует по `section` — модель «один проект → один воркер» этот контур не обслуживает в принципе |
-| **Сравнение стадий** | `services/stage_comparison/pipeline_queue.py` | свои job-файлы (`_jobs_dir:62`, `_write_job:81`), свой health-gate локальной модели (`qwen_health_gate:142`), свои стадии Qwen/Opus | хранилище — **не `projects_v2`**, а отдельный корень `comparison/` (env `COMPARISON_ROOT`, `AUDIT_STAGE_COMPARISON_ROOTS`). Состав пакета из §4 на него не распространяется |
 | **Подготовка данных (prepare)** | `pipeline/stages/prepare/prepare_service.py` | свой семафор кропа, свои `pause_event`/`cancel_event` (`:62,70,76`), **свой WS-канал** (`_broadcast_queue:206`, `_ws_log:265`), свои таски (`:497`) | 🔴 **межочередной интерлок**: `_check_not_in_active_batch()` ([:152](../../backend/app/pipeline/stages/prepare/prepare_service.py#L152)) блокирует ручной prepare через `pipeline_manager.is_project_in_active_batch()`. При выносе исполнения этот инвариант становится **межхостовым** и сегодня ничем не обеспечен |
 
 Плюс `services/findings/rejected_audit_service.py` — ещё один потребитель Codex (`run_codex_audit:5478`), не подключённый к роутерам и пишущий в `comparison/`.
@@ -331,17 +330,6 @@ $ norms/tools/venv/bin/python -c "import mcp"  → ModuleNotFoundError
 Оба указывают в **уже несуществующий** `projects/`. Читатели: `project_service._resolve_v2_legacy_project_path:1472-1474`, `projects_v2_dual_read.py:111-125`, `project_rename_service.py:178,242`. При переносе на воркер это либо чистить, либо игнорировать явно.
 
 Хорошая новость: `blocks_*/index.json` **переносим** — поля `file`, `crop_px`, `render_size`, `source_result_json` относительные (проверено на реальном index.json).
-
-### 5.10. Хардкод несуществующего deploy-worktree в рабочем коде
-
-[pipeline_v2_runtime_root_audit.py:52-57](../../backend/app/services/stage_comparison/pipeline_v2_runtime_root_audit.py#L52):
-```python
-MAIN_COMPARISON_ROOT   = "/home/coder/projects/PDF-proverka/comparison"
-DEPLOY_COMPARISON_ROOT = "/home/coder/projects/PDF-proverka-deploy/comparison"
-```
-и `scripts/check_production_data_roots.sh` с `REPO_ROOT` по умолчанию `/home/coder/projects/PDF-proverka-deploy`.
-
-Проверено: **каталога `PDF-proverka-deploy` на этом хосте нет** (`git worktree list` даёт только main + `.claude/worktrees/new-upload-format-stage1`). То есть диагностика «какой корень читает прод» на новом хосте даст ложную картину — её надо параметризовать перед раскаткой воркеров.
 
 ### 5.11. Stage 01 резолвит Claude CLI в обход автодетекта
 
@@ -419,7 +407,7 @@ _batch_slot_worker  →  [ExecutionBackend]  →  _dispatch_action (LocalExecuti
 | лимиты по воркерам | **готовый прототип**: модалка «Расход подписки по инженерам» `index.html:3128-3190` + `app.js:11106 subSpendLoad` — калька один-в-один, строка = воркер |
 | маршрутизация запросов | **готовая точка**: monkey-patch `window.fetch` в `app.js:4727-4747`, который уже добавляет `X-Object-Id` во все `/api/`-запросы — единственное место, где можно централизованно добавить `X-Worker-Id` без правки 116 вызовов `fetch` |
 
-**Сегодня в UI нет никакого понятия «где исполняется»** — проверено grep-ом по `app.js`: `worker|воркер|исполнител|хост` даёт только `job.qwen_worker` из Stage-Comparison (внутренняя дорожка Qwen в том же процессе, не хост).
+**Сегодня в UI нет никакого понятия «где исполняется»** — проверено grep-ом по `app.js`: отдельного selector хоста нет.
 
 ### 6.6. Что должен запускать воркер: backend или CLI-runner
 
@@ -716,7 +704,6 @@ _batch_slot_worker  →  [ExecutionBackend]  →  _dispatch_action (LocalExecuti
 | 2 | Codex CLI, агентный | [codex_runner.py:407 `run_codex_exec`](../../backend/app/services/llm/codex_runner.py#L407) | `codex exec --ephemeral --ignore-user-config --ignore-rules --skip-git-repo-check --sandbox <S> --model <M> [-c model_reasoning_effort=...] [--image ...] -C <ROOT_DIR> -o <tmpfile> -` |
 | 3 | Codex CLI, JSON-only | `codex_runner.py:509 run_codex_json_messages` | тот же + `--json [--output-schema <tmp>]`, sandbox по умолчанию `read-only` |
 | 4 | **Claude CLI в обход общего runner** | `gemma_findings_only.py:1418 call_claude_cli_for_block` (запуск на `:1463-1485`) | свой `asyncio.create_subprocess_exec`, свой путь `CLAUDE_CLI_BIN` (`:117`) — **без** `resource_budget`, **без** `register_process` |
-| 5 | **Claude CLI, ещё один путь** | `services/stage_comparison/text_llm_provider.py:265-273` | блокирующий `subprocess.run` со своим `_find_cli()` и своим rate-limit-ретраем |
 | 6 | OpenRouter (Stage 01, напрямую) | [gemma_findings_only.py:95](../../backend/app/pipeline/stages/block_analysis/gemma_findings_only.py) `OPENROUTER_URL` | httpx POST, `Authorization: Bearer $OPENROUTER_API_KEY`, **минуя** `llm_runner` |
 | 7 | OpenRouter (общий) | [llm_runner.py:965 `run_llm`](../../backend/app/services/llm/llm_runner.py#L965) | `AsyncOpenAI` на `OPENROUTER_BASE_URL` |
 | 8 | Gemini direct | `gemini_direct_runner.py` | Google GenAI SDK; **фактически спящий** (из KZ API отдаёт FAILED_PRECONDITION) |
@@ -953,7 +940,6 @@ slots = clamp(0, 5, min(S_ram, S_disk, S_cpu, S_la, S_proc))
 | 12 | **Судьба legacy-режима хранилища** | код держит три режима (`legacy`/`dual_write_shadow`/`projects_v2_primary`) | воркер поддерживает только `projects_v2_primary` |
 | 13 | **Кто чинит сломанный norms-venv на воркерах** | §5.3 — уже сломан на центральном хосте | вытекает из №1; при варианте Б вопрос снимается |
 | 14 | **Нужен ли воркеру фронтенд** | сейчас backend монтирует `/static` и отдаёт SPA | в режиме воркера не монтировать |
-| 15 | **Что делать с тремя параллельными контурами заданий** | `section_optimization` (кросс-проектный по замыслу), `stage_comparison/pipeline_queue` (свой корень `comparison/`), `prepare` (свой WS и интерлок) — §5.5 | оставить целиком на центре в первом этапе; но решить, как считать их нагрузку при подсчёте слотов |
 | 16 | **Источник кропов на воркере** | `AUDIT_CROP_CACHE_SOURCE`: `local_pdf` (нужен PyMuPDF) или `download` (нужен доступ к порталу) | `local_pdf` + обязательный PyMuPDF; сеть на портал с чужого VPS не открывать |
 
 ---
@@ -1034,7 +1020,6 @@ slots = clamp(0, 5, min(S_ram, S_disk, S_cpu, S_la, S_proc))
 | `backend/app/services/common/cli_utils.py` | детект лимитов, `parse_rate_limit_reset:62` | убрать жёсткий MSK (UTC+3) | 🟢 | желательно |
 | `backend/app/services/llm/codex_runner.py` | запуск Codex | `assert_norms_mcp_available:114` — проверять `import mcp`; пересмотреть sandbox для чужого VPS | 🟡 | желательно |
 | `backend/app/pipeline/stages/block_analysis/gemma_findings_only.py` | Stage 01; **свой** запуск `claude -p` (`:1462`) | привести к общему `process_runner` + `resource_budget` | 🟡 | желательно |
-| `backend/app/services/stage_comparison/text_llm_provider.py` | третий путь запуска `claude` (`:265`) | то же | 🟢 | опционально |
 | `backend/app/pipeline/stages/prepare/prepare_service.py` | вторая очередь; `_persist_queue:218` неатомарен | атомарная запись | 🟢 | желательно |
 | `backend/app/services/storage/projects_v2_adapter.py` | резолв документа, выбор run по mtime | явный `run_id` вместо mtime при распаковке пакета | 🟡 | желательно |
 | `backend/app/services/common/project_service.py` | `resolve_project_dir`, `iter_project_dirs` | запретить авто-создание объекта при `AUDIT_ROLE=worker` | 🟡 | **обязательно** |
@@ -1047,7 +1032,6 @@ slots = clamp(0, 5, min(S_ram, S_disk, S_cpu, S_la, S_proc))
 | `requirements.txt` | 12 пакетов, неполон | новый `requirements-worker.txt` по фактическим импортам (§5.8) | 🟢 | **обязательно** |
 | `backend/app/pipeline/stages/block_analysis/gemma_findings_only.py` (доп.) | `CLAUDE_CLI_BIN` в обход автодетекта (`:117`) | использовать `config.get_claude_cli()` | 🟢 | **обязательно** |
 | `backend/app/pipeline/stages/prepare/prepare_service.py` (доп.) | интерлок `_check_not_in_active_batch:152` | сделать межхостовым или явно ограничить (§5.5) | 🟡 | **обязательно** |
-| `backend/app/services/stage_comparison/pipeline_v2_runtime_root_audit.py` | хардкод `PDF-proverka-deploy` (`:52-57`) | параметризовать корни (§5.10) | 🟢 | желательно |
 | `backend/app/services/common/atomic_json.py` | `atomic_write_json` без flock (`:50-58`) | для shared-файлов использовать только `load_modify_save` | 🟡 | желательно |
 | `.github/workflows/ci.yml` | observe-first, `continue-on-error: true` | добавить проверку импортов воркера | 🟢 | желательно |
 | `docs/distributed_audit_workers/` | этот отчёт | + спецификация протокола, + runbook установки воркера | 🟢 | **обязательно** |
@@ -1117,7 +1101,6 @@ slots = clamp(0, 5, min(S_ram, S_disk, S_cpu, S_la, S_proc))
 
 Оценка: **шаги 1-3 из §17 дают работающий ручной режим** («вижу все VPS, назначаю проект, вижу прогресс и лог, получаю результат») — это и есть основной режим первого этапа по ТЗ. Шаги 4-5 добавляют отказоустойчивость и автоматику.
 
-Отдельно отмечу два уточнения, вскрытых на этапе критики полноты и уже внесённых в отчёт: **`PipelineManager` — не единственный владелец фоновых LLM-заданий** (есть ещё `section_optimization`, `stage_comparison/pipeline_queue` и `prepare`, каждый со своим реестром задач; §5.5), и **инвентарь зависимостей неполон** — воркер, собранный строго по `requirements.txt`, тихо теряет локальную вырезку кропов и уходит в сеть на портал (§5.8). Ни то, ни другое не меняет вердикт, но обе вещи обязаны попасть в runbook установки воркера.
 
 Формально в отчёте не закрыт один пункт задания — **готовой точки регистрации внешних воркеров в кодовой базе нет** (проверено: `external_register.py` — это реестр замечаний заказчика, а не хостов; grep по роутерам на `worker`/`node`/`agent`/`api_key`/`bearer` даёт только комментарии). Это не препятствие, а констатация: подсистему придётся создавать с нуля, но она аддитивна и ничего существующего не ломает.
 

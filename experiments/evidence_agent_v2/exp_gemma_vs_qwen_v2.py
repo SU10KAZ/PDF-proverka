@@ -87,7 +87,7 @@ async def run_cat(name, items, describe):
 
 
 async def main():
-    from backend.app.services.stage_comparison.graphic_llm_local import describe_image_local
+    from backend.app.services.common.local_vision_provider import describe_image_local
     gen, sl = collect()
     # ровная выборка general по дисциплинам
     by = defaultdict(list)

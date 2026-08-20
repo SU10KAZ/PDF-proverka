@@ -41,21 +41,6 @@ _DEFAULT_STORAGE_ENV = {
 for _name, _value in _DEFAULT_STORAGE_ENV.items():
     os.environ[_name] = _value
 
-# Rollout-флаги stage_comparison (могут быть включены в prod `.env` для
-# контролируемого прогона) нейтрализуем по умолчанию — тесты должны проверять
-# поведение при ДЕФОЛТНЫХ значениях, а не подхватывать `.env`. Тест, которому
-# нужен флаг ON, выставляет его сам через monkeypatch.setenv. Выставляем ДО
-# импорта приложения, чтобы `os.environ.setdefault` в main.py не перезаписал.
-for _rollout_flag in (
-    "STAGE_COMPARISON_GRSH_FEEDER_EXTRACTION_ENABLED",
-    "STAGE_COMPARISON_GRAPHIC_STRUCTURED_EXTRACTION_ENABLED",
-    "STAGE_COMPARISON_BLOCK_PDF_SOURCE_ENABLED",
-    "STAGE_COMPARISON_BLOCK_EQUIVALENCE_PRECHECK_ENABLED",
-    "STAGE_COMPARISON_BLOCK_EQUIVALENCE_SKIP_QWEN",
-):
-    os.environ[_rollout_flag] = "false"
-
-
 @pytest.fixture(autouse=True)
 def _isolate_batch_queue_file(tmp_path, monkeypatch):
     """НИ ОДИН тест не должен писать в реальный backend/app/data/batch_queue.json.

@@ -31,8 +31,9 @@ basename + `object_id`-хэшу, поэтому при версионизаци�
 `?version_id=` и `bind_version()`. Меняется только отображение
 `version_id → папка на диске` (через `version_group.json` в контейнере).
 
-«Сравнение стадий» (`stage_comparison`) от версионности **не зависит** и живёт в
-отдельном дереве `comparison_sources/` — версионизация его не затрагивает.
+Раздел сравнения хранит собственные source-only версии документов внутри
+`projects_v2/objects/<object>/comparison/stage_1|stage_2`; эта раскладка
+независима от групп версий обычного audit-pipeline.
 
 ## `version_group.json` (манифест контейнера)
 

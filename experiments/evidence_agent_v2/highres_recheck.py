@@ -138,7 +138,7 @@ def _ordered_block_ids(ctx, finding) -> list:
 
 
 async def recheck_one_async(rec, *, model: str, long_side: int = 2200) -> Optional[dict]:
-    from backend.app.services.stage_comparison.graphic_llm_local import describe_image_local
+    from backend.app.services.common.local_vision_provider import describe_image_local
     from .context import load_context_from_dir
     from .extract import _parse
 

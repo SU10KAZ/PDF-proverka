@@ -1,7 +1,7 @@
 # Evidence Verifier — документация
 
-Проект: `/home/coder/projects/PDF-proverka`  
-Связанный слой 1: [kb_agent.md](kb_agent.md)  
+Проект: `/home/coder/projects/PDF-proverka`
+Связанный слой 1: [kb_agent.md](kb_agent.md)
 Обновлено: июнь 2026
 
 ---
@@ -80,7 +80,7 @@ backend/app/pipeline/stages/findings_review/evidence_verifier/
   context_loader.py        # blocks, PNG paths, gemma OCR, MD excerpt
   router.py                # graphic | text | mixed | weak
   kb_routing.py            # should_run_evidence_verifier()
-  graphic_verifier.py      # vision LLM (graphic_llm_local)
+  graphic_verifier.py      # vision LLM (local_vision_provider)
   text_verifier.py         # Claude CLI text path
   parse.py                 # EVDecision, safety post-processing
   engine.py                # EvidenceVerifier orchestration
@@ -157,7 +157,7 @@ python3 scripts/benchmark_evidence_models.py --limit 20
 python3 scripts/benchmark_evidence_models.py --models qwen/qwen3.6-35b-a3b google/gemma-4-26b-a4b
 ```
 
-Метрики: `accuracy`, `false_reject_rate`, `avg_latency_sec`.  
+Метрики: `accuracy`, `false_reject_rate`, `avg_latency_sec`.
 Отчёт: `benchmarks/evidence_verify/report_YYYYMMDD_HHMMSS.json`.
 
 Требует доступный ngrok/LM Studio (`CHANDRA_BASE_URL`).
@@ -200,7 +200,7 @@ python3 scripts/validate_findings_evidence.py "PROJECT_ID" --force
 |------------|------------|
 | `CHANDRA_BASE_URL` | ngrok/LM Studio endpoint |
 | `NGROK_AUTH_USER` / `NGROK_AUTH_PASS` | Basic auth |
-| `STAGE_COMPARISON_GRAPHIC_LLM_MODEL` | default graphic model |
+| `EVIDENCE_LOCAL_VISION_MODEL` | default graphic model |
 | `EV_GRAPHIC_MODEL` | override для EV |
 | `EV_TEXT_MODEL` | Claude model для text path (default `sonnet`) |
 

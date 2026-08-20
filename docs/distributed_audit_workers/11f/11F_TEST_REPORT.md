@@ -81,4 +81,3 @@ worktree нет по построению (worktree делит `.git`, но не
 
 Семь записей baseline на ветке **не падают** — это не заслуга 11F, а тот же
 дрейф окружения в обратную сторону (тесты `gemma_prefetch`,
-`stage_comparison_md_enrichment`, `critic_v2_triage_stage` и др.).

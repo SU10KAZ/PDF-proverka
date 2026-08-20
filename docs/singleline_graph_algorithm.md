@@ -247,5 +247,5 @@ control, status, review, bbox_page` (§10).
 Только если у блока нет/беден вектор-слой. Тайлинг обязателен (one-shot на плотной схеме = 0%):
 рендер региона блока → тайлы 1600px с перекрытием → per-tile Qwen-VL → merge. Рычаги качества:
 поворот тайла на 90° (текст→горизонталь), чтение по одной колонке, OCR-модель
-`infinity-parser2-flash`. Модель `qwen/qwen3.6-35b-a3b` через ngrok (см. `graphic_llm_local.py`),
+`infinity-parser2-flash`. Модель `qwen/qwen3.6-35b-a3b` через ngrok (см. `local_vision_provider.py`),
 concurrency=1, холодная загрузка ~80с, ~60с/тайл. Для вектор-схем Qwen НЕ нужен.

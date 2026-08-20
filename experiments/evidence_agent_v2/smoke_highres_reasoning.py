@@ -26,9 +26,9 @@ from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
 
 # --- override на ЖИВОЙ старый ngrok (basic); .env указывает на TLS-битый vibe ---
-os.environ["STAGE_COMPARISON_GRAPHIC_LLM_BASE_URL"] = os.environ.get(
+os.environ["EVIDENCE_LOCAL_VISION_BASE_URL"] = os.environ.get(
     "EV2_NGROK_BASE_URL", "https://louvred-madie-gigglier.ngrok-free.dev")
-os.environ["STAGE_COMPARISON_GRAPHIC_LLM_AUTH"] = "basic"
+os.environ["EVIDENCE_LOCAL_VISION_AUTH"] = "basic"
 
 from experiments.evidence_agent_v2 import ngrok_guard
 from experiments.evidence_agent_v2.context import load_context
@@ -73,11 +73,11 @@ def render_hr(ctx, long_side: int):
 
 async def raw_call(png_path: Path, prompt: str, model: str, long_side: int, enable_thinking: bool):
     import httpx
-    from backend.app.services.stage_comparison.graphic_llm_local import (
-        load_local_graphic_llm_config, _build_headers,
+    from backend.app.services.common.local_vision_provider import (
+        load_local_vision_config, _build_headers,
         _resize_png_to_long_side, _png_bytes_to_data_url,
     )
-    cfg = load_local_graphic_llm_config()
+    cfg = load_local_vision_config()
     url = _png_bytes_to_data_url(_resize_png_to_long_side(Path(png_path), long_side))
     payload = {
         "model": model, "max_tokens": int(cfg.max_tokens), "temperature": float(cfg.temperature),
@@ -100,8 +100,8 @@ async def main() -> int:
     print("[smoke] preflight…")
     ngrok_guard.preflight(require_idle=False)
 
-    from backend.app.services.stage_comparison.graphic_llm_local import load_local_graphic_llm_config
-    cfg = load_local_graphic_llm_config()
+    from backend.app.services.common.local_vision_provider import load_local_vision_config
+    cfg = load_local_vision_config()
     print(f"[smoke] base_url={cfg.base_url} auth={cfg.auth} max_tokens={cfg.max_tokens} "
           f"long_side_cfg={cfg.image_long_side} timeout={cfg.timeout_sec}")
 

@@ -71,7 +71,7 @@ Verifikator спорит **не с замечанием, а с ПРИЧИНОЙ 
 | [5a] Калибровка | `filter_candidates.py` | калиброванный промпт (правило «инфо в общих указаниях → cannot_tell») |
 | [5b] Арбитр | `arbiter_pass.py` | `claude -p --model sonnet`, ПООДИНОЧКЕ, крэш-устойчиво (JSONL) |
 | Контекст/блоки | `context.py`, `extract.py` | `load_context_from_dir()`, реранжир блоков, `_parse()` |
-| Координация LLM | `ngrok_guard.py`, `graphic_llm_local.py` | preflight + lock; `describe_image_local()` |
+| Координация LLM | `ngrok_guard.py`, `local_vision_provider.py` | preflight + lock; `describe_image_local()` |
 | Отчёты | `compare_runs.py`, `report_shortlist.py`, `report_text.py`, `export_final_excel.py` | было/стало, шорт-лист, текст, Excel |
 
 ---

@@ -61,7 +61,7 @@ while len(sample) < N and any(by.values()):
 
 import asyncio
 async def go():
-    from backend.app.services.stage_comparison.graphic_llm_local import describe_image_local
+    from backend.app.services.common.local_vision_provider import describe_image_local
     ngrok_guard.preflight(require_idle=False)
     out_rows = []
     with ngrok_guard.LocalLLMLock(owner="ev2", note="trackb"):

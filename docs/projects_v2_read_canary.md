@@ -123,7 +123,7 @@ read-only (дерево не меняется); независимость от 
 
 1. `AUDIT_PROJECTS_V2_READ_CANARY_ENABLED=false` в deploy `.env` (флаг читается на
    старте → нужен рестарт).
-2. Controlled restart после idle-gate (jobs=0, queues empty, stage-comparison=0).
+2. Controlled restart после idle-gate (jobs=0, queues empty).
 3. Проверить: `?storage=projects_v2` снова даёт 403, обычные endpoint'ы работают.
 
 Код инертен при выключенном флаге, поэтому даже без отката риска нет.

@@ -3963,648 +3963,112 @@ tr.row-rejected td.sc-cell-goto {
 .extreg-status--rejected     { background:#fecaca; color:#991b1b; }
 .extreg-status--unmatched    { background:#f3f4f6; color:#6b7280; }
 
-/* ─── Stage Comparison ───────────────────────────────────────────────── */
-.sc-steps-bar {
-  display: flex; justify-content: center; align-items: center;
-  min-height: 32px; margin: -20px -24px 10px;
-  padding: 0 24px; background: var(--topbar-bg);
-  border-bottom: 1px solid var(--border);
-}
-.project-tab[disabled],
-.project-tab[disabled]:hover {
-  color: var(--text2); opacity: 0.4; cursor: not-allowed; border-bottom-color: transparent;
-}
-
-.sc-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
-.sc-status-matched   { background: #dcfce7; color: #15803d; }
-.sc-status-maybe     { background: #fef3c7; color: #92400e; }
-.sc-status-unmatched { background: #f3f4f6; color: #6b7280; }
-/* Кликабельный бейдж (например «⚠ файл большой ▸ fallback») */
-.sc-status--clickable { text-decoration: underline dotted; transition: filter .12s ease, box-shadow .12s ease; }
-.sc-status--clickable:hover { filter: brightness(.96); box-shadow: 0 0 0 1px rgba(146,64,14,.35); }
-
-.sc-diff-added    { color: #15803d; font-weight: 600; }
-.sc-diff-removed  { color: #b91c1c; font-weight: 600; }
-.sc-diff-modified { color: #92400e; font-weight: 600; }
-
-.sc-diffrow-added    td { background: rgba(220,252,231,.15); }
-.sc-diffrow-removed  td { background: rgba(254,226,226,.15); }
-.sc-diffrow-modified td { background: rgba(254,243,199,.15); }
-
-/* Overlay-блоки поверх PDF-изображения */
-.sc-block-overlay {
-    position: absolute;
-    border: 1.5px solid rgba(37, 99, 235, 0.55);
-    background: rgba(37, 99, 235, 0.08);
-    cursor: pointer;
-    transition: background 0.1s, border-color 0.1s;
-    box-sizing: border-box;
-}
-.sc-block-overlay:hover {
-    background: rgba(37, 99, 235, 0.16);
-    border-color: rgba(37, 99, 235, 0.85);
-}
-.sc-block-overlay.selected {
-    border: 2.5px solid #2563eb;
-    background: rgba(37, 99, 235, 0.22);
-    z-index: 5;
-}
-/* Связанный блок: рамка цветом конкретной связи задаётся inline-style из
-   scBlockOverlayStyle (style.borderColor = info.color). Здесь только толщина. */
-.sc-block-overlay.linked {
-    border-width: 2px;
-    background: rgba(37, 99, 235, 0.06);
-}
-.sc-block-overlay.linked-stale {
-    border-style: dashed;
-    background: rgba(245, 158, 11, 0.08);
-}
-.sc-block-overlay.linked-cross {
-    border-style: dashed;
-}
-.sc-block-overlay.linked-active {
-    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.35);
-    z-index: 6;
-}
-/* Подсветка блока, к которому перешли из поповера «упавшие блоки» */
-.sc-block-overlay.sc-block-focus-flash {
-    z-index: 8;
-    border: 2.5px solid #dc2626 !important;
-    animation: scBlockFocusFlash 0.7s ease-in-out 3;
-}
-@keyframes scBlockFocusFlash {
-    0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); background: rgba(220, 38, 38, 0.28); }
-    100% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); background: rgba(220, 38, 38, 0.08); }
-}
-
-/* ─── Поповер «упавшие блоки» (таблица пар) ─────────────────────────────── */
-.sc-failed-count {
-    color: #b91c1c;
-    cursor: pointer;
-    text-decoration: underline dotted;
-    text-underline-offset: 2px;
-    font-weight: 600;
-}
-.sc-failed-count:hover { color: #7f1d1d; }
-.sc-failed-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 40;
-}
-.sc-failed-popover {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 4px;
-    z-index: 41;
-    width: 340px;
-    max-height: 320px;
-    overflow: auto;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
-    text-align: left;
-    font-variant-numeric: normal;
-}
-.sc-failed-popover__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #374151;
-    border-bottom: 1px solid #f3f4f6;
-    position: sticky;
-    top: 0;
-    background: #fff;
-}
-.sc-failed-popover__close { cursor: pointer; color: #9ca3af; padding: 0 4px; }
-.sc-failed-popover__close:hover { color: #374151; }
-.sc-failed-popover__msg { padding: 12px 10px; font-size: 12px; color: #6b7280; }
-.sc-failed-popover__msg--err { color: #b91c1c; }
-.sc-failed-block-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    font-size: 11px;
-    cursor: pointer;
-    border-bottom: 1px solid #f9fafb;
-}
-.sc-failed-block-row:hover { background: #fef2f2; }
-.sc-failed-block-row__side {
-    flex: 0 0 auto;
-    padding: 1px 6px;
-    border-radius: 8px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-.sc-failed-block-row__side.is-left  { background: #dbeafe; color: #1e40af; }
-.sc-failed-block-row__side.is-right { background: #e0e7ff; color: #4338ca; }
-.sc-failed-block-row__page { flex: 0 0 auto; color: #6b7280; white-space: nowrap; }
-.sc-failed-block-row__id {
-    flex: 1 1 auto;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: #111827;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.sc-failed-block-row__reason {
-    flex: 0 1 auto;
-    color: #b91c1c;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 110px;
-}
-/* Цветная плашка-номер связи: рисуется внутри overlay, поверх рамки */
-.sc-block-link-badge {
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 6px;
-    border-radius: 999px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 22px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,.25);
-    pointer-events: auto;
-    cursor: pointer;
-    z-index: 5;
-    user-select: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-}
-.sc-block-link-badge--stale {
-    border: 1px dashed rgba(0,0,0,.4);
-    opacity: .85;
-}
-.sc-block-link-badge--manual .sc-block-link-badge__m {
-    font-size: 9px;
-    opacity: .8;
-    margin-left: 1px;
-}
-.sc-block-link-badge--inline {
-    position: static;
-    box-shadow: none;
-    cursor: default;
-}
-/* Компактная панель выбранной активной связи (заменяет таблицу) */
-.sc-active-link-panel {
-    display: inline-flex;
-    align-items: center;
-}
-
-/* ─── Stage Comparison v2 ──────────────────────────────────────────────── */
-.sc-viewer__pane { scroll-behavior: auto; }
-.sc-viewer__pane--panning,
-.sc-viewer__pane--panning * { cursor: grabbing !important; user-select: none; }
-/* MD enrichment viewer: подсветка строк по типу блока */
-.sc-md-content {
-  padding: 12px;
-  font-size: 12px;
-  line-height: 1.5;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
-  color: #1f2937;
-}
-.sc-md-line { white-space: pre-wrap; word-break: break-word; }
-.sc-md-line.sc-md-page  { background: #fef08a; font-weight: 600; }   /* ## СТРАНИЦА — жёлтый */
-.sc-md-line.sc-md-text  { background: #bbf7d0; font-weight: 600; }   /* ### BLOCK [TEXT] — зелёный */
-.sc-md-line.sc-md-image { background: #fecaca; font-weight: 600; }   /* ### Графический блок / [IMAGE] — красный */
-.sc-md-page-section {
-  box-sizing: border-box;
-  display: flow-root;
-  position: relative;
-  padding-bottom: 18px;
-  border-bottom: 1px dashed #cbd5e1;
-}
-.sc-md-page-section:last-child { border-bottom: none; }
-.sc-md-page-section--preamble { border-bottom-style: solid; }
-.sc-md-page-section--blank {
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(241, 245, 249, .38),
-    rgba(241, 245, 249, .38) 10px,
-    rgba(248, 250, 252, .38) 10px,
-    rgba(248, 250, 252, .38) 20px
-  );
-}
-/* HTML-рендер enriched MD (через marked) */
-.sc-md-rendered {
-  padding: 14px 18px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: #1f2937;
-  word-break: break-word;
-}
-.sc-md-rendered h1, .sc-md-rendered h2, .sc-md-rendered h3,
-.sc-md-rendered h4 { margin: 14px 0 6px; line-height: 1.3; }
-.sc-md-rendered h2 { font-size: 16px; }
-.sc-md-rendered h3 { font-size: 14px; }
-.sc-md-rendered p { margin: 6px 0; }
-.sc-md-rendered ul, .sc-md-rendered ol { margin: 6px 0; padding-left: 22px; }
-.sc-md-rendered li { margin: 2px 0; }
-.sc-md-rendered table { border-collapse: collapse; margin: 10px 0; font-size: 12px; }
-.sc-md-rendered th, .sc-md-rendered td { border: 1px solid #d1d5db; padding: 4px 8px; text-align: left; }
-.sc-md-rendered th { background: #f1f5f9; }
-.sc-md-rendered code { background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
-.sc-md-rendered pre { background: #f8fafc; padding: 10px; border-radius: 4px; overflow: auto; }
-.sc-md-rendered pre code { background: none; padding: 0; }
-.sc-md-rendered img { max-width: 100%; height: auto; }
-.sc-md-rendered hr { border: none; border-top: 1px solid #e5e7eb; margin: 12px 0; }
-.sc-md-rendered blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid #cbd5e1; color: #475569; }
-/* Цветовая подсветка заголовков по типу блока (как в текстовом режиме) */
-.sc-md-rendered h2.sc-md-h-page  { background: #fef08a; padding: 4px 10px; border-radius: 4px; }
-.sc-md-rendered h3.sc-md-h-text  { background: #bbf7d0; padding: 4px 10px; border-radius: 4px; }
-.sc-md-rendered h3.sc-md-h-image { background: #fecaca; padding: 4px 10px; border-radius: 4px; }
-.sc-canvas-wrap img { max-width: none; -webkit-user-drag: none; user-select: none; }
-.sc-slot { display: flex; flex-direction: column; }
-.sc-slot > :first-child { flex-shrink: 0; }
-.sc-slot--highlight {
-  outline: 3px solid #f59e0b; outline-offset: 2px;
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
-}
-.sc-blank-page,
-.sc-slot-placeholder {
-    flex: 1 1 auto;
-    background: repeating-linear-gradient(
-        45deg, #f8fafc, #f8fafc 8px, #f1f5f9 8px, #f1f5f9 16px
-    );
-    display: flex; align-items: center; justify-content: center;
-}
-.sc-block-id {
-    position: absolute; top: 1px; left: 2px;
-    font-size: 10px; background: rgba(255,255,255,.85);
-    padding: 0 3px; border-radius: 2px; pointer-events: none;
-}
-/* legacy: окраска строк stale-таблицы на вкладке «Расхождения» */
-.sc-link-cross td { background: rgba(254,243,199,0.25); }
-
-/* Stage Comparison: shared modal styles (match-pair, create-pair, ...) */
-.sc-modal-backdrop {
-    position: fixed; inset: 0; z-index: 1000;
-    background: rgba(15, 23, 42, 0.45);
-    display: flex; align-items: flex-start; justify-content: center;
-    padding: 40px 20px; overflow: auto;
-}
-.sc-modal {
-    background: #fff; border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    max-height: calc(100vh - 80px); display: flex; flex-direction: column;
-}
-.sc-modal__header {
-    padding: 12px 16px; border-bottom: 1px solid #e5e7eb;
-    display: flex; align-items: center; justify-content: space-between;
-}
-.sc-modal__body { padding: 14px 16px; overflow: auto; }
-.sc-modal__body .btn-icon { background: transparent; border: 0; font-size: 18px; cursor: pointer; color: #6b7280; }
-
-/* ─── Stage Comparison v3 ──────────────────────────────────────────────── */
-.sc-pair-disabled td { opacity: .55; }
-/* Drag-and-drop reorder для строк в таблице пар */
-.sc-pair-row { transition: background-color 0.12s, transform 0.12s; }
-.sc-pair-row.sc-pair-dragging  { opacity: .45; }
-.sc-pair-row.sc-pair-drag-over { background-color: #eef2ff; box-shadow: inset 0 2px 0 #4f46e5; }
-/* Компактные строки таблицы пар — та же плотность, что у строк-карточек на
-   вкладке «Отчёт» (там вертикальный padding 5px). Inline padding:8px на ячейках
-   перебивается через !important. */
-.sc-pair-row > td { padding-top: 4px !important; padding-bottom: 4px !important; }
-/* Live-pulse точка для индикатора «идёт обработка» */
-@keyframes sc-pulse-kf {
-    0%   { transform: scale(1);   opacity: 1;   box-shadow: 0 0 0 0 rgba(79,70,229,.45); }
-    70%  { transform: scale(1.2); opacity: .7;  box-shadow: 0 0 0 8px rgba(79,70,229,0);   }
-    100% { transform: scale(1);   opacity: 1;   box-shadow: 0 0 0 0 rgba(79,70,229,0);     }
-}
-.sc-pulse { animation: sc-pulse-kf 1.6s ease-in-out infinite; }
-
-/* Inline-match: клик по имени правого PDF → выпадающий popover */
-.sc-pair-right-name {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 6px; border-radius: 4px;
-    cursor: pointer; transition: background-color 0.1s;
-}
-.sc-pair-right-name:hover { background-color: #eef2ff; }
-.sc-pair-right-caret { color: #6366f1; font-size: 11px; opacity: .55; }
-.sc-pair-right-name:hover .sc-pair-right-caret { opacity: 1; }
-
-.sc-match-popover {
-    position: absolute; top: 100%; left: 0; z-index: 100;
-    min-width: 360px; max-width: 520px;
-    margin-top: 2px;
-    background: #fff;
-    border: 1px solid #c7d2fe;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.12);
-    font-family: monospace;
-    font-size: 12px;
-}
-.sc-match-popover__header { padding: 8px; border-bottom: 1px solid #eef2ff; }
-.sc-match-popover__list { max-height: 280px; overflow-y: auto; padding: 4px 0; }
-.sc-match-popover__item {
-    padding: 6px 12px; cursor: pointer;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.sc-match-popover__item:hover { background-color: #eef2ff; }
-.sc-match-popover__item--active { background-color: #ddd6fe; font-weight: 600; }
-.sc-match-popover__item--current { background-color: #f3f4f6; font-style: italic; }
-.sc-match-popover__item--current.sc-match-popover__item--active { background-color: #ddd6fe; }
-.sc-match-popover__item--detach { color: #b91c1c; font-style: italic; border-bottom: 1px solid #eef2ff; }
-.sc-match-popover__actions {
-    display: flex; gap: 6px; justify-content: flex-end;
-    padding: 8px; border-top: 1px solid #eef2ff;
-    font-family: inherit;
-}
-/* Per-pane icon-toolbar над PDF-окнами (Карта листов удалена) */
-.sc-pane-toolbar .sc-pane-icon-btn {
-    min-width: 30px; padding: 2px 8px; font-size: 14px; line-height: 1.1;
-}
-.sc-pane-toolbar .sc-pane-icon-btn:disabled { opacity: .45; cursor: not-allowed; }
-
-/* ─── Text LLM diff (Claude Sonnet) ─────────────────────────────────────── */
-.sc-text-llm-status { background: #e5e7eb; color: #374151; }
-.sc-text-llm-status--done { background: #dcfce7; color: #166534; }
-.sc-text-llm-status--disabled,
-.sc-text-llm-status--blocked { background: #e0f2fe; color: #075985; }
-.sc-text-llm-status--provider_not_available,
-.sc-text-llm-status--missing_md,
-.sc-text-llm-status--too_large,
-.sc-text-llm-status--error,
-.sc-text-llm-status--timeout { background: #fee2e2; color: #991b1b; }
-.sc-text-llm-status--not_run { background: #fef3c7; color: #92400e; }
-
-.sc-text-llm-importance { background: #e5e7eb; color: #374151; }
-.sc-text-llm-importance--high { background: #fee2e2; color: #991b1b; }
-.sc-text-llm-importance--medium { background: #fef3c7; color: #92400e; }
-.sc-text-llm-importance--low { background: #e0f2fe; color: #075985; }
-
-.sc-text-llm-card { border-left-width: 3px !important; }
-.sc-text-llm-card--sev-high { border-left-color: #dc2626; }
-.sc-text-llm-card--sev-medium { border-left-color: #f59e0b; }
-.sc-text-llm-card--sev-low { border-left-color: #9ca3af; }
-
-.sc-text-llm-pill--sev-high { background: #fee2e2; color: #991b1b; }
-.sc-text-llm-pill--sev-medium { background: #fef3c7; color: #92400e; }
-.sc-text-llm-pill--sev-low { background: #e5e7eb; color: #374151; }
-.sc-text-llm-pill--type { background: #ede9fe; color: #6d28d9; }
-.sc-text-llm-pill--cat { background: #e0f2fe; color: #075985; }
-.sc-slot-placeholder {
-    border-top: 1px dashed #e5e7eb;
-    color: #94a3b8;
-    text-align: center;
-}
-
-/* ─── Stage Comparison v4: report tab ──────────────────────────────────── */
-.sc-pill-type, .sc-pill-status, .sc-pill-sev {
-    display: inline-block; padding: 1px 6px; border-radius: 8px;
-    font-size: 11px; font-weight: 500;
-}
-.sc-pill-type { background: #f3f4f6; color: #374151; }
-.sc-pill-status-new          { background: #dbeafe; color: #1d4ed8; }
-.sc-pill-status-needs_review { background: #fef3c7; color: #92400e; }
-.sc-pill-status-accepted     { background: #d1fae5; color: #047857; }
-.sc-pill-status-rejected     { background: #fee2e2; color: #991b1b; }
-.sc-pill-status-resolved     { background: #e5e7eb; color: #4b5563; }
-.sc-pill-status-ignored      { background: #f3f4f6; color: #9ca3af; }
-.sc-pill-sev-high   { background: #fee2e2; color: #991b1b; }
-.sc-pill-sev-medium { background: #fef3c7; color: #92400e; }
-.sc-pill-sev-low    { background: #dbeafe; color: #1d4ed8; }
-.sc-pill-sev-unknown{ background: #f3f4f6; color: #6b7280; }
-
-.sc-finding-row:hover td { background: #f8fafc; }
-.sc-finding-active td { background: #eff6ff !important; }
-.sc-finding-row.sc-sev-high   td:first-child { box-shadow: inset 3px 0 0 #b91c1c; }
-.sc-finding-row.sc-sev-medium td:first-child { box-shadow: inset 3px 0 0 #b45309; }
-.sc-finding-row.sc-sev-low    td:first-child { box-shadow: inset 3px 0 0 #1d4ed8; }
-
-/* Go-to-place: временная подсветка элемента (Задача 6) */
-@keyframes sc-flash-pulse {
-    0%   { box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.85); background-color: rgba(251, 191, 36, 0.25); }
-    60%  { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.55); background-color: rgba(251, 191, 36, 0.15); }
-    100% { box-shadow: 0 0 0 0   rgba(251, 191, 36, 0.0);  background-color: transparent; }
-}
-.sc-flash-highlight {
-    animation: sc-flash-pulse 2.5s ease-out 1;
-    outline: 2px solid #f59e0b;
-    outline-offset: 1px;
-    border-radius: 4px;
-    z-index: 30;
-    position: relative;
-    transition: background-color .2s;
-}
-
-/* Сессионные предупреждения (Задача 9) */
-.sc-warnings { background:#fff7ed; border:1px solid #fdba74; border-radius:6px; padding:10px 12px; margin-bottom:10px; font-size:12px; }
-.sc-warnings__title { color:#9a3412; font-weight:600; margin-bottom:6px; }
-.sc-warnings__item { padding:3px 0; display:flex; gap:8px; align-items:flex-start; }
-.sc-warnings__sev-high   { color:#b91c1c; font-weight:600; }
-.sc-warnings__sev-medium { color:#b45309; font-weight:600; }
-.sc-warnings__sev-low    { color:#1d4ed8; }
-
-/* Сгруппированные findings (Задача 7) */
-.sc-finding-row.sc-finding-child td:first-child { padding-left: 18px; }
-.sc-finding-row.sc-finding-parent td:nth-child(3)::before {
-    content: "▼ ";
-    color: #6b7280;
-    font-size: 10px;
-}
-
-/* ─── Unified Excel-style table (Сравнение стадий → Расхождения) ─── */
-.sc-unified-table-wrap { overflow-x: auto; }
-.sc-unified-table { font-size: 12px; }
-.sc-unified-table td { padding: 8px 10px; vertical-align: top; }
-.sc-unified-table th { padding: 6px 10px; }
-/* Более контрастная сетка таблицы расхождений */
-.sc-unified-table th,
-.sc-unified-table td { border: 1px solid var(--grid-line); }
-
-/* Sortable column headers */
-.sc-unified-table th.sc-th-sortable { cursor: pointer; user-select: none; }
-.sc-unified-table th.sc-th-sortable:hover { background: var(--card-bg); }
-.sc-unified-table th.sc-th-active { background: var(--teal-light); color: var(--teal); }
-.sc-unified-table .sc-sort-ind { display: inline-block; min-width: 10px; margin-left: 2px; font-size: 9px; opacity: 0.75; }
-
-/* Severity row markers (как в findings-table, но через классы sc-row) */
-.sc-row--high td:first-child   { border-left: 3px solid var(--red); }
-.sc-row--medium td:first-child { border-left: 3px solid var(--orange); }
-.sc-row--low td:first-child    { border-left: 3px solid var(--blue); }
-.sc-row--unknown td:first-child{ border-left: 3px solid var(--text3); }
-
-/* №-cell: номер + severity-чип под ним */
-.sc-cell-no { text-align: center; }
-.sc-cell-no__num { font-weight: 700; opacity: 0.7; margin-bottom: 4px; font-size: 11px; }
-.sc-sev-chip { display: inline-block; max-width: 100%; box-sizing: border-box; padding: 1px 7px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; text-transform: lowercase; white-space: nowrap; line-height: 1.25; text-align: center; }
-.sc-sev-chip--high    { background: var(--red-light);   color: var(--red);    border: 1px solid rgba(212,24,58,0.2); }
-.sc-sev-chip--medium  { background: var(--amber-light); color: var(--amber);  border: 1px solid rgba(196,115,0,0.2); }
-.sc-sev-chip--low     { background: var(--blue-light);  color: var(--blue);   border: 1px solid rgba(20,96,212,0.2); }
-.sc-sev-chip--unknown { background: var(--card2-bg);    color: var(--text2);  border: 1px solid var(--border2); }
-
-/* Место (sheet + page + pair) */
-.sc-cell-place { font-size: 11px; line-height: 1.4; }
-.sc-place-sheet { color: var(--text); }
-.sc-place-page { opacity: 0.7; margin-top: 2px; }
-.sc-place-pair {
-    margin-top: 4px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 10px;
-    opacity: 0.55;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-/* Изменение */
-.sc-change-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
-.sc-chip { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 10px; line-height: 1.5; white-space: nowrap; }
-.sc-chip--manual  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.sc-chip--source  { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
-.sc-chip--nolinks { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-/* Источник изменения, перенесённый в колонку «№» — компактный, может переноситься */
-.sc-chip--source-in-no { margin-top: 4px; max-width: 100%; white-space: normal; font-size: 9px; padding: 1px 6px; text-align: center; }
-/* Отчёт: разделитель перед расхождениями, согласованными только в одном виде (V1/V2) */
-.sc-report-unique-divider td { background: #f8fafc; color: #64748b; font-size: 11px; font-weight: 600; padding: 6px 12px; border-top: 2px solid #e2e8f0; }
-.sc-row--unique { background: #fcfcfd; }
-.sc-change-title { font-weight: 600; font-size: 13px; line-height: 1.35; color: var(--text); }
-.sc-change-summary { opacity: 0.85; margin-top: 4px; line-height: 1.45; }
-.sc-change-details { margin-top: 6px; font-size: 11px; opacity: 0.85; }
-.sc-change-details summary { cursor: pointer; opacity: 0.7; }
-.sc-change-details__grid { margin-top: 4px; display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; }
-.sc-change-details__grid .muted { opacity: 0.6; }
-
-/* Было / Стало — цветные ячейки */
-.sc-unified-table .sc-col-was    { background: #fef2f2; color: #991b1b; }
-.sc-unified-table .sc-col-became { background: #ecfdf5; color: #065f46; }
-.sc-cell-was {
-    background: #fef2f2;
-    border-left: 2px solid #fca5a5 !important;
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.45;
-}
-.sc-cell-became {
-    background: #ecfdf5;
-    border-left: 2px solid #6ee7b7 !important;
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.45;
-}
-
-/* Влияние */
-.sc-unified-table .sc-col-impact { background: #fefce8; color: #713f12; }
-.sc-cell-impact { background: #fefce8; line-height: 1.45; }
-.sc-impact-text { white-space: pre-wrap; word-break: break-word; }
-.sc-impact-text.muted { opacity: 0.5; }
-.sc-impact-cost { margin-top: 4px; font-size: 11px; opacity: 0.75; }
-
-/* Перейти к месту — кнопка-иконка */
-.sc-cell-goto { text-align: center; padding: 4px !important; }
-.sc-goto-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px; height: 26px;
-    background: transparent;
+/* ─── Documentation comparison: clean shell + vector PDF viewer ─── */
+.sc-shell__header { margin-bottom: 12px; }
+.sc-shell__header p { margin: 5px 0 0; color: var(--text3); }
+.sc-steps-bar { margin-bottom: 16px; }
+.sc-shell { display: grid; gap: 16px; }
+.sc-shell-card {
+    padding: 18px;
     border: 1px solid var(--border2);
-    border-radius: 6px;
-    color: var(--text2);
-    cursor: pointer;
-    transition: all 0.15s;
+    border-radius: var(--radius);
+    background: var(--surface, #fff);
 }
-.sc-goto-btn:hover { background: var(--teal-light); border-color: var(--teal-border); color: var(--teal); }
-.sc-goto-btn:active { transform: scale(0.95); }
-
-/* Hover на строке — не подсвечиваем спец-ячейки слишком сильно */
-.sc-unified-table tbody tr:hover .sc-cell-was    { background: #fee2e2; }
-.sc-unified-table tbody tr:hover .sc-cell-became { background: #d1fae5; }
-.sc-unified-table tbody tr:hover .sc-cell-impact { background: #fef9c3; }
-
-/* ─── Grouped / high-value findings (Сгруппированные расхождения) ─── */
-
-/* View-mode toggle row */
-.sc-unified-mode { user-select: none; }
-.sc-grouped-hidden-count { font-weight: 600; }
-
-/* Formal / escalated / rollup chips (extra colors on top of .sc-chip*) */
-.sc-chip--formal    { background: var(--card2-bg); color: var(--text2); border: 1px solid var(--border2); }
-.sc-chip--escalated { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.sc-chip--rollup    { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
-
-/* Direction / cost-direction chips in «Тема / значимость» column */
-.sc-grouped-dir-chip,
-.sc-grouped-cost-chip {
-    display: inline-block;
-    padding: 1px 6px;
-    border-radius: 999px;
-    font-size: 9px;
-    line-height: 1.5;
-    white-space: nowrap;
+.sc-shell-card__head,
+.sc-upload-stage,
+.sc-pair-list__row,
+.sc-viewer-toolbar,
+.sc-vector-pane-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
-.sc-grouped-dir-chip--complication  { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-.sc-grouped-dir-chip--simplification { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-.sc-grouped-dir-chip--neutral       { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
-.sc-grouped-dir-chip--unknown       { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
-.sc-grouped-cost-chip--increase     { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-.sc-grouped-cost-chip--decrease     { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-.sc-grouped-cost-chip--unknown      { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
-
-/* Severity chips for grouped: добавляем 'formal' цвет (нейтральный серый) */
-.sc-sev-chip--formal { background: var(--card2-bg); color: var(--text2); border: 1px solid var(--border2); }
-
-/* Row for formal-grouped — нейтральный левый border */
-.sc-row--formal td:first-child { border-left: 3px solid var(--text3); }
-
-/* Expandable evidence row */
-.sc-row-evidence td { background: #fafafa; }
-.sc-grouped-evidence-cell {
-    padding: 8px 10px;
+.sc-shell-card__head { justify-content: space-between; margin-bottom: 16px; }
+.sc-shell-card__head > div,
+.sc-upload-stage > div,
+.sc-vector-pane-head > div:first-child { display: grid; gap: 3px; }
+.sc-shell-kicker {
+    color: var(--text3);
     font-size: 11px;
-    line-height: 1.5;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.sc-shell-muted { color: var(--text3); font-size: 12px; }
+.sc-upload-grid,
+.sc-source-grid,
+.sc-vector-viewer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.sc-upload-stage {
+    justify-content: space-between;
+    padding: 14px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+}
+.sc-upload-stage small { color: var(--text3); }
+.sc-upload-button { position: relative; overflow: hidden; }
+.sc-upload-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
+.sc-upload-button.is-disabled { opacity: .55; pointer-events: none; }
+.sc-shell-error {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid #ef4444;
+    border-radius: var(--radius);
+    color: #b91c1c;
+    background: #fef2f2;
+}
+.sc-source-grid label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; }
+.sc-source-list { display: grid; gap: 5px; margin: 10px 0 0; padding: 0; list-style: none; }
+.sc-source-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
     color: var(--text2);
+    font-size: 12px;
 }
-.sc-grouped-evidence-cell ul li { margin: 1px 0; }
-.sc-grouped-evidence-cell code { background: #f3f4f6; padding: 0 4px; border-radius: 3px; }
-.sc-grouped-variants { margin-bottom: 6px; }
+.sc-source-list small { color: var(--text3); }
+.sc-shell-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.sc-pair-list { display: grid; gap: 8px; }
+.sc-pair-list__row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto;
+    padding: 9px 10px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+}
+.sc-pair-list__arrow { color: var(--text3); }
+.sc-viewer-toolbar {
+    padding: 10px 12px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface, #fff);
+}
+.sc-viewer-toolbar__spacer { flex: 1; }
+.sc-vector-pane-wrap { min-width: 0; border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; }
+.sc-vector-pane-head { justify-content: space-between; padding: 10px 12px; background: var(--surface, #fff); }
+.sc-vector-pane-head span { color: var(--text3); font-size: 11px; }
+.sc-vector-pane-head strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-page-controls { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+.sc-vector-pane {
+    height: min(72vh, 900px);
+    overflow: auto;
+    background: #d8dde5;
+}
+.sc-vector-pane img { display: block; max-width: none; height: auto; margin: 0 auto; background: #fff; }
+.sc-empty-state {
+    padding: 24px;
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius);
+    color: var(--text3);
+    text-align: center;
+}
+.sc-empty-state--large { min-height: 220px; display: grid; place-items: center; }
 
-/* Compact «Where found» cell (reused class .sc-place-page color) */
-.sc-grouped-table tbody tr.sc-row-evidence:hover td {
-    background: #f3f4f6;
+@media (max-width: 900px) {
+    .sc-upload-grid,
+    .sc-source-grid,
+    .sc-vector-viewer { grid-template-columns: 1fr; }
+    .sc-vector-pane { height: 60vh; }
 }
-
-/* ─── V2 режим вкладки «Расхождения» (pair-scoped ручная верификация) ─── */
-/* Карточный вид V2 переиспользует классы классической таблицы расхождений
-   (sc-row / sc-cell-* / sc-sev-chip / sc-goto-btn / row-accepted|rejected),
-   поэтому здесь только V2-специфичное: чип качества + блок ревью в строке. */
-.sc-v2 .sc-input {
-    padding: 3px 6px; border: 1px solid var(--border, #d1d5db); border-radius: 5px;
-    background: var(--bg, #fff); color: var(--text, #0f172a);
-}
-.sc-v2-quality {
-    display: inline-block; padding: 1px 6px; border-radius: 5px; font-size: 10px; font-weight: 600;
-}
-.sc-v2-quality-good               { background: #dcfce7; color: #166534; }
-.sc-v2-quality-needs_human_review { background: #fef9c3; color: #854d0e; }
-.sc-v2-quality-questionable       { background: #fee2e2; color: #b91c1c; }
-/* Ревью инженера прямо в ячейке «Изменение» — статус + комментарий */
-.sc-v2-review-inline {
-    display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
-    margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border, #e2e8f0);
-}
-.sc-v2-status  { font-size: 11px; padding: 2px 6px; max-width: 180px; }
-.sc-v2-comment { font-size: 11px; padding: 2px 6px; flex: 1; min-width: 120px; }
-.sc-v2-status--confirmed           { border-color: #22c55e; color: #15803d; font-weight: 600; }
-.sc-v2-status--rejected            { border-color: #ef4444; color: #b91c1c; font-weight: 600; }
-.sc-v2-status--needs_clarification { border-color: #f59e0b; color: #92400e; }
-.sc-v2-status--cost_impact         { border-color: #6366f1; color: #4338ca; }
 
 /* ─── Upload folder from computer (browser folder upload) ─── */
 .upload-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
@@ -5024,162 +4488,3 @@ tr.row-rejected td.sc-cell-goto {
 .block-md-mode { font: inherit; font-size: 11.5px; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: background .12s, color .12s, border-color .12s; }
 .block-md-mode:hover { border-color: var(--accent-cyan, #1f9ec4); color: var(--text); }
 .block-md-mode.is-active { background: var(--accent-cyan, #1f9ec4); border-color: var(--accent-cyan, #1f9ec4); color: #fff; font-weight: 600; }
-.sc-stage-upload-btn {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.sc-stage-upload-group {
-    display: inline-flex;
-    align-items: stretch;
-    gap: 4px;
-}
-
-.sc-stage-upload-btn input[type="file"] {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.sc-stage-upload-btn--disabled {
-    opacity: 0.55;
-    pointer-events: none;
-    cursor: not-allowed;
-}
-
-.sc-stage-folder-modal {
-    width: min(1040px, 94vw);
-    max-width: 1040px;
-    max-height: 88vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.sc-stage-folder-modal__subtitle {
-    margin-top: 4px;
-    color: var(--text-muted);
-    font-size: 12px;
-}
-
-.sc-stage-folder-modal__body {
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.sc-stage-folder-summary {
-    display: grid;
-    grid-template-columns: 2fr 1fr 2fr;
-    gap: 10px;
-}
-
-.sc-stage-folder-summary > div {
-    padding: 9px 11px;
-    border: 1px solid var(--border2);
-    border-radius: 7px;
-    background: var(--card2-bg);
-    min-width: 0;
-}
-
-.sc-stage-folder-summary span,
-.sc-stage-folder-summary strong {
-    display: block;
-}
-
-.sc-stage-folder-summary span {
-    color: var(--text-muted);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    margin-bottom: 3px;
-}
-
-.sc-stage-folder-summary strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 12px;
-}
-
-.sc-stage-folder-selectbar,
-.sc-stage-folder-modal__footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 12px;
-}
-
-.sc-stage-folder-table-wrap {
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    overflow: auto;
-    max-height: 52vh;
-}
-
-.sc-stage-folder-progress,
-.sc-stage-folder-error {
-    padding: 9px 11px;
-    border-radius: 7px;
-    font-size: 12px;
-}
-
-.sc-stage-folder-progress {
-    color: var(--text);
-    background: rgba(0, 143, 126, .1);
-    border: 1px solid rgba(0, 143, 126, .3);
-}
-
-.sc-stage-folder-error {
-    color: var(--red);
-    background: var(--red-light);
-    border: 1px solid rgba(212, 24, 58, .25);
-}
-
-.sc-stage-folder-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-}
-
-.sc-stage-folder-table th,
-.sc-stage-folder-table td {
-    padding: 8px 9px;
-    border-bottom: 1px solid var(--border);
-    text-align: left;
-    vertical-align: middle;
-}
-
-.sc-stage-folder-table th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: var(--card2-bg);
-    color: var(--text-muted);
-    font-size: 10px;
-    text-transform: uppercase;
-}
-
-.sc-stage-folder-table tr.is-selected td {
-    background: rgba(0, 143, 126, .07);
-}
-
-.sc-stage-folder-ready {
-    color: var(--green);
-    font-weight: 700;
-}
-
-.sc-stage-folder-modal__footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
-    justify-content: flex-end;
-}
-
-@media (max-width: 760px) {
-    .sc-stage-folder-summary { grid-template-columns: 1fr; }
-}
