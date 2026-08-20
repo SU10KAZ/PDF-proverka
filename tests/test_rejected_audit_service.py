@@ -294,6 +294,68 @@ def test_collect_rejected_cases_uses_moscow_half_open_month(tmp_path, monkeypatc
     assert inventory["audit_contract_version"] == service.AUDIT_CONTRACT_VERSION
 
 
+def test_collect_rejected_cases_accepts_an_inclusive_date_slice(tmp_path, monkeypatch):
+    root = tmp_path / "projects_v2"
+    decisions = [
+        {
+            "item_id": "F-001",
+            "item_type": "finding",
+            "decision": "rejected",
+            "rejection_reason": "До среза",
+            "timestamp": "2026-08-09T20:59:59Z",
+        },
+        {
+            "item_id": "F-002",
+            "item_type": "finding",
+            "decision": "rejected",
+            "rejection_reason": "Начало среза",
+            "timestamp": "2026-08-09T21:00:00Z",
+        },
+        {
+            "item_id": "F-003",
+            "item_type": "finding",
+            "decision": "rejected",
+            "rejection_reason": "Последняя секунда среза",
+            "timestamp": "2026-08-16T20:59:59Z",
+        },
+        {
+            "item_id": "F-004",
+            "item_type": "finding",
+            "decision": "rejected",
+            "rejection_reason": "После среза",
+            "timestamp": "2026-08-16T21:00:00Z",
+        },
+    ]
+    findings = [
+        {"id": f"F-{number:03d}", "problem": f"Проблема {number}"}
+        for number in range(1, 5)
+    ]
+    _write_project(root, decisions, findings)
+    monkeypatch.setattr(
+        service,
+        "build_case_context",
+        lambda *_args, **_kwargs: _minimal_context(text="Контекст документа"),
+    )
+
+    cases, inventory = service.collect_rejected_cases(
+        month="2026-08",
+        projects_v2_root=root,
+        timezone_name="Europe/Moscow",
+        date_from="2026-08-10",
+        date_to="2026-08-16",
+    )
+
+    assert [case["item_id"] for case in cases] == ["F-002", "F-003"]
+    assert inventory["interval"] == {
+        "from": "2026-08-10T00:00:00+03:00",
+        "to_exclusive": "2026-08-17T00:00:00+03:00",
+        "from_utc": "2026-08-09T21:00:00+00:00",
+        "to_exclusive_utc": "2026-08-16T21:00:00+00:00",
+    }
+    assert inventory["filters"]["date_from"] == "2026-08-10"
+    assert inventory["filters"]["date_to"] == "2026-08-16"
+
+
 def test_collect_rejected_cases_uses_only_canonical_reviews_and_exclusions(
     tmp_path,
     monkeypatch,
