@@ -1,15 +1,18 @@
 # Agent development safety
 
-This repository's primary checkout at `/home/coder/projects/PDF-proverka` is
-production/deployment source and must remain read-only during coding work.
+Development happens directly in `/home/coder/projects/PDF-proverka` on `main`,
+in small isolated commits. No per-task feature branches, no per-task Git
+worktrees.
 
-Before changing files, run:
+This checkout is also the deployment source, so keep it releasable:
 
-```bash
-python3 scripts/development_worktree_guard.py --intent mutate
-```
-
-If it blocks, preserve the current work and move development to
-`.claude/worktrees/<task>` or another separate Git worktree. Do not reset,
-clean, stash, commit or otherwise modify the production checkout to work
-around the guard. Read-only inspection remains permitted.
+- one logical change = one commit on `main`; stage only the files that belong
+  to the task (never `git add -A`);
+- do not leave long-lived uncommitted work in the tree — a dirty tree blocks
+  `scripts/production_source_guard.py` and therefore blocks release builds;
+- the live portal is not served from this tree (it runs from
+  `/home/coder/auditmanager/current`), so editing files here never changes
+  production by itself — only a new release does;
+- before a release, the commit must be reachable from `origin/main`; that is
+  still enforced by `scripts/production_source_guard.py` (see
+  `docs/production_source_guard.md`).

@@ -241,13 +241,19 @@ CAD-шрифты (ISOCPEUR/GOST из AutoCAD/BIM) → текст из MD-фай�
 
 Все инструменты pre-approved в `.claude/settings.json`. Работай как конвейер, не как ассистент.
 
-### Защита production checkout
+### Где идёт разработка
 
-`/home/coder/projects/PDF-proverka` — только production/deployment source, а не
-mutable worktree для разработки. Перед любой записью запусти
-`python3 scripts/development_worktree_guard.py --intent mutate`. Если guard
-блокирует операцию, сохрани работу и используй отдельный Git worktree в
-`.claude/worktrees/<task>`. Read-only inspection production root разрешён.
+Работаем прямо в `/home/coder/projects/PDF-proverka` на ветке `main`
+маленькими изолированными коммитами. Отдельные feature-ветки и worktree под
+каждую задачу не создаём.
+
+Этот же чекаут — источник выкатки, поэтому держи его пригодным к релизу: один
+логический change = один коммит в `main`, в индекс кладём только файлы задачи
+(никогда `git add -A`), надолго незакоммиченную работу в дереве не оставляем —
+грязное дерево блокирует `scripts/production_source_guard.py`, а значит и
+сборку релиза. Живой портал работает не из этого дерева, а из
+`/home/coder/auditmanager/current`, поэтому правка файлов здесь сама по себе
+прод не меняет — меняет только новый релиз.
 
 | Ситуация | Действие |
 |----------|----------|
