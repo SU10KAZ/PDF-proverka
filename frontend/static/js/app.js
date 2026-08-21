@@ -11889,16 +11889,22 @@ const app = createApp({
         const scContinuousLoading = reactive({left: {}, right: {}});
         const scContinuousError = reactive({left: {}, right: {}});
         const scContinuousDims = reactive({left: {}, right: {}});
+        const scContinuousSignatures = reactive({left: {}, right: {}});
+        const scContinuousTiles = reactive({left: {}, right: {}});
         const scViews = {left: {zoom: 1, cx: 0.5, cy: 0.5}, right: {zoom: 1, cx: 0.5, cy: 0.5}};
         const scPageDims = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
         const scPaneSize = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
         const scPageInfoRequest = {left: null, right: null};
         const scContinuousRequests = {left: new Map(), right: new Map()};
         const scTileRefreshTimer = {left: 0, right: 0};
-        const scContinuousScrollOrigin = {left: false, right: false};
+        const scContinuousTileRefreshTimer = {left: 0, right: 0};
+        const scContinuousProgrammaticTarget = {left: null, right: null};
+        const scContinuousProgrammaticTimer = {left: 0, right: 0};
+        const scContinuousPageFromScroll = {left: null, right: null};
         const scContinuousScrollFrame = {left: 0, right: 0};
         let scViewFrame = 0;
         let scPanState = null;
+        let scContinuousPanState = null;
         let scPanBoostTimer = 0;
 
         const scSelectedObject = computed(() =>
@@ -12862,9 +12868,21 @@ const app = createApp({
             scContinuousError.right = {};
             scContinuousDims.left = {};
             scContinuousDims.right = {};
+            scContinuousSignatures.left = {};
+            scContinuousSignatures.right = {};
+            scContinuousTiles.left = {};
+            scContinuousTiles.right = {};
             for (const side of ['left', 'right']) {
                 for (const controller of scContinuousRequests[side].values()) controller.abort();
                 scContinuousRequests[side].clear();
+                scContinuousProgrammaticTarget[side] = null;
+                scContinuousPageFromScroll[side] = null;
+                if (scContinuousTileRefreshTimer[side]) clearTimeout(scContinuousTileRefreshTimer[side]);
+                scContinuousTileRefreshTimer[side] = 0;
+                if (scContinuousProgrammaticTimer[side]) clearTimeout(scContinuousProgrammaticTimer[side]);
+                scContinuousProgrammaticTimer[side] = 0;
+                if (scContinuousScrollFrame[side]) cancelAnimationFrame(scContinuousScrollFrame[side]);
+                scContinuousScrollFrame[side] = 0;
             }
             scCurrentPage.left = 1;
             scCurrentPage.right = 1;
@@ -13080,6 +13098,16 @@ const app = createApp({
             scContinuousLoading[side] = {};
             scContinuousError[side] = {};
             scContinuousDims[side] = {};
+            scContinuousSignatures[side] = {};
+            scContinuousTiles[side] = {};
+            scContinuousProgrammaticTarget[side] = null;
+            scContinuousPageFromScroll[side] = null;
+            if (scContinuousTileRefreshTimer[side]) clearTimeout(scContinuousTileRefreshTimer[side]);
+            scContinuousTileRefreshTimer[side] = 0;
+            if (scContinuousProgrammaticTimer[side]) clearTimeout(scContinuousProgrammaticTimer[side]);
+            scContinuousProgrammaticTimer[side] = 0;
+            if (scContinuousScrollFrame[side]) cancelAnimationFrame(scContinuousScrollFrame[side]);
+            scContinuousScrollFrame[side] = 0;
         }
 
         function scOpenSheetMapRow(row) {
@@ -13977,8 +14005,8 @@ const app = createApp({
 
         function scZoomBy(multiplier) {
             if (scViewMode.value === 'continuous') {
-                scContinuousZoom.value = Math.min(4, Math.max(0.5, scContinuousZoom.value * multiplier));
-                scZoomPercent.value = Math.round(scContinuousZoom.value * 100);
+                const side = scViewerEmpty.left && !scViewerEmpty.right ? 'right' : 'left';
+                scContinuousZoomAt(side, multiplier, null, null);
                 return;
             }
             scMeasurePane('left');
@@ -13986,6 +14014,17 @@ const app = createApp({
         }
 
         function scZoomFit() {
+            if (scViewMode.value === 'continuous') {
+                scContinuousZoom.value = 1;
+                scZoomPercent.value = 100;
+                nextTick(() => {
+                    for (const side of ['left', 'right']) {
+                        scScrollContinuousToPage(side, scCurrentPage[side]);
+                        scScheduleContinuousTileRefresh(side, true);
+                    }
+                });
+                return;
+            }
             for (const side of ['left', 'right']) {
                 scMeasurePane(side);
                 const view = scViews[side];
@@ -13993,17 +14032,16 @@ const app = createApp({
                 view.cx = 0.5;
                 view.cy = 0.5;
             }
-            scContinuousZoom.value = 1;
             scZoomPercent.value = 100;
-            if (scViewMode.value === 'paged') scScheduleView();
+            scScheduleView();
         }
 
         // 1:1 — один пункт PDF на один CSS-пиксель левой панели. Для листа A1 в
         // узкой панели это уже сильное увеличение, поэтому опора — левая сторона.
         function scZoomActualSize() {
             if (scViewMode.value === 'continuous') {
-                scContinuousZoom.value = 1;
-                scZoomPercent.value = 100;
+                const side = scViewerEmpty.left && !scViewerEmpty.right ? 'right' : 'left';
+                scContinuousZoomAt(side, 1 / scContinuousZoom.value, null, null);
                 return;
             }
             scMeasurePane('left');
@@ -14060,22 +14098,192 @@ const app = createApp({
             const dims = scContinuousDims[side][page];
             const ratio = dims && dims.w && dims.h ? `${dims.w} / ${dims.h}` : '1.414 / 1';
             return {
-                width: `${Math.round(scContinuousZoom.value * 100)}%`,
+                width: `${(scContinuousZoom.value * 100).toFixed(2)}%`,
                 aspectRatio: ratio,
             };
         }
 
-        function scScrollContinuousToPage(side, page) {
+        function scContinuousAnchorAt(side, clientX = null, clientY = null) {
             const pane = scContinuousPaneRefs[side];
             if (!pane || scViewerEmpty[side]) return;
+            const paneRect = pane.getBoundingClientRect();
+            const viewportX = Math.min(
+                pane.clientWidth,
+                Math.max(0, clientX == null ? pane.clientWidth / 2 : clientX - paneRect.left),
+            );
+            const viewportY = Math.min(
+                pane.clientHeight,
+                Math.max(0, clientY == null ? pane.clientHeight / 2 : clientY - paneRect.top),
+            );
+            const contentX = pane.scrollLeft + viewportX;
+            const contentY = pane.scrollTop + viewportY;
+            let chosen = null;
+            let nearestDistance = Infinity;
+            for (const sheet of pane.querySelectorAll('[data-sc-page]')) {
+                const top = sheet.offsetTop;
+                const bottom = top + sheet.offsetHeight;
+                if (contentY >= top && contentY <= bottom) {
+                    chosen = sheet;
+                    break;
+                }
+                const distance = contentY < top ? top - contentY : contentY - bottom;
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    chosen = sheet;
+                }
+            }
+            if (!chosen || !chosen.offsetWidth || !chosen.offsetHeight) return;
+            return {
+                page: Number(chosen.dataset.scPage),
+                x: Math.min(1, Math.max(0, (contentX - chosen.offsetLeft) / chosen.offsetWidth)),
+                y: Math.min(1, Math.max(0, (contentY - chosen.offsetTop) / chosen.offsetHeight)),
+                viewportX: pane.clientWidth ? viewportX / pane.clientWidth : 0.5,
+                viewportY: pane.clientHeight ? viewportY / pane.clientHeight : 0.5,
+            };
+        }
+
+        function scSetContinuousPanePosition(side, scrollLeft, scrollTop) {
+            const pane = scContinuousPaneRefs[side];
+            if (!pane) return;
+            pane.scrollLeft = Math.max(0, Number(scrollLeft) || 0);
+            pane.scrollTop = Math.max(0, Number(scrollTop) || 0);
+            scContinuousProgrammaticTarget[side] = {
+                left: pane.scrollLeft,
+                top: pane.scrollTop,
+            };
+            if (scContinuousProgrammaticTimer[side]) {
+                clearTimeout(scContinuousProgrammaticTimer[side]);
+            }
+            scContinuousProgrammaticTimer[side] = setTimeout(() => {
+                scContinuousProgrammaticTimer[side] = 0;
+                scContinuousProgrammaticTarget[side] = null;
+            }, 180);
+            scScheduleContinuousTileRefresh(side);
+        }
+
+        function scConsumeContinuousProgrammaticScroll(side, pane) {
+            const target = scContinuousProgrammaticTarget[side];
+            if (!target) return false;
+            const reached = Math.abs(pane.scrollLeft - target.left) < 2
+                && Math.abs(pane.scrollTop - target.top) < 2;
+            scContinuousProgrammaticTarget[side] = null;
+            if (scContinuousProgrammaticTimer[side]) {
+                clearTimeout(scContinuousProgrammaticTimer[side]);
+                scContinuousProgrammaticTimer[side] = 0;
+            }
+            return reached;
+        }
+
+        function scSetContinuousAnchor(side, page, anchor) {
+            const pane = scContinuousPaneRefs[side];
+            if (!pane || scViewerEmpty[side] || !anchor) return;
             const sheet = pane.querySelector(`[data-sc-page="${Number(page)}"]`);
             if (!sheet) return;
-            pane.scrollTop = Math.max(0, sheet.offsetTop - 8);
+            const viewportX = (Number(anchor.viewportX) || 0) * pane.clientWidth;
+            const viewportY = (Number(anchor.viewportY) || 0) * pane.clientHeight;
+            scSetContinuousPanePosition(
+                side,
+                sheet.offsetLeft + Math.min(1, Math.max(0, Number(anchor.x) || 0)) * sheet.offsetWidth
+                    - viewportX,
+                sheet.offsetTop + Math.min(1, Math.max(0, Number(anchor.y) || 0)) * sheet.offsetHeight
+                    - viewportY,
+            );
+        }
+
+        function scScrollContinuousToPage(side, page) {
+            scSetContinuousAnchor(side, page, {
+                x: 0.5, y: 0.5, viewportX: 0.5, viewportY: 0.5,
+            });
+        }
+
+        function scContinuousCounterpart(side, page) {
+            const sourceKey = side === 'left' ? 'leftPages' : 'rightPages';
+            const targetKey = side === 'left' ? 'rightPages' : 'leftPages';
+            const row = scSheetMapRows.value.find(item =>
+                (item[sourceKey] || []).map(Number).includes(Number(page))
+            );
+            if (row) {
+                const mapped = (row[targetKey] || []).map(Number).filter(Boolean);
+                return mapped.length ? mapped[0] : null;
+            }
+            const targetSide = side === 'left' ? 'right' : 'left';
+            const sourceCount = scPageCount(side);
+            const targetCount = scPageCount(targetSide);
+            if (!targetCount) return null;
+            if (sourceCount <= 1) return 1;
+            return Math.min(
+                targetCount,
+                Math.max(1, Math.round((Number(page) - 1) * (targetCount - 1) / (sourceCount - 1)) + 1),
+            );
+        }
+
+        function scSetContinuousPageFromScroll(side, page) {
+            const limited = Math.min(scPageCount(side) || 1, Math.max(1, Number(page) || 1));
+            if (limited === Number(scCurrentPage[side])) return;
+            scContinuousPageFromScroll[side] = limited;
+            scCurrentPage[side] = limited;
+        }
+
+        function scUpdateContinuousPages(side, page) {
+            scSetContinuousPageFromScroll(side, page);
+            scLinkEditorOpen.value = false;
+            if (!scSyncView.value) return null;
+            const targetSide = side === 'left' ? 'right' : 'left';
+            const targetPage = scContinuousCounterpart(side, page);
+            if (!targetPage) return null;
+            if (scViewerEmpty[targetSide]) scContinuousPageFromScroll[targetSide] = targetPage;
+            scSetViewerEmpty(targetSide, false);
+            scSetContinuousPageFromScroll(targetSide, targetPage);
+            return {side: targetSide, page: targetPage};
+        }
+
+        function scSyncContinuousAnchor(side, anchor) {
+            if (!scSyncView.value || !anchor) return;
+            const targetSide = side === 'left' ? 'right' : 'left';
+            const targetPage = scContinuousCounterpart(side, anchor.page);
+            if (!targetPage || scViewerEmpty[targetSide]) return;
+            scLoadContinuousWindow(targetSide, targetPage);
+            nextTick(() => scSetContinuousAnchor(targetSide, targetPage, anchor));
+        }
+
+        function scContinuousZoomAt(side, multiplier, clientX, clientY) {
+            const anchor = scContinuousAnchorAt(side, clientX, clientY);
+            if (anchor) {
+                const target = scUpdateContinuousPages(side, anchor.page);
+                if (target) scLoadContinuousWindow(target.side, target.page);
+            }
+            scContinuousZoom.value = Math.min(
+                SC_ZOOM_MAX,
+                Math.max(0.5, scContinuousZoom.value * multiplier),
+            );
+            scZoomPercent.value = Math.round(scContinuousZoom.value * 100);
+            nextTick(() => {
+                if (anchor) {
+                    scSetContinuousAnchor(side, anchor.page, anchor);
+                    scSyncContinuousAnchor(side, anchor);
+                }
+                scScheduleContinuousTileRefresh('left');
+                scScheduleContinuousTileRefresh('right');
+            });
         }
 
         function scSetContinuousPaneRef(side, element) {
+            const previous = scContinuousPaneRefs[side];
+            if (previous === element) return;
+            if (previous && previous.__scDetachContinuousViewer) {
+                previous.__scDetachContinuousViewer();
+            }
             scContinuousPaneRefs[side] = element || null;
-            if (element) nextTick(() => scScrollContinuousToPage(side, scCurrentPage[side]));
+            if (!element) return;
+            const observer = typeof ResizeObserver === 'function'
+                ? new ResizeObserver(() => scScheduleContinuousTileRefresh(side))
+                : null;
+            if (observer) observer.observe(element);
+            element.__scDetachContinuousViewer = () => {
+                if (observer) observer.disconnect();
+                delete element.__scDetachContinuousViewer;
+            };
+            nextTick(() => scScrollContinuousToPage(side, scCurrentPage[side]));
         }
 
         function scSetViewMode(mode) {
@@ -14104,38 +14312,80 @@ const app = createApp({
                 for (const side of ['left', 'right']) {
                     for (const controller of scContinuousRequests[side].values()) controller.abort();
                     scContinuousRequests[side].clear();
+                    scContinuousTiles[side] = {};
                     scLoadPageRaster(side);
                 }
                 nextTick(scScheduleView);
             }
         }
 
-        function scOnContinuousWheel(event) {
+        function scOnContinuousWheel(side, event) {
             if (!event.ctrlKey && !event.metaKey) return;
             event.preventDefault();
-            scZoomBy(Math.exp(-scWheelPixels(event).y * 0.0025));
+            scContinuousZoomAt(
+                side,
+                Math.exp(-scWheelPixels(event).y * 0.0025),
+                event.clientX,
+                event.clientY,
+            );
+        }
+
+        function scOnContinuousPanStart(side, event) {
+            if (event.button !== 0) return;
+            const pane = scContinuousPaneRefs[side];
+            if (!pane) return;
+            const rect = pane.getBoundingClientRect();
+            // Не перехватываем системные полосы прокрутки: их тоже можно
+            // продолжать таскать обычным способом, даже когда включена «рука».
+            if (event.clientX >= rect.left + pane.clientWidth
+                || event.clientY >= rect.top + pane.clientHeight) return;
+            scContinuousProgrammaticTarget[side] = null;
+            scContinuousPanState = {
+                side, x: event.clientX, y: event.clientY, pointerId: event.pointerId,
+            };
+            pane.classList.add('is-panning');
+            try { pane.setPointerCapture(event.pointerId); } catch (error) { /* без захвата */ }
+            event.preventDefault();
+        }
+
+        function scOnContinuousPanMove(event) {
+            if (!scContinuousPanState || event.pointerId !== scContinuousPanState.pointerId) return;
+            const pane = scContinuousPaneRefs[scContinuousPanState.side];
+            if (!pane) return;
+            pane.scrollLeft += scContinuousPanState.x - event.clientX;
+            pane.scrollTop += scContinuousPanState.y - event.clientY;
+            scContinuousPanState.x = event.clientX;
+            scContinuousPanState.y = event.clientY;
+            event.preventDefault();
+        }
+
+        function scOnContinuousPanEnd(event) {
+            if (!scContinuousPanState || event.pointerId !== scContinuousPanState.pointerId) return;
+            const pane = scContinuousPaneRefs[scContinuousPanState.side];
+            if (pane) {
+                pane.classList.remove('is-panning');
+                try { pane.releasePointerCapture(event.pointerId); } catch (error) { /* не был захвачен */ }
+            }
+            scContinuousPanState = null;
+        }
+
+        function scOnContinuousDoubleClick(side, event) {
+            scContinuousZoomAt(side, event.altKey ? 1 / 2 : 2, event.clientX, event.clientY);
         }
 
         function scOnContinuousScroll(side, event) {
+            scScheduleContinuousTileRefresh(side);
             if (scContinuousScrollFrame[side]) return;
             const pane = event.currentTarget;
             scContinuousScrollFrame[side] = requestAnimationFrame(() => {
                 scContinuousScrollFrame[side] = 0;
-                const center = pane.scrollTop + pane.clientHeight / 2;
-                let closestPage = scCurrentPage[side];
-                let closestDistance = Infinity;
-                for (const sheet of pane.querySelectorAll('[data-sc-page]')) {
-                    const distance = Math.abs(sheet.offsetTop + sheet.offsetHeight / 2 - center);
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestPage = Number(sheet.dataset.scPage);
-                    }
-                }
-                if (!closestPage || closestPage === Number(scCurrentPage[side])) return;
-                scContinuousScrollOrigin[side] = true;
-                if (side === 'left') scFocusLeftPage(closestPage);
-                else scSwitchRightPage(closestPage);
-                nextTick(() => { scContinuousScrollOrigin[side] = false; });
+                if (scConsumeContinuousProgrammaticScroll(side, pane)) return;
+                const anchor = scContinuousAnchorAt(side);
+                if (!anchor || !anchor.page) return;
+                scLoadContinuousWindow(side, anchor.page);
+                const target = scUpdateContinuousPages(side, anchor.page);
+                if (target) scLoadContinuousWindow(target.side, target.page);
+                scSyncContinuousAnchor(side, anchor);
             });
         }
 
@@ -14144,6 +14394,17 @@ const app = createApp({
             const url = scPageInfoUrl(side, page);
             if (!url || scViewerEmpty[side] || scViewMode.value !== 'continuous') return;
             if (scContinuousPreview[side][page] && scContinuousDims[side][page]) return;
+            if (scContinuousDims[side][page] && scContinuousSignatures[side][page]) {
+                scContinuousLoading[side][page] = true;
+                scContinuousError[side][page] = '';
+                scContinuousPreview[side][page] = scPagePreviewUrl(
+                    side,
+                    page,
+                    SC_CONTINUOUS_PREVIEW_WIDTH,
+                    scContinuousSignatures[side][page],
+                );
+                return;
+            }
             if (scContinuousRequests[side].has(page)) return;
             const controller = new AbortController();
             scContinuousRequests[side].set(page, controller);
@@ -14157,10 +14418,19 @@ const app = createApp({
                 const width = Number(info.width);
                 const height = Number(info.height);
                 if (!(width > 0 && height > 0)) throw new Error('Некорректный размер листа');
+                // Загрузка точного формата листа меняет высоту всей ленты.
+                // Сохраняем точку под центром окна, чтобы лента не уезжала и
+                // обработчик scroll не принимал сдвиг разметки за жест пользователя.
+                const anchor = scContinuousAnchorAt(side);
                 scContinuousDims[side][page] = {w: width, h: height};
+                scContinuousSignatures[side][page] = String(info.signature || '');
                 scContinuousPreview[side][page] = scPagePreviewUrl(
-                    side, page, SC_CONTINUOUS_PREVIEW_WIDTH, String(info.signature || ''),
+                    side, page, SC_CONTINUOUS_PREVIEW_WIDTH, scContinuousSignatures[side][page],
                 );
+                nextTick(() => {
+                    if (anchor) scSetContinuousAnchor(side, anchor.page, anchor);
+                    scScheduleContinuousTileRefresh(side);
+                });
             } catch (error) {
                 if (controller.signal.aborted) return;
                 scContinuousError[side][page] = 'Не удалось загрузить: ' + String(error.message || error);
@@ -14175,11 +14445,90 @@ const app = createApp({
         function scOnContinuousPreviewLoad(side, page) {
             scContinuousLoading[side][page] = false;
             scContinuousError[side][page] = '';
+            scScheduleContinuousTileRefresh(side, true);
         }
 
         function scOnContinuousPreviewError(side, page) {
             scContinuousLoading[side][page] = false;
             scContinuousError[side][page] = 'Не удалось загрузить preview страницы';
+        }
+
+        function scRefreshContinuousTiles(side) {
+            if (scViewMode.value !== 'continuous' || scViewerEmpty[side]) return;
+            const pane = scContinuousPaneRefs[side];
+            if (!pane) return;
+            const visiblePages = new Set();
+            const viewportLeft = pane.scrollLeft;
+            const viewportTop = pane.scrollTop;
+            const viewportRight = viewportLeft + pane.clientWidth;
+            const viewportBottom = viewportTop + pane.clientHeight;
+            const pixelRatio = Math.max(1, Number(window.devicePixelRatio) || 1);
+            for (const sheet of pane.querySelectorAll('[data-sc-page]')) {
+                const page = Number(sheet.dataset.scPage);
+                const dims = scContinuousDims[side][page];
+                const signature = scContinuousSignatures[side][page];
+                if (!dims || !signature || !sheet.offsetWidth || !sheet.offsetHeight) continue;
+                const sheetLeft = sheet.offsetLeft;
+                const sheetTop = sheet.offsetTop;
+                const sheetRight = sheetLeft + sheet.offsetWidth;
+                const sheetBottom = sheetTop + sheet.offsetHeight;
+                if (
+                    sheetRight <= viewportLeft || sheetLeft >= viewportRight
+                    || sheetBottom <= viewportTop || sheetTop >= viewportBottom
+                ) continue;
+                visiblePages.add(page);
+                const cssScale = sheet.offsetWidth / dims.w;
+                const requiredScale = cssScale * pixelRatio;
+                const previewScale = SC_CONTINUOUS_PREVIEW_WIDTH / dims.w;
+                if (requiredScale <= previewScale * 1.12) {
+                    scContinuousTiles[side][page] = [];
+                    continue;
+                }
+                const level = Math.min(
+                    SC_TILE_MAX_LEVEL,
+                    Math.max(0, Math.ceil(Math.log2(requiredScale))),
+                );
+                const span = SC_TILE_SIZE / (2 ** level);
+                const visibleLeft = Math.max(0, (viewportLeft - sheetLeft) / cssScale);
+                const visibleTop = Math.max(0, (viewportTop - sheetTop) / cssScale);
+                const visibleRight = Math.min(dims.w, (viewportRight - sheetLeft) / cssScale);
+                const visibleBottom = Math.min(dims.h, (viewportBottom - sheetTop) / cssScale);
+                const firstX = Math.max(0, Math.floor(visibleLeft / span) - 1);
+                const firstY = Math.max(0, Math.floor(visibleTop / span) - 1);
+                const lastX = Math.min(Math.ceil(dims.w / span) - 1, Math.floor(visibleRight / span) + 1);
+                const lastY = Math.min(Math.ceil(dims.h / span) - 1, Math.floor(visibleBottom / span) + 1);
+                const tiles = [];
+                for (let y = firstY; y <= lastY; y += 1) {
+                    for (let x = firstX; x <= lastX; x += 1) {
+                        const tileWidth = Math.min(span, dims.w - x * span);
+                        const tileHeight = Math.min(span, dims.h - y * span);
+                        tiles.push({
+                            key: `${page}:${level}:${x}:${y}:${signature}`,
+                            url: scPageTileUrl(side, page, level, x, y, signature),
+                            left: x * span / dims.w * 100,
+                            top: y * span / dims.h * 100,
+                            width: tileWidth / dims.w * 100,
+                            height: tileHeight / dims.h * 100,
+                        });
+                    }
+                }
+                const before = (scContinuousTiles[side][page] || []).map(tile => tile.key).join('|');
+                const after = tiles.map(tile => tile.key).join('|');
+                if (before !== after) scContinuousTiles[side][page] = tiles;
+            }
+            for (const page of Object.keys(scContinuousTiles[side]).map(Number)) {
+                if (!visiblePages.has(page)) delete scContinuousTiles[side][page];
+            }
+        }
+
+        function scScheduleContinuousTileRefresh(side, immediate = false) {
+            if (scContinuousTileRefreshTimer[side]) {
+                clearTimeout(scContinuousTileRefreshTimer[side]);
+            }
+            scContinuousTileRefreshTimer[side] = setTimeout(() => {
+                scContinuousTileRefreshTimer[side] = 0;
+                scRefreshContinuousTiles(side);
+            }, immediate ? 0 : 90);
         }
 
         function scLoadContinuousWindow(side, centerPage) {
@@ -14199,8 +14548,8 @@ const app = createApp({
             for (const page of Object.keys(scContinuousPreview[side]).map(Number)) {
                 if (!wanted.has(page)) delete scContinuousPreview[side][page];
             }
-            for (const page of Object.keys(scContinuousDims[side]).map(Number)) {
-                if (!wanted.has(page)) delete scContinuousDims[side][page];
+            for (const page of Object.keys(scContinuousTiles[side]).map(Number)) {
+                if (!wanted.has(page)) delete scContinuousTiles[side][page];
             }
             for (const page of wanted) scLoadContinuousPage(side, page);
         }
@@ -14270,12 +14619,15 @@ const app = createApp({
         function scRefreshViewerSide(side) {
             if (currentView.value !== 'stage-comparison') return;
             if (scViewMode.value === 'continuous') {
+                const pageFromScroll = Number(scContinuousPageFromScroll[side])
+                    === Number(scCurrentPage[side]);
+                scContinuousPageFromScroll[side] = null;
                 if (scViewerEmpty[side]) {
                     scSetViewerEmpty(side, true);
                     return;
                 }
                 scLoadContinuousWindow(side, scCurrentPage[side]);
-                if (!scContinuousScrollOrigin[side]) {
+                if (!pageFromScroll) {
                     nextTick(() => scScrollContinuousToPage(side, scCurrentPage[side]));
                 }
             } else {
@@ -14298,6 +14650,18 @@ const app = createApp({
             () => scRefreshViewerSide('right'),
         );
         watch(scSyncView, linked => {
+            if (scViewMode.value === 'continuous') {
+                if (linked) {
+                    const anchor = scContinuousAnchorAt('left') || scContinuousAnchorAt('right');
+                    if (anchor) {
+                        const sourceSide = scViewerEmpty.left ? 'right' : 'left';
+                        const target = scUpdateContinuousPages(sourceSide, anchor.page);
+                        if (target) scLoadContinuousWindow(target.side, target.page);
+                        scSyncContinuousAnchor(sourceSide, anchor);
+                    }
+                }
+                return;
+            }
             // Отвязали — правая панель продолжает с того же места, а не прыгает
             // к своему старому виду; связали — подхватывает вид левой.
             if (linked) scViews.left = {...scViews.left};
@@ -14699,10 +15063,12 @@ const app = createApp({
             scPagePreview, scPageTiles, scPageLoading, scPageError,
             scOnPagePreviewLoad, scOnPagePreviewError, scSetStageRef,
             scSetPaneRef,
-            scContinuousPreview, scContinuousLoading, scContinuousError,
+            scContinuousPreview, scContinuousLoading, scContinuousError, scContinuousTiles,
             scContinuousPages, scContinuousPageStyle, scSetContinuousPaneRef,
             scOnContinuousPreviewLoad, scOnContinuousPreviewError,
             scOnContinuousWheel, scOnContinuousScroll,
+            scOnContinuousPanStart, scOnContinuousPanMove, scOnContinuousPanEnd,
+            scOnContinuousDoubleClick,
         };
     }
 });
