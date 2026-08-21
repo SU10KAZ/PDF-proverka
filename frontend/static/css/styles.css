@@ -3998,7 +3998,7 @@ tr.row-rejected td.sc-cell-goto {
     text-transform: uppercase;
 }
 .sc-shell-muted { color: var(--text3); font-size: 12px; }
-.sc-vector-viewer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.sc-vector-viewer { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .sc-upload-button { position: relative; overflow: hidden; }
 .sc-upload-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
 .sc-upload-button.is-disabled { opacity: .55; pointer-events: none; }
@@ -4180,6 +4180,11 @@ tr.row-rejected td.sc-cell-goto {
     contain: layout paint;
 }
 .sc-vector-pane.is-panning { cursor: grabbing; }
+.sc-vector-pane.is-empty,
+.sc-continuous-pane.is-empty {
+    background: #d8dde5;
+    cursor: default;
+}
 /* Слой листа. Позиция и масштаб задаются ТОЛЬКО через transform из JS: перенос
    композитор делает без перерисовки, а inline-SVG остаётся вектором и Chrome
    растрирует его заново под текущий масштаб. will-change здесь ставить нельзя —
@@ -4206,6 +4211,79 @@ tr.row-rejected td.sc-cell-goto {
     pointer-events: none;
 }
 .sc-vector-pane__note--error { background: #b91c1c; }
+.sc-continuous-pane {
+    position: relative;
+    height: min(72vh, 900px);
+    padding: 8px;
+    overflow: auto;
+    background: #bfc6d0;
+    contain: layout paint;
+    overscroll-behavior: contain;
+}
+.sc-continuous-page {
+    position: relative;
+    max-width: none;
+    margin: 0 auto 10px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, .22), 0 2px 7px rgba(15, 23, 42, .14);
+}
+.sc-continuous-page:last-child { margin-bottom: 0; }
+.sc-continuous-page.is-current { box-shadow: 0 0 0 2px var(--accent, #0f9f8f), 0 2px 7px rgba(15, 23, 42, .18); }
+.sc-continuous-page__svg,
+.sc-continuous-page__svg > svg { display: block; width: 100%; height: 100%; }
+.sc-continuous-page__placeholder {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    color: #64748b;
+    background: #f8fafc;
+    font-size: 11px;
+}
+.sc-view-mode-switch {
+    position: absolute;
+    z-index: 5;
+    bottom: 10px;
+    left: 50%;
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid rgba(15, 23, 42, .32);
+    border-radius: 4px;
+    background: rgba(248, 250, 252, .94);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .22);
+    transform: translateX(-50%);
+}
+.sc-view-mode-switch button {
+    display: grid;
+    width: 25px;
+    height: 23px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    color: #475569;
+    background: transparent;
+    cursor: pointer;
+}
+.sc-view-mode-switch button:hover { background: #e2e8f0; }
+.sc-view-mode-switch button.is-active { border-color: #c28b18; color: #0f172a; background: #fff7d6; }
+.sc-view-mode-icon { position: relative; display: block; width: 12px; height: 15px; border: 1px solid currentColor; background: #fff; }
+.sc-view-mode-icon--paged::after {
+    position: absolute;
+    right: 1px;
+    bottom: -4px;
+    width: 9px;
+    height: 3px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    content: '';
+}
+.sc-view-mode-icon--continuous {
+    height: 5px;
+    box-shadow: 0 5px 0 -1px #fff, 0 5px 0 0 currentColor, 0 10px 0 -1px #fff, 0 10px 0 0 currentColor;
+}
 .sc-viewer-hint { color: var(--text3); font-size: 11px; }
 .sc-viewer-zoom { min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
 .sc-empty-state {
@@ -4253,7 +4331,7 @@ tr.row-rejected td.sc-cell-goto {
 .sc-sheet-map__list { overflow: visible; }
 .sc-sheet-map__row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 10px;
     min-height: 24px;
@@ -4279,7 +4357,23 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 12px;
     font-weight: 600;
 }
-.sc-sheet-map__relation span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-sheet-map__page-select {
+    min-width: 0;
+    width: 100%;
+    padding: 1px 22px 1px 2px;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: inherit;
+    background-color: transparent;
+    font: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.sc-sheet-map__page-select:hover,
+.sc-sheet-map__page-select:focus { border-color: var(--border2); background-color: var(--surface, #fff); outline: 0; }
+.sc-sheet-map__page-select:disabled { cursor: wait; opacity: .6; }
 .sc-sheet-map__relation b { color: var(--text3); font-size: 14px; }
 .sc-sheet-map__badge {
     padding: 2px 7px;
@@ -4292,25 +4386,6 @@ tr.row-rejected td.sc-cell-goto {
 .sc-sheet-map__badge--review { color: #92400e; background: #fef3c7; }
 .sc-sheet-map__badge--manual { color: #1d4ed8; background: #dbeafe; }
 .sc-sheet-map__badge--unmatched { color: #6b7280; background: #f3f4f6; }
-.sc-sheet-map__actions {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-}
-.sc-sheet-map__actions button {
-    padding: 2px 7px;
-    border: 0;
-    border-left: 1px solid var(--border2);
-    color: var(--accent, #0f766e);
-    background: transparent;
-    font: inherit;
-    font-size: 11px;
-    cursor: pointer;
-}
-.sc-sheet-map__actions button:first-child { border-left: 0; }
-.sc-sheet-map__actions button:hover:not(:disabled) { text-decoration: underline; }
-.sc-sheet-map__actions button.is-danger { color: #b91c1c; }
-.sc-sheet-map__actions button:disabled { color: var(--text3); cursor: default; opacity: .55; }
 .sc-sheet-map__empty { padding: 24px; color: var(--text3); text-align: center; }
 .sc-link-picker {
     display: flex;
@@ -4327,10 +4402,9 @@ tr.row-rejected td.sc-cell-goto {
 
 @media (max-width: 900px) {
     .sc-vector-viewer { grid-template-columns: 1fr; }
-    .sc-vector-pane { height: 60vh; }
-    /* На узком экране кнопки уезжают на свою строку. */
+    .sc-vector-pane,
+    .sc-continuous-pane { height: 60vh; }
     .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; min-height: 46px; }
-    .sc-sheet-map__actions { grid-column: 1 / -1; justify-content: flex-end; }
     .sc-link-picker { align-items: stretch; flex-direction: column; }
     .sc-sheet-map-editor select { min-width: 0; width: 100%; }
 }

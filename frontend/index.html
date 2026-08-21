@@ -5557,33 +5557,51 @@
                                  :class="{'is-active': scSheetMapRowActive(row)}"
                                  role="button" tabindex="0"
                                  @click="scOpenSheetMapRow(row)"
-                                 @keydown.enter.prevent="scOpenSheetMapRow(row)"
-                                 @keydown.space.prevent="scOpenSheetMapRow(row)">
+                                 @keydown.enter.self.prevent="scOpenSheetMapRow(row)"
+                                 @keydown.space.self.prevent="scOpenSheetMapRow(row)">
                                 <div class="sc-sheet-map__relation">
-                                    <span :title="scSheetMapSideLabel(row.leftPages, 'left')">
-                                        {{ scSheetMapSideLabel(row.leftPages, 'left') }}
-                                    </span>
+                                    <select class="sc-sheet-map__page-select"
+                                            :aria-label="'Выбрать лист stage_1 для ' + scSheetMapSideLabel(row.rightPages, 'right')"
+                                            :title="scSheetMapSideLabel(row.leftPages, 'left')"
+                                            :value="scSheetMapSelectionValue(row, 'left')"
+                                            :disabled="scLinkSaving"
+                                            @click.stop
+                                            @change.stop="scApplySheetMapSelection(row, 'left', $event.target.value)">
+                                        <option value="__empty__">Пусто</option>
+                                        <option v-if="row.leftPages.length > 1"
+                                                :value="scSheetMapSelectionValue(row, 'left')" disabled>
+                                            {{ scSheetMapSideLabel(row.leftPages, 'left') }}
+                                        </option>
+                                        <option v-for="sheet in scSheetMapOptions('left')"
+                                                :key="'left-sheet-'+row.key+'-'+sheet.pdf_page"
+                                                :value="String(sheet.pdf_page)">
+                                            {{ scSheetMapSideLabel([sheet.pdf_page], 'left') }}
+                                        </option>
+                                    </select>
                                     <b>↔</b>
-                                    <span :title="scSheetMapSideLabel(row.rightPages, 'right')">
-                                        {{ scSheetMapSideLabel(row.rightPages, 'right') }}
-                                    </span>
+                                    <select class="sc-sheet-map__page-select"
+                                            :aria-label="'Выбрать лист stage_2 для ' + scSheetMapSideLabel(row.leftPages, 'left')"
+                                            :title="scSheetMapSideLabel(row.rightPages, 'right')"
+                                            :value="scSheetMapSelectionValue(row, 'right')"
+                                            :disabled="scLinkSaving"
+                                            @click.stop
+                                            @change.stop="scApplySheetMapSelection(row, 'right', $event.target.value)">
+                                        <option value="__empty__">Пусто</option>
+                                        <option v-if="row.rightPages.length > 1"
+                                                :value="scSheetMapSelectionValue(row, 'right')" disabled>
+                                            {{ scSheetMapSideLabel(row.rightPages, 'right') }}
+                                        </option>
+                                        <option v-for="sheet in scSheetMapOptions('right')"
+                                                :key="'right-sheet-'+row.key+'-'+sheet.pdf_page"
+                                                :value="String(sheet.pdf_page)">
+                                            {{ scSheetMapSideLabel([sheet.pdf_page], 'right') }}
+                                        </option>
+                                    </select>
                                 </div>
                                 <span class="sc-sheet-map__badge"
                                       :class="'sc-sheet-map__badge--' + scSheetMapStatus(row).tone">
                                     {{ scSheetMapStatus(row).label }}
                                 </span>
-                                <div class="sc-sheet-map__actions" @click.stop>
-                                    <button v-if="row.source === 'auto' && row.rightPages.length && row.explicitLinkIndex === null"
-                                            type="button" :disabled="scLinkSaving"
-                                            @click="scAcceptSuggestion(row)">Оставить</button>
-                                    <button type="button" :disabled="!row.leftPages.length || scLinkSaving"
-                                            @click="scOpenSheetMapEditor(row, 'replace')">Изменить</button>
-                                    <button type="button" :disabled="!row.leftPages.length || scLinkSaving"
-                                            @click="scOpenSheetMapEditor(row, 'add')">+ Добавить</button>
-                                    <button type="button" class="is-danger"
-                                            :disabled="!row.leftPages.length || !row.rightPages.length || scLinkSaving"
-                                            @click="scDeleteSheetMapRow(row)">Удалить</button>
-                                </div>
                             </div>
                             <div v-if="!scSheetMapRows.length" class="sc-sheet-map__empty">
                                 Листы для карты не найдены.
@@ -5596,26 +5614,11 @@
                             Обработать
                         </button>
                     </section>
-                    <div v-if="scLinkEditorOpen" class="sc-link-picker sc-sheet-map-editor">
-                        <div>
-                            <strong>{{ scLinkEditorMode === 'add' ? 'Добавить лист РД' : 'Изменить связь' }}</strong>
-                            <small>{{ scSheetMapSideLabel(scLinkEditorLeftPages, 'left') }}</small>
-                        </div>
-                        <select id="sc-right-page-picker" v-model="scLinkEditorRightPage" class="form-control">
-                            <option v-for="sheet in scRightOptions" :key="'candidate-'+sheet.pdf_page"
-                                    :value="String(sheet.pdf_page)">
-                                {{ scSheetMapSideLabel([sheet.pdf_page], 'right') }}
-                            </option>
-                        </select>
-                        <button class="btn btn-primary" :disabled="!scLinkEditorRightPage || scLinkSaving"
-                                @click="scApplyLinkEditor()">Сохранить</button>
-                        <button class="btn btn-sm" :disabled="scLinkSaving"
-                                @click="scCloseSheetMapEditor()">Отмена</button>
-                    </div>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-toolbar">
                         <label><input type="checkbox" v-model="scSyncView"> Синхронный вид</label>
-                        <span class="sc-viewer-hint">Ctrl + колесо — масштаб, колесо — прокрутка, перетаскивание — сдвиг</span>
+                        <span class="sc-viewer-hint" v-if="scViewMode === 'paged'">Ctrl + колесо — масштаб, колесо — прокрутка, перетаскивание — сдвиг</span>
+                        <span class="sc-viewer-hint" v-else>Непрерывная прокрутка всех страниц, Ctrl + колесо — масштаб</span>
                         <span class="sc-viewer-toolbar__spacer"></span>
                         <button class="btn btn-sm" title="Уменьшить" @click="scZoomBy(1 / 1.25)">−</button>
                         <strong class="sc-viewer-zoom" title="100% — лист целиком">{{ scZoomPercent }}%</strong>
@@ -5631,20 +5634,52 @@
                                     <strong>{{ scActivePair[side].filename }}</strong>
                                 </div>
                                 <div class="sc-page-controls">
-                                    <button class="btn btn-sm" :disabled="scCurrentPage[side] <= 1" @click="scChangePage(side, -1)">←</button>
-                                    <span>{{ scCurrentPage[side] }} / {{ scPageCount(side) }}</span>
-                                    <button class="btn btn-sm" :disabled="scCurrentPage[side] >= scPageCount(side)" @click="scChangePage(side, 1)">→</button>
+                                    <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] <= 1" @click="scChangePage(side, -1)">←</button>
+                                    <span v-if="scViewerEmpty[side]">Пусто</span>
+                                    <span v-else>{{ scCurrentPage[side] }} / {{ scPageCount(side) }}</span>
+                                    <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] >= scPageCount(side)" @click="scChangePage(side, 1)">→</button>
                                 </div>
                             </div>
-                            <div class="sc-vector-pane" :ref="element => scSetPaneRef(side, element)">
-                                <div class="sc-vector-stage" :ref="element => scSetStageRef(side, element)"
+                            <div v-if="scViewMode === 'paged'" class="sc-vector-pane"
+                                 :class="{'is-empty': scViewerEmpty[side]}"
+                                 :ref="element => scSetPaneRef(side, element)">
+                                <div v-if="!scViewerEmpty[side]" class="sc-vector-stage"
+                                     :ref="element => scSetStageRef(side, element)"
                                      v-html="scPageSvg[side]"></div>
                                 <div v-if="scPageLoading[side]" class="sc-vector-pane__note">Загрузка вектора…</div>
                                 <div v-else-if="scPageError[side]" class="sc-vector-pane__note sc-vector-pane__note--error">
                                     {{ scPageError[side] }}
                                 </div>
                             </div>
+                            <div v-else class="sc-continuous-pane"
+                                 :class="{'is-empty': scViewerEmpty[side]}"
+                                 :ref="element => scSetContinuousPaneRef(side, element)"
+                                 @wheel="scOnContinuousWheel($event)"
+                                 @scroll.passive="scOnContinuousScroll(side, $event)">
+                                <template v-if="!scViewerEmpty[side]">
+                                    <article v-for="page in scContinuousPages(side)" :key="side+'-continuous-'+page"
+                                             class="sc-continuous-page"
+                                             :class="{'is-current': page === scCurrentPage[side]}"
+                                             :data-sc-page="page"
+                                             :style="scContinuousPageStyle(side, page)">
+                                        <div v-if="scContinuousSvg[side][page]" class="sc-continuous-page__svg"
+                                             v-html="scContinuousSvg[side][page]"></div>
+                                        <div v-else class="sc-continuous-page__placeholder">
+                                            <span v-if="scContinuousError[side][page]">{{ scContinuousError[side][page] }}</span>
+                                            <span v-else>{{ scContinuousLoading[side][page] ? 'Загрузка…' : 'Страница ' + page }}</span>
+                                        </div>
+                                    </article>
+                                </template>
+                            </div>
                         </section>
+                        <div class="sc-view-mode-switch" role="group" aria-label="Режим просмотра страниц">
+                            <button type="button" :class="{'is-active': scViewMode === 'paged'}"
+                                    title="Постраничный режим" aria-label="Постраничный режим"
+                                    @click="scSetViewMode('paged')"><i class="sc-view-mode-icon sc-view-mode-icon--paged"></i></button>
+                            <button type="button" :class="{'is-active': scViewMode === 'continuous'}"
+                                    title="Непрерывный режим" aria-label="Непрерывный режим"
+                                    @click="scSetViewMode('continuous')"><i class="sc-view-mode-icon sc-view-mode-icon--continuous"></i></button>
+                        </div>
                     </div>
                 </template>
             </div>

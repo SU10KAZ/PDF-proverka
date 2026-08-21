@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const app = readFileSync(new URL('../static/js/app.js', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../static/css/styles.css', import.meta.url), 'utf8');
+const sheetMapHtml = html.slice(html.indexOf('class="sc-sheet-map"'), html.indexOf('v-if="scProcessingError"'));
 
 describe('documentation comparison shell', () => {
   it('keeps the four shell tabs and the later-stage empty state', () => {
@@ -25,7 +26,7 @@ describe('documentation comparison shell', () => {
   });
 
   it('renders only the vector PDF endpoint', () => {
-    expect(app).toContain('/page-svg?side=${side}&page=${scCurrentPage[side]}');
+    expect(app).toContain('/page-svg?side=${side}&page=${page}');
     expect(html).not.toContain('page-image');
     expect(app).not.toContain('page-image');
     expect(app).not.toContain('block-image');
@@ -168,14 +169,14 @@ describe('documentation comparison shell', () => {
     expect(css).not.toContain('.sc-link-passports');
   });
 
-  it('keeps compact actions and manual many-to-many rows in the sheet map', () => {
-    expect(html).toContain('>Оставить</button>');
-    expect(html).toContain("scOpenSheetMapEditor(row, 'replace')");
-    expect(html).toContain("scOpenSheetMapEditor(row, 'add')");
-    expect(html).toContain('@click="scDeleteSheetMapRow(row)"');
-    expect(html).toContain('>Изменить</button>');
-    expect(html).toContain('>+ Добавить</button>');
-    expect(html).toContain('>Удалить</button>');
+  it('edits either side through inline page lists and keeps many-to-many rows', () => {
+    expect(html).toContain("scApplySheetMapSelection(row, 'left', $event.target.value)");
+    expect(html).toContain("scApplySheetMapSelection(row, 'right', $event.target.value)");
+    expect(html).toContain('<option value="__empty__">Пусто</option>');
+    expect(sheetMapHtml).not.toContain('>Изменить</button>');
+    expect(sheetMapHtml).not.toContain('>+ Добавить</button>');
+    expect(sheetMapHtml).not.toContain('>Удалить</button>');
+    expect(sheetMapHtml).not.toContain('class="sc-sheet-map__actions"');
     expect(app).toContain('leftPages: link.left_pages || []');
     expect(app).toContain('rightPages: link.right_pages || []');
     expect(app).toContain('return `Листы ${uniquePages.map(sheetNumber).join(\', \')}`');
@@ -188,6 +189,25 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain('passport.buildings');
     expect(app).toContain('left_pages: leftPages, right_pages: rightPages');
     expect(app).toContain('user_corrected');
+  });
+
+  it('clears the missing viewer side instead of retaining the previous SVG', () => {
+    expect(app).toContain('const scViewerEmpty = reactive({left: false, right: false})');
+    expect(app).toContain("scSetViewerEmpty(side, !pages.length)");
+    expect(app).toContain("scApplyPageSvg(side, '')");
+    expect(html).toContain("v-if=\"!scViewerEmpty[side]\" class=\"sc-vector-stage\"");
+    expect(html).toContain('<span v-if="scViewerEmpty[side]">Пусто</span>');
+  });
+
+  it('offers paged and lazy continuous vector viewing modes', () => {
+    expect(html).toContain('aria-label="Постраничный режим"');
+    expect(html).toContain('aria-label="Непрерывный режим"');
+    expect(html).toContain('v-for="page in scContinuousPages(side)"');
+    expect(html).toContain('v-html="scContinuousSvg[side][page]"');
+    expect(app).toContain('function scLoadContinuousWindow(side, centerPage)');
+    expect(app).toContain('for (let page = Math.max(1, center - 2)');
+    expect(app).toContain("'stage-comparison:view-mode'");
+    expect(css).toContain('.sc-view-mode-switch');
   });
 
   it('does not call removed analytical APIs', () => {
