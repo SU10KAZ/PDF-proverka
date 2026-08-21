@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "prompt_version": "stage4_semantic_reviewer_v1",
+  "prompt_version": "stage4_semantic_reviewer_v2_page_membership",
   "response_schema_sha256": "a58a6c2cc337cdf1150149402f7785ab7ee1852dde478d5b423882d1edd84e58",
   "source": {
     "real_project": "272_Sadovnicheskaya_76_Balchug_Esteyt",
@@ -2480,5 +2480,5 @@
       ]
     }
   ],
-  "dataset_sha256": "e4f790e5352056a7186c7a8aa8aca7b98c5e62e0990537c8573d2f84843a0d29"
+  "dataset_sha256": "19cc6c83ea1e69b6a94713468d511f5a2c57546e0910b1c71d789901d75abe9d"
 }

@@ -1,0 +1,35 @@
+{
+  "baseline_commit": "39da504e8da11028204f53aa340a079f2e019563",
+  "before": {
+    "final_classification_accuracy": 0.8718,
+    "false_same": 0,
+    "false_moved": 0,
+    "raw_model_false_same": 1,
+    "raw_model_false_moved": 0,
+    "correct_reclassification": 8,
+    "harmful_reclassification": 2,
+    "json_failures": 0,
+    "value_failures": 1,
+    "hallucinations": 1,
+    "input_tokens": 46900,
+    "output_tokens": 4312,
+    "avg_group_time_sec": 3.485,
+    "uncertain": 3
+  },
+  "after": {
+    "final_classification_accuracy": 0.8718,
+    "false_same": 0,
+    "false_moved": 0,
+    "raw_model_false_same": 1,
+    "raw_model_false_moved": 0,
+    "correct_reclassification": 8,
+    "harmful_reclassification": 2,
+    "json_failures": 0,
+    "value_failures": 1,
+    "hallucinations": 1,
+    "input_tokens": 48974,
+    "output_tokens": 4511,
+    "avg_group_time_sec": 3.785,
+    "uncertain": 3
+  }
+}

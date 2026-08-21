@@ -1,0 +1,1396 @@
+{
+  "version": 1,
+  "kind": "stage4_2_production_snapshot",
+  "label": "before",
+  "project_id": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+  "session_id": "121d764109184c13",
+  "pair_id": "p570d156f57",
+  "review_sha256": "a2bb1f1498ea92563b68160bbeaa646a981228b85854c47de97b5a370ae0d159",
+  "final_sha256": "f2ef4fba9d138753948bf414cee768fb32e427717a3ca4f617c619b125062ab8",
+  "source_hashes": {
+    "comparison": "d60ca8c316b7f1840cca19c7abf83c90e50555849f8e4d28266098287ee6e169",
+    "differences": "0cf97803e1c1410146044f21051279e06088317bf1ecd37dda3ff26f8ffd4e79",
+    "links": "700d79391c1d092b098add2e90beadd854e11b74acc1f40007275f972d048baf",
+    "suggestions": "44f11e69a74f8441df98bdd2926eb895ba22dd4f7d13830f54eb4763bbe54c14"
+  },
+  "source_signature": "5f12da5cdccf57c4352cc05c5cbece77afdd0c38aa369ea4ec443f23b7bb0b70",
+  "prompt_version": "stage4_semantic_reviewer_v1",
+  "validator_version": "stage4_validator_v1_1",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "review_status": "completed",
+  "status_counts": {
+    "SAME": 193,
+    "MOVED": 16,
+    "CHANGED": 41,
+    "REMOVED": 59,
+    "ADDED": 32,
+    "UNCERTAIN": 189
+  },
+  "model_status_counts": {
+    "ADDED": 70,
+    "CHANGED": 42,
+    "MOVED": 156,
+    "REMOVED": 62,
+    "SAME": 197,
+    "UNCERTAIN": 3
+  },
+  "uncertain_reason_counts": {
+    "MOVED_PAGE_SEMANTICS": 140,
+    "MULTIPLE_CANDIDATES": 3,
+    "OCR_NOISE": 5,
+    "TABLE_STRUCTURE": 2,
+    "VALIDATOR_REJECTED": 39
+  },
+  "diagnostic_cohort_statuses": {
+    "MOVED_PAGE_SEMANTICS": {
+      "UNCERTAIN": 140
+    },
+    "MULTIPLE_CANDIDATES": {
+      "UNCERTAIN": 3
+    },
+    "OCR_NOISE": {
+      "UNCERTAIN": 5
+    },
+    "TABLE_STRUCTURE": {
+      "UNCERTAIN": 2
+    },
+    "VALIDATOR_REJECTED": {
+      "UNCERTAIN": 39
+    }
+  },
+  "performance": {
+    "input_tokens": 414316,
+    "output_tokens": 49977,
+    "cached_tokens": 6912,
+    "duration_ms": 1039385,
+    "represented_model_calls": 21,
+    "fresh_model_calls": 5,
+    "chunks_total": 21
+  },
+  "diagnostic_case_mapping": [
+    {
+      "case_id": "link_5bac0a5098c7:d009",
+      "baseline_reason": "OCR_NOISE",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d048",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d049",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d050",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d051",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d052",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d054",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d055",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d056",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d057",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d058",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d059",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d060",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d062",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d064",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d067",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d069",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d071",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d073",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d074",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d075",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d076",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d077",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d078",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d079",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d080",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d081",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d083",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d085",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d086",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d087",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d088",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d089",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d090",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d093",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d094",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d095",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d096",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d097",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d098",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d099",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d100",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d102",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d103",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d104",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d105",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d106",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d107",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d108",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d109",
+      "baseline_reason": "OCR_NOISE",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d162",
+      "baseline_reason": "OCR_NOISE",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_5bac0a5098c7:d168",
+      "baseline_reason": "OCR_NOISE",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_8b7b6a4bcb55:d028",
+      "baseline_reason": "TABLE_STRUCTURE",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_8b7b6a4bcb55:d029",
+      "baseline_reason": "TABLE_STRUCTURE",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_6976a3842ce3:d048",
+      "baseline_reason": "MULTIPLE_CANDIDATES",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_6976a3842ce3:d049",
+      "baseline_reason": "MULTIPLE_CANDIDATES",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_6976a3842ce3:d050",
+      "baseline_reason": "MULTIPLE_CANDIDATES",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d000",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d001",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d002",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d003",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d004",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d005",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d006",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d007",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d008",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d009",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d010",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d011",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d015",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d016",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d017",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d018",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d019",
+      "baseline_reason": "OCR_NOISE",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d020",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d021",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d022",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d023",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d024",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d025",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d026",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d027",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d028",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d029",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d030",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d031",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d032",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d034",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d035",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d036",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d037",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d038",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d039",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d040",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d041",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d042",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d043",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_da35e872b7f4:d044",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d015",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d016",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d018",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d020",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d021",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d023",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d025",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d026",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d028",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d030",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d031",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d033",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d035",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d036",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d038",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d041",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d042",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d044",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d046",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d047",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d049",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d050",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d052",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d054",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d056",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d057",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d059",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d061",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d062",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d064",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d066",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d067",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d069",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d071",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d072",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d074",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d076",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d077",
+      "baseline_reason": "VALIDATOR_REJECTED",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d081",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d082",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d083",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d084",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d086",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d087",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d088",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d089",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d090",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d091",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d092",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d093",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d094",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d095",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d096",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d098",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d099",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d100",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d101",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d102",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d103",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d104",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d105",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d106",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d107",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d108",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d109",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d110",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d111",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d112",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d113",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d114",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d116",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d117",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d118",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d120",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d121",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d122",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d123",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d124",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d125",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d126",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d127",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d128",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d129",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d130",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d131",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d132",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d133",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d134",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d135",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d136",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    },
+    {
+      "case_id": "link_ba08ed80436a:d137",
+      "baseline_reason": "MOVED_PAGE_SEMANTICS",
+      "baseline_status": "UNCERTAIN",
+      "mapped_status": "UNCERTAIN",
+      "matching_decision_count": 1
+    }
+  ]
+}

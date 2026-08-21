@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "kind": "stage4_2_test_results",
+  "runs": [
+    {
+      "scope": "targeted reviewer module",
+      "command": "python3 -m pytest -q tests/test_stage_comparison_text_ai_reviewer.py",
+      "passed": 45,
+      "failed": 0,
+      "duration_sec": 0.32
+    },
+    {
+      "scope": "extended Stage Comparison selection",
+      "command": "python3 -m pytest -q tests/test_stage_comparison_document_matching.py tests/test_stage_comparison_sheet_matching.py tests/test_stage_comparison_shell.py tests/test_stage_comparison_stage_upload.py tests/test_stage_comparison_stage_upload_api.py tests/test_stage_comparison_stage_upload_batch.py tests/test_stage_comparison_text_ai_reviewer.py tests/test_stage_comparison_text_comparison.py tests/test_stage_comparison_text_differences.py",
+      "passed": 141,
+      "failed": 0,
+      "duration_sec": 1.59
+    }
+  ],
+  "compileall": {
+    "command": "python3 -m compileall -q backend/app/services/stage_comparison/text_ai_reviewer.py experiments/stage_comparison_text_ai_reviewer_stage42/regression.py experiments/stage_comparison_text_ai_reviewer_stage42/report.py",
+    "status": "passed"
+  },
+  "lint": {
+    "command": "python3 -m ruff check ...",
+    "status": "not_run",
+    "reason": "ruff is not installed in the repository Python environment"
+  }
+}

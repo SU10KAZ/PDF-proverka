@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "kind": "stage4_2_production_attempt_accounting",
+  "project_id": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+  "session_id": "121d764109184c13",
+  "pair_id": "p570d156f57",
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "partial",
+      "completed_groups": 9,
+      "failed_groups": 2,
+      "fresh_model_calls": 18,
+      "fresh_usage": {
+        "input_tokens": 333109,
+        "output_tokens": 38853,
+        "cached_tokens": 0,
+        "duration_ms": 822166
+      },
+      "failures": [
+        "link_5bac0a5098c7::chunk_1:validation_failed:decision_40_duplicate_classification",
+        "link_6976a3842ce3::chunk_2:validation_failed:decision_10_hallucinated_fragment_id"
+      ]
+    },
+    {
+      "attempt": 2,
+      "status": "partial",
+      "completed_groups": 9,
+      "failed_groups": 2,
+      "fresh_model_calls": 3,
+      "fresh_usage": {
+        "input_tokens": 64005,
+        "output_tokens": 8238,
+        "cached_tokens": 0,
+        "duration_ms": 169664
+      },
+      "fresh_usage_derivation": "attempt summary minus the unchanged persisted usage of the nine reused completed groups",
+      "failures": [
+        "link_5bac0a5098c7::chunk_1:validation_failed:decision_40_duplicate_classification",
+        "link_6976a3842ce3::chunk_2:validation_failed:incomplete_fragment_coverage"
+      ]
+    },
+    {
+      "attempt": 3,
+      "status": "partial",
+      "completed_groups": 10,
+      "failed_groups": 1,
+      "fresh_model_calls": 8,
+      "fresh_usage": {
+        "input_tokens": 172658,
+        "output_tokens": 24114,
+        "cached_tokens": 0,
+        "duration_ms": 484896
+      },
+      "fresh_usage_derivation": "attempt summary minus the unchanged persisted usage of the nine reused completed groups",
+      "failures": [
+        "link_6976a3842ce3::chunk_3:validation_failed:decision_4_duplicate_classification"
+      ]
+    },
+    {
+      "attempt": 4,
+      "status": "completed",
+      "completed_groups": 11,
+      "failed_groups": 0,
+      "fresh_model_calls": 3,
+      "fresh_usage": {
+        "input_tokens": 61235,
+        "output_tokens": 7179,
+        "cached_tokens": 0,
+        "duration_ms": 149759
+      },
+      "fresh_usage_derivation": "persisted usage of the only retried group",
+      "failures": []
+    }
+  ],
+  "cumulative_execution": {
+    "model_calls": 32,
+    "input_tokens": 631007,
+    "output_tokens": 78384,
+    "cached_tokens": 0,
+    "duration_ms": 1626485
+  },
+  "persisted_completed_artifact": {
+    "represented_model_calls": 23,
+    "input_tokens": 441762,
+    "output_tokens": 54152,
+    "cached_tokens": 0,
+    "duration_ms": 1127612
+  }
+}

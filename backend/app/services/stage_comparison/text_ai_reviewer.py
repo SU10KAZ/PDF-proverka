@@ -18,8 +18,8 @@ from . import text_differences
 VERSION = 1
 KIND = "stage_comparison_text_ai_review"
 FINAL_KIND = "stage_comparison_text_final_comparison"
-PROMPT_VERSION = "stage4_semantic_reviewer_v1"
-VALIDATOR_VERSION = "stage4_validator_v1_1"
+PROMPT_VERSION = "stage4_semantic_reviewer_v2_page_membership"
+VALIDATOR_VERSION = "stage4_validator_v1_2_page_membership"
 # Selected by experiments/stage_comparison_text_ai_reviewer. Production has no
 # fallback model cascade; transport retries keep this same reviewer model.
 PRODUCTION_MODEL = "gpt-5.6-luna"
@@ -103,6 +103,19 @@ SYSTEM_PROMPT = """Ты — второй уровень текстового с�
 - REMOVED: информация есть только слева;
 - ADDED: информация есть только справа;
 - UNCERTAIN: надёжная классификация невозможна.
+
+ВАЖНОЕ ПРАВИЛО СТРАНИЦ:
+- CURRENT SHEET GROUP явно задан полями left_pages и right_pages во входе;
+- эта принятая sheet-link group уже определяет соответствующие страницы П и РД;
+- left_pages и right_pages могут содержать несколько страниц: проверяй членство
+  каждого referenced fragment по полному множеству страниц своей стороны;
+- разные абсолютные PDF page внутри этой группы нормальны и НЕ означают перенос;
+- если семантически эквивалентные LEFT и RIGHT fragments оба принадлежат текущей
+  принятой группе, всегда выбирай SAME, даже когда left PDF page != right PDF page;
+- MOVED допустим только когда страница совпавшего fragment находится ВНЕ принятых
+  opposite-side pages текущей группы;
+- для этого решения не сравнивай sheet_number, абсолютные PDF page или их порядок:
+  используй только членство fragment page в left_pages/right_pages текущей группы.
 
 Правила безопасности:
 - ложные SAME/MOVED опаснее UNCERTAIN; при сомнении выбирай UNCERTAIN;
@@ -295,7 +308,12 @@ def validate_group_response(
                 *(str(right_source[value].get("sheet") or "") for value in right_ids),
             ]
         )
-        source_text = f"{before}\n{after}\n{provenance_meta}"
+        accepted_page_meta = " ".join(
+            str(page)
+            for side in ("left_pages", "right_pages")
+            for page in source_group.get(side) or []
+        )
+        source_text = f"{before}\n{after}\n{provenance_meta}\n{accepted_page_meta}"
         unsupported = []
         if not _supported_claim_text(summary, source_text):
             unsupported.append("summary")
@@ -306,28 +324,47 @@ def validate_group_response(
         used["right"].update(right_ids)
         model_status = status
         policy_reason = None
+        accepted_summary = summary.strip()
+        accepted_reason = reason.strip()
         deterministic_status = _derived_deterministic_status(left_ids, right_ids, source_group)
         if safe_same_moved and status in {"SAME", "MOVED"} and confidence != "high":
             status = "UNCERTAIN"
             policy_reason = "same_moved_requires_high_confidence"
             actual_pages = []
-        elif safe_same_moved and status == "SAME" and deterministic_status == "CHANGED":
+        elif safe_same_moved and status == "MOVED":
+            left_actual = set(_source_pages(left_ids, left_source))
+            right_actual = set(_source_pages(right_ids, right_source))
+            left_inside = left_actual <= {
+                int(page) for page in source_group.get("left_pages") or []
+            }
+            right_inside = right_actual <= {
+                int(page) for page in source_group.get("right_pages") or []
+            }
+            if left_inside and right_inside:
+                # MOVED asserts a high-confidence semantic match. When both
+                # referenced sides are members of the already accepted link,
+                # only the page interpretation is wrong, so normalize that
+                # assertion to SAME before applying the unchanged SAME safety
+                # gates below. Preserve the model proposal in model_* fields.
+                status = "SAME"
+                actual_pages = []
+                normalizations.append("moved_inside_accepted_group_to_same")
+                accepted_summary = "Смысл совпадает внутри принятой группы листов."
+                accepted_reason = (
+                    "Разные абсолютные номера PDF-страниц внутри принятой группы "
+                    "не означают перенос."
+                )
+            elif left_inside == right_inside:
+                status = "UNCERTAIN"
+                policy_reason = "moved_requires_exactly_one_side_outside_linked_pages"
+                actual_pages = []
+        if safe_same_moved and status == "SAME" and deterministic_status == "CHANGED":
             # A direct deterministic delta in the same paired fragments is
             # stronger evidence than an unsupported model assertion that it is
             # merely stylistic. Keep it visible for a person instead of masking.
             status = "UNCERTAIN"
             policy_reason = "same_conflicts_with_deterministic_change"
             actual_pages = []
-        elif safe_same_moved and status == "MOVED":
-            left_actual = set(_source_pages(left_ids, left_source))
-            right_actual = set(_source_pages(right_ids, right_source))
-            if (
-                left_actual <= {int(page) for page in source_group.get("left_pages") or []}
-                and right_actual <= {int(page) for page in source_group.get("right_pages") or []}
-            ):
-                status = "UNCERTAIN"
-                policy_reason = "moved_requires_source_outside_linked_pages"
-                actual_pages = []
         if unsupported:
             # The classification is not silently accepted when its explanation
             # invents a value/designation or engineering judgement. The exact
@@ -344,11 +381,11 @@ def validate_group_response(
             "final_status": status,
             "confidence": confidence,
             "summary": (
-                summary.strip() if not unsupported
+                accepted_summary if not unsupported
                 else "Объяснение модели не прошло проверку по источнику."
             ),
             "reason": (
-                reason.strip() if not unsupported
+                accepted_reason if not unsupported
                 else "Требуется ручная проверка provenance."
             ),
             "model_summary": summary.strip(),

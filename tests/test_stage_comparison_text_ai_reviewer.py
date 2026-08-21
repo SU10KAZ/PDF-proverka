@@ -23,12 +23,17 @@ def group(
     left_text: str = "Система работает постоянно.",
     right_text: str = "Система работает периодически.",
     left_count: int = 1, right_count: int = 1,
+    left_page: int = 1, right_page: int = 2,
+    left_pages: list[int] | None = None, right_pages: list[int] | None = None,
 ) -> dict:
-    left = [source(f"L{i + 1}", left_text, page=1, side="П") for i in range(left_count)]
-    right = [source(f"R{i + 1}", right_text, page=2, side="РД") for i in range(right_count)]
+    left = [source(f"L{i + 1}", left_text, page=left_page, side="П") for i in range(left_count)]
+    right = [source(f"R{i + 1}", right_text, page=right_page, side="РД") for i in range(right_count)]
     return {
-        "group_id": "link-1", "left_pages": [1],
-        "right_pages": [99] if preliminary_status == "MOVED" else [2],
+        "group_id": "link-1", "left_pages": left_pages or [left_page],
+        "right_pages": (
+            right_pages if right_pages is not None
+            else ([99] if preliminary_status == "MOVED" else [right_page])
+        ),
         "left_labels": ["Лист П-1"], "right_labels": ["Лист РД-2"],
         "source_left": left, "source_right": right,
         "required_fragment_ids": {
@@ -39,7 +44,7 @@ def group(
             "status": preliminary_status,
             "left_fragment_ids": [item["fragment_id"] for item in left],
             "right_fragment_ids": [item["fragment_id"] for item in right],
-            "actual_right_pages": [2] if preliminary_status == "MOVED" else [],
+            "actual_right_pages": [right_page] if preliminary_status == "MOVED" else [],
         }],
     }
 
@@ -48,13 +53,17 @@ def decision(
     status: str, *, left_ids: list[str] | None = None,
     right_ids: list[str] | None = None, confidence: str = "high",
     summary: str = "Режим изменён.", reason: str = "Содержание отличается.",
+    actual_right_pages: list[int] | None = None,
 ) -> dict:
     return {
         "left_fragment_ids": ["L1"] if left_ids is None else left_ids,
         "right_fragment_ids": ["R1"] if right_ids is None else right_ids,
         "final_status": status, "confidence": confidence,
         "summary": summary, "reason": reason,
-        "actual_right_pages": [2] if status == "MOVED" else [],
+        "actual_right_pages": (
+            ([2] if status == "MOVED" else [])
+            if actual_right_pages is None else actual_right_pages
+        ),
     }
 
 
@@ -86,6 +95,122 @@ def test_deterministic_moved_can_remain_moved_with_actual_page():
 def test_deterministic_moved_can_become_uncertain():
     item = validate(group("MOVED"), decision("UNCERTAIN", confidence="low"))[0]
     assert item["final_status"] == "UNCERTAIN"
+
+
+def test_different_absolute_pages_inside_accepted_group_are_same():
+    source_group = group(
+        "SAME", left_text="Система удаляет воздух.", right_text="Система удаляет воздух.",
+        left_page=24, right_page=3, left_pages=[24], right_pages=[3],
+    )
+    item = validate(source_group, decision(
+        "SAME", summary="Текст совпадает.", reason="Смысл совпадает.",
+    ))[0]
+    assert item["final_status"] == "SAME"
+    assert item["left_pages"] == [24] and item["right_pages"] == [3]
+
+
+def test_many_to_many_membership_accepts_fragment_on_second_right_page():
+    source_group = group(
+        "SAME", left_text="Удаление воздуха системой.",
+        right_text="Удаление воздуха системой.",
+        left_page=5, right_page=11, left_pages=[5], right_pages=[10, 11],
+    )
+    item = validate(source_group, decision(
+        "SAME", left_ids=["L1"], right_ids=["R1"],
+        summary="Удаление воздуха сохранено.", reason="Смысл совпадает.",
+    ))[0]
+    assert item["final_status"] == "SAME"
+    assert item["right_pages"] == [11]
+
+
+def test_model_moved_to_right_page_outside_accepted_group_remains_moved():
+    source_group = group(
+        "MOVED", left_text="Удаление воздуха системой.",
+        right_text="Удаление воздуха системой.", left_page=5, right_page=12,
+        left_pages=[5], right_pages=[10, 11],
+    )
+    item = validate(source_group, decision(
+        "MOVED", summary="Текст перенесён.",
+        reason="Правая страница 12 вне current right pages 10 и 11.",
+        actual_right_pages=[12],
+    ))[0]
+    assert item["final_status"] == "MOVED"
+    assert item["actual_right_pages"] == [12]
+
+
+def test_model_moved_to_left_page_outside_accepted_group_remains_moved():
+    source_group = group(
+        "MOVED", left_text="Удаление воздуха системой.",
+        right_text="Удаление воздуха системой.", left_page=7, right_page=10,
+        left_pages=[5, 6], right_pages=[10],
+    )
+    item = validate(source_group, decision(
+        "MOVED", summary="Текст перенесён.",
+        reason="Левая страница 7 вне current left pages 5 и 6.",
+        actual_right_pages=[10],
+    ))[0]
+    assert item["final_status"] == "MOVED"
+    assert item["left_pages"] == [7]
+
+
+def test_different_pages_inside_group_with_changed_content_remain_changed():
+    source_group = group(
+        "CHANGED", left_text="Расход 1200 м3/ч.", right_text="Расход 1600 м3/ч.",
+        left_page=24, right_page=3, left_pages=[24], right_pages=[3],
+    )
+    item = validate(source_group, decision(
+        "CHANGED", summary="Расход 1200 м3/ч изменён на 1600 м3/ч.",
+        reason="Числовое значение отличается.",
+    ))[0]
+    assert item["final_status"] == "CHANGED"
+
+
+def test_different_pages_inside_group_with_unclear_content_remain_uncertain():
+    source_group = group(
+        "MIXED", left_text="Система.", right_text="Установка.",
+        left_page=24, right_page=3, left_pages=[24], right_pages=[3],
+    )
+    item = validate(source_group, decision(
+        "UNCERTAIN", confidence="low", summary="Связь неясна.",
+        reason="Недостаточно контекста.",
+    ))[0]
+    assert item["final_status"] == "UNCERTAIN"
+
+
+def test_model_moved_inside_accepted_group_is_normalized_to_same():
+    source_group = group(
+        "SAME", left_text="Система удаляет воздух.", right_text="Система удаляет воздух.",
+        left_page=24, right_page=3, left_pages=[24], right_pages=[3],
+    )
+    item = validate(source_group, decision(
+        "MOVED", summary="Текст перенесён.", reason="Смысл совпадает.",
+        actual_right_pages=[3],
+    ))[0]
+    assert item["model_final_status"] == "MOVED"
+    assert item["final_status"] == "SAME"
+    assert item["actual_right_pages"] == []
+    assert item["normalizations"] == ["moved_inside_accepted_group_to_same"]
+
+
+def test_model_moved_inside_group_cannot_mask_deterministic_change():
+    source_group = group(
+        "CHANGED", left_text="Расход 1200 м3/ч.", right_text="Расход 1600 м3/ч.",
+        left_page=24, right_page=3, left_pages=[24], right_pages=[3],
+    )
+    item = validate(source_group, decision(
+        "MOVED", summary="Текст перенесён.", reason="Смысл совпадает.",
+        actual_right_pages=[3],
+    ))[0]
+    assert item["model_final_status"] == "MOVED"
+    assert item["final_status"] == "UNCERTAIN"
+    assert item["policy_reason"] == "same_conflicts_with_deterministic_change"
+
+
+def test_prompt_defines_moved_by_membership_not_absolute_page_number():
+    assert "оба принадлежат текущей" in ai.SYSTEM_PROMPT
+    assert "всегда выбирай SAME" in ai.SYSTEM_PROMPT
+    assert "ВНЕ принятых" in ai.SYSTEM_PROMPT
+    assert "не сравнивай sheet_number" in ai.SYSTEM_PROMPT
 
 
 def test_removed_added_can_become_same():
