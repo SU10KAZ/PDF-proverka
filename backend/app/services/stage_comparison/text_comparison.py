@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+import json
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -919,6 +920,7 @@ def build_overlays(matches: list[dict[str, Any]], labels: dict[str, dict[int, st
                     "id": f"{match['id']}_{side}_{box_index}",
                     **box,
                     "status": status,
+                    "evidence": match.get("evidence") or "structured_text",
                     "title": title,
                     "counterpart_page": other_page,
                 })
@@ -1051,6 +1053,129 @@ def compare_pdf_text_lines(
     }
 
 
+def _text_block_fragments(
+    fragments: list[dict[str, Any]], blocks_path: Path, side: str,
+) -> dict[int, list[dict[str, Any]]]:
+    """Aggregate structured text and attach the uploaded block geometry."""
+    try:
+        manifest = json.loads(blocks_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return {}
+    shapes = {
+        str(item.get("block_id") or ""): item
+        for item in manifest.get("blocks") or []
+        if item.get("block_type") == "text" and item.get("coords_norm")
+    }
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for fragment in fragments:
+        grouped[str(fragment.get("source_block_id") or "")].append(fragment)
+    output: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    for block_id, items in grouped.items():
+        shape = shapes.get(block_id)
+        if not shape:
+            continue
+        ordered = sorted(items, key=lambda item: int(item.get("order") or 0))
+        canonical = canonicalize_text(" ".join(
+            str(item.get("canonical_text") or "") for item in ordered
+        ))
+        if len(canonical) < 8:
+            continue
+        coords = [float(value) for value in shape.get("coords_norm") or []]
+        if len(coords) != 4:
+            continue
+        x0, y0, x1, y1 = (max(0.0, min(1.0, value)) for value in coords)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        box: dict[str, Any] = {
+            "x": round(x0, 6),
+            "y": round(y0, 6),
+            "width": round(x1 - x0, 6),
+            "height": round(y1 - y0, 6),
+        }
+        points = shape.get("polygon_points") or []
+        polygon = []
+        for point in points:
+            if not isinstance(point, list) or len(point) != 2:
+                continue
+            px, py = float(point[0]), float(point[1])
+            polygon.append([
+                round(max(0.0, min(1.0, (px - x0) / (x1 - x0))), 6),
+                round(max(0.0, min(1.0, (py - y0) / (y1 - y0))), 6),
+            ])
+        if len(polygon) >= 3:
+            box["polygon"] = polygon
+        pdf_page = int(ordered[0]["pdf_page"])
+        identity = f"{side}|{pdf_page}|{block_id}|{canonical}"
+        output[pdf_page].append({
+            "id": "textblock_" + hashlib.sha1(
+                identity.encode("utf-8")
+            ).hexdigest()[:16],
+            "stage": "stage_1" if side == "left" else "stage_2",
+            "pdf_page": pdf_page,
+            "text": " ".join(str(item.get("text") or "") for item in ordered),
+            "canonical_text": canonical,
+            "source_block_id": block_id,
+            "source_kind": "text_block",
+            "order": min(int(item.get("order") or 0) for item in ordered),
+            "bboxes": [box],
+        })
+    return output
+
+
+def compare_exact_text_blocks(
+    left_fragments: list[dict[str, Any]], right_fragments: list[dict[str, Any]],
+    left_blocks_path: Path, right_blocks_path: Path,
+    links: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Match a whole uploaded TEXT block only when all of its text is exact."""
+    left_by_page = _text_block_fragments(
+        left_fragments, left_blocks_path, "left"
+    )
+    right_by_page = _text_block_fragments(
+        right_fragments, right_blocks_path, "right"
+    )
+    matches: list[dict[str, Any]] = []
+    used_left: set[str] = set()
+    used_right: set[str] = set()
+    normalized_links = sorted(links, key=lambda item: (
+        min(item.get("left_pages") or [10**9]),
+        min(item.get("right_pages") or [10**9]),
+        str(item.get("id") or ""),
+    ))
+    for link in normalized_links:
+        left_group = [
+            block
+            for page in link.get("left_pages") or []
+            for block in left_by_page.get(int(page), [])
+            if block["id"] not in used_left
+        ]
+        right_group = [
+            block
+            for page in link.get("right_pages") or []
+            for block in right_by_page.get(int(page), [])
+            if block["id"] not in used_right
+        ]
+        left_exact: dict[str, list[dict]] = defaultdict(list)
+        right_exact: dict[str, list[dict]] = defaultdict(list)
+        for block in left_group:
+            left_exact[str(block["canonical_text"])].append(block)
+        for block in right_group:
+            right_exact[str(block["canonical_text"])].append(block)
+        for canonical in sorted(set(left_exact) & set(right_exact)):
+            for left, right in _safe_exact_pairs(
+                left_exact[canonical], right_exact[canonical]
+            ):
+                used_left.add(str(left["id"]))
+                used_right.add(str(right["id"]))
+                matches.append(_match_record(
+                    left, right, "same_on_linked_sheet", link,
+                    canonical_text=canonical, evidence="uploaded_text_block",
+                ))
+    return sorted(matches, key=lambda item: (
+        item["left_page"], item["right_page"], item["id"]
+    ))
+
+
 def apply_pdf_line_metrics(
     metrics: list[dict[str, Any]], summary: dict[str, Any],
     pdf_comparison: dict[str, Any],
@@ -1115,6 +1240,43 @@ def prefer_pdf_line_overlays(
     return result
 
 
+def prefer_exact_block_overlays(
+    current: dict[str, dict[str, list[dict[str, Any]]]],
+    blocks: dict[str, dict[str, list[dict[str, Any]]]],
+) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    """Replace masks inside an exact block with its one uploaded polygon."""
+    result = {
+        side: {page: list(items) for page, items in current.get(side, {}).items()}
+        for side in ("left", "right")
+    }
+    for side in ("left", "right"):
+        for page, block_items in blocks.get(side, {}).items():
+            existing = list(result[side].get(page) or [])
+            for block in block_items:
+                left = float(block.get("x") or 0)
+                top = float(block.get("y") or 0)
+                right = left + float(block.get("width") or 0)
+                bottom = top + float(block.get("height") or 0)
+
+                def outside(item: dict[str, Any]) -> bool:
+                    center_x = float(item.get("x") or 0) + float(
+                        item.get("width") or 0
+                    ) / 2
+                    center_y = float(item.get("y") or 0) + float(
+                        item.get("height") or 0
+                    ) / 2
+                    return not (
+                        left <= center_x <= right and top <= center_y <= bottom
+                    )
+
+                existing = [item for item in existing if outside(item)]
+                existing.append(block)
+            result[side][page] = sorted(
+                existing, key=lambda item: (item["y"], item["x"], item["id"])
+            )
+    return result
+
+
 def public_view(payload: dict[str, Any] | None, *, stale: bool = False) -> dict[str, Any] | None:
     if not isinstance(payload, dict) or payload.get("version") != 1:
         return None
@@ -1134,6 +1296,7 @@ def public_view(payload: dict[str, Any] | None, *, stale: bool = False) -> dict[
 __all__ = [
     "canonicalize_text", "parse_markdown_fragments", "attach_pdf_locations",
     "extract_document_fragments", "compare_fragments", "build_metrics_and_hints",
-    "build_overlays", "compare_pdf_text_lines", "apply_pdf_line_metrics",
-    "prefer_pdf_line_overlays", "public_view",
+    "build_overlays", "compare_pdf_text_lines", "compare_exact_text_blocks",
+    "apply_pdf_line_metrics", "prefer_pdf_line_overlays",
+    "prefer_exact_block_overlays", "public_view",
 ]

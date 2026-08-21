@@ -13168,12 +13168,20 @@ const app = createApp({
         }
 
         function scTextComparisonOverlayStyle(overlay) {
-            return {
+            const style = {
                 left: `${Number(overlay.x || 0) * 100}%`,
                 top: `${Number(overlay.y || 0) * 100}%`,
                 width: `${Number(overlay.width || 0) * 100}%`,
                 height: `${Number(overlay.height || 0) * 100}%`,
             };
+            if (Array.isArray(overlay.polygon) && overlay.polygon.length >= 3) {
+                const polygon = overlay.polygon.map(point =>
+                    `${Number(point[0] || 0) * 100}% ${Number(point[1] || 0) * 100}%`
+                ).join(', ');
+                style.clipPath = `polygon(${polygon})`;
+                style.WebkitClipPath = `polygon(${polygon})`;
+            }
+            return style;
         }
 
         function scOpenTextHint(hint) {

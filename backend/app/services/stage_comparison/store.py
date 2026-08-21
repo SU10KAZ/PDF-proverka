@@ -576,7 +576,7 @@ def save_sheet_links(
 def _text_source_signature(pair: dict, links: dict) -> str:
     """Fingerprint all read-only inputs that influence Stage 2."""
     source: dict[str, Any] = {
-        "algorithm": "deterministic_exact_text_v1_11",
+        "algorithm": "deterministic_exact_text_v1_12",
         "links": [
             {
                 "id": link.get("id"),
@@ -590,8 +590,12 @@ def _text_source_signature(pair: dict, links: dict) -> str:
     for side in ("left", "right"):
         document = pair.get(side) or {}
         entries = {}
-        for kind in ("pdf_path", "md_path"):
-            path = Path(str(document.get(kind) or ""))
+        document_paths = {
+            "pdf_path": Path(str(document.get("pdf_path") or "")),
+            "md_path": Path(str(document.get("md_path") or "")),
+        }
+        document_paths["blocks_path"] = document_paths["md_path"].parent / "blocks.json"
+        for kind, path in document_paths.items():
             try:
                 stat = path.stat()
                 entries[kind] = [str(path.resolve()), stat.st_size, stat.st_mtime_ns]
@@ -694,6 +698,13 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
             links,
             fitz,
         )
+        block_matches = text_comparison.compare_exact_text_blocks(
+            fragments["left"],
+            fragments["right"],
+            Path(str((pair.get("left") or {})["md_path"])).parent / "blocks.json",
+            Path(str((pair.get("right") or {})["md_path"])).parent / "blocks.json",
+            links,
+        )
         text_comparison.apply_pdf_line_metrics(
             metrics, summary, pdf_line_comparison
         )
@@ -717,10 +728,15 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
         overlays = text_comparison.prefer_pdf_line_overlays(
             structured_overlays, pdf_line_overlays
         )
+        block_overlays = text_comparison.build_overlays(block_matches, labels)
+        overlays = text_comparison.prefer_exact_block_overlays(
+            overlays, block_overlays
+        )
+        summary["exact_block_matches"] = len(block_matches)
         payload = {
             "version": 1,
             "pair_id": pair_id,
-            "algorithm": "deterministic_exact_text_v1_11",
+            "algorithm": "deterministic_exact_text_v1_12",
             "generated_at": _utc_now(),
             "source_signature": signature,
             "fragments": fragments,

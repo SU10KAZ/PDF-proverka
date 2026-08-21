@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 from pathlib import Path
 
 import fitz
@@ -226,9 +227,13 @@ def test_overlay_is_rendered_in_paged_and_continuous_pdf_viewer() -> None:
     root = Path(__file__).resolve().parents[1]
     template = (root / "frontend" / "index.html").read_text(encoding="utf-8")
     css = (root / "frontend" / "static" / "css" / "styles.css").read_text(encoding="utf-8")
+    javascript = (root / "frontend" / "static" / "js" / "app.js").read_text(
+        encoding="utf-8"
+    )
     assert template.count("scTextComparisonOverlaysFor") >= 2
     assert "sc-text-comparison-mask" in template
     assert ".sc-text-comparison-mask.is-elsewhere::after" in css
+    assert "style.clipPath = `polygon(${polygon})`" in javascript
 
 
 def test_pdf_text_location_is_read_only(tmp_path: Path) -> None:
@@ -331,3 +336,69 @@ def test_pdf_line_overlays_replace_fragment_masks_but_keep_elsewhere_marker() ->
     }
     result = tc.prefer_pdf_line_overlays(structured, pdf_lines)
     assert [item["id"] for item in result["left"]["1"]] == ["line", "elsewhere"]
+
+
+def test_whole_exact_text_block_uses_uploaded_polygon(tmp_path: Path) -> None:
+    left = [
+        _fragment("left", 1, "Первая строка блока", index=0),
+        _fragment("left", 1, "Вторая строка блока", index=1),
+    ]
+    right = [
+        _fragment("right", 1, "Первая строка блока", index=0),
+        _fragment("right", 1, "Вторая строка блока", index=1),
+    ]
+    for item in left:
+        item["source_block_id"] = "left_block"
+    for item in right:
+        item["source_block_id"] = "right_block"
+    manifests = {}
+    for side, block_id, polygon in (
+        ("left", "left_block", None),
+        ("right", "right_block", [[0.2, 0.3], [0.7, 0.3], [0.7, 0.6]]),
+    ):
+        path = tmp_path / f"{side}_blocks.json"
+        path.write_text(json.dumps({
+            "coordinate_space": "normalized_page_top_left",
+            "blocks": [{
+                "block_id": block_id,
+                "page_index": 0,
+                "block_type": "text",
+                "shape_type": "polygon" if polygon else "rectangle",
+                "coords_norm": [0.2, 0.3, 0.7, 0.6],
+                "polygon_points": polygon,
+            }],
+        }), encoding="utf-8")
+        manifests[side] = path
+    matches = tc.compare_exact_text_blocks(
+        left, right, manifests["left"], manifests["right"], [_link()]
+    )
+    assert len(matches) == 1
+    assert matches[0]["evidence"] == "uploaded_text_block"
+    assert matches[0]["left_bboxes"][0] == {
+        "x": 0.2, "y": 0.3, "width": 0.5, "height": 0.3,
+    }
+    assert matches[0]["right_bboxes"][0]["polygon"] == [
+        [0.0, 0.0], [1.0, 0.0], [1.0, 1.0]
+    ]
+    right[1]["canonical_text"] = tc.canonicalize_text("Изменённая строка")
+    assert tc.compare_exact_text_blocks(
+        left, right, manifests["left"], manifests["right"], [_link()]
+    ) == []
+
+
+def test_exact_block_overlay_replaces_only_masks_inside_block() -> None:
+    current = {
+        "left": {"1": [
+            {"id": "inside", "x": 0.2, "y": 0.2, "width": 0.1, "height": 0.02},
+            {"id": "outside", "x": 0.8, "y": 0.8, "width": 0.1, "height": 0.02},
+        ]},
+        "right": {},
+    }
+    blocks = {
+        "left": {"1": [
+            {"id": "block", "x": 0.1, "y": 0.1, "width": 0.5, "height": 0.5},
+        ]},
+        "right": {},
+    }
+    result = tc.prefer_exact_block_overlays(current, blocks)
+    assert {item["id"] for item in result["left"]["1"]} == {"block", "outside"}
