@@ -147,6 +147,78 @@ def test_repeated_title_is_disambiguated_by_sheet_number():
     assert all(item["confidence"] == "high" for item in result["suggestions"])
 
 
+def test_global_sequence_repairs_duplicate_sheet_number_and_conflicting_titles():
+    common = "Часть 1. Архитектурные решения. Планы"
+    result = sheet_matching.match_sheet_indexes(
+        [
+            _record(24, "1", common),
+            _record(25, "2", common),
+            _record(26, "3", common),
+            _record(27, "4", common),
+            _record(28, "5", common),
+        ],
+        [
+            _record(3, "1", common),
+            _record(4, "2", common),
+            _record(5, "2", common),  # OCR error: the PDF title block says Sheet 3.
+            _record(6, "4", "Корпуса 1, 2. План 1 этажа"),
+            _record(7, "5", "Корпуса 1, 2. План 2 этажа"),
+        ],
+    )
+
+    suggestions = result["suggestions"]
+    assert [item["primary_right_page"] for item in suggestions] == [3, 4, 5, 6, 7]
+    assert suggestions[2]["reason"] == ["sequence_repaired_sheet_number"]
+    assert suggestions[3]["reason"] == ["same_sheet_number_and_sequence"]
+    assert suggestions[4]["reason"] == ["same_sheet_number_and_sequence"]
+    assert result["unmatched_left_pages"] == []
+    assert result["unmatched_right_pages"] == []
+
+
+def test_global_sequence_skips_duplicate_service_page_before_drawings():
+    common = "Архитектурные решения. Кладочные планы"
+    result = sheet_matching.match_sheet_indexes(
+        [
+            _record(5, "1", None),
+            _record(6, "1", common),
+            _record(7, "2", "Кладочный план -1 этажа"),
+            _record(8, "3", "Кладочный план технического пространства"),
+            _record(9, "4", common),
+        ],
+        [
+            _record(5, "1", common),
+            _record(6, "2", "Кладочный план - 1 этажа"),
+            _record(7, "3", "Кладочный план технического пространства"),
+            _record(8, "4", common),
+        ],
+    )
+
+    assert [item["primary_right_page"] for item in result["suggestions"]] == [
+        None, 5, 6, 7, 8,
+    ]
+    assert result["unmatched_left_pages"] == [5]
+    assert result["unmatched_right_pages"] == []
+
+
+def test_global_sequence_prefers_drawing_run_after_sheet_number_reset():
+    notes = "Пояснительная записка"
+    drawings = "Мероприятия по обеспечению доступности инвалидов"
+    left = [
+        *[_record(page, str(page), notes) for page in range(1, 7)],
+        *[_record(page + 6, str(page), drawings) for page in range(1, 6)],
+    ]
+    right = [_record(page + 20, str(page), drawings) for page in range(1, 6)]
+
+    result = sheet_matching.match_sheet_indexes(left, right)
+
+    by_left = {
+        item["left_page"]: item["primary_right_page"]
+        for item in result["suggestions"]
+    }
+    assert [by_left[page] for page in range(7, 12)] == [21, 22, 23, 24, 25]
+    assert all(by_left[page] is None for page in range(1, 7))
+
+
 def test_page_without_sheet_or_title_does_not_become_high():
     result = sheet_matching.match_sheet_indexes(
         [_record(1, None, None)],

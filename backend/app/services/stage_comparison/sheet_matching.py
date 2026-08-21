@@ -5,6 +5,7 @@ import re
 from collections import Counter
 from difflib import SequenceMatcher
 from html.parser import HTMLParser
+from math import ceil
 from typing import Any
 
 
@@ -168,11 +169,192 @@ def _candidate(
     }
 
 
+_SEQUENCE_MIN_PAIRS = 3
+_SEQUENCE_GAP_PENALTY = -2.0
+
+
+def _numeric_sheet(record: dict[str, Any]) -> int | None:
+    value = str(record.get("canonical_sheet") or "").strip()
+    return int(value) if value.isdigit() else None
+
+
+def _numeric_sheet_runs(records: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
+    """Split numbered pages into monotone, physically contiguous runs.
+
+    A volume can contain several independent sequences with the same Sheet
+    numbers (contents, explanatory notes and the actual drawings).  A reset
+    from a larger number back to 1 starts a new candidate run.  Equal numbers
+    stay in one run because OCR occasionally reads ``..., 8, 8, 10, ...``.
+    """
+    numbered = [record for record in records if _numeric_sheet(record) is not None]
+    runs: list[list[dict[str, Any]]] = []
+    current: list[dict[str, Any]] = []
+    for record in numbered:
+        if current:
+            previous = current[-1]
+            page_is_next = int(record["pdf_page"]) == int(previous["pdf_page"]) + 1
+            current_sheet = _numeric_sheet(record)
+            previous_sheet = _numeric_sheet(previous)
+            assert current_sheet is not None and previous_sheet is not None
+            sheet_reset = current_sheet < previous_sheet
+            if not page_is_next or sheet_reset:
+                runs.append(current)
+                current = []
+        current.append(record)
+    if current:
+        runs.append(current)
+    return [
+        run for run in runs
+        if len(run) >= _SEQUENCE_MIN_PAIRS
+        and len({_numeric_sheet(record) for record in run}) >= _SEQUENCE_MIN_PAIRS
+    ]
+
+
+def _sequence_title_similarity(left: dict[str, Any], right: dict[str, Any]) -> float:
+    left_title = left.get("canonical_title")
+    right_title = right.get("canonical_title")
+    if not left_title or not right_title:
+        return 0.0
+    return SequenceMatcher(None, left_title, right_title).ratio()
+
+
+def _sequence_match_score(left: dict[str, Any], right: dict[str, Any]) -> float:
+    """Score one diagonal in a global sheet-sequence alignment.
+
+    Sheet equality is deliberately stronger than title text: title extraction
+    often returns the common volume name instead of the lower title-block row.
+    A one-off OCR number still receives a small score so strong neighbours can
+    repair an isolated ``8, 8, 10`` sequence, while a gap is preferred over a
+    cascade of shifted sheet numbers.
+    """
+    left_sheet = _numeric_sheet(left)
+    right_sheet = _numeric_sheet(right)
+    assert left_sheet is not None and right_sheet is not None
+    difference = abs(left_sheet - right_sheet)
+    sheet_score = 6.0 if difference == 0 else float(max(-4, -difference))
+    return sheet_score + 2.0 * _sequence_title_similarity(left, right)
+
+
+def _align_sheet_runs(
+    left: list[dict[str, Any]],
+    right: list[dict[str, Any]],
+) -> tuple[list[tuple[dict[str, Any], dict[str, Any], float]], float]:
+    """Needleman-Wunsch alignment for two monotone drawing runs."""
+    left_count = len(left)
+    right_count = len(right)
+    scores = [[0.0] * (right_count + 1) for _ in range(left_count + 1)]
+    moves: list[list[str | None]] = [
+        [None] * (right_count + 1) for _ in range(left_count + 1)
+    ]
+    for left_index in range(1, left_count + 1):
+        scores[left_index][0] = scores[left_index - 1][0] + _SEQUENCE_GAP_PENALTY
+        moves[left_index][0] = "left_gap"
+    for right_index in range(1, right_count + 1):
+        scores[0][right_index] = scores[0][right_index - 1] + _SEQUENCE_GAP_PENALTY
+        moves[0][right_index] = "right_gap"
+
+    for left_index in range(1, left_count + 1):
+        for right_index in range(1, right_count + 1):
+            options = (
+                (
+                    scores[left_index - 1][right_index - 1]
+                    + _sequence_match_score(left[left_index - 1], right[right_index - 1]),
+                    "match",
+                ),
+                (
+                    scores[left_index - 1][right_index] + _SEQUENCE_GAP_PENALTY,
+                    "left_gap",
+                ),
+                (
+                    scores[left_index][right_index - 1] + _SEQUENCE_GAP_PENALTY,
+                    "right_gap",
+                ),
+            )
+            # Stable option order intentionally prefers a diagonal on an exact
+            # tie; local acceptance below still rejects unsupported diagonals.
+            scores[left_index][right_index], moves[left_index][right_index] = max(
+                options, key=lambda option: option[0]
+            )
+
+    alignment: list[tuple[dict[str, Any], dict[str, Any], float]] = []
+    left_index = left_count
+    right_index = right_count
+    while left_index or right_index:
+        move = moves[left_index][right_index]
+        if move == "match":
+            left_record = left[left_index - 1]
+            right_record = right[right_index - 1]
+            alignment.append(
+                (left_record, right_record, _sequence_match_score(left_record, right_record))
+            )
+            left_index -= 1
+            right_index -= 1
+        elif move == "left_gap":
+            left_index -= 1
+        else:
+            right_index -= 1
+    alignment.reverse()
+    return alignment, scores[left_count][right_count]
+
+
+def _best_sheet_sequence_alignment(
+    left: list[dict[str, Any]],
+    right: list[dict[str, Any]],
+) -> list[tuple[dict[str, Any], dict[str, Any], float]]:
+    """Choose the strongest compatible drawing run pair in both documents."""
+    candidates: list[
+        tuple[float, int, float, list[tuple[dict[str, Any], dict[str, Any], float]]]
+    ] = []
+    for left_run in _numeric_sheet_runs(left):
+        for right_run in _numeric_sheet_runs(right):
+            alignment, score = _align_sheet_runs(left_run, right_run)
+            if len(alignment) < _SEQUENCE_MIN_PAIRS:
+                continue
+            supported = sum(
+                _numeric_sheet(left_record) == _numeric_sheet(right_record)
+                or _sequence_title_similarity(left_record, right_record) >= 0.92
+                for left_record, right_record, _ in alignment
+            )
+            required_support = max(_SEQUENCE_MIN_PAIRS, ceil(len(alignment) * 0.6))
+            coverage = len(alignment) / max(1, min(len(left_run), len(right_run)))
+            if supported < required_support or coverage < 0.7:
+                continue
+            candidates.append((score, supported, coverage, alignment))
+    if not candidates:
+        return []
+    return max(candidates, key=lambda candidate: candidate[:3])[3]
+
+
+def _sequence_pair_is_supported(
+    alignment: list[tuple[dict[str, Any], dict[str, Any], float]],
+    index: int,
+) -> bool:
+    left_record, right_record, _ = alignment[index]
+    if _numeric_sheet(left_record) == _numeric_sheet(right_record):
+        return True
+    # An isolated OCR error is safe to bridge only when both adjacent aligned
+    # pairs have exact sheet numbers and preserve the same physical page offset.
+    if index == 0 or index + 1 >= len(alignment):
+        return False
+    previous_left, previous_right, _ = alignment[index - 1]
+    next_left, next_right, _ = alignment[index + 1]
+    neighbours_match = (
+        _numeric_sheet(previous_left) == _numeric_sheet(previous_right)
+        and _numeric_sheet(next_left) == _numeric_sheet(next_right)
+    )
+    offsets_match = (
+        int(previous_right["pdf_page"]) - int(previous_left["pdf_page"])
+        == int(right_record["pdf_page"]) - int(left_record["pdf_page"])
+        == int(next_right["pdf_page"]) - int(next_left["pdf_page"])
+    )
+    return neighbours_match and offsets_match
+
+
 def match_sheet_indexes(
     left_sheet_index: list[dict[str, Any]],
     right_sheet_index: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Build primary suggestions and TOP-3 using only title similarity and Sheet."""
+    """Build deterministic suggestions from titles, Sheet and global order."""
     left = [_prepared(record) for record in left_sheet_index]
     right = [_prepared(record) for record in right_sheet_index]
     left_counts = Counter(item["canonical_title"] for item in left if item["canonical_title"])
@@ -217,6 +399,38 @@ def match_sheet_indexes(
             "title_similarity": primary["title_similarity"] if primary else None,
             "alternatives": alternatives,
         })
+
+    # The exact matcher above remains authoritative.  Global alignment only
+    # fills its holes, so unique-title matches and deliberate page reordering
+    # are never overwritten by the sequential fallback.
+    suggestion_by_left = {int(item["left_page"]): item for item in suggestions}
+    alignment = _best_sheet_sequence_alignment(left, right)
+    for index, (left_record, right_record, _) in enumerate(alignment):
+        left_page = int(left_record["pdf_page"])
+        right_page = int(right_record["pdf_page"])
+        suggestion = suggestion_by_left[left_page]
+        if suggestion["primary_right_page"] is not None or right_page in used_right:
+            continue
+        if not _sequence_pair_is_supported(alignment, index):
+            continue
+        same_sheet = _numeric_sheet(left_record) == _numeric_sheet(right_record)
+        similarity = round(_sequence_title_similarity(left_record, right_record), 4)
+        suggestion.update({
+            "primary_right_page": right_page,
+            "primary_right_sheet_number": right_record.get("sheet_number"),
+            "confidence": "high",
+            "reason": [
+                "same_sheet_number_and_sequence"
+                if same_sheet else "sequence_repaired_sheet_number"
+            ],
+            "title_similarity": similarity,
+            "alternatives": [
+                alternative for alternative in suggestion["alternatives"]
+                if int(alternative["right_page"]) != right_page
+            ],
+        })
+        matched_left.add(left_page)
+        used_right.add(right_page)
 
     return {
         "status": "ok",
