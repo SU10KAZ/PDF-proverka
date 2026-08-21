@@ -49,6 +49,22 @@ def test_canonical_exact_text_is_formatting_only() -> None:
     assert tc.canonicalize_text("Площадь 15,2 м²") != tc.canonicalize_text(
         "Площадь 15,8 м²"
     )
+    assert tc.canonicalize_text("6. Проектируемое здание") == tc.canonicalize_text(
+        "6.Проектируемое здание"
+    )
+    assert tc.canonicalize_text("12.4 м²") != tc.canonicalize_text("12. 4 м²")
+
+
+def test_repeated_technical_markdown_bullet_is_not_document_text() -> None:
+    single = """## Page 1
+### BLOCK #1 [TEXT]: one
+
+- Ф3.1 – здания организаций торговли
+"""
+    repeated = single.replace("- Ф3.1", "- - Ф3.1").replace("one", "two")
+    left = tc.parse_markdown_fragments(single, "stage_1")
+    right = tc.parse_markdown_fragments(repeated, "stage_2")
+    assert left[0]["canonical_text"] == right[0]["canonical_text"]
 
 
 def test_same_text_inside_linked_pair_is_excluded() -> None:
@@ -191,13 +207,20 @@ def test_pdf_text_location_is_read_only(tmp_path: Path) -> None:
     document = fitz.open()
     page = document.new_page()
     page.insert_text((72, 100), "Exact deterministic PDF text")
+    page.insert_text((72, 130), "6.Project building text is identical")
     document.save(pdf_path)
     document.close()
     before = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
     fragment = _fragment("left", 1, "Exact deterministic PDF text")
     fragment["bboxes"] = []
     fragment["source_location"] = None
-    tc.attach_pdf_locations([fragment], pdf_path, fitz)
+    numbered_fragment = _fragment(
+        "left", 1, "6. Project building text is identical", index=1
+    )
+    numbered_fragment["bboxes"] = []
+    numbered_fragment["source_location"] = None
+    tc.attach_pdf_locations([fragment, numbered_fragment], pdf_path, fitz)
     after = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
     assert fragment["bboxes"]
+    assert numbered_fragment["bboxes"]
     assert before == after

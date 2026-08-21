@@ -48,6 +48,10 @@ def canonicalize_text(text: str | None) -> str:
     value = _SPACE_RE.sub(" ", value).strip()
     value = re.sub(r"\s*/\s*", "/", value)
     value = re.sub(r"\s*-\s*", "-", value)
+    # Numbered notes are formatting-equivalent with or without a space:
+    # ``6.Текст`` and ``6. Текст``.  Decimal numbers keep their value because
+    # a digit after the dot does not satisfy this rule.
+    value = re.sub(r"\b(\d{1,3})\.\s*(?=[а-яa-z])", r"\1. ", value)
     return value
 
 
@@ -56,7 +60,9 @@ def _display_text(text: str) -> str:
     value = _HTML_TAG_RE.sub("", value)
     value = _MARKUP_RE.sub("", value)
     value = re.sub(r"^\s{0,3}#{1,6}\s+", "", value)
-    value = re.sub(r"^\s*[-+*]\s+", "", value)
+    # OCR Markdown occasionally serialises one visual bullet as ``- - text``.
+    # Remove the complete technical prefix, not only its first marker.
+    value = re.sub(r"^(?:\s*[-+*]\s+)+", "", value)
     return _SPACE_RE.sub(" ", value.replace("|", " ")).strip()
 
 
@@ -298,6 +304,57 @@ def _locate_table_parts(
     return sorted(unique.values(), key=lambda box: (box["y"], box["x"])), anchor
 
 
+def _search_pdf_boxes(
+    page: Any, text: str, fitz: Any, text_page: Any = None,
+) -> list[dict[str, float]]:
+    """Locate one proven fragment using MuPDF's local text search.
+
+    CAD sheets often interleave unrelated columns in the global ``sort=True``
+    word order.  ``Page.search_for`` follows the PDF text spans themselves and
+    can therefore find a phrase even when the page-wide stream cannot.  Long
+    wrapped notes get a conservative chunk fallback so one unrelated column
+    between two visual lines does not invalidate every mask.
+    """
+    clean = _SPACE_RE.sub(" ", str(text or "")).strip()
+    if len(canonicalize_text(clean)) < 8:
+        return []
+    variants = [clean]
+    compact_number = re.sub(r"^(\d{1,3})\.\s+", r"\1.", clean)
+    if compact_number != clean:
+        variants.append(compact_number)
+    rectangles = []
+    for variant in variants:
+        rectangles = list(page.search_for(variant, textpage=text_page))
+        if rectangles:
+            break
+    if not rectangles:
+        for variant in variants:
+            words = variant.split()
+            if len(words) < 8:
+                continue
+            chunk_size = 8
+            candidate_rectangles = []
+            for start in range(0, len(words), chunk_size):
+                chunk = " ".join(words[start:start + chunk_size]).strip()
+                if len(canonicalize_text(chunk)) < 20:
+                    continue
+                found = list(page.search_for(chunk, textpage=text_page))
+                # A long chunk yielding many disconnected hits is ambiguous.
+                if 0 < len(found) <= 4:
+                    candidate_rectangles.extend(found)
+            if candidate_rectangles:
+                rectangles = candidate_rectangles
+                break
+    boxes = []
+    for rectangle in rectangles:
+        if box := _normalized_bbox(page, rectangle, fitz):
+            boxes.append(box)
+    unique = {
+        (box["x"], box["y"], box["width"], box["height"]): box for box in boxes
+    }
+    return sorted(unique.values(), key=lambda box: (box["y"], box["x"]))
+
+
 def attach_pdf_locations(
     fragments: list[dict[str, Any]], pdf_path: Path, fitz: Any
 ) -> None:
@@ -310,7 +367,10 @@ def attach_pdf_locations(
             if pdf_page < 1 or pdf_page > document.page_count:
                 continue
             page = document[pdf_page - 1]
-            stream, words = _normalized_word_stream(page.get_text("words", sort=True))
+            text_page = page.get_textpage()
+            stream, words = _normalized_word_stream(
+                page.get_text("words", sort=True, textpage=text_page)
+            )
             cursors: dict[str, int] = defaultdict(int)
             for fragment in page_fragments:
                 canonical = str(fragment["canonical_text"])
@@ -321,6 +381,10 @@ def attach_pdf_locations(
                 if start >= 0:
                     cursors[canonical] = end
                 boxes = _span_boxes(page, words, start, end, fitz) if start >= 0 else []
+                if not boxes:
+                    boxes = _search_pdf_boxes(
+                        page, str(fragment.get("text") or ""), fitz, text_page
+                    )
                 if not boxes and fragment.get("source_kind") == "table_row":
                     boxes, table_span = _locate_table_parts(
                         page, stream, words, fragment.get("location_parts") or [], fitz
