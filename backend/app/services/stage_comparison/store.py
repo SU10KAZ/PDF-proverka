@@ -19,6 +19,7 @@ from . import scanner as scanner_mod
 from . import document_matching
 from . import sheet_matching
 from . import text_comparison
+from . import text_differences
 
 
 SHELL_KIND = "stage_comparison_shell"
@@ -365,6 +366,7 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "right_page_count": _page_count((pair["right"] or {})["pdf_path"]),
         "sheet_matching": get_sheet_matching_state(session_id, pair_id),
         "text_comparison": get_text_comparison_state(session_id, pair_id),
+        "text_differences": get_text_differences_state(session_id, pair_id),
     }
 
 
@@ -655,6 +657,68 @@ def require_text_exclusions_for_downstream(session_id: str, pair_id: str) -> dic
     if not payload.get("valid"):
         raise ValueError("text_exclusions_invalid")
     return payload
+
+
+def get_text_differences_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.text_differences_path(session_id, pair_id))
+    if not isinstance(payload, dict):
+        return None
+    exclusions = get_text_exclusions_state(session_id, pair_id)
+    stale = (
+        not exclusions
+        or bool(exclusions.get("stale"))
+        or not bool(exclusions.get("valid"))
+        or payload.get("source_signature")
+        != text_differences.source_signature(exclusions or {})
+    )
+    return text_differences.public_view(payload, stale=stale)
+
+
+def run_text_differences(session_id: str, pair_id: str) -> dict:
+    """Build one factual-difference record per accepted sheet group."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        exclusions = require_text_exclusions_for_downstream(session_id, pair_id)
+        comparison = _read_json(paths_mod.text_comparison_path(session_id, pair_id))
+        if (
+            not isinstance(comparison, dict)
+            or comparison.get("version") != 1
+            or comparison.get("source_signature") != exclusions.get("source_signature")
+        ):
+            raise ValueError("text_comparison_required")
+        expected_signature = text_differences.source_signature(exclusions)
+        existing = _read_json(paths_mod.text_differences_path(session_id, pair_id))
+        if (
+            isinstance(existing, dict)
+            and existing.get("version") == text_differences.VERSION
+            and existing.get("source_signature") == expected_signature
+        ):
+            return text_differences.public_view(existing, stale=False) or {}
+
+        links_payload = _load_sheet_links(session_id, pair_id)
+        links = list(links_payload.get("links") or [])
+        if not links:
+            raise ValueError("accepted_sheet_links_required")
+        suggestions = _load_sheet_suggestions(session_id, pair_id) or {}
+        labels = {
+            side: _sheet_labels(list(suggestions.get(f"{side}_sheet_index") or []))
+            for side in ("left", "right")
+        }
+        payload = text_differences.build_text_differences(
+            pair_id=pair_id,
+            generated_at=_utc_now(),
+            exclusions=exclusions,
+            comparison=comparison,
+            links=links,
+            labels=labels,
+        )
+        _atomic_write_json(paths_mod.text_differences_path(session_id, pair_id), payload)
+        return text_differences.public_view(payload, stale=False) or {}
 
 
 def run_text_comparison(session_id: str, pair_id: str) -> dict:
@@ -1421,6 +1485,8 @@ __all__ = [
     "get_text_exclusions_state",
     "require_text_exclusions_for_downstream",
     "run_text_comparison",
+    "get_text_differences_state",
+    "run_text_differences",
     "render_pdf_page_svg",
     "page_svg_payload",
     "page_thumbnail_payload",

@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "provider": "codex",
+  "requested_model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec",
+  "prompt_version": "stage3_text_delta_v1",
+  "cases": [
+    {
+      "case_id": "area_and_added_room",
+      "ok": true,
+      "elapsed_sec": 10.421,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13393,
+        "cached_input_tokens": 8960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 291,
+        "reasoning_output_tokens": 27
+      },
+      "answer": "{\"changed\":[{\"left_ids\":[\"txt_e80e92b24f192d93\"],\"right_ids\":[\"txt_fe97492628af5ca5\"],\"summary\":\"Площадь автостоянки С.А.2 изменена с 4394,20 на 4369,80\",\"before\":\"С.А.2 Автостоянка 4394,20 B2\",\"after\":\"С.А.2 Автостоянка 4369,80 B2\"},{\"left_ids\":[\"txt_aa1c03c75c340d10\"],\"right_ids\":[\"txt_3298fa2e583b7208\"],\"summary\":\"Площадь электрощитовой 1.Т.5 изменена с 65,50 на 59,70\",\"before\":\"1.Т.5 Электрощитовая 65,50 B3\",\"after\":\"1.Т.5 Электрощитовая 59,70 B3\"}],\"removed\":[],\"added\":[{\"right_ids\":[\"txt_953d02f2bdb15653\"],\"summary\":\"Добавлена автостоянка С.А.1 площадью 10830,50 B2\",\"after\":\"С.А.1 Автостоянка 10830,50 B2\"}]}",
+      "error": ""
+    },
+    {
+      "case_id": "equipment_marks",
+      "ok": true,
+      "elapsed_sec": 14.177,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13457,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 382,
+        "reasoning_output_tokens": 66
+      },
+      "answer": "{\"changed\":[{\"left_ids\":[\"txt_08cf6ef3e5fd2670\"],\"right_ids\":[\"txt_670a57c3be6569f4\"],\"summary\":\"Изменено обозначение: «Проеход» на «Проезд».\",\"before\":\"2.К.1 Проеход блока кладовых 23,10\",\"after\":\"2.К.1 Проезд блока кладовых 23,10\"},{\"left_ids\":[\"txt_8fe1c0ead799ea2e\"],\"right_ids\":[\"txt_3d6a5299ee1b8411\"],\"summary\":\"Изменено обозначение электрощитовой: ВРЧ-К2 на ВРУ-К2.\",\"before\":\"2.Т.1 Электрощитовая жилого корпуса 2 ВРЧ-К2 29,50 B3\",\"after\":\"2.Т.1 Электрощитовая жилого корпуса 2 ВРУ-К2 29,50 B3\"},{\"left_ids\":[\"txt_0a9d101db83a7af5\"],\"right_ids\":[\"txt_a9752d4dad25a29f\"],\"summary\":\"Изменено обозначение электрощитовой: ВРЧ1 на ВРУ1.\",\"before\":\"2.Т.2 Электрощитовая автостоянки ВРЧ1 17,90 B3\",\"after\":\"2.Т.2 Электрощитовая автостоянки ВРУ1 17,90 B3\"}],\"removed\":[],\"added\":[]}",
+      "error": ""
+    },
+    {
+      "case_id": "formatting_only",
+      "ok": true,
+      "elapsed_sec": 7.355,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13329,
+        "cached_input_tokens": 8960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 32,
+        "reasoning_output_tokens": 16
+      },
+      "answer": "{\"changed\":[],\"removed\":[],\"added\":[]}",
+      "error": ""
+    },
+    {
+      "case_id": "wastewater_values",
+      "ok": true,
+      "elapsed_sec": 9.726,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13318,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 179,
+        "reasoning_output_tokens": 26
+      },
+      "answer": "{\"changed\":[{\"left_ids\":[\"txt_8987880b31131ac4\"],\"right_ids\":[\"txt_4a8eaf20a282f69d\"],\"summary\":\"Изменены значения общего расхода стоков: 114,08 10,58 4,65 на 121,33 12,24 4,81+1,6=6,41.\",\"before\":\"Общий расход стоков на весь дом 114,08 10,58 4,65\",\"after\":\"Общий расход стоков на весь дом 121,33 12,24 4,81+1,6=6,41\"}],\"removed\":[],\"added\":[]}",
+      "error": ""
+    },
+    {
+      "case_id": "unrelated_corrections",
+      "ok": true,
+      "elapsed_sec": 10.335,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13382,
+        "cached_input_tokens": 8960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 302,
+        "reasoning_output_tokens": 38
+      },
+      "answer": "{\"changed\":[],\"removed\":[{\"left_ids\":[\"txt_ab103faee9411ce2\"],\"summary\":\"Изменения планировочных решений по типу и планировке квартир, включая изменение количества квартир.\",\"before\":\"Изменения планировочных решений по типу и планировке квартир (изменение количества квартир):\"},{\"left_ids\":[\"txt_e6de1f25c20f1626\"],\"summary\":\"Этажность корпуса 4 увеличена с 10 до 16 этажей.\",\"before\":\"Увеличение этажности корпуса 4 с 10 до 16 этажей.\"}],\"added\":[{\"right_ids\":[\"txt_c1e76795f7202656\"],\"summary\":\"Увеличение высоты этажей со 2-го по 16-й корпуса 4.\",\"after\":\"-Увеличение высоты этажей со 2-16 корпуса 4.\"},{\"right_ids\":[\"txt_ecef6c97de398bd0\"],\"summary\":\"Увеличение высоты оконных проёмов с 2,85 м до 3,10 метров.\",\"after\":\"-Увеличение высоты оконных проемов с 2,85 м до 3,10 метров.\"}]}",
+      "error": ""
+    },
+    {
+      "case_id": "long_note_reference",
+      "ok": true,
+      "elapsed_sec": 11.034,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13671,
+        "cached_input_tokens": 8960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 248,
+        "reasoning_output_tokens": 31
+      },
+      "answer": "{\"changed\":[{\"left_ids\":[\"txt_8512d2770cd66577\"],\"right_ids\":[\"txt_4e6a709a0da14f97\"],\"summary\":\"Изменена ссылка на источник исследования условий инсоляции: «Приложение 1» заменено на «графическую часть»; удалена ссылка «см. Приложение 1».\",\"before\":\"Исследование условий инсоляции в проектируемом объекте выполнены в Приложении 1. Расчеты свидетельствуют, что для нормируемых помещений, попавших под корректировку, нарушений условий инсоляции не возникает (см. Приложение 1).\",\"after\":\"Исследование условий инсоляции в проектируемом объекте выполнены в графической части. Расчеты свидетельствуют, что для нормируемых помещений, попавших под корректировку, нарушений условий инсоляции не возникает.\"}],\"removed\":[],\"added\":[]}",
+      "error": ""
+    },
+    {
+      "case_id": "title_metadata",
+      "ok": true,
+      "elapsed_sec": 12.121,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13386,
+        "cached_input_tokens": 8960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 276,
+        "reasoning_output_tokens": 40
+      },
+      "answer": "{\"changed\":[{\"left_ids\":[\"txt_33b07d3d9025e9e3\"],\"right_ids\":[\"txt_25d2578d58c845a0\"],\"summary\":\"Обозначение изменено: добавлено «-КОРР.»\",\"before\":\"АА/БЭ- 03-ДСЗ-АР2\",\"after\":\"АА/БЭ-03-ДСЗ-АР2-КОРР.\"},{\"left_ids\":[\"txt_e661954ac70568a1\"],\"right_ids\":[\"txt_094d1a5fdcaba7bb\"],\"summary\":\"Номер тома изменён с 3.2 на 3.1\",\"before\":\"Том 3.2\",\"after\":\"Том 3.1\"},{\"left_ids\":[\"txt_21a8e970728a46fa\"],\"right_ids\":[\"txt_325122c0e854be55\"],\"summary\":\"Год изменён с 2024 на 2025\",\"before\":\"Москва 2024\",\"after\":\"Москва 2025\"}],\"removed\":[],\"added\":[]}",
+      "error": ""
+    },
+    {
+      "case_id": "customer_change",
+      "ok": true,
+      "elapsed_sec": 9.768,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13293,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 119,
+        "reasoning_output_tokens": 0
+      },
+      "answer": "{\"changed\":[],\"removed\":[{\"left_ids\":[\"txt_51393a3e9e16c794\"],\"summary\":\"Удалён заказчик: ООО «Артел Архитектс».\",\"before\":\"Заказчик: ООО «Артел Архитектс»\"}],\"added\":[{\"right_ids\":[\"txt_a17aec0369c61110\"],\"summary\":\"Добавлен заказчик: ООО «МБ-Проект Бюро».\",\"after\":\"Заказчик – ООО «МБ-Проект Бюро»\"}]}",
+      "error": ""
+    },
+    {
+      "case_id": "removed_note",
+      "ok": true,
+      "elapsed_sec": 8.177,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13326,
+        "cached_input_tokens": 8960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 141,
+        "reasoning_output_tokens": 0
+      },
+      "answer": "{\"changed\":[],\"removed\":[{\"left_ids\":[\"txt_29a6d53cd0aa76f4\",\"txt_1f0213a8730759bb\"],\"summary\":\"Удалено примечание об инсоляции расчётных помещений квартир на 3-м этаже и вышерасположенных этажах.\",\"before\":\"Примечание:\\n1. Во всех расчетных помещениях квартир, расположенных на 3-м этаже в проектируемых корпусах, условия инсоляции выполняются, значит они будут выполняться и на вышерасположенных этажах, где светотехнические условия лучше.\"}],\"added\":[]}",
+      "error": ""
+    },
+    {
+      "case_id": "added_drawing_rows",
+      "ok": true,
+      "elapsed_sec": 10.942,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13351,
+        "cached_input_tokens": 8960,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 220,
+        "reasoning_output_tokens": 13
+      },
+      "answer": "{\"changed\":[],\"removed\":[],\"added\":[{\"right_ids\":[\"txt_feb948ca4f6c3dec\"],\"summary\":\"Добавлен ситуационный план, масштаб 1:2000.\",\"after\":\"2 Ситуационный план Масштаб 1:2000\"},{\"right_ids\":[\"txt_5d3d23a169ee61f5\"],\"summary\":\"Добавлена схема инсоляции корпуса 4, масштаб 1:500.\",\"after\":\"4 Схема инсоляции корпуса 4. Масштаб 1:500\"},{\"right_ids\":[\"txt_f5de3bfb35145d1b\"],\"summary\":\"Добавлен расчет КЕО: точка 1, 2 этаж, корпус 4, спальня, масштаб 1:50.\",\"after\":\"7 Расчет КЕО точка 1.; 2 этаж. Корпус 4. Спальня. Масштаб 1:50\"}]}",
+      "error": ""
+    },
+    {
+      "case_id": "contents_with_ambiguity",
+      "ok": true,
+      "elapsed_sec": 20.718,
+      "exit_code": 0,
+      "reported_model": null,
+      "usage": {
+        "input_tokens": 13478,
+        "cached_input_tokens": 13056,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 738,
+        "reasoning_output_tokens": 345
+      },
+      "answer": "{\"changed\":[{\"left_ids\":[\"txt_4aa446ba4f5d1127\"],\"right_ids\":[\"txt_4547ab37fae19405\"],\"summary\":\"Система уравнивания потенциалов изменена с дополнительной на основную.\",\"before\":\"АА/БЭ-03-ДСЗ-ИОС1.1.ГЧ Дополнительная система уравнивания потенциалов 36\",\"after\":\"л.24 Основная система уравнения потенциалов\"},{\"left_ids\":[\"txt_79ec0d971f7d0b3f\"],\"right_ids\":[\"txt_68ba5628a0f374ce\"],\"summary\":\"Однолинейная расчетная схема ВРУ-3 заменена на однолинейную схему ВРУ-3; обозначения страниц изменены с 25-26 на л.5.\",\"before\":\"АА/БЭ-03-ДСЗ-ИОС1.1.ГЧ Однолинейная расчетная схема ВРУ-3 25-26\",\"after\":\"л.5 Однолинейная схема ВРУ-3\"}],\"removed\":[{\"left_ids\":[\"txt_ffdd4acd472e7149\"],\"summary\":\"Фрагмент однолинейной расчетной схемы ВРУ-3 на страницах 27-28 отсутствует в РД.\",\"before\":\"АА/БЭ-03-ДСЗ-ИОС1.1.ГЧ Однолинейная расчетная схема ВРУ-3 27-28\"}],\"added\":[{\"right_ids\":[\"txt_fe1382206759393b\"],\"summary\":\"Добавлена однолинейная схема ВРУ-4 на л.6.\",\"after\":\"л.6 Однолинейная схема ВРУ-4\"}]}",
+      "error": ""
+    }
+  ]
+}

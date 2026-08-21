@@ -65,6 +65,10 @@ def text_exclusions_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "text_exclusions.json"
 
 
+def text_differences_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "text_differences.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -82,5 +86,6 @@ __all__ = [
     "sheet_links_path",
     "text_comparison_path",
     "text_exclusions_path",
+    "text_differences_path",
     "index_json_path",
 ]

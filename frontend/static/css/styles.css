@@ -3108,7 +3108,7 @@ tr.row-rejected td.sc-cell-goto {
     margin-top: 8px;
 }
 .btn-page {
-    background: var(--surface);
+    background: var(--card-bg);
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -4702,6 +4702,78 @@ tr.row-rejected td.sc-cell-goto {
     text-align: center;
 }
 .sc-empty-state--large { min-height: 220px; display: grid; place-items: center; }
+
+/* ─── Stage comparison: one factual-difference row per sheet group ─── */
+.sc-differences { display: grid; gap: 12px; }
+.sc-differences__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 18px;
+}
+.sc-differences__head p { margin: 5px 0 0; color: var(--text-muted); }
+.sc-differences__stale { color: #92400e; background: #fffbeb; border-color: #f59e0b; }
+.sc-differences__summary { display: flex; flex-wrap: wrap; gap: 8px; }
+.sc-differences__summary span {
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-muted);
+}
+.sc-differences__summary b { color: var(--text); margin-left: 4px; }
+.sc-differences__table-wrap {
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+}
+.sc-differences__table { width: 100%; min-width: 1060px; border-collapse: collapse; table-layout: fixed; }
+.sc-differences__table th,
+.sc-differences__table td {
+    padding: 10px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+}
+.sc-differences__table th:last-child,
+.sc-differences__table td:last-child { border-right: 0; }
+.sc-differences__table tbody tr:last-child td { border-bottom: 0; }
+.sc-differences__table th { position: sticky; top: 0; z-index: 1; background: var(--card2-bg); }
+.sc-differences__table th:nth-child(1),
+.sc-differences__table th:nth-child(2) { width: 12%; }
+.sc-differences__table th:nth-child(3),
+.sc-differences__table th:nth-child(4),
+.sc-differences__table th:nth-child(5) { width: 25.33%; }
+.sc-differences__pages { display: grid; gap: 5px; }
+.sc-differences__pages button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--teal);
+    text-align: left;
+    cursor: pointer;
+}
+.sc-differences__items details { padding: 5px 0; border-bottom: 1px dashed var(--border); }
+.sc-differences__items details:last-child { border-bottom: 0; }
+.sc-differences__items summary { cursor: pointer; line-height: 1.35; }
+.sc-differences__items summary::marker { color: var(--teal); }
+.sc-differences__none { color: var(--text-muted); }
+.sc-differences__detail { display: grid; gap: 8px; margin-top: 8px; }
+.sc-differences__detail pre {
+    max-height: 180px;
+    margin: 4px 0 7px;
+    padding: 8px;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    border-radius: 6px;
+    background: var(--card2-bg);
+    font: inherit;
+    font-size: 12px;
+}
 .sc-sheet-map {
     overflow: hidden;
     border: 1px solid var(--border2);

@@ -252,6 +252,32 @@ async def get_text_exclusions(session_id: str, pair_id: str):
     return payload or {"version": 1, "pair_id": pair_id, "status": "not_started"}
 
 
+@router.post("/sessions/{session_id}/pairs/{pair_id}/text-differences")
+async def rebuild_text_differences(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(
+            store.run_text_differences, session_id, pair_id
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
+        raise HTTPException(400, f"Не удалось определить расхождения текста: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("deterministic text differences failed")
+        raise HTTPException(500, f"Ошибка анализа расхождений текста: {exc}") from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/text-differences")
+async def get_text_differences(session_id: str, pair_id: str):
+    try:
+        payload = await run_in_threadpool(
+            store.get_text_differences_state, session_id, pair_id
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return payload or {"version": 1, "pair_id": pair_id, "status": "not_started"}
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-thumb")
 async def get_page_thumb(
     request: Request,

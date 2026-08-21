@@ -5863,8 +5863,105 @@
                 </template>
             </div>
 
-            <div v-if="scTab==='diffs'" class="sc-empty-state sc-empty-state--large">
-                <strong>Сравнение ещё не выполнено</strong>
+            <div v-if="scTab==='diffs'" class="sc-shell sc-differences">
+                <section class="sc-shell-card sc-differences__head">
+                    <div>
+                        <strong>Текстовые расхождения П ↔ РД</strong>
+                        <p v-if="scActivePair">
+                            {{ scActivePair.left.filename }} ↔ {{ scActivePair.right.filename }}
+                        </p>
+                        <p v-else>Выберите пару документов на вкладке «Загрузка документации».</p>
+                    </div>
+                    <button type="button" class="btn btn-primary"
+                            :disabled="!scActivePair || scTextComparisonLoading || scTextDifferencesLoading"
+                            @click="scTextComparison && !scTextComparison.stale ? scRunTextDifferences() : scRunTextComparison()">
+                        {{ scTextComparisonLoading || scTextDifferencesLoading ? 'Сравнение…' : 'Сформировать расхождения' }}
+                    </button>
+                </section>
+
+                <div v-if="scTextComparisonError || scTextDifferencesError" class="sc-shell-error">
+                    {{ scTextComparisonError || scTextDifferencesError }}
+                </div>
+                <div v-if="scTextDifferences && scTextDifferences.stale" class="sc-shell-error sc-differences__stale">
+                    Связи или исходные документы изменились. Пересчитайте расхождения.
+                </div>
+
+                <section v-if="scTextDifferences && !scTextDifferences.stale" class="sc-differences__summary">
+                    <span>Групп с изменениями <b>{{ scTextDifferenceGroups.length }}</b></span>
+                    <span>Изменилось <b>{{ scTextDifferences.summary.changed || 0 }}</b></span>
+                    <span>Удалено <b>{{ scTextDifferences.summary.removed || 0 }}</b></span>
+                    <span>Добавлено <b>{{ scTextDifferences.summary.added || 0 }}</b></span>
+                    <span>Неоднозначно <b>{{ scTextDifferences.summary.model_ambiguity || 0 }}</b></span>
+                </section>
+
+                <div v-if="!scActivePair" class="sc-empty-state sc-empty-state--large">
+                    <strong>Пара документов не выбрана</strong>
+                </div>
+                <div v-else-if="!scTextDifferences" class="sc-empty-state sc-empty-state--large">
+                    <strong>Сравнение ещё не выполнено</strong>
+                </div>
+                <div v-else-if="!scTextDifferences.stale && !scTextDifferenceGroups.length"
+                     class="sc-empty-state sc-empty-state--large">
+                    <strong>Текстовых расхождений нет</strong>
+                </div>
+
+                <div v-if="scTextDifferenceGroups.length" class="sc-differences__table-wrap">
+                    <table class="sc-differences__table">
+                        <thead>
+                            <tr>
+                                <th>Лист П</th>
+                                <th>Лист РД</th>
+                                <th>Изменилось</th>
+                                <th>Удалено</th>
+                                <th>Добавлено</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="group in scTextDifferenceGroups" :key="group.id">
+                                <td class="sc-differences__pages">
+                                    <button v-for="(label, index) in group.left_labels"
+                                            :key="group.id + '-left-' + index" type="button"
+                                            @click="scOpenDifferenceSource(group, {left_pages: [group.left_pages[index]]}, 'left')">
+                                        {{ label }}
+                                    </button>
+                                </td>
+                                <td class="sc-differences__pages">
+                                    <button v-for="(label, index) in group.right_labels"
+                                            :key="group.id + '-right-' + index" type="button"
+                                            @click="scOpenDifferenceSource(group, {right_pages: [group.right_pages[index]]}, 'right')">
+                                        {{ label }}
+                                    </button>
+                                </td>
+                                <td v-for="bucket in ['changed', 'removed', 'added']"
+                                    :key="group.id + '-' + bucket" class="sc-differences__items">
+                                    <span v-if="!(group[bucket] || []).length" class="sc-differences__none">—</span>
+                                    <details v-for="item in (group[bucket] || [])"
+                                             :key="(item.left_fragment_ids || []).join('-') + ':' + (item.right_fragment_ids || []).join('-')">
+                                        <summary>{{ item.summary }}</summary>
+                                        <div class="sc-differences__detail">
+                                            <div v-if="item.before">
+                                                <b>Было:</b>
+                                                <pre>{{ item.before }}</pre>
+                                                <button type="button" class="btn btn-sm"
+                                                        @click="scOpenDifferenceSource(group, item, 'left')">
+                                                    Открыть лист П
+                                                </button>
+                                            </div>
+                                            <div v-if="item.after">
+                                                <b>Стало:</b>
+                                                <pre>{{ item.after }}</pre>
+                                                <button type="button" class="btn btn-sm"
+                                                        @click="scOpenDifferenceSource(group, item, 'right')">
+                                                    Открыть лист РД
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div v-if="scTab==='report'" class="sc-empty-state sc-empty-state--large">
