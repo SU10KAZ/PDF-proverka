@@ -132,6 +132,12 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
   });
 
+  it('hides the page header and upload button on the sheet-link tab', () => {
+    // заголовок и загрузка относятся к первому шагу, а на «Связи блоков»
+    // только съедают высоту, которой не хватает просмотрщику
+    expect(html).toContain('<div v-if="scTab !== \'links\'" class="page-header sc-shell__header">');
+  });
+
   it('toggles the strip from a rail button under the toolbar', () => {
     // в панели инструментов кнопка стояла среди настроек масштаба и читалась
     // как ещё одна настройка, хотя открывает целую панель

@@ -5378,7 +5378,9 @@
         </div>
         <!-- ─── Documentation comparison shell ───────────────────────── -->
         <div v-if="currentView === 'stage-comparison'" class="container">
-            <div class="page-header sc-shell__header">
+            <!-- Заголовок и загрузка относятся к первому шагу. На «Связи блоков»
+                 они только съедают высоту, которой не хватает просмотрщику. -->
+            <div v-if="scTab !== 'links'" class="page-header sc-shell__header">
                 <div>
                     <h2>Сравнение документации</h2>
                     <p>Сопоставление документов и листов П → РД с ручной корректировкой</p>
