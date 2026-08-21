@@ -11869,6 +11869,11 @@ const app = createApp({
         const SC_CONTINUOUS_PREVIEW_WIDTH = 1000;
         const SC_SEARCH_FOCUS_ZOOM = 2.5;
         const SC_TILE_SIZE = 512;
+        // Запас вокруг видимой полосы. Одного ряда не хватало: панель бывает
+        // в 327 px высотой, и короткой прокрутки достаточно, чтобы выйти за
+        // пределы загруженного.
+        const SC_TILE_MARGIN = 2;
+        const SC_TILE_KEEP_PER_PAGE = 80;
         const SC_TILE_MAX_LEVEL = 6;
         const scSyncView = ref(true);
         const scViewMode = ref('paged');
@@ -14992,10 +14997,10 @@ const app = createApp({
                 const visibleTop = Math.max(0, (viewportTop - sheetTop) / cssScale);
                 const visibleRight = Math.min(dims.w, (viewportRight - sheetLeft) / cssScale);
                 const visibleBottom = Math.min(dims.h, (viewportBottom - sheetTop) / cssScale);
-                const firstX = Math.max(0, Math.floor(visibleLeft / span) - 1);
-                const firstY = Math.max(0, Math.floor(visibleTop / span) - 1);
-                const lastX = Math.min(Math.ceil(dims.w / span) - 1, Math.floor(visibleRight / span) + 1);
-                const lastY = Math.min(Math.ceil(dims.h / span) - 1, Math.floor(visibleBottom / span) + 1);
+                const firstX = Math.max(0, Math.floor(visibleLeft / span) - SC_TILE_MARGIN);
+                const firstY = Math.max(0, Math.floor(visibleTop / span) - SC_TILE_MARGIN);
+                const lastX = Math.min(Math.ceil(dims.w / span) - 1, Math.floor(visibleRight / span) + SC_TILE_MARGIN);
+                const lastY = Math.min(Math.ceil(dims.h / span) - 1, Math.floor(visibleBottom / span) + SC_TILE_MARGIN);
                 const tiles = [];
                 for (let y = firstY; y <= lastY; y += 1) {
                     for (let x = firstX; x <= lastX; x += 1) {
@@ -15011,9 +15016,25 @@ const app = createApp({
                         });
                     }
                 }
+                // Раньше набор тайлов ЗАМЕНЯЛСЯ на новую полосу видимости, и
+                // всё, что осталось выше, тут же пропадало: при движении вниз
+                // пройденная половина листа откатывалась к размытому preview,
+                // пока соседняя область догружалась. Удерживаем уже загруженные
+                // тайлы того же уровня, ограничивая их число сверху.
+                const merged = [...tiles];
+                const known = new Set(tiles.map(tile => tile.key));
+                const levelPrefix = `${page}:${level}:`;
+                for (const tile of scContinuousTiles[side][page] || []) {
+                    if (merged.length >= SC_TILE_KEEP_PER_PAGE) break;
+                    // тайлы другого уровня (после смены масштаба) не удерживаем:
+                    // они перекрыли бы новые своим устаревшим разрешением
+                    if (!tile.key.startsWith(levelPrefix) || known.has(tile.key)) continue;
+                    merged.push(tile);
+                    known.add(tile.key);
+                }
                 const before = (scContinuousTiles[side][page] || []).map(tile => tile.key).join('|');
-                const after = tiles.map(tile => tile.key).join('|');
-                if (before !== after) scContinuousTiles[side][page] = tiles;
+                const after = merged.map(tile => tile.key).join('|');
+                if (before !== after) scContinuousTiles[side][page] = merged;
             }
             for (const page of Object.keys(scContinuousTiles[side]).map(Number)) {
                 if (!visiblePages.has(page)) delete scContinuousTiles[side][page];

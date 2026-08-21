@@ -174,6 +174,21 @@ describe('documentation comparison shell', () => {
     expect(css).toContain('.sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }');
   });
 
+  it('keeps loaded tiles while the sheet is still on screen', () => {
+    // набор тайлов ЗАМЕНЯЛСЯ на новую полосу видимости: пройденная половина
+    // листа откатывалась к размытому preview, пока догружалась соседняя
+    expect(app).toContain('const SC_TILE_MARGIN = 2;');
+    expect(app).toContain('const SC_TILE_KEEP_PER_PAGE = 80;');
+    expect(app).toContain('const merged = [...tiles];');
+    expect(app).toContain('if (merged.length >= SC_TILE_KEEP_PER_PAGE) break;');
+    expect(app).toContain('if (before !== after) scContinuousTiles[side][page] = merged;');
+    // тайлы другого уровня не удерживаем — перекрыли бы новые старым разрешением
+    expect(app).toContain('if (!tile.key.startsWith(levelPrefix) || known.has(tile.key)) continue;');
+    // запас считается из константы, а не зашитой единицы
+    expect(app).not.toContain('Math.floor(visibleTop / span) - 1');
+    expect(app).not.toContain('Math.floor(visibleBottom / span) + 1');
+  });
+
   it('retries a failed page preview before showing the error', () => {
     // одна сорвавшаяся картинка навсегда рисовала «Не удалось загрузить preview»
     expect(app).toContain('const SC_PREVIEW_RETRIES = 2;');
