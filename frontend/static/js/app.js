@@ -12595,7 +12595,9 @@ const app = createApp({
             if (state && state.status === 'opening') return {tone: 'running', label: 'Открытие…'};
             if (state && state.status === 'processing') return {tone: 'running', label: 'Идёт сравнение…'};
             if (state && state.status === 'error') return {tone: 'error', label: 'Ошибка'};
-            if (state && state.status === 'done') return {tone: 'done', label: 'Сравнение готово'};
+            if ((state && state.status === 'done') || (row.pair && row.pair.sheet_matching_ready)) {
+                return {tone: 'done', label: 'Сравнение готово'};
+            }
             if (state && state.status === 'opened') return {tone: 'opened', label: 'Пара открыта'};
             if (scIsPairRowConfirmed(row)) return {tone: 'confirmed', label: 'Пара сопоставлена'};
             if (row.pair) return {tone: 'saved', label: 'Пара сохранена'};

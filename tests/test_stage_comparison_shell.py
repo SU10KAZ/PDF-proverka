@@ -84,6 +84,8 @@ def test_pdf_list_pair_and_raster_page(tmp_path, monkeypatch):
     assert pair_view["right_page_count"] == 1
 
     pair_id = pair_view["pair"]["id"]
+    initial_session = client.get(f"/api/stage-comparison/sessions/{session['id']}").json()
+    assert initial_session["pairs"][0]["sheet_matching_ready"] is False
     suggested_pairing = client.post(
         f"/api/stage-comparison/sessions/{session['id']}/document-pairing/suggest"
     )
@@ -125,6 +127,10 @@ def test_pdf_list_pair_and_raster_page(tmp_path, monkeypatch):
     )
     assert processed.status_code == 200
     assert processed.json()["suggestions"]["suggestions"][0]["primary_right_page"] == 1
+    restored_after_processing = client.get(
+        f"/api/stage-comparison/sessions/{session['id']}"
+    ).json()
+    assert restored_after_processing["pairs"][0]["sheet_matching_ready"] is True
 
     saved = client.put(
         f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/sheet-links",

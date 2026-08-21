@@ -79,9 +79,25 @@ def _pair_ids(session_id: str) -> list[str]:
     return ordered
 
 
+def _pair_with_persisted_status(session_id: str, pair: dict) -> dict:
+    """Expose durable comparison state in the lightweight session payload."""
+    pair_id = str(pair.get("id") or "")
+    suggestions = _read_json(paths_mod.sheet_match_suggestions_path(session_id, pair_id))
+    return {
+        **pair,
+        "sheet_matching_ready": bool(
+            isinstance(suggestions, dict) and suggestions.get("version") == 2
+        ),
+    }
+
+
 def _session_payload(meta: dict) -> dict:
     session_id = str(meta["id"])
-    pairs = [pair for pair_id in _pair_ids(session_id) if (pair := _load_pair(session_id, pair_id))]
+    pairs = [
+        _pair_with_persisted_status(session_id, pair)
+        for pair_id in _pair_ids(session_id)
+        if (pair := _load_pair(session_id, pair_id))
+    ]
     return {
         "id": session_id,
         "kind": SHELL_KIND,

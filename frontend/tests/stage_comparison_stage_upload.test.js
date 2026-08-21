@@ -95,6 +95,11 @@ describe('documentation comparison shell', () => {
     expect(app).toContain("method: 'PUT'");
   });
 
+  it('restores the durable completed status after a page reload', () => {
+    expect(app).toContain('(row.pair && row.pair.sheet_matching_ready)');
+    expect(app).toContain("return {tone: 'done', label: 'Сравнение готово'};");
+  });
+
   it('drops pair rows that are empty on both sides, keeping one-sided holes', () => {
     // чистим ДАННЫЕ, а не вывод: перетаскивание адресуется scPairRows.value[row.index],
     // и фильтр отображения разошёлся бы с этой адресацией
