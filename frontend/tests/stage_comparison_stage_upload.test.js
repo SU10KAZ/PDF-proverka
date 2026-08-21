@@ -97,6 +97,19 @@ describe('documentation comparison shell', () => {
     expect(css).toContain('border-color: #2563eb');
   });
 
+  it('saves project pairing on the server and restores it before a local draft', () => {
+    expect(html).toContain('Сохранить сопоставленные проекты');
+    expect(html).toContain('@click="scSaveDocumentPairing()"');
+    expect(app).toContain('/document-pairing`');
+    expect(app).toContain("method: 'PUT'");
+    expect(app).toContain('serverPairing.left_order');
+    expect(app).toContain('serverPairing.right_order');
+    expect(app).toContain('serverPairing.confirmed_pairs');
+    expect(app).toContain('if (useSaved && !loadedFromServer && storageKey)');
+    expect(app).toContain("scPairingSaveMessage.value = loadedFromServer ? 'Загружено сохранённое сопоставление'");
+    expect(css).toContain('.sc-pair-savebar');
+  });
+
   it('moves a whole pair vertically from the row handle', () => {
     expect(html).toContain('@dragstart="scStartPairRowDrag($event, row)"');
     expect(html).toContain('@dragover.prevent="scDragPairRowOver($event, row.index)"');

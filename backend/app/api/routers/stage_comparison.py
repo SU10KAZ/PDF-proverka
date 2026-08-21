@@ -28,6 +28,17 @@ class CreatePairRequest(BaseModel):
     right_pdf: str = Field(min_length=1)
 
 
+class ConfirmedDocumentPairRequest(BaseModel):
+    left_pdf: str = Field(min_length=1)
+    right_pdf: str = Field(min_length=1)
+
+
+class SaveDocumentPairingRequest(BaseModel):
+    left_order: list[str | None]
+    right_order: list[str | None]
+    confirmed_pairs: list[ConfirmedDocumentPairRequest] = Field(default_factory=list)
+
+
 class SheetLinkRequest(BaseModel):
     id: str | None = None
     left_pages: list[int]
@@ -136,6 +147,22 @@ async def create_pair(session_id: str, request: CreatePairRequest):
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.put("/sessions/{session_id}/document-pairing")
+async def save_document_pairing(session_id: str, request: SaveDocumentPairingRequest):
+    try:
+        return await run_in_threadpool(
+            store.save_document_pairing,
+            session_id,
+            request.left_order,
+            request.right_order,
+            [pair.model_dump() for pair in request.confirmed_pairs],
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}")
 async def get_pair(session_id: str, pair_id: str):
     pair = await run_in_threadpool(store.get_pair_view, session_id, pair_id)
@@ -155,7 +182,7 @@ async def rebuild_sheet_match_suggestions(session_id: str, pair_id: str):
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
     except (OSError, UnicodeDecodeError) as exc:
-        raise HTTPException(400, f"Не удалось прочитать Markdown: {exc}") from exc
+        raise HTTPException(400, f"Не удалось прочитать HTML-оглавление: {exc}") from exc
 
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/sheet-matches")

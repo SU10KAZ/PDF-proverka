@@ -5381,7 +5381,7 @@
             <div class="page-header sc-shell__header">
                 <div>
                     <h2>Сравнение документации</h2>
-                    <p>Быстрое сопоставление листов П → РД по Markdown с ручной корректировкой</p>
+                    <p>Сопоставление документов и листов П → РД с ручной корректировкой</p>
                 </div>
                 <button class="btn btn-primary"
                         :disabled="!currentObjectId || scStageUploadIsBusy"
@@ -5413,6 +5413,21 @@
                 </div>
 
                 <section v-if="scSession" class="sc-shell-card sc-pair-workbench">
+                    <div class="sc-pair-savebar">
+                        <span v-if="scPairingSaveError" class="sc-pair-savebar__error">
+                            {{ scPairingSaveError }}
+                        </span>
+                        <span v-else-if="scPairingSaveMessage" class="sc-pair-savebar__success">
+                            {{ scPairingSaveMessage }}
+                        </span>
+                        <span v-else-if="scPairingDirty">Есть несохранённые изменения</span>
+                        <span v-else>Сохраните раскладку, чтобы восстановить её после перезапуска</span>
+                        <button class="btn btn-primary"
+                                :disabled="scPairingSaving || !scPairRows.length"
+                                @click="scSaveDocumentPairing()">
+                            {{ scPairingSaving ? 'Сохранение…' : 'Сохранить сопоставленные проекты' }}
+                        </button>
+                    </div>
                     <div class="sc-pair-board">
                         <div class="sc-pair-board__header">
                             <span>№</span>

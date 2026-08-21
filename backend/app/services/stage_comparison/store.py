@@ -88,6 +88,7 @@ def _session_payload(meta: dict) -> dict:
         "stage_a_path": meta.get("stage_a_path"),
         "stage_b_path": meta.get("stage_b_path"),
         "documents": meta.get("documents") or {"stage_1": [], "stage_2": []},
+        "document_pairing": meta.get("document_pairing"),
         "warnings": meta.get("warnings") or [],
         "pairs": pairs,
     }
@@ -225,6 +226,72 @@ def create_pair(session_id: str, left_pdf: str, right_pdf: str) -> dict:
         meta["pair_order"] = [*meta.get("pair_order", []), pair_id]
         _atomic_write_json(paths_mod.session_json_path(session_id), meta)
         return get_pair_view(session_id, pair_id) or pair
+
+
+def save_document_pairing(
+    session_id: str,
+    left_order: list[str | None],
+    right_order: list[str | None],
+    confirmed_pairs: list[dict],
+) -> dict:
+    """Persist the user-arranged document rows independently of browser state."""
+    with _lock:
+        meta = _load_session_meta(session_id)
+        if meta is None:
+            raise KeyError("session_not_found")
+        documents = meta.get("documents") or {}
+        available_left = {
+            str(item.get("pdf_path")) for item in documents.get("stage_1") or []
+            if item.get("pdf_path")
+        }
+        available_right = {
+            str(item.get("pdf_path")) for item in documents.get("stage_2") or []
+            if item.get("pdf_path")
+        }
+        normalized_left = [str(path) if path else None for path in left_order]
+        normalized_right = [str(path) if path else None for path in right_order]
+        if len(normalized_left) != len(normalized_right):
+            raise ValueError("document_orders_must_have_equal_length")
+
+        def validate_order(order: list[str | None], available: set[str], side: str) -> None:
+            selected = [path for path in order if path]
+            if len(selected) != len(set(selected)):
+                raise ValueError(f"duplicate_document_in_{side}_order")
+            if set(selected) != available:
+                raise ValueError(f"{side}_order_must_contain_all_session_documents")
+
+        validate_order(normalized_left, available_left, "left")
+        validate_order(normalized_right, available_right, "right")
+        left_positions = {path: index for index, path in enumerate(normalized_left) if path}
+        right_positions = {path: index for index, path in enumerate(normalized_right) if path}
+        normalized_pairs: list[dict[str, str]] = []
+        seen_left: set[str] = set()
+        seen_right: set[str] = set()
+        for raw in confirmed_pairs:
+            if not isinstance(raw, dict):
+                raise ValueError("confirmed_pair_must_be_object")
+            left_pdf = str(raw.get("left_pdf") or "")
+            right_pdf = str(raw.get("right_pdf") or "")
+            if left_pdf not in available_left or right_pdf not in available_right:
+                raise ValueError("confirmed_pair_document_not_in_session")
+            if left_positions[left_pdf] != right_positions[right_pdf]:
+                raise ValueError("confirmed_pair_documents_must_share_row")
+            if left_pdf in seen_left or right_pdf in seen_right:
+                raise ValueError("confirmed_pair_document_reused")
+            seen_left.add(left_pdf)
+            seen_right.add(right_pdf)
+            normalized_pairs.append({"left_pdf": left_pdf, "right_pdf": right_pdf})
+
+        pairing = {
+            "version": 1,
+            "left_order": normalized_left,
+            "right_order": normalized_right,
+            "confirmed_pairs": normalized_pairs,
+            "updated_at": _utc_now(),
+        }
+        meta["document_pairing"] = pairing
+        _atomic_write_json(paths_mod.session_json_path(session_id), meta)
+        return pairing
 
 
 def _import_fitz():
@@ -596,6 +663,7 @@ __all__ = [
     "list_sessions",
     "get_session",
     "create_pair",
+    "save_document_pairing",
     "get_pair_view",
     "get_sheet_matching_state",
     "run_sheet_matching",

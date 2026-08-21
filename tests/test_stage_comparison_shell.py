@@ -78,6 +78,28 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     assert pair_view["right_page_count"] == 1
 
     pair_id = pair_view["pair"]["id"]
+    pairing_response = client.put(
+        f"/api/stage-comparison/sessions/{session['id']}/document-pairing",
+        json={
+            "left_order": [str(left_pdf)],
+            "right_order": [str(right_pdf)],
+            "confirmed_pairs": [{"left_pdf": str(left_pdf), "right_pdf": str(right_pdf)}],
+        },
+    )
+    assert pairing_response.status_code == 200
+    assert pairing_response.json()["confirmed_pairs"] == [
+        {"left_pdf": str(left_pdf), "right_pdf": str(right_pdf)}
+    ]
+    restored = client.get(f"/api/stage-comparison/sessions/{session['id']}")
+    assert restored.status_code == 200
+    assert restored.json()["document_pairing"]["left_order"] == [str(left_pdf)]
+    reopened = client.post(
+        "/api/stage-comparison/sessions",
+        json={"stage_a_path": str(stage_1), "stage_b_path": str(stage_2)},
+    )
+    assert reopened.json()["id"] == session["id"]
+    assert reopened.json()["document_pairing"] == pairing_response.json()
+
     vector = client.get(
         f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/page-svg",
         params={"side": "left", "page": 1},
@@ -123,6 +145,36 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     assert any(path.name == "sheet_match_suggestions.json" for path in stored)
     assert any(path.name == "sheet_links.json" for path in stored)
     assert not any(token in path.as_posix() for path in stored for token in ("findings", "diagnostic"))
+
+
+def test_document_pairing_rejects_documents_outside_session(tmp_path, monkeypatch):
+    stage_1 = tmp_path / "stage_1"
+    stage_2 = tmp_path / "stage_2"
+    stage_1.mkdir()
+    stage_2.mkdir()
+    left_pdf = stage_1 / "left.pdf"
+    right_pdf = stage_2 / "right.pdf"
+    left_pdf.write_bytes(_pdf_bytes("left"))
+    right_pdf.write_bytes(_pdf_bytes("right"))
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "runtime"))
+    monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(tmp_path))
+    client = TestClient(_app())
+    session = client.post(
+        "/api/stage-comparison/sessions",
+        json={"stage_a_path": str(stage_1), "stage_b_path": str(stage_2)},
+    ).json()
+
+    response = client.put(
+        f"/api/stage-comparison/sessions/{session['id']}/document-pairing",
+        json={
+            "left_order": [str(tmp_path / "foreign.pdf")],
+            "right_order": [str(right_pdf)],
+            "confirmed_pairs": [],
+        },
+    )
+
+    assert response.status_code == 400
+    assert "left_order_must_contain_all_session_documents" in response.json()["detail"]
 
 
 def _viewer_pair(tmp_path, monkeypatch) -> tuple[TestClient, str, str]:

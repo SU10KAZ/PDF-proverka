@@ -11827,6 +11827,10 @@ const app = createApp({
         const scPairRowDragOver = ref(null);
         const scPendingPairSelection = ref(null);
         const scConfirmedDocumentPairs = reactive({});
+        const scPairingSaving = ref(false);
+        const scPairingDirty = ref(false);
+        const scPairingSaveError = ref('');
+        const scPairingSaveMessage = ref('');
         const scPairRowStates = reactive({});
         const scActivePair = ref(null);
         const scPairData = ref(null);
@@ -12093,8 +12097,8 @@ const app = createApp({
             });
             if (!Array.isArray(savedPairs)) return;
             savedPairs.forEach(pair => {
-                const leftPdf = pair && pair.leftPdf;
-                const rightPdf = pair && pair.rightPdf;
+                const leftPdf = pair && (pair.leftPdf || pair.left_pdf);
+                const rightPdf = pair && (pair.rightPdf || pair.right_pdf);
                 if (!leftPdf || !rightPdf || leftIndexes.get(leftPdf) !== rightIndexes.get(rightPdf)) return;
                 scConfirmedDocumentPairs[scPairPathsKey(leftPdf, rightPdf)] = {leftPdf, rightPdf};
             });
@@ -12126,8 +12130,18 @@ const app = createApp({
 
         function scInitializeDocumentOrder(useSaved = true) {
             let saved = {};
+            let loadedFromServer = false;
+            const serverPairing = scSession.value && scSession.value.document_pairing;
+            if (useSaved && serverPairing && serverPairing.version === 1) {
+                saved = {
+                    left: serverPairing.left_order,
+                    right: serverPairing.right_order,
+                    confirmedPairs: serverPairing.confirmed_pairs,
+                };
+                loadedFromServer = true;
+            }
             const storageKey = scPairOrderStorageKey();
-            if (useSaved && storageKey) {
+            if (useSaved && !loadedFromServer && storageKey) {
                 try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (_) { saved = {}; }
             }
             const left = scReconcileDocumentOrder(saved.left, scDocumentsLeft.value);
@@ -12139,9 +12153,12 @@ const app = createApp({
             scDocumentOrder.right = right;
             scPendingPairSelection.value = null;
             scRestoreConfirmedDocumentPairs(useSaved ? saved.confirmedPairs : []);
+            scPairingDirty.value = false;
+            scPairingSaveError.value = '';
+            scPairingSaveMessage.value = loadedFromServer ? 'Загружено сохранённое сопоставление' : '';
         }
 
-        function scPersistDocumentOrder() {
+        function scPersistDocumentOrder(markDirty = true) {
             const storageKey = scPairOrderStorageKey();
             if (!storageKey) return;
             try {
@@ -12151,6 +12168,53 @@ const app = createApp({
                     confirmedPairs: Object.values(scConfirmedDocumentPairs),
                 }));
             } catch (_) {}
+            if (markDirty) {
+                scPairingDirty.value = true;
+                scPairingSaveError.value = '';
+                scPairingSaveMessage.value = '';
+            }
+        }
+
+        function scDocumentPairingPayload() {
+            return {
+                left_order: [...scDocumentOrder.left],
+                right_order: [...scDocumentOrder.right],
+                confirmed_pairs: Object.values(scConfirmedDocumentPairs).map(pair => ({
+                    left_pdf: pair.leftPdf,
+                    right_pdf: pair.rightPdf,
+                })),
+            };
+        }
+
+        async function scSaveDocumentPairing() {
+            if (!scSession.value || scPairingSaving.value) return;
+            const payload = scDocumentPairingPayload();
+            const snapshot = JSON.stringify(payload);
+            scPairingSaving.value = true;
+            scPairingSaveError.value = '';
+            scPairingSaveMessage.value = '';
+            try {
+                const response = await fetch(
+                    `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/document-pairing`,
+                    {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: snapshot,
+                    },
+                );
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scSession.value = {...scSession.value, document_pairing: data};
+                scPairingDirty.value = JSON.stringify(scDocumentPairingPayload()) !== snapshot;
+                scPairingSaveMessage.value = scPairingDirty.value
+                    ? 'Сохранено; после отправки появились новые изменения'
+                    : 'Сопоставление проектов сохранено';
+                scPersistDocumentOrder(false);
+            } catch (error) {
+                scPairingSaveError.value = String(error.message || error);
+            } finally {
+                scPairingSaving.value = false;
+            }
         }
 
         function scStartDocumentDrag(event, side, index) {
@@ -12385,6 +12449,9 @@ const app = createApp({
                 scActivePair.value = null;
                 scPairData.value = null;
                 scMatchState.value = null;
+                scPairingDirty.value = false;
+                scPairingSaveError.value = '';
+                scPairingSaveMessage.value = '';
                 return;
             }
             scSessionLoading.value = true;
@@ -13797,6 +13864,7 @@ const app = createApp({
             scDraggingDocument, scDocumentDragOver,
             scDraggingPairRow, scPairRowDragOver,
             scPendingPairSelection, scConfirmedDocumentPairs,
+            scPairingSaving, scPairingDirty, scPairingSaveError, scPairingSaveMessage,
             scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
             scProcessing, scProcessingError,
@@ -13813,6 +13881,7 @@ const app = createApp({
             scFinishPairRowDrag, scIsDraggingPairRow,
             scSelectPairDocument, scIsPairDocumentPending, scIsPairRowConfirmed,
             scPairRowStatus, scPairRowBusy, scPairRowError,
+            scSaveDocumentPairing,
             scSheetIndexEntryFor, scSheetIndexTitle, scReasonLabel,
             scSheetMapSideLabel, scSheetMapStatus, scSheetMapRowActive,
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,

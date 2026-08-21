@@ -4025,6 +4025,18 @@ tr.row-rejected td.sc-cell-goto {
     min-width: 1040px;
     align-items: stretch;
 }
+.sc-pair-savebar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border2);
+    background: var(--surface, #fff);
+}
+.sc-pair-savebar > span { margin-right: auto; color: var(--text3); font-size: 12px; }
+.sc-pair-savebar .sc-pair-savebar__success { color: #047857; }
+.sc-pair-savebar .sc-pair-savebar__error { color: #b91c1c; }
 .sc-pair-board__header {
     position: sticky;
     top: 0;
