@@ -5695,6 +5695,16 @@
                                                 :disabled="scViewerEmpty[side] || scTextSearchLoading[side] || !scTextSearchQuery[side].trim()">
                                             Найти
                                         </button>
+                                        <span class="sc-text-search__nav" aria-label="Переход по найденному тексту">
+                                            <button type="button" class="btn btn-sm"
+                                                    title="Предыдущее совпадение" aria-label="Предыдущее совпадение"
+                                                    :disabled="scTextSearchLoading[side] || !scTextSearchResultsCount(side)"
+                                                    @click="scNavigateTextSearch(side, -1)">↑</button>
+                                            <button type="button" class="btn btn-sm"
+                                                    title="Следующее совпадение" aria-label="Следующее совпадение"
+                                                    :disabled="scTextSearchLoading[side] || !scTextSearchResultsCount(side)"
+                                                    @click="scNavigateTextSearch(side, 1)">↓</button>
+                                        </span>
                                         <small v-if="scTextSearchStatus(side)" class="sc-text-search__status"
                                                :class="{'is-error': scTextSearchError[side]}"
                                                :title="scTextSearchTitle(side)">
@@ -5725,7 +5735,9 @@
                                          :style="{left: tile.left + 'px', top: tile.top + 'px', width: tile.width + 'px', height: tile.height + 'px'}">
                                     <i v-for="(highlight, index) in scTextSearchHighlightsFor(side, scCurrentPage[side])"
                                        :key="side + '-search-' + scCurrentPage[side] + '-' + index"
-                                       class="sc-text-highlight" aria-hidden="true"
+                                       class="sc-text-highlight"
+                                       :class="{'is-active': scTextSearchHighlightActive(side, scCurrentPage[side], highlight)}"
+                                       aria-hidden="true"
                                        :style="scTextSearchHighlightStyle(highlight)"></i>
                                 </div>
                                 <div v-if="scPageLoading[side]" class="sc-vector-pane__note">Загрузка страницы…</div>
@@ -5763,7 +5775,9 @@
                                              :style="{left: tile.left + '%', top: tile.top + '%', width: tile.width + '%', height: tile.height + '%'}">
                                         <i v-for="(highlight, index) in entry.page ? scTextSearchHighlightsFor(side, entry.page) : []"
                                            :key="side + '-continuous-search-' + entry.page + '-' + index"
-                                           class="sc-text-highlight" aria-hidden="true"
+                                           class="sc-text-highlight"
+                                           :class="{'is-active': scTextSearchHighlightActive(side, entry.page, highlight)}"
+                                           aria-hidden="true"
                                            :style="scTextSearchHighlightStyle(highlight)"></i>
                                         <div v-if="entry.placeholder" class="sc-continuous-page__missing">
                                             <span>Лист отсутствует в этой стадии</span>

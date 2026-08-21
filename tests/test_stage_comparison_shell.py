@@ -255,13 +255,14 @@ def test_pdf_text_search_is_case_insensitive_and_isolated_per_side(tmp_path, mon
     ] == [(1, 1, 1), (3, 2, 2)]
     for item in payload["pages"]:
         for highlight in item["highlights"]:
-            assert set(highlight) == {"x", "y", "width", "height"}
+            assert set(highlight) == {"match_index", "x", "y", "width", "height"}
             assert 0 <= highlight["x"] < 1
             assert 0 <= highlight["y"] < 1
             assert 0 < highlight["width"] <= 1
             assert 0 < highlight["height"] <= 1
             assert highlight["x"] + highlight["width"] <= 1.000001
             assert highlight["y"] + highlight["height"] <= 1.000001
+    assert [item["match_index"] for item in payload["pages"][1]["highlights"]] == [0, 1]
 
     phrase = client.get(url, params={"side": "left", "query": "PUMP SCHEDULE"})
     assert phrase.status_code == 200
@@ -269,6 +270,7 @@ def test_pdf_text_search_is_case_insensitive_and_isolated_per_side(tmp_path, mon
         (item["page"], item["matches"], len(item["highlights"]))
         for item in phrase.json()["pages"]
     ] == [(3, 1, 2)]
+    assert {item["match_index"] for item in phrase.json()["pages"][0]["highlights"]} == {0}
 
     right = client.get(url, params={"side": "right", "query": "pump"})
     assert right.status_code == 200

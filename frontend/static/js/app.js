@@ -11867,6 +11867,7 @@ const app = createApp({
         const SC_ZOOM_MAX = 100;
         const SC_PREVIEW_WIDTH = 1400;
         const SC_CONTINUOUS_PREVIEW_WIDTH = 1000;
+        const SC_SEARCH_FOCUS_ZOOM = 2.5;
         const SC_TILE_SIZE = 512;
         const SC_TILE_MAX_LEVEL = 6;
         const scSyncView = ref(true);
@@ -11888,6 +11889,7 @@ const app = createApp({
         const scTextSearchQuery = reactive({left: '', right: ''});
         const scTextSearchPages = reactive({left: [], right: []});
         const scTextSearchHighlights = reactive({left: {}, right: {}});
+        const scTextSearchResults = reactive({left: [], right: []});
         const scTextSearchIndex = reactive({left: -1, right: -1});
         const scTextSearchSubmitted = reactive({left: '', right: ''});
         const scTextSearchLoading = reactive({left: false, right: false});
@@ -13898,6 +13900,7 @@ const app = createApp({
             if (clearQuery) scTextSearchQuery[side] = '';
             scTextSearchPages[side] = [];
             scTextSearchHighlights[side] = {};
+            scTextSearchResults[side] = [];
             scTextSearchIndex[side] = -1;
             scTextSearchSubmitted[side] = '';
             scTextSearchLoading[side] = false;
@@ -13911,8 +13914,8 @@ const app = createApp({
             if (scTextSearchError[side]) return 'Ошибка';
             if (!scTextSearchSubmitted[side]) return '';
             if (!scTextSearchHasLayer[side]) return 'Нет текста';
-            if (!scTextSearchPages[side].length) return 'Не найдено';
-            return `${scTextSearchIndex[side] + 1}/${scTextSearchPages[side].length}`;
+            if (!scTextSearchResults[side].length) return 'Не найдено';
+            return `${scTextSearchIndex[side] + 1}/${scTextSearchResults[side].length}`;
         }
 
         function scTextSearchTitle(side) {
@@ -13946,15 +13949,77 @@ const app = createApp({
             };
         }
 
+        function scTextSearchResultsCount(side) {
+            return scTextSearchResults[side].length;
+        }
+
+        function scTextSearchHighlightActive(side, page, highlight) {
+            const result = scTextSearchResults[side][scTextSearchIndex[side]];
+            return Boolean(
+                result
+                && Number(result.page) === Number(page)
+                && Number(result.matchIndex) === Number(highlight.match_index),
+            );
+        }
+
+        function scCenterTextSearchResult(side, result) {
+            if (!result) return;
+            const boxes = result.highlights || [];
+            const left = boxes.length ? Math.min(...boxes.map(box => Number(box.x))) : 0.5;
+            const top = boxes.length ? Math.min(...boxes.map(box => Number(box.y))) : 0.5;
+            const right = boxes.length
+                ? Math.max(...boxes.map(box => Number(box.x) + Number(box.width)))
+                : 0.5;
+            const bottom = boxes.length
+                ? Math.max(...boxes.map(box => Number(box.y) + Number(box.height)))
+                : 0.5;
+            const x = Math.min(1, Math.max(0, (left + right) / 2));
+            const y = Math.min(1, Math.max(0, (top + bottom) / 2));
+            if (scViewMode.value === 'continuous') {
+                if (scContinuousZoom.value < SC_SEARCH_FOCUS_ZOOM) {
+                    scContinuousZoom.value = SC_SEARCH_FOCUS_ZOOM;
+                    scZoomPercent.value = Math.round(scContinuousZoom.value * 100);
+                }
+                nextTick(() => {
+                    const slot = scContinuousSlotForPage(side, result.page);
+                    const anchor = {
+                        slot: slot && slot.key,
+                        page: result.page,
+                        counterpartPage: slot
+                            && (side === 'left' ? slot.rightPage : slot.leftPage),
+                        x, y, viewportX: 0.5, viewportY: 0.5,
+                    };
+                    scSetContinuousAnchor(side, result.page, anchor);
+                    scSyncContinuousAnchor(side, anchor);
+                    scScheduleContinuousTileRefresh(side, true);
+                });
+                return;
+            }
+            const view = scViewFor(side);
+            view.zoom = Math.max(view.zoom, SC_SEARCH_FOCUS_ZOOM);
+            view.cx = x;
+            view.cy = y;
+            scMeasurePane(side);
+            scScheduleView();
+        }
+
+        function scNavigateTextSearch(side, direction) {
+            const results = scTextSearchResults[side];
+            if (!results.length) return;
+            const step = Number(direction) < 0 ? -1 : 1;
+            const current = scTextSearchIndex[side];
+            scTextSearchIndex[side] = (current + step + results.length) % results.length;
+            const result = results[scTextSearchIndex[side]];
+            scOpenTextSearchPage(side, result.page);
+            scCenterTextSearchResult(side, result);
+        }
+
         async function scSearchText(side) {
             const query = String(scTextSearchQuery[side] || '').trim();
             if (!query || !scPageApiBase() || scViewerEmpty[side]) return;
 
             if (scTextSearchSubmitted[side] === query) {
-                const pages = scTextSearchPages[side];
-                if (!pages.length) return;
-                scTextSearchIndex[side] = (scTextSearchIndex[side] + 1) % pages.length;
-                scOpenTextSearchPage(side, pages[scTextSearchIndex[side]]);
+                scNavigateTextSearch(side, 1);
                 return;
             }
 
@@ -13965,6 +14030,7 @@ const app = createApp({
             scTextSearchError[side] = '';
             scTextSearchPages[side] = [];
             scTextSearchHighlights[side] = {};
+            scTextSearchResults[side] = [];
             scTextSearchIndex[side] = -1;
             try {
                 const params = new URLSearchParams({side, query});
@@ -13984,15 +14050,30 @@ const app = createApp({
                     });
                 scTextSearchPages[side] = pageResults.map(item => Number(item.page));
                 const highlights = {};
+                const results = [];
                 for (const item of pageResults) {
-                    highlights[Number(item.page)] = (Array.isArray(item.highlights) ? item.highlights : [])
+                    const page = Number(item.page);
+                    const pageHighlights = (Array.isArray(item.highlights) ? item.highlights : [])
                         .filter(highlight => highlight && Number(highlight.width) > 0 && Number(highlight.height) > 0);
+                    highlights[page] = pageHighlights;
+                    const byMatch = new Map();
+                    for (const highlight of pageHighlights) {
+                        const matchIndex = Math.max(0, Number(highlight.match_index) || 0);
+                        if (!byMatch.has(matchIndex)) byMatch.set(matchIndex, []);
+                        byMatch.get(matchIndex).push(highlight);
+                    }
+                    const matchCount = Math.max(0, Number(item.matches) || 0);
+                    for (let matchIndex = 0; matchIndex < matchCount; matchIndex += 1) {
+                        results.push({
+                            page,
+                            matchIndex,
+                            highlights: byMatch.get(matchIndex) || [],
+                        });
+                    }
                 }
                 scTextSearchHighlights[side] = highlights;
-                if (scTextSearchPages[side].length) {
-                    scTextSearchIndex[side] = 0;
-                    scOpenTextSearchPage(side, scTextSearchPages[side][0]);
-                }
+                scTextSearchResults[side] = results;
+                if (results.length) scNavigateTextSearch(side, 1);
             } catch (error) {
                 if (error.name !== 'AbortError') {
                     scTextSearchError[side] = String(error.message || error);
@@ -15482,6 +15563,7 @@ const app = createApp({
             scTextSearchQuery, scTextSearchLoading, scTextSearchError,
             scResetTextSearch, scSearchText, scTextSearchStatus, scTextSearchTitle,
             scTextSearchHighlightsFor, scTextSearchHighlightStyle,
+            scTextSearchHighlightActive, scTextSearchResultsCount, scNavigateTextSearch,
             scSyncView, scViewMode, scSetViewMode,
             scZoomPercent, scZoomBy, scZoomFit, scZoomActualSize,
             scPagePreview, scPageTiles, scPageLoading, scPageError,

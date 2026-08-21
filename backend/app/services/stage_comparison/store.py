@@ -741,6 +741,7 @@ def _pdf_page_search_highlights(page, normalized_query: str) -> list[dict[str, f
     rotation_matrix = page.rotation_matrix
     highlights: list[dict[str, float]] = []
     match_start = 0
+    match_index = 0
     while True:
         match_start = normalized_text.find(normalized_query, match_start)
         if match_start < 0:
@@ -758,6 +759,7 @@ def _pdf_page_search_highlights(page, normalized_query: str) -> list[dict[str, f
             bottom = max(y, min(1.0, (rect.y1 - page_rect.y0) / page_rect.height))
             if right > x and bottom > y:
                 highlights.append({
+                    "match_index": match_index,
                     "x": round(x, 6),
                     "y": round(y, 6),
                     "width": round(right - x, 6),
@@ -766,6 +768,7 @@ def _pdf_page_search_highlights(page, normalized_query: str) -> list[dict[str, f
         # Match ``str.count`` semantics used by the existing result counter:
         # occurrences do not overlap.
         match_start = match_end
+        match_index += 1
     return highlights
 
 

@@ -15,13 +15,18 @@ describe('stage comparison PDF text search', () => {
     expect(css).toContain('width: 112px;');
   });
 
-  it('keeps left and right results separate and advances on repeated search', () => {
+  it('keeps left and right results separate and advances through occurrences', () => {
     expect(app).toContain("const scTextSearchQuery = reactive({left: '', right: ''})");
     expect(app).toContain('const scTextSearchPages = reactive({left: [], right: []})');
+    expect(app).toContain('const scTextSearchResults = reactive({left: [], right: []})');
     expect(app).toContain('function scResetTextSearch(side, clearQuery = false)');
     expect(app).toContain('/text-search?${params}');
-    expect(app).toContain('(scTextSearchIndex[side] + 1) % pages.length');
-    expect(app).toContain('scOpenTextSearchPage(side, pages[scTextSearchIndex[side]])');
+    expect(app).toContain('function scNavigateTextSearch(side, direction)');
+    expect(app).toContain('(current + step + results.length) % results.length');
+    expect(html).toContain('@click="scNavigateTextSearch(side, -1)"');
+    expect(html).toContain('@click="scNavigateTextSearch(side, 1)"');
+    expect(html).toContain('Предыдущее совпадение');
+    expect(html).toContain('Следующее совпадение');
   });
 
   it('draws independent coordinate highlights over paged and continuous sheets', () => {
@@ -33,5 +38,16 @@ describe('stage comparison PDF text search', () => {
     expect(html).toContain('scTextSearchHighlightsFor(side, entry.page)');
     expect(css).toContain('.sc-text-highlight {');
     expect(css).toContain('pointer-events: none;');
+    expect(html).toContain("'is-active': scTextSearchHighlightActive");
+    expect(css).toContain('.sc-text-highlight.is-active {');
+  });
+
+  it('centers the active occurrence in paged and continuous modes', () => {
+    expect(app).toContain('const SC_SEARCH_FOCUS_ZOOM = 2.5;');
+    expect(app).toContain('function scCenterTextSearchResult(side, result)');
+    expect(app).toContain('view.cx = x;');
+    expect(app).toContain('view.cy = y;');
+    expect(app).toContain('scSetContinuousAnchor(side, result.page, anchor)');
+    expect(app).toContain('x, y, viewportX: 0.5, viewportY: 0.5');
   });
 });

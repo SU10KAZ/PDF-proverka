@@ -4398,6 +4398,14 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 11px;
 }
 .sc-text-search input:focus { border-color: var(--accent, #0f9f8f); box-shadow: 0 0 0 2px rgba(15, 159, 143, .12); }
+.sc-text-search__nav { display: inline-flex; gap: 2px; }
+.sc-text-search__nav .btn {
+    width: 25px;
+    min-width: 25px;
+    padding-inline: 0;
+    font-size: 13px;
+    line-height: 1;
+}
 .sc-text-search__status {
     min-width: 28px;
     max-width: 72px;
@@ -4455,6 +4463,12 @@ tr.row-rejected td.sc-cell-goto {
     box-shadow: 0 0 0 1px rgba(254, 240, 138, .42);
     mix-blend-mode: multiply;
     pointer-events: none;
+}
+.sc-text-highlight.is-active {
+    z-index: 4;
+    border-color: #ea580c;
+    background: rgba(250, 204, 21, .72);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .9), 0 0 0 4px rgba(234, 88, 12, .72);
 }
 .sc-vector-pane__note {
     position: absolute;
