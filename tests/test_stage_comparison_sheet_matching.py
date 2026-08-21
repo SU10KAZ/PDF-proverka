@@ -121,6 +121,134 @@ def test_similar_title_with_different_sheet_is_medium():
     assert result["suggestions"][0]["confidence"] == "medium"
 
 
+def test_equipment_identifier_survives_generic_words_and_punctuation():
+    result = sheet_matching.match_sheet_indexes(
+        [
+            _record(24, "3", "Однолинейная расчетная схема ВРУ2"),
+            _record(51, "28", "Однолинейная расчетная схема ВРУ.ИТП"),
+        ],
+        [
+            _record(26, "4", "Однолинейная схема ВРУ-2"),
+            _record(32, "9", "Однолинейная схема ВРУ-ИТП"),
+        ],
+    )
+
+    assert [item["primary_right_page"] for item in result["suggestions"]] == [26, 32]
+    assert all(
+        item["reason"] == ["same_equipment_identifier"]
+        for item in result["suggestions"]
+    )
+
+
+def test_equipment_groups_cover_split_and_merged_sheets_in_order():
+    result = sheet_matching.match_sheet_indexes(
+        [
+            _record(24, "1", "Однолинейная расчетная схема ВРУ-1"),
+            _record(25, "2", "Однолинейная расчетная схема ВРУ-1"),
+            _record(27, "4", "Однолинейная расчетная схема ВРУ-3"),
+            _record(28, "5", "Однолинейная расчетная схема ВРУ-3"),
+        ],
+        [
+            _record(40, "2", "Однолинейная схема ВРУ-1 (начало)"),
+            _record(41, "3", "Однолинейная схема ВРУ-1 (конец)"),
+            _record(42, "5", "Однолинейная схема ВРУ-3"),
+        ],
+    )
+
+    suggestions = result["suggestions"]
+    assert [item["primary_right_pages"] for item in suggestions] == [
+        [40], [41], [42], [42],
+    ]
+    assert suggestions[2]["confidence"] == suggestions[3]["confidence"] == "medium"
+    assert result["unmatched_right_pages"] == []
+
+
+def test_fractional_continuation_pages_form_one_semantic_group():
+    result = sheet_matching.match_sheet_indexes(
+        [_record(52, "29", "Однолинейная расчетная схема ГРЩ")],
+        [
+            _record(21, "1.1", "Однолинейная схема ГРЩ"),
+            _record(22, "1.2", None),
+            _record(23, "1.3", None),
+        ],
+    )
+
+    suggestion = result["suggestions"][0]
+    assert suggestion["primary_right_pages"] == [21, 22, 23]
+    assert suggestion["confidence"] == "medium"
+    assert result["unmatched_right_pages"] == []
+    summary = store._matching_summary(result, {"links": [], "unlinked_left_pages": []})
+    assert summary["unmatched_right"] == 0
+
+
+def test_repeated_panel_series_infers_rename_and_two_missing_titles():
+    left_titles = [
+        "Однолинейная расчетная схема ЩР-1",
+        "Однолинейная расчетная схема ЩР-1а",
+        None,
+        "Однолинейная расчетная схема ЩР-2а",
+        "Однолинейная расчетная схема ЩР-3",
+        "Однолинейная расчетная схема ЩР-3а",
+        "Однолинейная расчетная схема ЩР-4",
+        "Однолинейная расчетная схема ЩР-4а",
+        "Однолинейная расчетная схема ЩР-5",
+        "Однолинейная расчетная схема ЩР-5а",
+        "Однолинейная расчетная схема ЩР-6",
+        None,
+    ]
+    left = [
+        _record(page, str(sheet), title)
+        for page, sheet, title in zip(range(39, 51), range(16, 28), left_titles)
+    ]
+    right = [
+        *[_record(32 + number, str(10 + number), f"Однолинейная схема ЩО-{number}")
+          for number in range(1, 7)],
+        *[_record(41 + number, str(13 + number), f"Однолинейная схема ЩАО-{number}")
+          for number in range(1, 7)],
+    ]
+
+    result = sheet_matching.match_sheet_indexes(left, right)
+    by_left = {
+        item["left_page"]: item["primary_right_page"]
+        for item in result["suggestions"]
+    }
+
+    assert [by_left[page] for page in range(39, 51)] == [
+        33, 42, 34, 43, 35, 44, 36, 45, 37, 46, 38, 47,
+    ]
+    assert all(
+        item["reason"] == ["inferred_panel_series_rename"]
+        for item in result["suggestions"]
+    )
+
+
+def test_markdown_summary_disambiguates_repeated_volume_titles():
+    markdown = """
+## Page 37
+> **Stamp:** | Name: Общее название |
+**Summary:** Схема подключения БВУ к блокам БПИ в электрощитовой.
+## Page 38
+> **Stamp:** | Name: Общее название |
+**Summary:** Система молниезащиты и заземления, уравнивание потенциалов.
+"""
+    semantics = sheet_matching.extract_page_semantics_from_markdown(markdown)
+    assert "Общее название" not in semantics[37]
+    left = [
+        {**_record(37, "14", "Общее название"), "_semantic_text": semantics[37]},
+        {**_record(38, "15", "Общее название"), "_semantic_text": semantics[38]},
+    ]
+    right = [
+        {**_record(45, "23", "Другое общее название"), "_semantic_text": semantics[37]},
+        {**_record(46, "24", "Другое общее название"), "_semantic_text": semantics[38]},
+    ]
+
+    result = sheet_matching.match_sheet_indexes(left, right)
+
+    assert [item["primary_right_page"] for item in result["suggestions"]] == [45, 46]
+    assert all(item["reason"] == ["same_semantic_topic"] for item in result["suggestions"])
+    assert all("_semantic_text" not in item for item in result["left_sheet_index"])
+
+
 @pytest.mark.parametrize(("left_title", "right_title"), [
     ("Архитектурный план этажа", "План с маркировкой отверстий"),
     ("План кровли", "Принципиальная схема электроснабжения"),
@@ -217,6 +345,23 @@ def test_global_sequence_prefers_drawing_run_after_sheet_number_reset():
     }
     assert [by_left[page] for page in range(7, 12)] == [21, 22, 23, 24, 25]
     assert all(by_left[page] is None for page in range(1, 7))
+
+
+def test_global_sequence_aligns_more_than_one_independent_numbered_run():
+    left = [
+        *[_record(page, str(page), None) for page in range(1, 4)],
+        *[_record(page + 3, str(page), None) for page in range(1, 4)],
+    ]
+    right = [
+        *[_record(page + 10, str(page), None) for page in range(1, 4)],
+        *[_record(page + 13, str(page), None) for page in range(1, 4)],
+    ]
+
+    result = sheet_matching.match_sheet_indexes(left, right)
+
+    assert [item["primary_right_page"] for item in result["suggestions"]] == [
+        11, 12, 13, 14, 15, 16,
+    ]
 
 
 def test_page_without_sheet_or_title_does_not_become_high():

@@ -350,6 +350,10 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain('sheet_title_reliable');
     expect(app).not.toContain('passport.buildings');
     expect(app).toContain('left_pages: leftPages, right_pages: rightPages');
+    expect(app).toContain('suggestion.primary_right_pages || [suggestion.primary_right_page]');
+    expect(app).toContain('suggestion-group-${matchGroup}');
+    expect(app).toContain('left_pages: leftPages');
+    expect(app).toContain('right_pages: [...new Set(rightPages)]');
     expect(app).toContain('user_corrected');
   });
 

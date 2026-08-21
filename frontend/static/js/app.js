@@ -12009,18 +12009,48 @@ const app = createApp({
                 });
             });
 
+            const handledSuggestionGroups = new Set();
             for (const suggestion of scSuggestions.value) {
                 const leftPage = Number(suggestion.left_page);
                 if (!leftPage || representedLeft.has(leftPage)) continue;
-                const rightPage = explicitlyUnlinked.has(leftPage)
-                    ? null
-                    : Number(suggestion.primary_right_page) || null;
+                const matchGroup = String(suggestion.match_group || '');
+                if (matchGroup && !explicitlyUnlinked.has(leftPage)
+                    && !handledSuggestionGroups.has(matchGroup)) {
+                    const groupedSuggestions = scSuggestions.value.filter(item => (
+                        String(item.match_group || '') === matchGroup
+                        && !representedLeft.has(Number(item.left_page))
+                        && !explicitlyUnlinked.has(Number(item.left_page))
+                    ));
+                    if (groupedSuggestions.length) {
+                        handledSuggestionGroups.add(matchGroup);
+                        const groupedRightPages = [...new Set(groupedSuggestions.flatMap(item => (
+                            item.primary_right_pages || [item.primary_right_page]
+                        )).map(Number).filter(Boolean))];
+                        addRow({
+                            key: `suggestion-group-${matchGroup}`,
+                            leftPages: groupedSuggestions.map(item => Number(item.left_page)),
+                            rightPages: groupedRightPages,
+                            source: 'auto',
+                            confidence: groupedRightPages.length
+                                ? (groupedSuggestions.every(item => item.confidence === 'high') ? 'high' : 'medium')
+                                : 'unmatched',
+                            reason: [...new Set(groupedSuggestions.flatMap(item => item.reason || []))],
+                            explicitLinkIndex: null,
+                        });
+                        continue;
+                    }
+                }
+                const suggestedRightPages = [
+                    ...new Set((suggestion.primary_right_pages || [suggestion.primary_right_page])
+                        .map(Number).filter(Boolean)),
+                ];
+                const rightPages = explicitlyUnlinked.has(leftPage) ? [] : suggestedRightPages;
                 addRow({
                     key: `suggestion-${leftPage}`,
                     leftPages: [leftPage],
-                    rightPages: rightPage ? [rightPage] : [],
+                    rightPages,
                     source: 'auto',
-                    confidence: rightPage ? (suggestion.confidence || 'medium') : 'unmatched',
+                    confidence: rightPages.length ? (suggestion.confidence || 'medium') : 'unmatched',
                     reason: suggestion.reason || [],
                     explicitLinkIndex: null,
                 });
@@ -12093,8 +12123,10 @@ const app = createApp({
             if (scUnlinkedLeftPages.value.map(Number).includes(Number(scCurrentPage.left))) return [];
             const explicit = [...new Set(scCurrentExplicitLinks.value.flatMap(link => link.right_pages || []).map(Number))];
             if (explicit.length) return explicit.sort((a, b) => a - b);
-            const primary = scLeftSuggestion.value && scLeftSuggestion.value.primary_right_page;
-            return primary ? [Number(primary)] : [];
+            const suggestion = scLeftSuggestion.value;
+            return [...new Set((suggestion && (
+                suggestion.primary_right_pages || [suggestion.primary_right_page]
+            ) || []).map(Number).filter(Boolean))].sort((a, b) => a - b);
         });
         const scMatchSummary = computed(() => (scMatchState.value && scMatchState.value.summary) || {
             auto_high: 0, needs_review: 0, manual_links: 0, unmatched_left: 0, unmatched_right: 0,
@@ -12121,7 +12153,11 @@ const app = createApp({
             const all = (suggestionsPayload && suggestionsPayload.right_sheet_index) || [];
             const suggestion = scLeftSuggestion.value;
             const orderedPages = [];
-            if (suggestion && suggestion.primary_right_page) orderedPages.push(Number(suggestion.primary_right_page));
+            if (suggestion) {
+                orderedPages.push(...(
+                    suggestion.primary_right_pages || [suggestion.primary_right_page]
+                ).map(Number).filter(Boolean));
+            }
             for (const item of (suggestion && suggestion.alternatives) || []) orderedPages.push(Number(item.right_page));
             for (const sheet of all) orderedPages.push(Number(sheet.pdf_page));
             const byPage = new Map(all.map(sheet => [Number(sheet.pdf_page), sheet]));
@@ -13390,21 +13426,34 @@ const app = createApp({
         }
 
         async function scAcceptSuggestion(row = null) {
-            const leftPage = Number(
-                row && row.leftPages && row.leftPages[0] || scCurrentPage.left
+            const leftPages = row && row.leftPages && row.leftPages.length
+                ? row.leftPages.map(Number)
+                : [Number(scCurrentPage.left)];
+            const suggestions = scSuggestions.value.filter(item =>
+                leftPages.includes(Number(item.left_page))
             );
-            const suggestion = scSuggestions.value.find(item =>
-                Number(item.left_page) === leftPage
-            );
-            if (!suggestion || !suggestion.primary_right_page) return;
+            const rightPages = row && row.rightPages && row.rightPages.length
+                ? row.rightPages.map(Number)
+                : [...new Set(suggestions.flatMap(item => (
+                    item.primary_right_pages || [item.primary_right_page]
+                )).map(Number).filter(Boolean))];
+            if (!suggestions.length || !rightPages.length) return;
             if (row) scOpenSheetMapRow(row);
-            const links = scWithoutLeft(scSheetLinks.value.map(link => ({...link})), leftPage);
+            let links = scSheetLinks.value.map(link => ({...link}));
+            for (const leftPage of leftPages) links = scWithoutLeft(links, leftPage);
             links.push({
-                left_pages: [leftPage], right_pages: [Number(suggestion.primary_right_page)],
-                source: 'auto', confidence: suggestion.confidence,
-                reason: [...(suggestion.reason || []), 'user_accepted'],
+                left_pages: leftPages,
+                right_pages: [...new Set(rightPages)],
+                source: 'auto',
+                confidence: suggestions.every(item => item.confidence === 'high') ? 'high' : 'medium',
+                reason: [...new Set([
+                    ...suggestions.flatMap(item => item.reason || []), 'user_accepted',
+                ])],
             });
-            await scPersistLinks(links, scUnlinkedLeftPages.value.filter(page => Number(page) !== leftPage));
+            await scPersistLinks(
+                links,
+                scUnlinkedLeftPages.value.filter(page => !leftPages.includes(Number(page)))
+            );
         }
 
         async function scApplyLinkEditor() {

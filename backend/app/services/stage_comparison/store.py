@@ -403,11 +403,15 @@ def _matching_summary(suggestions: dict | None, links: dict) -> dict:
         left_page = int(suggestion["left_page"])
         if left_page in linked_left or left_page in explicitly_unlinked:
             continue
-        right_page = suggestion.get("primary_right_page")
-        if right_page is None:
+        right_pages = [
+            int(page) for page in suggestion.get("primary_right_pages") or []
+        ]
+        if not right_pages and suggestion.get("primary_right_page") is not None:
+            right_pages = [int(suggestion["primary_right_page"])]
+        if not right_pages:
             continue
         effective_left.add(left_page)
-        effective_right.add(int(right_page))
+        effective_right.update(right_pages)
         if suggestion.get("confidence") == "high":
             high += 1
         else:
@@ -466,7 +470,23 @@ def run_sheet_matching(session_id: str, pair_id: str) -> dict:
             page_count = _page_count(str(pdf_path))
             by_page = {int(item["pdf_page"]): item for item in extracted}
             placeholders = sheet_matching.placeholder_sheet_index(page_count)
-            indexes[side] = [by_page.get(page, placeholder) for page, placeholder in enumerate(placeholders, 1)]
+            index = [
+                dict(by_page.get(page, placeholder))
+                for page, placeholder in enumerate(placeholders, 1)
+            ]
+            md_path = Path(str(document.get("md_path") or ""))
+            if md_path.is_file():
+                try:
+                    semantics = sheet_matching.extract_page_semantics_from_markdown(
+                        md_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, UnicodeDecodeError):
+                    semantics = {}
+                for record in index:
+                    semantic_text = semantics.get(int(record["pdf_page"]))
+                    if semantic_text:
+                        record["_semantic_text"] = semantic_text
+            indexes[side] = index
 
         result = sheet_matching.match_sheet_indexes(indexes["left"], indexes["right"])
         if unavailable_sides:
