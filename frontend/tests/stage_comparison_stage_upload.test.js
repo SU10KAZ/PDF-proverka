@@ -143,10 +143,22 @@ describe('documentation comparison shell', () => {
     expect(css).not.toContain('--sc-viewer-offset');
     expect(css).not.toMatch(/\.sc-shell--viewer \{[^}]*height: calc\(100vh/);
     expect(html).toContain("'sc-container--fit': scTab === 'links'");
-    expect(css).toContain('.sc-container--fit { display: flex; flex-direction: column; padding-bottom: 12px; }');
-    // flex-shrink: 0 — развёрнутая карта не должна душить просмотрщик
-    expect(css).toContain('.sc-container--fit > .sc-shell--viewer { flex: 1 0 auto; min-height: 0; }');
-    expect(css).toMatch(/\.sc-shell--viewer > \.sc-viewer-shell \{[^}]*min-height: 420px;/);
+    expect(css).toContain('.sc-container--fit { display: flex; flex-direction: column; min-height: 0; padding-bottom: 12px; }');
+    // вся цепочка ОБЯЗАНА сжиматься до высоты экрана, иначе непрерывный режим
+    // раздувает блок под все страницы и колесо крутит страницу, а не панель
+    expect(css).toContain('.sc-container--fit > .sc-shell--viewer { flex: 1; min-height: 0; }');
+    expect(css).not.toContain('flex: 1 0 auto');
+    for (const rule of [
+      /\.sc-container--fit \{[^}]*min-height: 0;/,
+      /\.sc-shell--viewer \{[^}]*min-height: 0;/,
+      /\.sc-shell--viewer > \.sc-viewer-shell \{[^}]*min-height: 0;/,
+      /\.sc-vector-viewer \{[^}]*min-height: 0;/,
+    ]) expect(css).toMatch(rule);
+    expect(css).toContain('.sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }');
+    expect(css).toMatch(/\.sc-vector-viewer \{[^}]*grid-template-rows: minmax\(0, 1fr\);/);
+    // карта листов не выдавливает просмотрщик и прокручивается внутри себя
+    expect(css).toMatch(/\.sc-shell--viewer > \.sc-sheet-map \{[^}]*max-height: 45%;/);
+    expect(css).toContain('.sc-shell--viewer .sc-sheet-map__list { min-height: 0; overflow-y: auto; }');
     expect(css).toContain('.sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }');
   });
 
@@ -191,7 +203,7 @@ describe('documentation comparison shell', () => {
     // рамка и скругление — только снаружи, внутри лишь разделители колонок
     expect(css).toContain('.sc-viewer-layout {');
     expect(css).toMatch(/\.sc-viewer-layout \{[^}]*height: min\(78vh, 960px\);/);
-    expect(css).toContain('.sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }');
+    expect(css).toContain('.sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }');
     expect(css).toContain('.sc-vector-pane-wrap + .sc-vector-pane-wrap { border-left: 1px solid var(--border2); }');
     expect(css).toContain('border-right: 1px solid var(--border2);');
     // высоту держит общий блок: своя высота у полосы растянула бы его под список

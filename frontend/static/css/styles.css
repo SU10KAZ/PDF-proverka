@@ -3991,21 +3991,37 @@ tr.row-rejected td.sc-cell-goto {
 
    Внутри всё подстраивается само: карта листов, ошибки и редактор связи берут
    своё, просмотрщик — остаток. */
-.sc-container--fit { display: flex; flex-direction: column; padding-bottom: 12px; }
-/* flex-shrink: 0 намеренно: при развёрнутой карте листов колонка растёт, и
-   прокрутку берёт .main-area, а не душит просмотрщик до нечитаемой полоски
-   (замер до этого: 178px). */
-.sc-container--fit > .sc-shell--viewer { flex: 1 0 auto; min-height: 0; }
+/* min-height: 0 на КАЖДОМ уровне обязателен. По умолчанию flex- и grid-элемент
+   не сжимается меньше своего содержимого (auto minimum size), и одного такого
+   уровня хватает, чтобы непрерывный режим раздул блок под все страницы: панель
+   так и не получала конечную высоту и не могла прокручиваться внутри себя. */
+.sc-container--fit { display: flex; flex-direction: column; min-height: 0; padding-bottom: 12px; }
+/* Вся цепочка обязана СЖИМАТЬСЯ до высоты экрана: только тогда панели листов
+   получают конечную высоту и прокручиваются внутри себя. С flex-shrink: 0
+   непрерывный режим раздувал блок под все страницы сразу — низ блока уезжал
+   вниз, а колесо крутило страницу целиком вместо содержимого панели. */
+.sc-container--fit > .sc-shell--viewer { flex: 1; min-height: 0; }
+/* Карта листов не должна выдавливать просмотрщик: берёт не больше 45% колонки
+   и прокручивается внутри себя. */
+.sc-shell--viewer > .sc-sheet-map {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    max-height: 45%;
+    min-height: 0;
+}
+.sc-shell--viewer .sc-sheet-map__list { min-height: 0; overflow-y: auto; }
 .sc-shell--viewer {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-height: 0;
 }
 .sc-shell--viewer > .sc-viewer-shell {
     display: flex;
     flex: 1;
     flex-direction: column;
-    min-height: 420px;
+    min-height: 0;
 }
 .sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }
 .sc-shell-card {
@@ -4181,7 +4197,13 @@ tr.row-rejected td.sc-cell-goto {
     border-radius: 2px;
     box-shadow: inset 5px 0 0 0 currentColor;
 }
-.sc-vector-viewer { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sc-vector-viewer {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 0;
+}
 .sc-upload-button { position: relative; overflow: hidden; }
 .sc-upload-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
 .sc-upload-button.is-disabled { opacity: .55; pointer-events: none; }
@@ -4355,7 +4377,7 @@ tr.row-rejected td.sc-cell-goto {
     background: var(--surface, #fff);
 }
 .sc-viewer-toolbar__spacer { flex: 1; }
-.sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
 .sc-vector-pane-wrap + .sc-vector-pane-wrap { border-left: 1px solid var(--border2); }
 .sc-vector-pane-head { justify-content: space-between; padding: 10px 12px; background: var(--surface, #fff); }
 .sc-vector-pane-head span { color: var(--text3); font-size: 11px; }
