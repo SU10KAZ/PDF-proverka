@@ -63,6 +63,9 @@ def _display_text(text: str) -> str:
     # OCR Markdown occasionally serialises one visual bullet as ``- - text``.
     # Remove the complete technical prefix, not only its first marker.
     value = re.sub(r"^(?:\s*[-+*]\s+)+", "", value)
+    # A numbered Markdown list can duplicate the number already present in the
+    # OCR text (``1. 1. Note``).  Both prefixes describe one visual marker.
+    value = re.sub(r"^(\d{1,3})\.\s+\1\.\s+", r"\1. ", value)
     return _SPACE_RE.sub(" ", value.replace("|", " ")).strip()
 
 
@@ -158,6 +161,12 @@ def parse_markdown_fragments(markdown: str, stage: str) -> list[dict[str, Any]]:
                 if re.match(r"^[-+*]\s+", line):
                     flush_paragraph()
                     emit(line, "list_item", block_id)
+                    continue
+                if re.match(r"^\d{1,3}\.\s+", line):
+                    # Numbered notes remain separate comparison units even
+                    # when OCR Markdown omits blank lines between them.
+                    flush_paragraph()
+                    paragraph.append(line)
                     continue
                 if line.startswith(">"):
                     # Other blockquotes are generated metadata, not sheet text.
@@ -355,6 +364,83 @@ def _search_pdf_boxes(
     return sorted(unique.values(), key=lambda box: (box["y"], box["x"]))
 
 
+def _pdf_text_lines(
+    page: Any, words: list[tuple], fitz: Any,
+) -> tuple[list[tuple[Any, str]], dict[int, list[int]]]:
+    """Return visual PDF text lines in stable page order."""
+    grouped: dict[tuple[int, int], list[tuple]] = defaultdict(list)
+    for word in words:
+        grouped[(int(word[5]), int(word[6]))].append(word)
+    lines = []
+    for line_words in grouped.values():
+        ordered = sorted(line_words, key=lambda word: (int(word[7]), float(word[0])))
+        text = _SPACE_RE.sub(" ", " ".join(str(word[4]) for word in ordered)).strip()
+        if not text:
+            continue
+        rectangle = fitz.Rect(ordered[0][:4])
+        for word in ordered[1:]:
+            rectangle |= fitz.Rect(word[:4])
+        if page.rotation:
+            rectangle = rectangle * page.rotation_matrix
+        lines.append((rectangle, text))
+    lines.sort(key=lambda item: (item[0].y0, item[0].x0, item[1]))
+    buckets: dict[int, list[int]] = defaultdict(list)
+    page_rect = page.rect
+    bucket_count = 256
+    for index, (rectangle, _) in enumerate(lines):
+        start = int(max(0, min(bucket_count - 1, (
+            rectangle.y0 - page_rect.y0
+        ) / max(page_rect.height, 1) * bucket_count)))
+        end = int(max(0, min(bucket_count - 1, (
+            rectangle.y1 - page_rect.y0
+        ) / max(page_rect.height, 1) * bucket_count)))
+        for bucket in range(start, end + 1):
+            buckets[bucket].append(index)
+    return lines, buckets
+
+
+def _pdf_canonical_for_boxes(
+    page: Any, boxes: list[dict[str, float]], lines: list[tuple[Any, str]],
+    line_buckets: dict[int, list[int]], fitz: Any,
+) -> str:
+    """Read the actual PDF text lines intersecting a fragment's overlay."""
+    page_rect = page.rect
+    areas = [
+        fitz.Rect(
+            page_rect.x0 + float(box["x"]) * page_rect.width,
+            page_rect.y0 + float(box["y"]) * page_rect.height,
+            page_rect.x0 + (float(box["x"]) + float(box["width"])) * page_rect.width,
+            page_rect.y0 + (float(box["y"]) + float(box["height"])) * page_rect.height,
+        )
+        for box in boxes
+    ]
+    bucket_count = 256
+    candidates: set[int] = set()
+    for area in areas:
+        start = int(max(0, min(bucket_count - 1, (
+            area.y0 - page_rect.y0
+        ) / max(page_rect.height, 1) * bucket_count)))
+        end = int(max(0, min(bucket_count - 1, (
+            area.y1 - page_rect.y0
+        ) / max(page_rect.height, 1) * bucket_count)))
+        for bucket in range(start, end + 1):
+            candidates.update(line_buckets.get(bucket, []))
+    selected = []
+    for index in sorted(candidates):
+        rectangle, text = lines[index]
+        for area in areas:
+            overlap = rectangle & area
+            minimum_height = min(rectangle.height, area.height)
+            if (
+                overlap.width > 0
+                and minimum_height > 0
+                and overlap.height >= minimum_height * 0.18
+            ):
+                selected.append(text)
+                break
+    return canonicalize_text(" ".join(selected))
+
+
 def attach_pdf_locations(
     fragments: list[dict[str, Any]], pdf_path: Path, fitz: Any
 ) -> None:
@@ -368,9 +454,9 @@ def attach_pdf_locations(
                 continue
             page = document[pdf_page - 1]
             text_page = page.get_textpage()
-            stream, words = _normalized_word_stream(
-                page.get_text("words", sort=True, textpage=text_page)
-            )
+            raw_words = page.get_text("words", sort=True, textpage=text_page)
+            pdf_lines, pdf_line_buckets = _pdf_text_lines(page, raw_words, fitz)
+            stream, words = _normalized_word_stream(raw_words)
             cursors: dict[str, int] = defaultdict(int)
             for fragment in page_fragments:
                 canonical = str(fragment["canonical_text"])
@@ -394,6 +480,11 @@ def attach_pdf_locations(
                 if not boxes:
                     continue
                 fragment["bboxes"] = boxes
+                pdf_canonical = _pdf_canonical_for_boxes(
+                    page, boxes, pdf_lines, pdf_line_buckets, fitz
+                )
+                if pdf_canonical:
+                    fragment["pdf_canonical_text"] = pdf_canonical
                 fragment["source_location"] = {
                     "pdf_page": pdf_page,
                     "word_start": start,
@@ -463,6 +554,7 @@ def _match_id(left_id: str, right_id: str, status: str) -> str:
 def _match_record(
     left: dict[str, Any], right: dict[str, Any], status: str,
     link: dict[str, Any] | None, origin_side: str | None = None,
+    *, canonical_text: str | None = None, evidence: str = "structured_text",
 ) -> dict[str, Any]:
     return {
         "id": _match_id(str(left["id"]), str(right["id"]), status),
@@ -473,8 +565,9 @@ def _match_record(
         "left_bboxes": left.get("bboxes") or [],
         "right_bboxes": right.get("bboxes") or [],
         "status": status,
-        "canonical_text": left["canonical_text"],
+        "canonical_text": canonical_text or left["canonical_text"],
         "confidence": "exact",
+        "evidence": evidence,
         "link_id": (link or {}).get("id"),
         "expected_left_pages": [int(p) for p in (link or {}).get("left_pages") or []],
         "expected_right_pages": [int(p) for p in (link or {}).get("right_pages") or []],
@@ -525,6 +618,30 @@ def compare_fragments(
                 used_left.add(str(left["id"]))
                 used_right.add(str(right["id"]))
                 matches.append(_match_record(left, right, "same_on_linked_sheet", link))
+
+        # Structured OCR can contain a typo even when the actual vector PDF
+        # text is identical. For still-unmatched fragments, accept only an
+        # exact match of text read from the already located PDF areas.
+        left_pdf_exact: dict[str, list[dict]] = defaultdict(list)
+        right_pdf_exact: dict[str, list[dict]] = defaultdict(list)
+        for fragment in left_group:
+            canonical = str(fragment.get("pdf_canonical_text") or "")
+            if fragment["id"] not in used_left and len(canonical) >= 8:
+                left_pdf_exact[canonical].append(fragment)
+        for fragment in right_group:
+            canonical = str(fragment.get("pdf_canonical_text") or "")
+            if fragment["id"] not in used_right and len(canonical) >= 8:
+                right_pdf_exact[canonical].append(fragment)
+        for canonical in sorted(set(left_pdf_exact) & set(right_pdf_exact)):
+            for left, right in _safe_exact_pairs(
+                left_pdf_exact[canonical], right_pdf_exact[canonical]
+            ):
+                used_left.add(str(left["id"]))
+                used_right.add(str(right["id"]))
+                matches.append(_match_record(
+                    left, right, "same_on_linked_sheet", link,
+                    canonical_text=canonical, evidence="pdf_text_layer",
+                ))
 
     # Only fragments belonging to an accepted relation are pass-2 sources.
     linked_left_pages = {int(page) for link in normalized_links for page in link.get("left_pages") or []}

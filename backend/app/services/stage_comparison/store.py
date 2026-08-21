@@ -576,7 +576,7 @@ def save_sheet_links(
 def _text_source_signature(pair: dict, links: dict) -> str:
     """Fingerprint all read-only inputs that influence Stage 2."""
     source: dict[str, Any] = {
-        "algorithm": "deterministic_exact_text_v1_4",
+        "algorithm": "deterministic_exact_text_v1_8",
         "links": [
             {
                 "id": link.get("id"),
@@ -691,7 +691,7 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
         payload = {
             "version": 1,
             "pair_id": pair_id,
-            "algorithm": "deterministic_exact_text_v1_4",
+            "algorithm": "deterministic_exact_text_v1_8",
             "generated_at": _utc_now(),
             "source_signature": signature,
             "fragments": fragments,

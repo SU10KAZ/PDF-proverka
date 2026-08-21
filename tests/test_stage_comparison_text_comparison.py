@@ -67,6 +67,23 @@ def test_repeated_technical_markdown_bullet_is_not_document_text() -> None:
     assert left[0]["canonical_text"] == right[0]["canonical_text"]
 
 
+def test_numbered_notes_split_without_blank_lines_and_drop_duplicate_marker() -> None:
+    markdown = """## Page 1
+### BLOCK #1 [TEXT]: notes
+
+1. 1. Первое примечание.
+2. 2. Второе примечание начинается здесь.
+Продолжение второго примечания.
+3. 3. Третье примечание.
+"""
+    fragments = tc.parse_markdown_fragments(markdown, "stage_2")
+    assert [item["text"] for item in fragments] == [
+        "1. Первое примечание.",
+        "2. Второе примечание начинается здесь. Продолжение второго примечания.",
+        "3. Третье примечание.",
+    ]
+
+
 def test_same_text_inside_linked_pair_is_excluded() -> None:
     left = [_fragment("left", 1, "Кладочный план первого этажа")]
     right = [_fragment("right", 1, "Кладочный план первого этажа")]
@@ -81,6 +98,18 @@ def test_different_numeric_value_remains() -> None:
     result = tc.compare_fragments(left, right, [_link()])
     assert result["matches"] == []
     assert result["remaining"] == {"left": [left[0]["id"]], "right": [right[0]["id"]]}
+
+
+def test_exact_pdf_text_can_prove_match_when_structured_text_has_typo() -> None:
+    left = [_fragment("left", 1, "Адрес: улица Летняя")]
+    right = [_fragment("right", 1, "Адрес: улица Лётная")]
+    pdf_text = tc.canonicalize_text("Адрес: улица Лётная")
+    left[0]["pdf_canonical_text"] = pdf_text
+    right[0]["pdf_canonical_text"] = pdf_text
+    result = tc.compare_fragments(left, right, [_link()])
+    assert len(result["matches"]) == 1
+    assert result["matches"][0]["evidence"] == "pdf_text_layer"
+    assert result["remaining"] == {"left": [], "right": []}
 
 
 def test_markdown_table_is_fragmented_and_compared_by_rows() -> None:
@@ -223,4 +252,8 @@ def test_pdf_text_location_is_read_only(tmp_path: Path) -> None:
     after = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
     assert fragment["bboxes"]
     assert numbered_fragment["bboxes"]
+    assert fragment["pdf_canonical_text"] == tc.canonicalize_text(fragment["text"])
+    assert numbered_fragment["pdf_canonical_text"] == tc.canonicalize_text(
+        numbered_fragment["text"]
+    )
     assert before == after
