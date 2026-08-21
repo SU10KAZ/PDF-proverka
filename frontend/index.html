@@ -5392,7 +5392,7 @@
                 </button>
             </div>
 
-            <div class="sc-steps-bar">
+            <div class="sc-steps-bar" :class="{'sc-steps-bar--tight': scTab === 'links'}">
                 <div class="project-tabs">
                     <button class="project-tab" :class="{'project-tab--active': scTab==='upload'}" @click="scTab='upload'">
                         1. Загрузка документации
@@ -5532,7 +5532,7 @@
                 </section>
             </div>
 
-            <div v-if="scTab==='links'" class="sc-shell">
+            <div v-if="scTab==='links'" class="sc-shell sc-shell--viewer">
                 <div v-if="!scPairData" class="sc-empty-state">
                     Выберите пару документов на вкладке «Загрузка документации»
                 </div>

@@ -132,6 +132,19 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
   });
 
+  it('fits the sheet-link tab to the screen without slack', () => {
+    // вкладка занимает экран: карта берёт своё, просмотрщик — остаток
+    expect(html).toContain("'sc-steps-bar--tight': scTab === 'links'");
+    expect(html).toContain('class="sc-shell sc-shell--viewer"');
+    expect(css).toContain('.sc-steps-bar--tight { margin-bottom: 6px; }');
+    expect(css).toMatch(/\.sc-shell--viewer \{[^}]*gap: 6px;/);
+    // min-height, а не height: развёрнутая карта не должна душить просмотрщик
+    expect(css).toMatch(/\.sc-shell--viewer \{[^}]*min-height: calc\(100vh - var\(--sc-viewer-offset, 123px\)\);/);
+    expect(css).not.toMatch(/\.sc-shell--viewer \{[^}]*[^-]height: calc\(100vh/);
+    expect(css).toMatch(/\.sc-shell--viewer > \.sc-viewer-shell \{[^}]*min-height: 420px;/);
+    expect(css).toContain('.sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }');
+  });
+
   it('keeps the viewer toolbar down to zoom controls', () => {
     // синхронный вид больше не выключается вручную — панели всегда связаны
     expect(html).not.toContain('v-model="scSyncView"');

@@ -3974,6 +3974,35 @@ tr.row-rejected td.sc-cell-goto {
 .sc-shell__header p { margin: 5px 0 0; color: var(--text3); }
 .sc-steps-bar { margin-bottom: 16px; }
 .sc-shell { display: grid; gap: 16px; }
+/* На «Связи блоков» между вкладками, картой листов и просмотрщиком стояло по
+   16 px воздуха. Здесь он не нужен: карта в свёрнутом виде это одна полоска,
+   а просмотрщику каждый десяток пикселей идёт в высоту листа. Ужимаем только
+   эту вкладку — на первом шаге карточки должны дышать как прежде. */
+.sc-steps-bar--tight { margin-bottom: 6px; }
+/* Вкладка «Связь блоков» занимает ровно экран: блок просмотрщика обязан
+   заканчиваться у его нижнего края, а не тянуть страницу в прокрутку. Выше
+   этой колонки лежат только элементы постоянной высоты (шапка портала, отступ
+   контейнера, полоса вкладок) — их и вычитаем. Всё внутри подстраивается само:
+   карта листов, ошибки и редактор связи берут своё, просмотрщик — остаток. */
+.sc-shell--viewer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* 115px — замеренное расстояние от верха окна до этой колонки (шапка
+       портала + отступ контейнера + полоса вкладок), 8px — воздух снизу,
+       чтобы блок не упирался в самый край. */
+    /* min-height, а не height: при свёрнутой карте колонка ровно в экран и
+       просмотрщик занимает остаток, при развёрнутой — растёт вместе с картой,
+       а не душит просмотрщик до нечитаемой полоски (замер: было 178px). */
+    min-height: calc(100vh - var(--sc-viewer-offset, 123px));
+}
+.sc-shell--viewer > .sc-viewer-shell {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 420px;
+}
+.sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }
 .sc-shell-card {
     padding: 18px;
     border: 1px solid var(--border2);
@@ -4620,7 +4649,10 @@ tr.row-rejected td.sc-cell-goto {
     }
     .sc-vector-viewer { grid-template-columns: 1fr; }
     /* Колонки встали друг под друга — общая высота блока здесь не годится,
-       каждая колонка снова получает свою. */
+       каждая колонка снова получает свою, а вкладка снова тянется по контенту. */
+    .sc-shell--viewer { height: auto; }
+    .sc-shell--viewer > .sc-viewer-shell { flex: 0 0 auto; }
+    .sc-shell--viewer .sc-viewer-layout { flex: 0 0 auto; }
     .sc-viewer-layout { height: auto; }
     .sc-vector-pane,
     .sc-continuous-pane { flex: 0 0 auto; height: 60vh; }
