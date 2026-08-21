@@ -108,7 +108,8 @@ describe('documentation comparison shell', () => {
   });
 
   it('opens a left thumbnail strip of sheet pairs on a button', () => {
-    expect(html).toContain('title="Миниатюры листов" @click="scToggleThumbs()"');
+    expect(html).toContain('class="sc-thumbs-rail__btn"');
+    expect(html).toContain('@click="scToggleThumbs()"');
     expect(html).toContain('<aside v-if="scThumbsOpen" class="sc-thumbs"');
     expect(html).toContain('class="sc-thumbs__row"');
     expect(html).toContain("scOpenThumbRow(row)");
@@ -129,6 +130,19 @@ describe('documentation comparison shell', () => {
     // активная пара сама подкручивается: крутим список, не страницу
     expect(app).toContain('function scRevealActiveThumb()');
     expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
+  });
+
+  it('toggles the strip from a rail button under the toolbar', () => {
+    // в панели инструментов кнопка стояла среди настроек масштаба и читалась
+    // как ещё одна настройка, хотя открывает целую панель
+    expect(html).not.toContain('sc-thumbs-toggle');
+    expect(css).not.toContain('.sc-thumbs-toggle.is-active');
+    // рейка идёт ПЕРЕД панелью, поэтому кнопка не съезжает, когда та выезжает
+    expect(html.indexOf('class="sc-thumbs-rail"')).toBeLessThan(html.indexOf('class="sc-thumbs"'));
+    expect(html).toContain(":title=\"scThumbsOpen ? 'Скрыть миниатюры' : 'Показать миниатюры'\"");
+    expect(html).toContain(':class="{\'is-active\': scThumbsOpen}"');
+    expect(css).toMatch(/\.sc-thumbs-rail \{[^}]*flex-direction: column;/);
+    expect(css).toMatch(/\.sc-thumbs-rail__btn\.is-active \{[^}]*var\(--teal\)/);
   });
 
   it('wraps the toolbar and the working area in one shell', () => {

@@ -4111,7 +4111,49 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 9px;
 }
 .sc-thumbs__empty { padding: 16px; color: var(--text3); font-size: 12px; text-align: center; }
-.sc-thumbs-toggle.is-active { border-color: var(--accent, #0f9f8f); color: var(--accent, #0f9f8f); }
+/* Переключатель полосы миниатюр живёт на узкой рейке у левого края рабочей
+   области, а не в панели инструментов: там он стоял среди настроек масштаба и
+   читался как ещё одна настройка, хотя открывает целую панель. На рейке он
+   всегда на одном месте — панель выезжает справа от него и не сдвигает
+   кнопку, иначе повторное нажатие пришлось бы ловить на новом месте. */
+.sc-thumbs-rail {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 6px;
+    border-right: 1px solid var(--border2);
+    background: var(--surface, #fff);
+}
+.sc-thumbs-rail__btn {
+    display: grid;
+    width: 28px;
+    height: 26px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    color: var(--text3);
+    background: transparent;
+    cursor: pointer;
+    transition: all .13s;
+}
+.sc-thumbs-rail__btn:hover { color: var(--text); background: var(--card2-bg); }
+.sc-thumbs-rail__btn.is-active {
+    border-color: var(--teal-border);
+    color: var(--teal);
+    background: var(--teal-light);
+}
+/* Значок — лист с выделенной боковой колонкой, currentColor и без своего фона,
+   чтобы одинаково читаться в обеих темах. */
+.sc-thumbs-rail__icon {
+    display: block;
+    width: 15px;
+    height: 13px;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    box-shadow: inset 5px 0 0 0 currentColor;
+}
 .sc-vector-viewer { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .sc-upload-button { position: relative; overflow: hidden; }
 .sc-upload-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
@@ -4349,7 +4391,10 @@ tr.row-rejected td.sc-cell-goto {
     background: #bfc6d0;
     contain: layout paint;
     overscroll-behavior: contain;
+    cursor: grab;
+    touch-action: none;
 }
+.sc-continuous-pane.is-panning { cursor: grabbing; }
 .sc-continuous-page {
     position: relative;
     max-width: none;
@@ -4360,7 +4405,14 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-continuous-page:last-child { margin-bottom: 0; }
 .sc-continuous-page.is-current { box-shadow: 0 0 0 2px var(--accent, #0f9f8f), 0 2px 7px rgba(15, 23, 42, .18); }
-.sc-continuous-page__preview { display: block; width: 100%; height: 100%; user-select: none; }
+.sc-continuous-page__preview { display: block; width: 100%; height: 100%; pointer-events: none; user-select: none; }
+.sc-continuous-page__tile {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+}
 .sc-continuous-page__placeholder {
     position: absolute;
     inset: 0;
@@ -4368,6 +4420,7 @@ tr.row-rejected td.sc-cell-goto {
     width: 100%;
     height: 100%;
     place-items: center;
+    z-index: 2;
     color: #64748b;
     background: #f8fafc;
     font-size: 11px;

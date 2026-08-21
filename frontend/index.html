@@ -5617,9 +5617,6 @@
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
-                        <button class="btn btn-sm sc-thumbs-toggle" :class="{'is-active': scThumbsOpen}"
-                                :aria-pressed="scThumbsOpen ? 'true' : 'false'"
-                                title="Миниатюры листов" @click="scToggleThumbs()">Миниатюры</button>
                         <label><input type="checkbox" v-model="scSyncView"> Синхронный вид</label>
                         <span class="sc-viewer-hint" v-if="scViewMode === 'paged'">Ctrl + колесо — масштаб, колесо — прокрутка, перетаскивание — сдвиг</span>
                         <span class="sc-viewer-hint" v-else>Непрерывная прокрутка всех страниц, Ctrl + колесо — масштаб</span>
@@ -5631,6 +5628,16 @@
                         <button class="btn btn-sm" title="1 пункт PDF = 1 пиксель" @click="scZoomActualSize()">1:1</button>
                     </div>
                     <div class="sc-viewer-layout">
+                    <div class="sc-thumbs-rail">
+                        <button type="button" class="sc-thumbs-rail__btn"
+                                :class="{'is-active': scThumbsOpen}"
+                                :aria-pressed="scThumbsOpen ? 'true' : 'false'"
+                                :title="scThumbsOpen ? 'Скрыть миниатюры' : 'Показать миниатюры'"
+                                :aria-label="scThumbsOpen ? 'Скрыть миниатюры' : 'Показать миниатюры'"
+                                @click="scToggleThumbs()">
+                            <i class="sc-thumbs-rail__icon"></i>
+                        </button>
+                    </div>
                     <aside v-if="scThumbsOpen" class="sc-thumbs" aria-label="Миниатюры листов">
                         <div class="sc-thumbs__head">
                             <span>Миниатюры</span>
@@ -5708,8 +5715,13 @@
                             <div v-else class="sc-continuous-pane"
                                  :class="{'is-empty': scViewerEmpty[side]}"
                                  :ref="element => scSetContinuousPaneRef(side, element)"
-                                 @wheel="scOnContinuousWheel($event)"
-                                 @scroll.passive="scOnContinuousScroll(side, $event)">
+                                 @wheel="scOnContinuousWheel(side, $event)"
+                                 @scroll.passive="scOnContinuousScroll(side, $event)"
+                                 @pointerdown="scOnContinuousPanStart(side, $event)"
+                                 @pointermove="scOnContinuousPanMove($event)"
+                                 @pointerup="scOnContinuousPanEnd($event)"
+                                 @pointercancel="scOnContinuousPanEnd($event)"
+                                 @dblclick="scOnContinuousDoubleClick(side, $event)">
                                 <template v-if="!scViewerEmpty[side]">
                                     <article v-for="page in scContinuousPages(side)" :key="side+'-continuous-'+page"
                                              class="sc-continuous-page"
@@ -5722,6 +5734,10 @@
                                              draggable="false" alt=""
                                              @load="scOnContinuousPreviewLoad(side, page)"
                                              @error="scOnContinuousPreviewError(side, page)">
+                                        <img v-for="tile in scContinuousTiles[side][page] || []"
+                                             :key="tile.key" class="sc-continuous-page__tile"
+                                             :src="tile.url" decoding="async" draggable="false" alt=""
+                                             :style="{left: tile.left + '%', top: tile.top + '%', width: tile.width + '%', height: tile.height + '%'}">
                                         <div v-if="!scContinuousPreview[side][page] || scContinuousLoading[side][page] || scContinuousError[side][page]"
                                              class="sc-continuous-page__placeholder">
                                             <span v-if="scContinuousError[side][page]">{{ scContinuousError[side][page] }}</span>
