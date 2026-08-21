@@ -118,15 +118,22 @@ describe('documentation comparison shell', () => {
   });
 
   it('saves project pairing on the server and restores it before a local draft', () => {
+    expect(html).toContain('Сопоставить проекты');
     expect(html).toContain('Сохранить сопоставленные проекты');
+    expect(html).toContain('@click="scAutoMatchDocumentProjects()"');
     expect(html).toContain('@click="scSaveDocumentPairing()"');
+    expect(html).toContain('v-if="!scPairingSaved"');
     expect(app).toContain('/document-pairing`');
+    expect(app).toContain('/document-pairing/suggest`');
     expect(app).toContain("method: 'PUT'");
+    expect(app).toContain("{method: 'POST'}");
     expect(app).toContain('serverPairing.left_order');
     expect(app).toContain('serverPairing.right_order');
     expect(app).toContain('serverPairing.confirmed_pairs');
     expect(app).toContain('if (useSaved && !loadedFromServer && storageKey)');
     expect(app).toContain("scPairingSaveMessage.value = loadedFromServer ? 'Загружено сохранённое сопоставление'");
+    expect(app).toContain('scDocumentOrder.left = [...(data.left_order || [])]');
+    expect(app).toContain('scRestoreConfirmedDocumentPairs(data.confirmed_pairs || [])');
     expect(css).toContain('.sc-pair-savebar');
   });
 

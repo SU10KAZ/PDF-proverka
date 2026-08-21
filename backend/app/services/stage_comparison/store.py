@@ -15,6 +15,7 @@ from typing import Any
 
 from . import paths as paths_mod
 from . import scanner as scanner_mod
+from . import document_matching
 from . import sheet_matching
 
 
@@ -292,6 +293,19 @@ def save_document_pairing(
         meta["document_pairing"] = pairing
         _atomic_write_json(paths_mod.session_json_path(session_id), meta)
         return pairing
+
+
+def suggest_document_pairing(session_id: str) -> dict:
+    """Build a disposable approximate filename pairing without saving it."""
+    with _lock:
+        meta = _load_session_meta(session_id)
+        if meta is None:
+            raise KeyError("session_not_found")
+        documents = meta.get("documents") or {}
+        return document_matching.suggest_document_pairing(
+            list(documents.get("stage_1") or []),
+            list(documents.get("stage_2") or []),
+        )
 
 
 def _import_fitz():
@@ -664,6 +678,7 @@ __all__ = [
     "get_session",
     "create_pair",
     "save_document_pairing",
+    "suggest_document_pairing",
     "get_pair_view",
     "get_sheet_matching_state",
     "run_sheet_matching",

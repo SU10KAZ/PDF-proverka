@@ -11828,6 +11828,7 @@ const app = createApp({
         const scPendingPairSelection = ref(null);
         const scConfirmedDocumentPairs = reactive({});
         const scPairingSaving = ref(false);
+        const scPairingMatching = ref(false);
         const scPairingDirty = ref(false);
         const scPairingSaveError = ref('');
         const scPairingSaveMessage = ref('');
@@ -11903,6 +11904,10 @@ const app = createApp({
             scStageUploadBusy.stage_1 || scStageUploadBusy.stage_2
         );
         const scPairs = computed(() => (scSession.value && scSession.value.pairs) || []);
+        const scPairingSaved = computed(() => Boolean(
+            scSession.value && scSession.value.document_pairing
+            && !scPairingDirty.value && !scPairingSaving.value
+        ));
         const scPairRows = computed(() => {
             const documents = {
                 left: new Map(scDocumentsLeft.value.map(item => [item.pdf_path, item])),
@@ -12187,7 +12192,7 @@ const app = createApp({
         }
 
         async function scSaveDocumentPairing() {
-            if (!scSession.value || scPairingSaving.value) return;
+            if (!scSession.value || scPairingSaving.value || scPairingMatching.value) return;
             const payload = scDocumentPairingPayload();
             const snapshot = JSON.stringify(payload);
             scPairingSaving.value = true;
@@ -12214,6 +12219,35 @@ const app = createApp({
                 scPairingSaveError.value = String(error.message || error);
             } finally {
                 scPairingSaving.value = false;
+            }
+        }
+
+        async function scAutoMatchDocumentProjects() {
+            if (!scSession.value || scPairingMatching.value || scPairingSaving.value) return;
+            scPairingMatching.value = true;
+            scPairingSaveError.value = '';
+            scPairingSaveMessage.value = '';
+            try {
+                const response = await fetch(
+                    `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/document-pairing/suggest`,
+                    {method: 'POST'},
+                );
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scDocumentOrder.left = [...(data.left_order || [])];
+                scDocumentOrder.right = [...(data.right_order || [])];
+                scPendingPairSelection.value = null;
+                scRestoreConfirmedDocumentPairs(data.confirmed_pairs || []);
+                scFinishDocumentDrag();
+                scFinishPairRowDrag();
+                scPersistDocumentOrder();
+                scPairingSaveMessage.value = `Сопоставлено автоматически: ${Number(data.matched_count) || 0}. `
+                    + `Остались внизу: П — ${Number(data.unmatched_left_count) || 0}, `
+                    + `РД — ${Number(data.unmatched_right_count) || 0}`;
+            } catch (error) {
+                scPairingSaveError.value = String(error.message || error);
+            } finally {
+                scPairingMatching.value = false;
             }
         }
 
@@ -12450,6 +12484,7 @@ const app = createApp({
                 scPairData.value = null;
                 scMatchState.value = null;
                 scPairingDirty.value = false;
+                scPairingMatching.value = false;
                 scPairingSaveError.value = '';
                 scPairingSaveMessage.value = '';
                 return;
@@ -13887,7 +13922,8 @@ const app = createApp({
             scDraggingDocument, scDocumentDragOver,
             scDraggingPairRow, scPairRowDragOver,
             scPendingPairSelection, scConfirmedDocumentPairs,
-            scPairingSaving, scPairingDirty, scPairingSaveError, scPairingSaveMessage,
+            scPairingSaving, scPairingMatching, scPairingDirty, scPairingSaved,
+            scPairingSaveError, scPairingSaveMessage,
             scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
             scProcessing, scProcessingError,
@@ -13904,7 +13940,7 @@ const app = createApp({
             scFinishPairRowDrag, scIsDraggingPairRow,
             scSelectPairDocument, scIsPairDocumentPending, scIsPairRowConfirmed,
             scPairRowStatus, scPairRowBusy, scPairRowError,
-            scSaveDocumentPairing,
+            scAutoMatchDocumentProjects, scSaveDocumentPairing,
             scSheetIndexEntryFor, scSheetIndexTitle, scReasonLabel,
             scSheetMapSideLabel, scSheetMapStatus, scSheetMapRowActive,
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,

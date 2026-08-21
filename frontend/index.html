@@ -5421,12 +5421,19 @@
                             {{ scPairingSaveMessage }}
                         </span>
                         <span v-else-if="scPairingDirty">Есть несохранённые изменения</span>
-                        <span v-else>Сохраните раскладку, чтобы восстановить её после перезапуска</span>
-                        <button class="btn btn-primary"
-                                :disabled="scPairingSaving || !scPairRows.length"
-                                @click="scSaveDocumentPairing()">
-                            {{ scPairingSaving ? 'Сохранение…' : 'Сохранить сопоставленные проекты' }}
-                        </button>
+                        <span v-else>Сопоставьте проекты автоматически или сохраните текущую раскладку</span>
+                        <div v-if="!scPairingSaved" class="sc-pair-savebar__actions">
+                            <button class="btn btn-secondary"
+                                    :disabled="scPairingMatching || scPairingSaving || !scPairRows.length"
+                                    @click="scAutoMatchDocumentProjects()">
+                                {{ scPairingMatching ? 'Сопоставление…' : 'Сопоставить проекты' }}
+                            </button>
+                            <button class="btn btn-primary"
+                                    :disabled="scPairingSaving || scPairingMatching || !scPairRows.length"
+                                    @click="scSaveDocumentPairing()">
+                                {{ scPairingSaving ? 'Сохранение…' : 'Сохранить сопоставленные проекты' }}
+                            </button>
+                        </div>
                     </div>
                     <div class="sc-pair-board">
                         <div class="sc-pair-board__header">

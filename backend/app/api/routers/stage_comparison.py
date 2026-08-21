@@ -163,6 +163,14 @@ async def save_document_pairing(session_id: str, request: SaveDocumentPairingReq
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.post("/sessions/{session_id}/document-pairing/suggest")
+async def suggest_document_pairing(session_id: str):
+    try:
+        return await run_in_threadpool(store.suggest_document_pairing, session_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}")
 async def get_pair(session_id: str, pair_id: str):
     pair = await run_in_threadpool(store.get_pair_view, session_id, pair_id)

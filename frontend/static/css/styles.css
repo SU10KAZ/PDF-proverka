@@ -4035,6 +4035,7 @@ tr.row-rejected td.sc-cell-goto {
     background: var(--surface, #fff);
 }
 .sc-pair-savebar > span { margin-right: auto; color: var(--text3); font-size: 12px; }
+.sc-pair-savebar__actions { display: flex; align-items: center; gap: 7px; }
 .sc-pair-savebar .sc-pair-savebar__success { color: #047857; }
 .sc-pair-savebar .sc-pair-savebar__error { color: #b91c1c; }
 .sc-pair-board__header {

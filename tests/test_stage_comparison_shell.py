@@ -78,6 +78,12 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     assert pair_view["right_page_count"] == 1
 
     pair_id = pair_view["pair"]["id"]
+    suggested_pairing = client.post(
+        f"/api/stage-comparison/sessions/{session['id']}/document-pairing/suggest"
+    )
+    assert suggested_pairing.status_code == 200
+    assert suggested_pairing.json()["matched_count"] == 0
+    assert suggested_pairing.json()["confirmed_pairs"] == []
     pairing_response = client.put(
         f"/api/stage-comparison/sessions/{session['id']}/document-pairing",
         json={
