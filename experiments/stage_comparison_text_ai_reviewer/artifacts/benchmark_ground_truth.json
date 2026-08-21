@@ -1,0 +1,509 @@
+{
+  "version": 1,
+  "dataset_sha256": "e4f790e5352056a7186c7a8aa8aca7b98c5e62e0990537c8573d2f84843a0d29",
+  "author": "manual_source_review",
+  "production_dependency": false,
+  "groups": [
+    {
+      "group_id": "real_area_and_added_room",
+      "category": "table_numeric_and_added",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_e80e92b24f192d93"
+          ],
+          "right_fragment_ids": [
+            "txt_fe97492628af5ca5"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_aa1c03c75c340d10"
+          ],
+          "right_fragment_ids": [
+            "txt_3298fa2e583b7208"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_953d02f2bdb15653"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_equipment_marks",
+      "category": "stable_key_mark_change",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_08cf6ef3e5fd2670"
+          ],
+          "right_fragment_ids": [
+            "txt_670a57c3be6569f4"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8fe1c0ead799ea2e"
+          ],
+          "right_fragment_ids": [
+            "txt_3d6a5299ee1b8411"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_0a9d101db83a7af5"
+          ],
+          "right_fragment_ids": [
+            "txt_a9752d4dad25a29f"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_formatting_only",
+      "category": "almost_unchanged",
+      "expected_decisions": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "txt_20398df4864d255a"
+          ],
+          "right_fragment_ids": [
+            "txt_6c64ed13c41fcd36"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_wastewater_values",
+      "category": "multi_value_table_row",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8987880b31131ac4"
+          ],
+          "right_fragment_ids": [
+            "txt_4a8eaf20a282f69d"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_unrelated_corrections",
+      "category": "false_changed_trap",
+      "expected_decisions": [
+        {
+          "final_status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_ab103faee9411ce2"
+          ],
+          "right_fragment_ids": []
+        },
+        {
+          "final_status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_e6de1f25c20f1626"
+          ],
+          "right_fragment_ids": []
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_c1e76795f7202656"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_ecef6c97de398bd0"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_long_note_reference",
+      "category": "long_rewritten_note",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8512d2770cd66577"
+          ],
+          "right_fragment_ids": [
+            "txt_4e6a709a0da14f97"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_title_metadata",
+      "category": "document_metadata",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_33b07d3d9025e9e3"
+          ],
+          "right_fragment_ids": [
+            "txt_25d2578d58c845a0"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_e661954ac70568a1"
+          ],
+          "right_fragment_ids": [
+            "txt_094d1a5fdcaba7bb"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_21a8e970728a46fa"
+          ],
+          "right_fragment_ids": [
+            "txt_325122c0e854be55"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_customer_change",
+      "category": "name_change",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_51393a3e9e16c794"
+          ],
+          "right_fragment_ids": [
+            "txt_a17aec0369c61110"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_removed_note",
+      "category": "removed_long_text",
+      "expected_decisions": [
+        {
+          "final_status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_29a6d53cd0aa76f4",
+            "txt_1f0213a8730759bb"
+          ],
+          "right_fragment_ids": []
+        }
+      ]
+    },
+    {
+      "group_id": "real_added_drawing_rows",
+      "category": "added_table_rows",
+      "expected_decisions": [
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_feb948ca4f6c3dec"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_5d3d23a169ee61f5"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_f5de3bfb35145d1b"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_contents_with_ambiguity",
+      "category": "ambiguous_pairing",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_4aa446ba4f5d1127"
+          ],
+          "right_fragment_ids": [
+            "txt_4547ab37fae19405"
+          ]
+        },
+        {
+          "final_status": "UNCERTAIN",
+          "left_fragment_ids": [
+            "txt_79ec0d971f7d0b3f",
+            "txt_ffdd4acd472e7149"
+          ],
+          "right_fragment_ids": [
+            "txt_68ba5628a0f374ce",
+            "txt_fe1382206759393b"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_exact_same",
+      "category": "same_same_words",
+      "expected_decisions": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "txt_122274c4f8824226"
+          ],
+          "right_fragment_ids": [
+            "txt_955d76998998c198"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_moved_other_sheet",
+      "category": "moved_other_sheet",
+      "expected_decisions": [
+        {
+          "final_status": "MOVED",
+          "left_fragment_ids": [
+            "txt_20e4f3c4aee77cdc"
+          ],
+          "right_fragment_ids": [
+            "txt_8a7b13d64b18fdc9"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "semantic_paraphrase",
+      "category": "same_strong_paraphrase",
+      "expected_decisions": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_semantic_paraphrase_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_semantic_paraphrase_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "operating_mode",
+      "category": "changed_semantic_word",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_operating_mode_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_operating_mode_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "negation",
+      "category": "changed_negation",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_negation_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_negation_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "material_change",
+      "category": "changed_material",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_material_change_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_material_change_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "quantity_words",
+      "category": "same_quantity_words",
+      "expected_decisions": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_quantity_words_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_quantity_words_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "unit_magnitude",
+      "category": "changed_unit_and_value",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_unit_magnitude_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_unit_magnitude_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "formula_equivalent",
+      "category": "same_formula",
+      "expected_decisions": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_formula_equivalent_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_formula_equivalent_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "formula_changed",
+      "category": "changed_formula",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_formula_changed_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_formula_changed_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "calculation_input",
+      "category": "changed_calculation_input",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_calculation_input_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_calculation_input_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "calculation_method",
+      "category": "changed_calculation_method",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_calculation_method_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_calculation_method_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "one_to_many",
+      "category": "same_one_to_many",
+      "expected_decisions": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_one_to_many_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_one_to_many_R1",
+            "ctl_one_to_many_R2"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "many_to_one",
+      "category": "changed_many_to_one",
+      "expected_decisions": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_many_to_one_L1",
+            "ctl_many_to_one_L2"
+          ],
+          "right_fragment_ids": [
+            "ctl_many_to_one_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "false_moved",
+      "category": "similar_but_not_moved",
+      "expected_decisions": [
+        {
+          "final_status": "UNCERTAIN",
+          "left_fragment_ids": [
+            "ctl_false_moved_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_false_moved_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "same_words_different_context",
+      "category": "same_text_different_context",
+      "expected_decisions": [
+        {
+          "final_status": "UNCERTAIN",
+          "left_fragment_ids": [
+            "ctl_same_words_different_context_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_same_words_different_context_R1"
+          ]
+        }
+      ]
+    }
+  ],
+  "ground_truth_sha256": "f923379270430633fe7e52865257703b1878f0b596bb08f95f4a05e6e7cb4b29"
+}

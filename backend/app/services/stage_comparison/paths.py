@@ -69,6 +69,14 @@ def text_differences_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "text_differences.json"
 
 
+def text_ai_review_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "text_ai_review.json"
+
+
+def text_final_comparison_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "text_final_comparison.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -87,5 +95,7 @@ __all__ = [
     "text_comparison_path",
     "text_exclusions_path",
     "text_differences_path",
+    "text_ai_review_path",
+    "text_final_comparison_path",
     "index_json_path",
 ]

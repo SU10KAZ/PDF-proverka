@@ -1,0 +1,2484 @@
+{
+  "version": 1,
+  "prompt_version": "stage4_semantic_reviewer_v1",
+  "response_schema_sha256": "a58a6c2cc337cdf1150149402f7785ab7ee1852dde478d5b423882d1edd84e58",
+  "source": {
+    "real_project": "272_Sadovnicheskaya_76_Balchug_Esteyt",
+    "session_id": "121d764109184c13",
+    "ground_truth_author": "manual_source_review",
+    "production_dependency": false,
+    "real_groups": 13,
+    "controlled_groups": 14
+  },
+  "groups": [
+    {
+      "group_id": "real_area_and_added_room",
+      "category": "table_numeric_and_added",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p570d156f57",
+        "link_id": "link_5bac0a5098c7",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        7
+      ],
+      "right_pages": [
+        6
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_e80e92b24f192d93",
+          "page": 7,
+          "sheet": "LEFT page 7",
+          "text": "С.А.2 Автостоянка 4394,20 B2",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_aa1c03c75c340d10",
+          "page": 7,
+          "sheet": "LEFT page 7",
+          "text": "1.Т.5 Электрощитовая 65,50 B3",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_fe97492628af5ca5",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "С.А.2 Автостоянка 4369,80 B2",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_3298fa2e583b7208",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "1.Т.5 Электрощитовая 59,70 B3",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_953d02f2bdb15653",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "С.А.1 Автостоянка 10830,50 B2",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_e80e92b24f192d93",
+          "txt_aa1c03c75c340d10"
+        ],
+        "right": [
+          "txt_fe97492628af5ca5",
+          "txt_3298fa2e583b7208",
+          "txt_953d02f2bdb15653"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_aa1c03c75c340d10"
+          ],
+          "right_fragment_ids": [
+            "txt_3298fa2e583b7208"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_e80e92b24f192d93"
+          ],
+          "right_fragment_ids": [
+            "txt_fe97492628af5ca5"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_953d02f2bdb15653"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_e80e92b24f192d93"
+          ],
+          "right_fragment_ids": [
+            "txt_fe97492628af5ca5"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_aa1c03c75c340d10"
+          ],
+          "right_fragment_ids": [
+            "txt_3298fa2e583b7208"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_953d02f2bdb15653"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_equipment_marks",
+      "category": "stable_key_mark_change",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p570d156f57",
+        "link_id": "link_5bac0a5098c7",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        7
+      ],
+      "right_pages": [
+        6
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_08cf6ef3e5fd2670",
+          "page": 7,
+          "sheet": "LEFT page 7",
+          "text": "2.К.1 Проеход блока кладовых 23,10",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_8fe1c0ead799ea2e",
+          "page": 7,
+          "sheet": "LEFT page 7",
+          "text": "2.Т.1 Электрощитовая жилого корпуса 2 ВРЧ-К2 29,50 B3",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_0a9d101db83a7af5",
+          "page": 7,
+          "sheet": "LEFT page 7",
+          "text": "2.Т.2 Электрощитовая автостоянки ВРЧ1 17,90 B3",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_670a57c3be6569f4",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "2.К.1 Проезд блока кладовых 23,10",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_3d6a5299ee1b8411",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "2.Т.1 Электрощитовая жилого корпуса 2 ВРУ-К2 29,50 B3",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_a9752d4dad25a29f",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "2.Т.2 Электрощитовая автостоянки ВРУ1 17,90 B3",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_08cf6ef3e5fd2670",
+          "txt_8fe1c0ead799ea2e",
+          "txt_0a9d101db83a7af5"
+        ],
+        "right": [
+          "txt_670a57c3be6569f4",
+          "txt_3d6a5299ee1b8411",
+          "txt_a9752d4dad25a29f"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8fe1c0ead799ea2e"
+          ],
+          "right_fragment_ids": [
+            "txt_3d6a5299ee1b8411"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_0a9d101db83a7af5"
+          ],
+          "right_fragment_ids": [
+            "txt_a9752d4dad25a29f"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_08cf6ef3e5fd2670"
+          ],
+          "right_fragment_ids": [
+            "txt_670a57c3be6569f4"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_08cf6ef3e5fd2670"
+          ],
+          "right_fragment_ids": [
+            "txt_670a57c3be6569f4"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8fe1c0ead799ea2e"
+          ],
+          "right_fragment_ids": [
+            "txt_3d6a5299ee1b8411"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_0a9d101db83a7af5"
+          ],
+          "right_fragment_ids": [
+            "txt_a9752d4dad25a29f"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_formatting_only",
+      "category": "almost_unchanged",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p570d156f57",
+        "link_id": "link_5bac0a5098c7",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        7
+      ],
+      "right_pages": [
+        6
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_20398df4864d255a",
+          "page": 7,
+          "sheet": "LEFT page 7",
+          "text": "У2 - Утепление плитами из минеральной ваты, плотностью ≥130кг/м³ – 150мм",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_6c64ed13c41fcd36",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "У2 - Утепление плитами из минеральной ваты, плотностью \\geq 130 \\text{ кг/м}^3 - 150мм",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_20398df4864d255a"
+        ],
+        "right": [
+          "txt_6c64ed13c41fcd36"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "SAME",
+          "left_fragment_ids": [
+            "txt_20398df4864d255a"
+          ],
+          "right_fragment_ids": [
+            "txt_6c64ed13c41fcd36"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "txt_20398df4864d255a"
+          ],
+          "right_fragment_ids": [
+            "txt_6c64ed13c41fcd36"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_wastewater_values",
+      "category": "multi_value_table_row",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p3f0a37b288",
+        "link_id": "link_f74183e1c225",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        8
+      ],
+      "right_pages": [
+        12
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_8987880b31131ac4",
+          "page": 8,
+          "sheet": "LEFT page 8",
+          "text": "Общий расход стоков на весь дом 114,08 10,58 4,65",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_4a8eaf20a282f69d",
+          "page": 12,
+          "sheet": "RIGHT page 12",
+          "text": "Общий расход стоков на весь дом 121,33 12,24 4,81+1,6=6,41",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_8987880b31131ac4"
+        ],
+        "right": [
+          "txt_4a8eaf20a282f69d"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8987880b31131ac4"
+          ],
+          "right_fragment_ids": [
+            "txt_4a8eaf20a282f69d"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8987880b31131ac4"
+          ],
+          "right_fragment_ids": [
+            "txt_4a8eaf20a282f69d"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_unrelated_corrections",
+      "category": "false_changed_trap",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p597ae0bb5d",
+        "link_id": "link_9ac9ff39564b",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        6
+      ],
+      "right_pages": [
+        6
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_ab103faee9411ce2",
+          "page": 6,
+          "sheet": "LEFT page 6",
+          "text": "Изменения планировочных решений по типу и планировке квартир (изменение количества квартир):",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_e6de1f25c20f1626",
+          "page": 6,
+          "sheet": "LEFT page 6",
+          "text": "Увеличение этажности корпуса 4 с 10 до 16 этажей.",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_c1e76795f7202656",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "-Увеличение высоты этажей со 2-16 корпуса 4.",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_ecef6c97de398bd0",
+          "page": 6,
+          "sheet": "RIGHT page 6",
+          "text": "-Увеличение высоты оконных проемов с 2,85 м до 3,10 метров.",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_ab103faee9411ce2",
+          "txt_e6de1f25c20f1626"
+        ],
+        "right": [
+          "txt_c1e76795f7202656",
+          "txt_ecef6c97de398bd0"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_ab103faee9411ce2"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_e6de1f25c20f1626"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_c1e76795f7202656"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_ecef6c97de398bd0"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_ab103faee9411ce2"
+          ],
+          "right_fragment_ids": []
+        },
+        {
+          "final_status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_e6de1f25c20f1626"
+          ],
+          "right_fragment_ids": []
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_c1e76795f7202656"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_ecef6c97de398bd0"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_long_note_reference",
+      "category": "long_rewritten_note",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p597ae0bb5d",
+        "link_id": "link_0e6fcde0c4a4",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        7
+      ],
+      "right_pages": [
+        7
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_8512d2770cd66577",
+          "page": 7,
+          "sheet": "LEFT page 7",
+          "text": "Исследование условий инсоляции в проектируемом объекте выполнены в Приложении 1. Расчеты свидетельствуют, что для нормируемых помещений, попавших под корректировку, нарушений условий инсоляции не возникает (см. Приложение 1).",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_4e6a709a0da14f97",
+          "page": 7,
+          "sheet": "RIGHT page 7",
+          "text": "Исследование условий инсоляции в проектируемом объекте выполнены в графической части. Расчеты свидетельствуют, что для нормируемых помещений, попавших под корректировку, нарушений условий инсоляции не возникает.",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_8512d2770cd66577"
+        ],
+        "right": [
+          "txt_4e6a709a0da14f97"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8512d2770cd66577"
+          ],
+          "right_fragment_ids": [
+            "txt_4e6a709a0da14f97"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_8512d2770cd66577"
+          ],
+          "right_fragment_ids": [
+            "txt_4e6a709a0da14f97"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_title_metadata",
+      "category": "document_metadata",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "pbb3aa1717f",
+        "link_id": "link_ffeee0e233a5",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        2
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_33b07d3d9025e9e3",
+          "page": 2,
+          "sheet": "LEFT page 2",
+          "text": "АА/БЭ- 03-ДСЗ-АР2",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_e661954ac70568a1",
+          "page": 2,
+          "sheet": "LEFT page 2",
+          "text": "Том 3.2",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_21a8e970728a46fa",
+          "page": 2,
+          "sheet": "LEFT page 2",
+          "text": "Москва 2024",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_25d2578d58c845a0",
+          "page": 2,
+          "sheet": "RIGHT page 2",
+          "text": "АА/БЭ-03-ДСЗ-АР2-КОРР.",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_094d1a5fdcaba7bb",
+          "page": 2,
+          "sheet": "RIGHT page 2",
+          "text": "Том 3.1",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_325122c0e854be55",
+          "page": 2,
+          "sheet": "RIGHT page 2",
+          "text": "Москва 2025",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_33b07d3d9025e9e3",
+          "txt_e661954ac70568a1",
+          "txt_21a8e970728a46fa"
+        ],
+        "right": [
+          "txt_25d2578d58c845a0",
+          "txt_094d1a5fdcaba7bb",
+          "txt_325122c0e854be55"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_21a8e970728a46fa"
+          ],
+          "right_fragment_ids": [
+            "txt_325122c0e854be55"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_33b07d3d9025e9e3"
+          ],
+          "right_fragment_ids": [
+            "txt_25d2578d58c845a0"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_e661954ac70568a1"
+          ],
+          "right_fragment_ids": [
+            "txt_094d1a5fdcaba7bb"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_33b07d3d9025e9e3"
+          ],
+          "right_fragment_ids": [
+            "txt_25d2578d58c845a0"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_e661954ac70568a1"
+          ],
+          "right_fragment_ids": [
+            "txt_094d1a5fdcaba7bb"
+          ]
+        },
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_21a8e970728a46fa"
+          ],
+          "right_fragment_ids": [
+            "txt_325122c0e854be55"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_customer_change",
+      "category": "name_change",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "pfc7429293b",
+        "link_id": "link_9b280d5e5b14",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        2
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_51393a3e9e16c794",
+          "page": 2,
+          "sheet": "LEFT page 2",
+          "text": "Заказчик: ООО «Артел Архитектс»",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_a17aec0369c61110",
+          "page": 2,
+          "sheet": "RIGHT page 2",
+          "text": "Заказчик – ООО «МБ-Проект Бюро»",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_51393a3e9e16c794"
+        ],
+        "right": [
+          "txt_a17aec0369c61110"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_51393a3e9e16c794"
+          ],
+          "right_fragment_ids": [
+            "txt_a17aec0369c61110"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_51393a3e9e16c794"
+          ],
+          "right_fragment_ids": [
+            "txt_a17aec0369c61110"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_removed_note",
+      "category": "removed_long_text",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p597ae0bb5d",
+        "link_id": "link_d237431408ab",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        10
+      ],
+      "right_pages": [
+        12
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_29a6d53cd0aa76f4",
+          "page": 10,
+          "sheet": "LEFT page 10",
+          "text": "Примечание:",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_1f0213a8730759bb",
+          "page": 10,
+          "sheet": "LEFT page 10",
+          "text": "1. Во всех расчетных помещениях квартир, расположенных на 3-м этаже в проектируемых корпусах, условия инсоляции выполняются, значит они будут выполняться и на вышерасположенных этажах, где светотехнические условия лучше.",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [],
+      "required_fragment_ids": {
+        "left": [
+          "txt_29a6d53cd0aa76f4",
+          "txt_1f0213a8730759bb"
+        ],
+        "right": []
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_1f0213a8730759bb"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_29a6d53cd0aa76f4"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_29a6d53cd0aa76f4",
+            "txt_1f0213a8730759bb"
+          ],
+          "right_fragment_ids": []
+        }
+      ]
+    },
+    {
+      "group_id": "real_added_drawing_rows",
+      "category": "added_table_rows",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p597ae0bb5d",
+        "link_id": "link_06f9e80ad3c2",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        9
+      ],
+      "right_pages": [
+        9
+      ],
+      "source_left": [],
+      "source_right": [
+        {
+          "fragment_id": "txt_feb948ca4f6c3dec",
+          "page": 9,
+          "sheet": "RIGHT page 9",
+          "text": "2 Ситуационный план Масштаб 1:2000",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_5d3d23a169ee61f5",
+          "page": 9,
+          "sheet": "RIGHT page 9",
+          "text": "4 Схема инсоляции корпуса 4. Масштаб 1:500",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_f5de3bfb35145d1b",
+          "page": 9,
+          "sheet": "RIGHT page 9",
+          "text": "7 Расчет КЕО точка 1.; 2 этаж. Корпус 4. Спальня. Масштаб 1:50",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [],
+        "right": [
+          "txt_feb948ca4f6c3dec",
+          "txt_5d3d23a169ee61f5",
+          "txt_f5de3bfb35145d1b"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_5d3d23a169ee61f5"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_f5de3bfb35145d1b"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_feb948ca4f6c3dec"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_feb948ca4f6c3dec"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_5d3d23a169ee61f5"
+          ]
+        },
+        {
+          "final_status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_f5de3bfb35145d1b"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_contents_with_ambiguity",
+      "category": "ambiguous_pairing",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p26c08b83a6",
+        "link_id": "link_4f7238b8c9ed",
+        "stage3_dataset_sha256": "c30cc7c1a4a9df63f13c2118e9922fa90dff570d134fddf478b0d7ff0e4dc7ec"
+      },
+      "left_pages": [
+        4
+      ],
+      "right_pages": [
+        4
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_4aa446ba4f5d1127",
+          "page": 4,
+          "sheet": "LEFT page 4",
+          "text": "АА/БЭ-03-ДСЗ-ИОС1.1.ГЧ Дополнительная система уравнивания потенциалов 36",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_79ec0d971f7d0b3f",
+          "page": 4,
+          "sheet": "LEFT page 4",
+          "text": "АА/БЭ-03-ДСЗ-ИОС1.1.ГЧ Однолинейная расчетная схема ВРУ-3 25-26",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_ffdd4acd472e7149",
+          "page": 4,
+          "sheet": "LEFT page 4",
+          "text": "АА/БЭ-03-ДСЗ-ИОС1.1.ГЧ Однолинейная расчетная схема ВРУ-3 27-28",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_4547ab37fae19405",
+          "page": 4,
+          "sheet": "RIGHT page 4",
+          "text": "л.24 Основная система уравнения потенциалов",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_68ba5628a0f374ce",
+          "page": 4,
+          "sheet": "RIGHT page 4",
+          "text": "л.5 Однолинейная схема ВРУ-3",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "txt_fe1382206759393b",
+          "page": 4,
+          "sheet": "RIGHT page 4",
+          "text": "л.6 Однолинейная схема ВРУ-4",
+          "bboxes": [],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_4aa446ba4f5d1127",
+          "txt_79ec0d971f7d0b3f",
+          "txt_ffdd4acd472e7149"
+        ],
+        "right": [
+          "txt_4547ab37fae19405",
+          "txt_68ba5628a0f374ce",
+          "txt_fe1382206759393b"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_4aa446ba4f5d1127"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_79ec0d971f7d0b3f"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "txt_ffdd4acd472e7149"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_4547ab37fae19405"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_68ba5628a0f374ce"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "txt_fe1382206759393b"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "txt_4aa446ba4f5d1127"
+          ],
+          "right_fragment_ids": [
+            "txt_4547ab37fae19405"
+          ]
+        },
+        {
+          "final_status": "UNCERTAIN",
+          "left_fragment_ids": [
+            "txt_79ec0d971f7d0b3f",
+            "txt_ffdd4acd472e7149"
+          ],
+          "right_fragment_ids": [
+            "txt_68ba5628a0f374ce",
+            "txt_fe1382206759393b"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_exact_same",
+      "category": "same_same_words",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p570d156f57"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        1
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_122274c4f8824226",
+          "page": 1,
+          "sheet": "page 1",
+          "text": "ООО «СУ-10» 117335, город Москва, улица Вавилова, дом 69/75, пом I, ком 7, оф 806",
+          "bboxes": [
+            {
+              "x": 0.815281,
+              "y": 0.025902,
+              "width": 0.131547,
+              "height": 0.016128
+            },
+            {
+              "x": 0.506683,
+              "y": 0.042055,
+              "width": 0.383775,
+              "height": 0.014838
+            }
+          ],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_955d76998998c198",
+          "page": 1,
+          "sheet": "page 1",
+          "text": "ООО «СУ-10» 117335, город Москва, улица Вавилова, дом 69/75, пом I, ком 7, оф 806",
+          "bboxes": [
+            {
+              "x": 0.815281,
+              "y": 0.025902,
+              "width": 0.131547,
+              "height": 0.016128
+            },
+            {
+              "x": 0.506683,
+              "y": 0.042055,
+              "width": 0.383775,
+              "height": 0.014838
+            }
+          ],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_122274c4f8824226"
+        ],
+        "right": [
+          "txt_955d76998998c198"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "SAME",
+          "left_fragment_ids": [
+            "txt_122274c4f8824226"
+          ],
+          "right_fragment_ids": [
+            "txt_955d76998998c198"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "txt_122274c4f8824226"
+          ],
+          "right_fragment_ids": [
+            "txt_955d76998998c198"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "real_moved_other_sheet",
+      "category": "moved_other_sheet",
+      "source_type": "real_project",
+      "source_ref": {
+        "session_id": "121d764109184c13",
+        "pair_id": "p570d156f57",
+        "actual_right_page": 17
+      },
+      "left_pages": [
+        7
+      ],
+      "right_pages": [
+        6
+      ],
+      "source_left": [
+        {
+          "fragment_id": "txt_20e4f3c4aee77cdc",
+          "page": 7,
+          "sheet": "2",
+          "text": "7.ПОН.1 Лифтовой холл 11,40",
+          "bboxes": [
+            {
+              "x": 0.203363,
+              "y": 0.866749,
+              "width": 0.0244,
+              "height": 0.002709
+            },
+            {
+              "x": 0.18796,
+              "y": 0.892028,
+              "width": 0.011028,
+              "height": 0.002709
+            },
+            {
+              "x": 0.305547,
+              "y": 0.892028,
+              "width": 0.007417,
+              "height": 0.002709
+            }
+          ],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "txt_8a7b13d64b18fdc9",
+          "page": 17,
+          "sheet": "13",
+          "text": "7.ПОН.1 Лифтовой холл 11,40",
+          "bboxes": [
+            {
+              "x": 0.042485,
+              "y": 0.638022,
+              "width": 0.0244,
+              "height": 0.002709
+            },
+            {
+              "x": 0.027081,
+              "y": 0.663302,
+              "width": 0.011028,
+              "height": 0.002709
+            },
+            {
+              "x": 0.144669,
+              "y": 0.663302,
+              "width": 0.007417,
+              "height": 0.002709
+            }
+          ],
+          "source_kind": "real_project",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "txt_20e4f3c4aee77cdc"
+        ],
+        "right": [
+          "txt_8a7b13d64b18fdc9"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "MOVED",
+          "left_fragment_ids": [
+            "txt_20e4f3c4aee77cdc"
+          ],
+          "right_fragment_ids": [
+            "txt_8a7b13d64b18fdc9"
+          ],
+          "actual_right_pages": [
+            17
+          ]
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "MOVED",
+          "left_fragment_ids": [
+            "txt_20e4f3c4aee77cdc"
+          ],
+          "right_fragment_ids": [
+            "txt_8a7b13d64b18fdc9"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "semantic_paraphrase",
+      "category": "same_strong_paraphrase",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_semantic_paraphrase_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Для помещения предусматривается вытяжная вентиляция.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_semantic_paraphrase_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Удаление воздуха из помещения осуществляется системой вытяжной вентиляции.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_semantic_paraphrase_L1"
+        ],
+        "right": [
+          "ctl_semantic_paraphrase_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "ctl_semantic_paraphrase_L1"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "ctl_semantic_paraphrase_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_semantic_paraphrase_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_semantic_paraphrase_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "operating_mode",
+      "category": "changed_semantic_word",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_operating_mode_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Система работает постоянно.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_operating_mode_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Система работает периодически.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_operating_mode_L1"
+        ],
+        "right": [
+          "ctl_operating_mode_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_operating_mode_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_operating_mode_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_operating_mode_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_operating_mode_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "negation",
+      "category": "changed_negation",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_negation_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Для кладовых предусматривается механическая вытяжная вентиляция.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_negation_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Для кладовых механическая вытяжная вентиляция не предусматривается.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_negation_L1"
+        ],
+        "right": [
+          "ctl_negation_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_negation_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_negation_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_negation_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_negation_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "material_change",
+      "category": "changed_material",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_material_change_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Воздуховоды выполняются из оцинкованной стали.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_material_change_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Воздуховоды выполняются из нержавеющей стали.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_material_change_L1"
+        ],
+        "right": [
+          "ctl_material_change_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_material_change_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_material_change_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_material_change_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_material_change_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "quantity_words",
+      "category": "same_quantity_words",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_quantity_words_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Количество лифтов — 2.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_quantity_words_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Предусмотрено два лифта.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_quantity_words_L1"
+        ],
+        "right": [
+          "ctl_quantity_words_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "ctl_quantity_words_L1"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "ctl_quantity_words_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_quantity_words_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_quantity_words_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "unit_magnitude",
+      "category": "changed_unit_and_value",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_unit_magnitude_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Расход воздуха — 1200 м³/ч.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_unit_magnitude_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Расчётный расход системы составляет 1,6 тыс. м³/ч.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_unit_magnitude_L1"
+        ],
+        "right": [
+          "ctl_unit_magnitude_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_unit_magnitude_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_unit_magnitude_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_unit_magnitude_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_unit_magnitude_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "formula_equivalent",
+      "category": "same_formula",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_formula_equivalent_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Расход определяется по формуле Q = L × n.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_formula_equivalent_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Расчёт выполняется по выражению Q=n·L.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_formula_equivalent_L1"
+        ],
+        "right": [
+          "ctl_formula_equivalent_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "ctl_formula_equivalent_L1"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "ctl_formula_equivalent_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_formula_equivalent_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_formula_equivalent_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "formula_changed",
+      "category": "changed_formula",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_formula_changed_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Расход определяется по формуле Q = V × n.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_formula_changed_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Расход определяется по формуле Q = G / (Cп - Cн).",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_formula_changed_L1"
+        ],
+        "right": [
+          "ctl_formula_changed_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_formula_changed_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_formula_changed_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_formula_changed_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_formula_changed_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "calculation_input",
+      "category": "changed_calculation_input",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_calculation_input_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Расчётная кратность воздухообмена n = 3.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_calculation_input_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Расчётная кратность воздухообмена n = 5.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_calculation_input_L1"
+        ],
+        "right": [
+          "ctl_calculation_input_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_calculation_input_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_calculation_input_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_calculation_input_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_calculation_input_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "calculation_method",
+      "category": "changed_calculation_method",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_calculation_method_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Расход определяется исходя из 3-кратного воздухообмена.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_calculation_method_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Расход определяется по количеству выделяемых вредностей.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_calculation_method_L1"
+        ],
+        "right": [
+          "ctl_calculation_method_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "ctl_calculation_method_L1"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "ctl_calculation_method_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_calculation_method_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_calculation_method_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "one_to_many",
+      "category": "same_one_to_many",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_one_to_many_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Приток воздуха подаётся в верхнюю зону. Удаление воздуха выполняется из верхней и нижней зон.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_one_to_many_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Приточный воздух поступает в верхнюю зону.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "ctl_one_to_many_R2",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Вытяжка производится из верхней и нижней зон.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_one_to_many_L1"
+        ],
+        "right": [
+          "ctl_one_to_many_R1",
+          "ctl_one_to_many_R2"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "ctl_one_to_many_L1"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "ctl_one_to_many_R1"
+          ],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "ctl_one_to_many_R2"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "SAME",
+          "left_fragment_ids": [
+            "ctl_one_to_many_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_one_to_many_R1",
+            "ctl_one_to_many_R2"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "many_to_one",
+      "category": "changed_many_to_one",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_many_to_one_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Вентилятор работает постоянно.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        },
+        {
+          "fragment_id": "ctl_many_to_one_L2",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Резервный вентилятор включается автоматически.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_many_to_one_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Основной вентилятор работает периодически, резервный включается автоматически.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_many_to_one_L1",
+          "ctl_many_to_one_L2"
+        ],
+        "right": [
+          "ctl_many_to_one_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "ctl_many_to_one_L1"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "REMOVED",
+          "left_fragment_ids": [
+            "ctl_many_to_one_L2"
+          ],
+          "right_fragment_ids": [],
+          "actual_right_pages": []
+        },
+        {
+          "status": "ADDED",
+          "left_fragment_ids": [],
+          "right_fragment_ids": [
+            "ctl_many_to_one_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "CHANGED",
+          "left_fragment_ids": [
+            "ctl_many_to_one_L1",
+            "ctl_many_to_one_L2"
+          ],
+          "right_fragment_ids": [
+            "ctl_many_to_one_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "false_moved",
+      "category": "similar_but_not_moved",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        7
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_false_moved_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Удаление воздуха из санузлов выполняется вытяжной системой.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_false_moved_R1",
+          "page": 18,
+          "sheet": "РД-18",
+          "text": "Удаление дыма из коридора выполняется системой противодымной вентиляции.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": ""
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_false_moved_L1"
+        ],
+        "right": [
+          "ctl_false_moved_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "MOVED",
+          "left_fragment_ids": [
+            "ctl_false_moved_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_false_moved_R1"
+          ],
+          "actual_right_pages": [
+            18
+          ]
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "UNCERTAIN",
+          "left_fragment_ids": [
+            "ctl_false_moved_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_false_moved_R1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "same_words_different_context",
+      "category": "same_text_different_context",
+      "source_type": "controlled_adversarial",
+      "source_ref": {
+        "basis": "explicit_stage4_acceptance_case"
+      },
+      "left_pages": [
+        1
+      ],
+      "right_pages": [
+        2
+      ],
+      "source_left": [
+        {
+          "fragment_id": "ctl_same_words_different_context_L1",
+          "page": 1,
+          "sheet": "П-1",
+          "text": "Расчётная температура воздуха — 20 °C.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": "Жилая комната квартиры."
+        }
+      ],
+      "source_right": [
+        {
+          "fragment_id": "ctl_same_words_different_context_R1",
+          "page": 2,
+          "sheet": "РД-2",
+          "text": "Расчётная температура воздуха — 20 °C.",
+          "bboxes": [],
+          "source_kind": "controlled_adversarial",
+          "table_key": "",
+          "local_context": "Помещение серверной."
+        }
+      ],
+      "required_fragment_ids": {
+        "left": [
+          "ctl_same_words_different_context_L1"
+        ],
+        "right": [
+          "ctl_same_words_different_context_R1"
+        ]
+      },
+      "preliminary": [
+        {
+          "status": "SAME",
+          "left_fragment_ids": [
+            "ctl_same_words_different_context_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_same_words_different_context_R1"
+          ],
+          "actual_right_pages": []
+        }
+      ],
+      "ground_truth": [
+        {
+          "final_status": "UNCERTAIN",
+          "left_fragment_ids": [
+            "ctl_same_words_different_context_L1"
+          ],
+          "right_fragment_ids": [
+            "ctl_same_words_different_context_R1"
+          ]
+        }
+      ]
+    }
+  ],
+  "dataset_sha256": "e4f790e5352056a7186c7a8aa8aca7b98c5e62e0990537c8573d2f84843a0d29"
+}

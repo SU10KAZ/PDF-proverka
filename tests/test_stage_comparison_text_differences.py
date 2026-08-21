@@ -194,6 +194,16 @@ def test_no_differences_produces_no_discrepancy_row():
     assert result["summary"]["sheet_groups_with_differences"] == 0
 
 
+def test_exact_pair_provenance_is_available_to_stage4_reviewer():
+    result = td.compare_group(
+        [fragment("l1", "Одинаковый смысл")],
+        [fragment("r1", "Одинаковый смысл", 2)],
+    )
+    assert result["exact_equivalents"] == 1
+    assert result["same"][0]["left_fragment_ids"] == ["l1"]
+    assert result["same"][0]["right_fragment_ids"] == ["r1"]
+
+
 def test_embedded_graphic_ocr_description_does_not_create_a_text_difference():
     result = build(
         [fragment(

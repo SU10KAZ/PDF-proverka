@@ -17,7 +17,7 @@ from typing import Any, Iterable
 
 VERSION = 1
 KIND = "stage_comparison_text_differences"
-ALGORITHM = "deterministic_text_differences_v1_4"
+ALGORITHM = "deterministic_text_differences_v1_5"
 PRODUCTION_PATH = "deterministic_only"
 SIMILARITY_THRESHOLD = 0.82
 AMBIGUITY_THRESHOLD = 0.55
@@ -135,7 +135,7 @@ def _equivalence_key(value: str) -> str:
     return re.sub(r"[^a-zа-я0-9≥≤]+", "", canonicalize(value))
 
 
-def _is_graphic_description(fragment: dict[str, Any]) -> bool:
+def is_graphic_description(fragment: dict[str, Any]) -> bool:
     text = str(fragment.get("text") or "").strip().lower()
     return bool(re.match(
         r"^(?:the image contains|the image shows|a blue circular official stamp|"
@@ -247,6 +247,21 @@ def _changed_item(left: dict[str, Any], right: dict[str, Any]) -> dict[str, Any]
     }
 
 
+def _paired_item(left: dict[str, Any], right: dict[str, Any]) -> dict[str, Any]:
+    """Exact source provenance for a deterministic pair used by Stage 4."""
+    before, after = str(left["text"]), str(right["text"])
+    return {
+        "before": before,
+        "after": after,
+        "left_fragment_ids": [str(left["id"])],
+        "right_fragment_ids": [str(right["id"])],
+        "left_pages": [int(left["pdf_page"])],
+        "right_pages": [int(right["pdf_page"])],
+        "left_anchors": _anchors([left]),
+        "right_anchors": _anchors([right]),
+    }
+
+
 def _removed_item(fragment: dict[str, Any]) -> dict[str, Any]:
     before = str(fragment["text"])
     return {
@@ -279,6 +294,7 @@ def compare_group(
     unused_left = set(left_by_id)
     unused_right = set(right_by_id)
     changed_items: list[dict[str, Any]] = []
+    same_items: list[dict[str, Any]] = []
 
     exact_left: dict[str, deque[str]] = defaultdict(deque)
     exact_right: dict[str, deque[str]] = defaultdict(deque)
@@ -288,8 +304,11 @@ def compare_group(
         exact_right[_equivalence_key(str(item["text"]))].append(str(item["id"]))
     for value in sorted(set(exact_left) & set(exact_right)):
         while exact_left[value] and exact_right[value]:
-            unused_left.discard(exact_left[value].popleft())
-            unused_right.discard(exact_right[value].popleft())
+            left_id = exact_left[value].popleft()
+            right_id = exact_right[value].popleft()
+            unused_left.discard(left_id)
+            unused_right.discard(right_id)
+            same_items.append(_paired_item(left_by_id[left_id], right_by_id[right_id]))
 
     left_keys: dict[str, list[str]] = defaultdict(list)
     right_keys: dict[str, list[str]] = defaultdict(list)
@@ -327,7 +346,7 @@ def compare_group(
         unused_right.remove(right_id)
         changed_items.append(_changed_item(left_by_id[left_id], right_by_id[right_id]))
 
-    ambiguity_count = 0
+    ambiguous_items: list[dict[str, Any]] = []
     ambiguity_left: set[str] = set()
     ambiguity_right: set[str] = set()
     for _, left_id, right_id in sorted(ambiguous_pairs, reverse=True):
@@ -337,10 +356,16 @@ def compare_group(
         ):
             ambiguity_left.add(left_id)
             ambiguity_right.add(right_id)
-            ambiguity_count += 1
+            ambiguous_items.append(_paired_item(left_by_id[left_id], right_by_id[right_id]))
     order_left = {str(item["id"]): index for index, item in enumerate(left_fragments)}
     order_right = {str(item["id"]): index for index, item in enumerate(right_fragments)}
     changed_items.sort(key=lambda item: (
+        min(item["left_pages"]), order_left[item["left_fragment_ids"][0]]
+    ))
+    same_items.sort(key=lambda item: (
+        min(item["left_pages"]), order_left[item["left_fragment_ids"][0]]
+    ))
+    ambiguous_items.sort(key=lambda item: (
         min(item["left_pages"]), order_left[item["left_fragment_ids"][0]]
     ))
     removed_items = [
@@ -352,14 +377,13 @@ def compare_group(
         for fragment_id in sorted(unused_right, key=order_right.get)
     ]
     return {
+        "same": same_items,
         "changed": changed_items,
         "removed": removed_items,
         "added": added_items,
-        "ambiguity_count": ambiguity_count,
-        "exact_equivalents": (
-            len(left_fragments) + len(right_fragments)
-            - len(unused_left) - len(unused_right) - 2 * len(changed_items)
-        ) // 2,
+        "ambiguous": ambiguous_items,
+        "ambiguity_count": len(ambiguous_items),
+        "exact_equivalents": len(same_items),
     }
 
 
@@ -395,7 +419,7 @@ def build_text_differences(
         side: [
             item for item in comparison.get("fragments", {}).get(side, [])
             if str(item.get("id")) in remaining[side]
-            and not _is_graphic_description(item)
+            and not is_graphic_description(item)
         ]
         for side in ("left", "right")
     }
@@ -425,6 +449,8 @@ def build_text_differences(
             "changed": result["changed"],
             "removed": result["removed"],
             "added": result["added"],
+            "deterministic_same": result["same"],
+            "deterministic_ambiguities": result["ambiguous"],
             "ambiguity_count": result["ambiguity_count"],
             "exact_equivalents": result["exact_equivalents"],
         }
@@ -520,6 +546,6 @@ def validate_model_response(
 
 __all__ = [
     "ALGORITHM", "KIND", "PRODUCTION_PATH", "VERSION",
-    "build_text_differences", "canonicalize", "compare_group", "public_view",
+    "build_text_differences", "canonicalize", "compare_group", "is_graphic_description", "public_view",
     "similarity", "source_signature", "stable_key", "validate_model_response",
 ]

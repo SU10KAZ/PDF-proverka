@@ -5663,6 +5663,26 @@
                         <div v-if="scTextComparisonError" class="sc-text-comparison-summary__error">
                             {{ scTextComparisonError }}
                         </div>
+                        <div v-if="scTextFinalComparison && !scTextFinalComparison.stale"
+                             class="sc-ai-review-state"
+                             :class="{'is-failed': scTextFinalComparison.review_status !== 'completed'}">
+                            <template v-if="scTextFinalComparison.review_status === 'completed'">
+                                <b>Проверено ИИ</b>
+                                <span>Совпало: {{ scTextResultSummary.same || 0 }}</span>
+                                <span>Перенесено: {{ scTextResultSummary.moved || 0 }}</span>
+                                <span>ИИ скорректировал: {{ scTextResultSummary.ai_corrected || 0 }}</span>
+                                <span v-if="scTextResultSummary.uncertain">Требует проверки: {{ scTextResultSummary.uncertain }}</span>
+                            </template>
+                            <template v-else>
+                                Текст проверен детерминированно, ИИ-проверка не выполнена полностью
+                            </template>
+                        </div>
+                        <div v-else-if="scTextDifferences && !scTextDifferences.stale" class="sc-ai-review-state is-failed">
+                            Текст проверен детерминированно, ИИ-проверка не выполнена
+                        </div>
+                        <div v-if="scTextAiReviewError" class="sc-text-comparison-summary__error">
+                            {{ scTextAiReviewError }}
+                        </div>
                     </section>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-shell">
@@ -5782,7 +5802,7 @@
                                          :style="{left: tile.left + 'px', top: tile.top + 'px', width: tile.width + 'px', height: tile.height + 'px'}">
                                     <i v-for="overlay in scTextComparisonOverlaysFor(side, scCurrentPage[side])"
                                        :key="overlay.id" class="sc-text-comparison-mask"
-                                       :class="{'is-elsewhere': overlay.status === 'found_on_other_sheet'}"
+                                       :class="{'is-elsewhere': overlay.status === 'MOVED'}"
                                        :title="overlay.title" :aria-label="overlay.title"
                                        :style="scTextComparisonOverlayStyle(overlay)"></i>
                                     <i v-for="(highlight, index) in scTextSearchHighlightsFor(side, scCurrentPage[side])"
@@ -5828,7 +5848,7 @@
                                         <i v-for="overlay in entry.page ? scTextComparisonOverlaysFor(side, entry.page) : []"
                                            :key="side + '-continuous-mask-' + overlay.id"
                                            class="sc-text-comparison-mask"
-                                           :class="{'is-elsewhere': overlay.status === 'found_on_other_sheet'}"
+                                           :class="{'is-elsewhere': overlay.status === 'MOVED'}"
                                            :title="overlay.title" :aria-label="overlay.title"
                                            :style="scTextComparisonOverlayStyle(overlay)"></i>
                                         <i v-for="(highlight, index) in entry.page ? scTextSearchHighlightsFor(side, entry.page) : []"
@@ -5873,14 +5893,14 @@
                         <p v-else>Выберите пару документов на вкладке «Загрузка документации».</p>
                     </div>
                     <button type="button" class="btn btn-primary"
-                            :disabled="!scActivePair || scTextComparisonLoading || scTextDifferencesLoading"
+                            :disabled="!scActivePair || scTextComparisonLoading || scTextDifferencesLoading || scTextAiReviewLoading"
                             @click="scTextComparison && !scTextComparison.stale ? scRunTextDifferences() : scRunTextComparison()">
-                        {{ scTextComparisonLoading || scTextDifferencesLoading ? 'Сравнение…' : 'Сформировать расхождения' }}
+                        {{ scTextComparisonLoading || scTextDifferencesLoading ? 'Сравнение…' : (scTextAiReviewLoading ? 'ИИ проверяет…' : 'Сформировать расхождения') }}
                     </button>
                 </section>
 
-                <div v-if="scTextComparisonError || scTextDifferencesError" class="sc-shell-error">
-                    {{ scTextComparisonError || scTextDifferencesError }}
+                <div v-if="scTextComparisonError || scTextDifferencesError || scTextAiReviewError" class="sc-shell-error">
+                    {{ scTextComparisonError || scTextDifferencesError || scTextAiReviewError }}
                 </div>
                 <div v-if="scTextDifferences && scTextDifferences.stale" class="sc-shell-error sc-differences__stale">
                     Связи или исходные документы изменились. Пересчитайте расхождения.
@@ -5888,10 +5908,20 @@
 
                 <section v-if="scTextDifferences && !scTextDifferences.stale" class="sc-differences__summary">
                     <span>Групп с изменениями <b>{{ scTextDifferenceGroups.length }}</b></span>
-                    <span>Изменилось <b>{{ scTextDifferences.summary.changed || 0 }}</b></span>
-                    <span>Удалено <b>{{ scTextDifferences.summary.removed || 0 }}</b></span>
-                    <span>Добавлено <b>{{ scTextDifferences.summary.added || 0 }}</b></span>
-                    <span>Неоднозначно <b>{{ scTextDifferences.summary.model_ambiguity || 0 }}</b></span>
+                    <span>Изменилось <b>{{ scTextResultSummary.changed || 0 }}</b></span>
+                    <span>Удалено <b>{{ scTextResultSummary.removed || 0 }}</b></span>
+                    <span>Добавлено <b>{{ scTextResultSummary.added || 0 }}</b></span>
+                    <span v-if="scTextResultSummary.uncertain">Требует проверки <b>{{ scTextResultSummary.uncertain }}</b></span>
+                    <span v-if="scTextFinalComparison && scTextFinalComparison.review_status === 'completed'">
+                        Проверено ИИ · скорректировано <b>{{ scTextResultSummary.ai_corrected || 0 }}</b>
+                    </span>
+                    <span v-else class="is-warning">Текст проверен детерминированно, ИИ-проверка не выполнена</span>
+                    <details v-if="scTextResultSummary.ai_corrected" class="sc-differences__transitions">
+                        <summary>Что скорректировал ИИ</summary>
+                        <span v-for="item in scTextAiTransitions" :key="item.transition">
+                            {{ item.transition }}: <b>{{ item.count }}</b>
+                        </span>
+                    </details>
                 </section>
 
                 <div v-if="!scActivePair" class="sc-empty-state sc-empty-state--large">
@@ -5914,11 +5944,19 @@
                                 <th>Изменилось</th>
                                 <th>Удалено</th>
                                 <th>Добавлено</th>
+                                <th v-if="scTextHasUncertain">Неопределённо</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="group in scTextDifferenceGroups" :key="group.id">
                                 <td class="sc-differences__pages">
+                                    <small v-if="group.review_status === 'ai_reviewed'" class="sc-differences__review-badge">
+                                        Проверено ИИ
+                                    </small>
+                                    <small v-else-if="group.review_status === 'deterministic_fallback'"
+                                           class="sc-differences__review-badge is-warning">
+                                        ИИ-проверка не выполнена
+                                    </small>
                                     <button v-for="(label, index) in group.left_labels"
                                             :key="group.id + '-left-' + index" type="button"
                                             @click="scOpenDifferenceSource(group, {left_pages: [group.left_pages[index]]}, 'left')">
@@ -5954,6 +5992,25 @@
                                                         @click="scOpenDifferenceSource(group, item, 'right')">
                                                     Открыть лист РД
                                                 </button>
+                                            </div>
+                                        </div>
+                                    </details>
+                                </td>
+                                <td v-if="scTextHasUncertain" class="sc-differences__items sc-differences__uncertain">
+                                    <span v-if="!(group.uncertain || []).length" class="sc-differences__none">—</span>
+                                    <details v-for="item in (group.uncertain || [])"
+                                             :key="'uncertain:' + (item.left_fragment_ids || []).join('-') + ':' + (item.right_fragment_ids || []).join('-')">
+                                        <summary>⚠ {{ item.summary }}</summary>
+                                        <div class="sc-differences__detail">
+                                            <div v-if="item.before">
+                                                <b>П:</b><pre>{{ item.before }}</pre>
+                                                <button type="button" class="btn btn-sm"
+                                                        @click="scOpenDifferenceSource(group, item, 'left')">Открыть лист П</button>
+                                            </div>
+                                            <div v-if="item.after">
+                                                <b>РД:</b><pre>{{ item.after }}</pre>
+                                                <button type="button" class="btn btn-sm"
+                                                        @click="scOpenDifferenceSource(group, item, 'right')">Открыть лист РД</button>
                                             </div>
                                         </div>
                                     </details>

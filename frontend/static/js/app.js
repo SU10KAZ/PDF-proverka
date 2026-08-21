@@ -11845,6 +11845,10 @@ const app = createApp({
         const scTextDifferences = ref(null);
         const scTextDifferencesLoading = ref(false);
         const scTextDifferencesError = ref('');
+        const scTextAiReview = ref(null);
+        const scTextFinalComparison = ref(null);
+        const scTextAiReviewLoading = ref(false);
+        const scTextAiReviewError = ref('');
         const scLinkSaving = ref(false);
         const scLinkEditorOpen = ref(false);
         const scLinkEditorMode = ref('replace');
@@ -12206,11 +12210,43 @@ const app = createApp({
             return metric ? hints.filter(hint => hint.link_id === metric.link_id) : [];
         });
         const scTextDifferenceGroups = computed(() => {
+            const finalResult = scTextFinalComparison.value;
+            if (finalResult && !finalResult.stale) {
+                return (finalResult.sheet_groups || []).filter(group =>
+                    ['changed', 'removed', 'added', 'uncertain'].some(key => (group[key] || []).length)
+                );
+            }
             if (!scTextDifferences.value || scTextDifferences.value.stale) return [];
             return (scTextDifferences.value.sheet_groups || []).filter(group =>
                 ['changed', 'removed', 'added'].some(key => (group[key] || []).length)
             );
         });
+        const scTextResultSummary = computed(() => {
+            const finalResult = scTextFinalComparison.value;
+            if (finalResult && !finalResult.stale) {
+                const summary = finalResult.summary || {};
+                return {
+                    changed: Number(summary.changed || 0) + Number(summary.fallback_changed || 0),
+                    removed: Number(summary.removed || 0) + Number(summary.fallback_removed || 0),
+                    added: Number(summary.added || 0) + Number(summary.fallback_added || 0),
+                    uncertain: Number(summary.uncertain || 0),
+                    same: Number(summary.same || 0),
+                    moved: Number(summary.moved || 0),
+                    ai_corrected: Number(summary.ai_corrected || 0),
+                    transitions: summary.transitions || {},
+                };
+            }
+            const summary = (scTextDifferences.value && scTextDifferences.value.summary) || {};
+            return {...summary, uncertain: Number(summary.model_ambiguity || 0)};
+        });
+        const scTextHasUncertain = computed(() =>
+            scTextDifferenceGroups.value.some(group => (group.uncertain || []).length)
+        );
+        const scTextAiTransitions = computed(() =>
+            Object.entries(scTextResultSummary.value.transitions || {})
+                .filter(([, count]) => Number(count) > 0)
+                .map(([transition, count]) => ({transition, count: Number(count)}))
+        );
 
         function scStageInfo(stageName) {
             const object = scSelectedObject.value;
@@ -12996,6 +13032,9 @@ const app = createApp({
             scTextComparisonError.value = '';
             scTextDifferences.value = data.text_differences || null;
             scTextDifferencesError.value = '';
+            scTextAiReview.value = data.text_ai_review || null;
+            scTextFinalComparison.value = data.text_final_comparison || null;
+            scTextAiReviewError.value = '';
             scSelectedPdf.left = data.pair.left.pdf_path;
             scSelectedPdf.right = data.pair.right.pdf_path;
             scViewerEmpty.left = false;
@@ -13157,6 +13196,9 @@ const app = createApp({
             if (!scActivePair.value || scTextComparisonLoading.value) return;
             scTextComparisonLoading.value = true;
             scTextComparisonError.value = '';
+            if (scTextFinalComparison.value) {
+                scTextFinalComparison.value = {...scTextFinalComparison.value, stale: true};
+            }
             try {
                 const response = await fetch(
                     scPairUrl(scActivePair.value.id, '/text-comparison'),
@@ -13177,6 +13219,9 @@ const app = createApp({
             if (!scActivePair.value || scTextDifferencesLoading.value) return;
             scTextDifferencesLoading.value = true;
             scTextDifferencesError.value = '';
+            if (scTextFinalComparison.value) {
+                scTextFinalComparison.value = {...scTextFinalComparison.value, stale: true};
+            }
             try {
                 const response = await fetch(
                     scPairUrl(scActivePair.value.id, '/text-differences'),
@@ -13185,10 +13230,31 @@ const app = createApp({
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scTextDifferences.value = data;
+                await scRunTextAiReview();
             } catch (error) {
                 scTextDifferencesError.value = String(error.message || error);
             } finally {
                 scTextDifferencesLoading.value = false;
+            }
+        }
+
+        async function scRunTextAiReview() {
+            if (!scActivePair.value || scTextAiReviewLoading.value) return;
+            scTextAiReviewLoading.value = true;
+            scTextAiReviewError.value = '';
+            try {
+                const response = await fetch(
+                    scPairUrl(scActivePair.value.id, '/text-ai-review'),
+                    {method: 'POST'},
+                );
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scTextAiReview.value = data.text_ai_review || null;
+                scTextFinalComparison.value = data.text_final_comparison || null;
+            } catch (error) {
+                scTextAiReviewError.value = String(error.message || error);
+            } finally {
+                scTextAiReviewLoading.value = false;
             }
         }
 
@@ -13218,8 +13284,8 @@ const app = createApp({
         }
 
         function scTextComparisonOverlaysFor(side, page) {
-            if (scTextComparison.value && scTextComparison.value.stale) return [];
-            const overlays = scTextComparison.value && scTextComparison.value.overlays;
+            if (!scTextFinalComparison.value || scTextFinalComparison.value.stale) return [];
+            const overlays = scTextFinalComparison.value.overlays;
             return (overlays && overlays[side] && overlays[side][String(Number(page))]) || [];
         }
 
@@ -13560,6 +13626,12 @@ const app = createApp({
                 }
                 if (scTextDifferences.value) {
                     scTextDifferences.value = {...scTextDifferences.value, stale: true};
+                }
+                if (scTextAiReview.value) {
+                    scTextAiReview.value = {...scTextAiReview.value, stale: true};
+                }
+                if (scTextFinalComparison.value) {
+                    scTextFinalComparison.value = {...scTextFinalComparison.value, stale: true};
                 }
                 scFocusLeftPage(scCurrentPage.left);
             } catch (error) {
@@ -15735,7 +15807,9 @@ const app = createApp({
             scTextComparisonOverlaysFor, scTextComparisonOverlayStyle,
             scOpenTextHint, scApplyTextHint,
             scTextDifferences, scTextDifferencesLoading, scTextDifferencesError,
-            scTextDifferenceGroups, scRunTextDifferences, scOpenDifferenceSource,
+            scTextAiReview, scTextFinalComparison, scTextAiReviewLoading, scTextAiReviewError,
+            scTextDifferenceGroups, scTextResultSummary, scTextHasUncertain, scTextAiTransitions,
+            scRunTextDifferences, scRunTextAiReview, scOpenDifferenceSource,
             scSheetLinks, scSheetMapRows, scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,
             scSheetMapCollapsed, scToggleSheetMap,

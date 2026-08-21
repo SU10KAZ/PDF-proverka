@@ -20,6 +20,8 @@ from . import document_matching
 from . import sheet_matching
 from . import text_comparison
 from . import text_differences
+from . import text_ai_reviewer
+from backend.app.services.llm.codex_runner import run_codex_json_messages
 
 
 SHELL_KIND = "stage_comparison_shell"
@@ -367,6 +369,8 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "sheet_matching": get_sheet_matching_state(session_id, pair_id),
         "text_comparison": get_text_comparison_state(session_id, pair_id),
         "text_differences": get_text_differences_state(session_id, pair_id),
+        "text_ai_review": get_text_ai_review_state(session_id, pair_id),
+        "text_final_comparison": get_text_final_comparison_state(session_id, pair_id),
     }
 
 
@@ -719,6 +723,259 @@ def run_text_differences(session_id: str, pair_id: str) -> dict:
         )
         _atomic_write_json(paths_mod.text_differences_path(session_id, pair_id), payload)
         return text_differences.public_view(payload, stale=False) or {}
+
+
+def _current_text_ai_signature(
+    session_id: str, pair_id: str,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None, str | None]:
+    comparison = _read_json(paths_mod.text_comparison_path(session_id, pair_id))
+    differences = _read_json(paths_mod.text_differences_path(session_id, pair_id))
+    if not isinstance(comparison, dict) or not isinstance(differences, dict):
+        return comparison, differences, None
+    return comparison, differences, text_ai_reviewer.source_signature(
+        comparison, differences,
+        model=text_ai_reviewer.PRODUCTION_MODEL,
+        reasoning_effort=text_ai_reviewer.PRODUCTION_REASONING_EFFORT,
+    )
+
+
+def get_text_ai_review_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.text_ai_review_path(session_id, pair_id))
+    _comparison, _differences, expected = _current_text_ai_signature(session_id, pair_id)
+    stale = (
+        expected is None or payload.get("source_signature") != expected
+        if isinstance(payload, dict) else True
+    )
+    return text_ai_reviewer.public_review_view(payload, stale=stale)
+
+
+def get_text_final_comparison_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.text_final_comparison_path(session_id, pair_id))
+    _comparison, _differences, expected = _current_text_ai_signature(session_id, pair_id)
+    stale = (
+        expected is None or payload.get("source_signature") != expected
+        if isinstance(payload, dict) else True
+    )
+    return text_ai_reviewer.public_final_view(payload, stale=stale)
+
+
+async def run_text_ai_review(session_id: str, pair_id: str) -> dict:
+    """Review every accepted text group once with the benchmark-selected model."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        exclusions = require_text_exclusions_for_downstream(session_id, pair_id)
+        comparison, differences, signature = _current_text_ai_signature(session_id, pair_id)
+        if not isinstance(comparison, dict) or comparison.get("version") != 1:
+            raise ValueError("text_comparison_required")
+        if (
+            not isinstance(differences, dict)
+            or differences.get("version") != text_differences.VERSION
+            or differences.get("source_signature") != text_differences.source_signature(exclusions)
+        ):
+            raise ValueError("text_differences_required")
+        assert signature is not None
+        existing_review = _read_json(paths_mod.text_ai_review_path(session_id, pair_id))
+        existing_final = _read_json(paths_mod.text_final_comparison_path(session_id, pair_id))
+        if (
+            isinstance(existing_review, dict)
+            and existing_review.get("version") == text_ai_reviewer.VERSION
+            and existing_review.get("source_signature") == signature
+            and existing_review.get("status") == "completed"
+            and isinstance(existing_final, dict)
+            and existing_final.get("version") == text_ai_reviewer.VERSION
+            and existing_final.get("source_signature") == signature
+        ):
+            return {
+                "text_ai_review": text_ai_reviewer.public_review_view(existing_review, stale=False),
+                "text_final_comparison": text_ai_reviewer.public_final_view(existing_final, stale=False),
+            }
+        reusable_completed = {
+            str(group.get("id") or ""): group
+            for group in (existing_review.get("sheet_groups") or [])
+            if (
+                isinstance(existing_review, dict)
+                and existing_review.get("source_signature") == signature
+                and isinstance(group, dict) and group.get("status") == "completed"
+            )
+        } if isinstance(existing_review, dict) else {}
+        links = list(_load_sheet_links(session_id, pair_id).get("links") or [])
+        if not links:
+            raise ValueError("accepted_sheet_links_required")
+        suggestions = _load_sheet_suggestions(session_id, pair_id) or {}
+        labels = {
+            side: _sheet_labels(list(suggestions.get(f"{side}_sheet_index") or []))
+            for side in ("left", "right")
+        }
+        review_groups = text_ai_reviewer.build_review_groups(
+            comparison=comparison, links=links, labels=labels,
+        )
+
+    group_results = []
+    total_input = total_output = total_cached = total_duration = 0
+    represented_model_calls = fresh_model_calls = 0
+    chunks_total = 0
+    provider_unavailable = ""
+    for source_group in review_groups:
+        reusable = reusable_completed.get(source_group["group_id"])
+        if (
+            reusable
+            and reusable.get("source_group_sha256") == source_group["source_group_sha256"]
+        ):
+            group_results.append(reusable)
+            reuse_usage = reusable.get("usage") or {}
+            total_input += int(reuse_usage.get("input_tokens") or 0)
+            total_output += int(reuse_usage.get("output_tokens") or 0)
+            total_cached += int(reuse_usage.get("cached_tokens") or 0)
+            total_duration += int(reuse_usage.get("duration_ms") or 0)
+            represented_model_calls += max(1, len(reusable.get("chunks") or []))
+            chunks_total += max(1, len(reusable.get("chunks") or []))
+            continue
+        error = provider_unavailable
+        normalized: list[dict[str, Any]] = []
+        model_reported = ""
+        usage = {"input_tokens": 0, "output_tokens": 0, "cached_tokens": 0, "duration_ms": 0}
+        chunk_results = []
+        chunks = text_ai_reviewer.chunk_review_group(source_group)
+        chunks_total += len(chunks)
+        for chunk in chunks:
+            if error:
+                break
+            chunk_error = ""
+            chunk_usage = {
+                "input_tokens": 0, "output_tokens": 0,
+                "cached_tokens": 0, "duration_ms": 0,
+            }
+            try:
+                result = await run_codex_json_messages(
+                    [{"role": "user", "content": text_ai_reviewer.prompt_for_groups([chunk])}],
+                    timeout=240,
+                    stage="stage_comparison_text_ai_review",
+                    project_id=f"{session_id}:{pair_id}:{chunk['group_id']}",
+                    model=text_ai_reviewer.PRODUCTION_MODEL,
+                    reasoning_effort=text_ai_reviewer.PRODUCTION_REASONING_EFFORT,
+                    output_schema=text_ai_reviewer.RESPONSE_SCHEMA,
+                    allowed_tools="",
+                )
+            except Exception as exc:  # noqa: BLE001 - persisted closed failure
+                chunk_error = f"provider_exception:{type(exc).__name__}:{exc}"
+                result = None
+            fresh_model_calls += 1
+            if result is None and not chunk_error:
+                chunk_error = "ai_provider_failure:no_result"
+            if result is not None:
+                model_reported = result.model or model_reported
+                chunk_usage = {
+                    "input_tokens": result.input_tokens,
+                    "output_tokens": result.output_tokens,
+                    "cached_tokens": result.cached_tokens,
+                    "duration_ms": result.duration_ms,
+                }
+                if result.is_error or result.json_data is None:
+                    chunk_error = result.error_message or "ai_provider_failure"
+                else:
+                    try:
+                        chunk_decisions = text_ai_reviewer.validate_response(
+                            result.json_data, [chunk], safe_same_moved=True,
+                        )[0]["decisions"]
+                    except text_ai_reviewer.ReviewValidationError as exc:
+                        chunk_error = f"validation_failed:{exc}"
+                    else:
+                        normalized.extend(chunk_decisions)
+            for key in usage:
+                usage[key] += int(chunk_usage[key] or 0)
+            chunk_results.append({
+                "id": chunk["group_id"],
+                "source_group_sha256": chunk["source_group_sha256"],
+                "status": "failed" if chunk_error else "completed",
+                "error": chunk_error or None,
+                "usage": chunk_usage,
+                "decision_count": 0 if chunk_error else len(chunk_decisions),
+            })
+            if chunk_error:
+                error = f"{chunk['group_id']}:{chunk_error}"
+                failure_text = f"{chunk_error}\n{getattr(result, 'text', '')}".lower()
+                if any(marker in failure_text for marker in (
+                    "cli_not_found", "not authenticated", "usage limit", "quota",
+                    "unauthorized", "invalid api key",
+                )):
+                    provider_unavailable = chunk_error
+                normalized = []
+                break
+        total_input += int(usage["input_tokens"])
+        total_output += int(usage["output_tokens"])
+        total_cached += int(usage["cached_tokens"])
+        total_duration += int(usage["duration_ms"])
+        represented_model_calls += len(chunk_results)
+        group_results.append({
+            "id": source_group["group_id"],
+            "left_pages": source_group["left_pages"],
+            "right_pages": source_group["right_pages"],
+            "left_labels": source_group["left_labels"],
+            "right_labels": source_group["right_labels"],
+            "source_group_sha256": source_group["source_group_sha256"],
+            "status": "failed" if error else "completed",
+            "error": error or None,
+            "reported_model": model_reported or None,
+            "usage": usage,
+            "chunks": chunk_results,
+            "decisions": normalized,
+        })
+
+    completed = sum(group["status"] == "completed" for group in group_results)
+    failed = len(group_results) - completed
+    status = "completed" if not failed else "failed" if not completed else "partial"
+    generated_at = _utc_now()
+    review_payload = {
+        "version": text_ai_reviewer.VERSION,
+        "kind": text_ai_reviewer.KIND,
+        "pair_id": pair_id,
+        "generated_at": generated_at,
+        "source_signature": signature,
+        "prompt_version": text_ai_reviewer.PROMPT_VERSION,
+        "validator_version": text_ai_reviewer.VALIDATOR_VERSION,
+        "model": text_ai_reviewer.PRODUCTION_MODEL,
+        "reasoning_effort": text_ai_reviewer.PRODUCTION_REASONING_EFFORT,
+        "status": status,
+        "sheet_groups": group_results,
+        "summary": {
+            "total_groups": len(group_results), "completed_groups": completed,
+            "failed_groups": failed, "input_tokens": total_input,
+            "output_tokens": total_output, "cached_tokens": total_cached,
+            "duration_ms": total_duration,
+            "represented_model_calls": represented_model_calls,
+            "fresh_model_calls": fresh_model_calls,
+            "chunks_total": chunks_total,
+        },
+        "constraints": {
+            "text_only": True, "images_sent": False, "norms_sent": False,
+            "sheet_links_mutated": False, "raw_artifacts_mutated": False,
+            "max_preliminary_per_chunk": text_ai_reviewer.PRODUCTION_MAX_PRELIMINARY_PER_CHUNK,
+        },
+    }
+    final_payload = text_ai_reviewer.build_final_comparison(
+        pair_id=pair_id, generated_at=generated_at,
+        review_payload=review_payload, differences=differences,
+    )
+    with _lock:
+        _latest_comparison, _latest_differences, latest_signature = _current_text_ai_signature(
+            session_id, pair_id
+        )
+        if latest_signature != signature:
+            raise ValueError("text_sources_changed_during_ai_review")
+        _atomic_write_json(paths_mod.text_ai_review_path(session_id, pair_id), review_payload)
+        _atomic_write_json(paths_mod.text_final_comparison_path(session_id, pair_id), final_payload)
+    return {
+        "text_ai_review": text_ai_reviewer.public_review_view(review_payload, stale=False),
+        "text_final_comparison": text_ai_reviewer.public_final_view(final_payload, stale=False),
+    }
 
 
 def run_text_comparison(session_id: str, pair_id: str) -> dict:
@@ -1487,6 +1744,9 @@ __all__ = [
     "run_text_comparison",
     "get_text_differences_state",
     "run_text_differences",
+    "get_text_ai_review_state",
+    "get_text_final_comparison_state",
+    "run_text_ai_review",
     "render_pdf_page_svg",
     "page_svg_payload",
     "page_thumbnail_payload",

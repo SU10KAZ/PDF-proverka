@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-08-21T20:01:58+03:00",
+  "codex_cli_version": "codex-cli 0.149.0-alpha.4",
+  "claude_cli_version": "2.1.233 (Claude Code)",
+  "reasoning_effort": "medium",
+  "native_structured_output": {
+    "codex_flag": "--output-schema",
+    "claude_flag": "--json-schema",
+    "claude_max_turns": 2
+  },
+  "codex_catalog_verified": [
+    "gpt-5.6-luna",
+    "gpt-5.6-terra",
+    "gpt-5.6-sol"
+  ],
+  "claude_successfully_invoked": [
+    "claude-fable-5",
+    "claude-sonnet-5",
+    "claude-opus-5"
+  ],
+  "verification_note": "Codex names came from `codex debug models`; Claude aliases are accepted by the installed CLI and are retained only when benchmark calls return a successful envelope with modelUsage."
+}
