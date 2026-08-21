@@ -21,17 +21,17 @@ describe('Stage 4 semantic AI reviewer', () => {
     expect(html).not.toContain("overlay.status === 'found_on_other_sheet'");
   });
 
-  it('keeps one row per sheet group and exposes uncertainty only when present', () => {
+  it('keeps one row per sheet group and exposes uncertainty separately', () => {
     expect(html).toContain('v-for="group in scTextDifferenceGroups"');
-    expect(html).toContain('<th v-if="scTextHasUncertain">Неопределённо</th>');
+    expect(html).toContain('<th>Требует проверки</th>');
     expect(html).toContain("group.uncertain || []");
-    expect(app).toContain("['changed', 'removed', 'added', 'uncertain'].some");
+    expect(app).toContain('window.StageComparisonDifferences.buildRows');
   });
 
   it('distinguishes completed, corrected and unavailable AI review states', () => {
     expect(html).toContain('Проверено ИИ');
     expect(html).toContain('ИИ скорректировал:');
     expect(html).toContain('Требует проверки:');
-    expect(html).toContain('Текст проверен детерминированно, ИИ-проверка не выполнена');
+    expect(html).toContain('Только детерминированная проверка');
   });
 });

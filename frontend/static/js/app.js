@@ -11849,6 +11849,16 @@ const app = createApp({
         const scTextFinalComparison = ref(null);
         const scTextAiReviewLoading = ref(false);
         const scTextAiReviewError = ref('');
+        const scTextDifferenceFilter = ref('all');
+        const scTextDifferenceSearch = ref('');
+        const scTextExpandedBuckets = reactive({});
+        const scTextDifferenceFilterOptions = [
+            {key: 'all', label: 'Все'},
+            {key: 'changed', label: 'Изменилось'},
+            {key: 'removed', label: 'Удалено'},
+            {key: 'added', label: 'Добавлено'},
+            {key: 'uncertain', label: 'Требует проверки'},
+        ];
         const scLinkSaving = ref(false);
         const scLinkEditorOpen = ref(false);
         const scLinkEditorMode = ref('replace');
@@ -12209,18 +12219,27 @@ const app = createApp({
             const metric = scSelectedTextMetric.value;
             return metric ? hints.filter(hint => hint.link_id === metric.link_id) : [];
         });
-        const scTextDifferenceGroups = computed(() => {
-            const finalResult = scTextFinalComparison.value;
-            if (finalResult && !finalResult.stale) {
-                return (finalResult.sheet_groups || []).filter(group =>
-                    ['changed', 'removed', 'added', 'uncertain'].some(key => (group[key] || []).length)
-                );
-            }
-            if (!scTextDifferences.value || scTextDifferences.value.stale) return [];
-            return (scTextDifferences.value.sheet_groups || []).filter(group =>
-                ['changed', 'removed', 'added'].some(key => (group[key] || []).length)
-            );
-        });
+        const scTextAllDifferenceGroups = computed(() =>
+            window.StageComparisonDifferences.buildRows(
+                scTextFinalComparison.value,
+                scTextDifferences.value,
+                {filter: 'all', query: ''},
+            )
+        );
+        const scTextDifferenceGroups = computed(() =>
+            window.StageComparisonDifferences.buildRows(
+                scTextFinalComparison.value,
+                scTextDifferences.value,
+                {
+                    filter: scTextDifferenceFilter.value,
+                    query: scTextDifferenceSearch.value,
+                },
+            )
+        );
+        const scTextResultAvailable = computed(() => Boolean(
+            (scTextFinalComparison.value && !scTextFinalComparison.value.stale)
+            || (scTextDifferences.value && !scTextDifferences.value.stale)
+        ));
         const scTextResultSummary = computed(() => {
             const finalResult = scTextFinalComparison.value;
             if (finalResult && !finalResult.stale) {
@@ -12240,13 +12259,58 @@ const app = createApp({
             return {...summary, uncertain: Number(summary.model_ambiguity || 0)};
         });
         const scTextHasUncertain = computed(() =>
-            scTextDifferenceGroups.value.some(group => (group.uncertain || []).length)
+            scTextAllDifferenceGroups.value.some(group => (group.uncertain || []).length)
         );
         const scTextAiTransitions = computed(() =>
             Object.entries(scTextResultSummary.value.transitions || {})
                 .filter(([, count]) => Number(count) > 0)
                 .map(([transition, count]) => ({transition, count: Number(count)}))
         );
+
+        function scTextBucketKey(group, bucket) {
+            return `${String(group && group.id || '')}:${bucket}`;
+        }
+
+        function scTextBucketExpanded(group, bucket) {
+            return Boolean(scTextExpandedBuckets[scTextBucketKey(group, bucket)]);
+        }
+
+        function scToggleTextBucket(group, bucket) {
+            const key = scTextBucketKey(group, bucket);
+            scTextExpandedBuckets[key] = !scTextExpandedBuckets[key];
+        }
+
+        function scTextVisibleBucketItems(group, bucket) {
+            return window.StageComparisonDifferences.visibleItems(
+                group, bucket, scTextBucketExpanded(group, bucket),
+            );
+        }
+
+        function scTextBucketRemaining(group, bucket) {
+            return window.StageComparisonDifferences.remainingCount(
+                group, bucket, scTextBucketExpanded(group, bucket),
+            );
+        }
+
+        function scTextBucketLabel(bucket) {
+            return {
+                changed: 'Изменилось',
+                removed: 'Удалено',
+                added: 'Добавлено',
+                uncertain: 'Требует проверки',
+            }[bucket] || bucket;
+        }
+
+        function scTextGroupAiDiagnostic(group) {
+            if (!group || group.review_status !== 'ai_reviewed') return null;
+            return window.StageComparisonDifferences.groupAiDiagnostics(
+                scTextAiReview.value, group.id,
+            );
+        }
+
+        function scTextUncertainReasonLabel(item) {
+            return window.StageComparisonDifferences.uncertainReasonLabel(item);
+        }
 
         function scStageInfo(stageName) {
             const object = scSelectedObject.value;
@@ -13035,6 +13099,9 @@ const app = createApp({
             scTextAiReview.value = data.text_ai_review || null;
             scTextFinalComparison.value = data.text_final_comparison || null;
             scTextAiReviewError.value = '';
+            scTextDifferenceFilter.value = 'all';
+            scTextDifferenceSearch.value = '';
+            Object.keys(scTextExpandedBuckets).forEach(key => delete scTextExpandedBuckets[key]);
             scSelectedPdf.left = data.pair.left.pdf_path;
             scSelectedPdf.right = data.pair.right.pdf_path;
             scViewerEmpty.left = false;
@@ -15808,7 +15875,12 @@ const app = createApp({
             scOpenTextHint, scApplyTextHint,
             scTextDifferences, scTextDifferencesLoading, scTextDifferencesError,
             scTextAiReview, scTextFinalComparison, scTextAiReviewLoading, scTextAiReviewError,
-            scTextDifferenceGroups, scTextResultSummary, scTextHasUncertain, scTextAiTransitions,
+            scTextAllDifferenceGroups, scTextDifferenceGroups, scTextResultAvailable,
+            scTextResultSummary, scTextHasUncertain, scTextAiTransitions,
+            scTextDifferenceFilter, scTextDifferenceSearch, scTextDifferenceFilterOptions,
+            scTextBucketExpanded, scToggleTextBucket,
+            scTextVisibleBucketItems, scTextBucketRemaining, scTextBucketLabel,
+            scTextGroupAiDiagnostic, scTextUncertainReasonLabel,
             scRunTextDifferences, scRunTextAiReview, scOpenDifferenceSource,
             scSheetLinks, scSheetMapRows, scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,

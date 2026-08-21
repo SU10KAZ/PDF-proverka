@@ -43,6 +43,43 @@ def test_shell_imports_and_object_list_opens(monkeypatch):
     assert store.SHELL_KIND == "stage_comparison_shell"
 
 
+def test_pair_get_reads_ready_stage4_artifacts_without_model_call(monkeypatch):
+    pair = {
+        "id": "pair",
+        "left": {"pdf_path": "/tmp/left.pdf", "filename": "left.pdf"},
+        "right": {"pdf_path": "/tmp/right.pdf", "filename": "right.pdf"},
+    }
+    final = {
+        "version": 1,
+        "kind": "stage_comparison_text_final_comparison",
+        "pair_id": "pair",
+        "review_status": "completed",
+        "sheet_groups": [],
+        "summary": {"same": 314, "moved": 16, "uncertain": 91},
+    }
+    calls = []
+
+    async def forbidden_model_call(*_args, **_kwargs):
+        calls.append("model")
+        raise AssertionError("GET pair must never run the AI reviewer")
+
+    monkeypatch.setattr(store, "_load_session_meta", lambda *_: {"id": "session"})
+    monkeypatch.setattr(store, "_load_pair", lambda *_: pair)
+    monkeypatch.setattr(store, "_page_count", lambda *_: 1)
+    monkeypatch.setattr(store, "get_sheet_matching_state", lambda *_: None)
+    monkeypatch.setattr(store, "get_text_comparison_state", lambda *_: None)
+    monkeypatch.setattr(store, "get_text_differences_state", lambda *_: None)
+    monkeypatch.setattr(store, "get_text_ai_review_state", lambda *_: {"status": "completed"})
+    monkeypatch.setattr(store, "get_text_final_comparison_state", lambda *_: final)
+    monkeypatch.setattr(store, "run_text_ai_review", forbidden_model_call)
+
+    response = TestClient(_app()).get("/api/stage-comparison/sessions/session/pairs/pair")
+
+    assert response.status_code == 200
+    assert response.json()["text_final_comparison"] == final
+    assert calls == []
+
+
 def test_text_exclusion_endpoint_and_downstream_gate(monkeypatch):
     current = {
         "version": 1,

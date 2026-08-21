@@ -33,8 +33,8 @@ describe('grouped Stage 3 text differences', () => {
   });
 
   it('does not show unchanged groups and marks stale results', () => {
-    expect(app).toContain("['changed', 'removed', 'added'].some");
-    expect(app).toContain('if (!scTextDifferences.value || scTextDifferences.value.stale) return []');
+    expect(app).toContain('window.StageComparisonDifferences.buildRows');
+    expect(html).toContain('scTextAllDifferenceGroups.length');
     expect(app).toContain('scTextDifferences.value = {...scTextDifferences.value, stale: true}');
     expect(html).toContain('Текстовых расхождений нет');
     expect(html).toContain('Связи или исходные документы изменились');
