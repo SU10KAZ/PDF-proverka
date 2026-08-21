@@ -1,0 +1,359 @@
+{
+  "version": 1,
+  "kind": "stage4_uncertain_manual_annotations",
+  "diagnostic_only": true,
+  "production_ground_truth": false,
+  "review_method": "manual reason-first review of exact fragments, neighboring context, competing candidates and raster where OCR was suspect",
+  "annotations": {
+    "link_5bac0a5098c7:d109": {
+      "classification": "BAD_INPUT",
+      "resolved_status": "SAME",
+      "automation_candidate": false,
+      "evidence_scope": "RASTER",
+      "rationale": "На растрах П стр. 7 и РД стр. 6 одна подпись «Приямок»; варианты «Прямок/Прямюк» созданы OCR. Текстовый reviewer не получил достаточных данных для безопасного SAME."
+    },
+    "link_5bac0a5098c7:d168": {
+      "classification": "BAD_INPUT",
+      "resolved_status": "SAME",
+      "automation_candidate": false,
+      "evidence_scope": "RASTER",
+      "rationale": "На обоих растрах в пункте 16 написано «кладовых помещений»; «кладковых» — ошибка OCR, а остальной текст совпадает."
+    },
+    "link_da35e872b7f4:d019": {
+      "classification": "BAD_INPUT",
+      "resolved_status": "SAME",
+      "automation_candidate": false,
+      "evidence_scope": "RASTER",
+      "rationale": "На растрах П стр. 10 и РД стр. 9 указано «Приямок»; «Прямок/Приемок» — два OCR-искажения одного слова."
+    },
+    "link_5bac0a5098c7:d009": {
+      "classification": "BAD_INPUT",
+      "resolved_status": "SAME",
+      "automation_candidate": false,
+      "evidence_scope": "RASTER",
+      "rationale": "В экспликациях обоих растров строка 2.К.1 содержит «Проход блока кладовых 23,10»; «Проеход/Проезд» появились при OCR."
+    },
+    "link_5bac0a5098c7:d162": {
+      "classification": "BAD_INPUT",
+      "resolved_status": "SAME",
+      "automation_candidate": false,
+      "evidence_scope": "RASTER",
+      "rationale": "Пункт 10 на обоих растрах оканчивается «данного комплекта»; вариант «комплекса» является OCR-ошибкой."
+    },
+    "link_8b7b6a4bcb55:d028": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "Число 50 в правой строке — вынесенная в соседний столбец толщина, уже повторённая в описании; марка У1 и все параметры совпадают."
+    },
+    "link_8b7b6a4bcb55:d029": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "Число 150 в правой строке дублирует толщину из описания и отражает структуру таблицы; марка У2 и параметры не изменились."
+    },
+    "link_6976a3842ce3:d048": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "На связанной правой стр. 8 есть соответствующая У2 с similarity 0,9744; она ошибочно занята дубликатом с другой левой страницы. Приоритет linked-sheet кандидата разрешает случай."
+    },
+    "link_6976a3842ce3:d049": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "На связанной правой стр. 8 есть та же У3 с similarity 0,9714; неоднозначность создана глобальным распределением дубликатов, а не отсутствием текста."
+    },
+    "link_6976a3842ce3:d050": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "P-1 слева и Р-1 справа — одна марка решётки с латинской/кириллической глифой; linked-sheet кандидат есть, но был занят дубликатом с другой страницы."
+    },
+    "link_5bac0a5098c7:d081": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Различается только запись ≥130 кг/м³ и LaTeX-форма; модель ошибочно подставила summary про ИТП из другого решения, validator это корректно остановил."
+    },
+    "link_ba08ed80436a:d036": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "Комплект фасадов K2 присутствует только справа; ближайший левый K7 — другой корпус. Статус модели верен, rejected лишь нормализованная К/K в summary."
+    },
+    "link_ba08ed80436a:d052": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР1.2-K4 — отдельная правая позиция; слева есть иные обозначения и комбинированные корпуса, но точного объекта нет."
+    },
+    "link_ba08ed80436a:d020": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "Комплект АР0.4-ПА для осей П.24–П.48 есть только справа; похожие левые позиции имеют другие разделы и оси."
+    },
+    "link_ba08ed80436a:d031": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР4.1-K1 — правая позиция по корпусу K1; левый АР4.1-К7 относится к другому корпусу."
+    },
+    "link_ba08ed80436a:d030": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР3-K1 по кровле присутствует только справа; левый АР3-К7 — другой корпус."
+    },
+    "link_ba08ed80436a:d042": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР1.1-K3 по кладочным планам — отдельный правый комплект; точного левого обозначения нет."
+    },
+    "link_ba08ed80436a:d077": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР4.1-K6 присутствует только справа; пропуск «Д» в РД — часть исходного обозначения, а не соответствие левому K7."
+    },
+    "link_ba08ed80436a:d076": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР3-K6 по кровле — правая позиция; похожий левый АР3-К7 относится к другому корпусу."
+    },
+    "link_ba08ed80436a:d035": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР1.2-K2 по маркировочным планам присутствует только справа; левые кандидаты имеют другие корпуса/комплекты."
+    },
+    "link_ba08ed80436a:d015": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР0.1-ПА для осей П.1–П.24 — самостоятельная правая строка; левые комбинированные комплекты не являются тем же объектом."
+    },
+    "link_ba08ed80436a:d071": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "ADDED",
+      "automation_candidate": true,
+      "evidence_scope": "FULL_GROUP",
+      "rationale": "АР1.1-K6 по кладочным планам существует только справа; ближайшие левые позиции имеют иные корпуса."
+    },
+    "link_5bac0a5098c7:d051": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Текст, идентификатор, площадь и категория совпадают; 7→6 — разные абсолютные номера соответствующих П/РД листов, не перенос."
+    },
+    "link_da35e872b7f4:d036": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Пункт 10 совпадает дословно внутри принятой связи листов; 10→9 не означает MOVED."
+    },
+    "link_ba08ed80436a:d120": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "«Открывающие двери» заменено на грамматическое «открывание дверей» без изменения требования; положение на 6/5 — соответствующие листы, не перенос."
+    },
+    "link_5bac0a5098c7:d094": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Идентификатор, помещение, площадь и категория совпадают; изменился только абсолютный номер страницы соответствующей версии."
+    },
+    "link_5bac0a5098c7:d077": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Марка CB-3.1 и все параметры совпадают; различие тире и 7→6 не являются смысловым изменением или переносом."
+    },
+    "link_ba08ed80436a:d135": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Длинный текст совпадает дословно; абсолютные страницы 6/5 относятся к уже связанным листам."
+    },
+    "link_da35e872b7f4:d006": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "CB-1.6, толщина, материал, высота и ограждение совпадают; скобки/точки с запятой отражают flattening условного обозначения."
+    },
+    "link_ba08ed80436a:d101": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Номер и название ГОСТ совпадают; добавлено лишь нумерующее «10. -», а 6→5 — страницы соответствующих версий."
+    },
+    "link_ba08ed80436a:d096": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Номер и название ГОСТ совпадают, правое «5. -» является номером списка; MOVED внутри linked pages неверен."
+    },
+    "link_da35e872b7f4:d003": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "CB-1.2, D600 и 200 мм совпадают; различается только текстовое представление графического образца и столбца толщины."
+    },
+    "link_da35e872b7f4:d009": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "У1, плотность и 50 мм совпадают; LaTeX/Unicode и вынесенное число 50 — представление одной таблицы."
+    },
+    "link_5bac0a5098c7:d089": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Строка венткамеры совпадает дословно; разные PDF-страницы уже входят в принятую связь листов."
+    },
+    "link_da35e872b7f4:d007": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "CB-1.5, D600 и 300 мм совпадают; графический образец был сериализован разными текстовыми маркерами."
+    },
+    "link_da35e872b7f4:d011": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "У3/УЗ — OCR-глиф, а назначение, плотность 80–90 и толщина 50 мм совпадают; это не перенос."
+    },
+    "link_ba08ed80436a:d109": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Класс Ф3.1 и описание совпадают дословно; различаются только абсолютные номера linked pages."
+    },
+    "link_da35e872b7f4:d002": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "CB-1.1, D600 и 250 мм совпадают; различие — сериализация штриховки/столбца, а не смысл."
+    },
+    "link_5bac0a5098c7:d048": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Короткий заголовок МОП совпадает; 7→6 — нумерация соответствующих PDF-листов."
+    },
+    "link_ba08ed80436a:d116": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Указание на инженерные разделы совпадает дословно на принятых связанных листах."
+    },
+    "link_ba08ed80436a:d104": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Уровень ответственности и значение «нормальный» совпадают; разница страниц не означает перенос."
+    },
+    "link_da35e872b7f4:d040": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Пункт 14 совпадает полностью; страницы 10/9 входят в одну принятую связь листов."
+    },
+    "link_ba08ed80436a:d112": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Класс Ф4.3 и описание помещений совпадают дословно внутри linked sheet group."
+    },
+    "link_ba08ed80436a:d127": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Пункт 12 совпадает дословно; модель неверно интерпретировала 6→5 как перемещение."
+    },
+    "link_da35e872b7f4:d001": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Текст и ссылка на КЖ совпадают; начальный дефис и абсолютный номер страницы не меняют смысл."
+    },
+    "link_da35e872b7f4:d004": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT_AND_TABLE_CONTEXT",
+      "rationale": "CB-1.3, D600 и 150 мм совпадают; маркеры штриховки/толщины — структурное представление таблицы."
+    },
+    "link_da35e872b7f4:d042": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Пункт 16 совпадает полностью; 10/9 — номера соответствующих листов двух версий."
+    },
+    "link_5bac0a5098c7:d060": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Идентификатор 2.МОП.4, помещение, площадь и категория совпадают; перенос отсутствует."
+    },
+    "link_5bac0a5098c7:d107": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Подпись «Отметка чистого пола» совпадает дословно на связанных листах."
+    },
+    "link_5bac0a5098c7:d085": {
+      "classification": "HUMAN_RESOLVABLE",
+      "resolved_status": "SAME",
+      "automation_candidate": true,
+      "evidence_scope": "TEXT",
+      "rationale": "Идентификатор 1.Т.6, наименование, площадь 99,00 и категория D совпадают; страницы 7/6 не являются MOVED."
+    }
+  }
+}
