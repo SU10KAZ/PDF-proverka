@@ -5619,9 +5619,6 @@
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
-                        <label><input type="checkbox" v-model="scSyncView"> Синхронный вид</label>
-                        <span class="sc-viewer-hint" v-if="scViewMode === 'paged'">Ctrl + колесо — масштаб, колесо — прокрутка, перетаскивание — сдвиг</span>
-                        <span class="sc-viewer-hint" v-else>Непрерывная прокрутка всех страниц, Ctrl + колесо — масштаб</span>
                         <span class="sc-viewer-toolbar__spacer"></span>
                         <button class="btn btn-sm" title="Уменьшить" @click="scZoomBy(1 / 1.25)">−</button>
                         <strong class="sc-viewer-zoom" title="100% — лист целиком">{{ scZoomPercent }}%</strong>
@@ -5641,14 +5638,11 @@
                         </button>
                     </div>
                     <aside v-if="scThumbsOpen" class="sc-thumbs" aria-label="Миниатюры листов">
-                        <div class="sc-thumbs__head">
-                            <span>Миниатюры</span>
-                            <span v-if="scThumbSelection.pages.length" class="sc-thumbs__picked">
+                        <div v-if="scThumbSelection.pages.length" class="sc-thumbs__head">
+                            <span class="sc-thumbs__picked">
                                 выбрано {{ scThumbSelection.pages.length }}
                                 <button type="button" @click.stop="scClearThumbSelection()">сбросить</button>
                             </span>
-                            <button type="button" class="sc-thumbs__close" aria-label="Закрыть миниатюры"
-                                    @click="scToggleThumbs()">&times;</button>
                         </div>
                         <p class="sc-thumbs__hint">Ctrl или Shift — отметить листы, перетаскиванием — переставить</p>
                         <div class="sc-thumbs__list">

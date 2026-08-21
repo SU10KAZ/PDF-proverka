@@ -132,6 +132,13 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
   });
 
+  it('keeps the viewer toolbar down to zoom controls', () => {
+    // синхронный вид больше не выключается вручную — панели всегда связаны
+    expect(html).not.toContain('v-model="scSyncView"');
+    expect(html).not.toContain('class="sc-viewer-hint"');
+    expect(css).not.toContain('.sc-viewer-hint {');
+  });
+
   it('hides the page header and upload button on the sheet-link tab', () => {
     // заголовок и загрузка относятся к первому шагу, а на «Связи блоков»
     // только съедают высоту, которой не хватает просмотрщику
@@ -233,7 +240,10 @@ describe('documentation comparison shell', () => {
     const panel = html.slice(html.indexOf('class="sc-thumbs"'), html.indexOf('class="sc-vector-viewer"'));
     // перестановка листов есть, действий НАД листами (поворот, печать, удаление) — нет
     expect(panel).not.toMatch(/Повернуть|Печать|Удалить|Извлечь|Вставить/);
-    expect(panel.match(/<button/g).length).toBe(2);   // закрыть панель + сбросить выбор
+    expect(panel.match(/<button/g).length).toBe(1);   // только «сбросить выбор»
+    // заголовок «Миниатюры» и крестик убраны — панель закрывается кнопкой на рейке
+    expect(panel).not.toContain('sc-thumbs__close');
+    expect(panel).not.toContain('<span>Миниатюры</span>');
   });
 
   it('manages every PDF pair in its own draggable row', () => {

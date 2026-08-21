@@ -4022,10 +4022,11 @@ tr.row-rejected td.sc-cell-goto {
     border-right: 1px solid var(--border2);
     background: var(--surface, #fff);
 }
+/* Шапка полосы осталась только под счётчиком отметки и появляется вместе с
+   ним: заголовок и крестик убраны, панель закрывается кнопкой на рейке. */
 .sc-thumbs__head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
     padding: 6px 10px;
     border-bottom: 1px solid var(--border2);
@@ -4034,14 +4035,6 @@ tr.row-rejected td.sc-cell-goto {
     font-weight: 700;
     letter-spacing: .04em;
     text-transform: uppercase;
-}
-.sc-thumbs__close {
-    border: 0;
-    background: transparent;
-    color: var(--text3);
-    font-size: 15px;
-    line-height: 1;
-    cursor: pointer;
 }
 .sc-thumbs__list { display: grid; align-content: start; gap: 6px; min-height: 0; padding: 8px; overflow-y: auto; }
 .sc-thumbs__hint { padding: 6px 10px 0; color: var(--text3); font-size: 10px; line-height: 1.35; }
@@ -4476,7 +4469,6 @@ tr.row-rejected td.sc-cell-goto {
         linear-gradient(currentColor 0 0) 0 5px / 100% 3px no-repeat,
         linear-gradient(currentColor 0 0) 0 10px / 100% 3px no-repeat;
 }
-.sc-viewer-hint { color: var(--text3); font-size: 11px; }
 .sc-viewer-zoom { min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
 .sc-empty-state {
     padding: 24px;
