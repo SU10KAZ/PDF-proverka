@@ -5538,13 +5538,20 @@
                     <section v-if="scMatchState && scMatchState.suggestions" class="sc-sheet-map">
                         <div class="sc-sheet-map__head">
                             <strong>Карта листов</strong>
-                            <span>{{ scSheetMapRows.length }} связей и несопоставленных листов</span>
+                            <div>
+                                <span>{{ scSheetMapRows.length }} связей и несопоставленных листов</span>
+                                <button type="button" class="sc-sheet-map__toggle"
+                                        :aria-expanded="String(!scSheetMapCollapsed)"
+                                        @click="scToggleSheetMap()">
+                                    {{ scSheetMapCollapsed ? 'Развернуть' : 'Свернуть' }}
+                                </button>
+                            </div>
                         </div>
-                        <div v-if="scMatchState.suggestions.status === 'sheet_index_unavailable'"
+                        <div v-if="!scSheetMapCollapsed && scMatchState.suggestions.status === 'sheet_index_unavailable'"
                              class="sc-sheet-map__warning">
                             HTML-оглавление листов недоступно. Автосопоставление отключено; страницы оставлены для ручной связи.
                         </div>
-                        <div class="sc-sheet-map__list">
+                        <div v-if="!scSheetMapCollapsed" class="sc-sheet-map__list">
                             <div v-for="row in scSheetMapRows" :key="row.key"
                                  class="sc-sheet-map__row"
                                  :class="{'is-active': scSheetMapRowActive(row)}"

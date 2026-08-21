@@ -4231,6 +4231,18 @@ tr.row-rejected td.sc-cell-goto {
     border-bottom: 1px solid var(--border2);
 }
 .sc-sheet-map__head span { color: var(--text3); font-size: 11px; }
+.sc-sheet-map__head > div { display: flex; align-items: center; gap: 10px; }
+.sc-sheet-map__toggle {
+    padding: 2px 7px;
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--accent, #0f9f8f);
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+}
+.sc-sheet-map__toggle:hover { background: var(--bg2, #f8f9fa); }
 .sc-sheet-map__warning {
     padding: 9px 12px;
     border-top: 1px solid color-mix(in srgb, #d97706 28%, transparent);
@@ -4238,21 +4250,13 @@ tr.row-rejected td.sc-cell-goto {
     color: #b45309;
     font-size: 12px;
 }
-/* Карта листов бывает на сотню строк. Держим ровно 5 видимых: высота списка
-   считается из высоты строки, поэтому правка одной переменной не разъезжается
-   с реальной вёрсткой. Строки одинаковой высоты — весь текст в них nowrap. */
-.sc-sheet-map__list {
-    --sc-sheet-map-row: 24px;                 /* без нижнего разделителя */
-    --sc-sheet-map-visible: 5;
-    max-height: calc((var(--sc-sheet-map-row) + 1px) * var(--sc-sheet-map-visible));
-    overflow: auto;
-}
+.sc-sheet-map__list { overflow: visible; }
 .sc-sheet-map__row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 10px;
-    min-height: var(--sc-sheet-map-row);
+    min-height: 24px;
     padding: 3px 10px;
     border-bottom: 1px solid var(--border2);
     background: var(--surface, #fff);
@@ -4324,9 +4328,8 @@ tr.row-rejected td.sc-cell-goto {
 @media (max-width: 900px) {
     .sc-vector-viewer { grid-template-columns: 1fr; }
     .sc-vector-pane { height: 60vh; }
-    /* Кнопки уезжают на свою строку — строка вдвое выше, но видимых всё те же 5 */
-    .sc-sheet-map__list { --sc-sheet-map-row: 46px; }
-    .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; }
+    /* На узком экране кнопки уезжают на свою строку. */
+    .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; min-height: 46px; }
     .sc-sheet-map__actions { grid-column: 1 / -1; justify-content: flex-end; }
     .sc-link-picker { align-items: stretch; flex-direction: column; }
     .sc-sheet-map-editor select { min-width: 0; width: 100%; }

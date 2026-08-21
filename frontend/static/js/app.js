@@ -11846,6 +11846,10 @@ const app = createApp({
         const scLinkEditorLeftPages = ref([]);
         const scLinkEditorRightPages = ref([]);
         const scLinkEditorSourceIndex = ref(null);
+        const scSheetMapCollapsed = ref(false);
+        try {
+            scSheetMapCollapsed.value = localStorage.getItem('stage-comparison:sheet-map-collapsed') === '1';
+        } catch (_) {}
         const scCurrentPage = reactive({left: 1, right: 1});
         // ─── Просмотрщик листов: общий видовой порт двух панелей ───────────
         // Панели показывают РАЗНЫЕ листы разного формата (A4 стадии П против
@@ -12970,28 +12974,16 @@ const app = createApp({
             return {tone: 'review', label: 'Проверить'};
         }
 
-        // Видимых строк карты всего пять, поэтому при листании в просмотрщике
-        // активная строка почти всегда оказывается за пределами списка.
-        // Подкручиваем САМ список, а не страницу: scrollIntoView утащил бы
-        // за собой весь экран вместе с панелями просмотрщика.
-        function scRevealActiveSheetMapRow() {
-            const list = document.querySelector('.sc-sheet-map__list');
-            const row = list && list.querySelector('.sc-sheet-map__row.is-active');
-            if (!row) return;
-            const listRect = list.getBoundingClientRect();
-            const rowRect = row.getBoundingClientRect();
-            if (rowRect.top < listRect.top) {
-                list.scrollTop -= listRect.top - rowRect.top;
-            } else if (rowRect.bottom > listRect.bottom) {
-                list.scrollTop += rowRect.bottom - listRect.bottom;
-            }
+        function scToggleSheetMap() {
+            scSheetMapCollapsed.value = !scSheetMapCollapsed.value;
+            if (scSheetMapCollapsed.value) scLinkEditorOpen.value = false;
+            try {
+                localStorage.setItem(
+                    'stage-comparison:sheet-map-collapsed',
+                    scSheetMapCollapsed.value ? '1' : '0',
+                );
+            } catch (_) {}
         }
-
-        watch(
-            () => [scCurrentPage.left, scCurrentPage.right],
-            () => { if (currentView.value === 'stage-comparison') scRevealActiveSheetMapRow(); },
-            {flush: 'post'},
-        );
 
         function scSheetMapRowActive(row) {
             const leftMatches = !row.leftPages.length
@@ -13930,6 +13922,7 @@ const app = createApp({
             scMatchState, scMatchSummary, scSuggestions, scLeftSuggestion,
             scSheetLinks, scSheetMapRows, scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,
+            scSheetMapCollapsed, scToggleSheetMap,
             scLinkEditorOpen, scLinkEditorMode, scLinkEditorRightPage,
             scLinkEditorLeftPages, scLinkEditorRightPages,
             scLoadObjects, scOpenSelectedPair, scOpenPair, scOpenPairRow,

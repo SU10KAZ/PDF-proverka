@@ -49,24 +49,20 @@ describe('documentation comparison shell', () => {
     expect(app).toContain('requestAnimationFrame');
   });
 
-  it('keeps the sheet map to five compact rows', () => {
-    // высота списка считается из высоты строки — иначе «пять» разъедется
-    expect(css).toContain('--sc-sheet-map-row: 24px;');
-    expect(css).toContain('--sc-sheet-map-visible: 5;');
-    expect(css).toContain('max-height: calc((var(--sc-sheet-map-row) + 1px) * var(--sc-sheet-map-visible));');
-    expect(css).toContain('min-height: var(--sc-sheet-map-row);');
-    expect(css).not.toContain('max-height: min(42vh, 520px);');
-    // на узком экране кнопки уезжают на свою строку — строка выше
-    expect(css).toContain('.sc-sheet-map__list { --sc-sheet-map-row: 46px; }');
+  it('shows the full sheet map without an internal height limit', () => {
+    expect(css).toContain('.sc-sheet-map__list { overflow: visible; }');
+    expect(css).toContain('min-height: 24px;');
+    expect(css).not.toContain('--sc-sheet-map-visible');
+    expect(css).not.toContain('max-height: calc((var(--sc-sheet-map-row)');
   });
 
-  it('keeps the active sheet-map row visible while paging', () => {
-    // scrollIntoView утащил бы всю страницу — крутим сам список
-    expect(app).toContain('function scRevealActiveSheetMapRow()');
-    expect(app).toContain(".sc-sheet-map__row.is-active");
-    expect(app).toContain('list.scrollTop -= listRect.top - rowRect.top;');
-    expect(app).toContain('list.scrollTop += rowRect.bottom - listRect.bottom;');
-    expect(app).not.toContain('.sc-sheet-map__row.is-active\').scrollIntoView');
+  it('collapses the whole sheet map and remembers the choice', () => {
+    expect(html).toContain("{{ scSheetMapCollapsed ? 'Развернуть' : 'Свернуть' }}");
+    expect(html).toContain('v-if="!scSheetMapCollapsed" class="sc-sheet-map__list"');
+    expect(html).toContain('@click="scToggleSheetMap()"');
+    expect(app).toContain("'stage-comparison:sheet-map-collapsed'");
+    expect(app).toContain('localStorage.setItem(');
+    expect(app).toContain('if (scSheetMapCollapsed.value) scLinkEditorOpen.value = false;');
   });
 
   it('promotes the layer for panning only, never for zooming', () => {
