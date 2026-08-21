@@ -4186,6 +4186,13 @@ tr.row-rejected td.sc-cell-goto {
     border-bottom: 1px solid var(--border2);
 }
 .sc-sheet-map__head span { color: var(--text3); font-size: 11px; }
+.sc-sheet-map__warning {
+    padding: 9px 12px;
+    border-top: 1px solid color-mix(in srgb, #d97706 28%, transparent);
+    background: color-mix(in srgb, #d97706 8%, transparent);
+    color: #b45309;
+    font-size: 12px;
+}
 .sc-sheet-map__list { max-height: min(42vh, 520px); overflow: auto; }
 .sc-sheet-map__row {
     display: grid;

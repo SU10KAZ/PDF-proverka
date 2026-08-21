@@ -47,14 +47,12 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     right_pdf = stage_2 / "working.pdf"
     left_pdf.write_bytes(_pdf_bytes("stage 1"))
     right_pdf.write_bytes(_pdf_bytes("stage 2"))
-    # Markdown is indexed for the small sheet matcher; unrelated JSON is not.
-    md_page = (
-        "## Page 1\n"
-        "> **Stamp:** Code: X | Sheet: 7 | Name: Корпус 4. План 1 этажа | Org: X\n"
-        "Корпус 4. План 1 этажа\n"
+    # The matcher reads only the ready-made Page/Sheet index from results HTML.
+    html_index = '<ol><li><a href="#page-0">Sheet 7 — Корпус 4. План 1 этажа</a></li></ol>'
+    (stage_1 / "project_results.html").write_text(html_index, encoding="utf-8")
+    (stage_2 / "working_results.html").write_text(
+        html_index.replace("Sheet 7", "Sheet 99"), encoding="utf-8"
     )
-    (stage_1 / "project.md").write_text(md_page, encoding="utf-8")
-    (stage_2 / "working.md").write_text(md_page.replace("Sheet: 7", "Sheet: 99"), encoding="utf-8")
     (stage_2 / "blocks.json").write_text("not-json-on-purpose", encoding="utf-8")
     monkeypatch.setenv("COMPARISON_ROOT", str(comparison_root))
     monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(tmp_path))
@@ -68,7 +66,7 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     session = created.json()
     assert [item["filename"] for item in session["documents"]["stage_1"]] == ["project.pdf"]
     assert [item["filename"] for item in session["documents"]["stage_2"]] == ["working.pdf"]
-    assert session["documents"]["stage_1"][0]["md_path"] == str(stage_1 / "project.md")
+    assert session["documents"]["stage_1"][0]["html_path"] == str(stage_1 / "project_results.html")
 
     pair_response = client.post(
         f"/api/stage-comparison/sessions/{session['id']}/pairs",

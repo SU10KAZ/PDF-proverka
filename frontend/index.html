@@ -5518,6 +5518,10 @@
                             <strong>Карта листов</strong>
                             <span>{{ scSheetMapRows.length }} связей и несопоставленных листов</span>
                         </div>
+                        <div v-if="scMatchState.suggestions.status === 'sheet_index_unavailable'"
+                             class="sc-sheet-map__warning">
+                            HTML-оглавление листов недоступно. Автосопоставление отключено; страницы оставлены для ручной связи.
+                        </div>
                         <div class="sc-sheet-map__list">
                             <div v-for="row in scSheetMapRows" :key="row.key"
                                  class="sc-sheet-map__row"
@@ -5540,6 +5544,9 @@
                                     {{ scSheetMapStatus(row).label }}
                                 </span>
                                 <div class="sc-sheet-map__actions" @click.stop>
+                                    <button v-if="row.source === 'auto' && row.rightPages.length && row.explicitLinkIndex === null"
+                                            type="button" :disabled="scLinkSaving"
+                                            @click="scAcceptSuggestion(row)">Оставить</button>
                                     <button type="button" :disabled="!row.leftPages.length || scLinkSaving"
                                             @click="scOpenSheetMapEditor(row, 'replace')">Изменить</button>
                                     <button type="button" :disabled="!row.leftPages.length || scLinkSaving"
@@ -5566,9 +5573,9 @@
                             <small>{{ scSheetMapSideLabel(scLinkEditorLeftPages, 'left') }}</small>
                         </div>
                         <select id="sc-right-page-picker" v-model="scLinkEditorRightPage" class="form-control">
-                            <option v-for="passport in scRightOptions" :key="'candidate-'+passport.pdf_page"
-                                    :value="String(passport.pdf_page)">
-                                {{ scSheetMapSideLabel([passport.pdf_page], 'right') }}
+                            <option v-for="sheet in scRightOptions" :key="'candidate-'+sheet.pdf_page"
+                                    :value="String(sheet.pdf_page)">
+                                {{ scSheetMapSideLabel([sheet.pdf_page], 'right') }}
                             </option>
                         </select>
                         <button class="btn btn-primary" :disabled="!scLinkEditorRightPage || scLinkSaving"

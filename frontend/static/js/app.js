@@ -11961,8 +11961,8 @@ const app = createApp({
                 });
             }
 
-            for (const passport of payload.left_passports || []) {
-                const leftPage = Number(passport.pdf_page);
+            for (const sheet of payload.left_sheet_index || []) {
+                const leftPage = Number(sheet.pdf_page);
                 if (!leftPage || representedLeft.has(leftPage)) continue;
                 addRow({
                     key: `left-only-${leftPage}`,
@@ -11975,8 +11975,8 @@ const app = createApp({
                 });
             }
 
-            for (const passport of payload.right_passports || []) {
-                const rightPage = Number(passport.pdf_page);
+            for (const sheet of payload.right_sheet_index || []) {
+                const rightPage = Number(sheet.pdf_page);
                 if (!rightPage || representedRight.has(rightPage)) continue;
                 addRow({
                     key: `right-only-${rightPage}`,
@@ -12027,13 +12027,13 @@ const app = createApp({
         });
         const scRightOptions = computed(() => {
             const suggestionsPayload = scMatchState.value && scMatchState.value.suggestions;
-            const all = (suggestionsPayload && suggestionsPayload.right_passports) || [];
+            const all = (suggestionsPayload && suggestionsPayload.right_sheet_index) || [];
             const suggestion = scLeftSuggestion.value;
             const orderedPages = [];
             if (suggestion && suggestion.primary_right_page) orderedPages.push(Number(suggestion.primary_right_page));
             for (const item of (suggestion && suggestion.alternatives) || []) orderedPages.push(Number(item.right_page));
-            for (const passport of all) orderedPages.push(Number(passport.pdf_page));
-            const byPage = new Map(all.map(passport => [Number(passport.pdf_page), passport]));
+            for (const sheet of all) orderedPages.push(Number(sheet.pdf_page));
+            const byPage = new Map(all.map(sheet => [Number(sheet.pdf_page), sheet]));
             return [...new Set(orderedPages)].map(page => byPage.get(page)).filter(Boolean);
         });
 
@@ -12797,44 +12797,18 @@ const app = createApp({
             }
         }
 
-        function scPassportFor(side, page) {
+        function scSheetIndexEntryFor(side, page) {
             const payload = scMatchState.value && scMatchState.value.suggestions;
-            const passports = payload && payload[`${side}_passports`] || [];
-            return passports.find(item => Number(item.pdf_page) === Number(page)) || null;
+            const sheetIndex = payload && payload[`${side}_sheet_index`] || [];
+            return sheetIndex.find(item => Number(item.pdf_page) === Number(page)) || null;
         }
 
-        function scPassportLabel(passport) {
-            if (!passport) return 'Признаки листа не извлечены';
-            const parts = [];
-            if (passport.sheet_title_reliable && passport.sheet_title) {
-                parts.push(String(passport.sheet_title));
-            }
-            if ((passport.buildings || []).length) {
-                parts.push((passport.buildings.length > 1 ? 'Корпуса ' : 'Корпус ') + passport.buildings.join(', '));
-            }
-            if (passport.roof) parts.push('План кровли');
-            else if (passport.floor) parts.push(`План ${passport.floor} этажа`);
-            else if (!passport.sheet_title_reliable) {
-                const kindLabels = {
-                    plan: 'План', section: 'Разрез', facade: 'Фасад', scheme: 'Схема',
-                    specification: 'Спецификация', table: 'Таблица', contents: 'Содержание',
-                };
-                if (kindLabels[passport.kind]) parts.push(kindLabels[passport.kind]);
-            }
-            if (passport.level) parts.push(`уровень ${passport.level}`);
-            return parts.join(' · ') || 'Без названия';
-        }
-
-        function scPassportShortTitle(passport) {
-            if (!passport) return 'Без названия';
-            const reliableTitle = passport.sheet_title_reliable && passport.sheet_title
-                ? passport.sheet_title
-                : '';
-            let title = String(reliableTitle || scPassportLabel(passport) || 'Без названия')
+        function scSheetIndexTitle(sheet) {
+            if (!sheet || !sheet.title) return '';
+            let title = String(sheet.title)
                 .replace(/\s+/g, ' ')
                 .replace(/[.;,\s]+$/g, '')
                 .trim();
-            if (!title || title === 'Признаки листа не извлечены') title = 'Без названия';
             if (title.length > 72) title = title.slice(0, 69).trimEnd() + '…';
             return title;
         }
@@ -12844,16 +12818,17 @@ const app = createApp({
                 .sort((a, b) => a - b);
             if (!uniquePages.length) return 'Лист отсутствует';
             const sheetNumber = (page) => {
-                const passport = scPassportFor(side, page);
-                return String((passport && passport.sheet_number) || page);
+                const sheet = scSheetIndexEntryFor(side, page);
+                return String((sheet && sheet.sheet_number) || page);
             };
             if (uniquePages.length > 1) {
                 return `Листы ${uniquePages.map(sheetNumber).join(', ')}`;
             }
             const page = uniquePages[0];
-            const passport = scPassportFor(side, page);
-            const title = scPassportShortTitle(passport);
-            return `Лист ${sheetNumber(page)}${title ? ' — ' + title : ''}`;
+            const sheet = scSheetIndexEntryFor(side, page);
+            if (!sheet || !sheet.sheet_number) return `Страница ${page}`;
+            const title = scSheetIndexTitle(sheet);
+            return `Лист ${sheet.sheet_number}${title ? ' — ' + title : ''}`;
         }
 
         function scSheetMapStatus(row) {
@@ -12887,13 +12862,10 @@ const app = createApp({
 
         function scReasonLabel(reason) {
             const labels = {
-                same_sheet_title: 'название листа',
-                same_unique_sheet_title: 'уникальное название листа',
-                similar_sheet_title: 'похожее название листа',
-                title_conflict: 'названия различаются',
-                same_page_number: 'номер страницы',
-                same_buildings: 'корпус', same_floor: 'этаж', same_level: 'уровень',
-                same_kind: 'тип', same_sheet_number: 'номер листа', order_neighbor: 'порядок',
+                same_sheet_number_and_title: 'одинаковые номер и название листа',
+                same_unique_title: 'уникальное название листа',
+                similar_title: 'похожее название листа',
+                title_candidate: 'кандидат по названию',
                 user_corrected: 'исправлено инженером', user_accepted: 'принято инженером',
             };
             return labels[reason] || reason;
@@ -12988,10 +12960,15 @@ const app = createApp({
             }
         }
 
-        async function scAcceptSuggestion() {
-            const suggestion = scLeftSuggestion.value;
+        async function scAcceptSuggestion(row = null) {
+            const leftPage = Number(
+                row && row.leftPages && row.leftPages[0] || scCurrentPage.left
+            );
+            const suggestion = scSuggestions.value.find(item =>
+                Number(item.left_page) === leftPage
+            );
             if (!suggestion || !suggestion.primary_right_page) return;
-            const leftPage = Number(scCurrentPage.left);
+            if (row) scOpenSheetMapRow(row);
             const links = scWithoutLeft(scSheetLinks.value.map(link => ({...link})), leftPage);
             links.push({
                 left_pages: [leftPage], right_pages: [Number(suggestion.primary_right_page)],
@@ -13479,7 +13456,7 @@ const app = createApp({
             scFinishPairRowDrag, scIsDraggingPairRow,
             scSelectPairDocument, scIsPairDocumentPending, scIsPairRowConfirmed,
             scPairRowStatus, scPairRowBusy, scPairRowError,
-            scPassportFor, scPassportLabel, scPassportShortTitle, scReasonLabel,
+            scSheetIndexEntryFor, scSheetIndexTitle, scReasonLabel,
             scSheetMapSideLabel, scSheetMapStatus, scSheetMapRowActive,
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,

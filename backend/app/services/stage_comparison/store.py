@@ -143,10 +143,10 @@ def _source_signature(stage_a_path: str, stage_b_path: str, left: list[dict], ri
         "stage_a_path": str(Path(stage_a_path).expanduser().resolve()),
         "stage_b_path": str(Path(stage_b_path).expanduser().resolve()),
         "stage_1": [
-            (item["pdf_path"], item.get("md_path"), item.get("version_id")) for item in left
+            (item["pdf_path"], item.get("html_path"), item.get("version_id")) for item in left
         ],
         "stage_2": [
-            (item["pdf_path"], item.get("md_path"), item.get("version_id")) for item in right
+            (item["pdf_path"], item.get("html_path"), item.get("version_id")) for item in right
         ],
     }
     raw = json.dumps(compact, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -265,7 +265,9 @@ def _empty_sheet_links(pair_id: str) -> dict:
 
 def _load_sheet_suggestions(session_id: str, pair_id: str) -> dict | None:
     payload = _read_json(paths_mod.sheet_match_suggestions_path(session_id, pair_id))
-    if not isinstance(payload, dict) or payload.get("version") != 1:
+    # Version 1 was produced by the removed Markdown feature matcher.
+    # It must never be exposed as a fallback for the HTML-index matcher.
+    if not isinstance(payload, dict) or payload.get("version") != 2:
         return None
     return payload
 
@@ -281,8 +283,8 @@ def _load_sheet_links(session_id: str, pair_id: str) -> dict:
 
 
 def _matching_summary(suggestions: dict | None, links: dict) -> dict:
-    left_passports = (suggestions or {}).get("left_passports") or []
-    right_passports = (suggestions or {}).get("right_passports") or []
+    left_sheet_index = (suggestions or {}).get("left_sheet_index") or []
+    right_sheet_index = (suggestions or {}).get("right_sheet_index") or []
     linked_left: set[int] = set()
     linked_right: set[int] = set()
     manual_links = 0
@@ -313,8 +315,8 @@ def _matching_summary(suggestions: dict | None, links: dict) -> dict:
             high += 1
         else:
             review += 1
-    all_left = {int(item["pdf_page"]) for item in left_passports}
-    all_right = {int(item["pdf_page"]) for item in right_passports}
+    all_left = {int(item["pdf_page"]) for item in left_sheet_index}
+    all_right = {int(item["pdf_page"]) for item in right_sheet_index}
     return {
         "auto_high": high,
         "needs_review": review,
@@ -344,21 +346,37 @@ def run_sheet_matching(session_id: str, pair_id: str) -> dict:
         pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
         if pair is None:
             raise KeyError("pair_not_found")
-        markdown: dict[str, str] = {}
+        indexes: dict[str, list[dict]] = {}
+        unavailable_sides: list[str] = []
         for side in ("left", "right"):
-            md_path = Path(str((pair.get(side) or {}).get("md_path") or ""))
-            if not md_path.is_file():
-                raise FileNotFoundError(f"markdown_not_found:{side}")
-            markdown[side] = md_path.read_text(encoding="utf-8")
-        left_passports = sheet_matching.build_sheet_passports(markdown["left"])
-        right_passports = sheet_matching.build_sheet_passports(markdown["right"])
-        if not left_passports:
-            raise ValueError("markdown_pages_not_found:left")
-        if not right_passports:
-            raise ValueError("markdown_pages_not_found:right")
-        result = sheet_matching.suggest_sheet_matches(left_passports, right_passports)
+            document = pair.get(side) or {}
+            pdf_path = Path(str(document.get("pdf_path") or ""))
+            html_path = Path(str(document.get("html_path") or ""))
+            if not html_path.is_file():
+                # Existing sessions predate html_path. The canonical import location
+                # is deterministic and does not invoke the old Markdown matcher.
+                html_path = pdf_path.parent / "ocr.html"
+            extracted: list[dict] = []
+            if html_path.is_file():
+                try:
+                    extracted = sheet_matching.extract_sheet_index_from_results_html(
+                        html_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, UnicodeDecodeError):
+                    extracted = []
+            if not extracted:
+                unavailable_sides.append(side)
+            page_count = _page_count(str(pdf_path))
+            by_page = {int(item["pdf_page"]): item for item in extracted}
+            placeholders = sheet_matching.placeholder_sheet_index(page_count)
+            indexes[side] = [by_page.get(page, placeholder) for page, placeholder in enumerate(placeholders, 1)]
+
+        result = sheet_matching.match_sheet_indexes(indexes["left"], indexes["right"])
+        if unavailable_sides:
+            result["status"] = "sheet_index_unavailable"
+            result["unavailable_sides"] = unavailable_sides
         payload = {
-            "version": 1,
+            "version": 2,
             "pair_id": pair_id,
             "generated_at": _utc_now(),
             **result,

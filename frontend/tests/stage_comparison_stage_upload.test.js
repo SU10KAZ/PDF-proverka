@@ -88,6 +88,7 @@ describe('documentation comparison shell', () => {
   });
 
   it('keeps compact actions and manual many-to-many rows in the sheet map', () => {
+    expect(html).toContain('>Оставить</button>');
     expect(html).toContain("scOpenSheetMapEditor(row, 'replace')");
     expect(html).toContain("scOpenSheetMapEditor(row, 'add')");
     expect(html).toContain('@click="scDeleteSheetMapRow(row)"');
@@ -97,6 +98,13 @@ describe('documentation comparison shell', () => {
     expect(app).toContain('leftPages: link.left_pages || []');
     expect(app).toContain('rightPages: link.right_pages || []');
     expect(app).toContain('return `Листы ${uniquePages.map(sheetNumber).join(\', \')}`');
+    expect(app).toContain('payload.left_sheet_index || []');
+    expect(app).toContain('payload.right_sheet_index || []');
+    expect(app).toContain('suggestionsPayload.right_sheet_index');
+    expect(app).toContain('String(sheet.title)');
+    expect(app).not.toContain('scPassportFor');
+    expect(app).not.toContain('sheet_title_reliable');
+    expect(app).not.toContain('passport.buildings');
     expect(app).toContain('left_pages: leftPages, right_pages: rightPages');
     expect(app).toContain('user_corrected');
   });
