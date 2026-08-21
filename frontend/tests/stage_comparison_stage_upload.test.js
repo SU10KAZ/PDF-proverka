@@ -120,6 +120,13 @@ describe('documentation comparison shell', () => {
     expect(css).toContain('flex: 0 0 268px;');
   });
 
+  it('gives the long thumbnail list a wide scrollbar grab area', () => {
+    expect(css).toContain('.sc-thumbs__list::-webkit-scrollbar { width: 16px; }');
+    expect(css).toMatch(/\.sc-thumbs__list::-webkit-scrollbar-thumb \{[^}]*min-height: 56px;/);
+    expect(css).toMatch(/\.sc-thumbs__list::-webkit-scrollbar-thumb \{[^}]*border: 3px solid transparent;/);
+    expect(css).toContain('scrollbar-width: auto;');
+  });
+
   it('builds the strip from the sheet map and falls back to raw pages', () => {
     // связи считаются один раз — иначе полоса и карта разъедутся
     expect(app).toContain('const mapped = scSheetMapRows.value;');
