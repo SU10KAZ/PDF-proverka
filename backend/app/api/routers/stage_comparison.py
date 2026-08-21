@@ -1,4 +1,4 @@
-"""API for the source-upload and vector-viewer comparison shell."""
+"""API for source upload, sheet matching and the tiled PDF viewer."""
 from __future__ import annotations
 
 import json
@@ -243,6 +243,88 @@ async def get_page_thumb(
     # Миниатюра меняется только вместе с PDF, поэтому кэшируем надолго: полоса
     # прокручивается туда-обратно, и каждый повторный проход иначе стоил бы
     # десятки перерисовок.
+    headers = {"Cache-Control": "private, max-age=86400", "ETag": payload["etag"]}
+    if request.headers.get("if-none-match") == payload["etag"]:
+        return Response(status_code=304, headers=headers)
+    return Response(payload["body"], media_type="image/png", headers=headers)
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/page-info")
+async def get_page_info(
+    session_id: str,
+    pair_id: str,
+    side: str = Query(..., pattern="^(left|right)$"),
+    page: int = Query(1, ge=1),
+):
+    try:
+        return await run_in_threadpool(
+            store.page_info_payload, session_id, pair_id, side, page
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("page-info read failed")
+        raise HTTPException(500, f"Ошибка параметров страницы: {exc}") from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/page-preview")
+async def get_page_preview(
+    request: Request,
+    session_id: str,
+    pair_id: str,
+    side: str = Query(..., pattern="^(left|right)$"),
+    page: int = Query(1, ge=1),
+    width: int = Query(1400, ge=640, le=2400),
+):
+    try:
+        payload = await run_in_threadpool(
+            store.page_preview_payload, session_id, pair_id, side, page, width
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("page-preview render failed")
+        raise HTTPException(500, f"Ошибка preview страницы: {exc}") from exc
+
+    headers = {"Cache-Control": "private, max-age=86400", "ETag": payload["etag"]}
+    if request.headers.get("if-none-match") == payload["etag"]:
+        return Response(status_code=304, headers=headers)
+    return Response(payload["body"], media_type="image/png", headers=headers)
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/page-tile")
+async def get_page_tile(
+    request: Request,
+    session_id: str,
+    pair_id: str,
+    side: str = Query(..., pattern="^(left|right)$"),
+    page: int = Query(1, ge=1),
+    level: int = Query(0, ge=0, le=6),
+    x: int = Query(0, ge=0),
+    y: int = Query(0, ge=0),
+):
+    try:
+        payload = await run_in_threadpool(
+            store.page_tile_payload, session_id, pair_id, side, page, level, x, y
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("page-tile render failed")
+        raise HTTPException(500, f"Ошибка тайла страницы: {exc}") from exc
+
     headers = {"Cache-Control": "private, max-age=86400", "ETag": payload["etag"]}
     if request.headers.get("if-none-match") == payload["etag"]:
         return Response(status_code=304, headers=headers)

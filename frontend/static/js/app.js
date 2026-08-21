@@ -11861,11 +11861,14 @@ const app = createApp({
         // чертежа оказывается в одном и том же месте обеих панелей.
         //
         // Само состояние НЕ реактивно: pan/zoom пишет transform прямо в DOM
-        // внутри requestAnimationFrame, минуя перерисовку Vue — иначе на
-        // 30 000 SVG-узлов каждое движение колеса стоило бы кадр.
+        // внутри requestAnimationFrame. Vue обновляет небольшой набор тайлов
+        // только после паузы жеста, а не на каждое движение колеса.
         const SC_ZOOM_MIN = 0.1;
         const SC_ZOOM_MAX = 100;
-        const SC_SVG_CACHE_BUDGET = 24e6;   // символов, ≈24 МБ разметки
+        const SC_PREVIEW_WIDTH = 1400;
+        const SC_CONTINUOUS_PREVIEW_WIDTH = 1000;
+        const SC_TILE_SIZE = 512;
+        const SC_TILE_MAX_LEVEL = 6;
         const scSyncView = ref(true);
         const scViewMode = ref('paged');
         try {
@@ -11877,19 +11880,21 @@ const app = createApp({
         const scPaneRefs = reactive({left: null, right: null});
         const scStageRefs = reactive({left: null, right: null});
         const scContinuousPaneRefs = reactive({left: null, right: null});
-        const scPageSvg = reactive({left: '', right: ''});
+        const scPagePreview = reactive({left: '', right: ''});
+        const scPageTiles = reactive({left: [], right: []});
+        const scPageSignatures = reactive({left: '', right: ''});
         const scPageLoading = reactive({left: false, right: false});
         const scPageError = reactive({left: '', right: ''});
-        const scContinuousSvg = reactive({left: {}, right: {}});
+        const scContinuousPreview = reactive({left: {}, right: {}});
         const scContinuousLoading = reactive({left: {}, right: {}});
         const scContinuousError = reactive({left: {}, right: {}});
         const scContinuousDims = reactive({left: {}, right: {}});
         const scViews = {left: {zoom: 1, cx: 0.5, cy: 0.5}, right: {zoom: 1, cx: 0.5, cy: 0.5}};
         const scPageDims = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
         const scPaneSize = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
-        const scSvgCache = new Map();
-        const scSvgRequest = {left: null, right: null};
+        const scPageInfoRequest = {left: null, right: null};
         const scContinuousRequests = {left: new Map(), right: new Map()};
+        const scTileRefreshTimer = {left: 0, right: 0};
         const scContinuousScrollOrigin = {left: false, right: false};
         const scContinuousScrollFrame = {left: 0, right: 0};
         let scViewFrame = 0;
@@ -12849,8 +12854,8 @@ const app = createApp({
             scSelectedPdf.right = data.pair.right.pdf_path;
             scViewerEmpty.left = false;
             scViewerEmpty.right = false;
-            scContinuousSvg.left = {};
-            scContinuousSvg.right = {};
+            scContinuousPreview.left = {};
+            scContinuousPreview.right = {};
             scContinuousLoading.left = {};
             scContinuousLoading.right = {};
             scContinuousError.left = {};
@@ -13058,14 +13063,20 @@ const app = createApp({
         function scSetViewerEmpty(side, empty) {
             scViewerEmpty[side] = Boolean(empty);
             if (!empty) return;
-            if (scSvgRequest[side]) scSvgRequest[side].abort();
-            scSvgRequest[side] = null;
+            if (scPageInfoRequest[side]) scPageInfoRequest[side].abort();
+            scPageInfoRequest[side] = null;
             scPageLoading[side] = false;
             scPageError[side] = '';
-            scApplyPageSvg(side, '');
+            scPagePreview[side] = '';
+            scPageTiles[side] = [];
+            scPageSignatures[side] = '';
+            scPageDims[side] = {w: 0, h: 0};
+            if (scTileRefreshTimer[side]) clearTimeout(scTileRefreshTimer[side]);
+            scTileRefreshTimer[side] = 0;
+            scScheduleView();
             for (const controller of scContinuousRequests[side].values()) controller.abort();
             scContinuousRequests[side].clear();
-            scContinuousSvg[side] = {};
+            scContinuousPreview[side] = {};
             scContinuousLoading[side] = {};
             scContinuousError[side] = {};
             scContinuousDims[side] = {};
@@ -13651,11 +13662,30 @@ const app = createApp({
             return Number(scPairData.value && scPairData.value[`${side}_page_count`] || 0);
         }
 
-        function scPageSrcUrl(side, page = scCurrentPage[side]) {
+        function scPageApiBase() {
             if (!scSession.value || !scActivePair.value) return '';
             const sessionId = encodeURIComponent(scSession.value.id);
             const pairId = encodeURIComponent(scActivePair.value.id);
-            return `/api/stage-comparison/sessions/${sessionId}/pairs/${pairId}/page-svg?side=${side}&page=${page}`;
+            return `/api/stage-comparison/sessions/${sessionId}/pairs/${pairId}`;
+        }
+
+        function scPageInfoUrl(side, page = scCurrentPage[side]) {
+            const base = scPageApiBase();
+            return base ? `${base}/page-info?side=${side}&page=${page}` : '';
+        }
+
+        function scPagePreviewUrl(side, page, width, signature) {
+            const base = scPageApiBase();
+            if (!base) return '';
+            return `${base}/page-preview?side=${side}&page=${page}&width=${width}`
+                + `&v=${encodeURIComponent(signature || '')}`;
+        }
+
+        function scPageTileUrl(side, page, level, x, y, signature) {
+            const base = scPageApiBase();
+            if (!base) return '';
+            return `${base}/page-tile?side=${side}&page=${page}&level=${level}&x=${x}&y=${y}`
+                + `&v=${encodeURIComponent(signature || '')}`;
         }
 
         function scChangePage(side, delta) {
@@ -13715,6 +13745,76 @@ const app = createApp({
             }
         }
 
+        // Preview остаётся подложкой на всём листе. После паузы в pan/zoom
+        // поверх него появляется только небольшая рамка видимых 512px-тайлов.
+        // Поэтому движение не запускает Vue-рендер на каждый кадр и не создаёт
+        // гигантский canvas либо DOM из SVG-команд.
+        function scRefreshTiles(side) {
+            if (scViewMode.value !== 'paged' || scViewerEmpty[side]) {
+                scPageTiles[side] = [];
+                return;
+            }
+            const dims = scPageDims[side];
+            const pane = scPaneSize[side];
+            const scale = scScaleFor(side);
+            const page = Number(scCurrentPage[side]);
+            const signature = scPageSignatures[side];
+            if (!dims.w || !dims.h || !pane.w || !pane.h || !scale || !signature) {
+                scPageTiles[side] = [];
+                return;
+            }
+            const pixelRatio = Math.min(2, Math.max(1, Number(window.devicePixelRatio) || 1));
+            const wantedDensity = scale * pixelRatio;
+            const previewDensity = SC_PREVIEW_WIDTH / dims.w;
+            if (wantedDensity <= previewDensity * 1.05) {
+                scPageTiles[side] = [];
+                return;
+            }
+            const level = Math.min(
+                SC_TILE_MAX_LEVEL,
+                Math.max(0, Math.ceil(Math.log2(wantedDensity))),
+            );
+            const tileScale = 2 ** level;
+            const span = SC_TILE_SIZE / tileScale;
+            const view = scViewFor(side);
+            const halfWidth = pane.w / (2 * scale);
+            const halfHeight = pane.h / (2 * scale);
+            const x0 = Math.max(0, view.cx * dims.w - halfWidth);
+            const y0 = Math.max(0, view.cy * dims.h - halfHeight);
+            const x1 = Math.min(dims.w, view.cx * dims.w + halfWidth);
+            const y1 = Math.min(dims.h, view.cy * dims.h + halfHeight);
+            const columns = Math.max(1, Math.ceil(dims.w / span));
+            const rows = Math.max(1, Math.ceil(dims.h / span));
+            const startX = Math.max(0, Math.floor(x0 / span) - 1);
+            const startY = Math.max(0, Math.floor(y0 / span) - 1);
+            const endX = Math.min(columns - 1, Math.floor(Math.max(0, x1 - 0.001) / span) + 1);
+            const endY = Math.min(rows - 1, Math.floor(Math.max(0, y1 - 0.001) / span) + 1);
+            const tiles = [];
+            for (let y = startY; y <= endY; y += 1) {
+                for (let x = startX; x <= endX; x += 1) {
+                    tiles.push({
+                        key: `${signature}:${page}:${level}:${x}:${y}`,
+                        url: scPageTileUrl(side, page, level, x, y, signature),
+                        left: x * span,
+                        top: y * span,
+                        width: Math.min(span, dims.w - x * span),
+                        height: Math.min(span, dims.h - y * span),
+                    });
+                }
+            }
+            const before = scPageTiles[side].map(tile => tile.key).join('|');
+            const after = tiles.map(tile => tile.key).join('|');
+            if (before !== after) scPageTiles[side] = tiles;
+        }
+
+        function scScheduleTileRefresh(side, immediate = false) {
+            if (scTileRefreshTimer[side]) clearTimeout(scTileRefreshTimer[side]);
+            scTileRefreshTimer[side] = setTimeout(() => {
+                scTileRefreshTimer[side] = 0;
+                scRefreshTiles(side);
+            }, immediate ? 0 : 90);
+        }
+
         function scApplyView() {
             for (const side of ['left', 'right']) {
                 const stage = scStageRefs[side];
@@ -13736,6 +13836,10 @@ const app = createApp({
             }
             const percent = Math.round(scViewFor('left').zoom * 100);
             if (percent !== scZoomPercent.value) scZoomPercent.value = percent;
+            if (scViewMode.value === 'paged') {
+                scScheduleTileRefresh('left');
+                scScheduleTileRefresh('right');
+            }
         }
 
         // Кадры склеиваются: несколько событий в одном кадре дают один расчёт.
@@ -13791,11 +13895,10 @@ const app = createApp({
             }
         }
 
-        // Сдвиг не меняет масштаб, поэтому закреплённый растр слоя остаётся
-        // точным: композитор двигает готовые тайлы вместо перерисовки 30 000
-        // узлов SVG — на листе A1 это 33 мс на кадр против 67 мс. Для зума
-        // промоушен, наоборот, заморозил бы растр и лист бы мылился, поэтому
-        // там слой снимаем сразу и Chrome растрирует вектор заново.
+        // Сдвиг не меняет масштаб, поэтому композитор может двигать готовую
+        // preview+tile подложку. При зуме снимаем временный promotion, чтобы
+        // браузер не держал лишний GPU-слой; новый уровень тайлов придёт после
+        // короткой паузы жеста.
         function scBoostPan() {
             if (scPanBoostTimer) clearTimeout(scPanBoostTimer);
             else scSetPanBoost(true);
@@ -13982,9 +14085,10 @@ const app = createApp({
             try { localStorage.setItem('stage-comparison:view-mode', mode); } catch (_) {}
             if (mode === 'continuous') {
                 for (const side of ['left', 'right']) {
-                    if (scSvgRequest[side]) scSvgRequest[side].abort();
-                    scSvgRequest[side] = null;
+                    if (scPageInfoRequest[side]) scPageInfoRequest[side].abort();
+                    scPageInfoRequest[side] = null;
                     scPageLoading[side] = false;
+                    scPageTiles[side] = [];
                 }
                 scContinuousZoom.value = 1;
                 scZoomPercent.value = 100;
@@ -14000,7 +14104,7 @@ const app = createApp({
                 for (const side of ['left', 'right']) {
                     for (const controller of scContinuousRequests[side].values()) controller.abort();
                     scContinuousRequests[side].clear();
-                    scLoadPageSvg(side);
+                    scLoadPageRaster(side);
                 }
                 nextTick(scScheduleView);
             }
@@ -14035,54 +14139,11 @@ const app = createApp({
             });
         }
 
-        // ─── Просмотрщик: загрузка вектора ────────────────────────────────
-        function scSvgCachePut(url, markup) {
-            scSvgCache.set(url, markup);
-            let total = 0;
-            for (const value of scSvgCache.values()) total += value.length;
-            for (const key of scSvgCache.keys()) {
-                if (total <= SC_SVG_CACHE_BUDGET) break;
-                if (key === url) continue;
-                total -= scSvgCache.get(key).length;
-                scSvgCache.delete(key);
-            }
-        }
-
-        // Размеры листа берём из самого SVG: viewBox задан в пунктах PDF и уже
-        // учитывает поворот страницы, отдельный запрос к бэкенду не нужен.
-        function scSvgDimensions(markup) {
-            const head = markup.slice(0, 2048);
-            const viewBox = head.match(/viewBox="\s*([-\d.]+)[,\s]+([-\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/);
-            if (viewBox) {
-                const w = Number(viewBox[3]);
-                const h = Number(viewBox[4]);
-                if (w > 0 && h > 0) return {w, h};
-            }
-            const width = head.match(/\swidth="([\d.]+)/);
-            const height = head.match(/\sheight="([\d.]+)/);
-            const w = Number(width && width[1]);
-            const h = Number(height && height[1]);
-            return w > 0 && h > 0 ? {w, h} : {w: 0, h: 0};
-        }
-
-        function scApplyPageSvg(side, markup) {
-            scPageDims[side] = scSvgDimensions(markup);
-            scPageSvg[side] = markup;
-            scMeasurePane(side);
-            scScheduleView();
-        }
-
+        // ─── Просмотрщик: raster preview + тайлы высокого разрешения ──────
         async function scLoadContinuousPage(side, page) {
-            const url = scPageSrcUrl(side, page);
+            const url = scPageInfoUrl(side, page);
             if (!url || scViewerEmpty[side] || scViewMode.value !== 'continuous') return;
-            const cached = scSvgCache.get(url);
-            if (cached !== undefined) {
-                scContinuousSvg[side][page] = cached;
-                scContinuousDims[side][page] = scSvgDimensions(cached);
-                scContinuousLoading[side][page] = false;
-                scContinuousError[side][page] = '';
-                return;
-            }
+            if (scContinuousPreview[side][page] && scContinuousDims[side][page]) return;
             if (scContinuousRequests[side].has(page)) return;
             const controller = new AbortController();
             scContinuousRequests[side].set(page, controller);
@@ -14091,20 +14152,34 @@ const app = createApp({
             try {
                 const response = await fetch(url, {signal: controller.signal});
                 if (!response.ok) throw new Error('HTTP ' + response.status);
-                const markup = await response.text();
+                const info = await response.json();
                 if (scContinuousRequests[side].get(page) !== controller) return;
-                scSvgCachePut(url, markup);
-                scContinuousSvg[side][page] = markup;
-                scContinuousDims[side][page] = scSvgDimensions(markup);
+                const width = Number(info.width);
+                const height = Number(info.height);
+                if (!(width > 0 && height > 0)) throw new Error('Некорректный размер листа');
+                scContinuousDims[side][page] = {w: width, h: height};
+                scContinuousPreview[side][page] = scPagePreviewUrl(
+                    side, page, SC_CONTINUOUS_PREVIEW_WIDTH, String(info.signature || ''),
+                );
             } catch (error) {
                 if (controller.signal.aborted) return;
                 scContinuousError[side][page] = 'Не удалось загрузить: ' + String(error.message || error);
+                scContinuousLoading[side][page] = false;
             } finally {
                 if (scContinuousRequests[side].get(page) === controller) {
                     scContinuousRequests[side].delete(page);
-                    scContinuousLoading[side][page] = false;
                 }
             }
+        }
+
+        function scOnContinuousPreviewLoad(side, page) {
+            scContinuousLoading[side][page] = false;
+            scContinuousError[side][page] = '';
+        }
+
+        function scOnContinuousPreviewError(side, page) {
+            scContinuousLoading[side][page] = false;
+            scContinuousError[side][page] = 'Не удалось загрузить preview страницы';
         }
 
         function scLoadContinuousWindow(side, centerPage) {
@@ -14121,8 +14196,8 @@ const app = createApp({
                     scContinuousRequests[side].delete(page);
                 }
             }
-            for (const page of Object.keys(scContinuousSvg[side]).map(Number)) {
-                if (!wanted.has(page)) delete scContinuousSvg[side][page];
+            for (const page of Object.keys(scContinuousPreview[side]).map(Number)) {
+                if (!wanted.has(page)) delete scContinuousPreview[side][page];
             }
             for (const page of Object.keys(scContinuousDims[side]).map(Number)) {
                 if (!wanted.has(page)) delete scContinuousDims[side][page];
@@ -14130,45 +14205,66 @@ const app = createApp({
             for (const page of wanted) scLoadContinuousPage(side, page);
         }
 
-        async function scLoadPageSvg(side) {
-            const url = scViewerEmpty[side] ? '' : scPageSrcUrl(side);
-            if (scSvgRequest[side]) scSvgRequest[side].abort();
+        async function scLoadPageRaster(side) {
+            const url = scViewerEmpty[side] ? '' : scPageInfoUrl(side);
+            if (scPageInfoRequest[side]) scPageInfoRequest[side].abort();
+            scPageTiles[side] = [];
+            scPagePreview[side] = '';
+            scPageSignatures[side] = '';
             if (!url) {
-                scSvgRequest[side] = null;
+                scPageInfoRequest[side] = null;
                 scPageLoading[side] = false;
                 scPageError[side] = '';
-                scApplyPageSvg(side, '');
-                return;
-            }
-            const cached = scSvgCache.get(url);
-            if (cached !== undefined) {
-                scSvgRequest[side] = null;
-                scPageLoading[side] = false;
-                scPageError[side] = '';
-                scApplyPageSvg(side, cached);
+                scPagePreview[side] = '';
+                scPageSignatures[side] = '';
+                scPageDims[side] = {w: 0, h: 0};
+                scScheduleView();
                 return;
             }
             const controller = new AbortController();
-            scSvgRequest[side] = controller;
+            scPageInfoRequest[side] = controller;
             scPageLoading[side] = true;
             scPageError[side] = '';
             try {
                 const response = await fetch(url, {signal: controller.signal});
                 if (!response.ok) throw new Error('HTTP ' + response.status);
-                const markup = await response.text();
-                if (scSvgRequest[side] !== controller) return;
-                scSvgCachePut(url, markup);
-                scApplyPageSvg(side, markup);
+                const info = await response.json();
+                if (scPageInfoRequest[side] !== controller) return;
+                const width = Number(info.width);
+                const height = Number(info.height);
+                if (!(width > 0 && height > 0)) throw new Error('Некорректный размер листа');
+                scPageDims[side] = {w: width, h: height};
+                scPageSignatures[side] = String(info.signature || '');
+                scPagePreview[side] = scPagePreviewUrl(
+                    side, Number(scCurrentPage[side]), SC_PREVIEW_WIDTH, scPageSignatures[side],
+                );
+                scMeasurePane(side);
+                scScheduleView();
             } catch (error) {
                 if (controller.signal.aborted) return;
-                scPageError[side] = 'Не удалось загрузить вектор: ' + String(error.message || error);
-                scApplyPageSvg(side, '');
+                scPageError[side] = 'Не удалось загрузить страницу: ' + String(error.message || error);
+                scPageLoading[side] = false;
+                scPagePreview[side] = '';
+                scPageSignatures[side] = '';
+                scPageDims[side] = {w: 0, h: 0};
             } finally {
-                if (scSvgRequest[side] === controller) {
-                    scSvgRequest[side] = null;
-                    scPageLoading[side] = false;
+                if (scPageInfoRequest[side] === controller) {
+                    scPageInfoRequest[side] = null;
                 }
             }
+        }
+
+        function scOnPagePreviewLoad(side, event) {
+            if (event.currentTarget.getAttribute('src') !== scPagePreview[side]) return;
+            scPageLoading[side] = false;
+            scPageError[side] = '';
+            scScheduleTileRefresh(side, true);
+        }
+
+        function scOnPagePreviewError(side, event) {
+            if (event.currentTarget.getAttribute('src') !== scPagePreview[side]) return;
+            scPageLoading[side] = false;
+            scPageError[side] = 'Не удалось загрузить preview страницы';
         }
 
         function scRefreshViewerSide(side) {
@@ -14183,7 +14279,7 @@ const app = createApp({
                     nextTick(() => scScrollContinuousToPage(side, scCurrentPage[side]));
                 }
             } else {
-                scLoadPageSvg(side);
+                scLoadPageRaster(side);
             }
         }
 
@@ -14597,13 +14693,15 @@ const app = createApp({
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,
             scAcceptSuggestion, scApplyLinkEditor, scDeleteSheetMapRow, scDeleteCurrentLink,
-            scCurrentPage, scViewerEmpty, scPageCount, scPageSrcUrl, scChangePage,
+            scCurrentPage, scViewerEmpty, scPageCount, scChangePage,
             scSyncView, scViewMode, scSetViewMode,
             scZoomPercent, scZoomBy, scZoomFit, scZoomActualSize,
-            scPageSvg, scPageLoading, scPageError, scSetStageRef,
+            scPagePreview, scPageTiles, scPageLoading, scPageError,
+            scOnPagePreviewLoad, scOnPagePreviewError, scSetStageRef,
             scSetPaneRef,
-            scContinuousSvg, scContinuousLoading, scContinuousError,
+            scContinuousPreview, scContinuousLoading, scContinuousError,
             scContinuousPages, scContinuousPageStyle, scSetContinuousPaneRef,
+            scOnContinuousPreviewLoad, scOnContinuousPreviewError,
             scOnContinuousWheel, scOnContinuousScroll,
         };
     }

@@ -4,6 +4,7 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
+import math
 import os
 import re
 import threading
@@ -617,6 +618,249 @@ _THUMB_MAX_WIDTH = 400
 _thumb_cache: "OrderedDict[str, dict]" = OrderedDict()
 _thumb_cache_lock = threading.Lock()
 
+# Основной просмотрщик не должен превращать насыщенный CAD-лист в десятки
+# тысяч DOM-узлов. Полный лист сначала показываем как умеренный preview, а при
+# увеличении дорисовываем только видимые фрагменты сетки. Кэш общий для preview
+# и тайлов и ограничен байтами: PNG разных дисциплин отличается по размеру на
+# порядки, поэтому лимит количества элементов не защищал бы память процесса.
+_PAGE_PREVIEW_MIN_WIDTH = 640
+_PAGE_PREVIEW_MAX_WIDTH = 2400
+_PAGE_TILE_SIZE = 512
+_PAGE_TILE_MAX_LEVEL = 6
+_PAGE_RASTER_CACHE_MAX_BYTES = 128 * 1024 * 1024
+_PAGE_DISPLAY_CACHE_LIMIT = 2
+_page_raster_cache: "OrderedDict[str, dict]" = OrderedDict()
+_page_raster_cache_bytes = 0
+_page_raster_cache_lock = threading.Lock()
+_page_display_cache: "OrderedDict[str, dict]" = OrderedDict()
+_page_display_cache_lock = threading.RLock()
+_page_display_build_locks: dict[str, threading.Lock] = {}
+_page_raster_render_slots = threading.Semaphore(2)
+
+
+def _pdf_signature(pdf_path: Path) -> str:
+    try:
+        stat = pdf_path.stat()
+        return f"{stat.st_mtime_ns}:{stat.st_size}"
+    except OSError:
+        return "nostat"
+
+
+def _page_raster_cache_get(key: str) -> dict | None:
+    with _page_raster_cache_lock:
+        entry = _page_raster_cache.get(key)
+        if entry is not None:
+            _page_raster_cache.move_to_end(key)
+        return entry
+
+
+def _page_raster_cache_put(key: str, entry: dict) -> None:
+    global _page_raster_cache_bytes
+    size = len(entry["body"])
+    with _page_raster_cache_lock:
+        previous = _page_raster_cache.pop(key, None)
+        if previous is not None:
+            _page_raster_cache_bytes -= len(previous["body"])
+        _page_raster_cache[key] = entry
+        _page_raster_cache_bytes += size
+        while _page_raster_cache and _page_raster_cache_bytes > _PAGE_RASTER_CACHE_MAX_BYTES:
+            _, evicted = _page_raster_cache.popitem(last=False)
+            _page_raster_cache_bytes -= len(evicted["body"])
+
+
+def _close_page_display_context(entry: dict) -> None:
+    try:
+        entry["document"].close()
+    except Exception:  # noqa: BLE001 - очистка кэша не должна ронять запрос
+        pass
+
+
+def _evict_page_display_contexts_locked() -> list[dict]:
+    evicted: list[dict] = []
+    while len(_page_display_cache) > _PAGE_DISPLAY_CACHE_LIMIT:
+        victim_key = next(
+            (key for key, value in _page_display_cache.items() if value["users"] == 0),
+            None,
+        )
+        if victim_key is None:
+            break
+        evicted.append(_page_display_cache.pop(victim_key))
+    return evicted
+
+
+def _acquire_page_display_context(pdf_path: Path, signature: str, page: int) -> dict:
+    """Один раз разобрать PDF page display list и переиспользовать в пачке тайлов."""
+    key = f"{pdf_path}|{signature}|{page}"
+    with _page_display_cache_lock:
+        entry = _page_display_cache.get(key)
+        if entry is not None:
+            entry["users"] += 1
+            _page_display_cache.move_to_end(key)
+            return entry
+        build_lock = _page_display_build_locks.setdefault(key, threading.Lock())
+
+    # По одному build-lock на PDF-страницу: разные стороны строятся параллельно,
+    # но пачка запросов одного тяжёлого A1 создаёт только одну display list.
+    with build_lock:
+        with _page_display_cache_lock:
+            entry = _page_display_cache.get(key)
+            if entry is not None:
+                entry["users"] += 1
+                _page_display_cache.move_to_end(key)
+                return entry
+        fitz = _import_fitz()
+        document = fitz.open(str(pdf_path))
+        try:
+            if page > document.page_count:
+                raise ValueError(f"page_out_of_range:{page}>doc:{document.page_count}")
+            rendered = document[page - 1]
+            entry = {
+                "key": key,
+                "document": document,
+                "display_list": rendered.get_displaylist(annots=1),
+                "rect": rendered.rect,
+                "users": 1,
+                "render_lock": threading.Lock(),
+            }
+        except Exception:
+            document.close()
+            with _page_display_cache_lock:
+                if _page_display_build_locks.get(key) is build_lock:
+                    _page_display_build_locks.pop(key, None)
+            raise
+        with _page_display_cache_lock:
+            _page_display_cache[key] = entry
+            _page_display_cache.move_to_end(key)
+            if _page_display_build_locks.get(key) is build_lock:
+                _page_display_build_locks.pop(key, None)
+            evicted = _evict_page_display_contexts_locked()
+    for stale in evicted:
+        _close_page_display_context(stale)
+    return entry
+
+
+def _release_page_display_context(entry: dict) -> None:
+    with _page_display_cache_lock:
+        entry["users"] = max(0, entry["users"] - 1)
+        evicted = _evict_page_display_contexts_locked()
+    for stale in evicted:
+        _close_page_display_context(stale)
+
+
+def page_info_payload(session_id: str, pair_id: str, side: str, page: int) -> dict:
+    """Размер повёрнутой PDF-страницы и подпись версии для raster viewer."""
+    if page < 1:
+        raise ValueError("page must be >= 1")
+    pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
+    fitz = _import_fitz()
+    with fitz.open(str(pdf_path)) as document:
+        if page > document.page_count:
+            raise ValueError(f"page_out_of_range:{page}>doc:{document.page_count}")
+        rect = document[page - 1].rect
+        width, height = float(rect.width), float(rect.height)
+    return {
+        "page": page,
+        "width": width,
+        "height": height,
+        "signature": _pdf_signature(pdf_path),
+        "tile_size": _PAGE_TILE_SIZE,
+        "max_level": _PAGE_TILE_MAX_LEVEL,
+    }
+
+
+def page_preview_payload(
+    session_id: str,
+    pair_id: str,
+    side: str,
+    page: int,
+    width: int = 1400,
+) -> dict:
+    """Умеренный полноформатный PNG: мгновенная подложка для листа."""
+    if page < 1:
+        raise ValueError("page must be >= 1")
+    width = max(_PAGE_PREVIEW_MIN_WIDTH, min(_PAGE_PREVIEW_MAX_WIDTH, int(width)))
+    pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
+    signature = _pdf_signature(pdf_path)
+    key = f"preview|{pdf_path}|{signature}|{page}|{width}"
+    entry = _page_raster_cache_get(key)
+    if entry is not None:
+        return entry
+
+    fitz = _import_fitz()
+    with _page_raster_render_slots:
+        context = _acquire_page_display_context(pdf_path, signature, page)
+        try:
+            rect = context["rect"]
+            scale = width / rect.width if rect.width else 1
+            with context["render_lock"]:
+                pixmap = context["display_list"].get_pixmap(
+                    matrix=fitz.Matrix(scale, scale), colorspace=fitz.csRGB, alpha=False
+                )
+            body = pixmap.tobytes("png")
+        finally:
+            _release_page_display_context(context)
+    entry = {"body": body, "etag": '"' + hashlib.sha1(body).hexdigest()[:24] + '"'}
+    _page_raster_cache_put(key, entry)
+    return entry
+
+
+def page_tile_payload(
+    session_id: str,
+    pair_id: str,
+    side: str,
+    page: int,
+    level: int,
+    tile_x: int,
+    tile_y: int,
+) -> dict:
+    """PNG одного 512px-тайла; level N означает 2**N пикселей на PDF-point."""
+    if page < 1:
+        raise ValueError("page must be >= 1")
+    if level < 0 or level > _PAGE_TILE_MAX_LEVEL:
+        raise ValueError(f"tile_level_out_of_range:{level}")
+    if tile_x < 0 or tile_y < 0:
+        raise ValueError("tile_coordinates_must_be_non_negative")
+
+    pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
+    signature = _pdf_signature(pdf_path)
+    key = f"tile|{pdf_path}|{signature}|{page}|{level}|{tile_x}|{tile_y}"
+    entry = _page_raster_cache_get(key)
+    if entry is not None:
+        return entry
+
+    fitz = _import_fitz()
+    scale = 2 ** level
+    span = _PAGE_TILE_SIZE / scale
+    with _page_raster_render_slots:
+        context = _acquire_page_display_context(pdf_path, signature, page)
+        try:
+            rect = context["rect"]
+            columns = max(1, math.ceil(rect.width / span))
+            rows = max(1, math.ceil(rect.height / span))
+            if tile_x >= columns or tile_y >= rows:
+                raise ValueError(
+                    f"tile_out_of_range:{tile_x},{tile_y}>grid:{columns},{rows}"
+                )
+            clip = fitz.Rect(
+                rect.x0 + tile_x * span,
+                rect.y0 + tile_y * span,
+                min(rect.x1, rect.x0 + (tile_x + 1) * span),
+                min(rect.y1, rect.y0 + (tile_y + 1) * span),
+            )
+            with context["render_lock"]:
+                pixmap = context["display_list"].get_pixmap(
+                    matrix=fitz.Matrix(scale, scale),
+                    clip=clip,
+                    colorspace=fitz.csRGB,
+                    alpha=False,
+                )
+            body = pixmap.tobytes("png")
+        finally:
+            _release_page_display_context(context)
+    entry = {"body": body, "etag": '"' + hashlib.sha1(body).hexdigest()[:24] + '"'}
+    _page_raster_cache_put(key, entry)
+    return entry
+
 
 def page_thumbnail_payload(
     session_id: str,
@@ -754,5 +998,8 @@ __all__ = [
     "render_pdf_page_svg",
     "page_svg_payload",
     "page_thumbnail_payload",
+    "page_info_payload",
+    "page_preview_payload",
+    "page_tile_payload",
     "assert_path_in_allowlist",
 ]

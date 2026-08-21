@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import fitz
@@ -37,7 +38,7 @@ def test_shell_imports_and_object_list_opens(monkeypatch):
     assert store.SHELL_KIND == "stage_comparison_shell"
 
 
-def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
+def test_pdf_list_pair_and_raster_page(tmp_path, monkeypatch):
     comparison_root = tmp_path / "comparison-runtime"
     stage_1 = tmp_path / "object" / "comparison" / "stage_1"
     stage_2 = tmp_path / "object" / "comparison" / "stage_2"
@@ -106,13 +107,13 @@ def test_pdf_list_pair_and_vector_page_only(tmp_path, monkeypatch):
     assert reopened.json()["id"] == session["id"]
     assert reopened.json()["document_pairing"] == pairing_response.json()
 
-    vector = client.get(
-        f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/page-svg",
-        params={"side": "left", "page": 1},
+    preview = client.get(
+        f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/page-preview",
+        params={"side": "left", "page": 1, "width": 1400},
     )
-    assert vector.status_code == 200
-    assert vector.headers["content-type"].startswith("image/svg+xml")
-    assert b"<svg" in vector.content
+    assert preview.status_code == 200
+    assert preview.headers["content-type"].startswith("image/png")
+    assert preview.content.startswith(b"\x89PNG")
 
     processed = client.post(
         f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair_id}/sheet-match-suggestions"
@@ -398,3 +399,87 @@ def test_page_thumbnail_rejects_bad_input(tmp_path, monkeypatch):
     assert client.get(url, params={"side": "left", "page": 99}).status_code == 400
     assert client.get(url, params={"side": "middle", "page": 1}).status_code == 422
     assert client.get(url, params={"side": "left", "page": 1, "width": 4000}).status_code == 422
+
+
+def test_page_info_preview_and_tile_contract(tmp_path, monkeypatch):
+    """Основной viewer получает геометрию, preview и только нужные тайлы."""
+    client, session_id, pair_id = _viewer_pair(tmp_path, monkeypatch)
+    base = f"/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}"
+    with store._page_display_cache_lock:
+        stale_contexts = list(store._page_display_cache.values())
+        store._page_display_cache.clear()
+        store._page_display_build_locks.clear()
+    for context in stale_contexts:
+        store._close_page_display_context(context)
+    with store._page_raster_cache_lock:
+        store._page_raster_cache.clear()
+        store._page_raster_cache_bytes = 0
+
+    info = client.get(f"{base}/page-info", params={"side": "left", "page": 1})
+    assert info.status_code == 200
+    assert info.json()["width"] > 0
+    assert info.json()["height"] > 0
+    assert info.json()["signature"]
+    assert info.json()["tile_size"] == 512
+    assert info.json()["max_level"] == 6
+
+    preview = client.get(
+        f"{base}/page-preview", params={"side": "left", "page": 1, "width": 1400}
+    )
+    assert preview.status_code == 200
+    assert preview.content.startswith(b"\x89PNG")
+    assert "max-age=86400" in preview.headers["cache-control"]
+    assert preview.headers["etag"]
+    with store._page_display_cache_lock:
+        assert len(store._page_display_cache) == 1
+        display_list = next(iter(store._page_display_cache.values()))["display_list"]
+    assert client.get(
+        f"{base}/page-preview",
+        params={"side": "left", "page": 1, "width": 1400},
+        headers={"If-None-Match": preview.headers["etag"]},
+    ).status_code == 304
+
+    tile = client.get(
+        f"{base}/page-tile",
+        params={"side": "left", "page": 1, "level": 0, "x": 0, "y": 0},
+    )
+    assert tile.status_code == 200
+    assert tile.content.startswith(b"\x89PNG")
+    assert tile.headers["etag"]
+    with store._page_display_cache_lock:
+        assert next(iter(store._page_display_cache.values()))["display_list"] is display_list
+    assert client.get(
+        f"{base}/page-tile",
+        params={"side": "left", "page": 1, "level": 0, "x": 999, "y": 0},
+    ).status_code == 400
+    assert client.get(
+        f"{base}/page-tile",
+        params={"side": "left", "page": 1, "level": 7, "x": 0, "y": 0},
+    ).status_code == 422
+
+
+def test_page_tiles_render_concurrently_from_one_display_list(tmp_path, monkeypatch):
+    """Пачка видимых тайлов не разбирает одну PDF-страницу несколько раз."""
+    client, session_id, pair_id = _viewer_pair(tmp_path, monkeypatch)
+    url = f"/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/page-tile"
+    coordinates = [(0, 0), (1, 0), (0, 1), (1, 1)]
+
+    def load_tile(position):
+        x, y = position
+        return client.get(
+            url,
+            params={"side": "left", "page": 1, "level": 2, "x": x, "y": y},
+        )
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        responses = list(pool.map(load_tile, coordinates))
+
+    assert all(response.status_code == 200 for response in responses)
+    assert all(response.content.startswith(b"\x89PNG") for response in responses)
+    pdf_path = str(tmp_path / "object" / "comparison" / "stage_1" / "project.pdf")
+    with store._page_display_cache_lock:
+        matching = [
+            entry for key, entry in store._page_display_cache.items() if key.startswith(pdf_path + "|")
+        ]
+        assert len(matching) == 1
+        assert matching[0]["users"] == 0
