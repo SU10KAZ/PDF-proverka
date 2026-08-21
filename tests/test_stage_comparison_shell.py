@@ -12,13 +12,18 @@ from backend.app.api.routers import stage_comparison as router_mod
 from backend.app.services.stage_comparison import store
 
 
-def _pdf_bytes(label: str) -> bytes:
+def _pdf_pages_bytes(*labels: str) -> bytes:
     document = fitz.open()
-    page = document.new_page(width=240, height=160)
-    page.insert_text((24, 48), label)
+    for label in labels:
+        page = document.new_page(width=240, height=160)
+        page.insert_text((24, 48), label)
     payload = document.tobytes()
     document.close()
     return payload
+
+
+def _pdf_bytes(label: str) -> bytes:
+    return _pdf_pages_bytes(label)
 
 
 def _app() -> FastAPI:
@@ -206,6 +211,58 @@ def _viewer_pair(tmp_path, monkeypatch) -> tuple[TestClient, str, str]:
         json={"left_pdf": str(stage_1 / "project.pdf"), "right_pdf": str(stage_2 / "working.pdf")},
     ).json()
     return client, session["id"], pair["pair"]["id"]
+
+
+def test_pdf_text_search_is_case_insensitive_and_isolated_per_side(tmp_path, monkeypatch):
+    stage_1 = tmp_path / "object" / "comparison" / "stage_1"
+    stage_2 = tmp_path / "object" / "comparison" / "stage_2"
+    stage_1.mkdir(parents=True)
+    stage_2.mkdir(parents=True)
+    left_pdf = stage_1 / "project.pdf"
+    right_pdf = stage_2 / "working.pdf"
+    left_pdf.write_bytes(_pdf_pages_bytes("Pump room", "Corridor", "PUMP schedule pump"))
+    right_pdf.write_bytes(_pdf_pages_bytes("Pipe room", "Working drawing"))
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison-runtime"))
+    monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(tmp_path))
+    with store._pdf_text_cache_lock:
+        store._pdf_text_cache.clear()
+
+    client = TestClient(_app())
+    session = client.post(
+        "/api/stage-comparison/sessions",
+        json={"stage_a_path": str(stage_1), "stage_b_path": str(stage_2)},
+    ).json()
+    pair = client.post(
+        f"/api/stage-comparison/sessions/{session['id']}/pairs",
+        json={"left_pdf": str(left_pdf), "right_pdf": str(right_pdf)},
+    ).json()["pair"]
+    url = f"/api/stage-comparison/sessions/{session['id']}/pairs/{pair['id']}/text-search"
+
+    left = client.get(url, params={"side": "left", "query": "  pump  "})
+    assert left.status_code == 200
+    assert left.json() == {
+        "query": "pump",
+        "pages": [{"page": 1, "matches": 1}, {"page": 3, "matches": 2}],
+        "matched_pages": 2,
+        "total_matches": 3,
+        "page_count": 3,
+        "has_text_layer": True,
+    }
+
+    right = client.get(url, params={"side": "right", "query": "pump"})
+    assert right.status_code == 200
+    assert right.json()["pages"] == []
+    assert right.json()["has_text_layer"] is True
+
+
+def test_pdf_text_search_rejects_bad_input(tmp_path, monkeypatch):
+    client, session_id, pair_id = _viewer_pair(tmp_path, monkeypatch)
+    url = f"/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/text-search"
+
+    assert client.get(url, params={"side": "middle", "query": "stage"}).status_code == 422
+    assert client.get(url, params={"side": "left", "query": ""}).status_code == 422
+    assert client.get(url, params={"side": "left", "query": " "}).status_code == 400
+    assert client.get(url, params={"side": "left", "query": "x" * 201}).status_code == 422
 
 
 def test_page_svg_namespaces_ids_per_side(tmp_path, monkeypatch):

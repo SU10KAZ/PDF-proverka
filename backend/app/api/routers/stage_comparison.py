@@ -271,6 +271,28 @@ async def get_page_info(
         raise HTTPException(500, f"Ошибка параметров страницы: {exc}") from exc
 
 
+@router.get("/sessions/{session_id}/pairs/{pair_id}/text-search")
+async def search_pdf_text(
+    session_id: str,
+    pair_id: str,
+    side: str = Query(..., pattern="^(left|right)$"),
+    query: str = Query(..., min_length=1, max_length=200),
+):
+    try:
+        return await run_in_threadpool(
+            store.pdf_text_search_payload, session_id, pair_id, side, query
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("PDF text search failed")
+        raise HTTPException(500, f"Ошибка поиска по PDF: {exc}") from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-preview")
 async def get_page_preview(
     request: Request,

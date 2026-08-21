@@ -5679,16 +5679,35 @@
                     <div class="sc-vector-viewer">
                         <section v-for="side in ['left', 'right']" :key="side" class="sc-vector-pane-wrap">
                             <div class="sc-vector-pane-head">
-                                <div>
+                                <div class="sc-vector-pane-head__document">
                                     <span>{{ side === 'left' ? 'stage_1' : 'stage_2' }}</span>
                                     <strong>{{ scActivePair[side].filename }}</strong>
                                 </div>
-                                <div class="sc-page-controls">
-                                    <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] <= 1" @click="scChangePage(side, -1)">←</button>
-                                    <span v-if="scViewerEmpty[side]">Пусто</span>
-                                    <span v-else-if="scViewMode === 'continuous' && scContinuousCurrentIsPlaceholder(side)">Нет листа</span>
-                                    <span v-else>{{ scCurrentPage[side] }} / {{ scPageCount(side) }}</span>
-                                    <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] >= scPageCount(side)" @click="scChangePage(side, 1)">→</button>
+                                <div class="sc-vector-pane-head__actions">
+                                    <form class="sc-text-search" role="search"
+                                          @submit.prevent="scSearchText(side)">
+                                        <input v-model="scTextSearchQuery[side]" type="search"
+                                               maxlength="200" autocomplete="off"
+                                               :aria-label="'Поиск по тексту в ' + (side === 'left' ? 'stage_1' : 'stage_2')"
+                                               placeholder="Текст"
+                                               @input="scResetTextSearch(side)">
+                                        <button type="submit" class="btn btn-sm"
+                                                :disabled="scViewerEmpty[side] || scTextSearchLoading[side] || !scTextSearchQuery[side].trim()">
+                                            Найти
+                                        </button>
+                                        <small v-if="scTextSearchStatus(side)" class="sc-text-search__status"
+                                               :class="{'is-error': scTextSearchError[side]}"
+                                               :title="scTextSearchTitle(side)">
+                                            {{ scTextSearchStatus(side) }}
+                                        </small>
+                                    </form>
+                                    <div class="sc-page-controls">
+                                        <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] <= 1" @click="scChangePage(side, -1)">←</button>
+                                        <span v-if="scViewerEmpty[side]">Пусто</span>
+                                        <span v-else-if="scViewMode === 'continuous' && scContinuousCurrentIsPlaceholder(side)">Нет листа</span>
+                                        <span v-else>{{ scCurrentPage[side] }} / {{ scPageCount(side) }}</span>
+                                        <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] >= scPageCount(side)" @click="scChangePage(side, 1)">→</button>
+                                    </div>
                                 </div>
                             </div>
                             <div v-if="scViewMode === 'paged'" class="sc-vector-pane"

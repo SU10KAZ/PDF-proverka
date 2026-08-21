@@ -657,6 +657,14 @@ _page_display_cache_lock = threading.RLock()
 _page_display_build_locks: dict[str, threading.Lock] = {}
 _page_raster_render_slots = threading.Semaphore(2)
 
+# Поиск работает по встроенному текстовому слою PDF. Извлекать текст заново
+# при каждом запросе дорого (в паре бывает по несколько десятков A1-листов),
+# поэтому держим нормализованный текст последних документов. Подпись в ключе
+# автоматически инвалидирует запись после замены PDF.
+_PDF_TEXT_CACHE_LIMIT = 4
+_pdf_text_cache: "OrderedDict[str, list[str]]" = OrderedDict()
+_pdf_text_cache_lock = threading.Lock()
+
 
 def _pdf_signature(pdf_path: Path) -> str:
     try:
@@ -664,6 +672,63 @@ def _pdf_signature(pdf_path: Path) -> str:
         return f"{stat.st_mtime_ns}:{stat.st_size}"
     except OSError:
         return "nostat"
+
+
+def _normalize_pdf_search_text(value: str) -> str:
+    """Case-insensitive search text with PDF line breaks treated as spaces."""
+    return " ".join(str(value or "").casefold().split())
+
+
+def _pdf_page_search_texts(pdf_path: Path) -> list[str]:
+    signature = _pdf_signature(pdf_path)
+    key = f"{pdf_path}|{signature}"
+    with _pdf_text_cache_lock:
+        cached = _pdf_text_cache.get(key)
+        if cached is not None:
+            _pdf_text_cache.move_to_end(key)
+            return cached
+
+    fitz = _import_fitz()
+    with fitz.open(str(pdf_path)) as document:
+        texts = [
+            _normalize_pdf_search_text(page.get_text("text", sort=True))
+            for page in document
+        ]
+
+    with _pdf_text_cache_lock:
+        _pdf_text_cache[key] = texts
+        _pdf_text_cache.move_to_end(key)
+        while len(_pdf_text_cache) > _PDF_TEXT_CACHE_LIMIT:
+            _pdf_text_cache.popitem(last=False)
+    return texts
+
+
+def pdf_text_search_payload(
+    session_id: str,
+    pair_id: str,
+    side: str,
+    query: str,
+) -> dict:
+    """Find PDF pages containing ``query`` in one side of the viewer pair."""
+    normalized_query = _normalize_pdf_search_text(query)
+    if not normalized_query:
+        raise ValueError("search_query_must_not_be_empty")
+
+    pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
+    page_texts = _pdf_page_search_texts(pdf_path)
+    matches = [
+        {"page": index + 1, "matches": text.count(normalized_query)}
+        for index, text in enumerate(page_texts)
+        if normalized_query in text
+    ]
+    return {
+        "query": str(query).strip(),
+        "pages": matches,
+        "matched_pages": len(matches),
+        "total_matches": sum(item["matches"] for item in matches),
+        "page_count": len(page_texts),
+        "has_text_layer": any(page_texts),
+    }
 
 
 def _page_raster_cache_get(key: str) -> dict | None:
@@ -1021,5 +1086,6 @@ __all__ = [
     "page_info_payload",
     "page_preview_payload",
     "page_tile_payload",
+    "pdf_text_search_payload",
     "assert_path_in_allowlist",
 ]

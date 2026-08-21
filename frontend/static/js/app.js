@@ -11885,6 +11885,15 @@ const app = createApp({
         const scPageSignatures = reactive({left: '', right: ''});
         const scPageLoading = reactive({left: false, right: false});
         const scPageError = reactive({left: '', right: ''});
+        const scTextSearchQuery = reactive({left: '', right: ''});
+        const scTextSearchPages = reactive({left: [], right: []});
+        const scTextSearchIndex = reactive({left: -1, right: -1});
+        const scTextSearchSubmitted = reactive({left: '', right: ''});
+        const scTextSearchLoading = reactive({left: false, right: false});
+        const scTextSearchError = reactive({left: '', right: ''});
+        const scTextSearchHasLayer = reactive({left: true, right: true});
+        const scTextSearchTotalMatches = reactive({left: 0, right: 0});
+        const scTextSearchRequest = {left: null, right: null};
         const scContinuousPreview = reactive({left: {}, right: {}});
         const scContinuousLoading = reactive({left: {}, right: {}});
         const scContinuousError = reactive({left: {}, right: {}});
@@ -12936,6 +12945,8 @@ const app = createApp({
 
         function scActivatePairData(data) {
             if (!data || !data.pair) return;
+            scResetTextSearch('left', true);
+            scResetTextSearch('right', true);
             scRememberPair(data.pair);
             scPairData.value = data;
             scActivePair.value = data.pair;
@@ -13878,6 +13889,95 @@ const app = createApp({
             if (!base) return '';
             return `${base}/page-tile?side=${side}&page=${page}&level=${level}&x=${x}&y=${y}`
                 + `&v=${encodeURIComponent(signature || '')}`;
+        }
+
+        function scResetTextSearch(side, clearQuery = false) {
+            if (scTextSearchRequest[side]) scTextSearchRequest[side].abort();
+            scTextSearchRequest[side] = null;
+            if (clearQuery) scTextSearchQuery[side] = '';
+            scTextSearchPages[side] = [];
+            scTextSearchIndex[side] = -1;
+            scTextSearchSubmitted[side] = '';
+            scTextSearchLoading[side] = false;
+            scTextSearchError[side] = '';
+            scTextSearchHasLayer[side] = true;
+            scTextSearchTotalMatches[side] = 0;
+        }
+
+        function scTextSearchStatus(side) {
+            if (scTextSearchLoading[side]) return '…';
+            if (scTextSearchError[side]) return 'Ошибка';
+            if (!scTextSearchSubmitted[side]) return '';
+            if (!scTextSearchHasLayer[side]) return 'Нет текста';
+            if (!scTextSearchPages[side].length) return 'Не найдено';
+            return `${scTextSearchIndex[side] + 1}/${scTextSearchPages[side].length}`;
+        }
+
+        function scTextSearchTitle(side) {
+            if (scTextSearchError[side]) return scTextSearchError[side];
+            if (!scTextSearchSubmitted[side]) return '';
+            if (!scTextSearchHasLayer[side]) return 'В PDF нет встроенного текстового слоя';
+            if (!scTextSearchPages[side].length) return 'Совпадений не найдено';
+            return `Совпадений: ${scTextSearchTotalMatches[side]}; страниц: ${scTextSearchPages[side].length}`;
+        }
+
+        function scOpenTextSearchPage(side, page) {
+            if (scViewMode.value === 'continuous') {
+                scNavigateContinuousPage(side, page);
+            } else if (side === 'left') {
+                scFocusLeftPage(page);
+            } else {
+                scSwitchRightPage(page);
+            }
+        }
+
+        async function scSearchText(side) {
+            const query = String(scTextSearchQuery[side] || '').trim();
+            if (!query || !scPageApiBase() || scViewerEmpty[side]) return;
+
+            if (scTextSearchSubmitted[side] === query) {
+                const pages = scTextSearchPages[side];
+                if (!pages.length) return;
+                scTextSearchIndex[side] = (scTextSearchIndex[side] + 1) % pages.length;
+                scOpenTextSearchPage(side, pages[scTextSearchIndex[side]]);
+                return;
+            }
+
+            if (scTextSearchRequest[side]) scTextSearchRequest[side].abort();
+            const controller = new AbortController();
+            scTextSearchRequest[side] = controller;
+            scTextSearchLoading[side] = true;
+            scTextSearchError[side] = '';
+            scTextSearchPages[side] = [];
+            scTextSearchIndex[side] = -1;
+            try {
+                const params = new URLSearchParams({side, query});
+                const response = await fetch(`${scPageApiBase()}/text-search?${params}`, {
+                    signal: controller.signal,
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (scTextSearchRequest[side] !== controller) return;
+                scTextSearchSubmitted[side] = query;
+                scTextSearchHasLayer[side] = data.has_text_layer !== false;
+                scTextSearchTotalMatches[side] = Number(data.total_matches || 0);
+                scTextSearchPages[side] = (Array.isArray(data.pages) ? data.pages : [])
+                    .map(item => Number(item && item.page))
+                    .filter(page => Number.isInteger(page) && page >= 1 && page <= scPageCount(side));
+                if (scTextSearchPages[side].length) {
+                    scTextSearchIndex[side] = 0;
+                    scOpenTextSearchPage(side, scTextSearchPages[side][0]);
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    scTextSearchError[side] = String(error.message || error);
+                }
+            } finally {
+                if (scTextSearchRequest[side] === controller) {
+                    scTextSearchRequest[side] = null;
+                    scTextSearchLoading[side] = false;
+                }
+            }
         }
 
         function scChangePage(side, delta) {
@@ -15354,6 +15454,8 @@ const app = createApp({
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,
             scAcceptSuggestion, scApplyLinkEditor, scDeleteSheetMapRow, scDeleteCurrentLink,
             scCurrentPage, scViewerEmpty, scPageCount, scChangePage,
+            scTextSearchQuery, scTextSearchLoading, scTextSearchError,
+            scResetTextSearch, scSearchText, scTextSearchStatus, scTextSearchTitle,
             scSyncView, scViewMode, scSetViewMode,
             scZoomPercent, scZoomBy, scZoomFit, scZoomActualSize,
             scPagePreview, scPageTiles, scPageLoading, scPageError,

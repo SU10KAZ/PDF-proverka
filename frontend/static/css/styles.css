@@ -4380,8 +4380,35 @@ tr.row-rejected td.sc-cell-goto {
 .sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
 .sc-vector-pane-wrap + .sc-vector-pane-wrap { border-left: 1px solid var(--border2); }
 .sc-vector-pane-head { justify-content: space-between; padding: 10px 12px; background: var(--surface, #fff); }
+.sc-vector-pane-head__document { flex: 1; min-width: 0; }
+.sc-vector-pane-head__actions { display: flex; flex: 0 0 auto; align-items: center; gap: 9px; }
 .sc-vector-pane-head span { color: var(--text3); font-size: 11px; }
 .sc-vector-pane-head strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-text-search { display: flex; align-items: center; gap: 5px; }
+.sc-text-search input {
+    width: 112px;
+    height: 30px;
+    padding: 4px 8px;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    outline: 0;
+    color: var(--text);
+    background: var(--surface, #fff);
+    font: inherit;
+    font-size: 11px;
+}
+.sc-text-search input:focus { border-color: var(--accent, #0f9f8f); box-shadow: 0 0 0 2px rgba(15, 159, 143, .12); }
+.sc-text-search__status {
+    min-width: 28px;
+    max-width: 72px;
+    overflow: hidden;
+    color: var(--text3);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sc-text-search__status.is-error { color: #b91c1c; }
 .sc-page-controls { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
 .sc-vector-pane {
     position: relative;
@@ -4686,6 +4713,12 @@ tr.row-rejected td.sc-cell-goto {
     .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; min-height: 46px; }
     .sc-link-picker { align-items: stretch; flex-direction: column; }
     .sc-sheet-map-editor select { min-width: 0; width: 100%; }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+    .sc-vector-pane-head { gap: 7px; padding-inline: 9px; }
+    .sc-vector-pane-head__actions { gap: 6px; }
+    .sc-text-search input { width: 88px; }
 }
 
 /* ─── Upload folder from computer (browser folder upload) ─── */
