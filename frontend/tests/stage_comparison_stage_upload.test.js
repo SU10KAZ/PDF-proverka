@@ -138,9 +138,14 @@ describe('documentation comparison shell', () => {
     expect(html).toContain('class="sc-shell sc-shell--viewer"');
     expect(css).toContain('.sc-steps-bar--tight { margin-bottom: 6px; }');
     expect(css).toMatch(/\.sc-shell--viewer \{[^}]*gap: 6px;/);
-    // min-height, а не height: развёрнутая карта не должна душить просмотрщик
-    expect(css).toMatch(/\.sc-shell--viewer \{[^}]*min-height: calc\(100vh - var\(--sc-viewer-offset, 123px\)\);/);
-    expect(css).not.toMatch(/\.sc-shell--viewer \{[^}]*[^-]height: calc\(100vh/);
+    // высота НЕ считается вычитанием из 100vh: такое число промахивается при
+    // другом масштабе, ширине окна или хроме браузера — блок уезжал за край
+    expect(css).not.toContain('--sc-viewer-offset');
+    expect(css).not.toMatch(/\.sc-shell--viewer \{[^}]*height: calc\(100vh/);
+    expect(html).toContain("'sc-container--fit': scTab === 'links'");
+    expect(css).toContain('.sc-container--fit { display: flex; flex-direction: column; padding-bottom: 12px; }');
+    // flex-shrink: 0 — развёрнутая карта не должна душить просмотрщик
+    expect(css).toContain('.sc-container--fit > .sc-shell--viewer { flex: 1 0 auto; min-height: 0; }');
     expect(css).toMatch(/\.sc-shell--viewer > \.sc-viewer-shell \{[^}]*min-height: 420px;/);
     expect(css).toContain('.sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }');
   });
