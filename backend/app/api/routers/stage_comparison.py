@@ -217,6 +217,38 @@ async def save_sheet_links(session_id: str, pair_id: str, request: SaveSheetLink
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/sessions/{session_id}/pairs/{pair_id}/page-thumb")
+async def get_page_thumb(
+    request: Request,
+    session_id: str,
+    pair_id: str,
+    side: str = Query(..., pattern="^(left|right)$"),
+    page: int = Query(1, ge=1),
+    width: int = Query(160, ge=64, le=400),
+):
+    try:
+        payload = await run_in_threadpool(
+            store.page_thumbnail_payload, session_id, pair_id, side, page, width
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("page-thumb render failed")
+        raise HTTPException(500, f"Ошибка миниатюры страницы: {exc}") from exc
+
+    # Миниатюра меняется только вместе с PDF, поэтому кэшируем надолго: полоса
+    # прокручивается туда-обратно, и каждый повторный проход иначе стоил бы
+    # десятки перерисовок.
+    headers = {"Cache-Control": "private, max-age=86400", "ETag": payload["etag"]}
+    if request.headers.get("if-none-match") == payload["etag"]:
+        return Response(status_code=304, headers=headers)
+    return Response(payload["body"], media_type="image/png", headers=headers)
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-svg")
 async def get_page_svg(
     request: Request,

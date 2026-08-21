@@ -360,3 +360,41 @@ def test_document_pairing_drops_rows_empty_on_both_sides(tmp_path, monkeypatch):
             zip(pairing["left_order"], pairing["right_order"])
         ) if not left and not right
     ]
+
+
+def test_page_thumbnail_is_cached_raster(tmp_path, monkeypatch):
+    """Миниатюры для полосы навигации: PNG, ETag и долгий кэш.
+
+    Насыщенный лист рисуется ~120 мс, а полоса прокручивается туда-обратно —
+    без кэша каждый проход стоил бы десятки перерисовок.
+    """
+    client, session_id, pair_id = _viewer_pair(tmp_path, monkeypatch)
+    store._thumb_cache.clear()
+    url = f"/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/page-thumb"
+
+    first = client.get(url, params={"side": "left", "page": 1, "width": 160})
+    assert first.status_code == 200
+    assert first.headers["content-type"] == "image/png"
+    assert first.content.startswith(b"\x89PNG")
+    assert "max-age=86400" in first.headers["cache-control"]
+
+    cached = client.get(
+        url,
+        params={"side": "left", "page": 1, "width": 160},
+        headers={"If-None-Match": first.headers["etag"]},
+    )
+    assert cached.status_code == 304
+
+    # ширина участвует в ключе кэша — иначе панель получила бы чужой размер
+    wider = client.get(url, params={"side": "left", "page": 1, "width": 320})
+    assert wider.status_code == 200
+    assert wider.headers["etag"] != first.headers["etag"]
+
+
+def test_page_thumbnail_rejects_bad_input(tmp_path, monkeypatch):
+    client, session_id, pair_id = _viewer_pair(tmp_path, monkeypatch)
+    url = f"/api/stage-comparison/sessions/{session_id}/pairs/{pair_id}/page-thumb"
+
+    assert client.get(url, params={"side": "left", "page": 99}).status_code == 400
+    assert client.get(url, params={"side": "middle", "page": 1}).status_code == 422
+    assert client.get(url, params={"side": "left", "page": 1, "width": 4000}).status_code == 422

@@ -607,6 +607,62 @@ def render_pdf_page_svg(session_id: str, pair_id: str, side: str, page: int) -> 
     return _harden_svg(_namespace_svg_ids(svg, _svg_id_prefix(side))).encode("utf-8")
 
 
+# Полоса миниатюр листает десятки страниц, а насыщенный лист A1 рисуется
+# ~120 мс (лёгкий титульный — 3 мс): цена в отрисовке содержимого, а не в
+# размере растра, поэтому ширина на стоимость почти не влияет. Держим готовые
+# PNG в памяти — 512 штук это ~6 МБ, зато повторное открытие панели бесплатно.
+_THUMB_CACHE_LIMIT = 512
+_THUMB_MIN_WIDTH = 64
+_THUMB_MAX_WIDTH = 400
+_thumb_cache: "OrderedDict[str, dict]" = OrderedDict()
+_thumb_cache_lock = threading.Lock()
+
+
+def page_thumbnail_payload(
+    session_id: str,
+    pair_id: str,
+    side: str,
+    page: int,
+    width: int = 160,
+) -> dict:
+    """Растровая миниатюра страницы для панели навигации по листам."""
+    if page < 1:
+        raise ValueError("page must be >= 1")
+    width = max(_THUMB_MIN_WIDTH, min(_THUMB_MAX_WIDTH, int(width)))
+    pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
+    try:
+        stat = pdf_path.stat()
+        signature = f"{stat.st_mtime_ns}:{stat.st_size}"
+    except OSError:
+        signature = "nostat"
+    key = f"{pdf_path}|{signature}|{page}|{width}"
+
+    with _thumb_cache_lock:
+        entry = _thumb_cache.get(key)
+        if entry is not None:
+            _thumb_cache.move_to_end(key)
+
+    if entry is None:
+        fitz = _import_fitz()
+        with fitz.open(str(pdf_path)) as document:
+            if page > document.page_count:
+                raise ValueError(f"page_out_of_range:{page}>doc:{document.page_count}")
+            rendered = document[page - 1]
+            scale = width / rendered.rect.width if rendered.rect.width else 1
+            pixmap = rendered.get_pixmap(
+                matrix=fitz.Matrix(scale, scale), colorspace=fitz.csRGB, alpha=False
+            )
+            body = pixmap.tobytes("png")
+        entry = {"body": body, "etag": '"' + hashlib.sha1(body).hexdigest()[:24] + '"'}
+        with _thumb_cache_lock:
+            _thumb_cache[key] = entry
+            _thumb_cache.move_to_end(key)
+            while len(_thumb_cache) > _THUMB_CACHE_LIMIT:
+                _thumb_cache.popitem(last=False)
+
+    return entry
+
+
 def page_svg_payload(
     session_id: str,
     pair_id: str,
@@ -697,5 +753,6 @@ __all__ = [
     "save_sheet_links",
     "render_pdf_page_svg",
     "page_svg_payload",
+    "page_thumbnail_payload",
     "assert_path_in_allowlist",
 ]
