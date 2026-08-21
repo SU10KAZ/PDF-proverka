@@ -49,6 +49,26 @@ describe('documentation comparison shell', () => {
     expect(app).toContain('requestAnimationFrame');
   });
 
+  it('keeps the sheet map to five compact rows', () => {
+    // высота списка считается из высоты строки — иначе «пять» разъедется
+    expect(css).toContain('--sc-sheet-map-row: 24px;');
+    expect(css).toContain('--sc-sheet-map-visible: 5;');
+    expect(css).toContain('max-height: calc((var(--sc-sheet-map-row) + 1px) * var(--sc-sheet-map-visible));');
+    expect(css).toContain('min-height: var(--sc-sheet-map-row);');
+    expect(css).not.toContain('max-height: min(42vh, 520px);');
+    // на узком экране кнопки уезжают на свою строку — строка выше
+    expect(css).toContain('.sc-sheet-map__list { --sc-sheet-map-row: 46px; }');
+  });
+
+  it('keeps the active sheet-map row visible while paging', () => {
+    // scrollIntoView утащил бы всю страницу — крутим сам список
+    expect(app).toContain('function scRevealActiveSheetMapRow()');
+    expect(app).toContain(".sc-sheet-map__row.is-active");
+    expect(app).toContain('list.scrollTop -= listRect.top - rowRect.top;');
+    expect(app).toContain('list.scrollTop += rowRect.bottom - listRect.bottom;');
+    expect(app).not.toContain('.sc-sheet-map__row.is-active\').scrollIntoView');
+  });
+
   it('promotes the layer for panning only, never for zooming', () => {
     // will-change при зуме заморозил бы растровый масштаб слоя → мыло
     expect(app).toContain('function scBoostPan()');

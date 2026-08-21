@@ -12935,6 +12935,29 @@ const app = createApp({
             return {tone: 'review', label: 'Проверить'};
         }
 
+        // Видимых строк карты всего пять, поэтому при листании в просмотрщике
+        // активная строка почти всегда оказывается за пределами списка.
+        // Подкручиваем САМ список, а не страницу: scrollIntoView утащил бы
+        // за собой весь экран вместе с панелями просмотрщика.
+        function scRevealActiveSheetMapRow() {
+            const list = document.querySelector('.sc-sheet-map__list');
+            const row = list && list.querySelector('.sc-sheet-map__row.is-active');
+            if (!row) return;
+            const listRect = list.getBoundingClientRect();
+            const rowRect = row.getBoundingClientRect();
+            if (rowRect.top < listRect.top) {
+                list.scrollTop -= listRect.top - rowRect.top;
+            } else if (rowRect.bottom > listRect.bottom) {
+                list.scrollTop += rowRect.bottom - listRect.bottom;
+            }
+        }
+
+        watch(
+            () => [scCurrentPage.left, scCurrentPage.right],
+            () => { if (currentView.value === 'stage-comparison') scRevealActiveSheetMapRow(); },
+            {flush: 'post'},
+        );
+
         function scSheetMapRowActive(row) {
             const leftMatches = !row.leftPages.length
                 || row.leftPages.includes(Number(scCurrentPage.left));

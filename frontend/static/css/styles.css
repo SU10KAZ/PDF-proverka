@@ -4226,7 +4226,7 @@ tr.row-rejected td.sc-cell-goto {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 12px;
+    padding: 7px 12px;
     border-bottom: 1px solid var(--border2);
 }
 .sc-sheet-map__head span { color: var(--text3); font-size: 11px; }
@@ -4237,14 +4237,22 @@ tr.row-rejected td.sc-cell-goto {
     color: #b45309;
     font-size: 12px;
 }
-.sc-sheet-map__list { max-height: min(42vh, 520px); overflow: auto; }
+/* Карта листов бывает на сотню строк. Держим ровно 5 видимых: высота списка
+   считается из высоты строки, поэтому правка одной переменной не разъезжается
+   с реальной вёрсткой. Строки одинаковой высоты — весь текст в них nowrap. */
+.sc-sheet-map__list {
+    --sc-sheet-map-row: 24px;                 /* без нижнего разделителя */
+    --sc-sheet-map-visible: 5;
+    max-height: calc((var(--sc-sheet-map-row) + 1px) * var(--sc-sheet-map-visible));
+    overflow: auto;
+}
 .sc-sheet-map__row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     align-items: center;
-    gap: 12px;
-    min-height: 42px;
-    padding: 6px 10px;
+    gap: 10px;
+    min-height: var(--sc-sheet-map-row);
+    padding: 3px 10px;
     border-bottom: 1px solid var(--border2);
     background: var(--surface, #fff);
     cursor: pointer;
@@ -4315,7 +4323,9 @@ tr.row-rejected td.sc-cell-goto {
 @media (max-width: 900px) {
     .sc-vector-viewer { grid-template-columns: 1fr; }
     .sc-vector-pane { height: 60vh; }
-    .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; }
+    /* Кнопки уезжают на свою строку — строка вдвое выше, но видимых всё те же 5 */
+    .sc-sheet-map__list { --sc-sheet-map-row: 46px; }
+    .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; }
     .sc-sheet-map__actions { grid-column: 1 / -1; justify-content: flex-end; }
     .sc-link-picker { align-items: stretch; flex-direction: column; }
     .sc-sheet-map-editor select { min-width: 0; width: 100%; }
