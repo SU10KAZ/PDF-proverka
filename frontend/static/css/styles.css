@@ -4010,8 +4010,6 @@ tr.row-rejected td.sc-cell-goto {
     align-items: stretch;
     height: min(78vh, 960px);
     overflow: hidden;
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
     background: var(--surface, #fff);
 }
 .sc-viewer-layout > .sc-vector-viewer { flex: 1; min-width: 0; }
@@ -4274,10 +4272,17 @@ tr.row-rejected td.sc-cell-goto {
 .sc-pair-row-status--error { color: #b91c1c; background: #fee2e2; }
 .sc-pair-row-status--incomplete { color: #92400e; background: #fef3c7; }
 .sc-pair-row-error { grid-column: 1 / -1; overflow: hidden; color: #b91c1c; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-.sc-viewer-toolbar {
-    padding: 10px 12px;
+/* Панель инструментов принадлежит просмотрщику, а не висит над ним отдельной
+   карточкой: рамка и скругление — у общей оболочки, здесь только разделитель. */
+.sc-viewer-shell {
+    overflow: hidden;
     border: 1px solid var(--border2);
     border-radius: var(--radius);
+    background: var(--surface, #fff);
+}
+.sc-viewer-toolbar {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border2);
     background: var(--surface, #fff);
 }
 .sc-viewer-toolbar__spacer { flex: 1; }
@@ -4303,10 +4308,9 @@ tr.row-rejected td.sc-cell-goto {
     background: #d8dde5;
     cursor: default;
 }
-/* Слой листа. Позиция и масштаб задаются ТОЛЬКО через transform из JS: перенос
-   композитор делает без перерисовки, а inline-SVG остаётся вектором и Chrome
-   растрирует его заново под текущий масштаб. will-change здесь ставить нельзя —
-   он закрепляет растровый масштаб слоя, и лист мылится при увеличении. */
+/* Слой листа. Позиция и масштаб задаются только через transform из JS. Под
+   тайлами всегда лежит preview всего листа: при быстром pan/zoom дырок нет, а
+   после короткой паузы видимая область становится чёткой. */
 .sc-vector-stage {
     position: absolute;
     top: 0;
@@ -4315,7 +4319,14 @@ tr.row-rejected td.sc-cell-goto {
     background: #fff;
     box-shadow: 0 0 0 1px rgba(15, 23, 42, .18);
 }
-.sc-vector-stage > svg { display: block; width: 100%; height: 100%; }
+.sc-page-preview,
+.sc-page-tile {
+    display: block;
+    pointer-events: none;
+    user-select: none;
+}
+.sc-page-preview { width: 100%; height: 100%; }
+.sc-page-tile { position: absolute; z-index: 1; }
 .sc-vector-pane__note {
     position: absolute;
     top: 10px;
@@ -4349,9 +4360,10 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-continuous-page:last-child { margin-bottom: 0; }
 .sc-continuous-page.is-current { box-shadow: 0 0 0 2px var(--accent, #0f9f8f), 0 2px 7px rgba(15, 23, 42, .18); }
-.sc-continuous-page__svg,
-.sc-continuous-page__svg > svg { display: block; width: 100%; height: 100%; }
+.sc-continuous-page__preview { display: block; width: 100%; height: 100%; user-select: none; }
 .sc-continuous-page__placeholder {
+    position: absolute;
+    inset: 0;
     display: grid;
     width: 100%;
     height: 100%;

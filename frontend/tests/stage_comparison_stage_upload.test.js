@@ -25,20 +25,25 @@ describe('documentation comparison shell', () => {
     expect(html).not.toContain('{{ scSession.id }}');
   });
 
-  it('renders only the vector PDF endpoint', () => {
-    expect(app).toContain('/page-svg?side=${side}&page=${page}');
+  it('renders page geometry, preview and detail tiles without the legacy SVG path', () => {
+    expect(app).toContain('/page-info?side=${side}&page=${page}');
+    expect(app).toContain('/page-preview?side=${side}&page=${page}&width=${width}');
+    expect(app).toContain('/page-tile?side=${side}&page=${page}&level=${level}&x=${x}&y=${y}');
+    expect(app).not.toContain('/page-svg?side=${side}&page=${page}');
     expect(html).not.toContain('page-image');
     expect(app).not.toContain('page-image');
     expect(app).not.toContain('block-image');
   });
 
-  it('inlines the page SVG instead of rasterising it through <img>', () => {
+  it('keeps one raster preview under a small on-demand tile set', () => {
     expect(html).toContain('class="sc-vector-stage"');
-    expect(html).toContain('v-html="scPageSvg[side]"');
-    expect(html).not.toContain('<img :src="scPageSrcUrl(side)"');
-    expect(css).toContain('.sc-vector-stage > svg');
-    // will-change закрепил бы растровый масштаб слоя — лист мылился бы при зуме
-    expect(css).not.toMatch(/\.sc-vector-stage\s*\{[^}]*will-change/);
+    expect(html).toContain('class="sc-page-preview"');
+    expect(html).toContain('v-for="tile in scPageTiles[side]"');
+    expect(html).not.toContain('v-html="scPageSvg[side]"');
+    expect(css).toContain('.sc-page-tile { position: absolute; z-index: 1; }');
+    expect(app).toContain('function scRefreshTiles(side)');
+    expect(app).toContain('SC_TILE_SIZE = 512');
+    expect(app).toContain('setTimeout(() =>');
   });
 
   it('drives both panes from one normalised viewport', () => {
@@ -124,6 +129,17 @@ describe('documentation comparison shell', () => {
     // активная пара сама подкручивается: крутим список, не страницу
     expect(app).toContain('function scRevealActiveThumb()');
     expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
+  });
+
+  it('wraps the toolbar and the working area in one shell', () => {
+    // инструменты принадлежат просмотрщику, а не висят над ним отдельной карточкой
+    expect(html).toContain('<div class="sc-viewer-shell">');
+    expect(css).toMatch(/\.sc-viewer-shell \{[^}]*border: 1px solid var\(--border2\);/);
+    expect(css).toMatch(/\.sc-viewer-shell \{[^}]*border-radius: var\(--radius\);/);
+    // своих рамок и скруглений у частей внутри оболочки нет
+    expect(css).toMatch(/\.sc-viewer-toolbar \{[^}]*border-bottom: 1px solid var\(--border2\);/);
+    expect(css).not.toMatch(/\.sc-viewer-toolbar \{[^}]*border: 1px solid var\(--border2\);/);
+    expect(css).not.toMatch(/\.sc-viewer-layout \{[^}]*border: 1px solid var\(--border2\);/);
   });
 
   it('draws the strip and both panes as one block', () => {
@@ -289,19 +305,20 @@ describe('documentation comparison shell', () => {
     expect(app).toContain('user_corrected');
   });
 
-  it('clears the missing viewer side instead of retaining the previous SVG', () => {
+  it('clears the missing viewer side instead of retaining the previous page', () => {
     expect(app).toContain('const scViewerEmpty = reactive({left: false, right: false})');
     expect(app).toContain("scSetViewerEmpty(side, !pages.length)");
-    expect(app).toContain("scApplyPageSvg(side, '')");
+    expect(app).toContain("scPagePreview[side] = ''");
+    expect(app).toContain('scPageTiles[side] = []');
     expect(html).toContain("v-if=\"!scViewerEmpty[side]\" class=\"sc-vector-stage\"");
     expect(html).toContain('<span v-if="scViewerEmpty[side]">Пусто</span>');
   });
 
-  it('offers paged and lazy continuous vector viewing modes', () => {
+  it('offers paged tile and lazy continuous preview modes', () => {
     expect(html).toContain('aria-label="Постраничный режим"');
     expect(html).toContain('aria-label="Непрерывный режим"');
     expect(html).toContain('v-for="page in scContinuousPages(side)"');
-    expect(html).toContain('v-html="scContinuousSvg[side][page]"');
+    expect(html).toContain(':src="scContinuousPreview[side][page]"');
     expect(app).toContain('function scLoadContinuousWindow(side, centerPage)');
     expect(app).toContain('for (let page = Math.max(1, center - 2)');
     expect(app).toContain("'stage-comparison:view-mode'");

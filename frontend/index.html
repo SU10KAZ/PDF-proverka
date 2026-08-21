@@ -5615,6 +5615,7 @@
                         </button>
                     </section>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
+                    <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
                         <button class="btn btn-sm sc-thumbs-toggle" :class="{'is-active': scThumbsOpen}"
                                 :aria-pressed="scThumbsOpen ? 'true' : 'false'"
@@ -5689,9 +5690,17 @@
                                  :class="{'is-empty': scViewerEmpty[side]}"
                                  :ref="element => scSetPaneRef(side, element)">
                                 <div v-if="!scViewerEmpty[side]" class="sc-vector-stage"
-                                     :ref="element => scSetStageRef(side, element)"
-                                     v-html="scPageSvg[side]"></div>
-                                <div v-if="scPageLoading[side]" class="sc-vector-pane__note">Загрузка вектора…</div>
+                                     :ref="element => scSetStageRef(side, element)">
+                                    <img v-if="scPagePreview[side]" class="sc-page-preview"
+                                         :src="scPagePreview[side]" decoding="async" draggable="false" alt=""
+                                         @load="scOnPagePreviewLoad(side, $event)"
+                                         @error="scOnPagePreviewError(side, $event)">
+                                    <img v-for="tile in scPageTiles[side]" :key="tile.key"
+                                         class="sc-page-tile" :src="tile.url" decoding="async"
+                                         draggable="false" alt=""
+                                         :style="{left: tile.left + 'px', top: tile.top + 'px', width: tile.width + 'px', height: tile.height + 'px'}">
+                                </div>
+                                <div v-if="scPageLoading[side]" class="sc-vector-pane__note">Загрузка страницы…</div>
                                 <div v-else-if="scPageError[side]" class="sc-vector-pane__note sc-vector-pane__note--error">
                                     {{ scPageError[side] }}
                                 </div>
@@ -5707,9 +5716,14 @@
                                              :class="{'is-current': page === scCurrentPage[side]}"
                                              :data-sc-page="page"
                                              :style="scContinuousPageStyle(side, page)">
-                                        <div v-if="scContinuousSvg[side][page]" class="sc-continuous-page__svg"
-                                             v-html="scContinuousSvg[side][page]"></div>
-                                        <div v-else class="sc-continuous-page__placeholder">
+                                        <img v-if="scContinuousPreview[side][page]"
+                                             class="sc-continuous-page__preview"
+                                             :src="scContinuousPreview[side][page]" loading="lazy" decoding="async"
+                                             draggable="false" alt=""
+                                             @load="scOnContinuousPreviewLoad(side, page)"
+                                             @error="scOnContinuousPreviewError(side, page)">
+                                        <div v-if="!scContinuousPreview[side][page] || scContinuousLoading[side][page] || scContinuousError[side][page]"
+                                             class="sc-continuous-page__placeholder">
                                             <span v-if="scContinuousError[side][page]">{{ scContinuousError[side][page] }}</span>
                                             <span v-else>{{ scContinuousLoading[side][page] ? 'Загрузка…' : 'Страница ' + page }}</span>
                                         </div>
@@ -5725,6 +5739,7 @@
                                     title="Непрерывный режим" aria-label="Непрерывный режим"
                                     @click="scSetViewMode('continuous')"><i class="sc-view-mode-icon sc-view-mode-icon--continuous"></i></button>
                         </div>
+                    </div>
                     </div>
                     </div>
                 </template>
