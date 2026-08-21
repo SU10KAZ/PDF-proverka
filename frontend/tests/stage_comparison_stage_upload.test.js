@@ -110,7 +110,7 @@ describe('documentation comparison shell', () => {
     // ленивая загрузка нативная: полоса тянет только видимые кропы
     expect(html).toContain('loading="lazy" decoding="async"');
     expect(app).toContain('/page-thumb?side=${side}&page=${page}&width=200');
-    expect(css).toContain('.sc-viewer-layout { display: flex;');
+    expect(css).toMatch(/\.sc-viewer-layout \{[^}]*display: flex;/);
     expect(css).toContain('flex: 0 0 268px;');
   });
 
@@ -124,6 +124,34 @@ describe('documentation comparison shell', () => {
     // активная пара сама подкручивается: крутим список, не страницу
     expect(app).toContain('function scRevealActiveThumb()');
     expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
+  });
+
+  it('draws the strip and both panes as one block', () => {
+    // рамка и скругление — только снаружи, внутри лишь разделители колонок
+    expect(css).toContain('.sc-viewer-layout {');
+    expect(css).toMatch(/\.sc-viewer-layout \{[^}]*height: min\(78vh, 960px\);/);
+    expect(css).toContain('.sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }');
+    expect(css).toContain('.sc-vector-pane-wrap + .sc-vector-pane-wrap { border-left: 1px solid var(--border2); }');
+    expect(css).toContain('border-right: 1px solid var(--border2);');
+    // высоту держит общий блок: своя высота у полосы растянула бы его под список
+    expect(css).not.toMatch(/\.sc-vector-pane \{[^}]*height: min\(72vh, 900px\)/);
+    expect(css).not.toMatch(/\.sc-thumbs \{[^}]*max-height: min\(72vh, 900px\)/);
+    expect(css).not.toContain('.sc-vector-viewer { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }');
+  });
+
+  it('sizes the empty slot to the sheet beside it', () => {
+    expect(css).toMatch(/\.sc-thumbs__row \{[^}]*align-items: stretch;/);
+    expect(css).toMatch(/\.sc-thumbs__cell i \{[^}]*height: 100%;/);
+    expect(css).toContain('align-self: center;');   // номер пары не растягиваем
+  });
+
+  it('styles the page-mode switch with theme tokens', () => {
+    expect(css).toMatch(/\.sc-view-mode-switch button\.is-active \{[^}]*var\(--teal\)/);
+    expect(css).toMatch(/\.sc-view-mode-switch \{[^}]*background: var\(--card-bg\);/);
+    // прежние захардкоженные цвета делали плашку чужеродной в тёмной теме
+    expect(css).not.toContain('background: rgba(248, 250, 252, .94);');
+    expect(css).not.toContain('border-color: #c28b18;');
+    expect(css).not.toContain('.sc-view-mode-icon { position: relative; display: block; width: 12px; height: 15px; border: 1px solid currentColor; background: #fff; }');
   });
 
   it('numbers the pairs down the left edge of the strip', () => {

@@ -4002,16 +4002,26 @@ tr.row-rejected td.sc-cell-goto {
    Только ориентация: пара мини-кропов в строке и переход по клику. Ширина
    колонки фиксированная, потому что просмотрщик рядом обязан сохранять свою
    ширину при открытии панели, а не «прыгать» вслед за содержимым. */
-.sc-viewer-layout { display: flex; align-items: flex-start; gap: 12px; }
+/* Полоса миниатюр и обе панели — один блок, а не три карточки с зазорами:
+   это одно рабочее место, и рамки внутри него только дробят взгляд. Границы
+   остаются как разделители колонок, скругление и фон — общие. */
+.sc-viewer-layout {
+    display: flex;
+    align-items: stretch;
+    height: min(78vh, 960px);
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface, #fff);
+}
 .sc-viewer-layout > .sc-vector-viewer { flex: 1; min-width: 0; }
 .sc-thumbs {
     display: flex;
     flex: 0 0 268px;
     flex-direction: column;
-    max-height: min(72vh, 900px);
     overflow: hidden;
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
+    /* высоту задаёт общий контейнер, своя рамка тут только разделяет колонки */
+    border-right: 1px solid var(--border2);
     background: var(--surface, #fff);
 }
 .sc-thumbs__head {
@@ -4035,7 +4045,7 @@ tr.row-rejected td.sc-cell-goto {
     line-height: 1;
     cursor: pointer;
 }
-.sc-thumbs__list { display: grid; align-content: start; gap: 6px; padding: 8px; overflow-y: auto; }
+.sc-thumbs__list { display: grid; align-content: start; gap: 6px; min-height: 0; padding: 8px; overflow-y: auto; }
 .sc-thumbs__hint { padding: 6px 10px 0; color: var(--text3); font-size: 10px; line-height: 1.35; }
 .sc-thumbs__picked { display: flex; align-items: center; gap: 5px; color: var(--accent, #0f766e); font-size: 10px; }
 .sc-thumbs__picked button {
@@ -4049,7 +4059,9 @@ tr.row-rejected td.sc-cell-goto {
 .sc-thumbs__row {
     display: grid;
     grid-template-columns: 18px 1fr 1fr;
-    align-items: center;
+    /* stretch, а не center: плашка «пусто» обязана повторять высоту листа
+       рядом, иначе пустое место читается как обрезанная миниатюра */
+    align-items: stretch;
     gap: 5px;
     padding: 4px;
     border: 1px solid transparent;
@@ -4058,6 +4070,7 @@ tr.row-rejected td.sc-cell-goto {
     cursor: pointer;
 }
 .sc-thumbs__num {
+    align-self: center;
     color: var(--text3);
     font-size: 10px;
     font-variant-numeric: tabular-nums;
@@ -4076,6 +4089,7 @@ tr.row-rejected td.sc-cell-goto {
 .sc-thumbs__cell img { display: block; width: 100%; height: auto; }
 .sc-thumbs__cell i {
     display: grid;
+    height: 100%;
     min-height: 54px;
     place-items: center;
     color: var(--text3);
@@ -4100,7 +4114,7 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-thumbs__empty { padding: 16px; color: var(--text3); font-size: 12px; text-align: center; }
 .sc-thumbs-toggle.is-active { border-color: var(--accent, #0f9f8f); color: var(--accent, #0f9f8f); }
-.sc-vector-viewer { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.sc-vector-viewer { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .sc-upload-button { position: relative; overflow: hidden; }
 .sc-upload-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
 .sc-upload-button.is-disabled { opacity: .55; pointer-events: none; }
@@ -4267,14 +4281,16 @@ tr.row-rejected td.sc-cell-goto {
     background: var(--surface, #fff);
 }
 .sc-viewer-toolbar__spacer { flex: 1; }
-.sc-vector-pane-wrap { min-width: 0; border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; }
+.sc-vector-pane-wrap { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.sc-vector-pane-wrap + .sc-vector-pane-wrap { border-left: 1px solid var(--border2); }
 .sc-vector-pane-head { justify-content: space-between; padding: 10px 12px; background: var(--surface, #fff); }
 .sc-vector-pane-head span { color: var(--text3); font-size: 11px; }
 .sc-vector-pane-head strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-page-controls { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
 .sc-vector-pane {
     position: relative;
-    height: min(72vh, 900px);
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
     background: #d8dde5;
     cursor: grab;
@@ -4315,7 +4331,8 @@ tr.row-rejected td.sc-cell-goto {
 .sc-vector-pane__note--error { background: #b91c1c; }
 .sc-continuous-pane {
     position: relative;
-    height: min(72vh, 900px);
+    flex: 1;
+    min-height: 0;
     padding: 8px;
     overflow: auto;
     background: #bfc6d0;
@@ -4343,48 +4360,56 @@ tr.row-rejected td.sc-cell-goto {
     background: #f8fafc;
     font-size: 11px;
 }
+/* Переключатель режима листания — в токенах темы, а не в собственных
+   слейт-серых и янтарных цветах: он лежит поверх листа и в тёмной теме
+   светлая плашка с жёлтой подсветкой выглядела чужеродной. */
 .sc-view-mode-switch {
     position: absolute;
     z-index: 5;
-    bottom: 10px;
+    bottom: 12px;
     left: 50%;
     display: flex;
-    gap: 2px;
-    padding: 2px;
-    border: 1px solid rgba(15, 23, 42, .32);
-    border-radius: 4px;
-    background: rgba(248, 250, 252, .94);
-    box-shadow: 0 2px 8px rgba(15, 23, 42, .22);
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid var(--border2);
+    border-radius: 9px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .16);
     transform: translateX(-50%);
 }
 .sc-view-mode-switch button {
     display: grid;
-    width: 25px;
-    height: 23px;
+    width: 30px;
+    height: 26px;
     padding: 0;
     place-items: center;
     border: 1px solid transparent;
-    border-radius: 2px;
-    color: #475569;
+    border-radius: 6px;
+    color: var(--text3);
     background: transparent;
     cursor: pointer;
+    transition: all .13s;
 }
-.sc-view-mode-switch button:hover { background: #e2e8f0; }
-.sc-view-mode-switch button.is-active { border-color: #c28b18; color: #0f172a; background: #fff7d6; }
-.sc-view-mode-icon { position: relative; display: block; width: 12px; height: 15px; border: 1px solid currentColor; background: #fff; }
-.sc-view-mode-icon--paged::after {
-    position: absolute;
-    right: 1px;
-    bottom: -4px;
-    width: 9px;
-    height: 3px;
-    border-right: 1px solid currentColor;
-    border-bottom: 1px solid currentColor;
-    content: '';
+.sc-view-mode-switch button:hover { color: var(--text); background: var(--card2-bg); }
+.sc-view-mode-switch button.is-active {
+    border-color: var(--teal-border);
+    color: var(--teal);
+    background: var(--teal-light);
+}
+/* Значки рисуются currentColor и без собственного фона: иначе на тёмной теме
+   на кнопке оставался бы белый прямоугольник. */
+.sc-view-mode-icon { display: block; width: 13px; }
+.sc-view-mode-icon--paged {
+    height: 15px;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
 }
 .sc-view-mode-icon--continuous {
-    height: 5px;
-    box-shadow: 0 5px 0 -1px #fff, 0 5px 0 0 currentColor, 0 10px 0 -1px #fff, 0 10px 0 0 currentColor;
+    height: 13px;
+    background:
+        linear-gradient(currentColor 0 0) 0 0 / 100% 3px no-repeat,
+        linear-gradient(currentColor 0 0) 0 5px / 100% 3px no-repeat,
+        linear-gradient(currentColor 0 0) 0 10px / 100% 3px no-repeat;
 }
 .sc-viewer-hint { color: var(--text3); font-size: 11px; }
 .sc-viewer-zoom { min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
@@ -4504,10 +4529,18 @@ tr.row-rejected td.sc-cell-goto {
 
 @media (max-width: 900px) {
     .sc-viewer-layout { flex-direction: column; }
-    .sc-thumbs { flex: 0 0 auto; align-self: stretch; max-height: 40vh; }
+    .sc-thumbs {
+        flex: 0 0 auto;
+        max-height: 40vh;
+        border-right: 0;
+        border-bottom: 1px solid var(--border2);
+    }
     .sc-vector-viewer { grid-template-columns: 1fr; }
+    /* Колонки встали друг под друга — общая высота блока здесь не годится,
+       каждая колонка снова получает свою. */
+    .sc-viewer-layout { height: auto; }
     .sc-vector-pane,
-    .sc-continuous-pane { height: 60vh; }
+    .sc-continuous-pane { flex: 0 0 auto; height: 60vh; }
     .sc-sheet-map__row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; min-height: 46px; }
     .sc-link-picker { align-items: stretch; flex-direction: column; }
     .sc-sheet-map-editor select { min-width: 0; width: 100%; }
