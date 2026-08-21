@@ -254,6 +254,18 @@ def save_document_pairing(
         if len(normalized_left) != len(normalized_right):
             raise ValueError("document_orders_must_have_equal_length")
 
+        # Строка, пустая с ОБЕИХ сторон, не выражает ничего и в интерфейсе
+        # выглядит мусорной «парой» с двумя приглашениями перетащить документ.
+        # Нормализуем на записи, чтобы такие строки нельзя было сохранить в
+        # принципе — независимо от того, какой клиент прислал заказ.
+        rows = [
+            (left, right)
+            for left, right in zip(normalized_left, normalized_right)
+            if left or right
+        ]
+        normalized_left = [left for left, _right in rows]
+        normalized_right = [right for _left, right in rows]
+
         def validate_order(order: list[str | None], available: set[str], side: str) -> None:
             selected = [path for path in order if path]
             if len(selected) != len(set(selected)):

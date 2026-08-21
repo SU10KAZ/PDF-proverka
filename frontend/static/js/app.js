@@ -12137,6 +12137,36 @@ const app = createApp({
             return order;
         }
 
+        // Строка, пустая с ОБЕИХ сторон, не выражает ничего: перенос документа
+        // сделан обменом местами, поэтому «пустая пара» не нужна даже как цель
+        // перетаскивания. Дырку на ОДНОЙ стороне трогать нельзя — это документ
+        // без пары, и он обязан стоять напротив пустого места.
+        //
+        // Убираем именно из данных, а не из вывода: обработчики перетаскивания
+        // адресуются как scPairRows.value[row.index], и фильтр отображения
+        // разошёлся бы с этой адресацией.
+        function scPackDocumentRows(left, right) {
+            const length = Math.max(left.length, right.length);
+            const packed = {left: [], right: []};
+            for (let index = 0; index < length; index += 1) {
+                const leftPdf = left[index] || null;
+                const rightPdf = right[index] || null;
+                if (!leftPdf && !rightPdf) continue;
+                packed.left.push(leftPdf);
+                packed.right.push(rightPdf);
+            }
+            return packed;
+        }
+
+        function scCompactDocumentOrder() {
+            const packed = scPackDocumentRows(scDocumentOrder.left, scDocumentOrder.right);
+            if (packed.left.length === scDocumentOrder.left.length
+                    && packed.right.length === scDocumentOrder.right.length) return false;
+            scDocumentOrder.left = packed.left;
+            scDocumentOrder.right = packed.right;
+            return true;
+        }
+
         function scInitializeDocumentOrder(useSaved = true) {
             let saved = {};
             let loadedFromServer = false;
@@ -12153,13 +12183,12 @@ const app = createApp({
             if (useSaved && !loadedFromServer && storageKey) {
                 try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (_) { saved = {}; }
             }
-            const left = scReconcileDocumentOrder(saved.left, scDocumentsLeft.value);
-            const right = scReconcileDocumentOrder(saved.right, scDocumentsRight.value);
-            const length = Math.max(left.length, right.length);
-            while (left.length < length) left.push(null);
-            while (right.length < length) right.push(null);
-            scDocumentOrder.left = left;
-            scDocumentOrder.right = right;
+            const packed = scPackDocumentRows(
+                scReconcileDocumentOrder(saved.left, scDocumentsLeft.value),
+                scReconcileDocumentOrder(saved.right, scDocumentsRight.value),
+            );
+            scDocumentOrder.left = packed.left;
+            scDocumentOrder.right = packed.right;
             scPendingPairSelection.value = null;
             scRestoreConfirmedDocumentPairs(useSaved ? saved.confirmedPairs : []);
             scPairingDirty.value = false;
@@ -12240,6 +12269,7 @@ const app = createApp({
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scDocumentOrder.left = [...(data.left_order || [])];
                 scDocumentOrder.right = [...(data.right_order || [])];
+                scCompactDocumentOrder();
                 scPendingPairSelection.value = null;
                 scRestoreConfirmedDocumentPairs(data.confirmed_pairs || []);
                 scFinishDocumentDrag();
@@ -12289,6 +12319,7 @@ const app = createApp({
             scRemoveConfirmedPairsForPaths([values[dragging.index], values[index]]);
             [values[dragging.index], values[index]] = [values[index], values[dragging.index]];
             scDocumentOrder[side] = values;
+            scCompactDocumentOrder();   // обмен мог оставить строку пустой с обеих сторон
             scPersistDocumentOrder();
             scFinishDocumentDrag();
         }

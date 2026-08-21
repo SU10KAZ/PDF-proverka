@@ -89,6 +89,18 @@ describe('documentation comparison shell', () => {
     expect(app).toContain("method: 'PUT'");
   });
 
+  it('drops pair rows that are empty on both sides, keeping one-sided holes', () => {
+    // чистим ДАННЫЕ, а не вывод: перетаскивание адресуется scPairRows.value[row.index],
+    // и фильтр отображения разошёлся бы с этой адресацией
+    expect(app).toContain('function scPackDocumentRows(left, right)');
+    expect(app).toContain('function scCompactDocumentOrder()');
+    expect(app).toContain('if (!leftPdf && !rightPdf) continue;');
+    expect(app).toContain('scCompactDocumentOrder();   // обмен мог оставить строку пустой с обеих сторон');
+    // прежнее выравнивание длин добивало массивы null — так мусорные строки и появлялись
+    expect(app).not.toContain('while (left.length < length) left.push(null);');
+    expect(app).not.toContain('while (right.length < length) right.push(null);');
+  });
+
   it('manages every PDF pair in its own draggable row', () => {
     expect(html).not.toContain('id="sc-left-pdf"');
     expect(html).not.toContain('id="sc-right-pdf"');

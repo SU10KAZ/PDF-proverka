@@ -312,3 +312,51 @@ def test_page_svg_strips_active_content():
     # обычный чертёж обязан пройти насквозь байт в байт
     drawing = '<svg><path d="M0 0" clip-path="url(#scl_clip_1)"/><use href="#scl_font_1_2"/></svg>'
     assert harden(drawing) == drawing
+
+
+def test_document_pairing_drops_rows_empty_on_both_sides(tmp_path, monkeypatch):
+    """Строка без документа с ОБЕИХ сторон — мусор, а не «пара».
+
+    Дырка на ОДНОЙ стороне, наоборот, осмысленна: это документ, которому пока
+    не нашли пары, и он обязан стоять напротив пустого места.
+    """
+    stage_1 = tmp_path / "object" / "comparison" / "stage_1"
+    stage_2 = tmp_path / "object" / "comparison" / "stage_2"
+    stage_1.mkdir(parents=True)
+    stage_2.mkdir(parents=True)
+    left_pdf = stage_1 / "project.pdf"
+    right_pdf = stage_2 / "working.pdf"
+    left_pdf.write_bytes(_pdf_bytes("stage 1"))
+    right_pdf.write_bytes(_pdf_bytes("stage 2"))
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison-runtime"))
+    monkeypatch.setenv("AUDIT_STAGE_COMPARISON_ROOTS", str(tmp_path))
+
+    client = TestClient(_app())
+    session = client.post(
+        "/api/stage-comparison/sessions",
+        json={"stage_a_path": str(stage_1), "stage_b_path": str(stage_2)},
+    ).json()
+
+    saved = client.put(
+        f"/api/stage-comparison/sessions/{session['id']}/document-pairing",
+        json={
+            # строка 1 — только П, строка 2 — только РД, строка 3 — пустая с обеих
+            "left_order": [str(left_pdf), None, None],
+            "right_order": [None, str(right_pdf), None],
+            "confirmed_pairs": [],
+        },
+    )
+
+    assert saved.status_code == 200
+    payload = saved.json()
+    assert payload["left_order"] == [str(left_pdf), None]
+    assert payload["right_order"] == [None, str(right_pdf)]
+
+    # и после перезагрузки сессии мусорной строки тоже нет
+    reopened = client.get(f"/api/stage-comparison/sessions/{session['id']}").json()
+    pairing = reopened["document_pairing"]
+    assert not [
+        index for index, (left, right) in enumerate(
+            zip(pairing["left_order"], pairing["right_order"])
+        ) if not left and not right
+    ]
