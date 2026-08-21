@@ -1038,10 +1038,24 @@ def compare_pdf_text_lines(
     matches.sort(key=lambda item: (
         item["left_page"], item["right_page"], item["id"]
     ))
+    remaining_lines = {
+        "left": [
+            item for page in sorted(left_by_page)
+            for item in left_by_page[page] if item["id"] not in used_left
+        ],
+        "right": [
+            item for page in sorted(right_by_page)
+            for item in right_by_page[page] if item["id"] not in used_right
+        ],
+    }
     total_chars = sum(int(item["total_chars"]) for item in metrics)
     matched_chars = sum(int(item["matched_chars"]) for item in metrics)
     return {
         "matches": matches,
+        "excluded_line_ids": {
+            "left": sorted(used_left), "right": sorted(used_right),
+        },
+        "remaining_lines": remaining_lines,
         "link_metrics": metrics,
         "summary": {
             "matches": len(matches),
@@ -1277,6 +1291,167 @@ def prefer_exact_block_overlays(
     return result
 
 
+def _point_inside_overlay(x: float, y: float, overlay: dict[str, Any]) -> bool:
+    left = float(overlay.get("x") or 0)
+    top = float(overlay.get("y") or 0)
+    width = float(overlay.get("width") or 0)
+    height = float(overlay.get("height") or 0)
+    if not (left <= x <= left + width and top <= y <= top + height):
+        return False
+    polygon = overlay.get("polygon") or []
+    if len(polygon) < 3 or width <= 0 or height <= 0:
+        return True
+    local_x = (x - left) / width
+    local_y = (y - top) / height
+    inside = False
+    previous = polygon[-1]
+    for current in polygon:
+        x1, y1 = float(previous[0]), float(previous[1])
+        x2, y2 = float(current[0]), float(current[1])
+        crosses = (y1 > local_y) != (y2 > local_y)
+        if crosses:
+            boundary_x = (x2 - x1) * (local_y - y1) / (y2 - y1) + x1
+            if local_x < boundary_x:
+                inside = not inside
+        previous = current
+    return inside
+
+
+def build_text_exclusion_contract(
+    *, pair_id: str, source_signature: str, generated_at: str,
+    structured_comparison: dict[str, Any], pdf_comparison: dict[str, Any],
+    overlays: dict[str, dict[str, list[dict[str, Any]]]],
+) -> dict[str, Any]:
+    """Persist the mandatory subtraction layer for every downstream stage."""
+    masks: dict[str, dict[str, list[dict[str, Any]]]] = {"left": {}, "right": {}}
+    for side in ("left", "right"):
+        for page, items in overlays.get(side, {}).items():
+            masks[side][str(page)] = [{
+                key: item[key] for key in (
+                    "id", "x", "y", "width", "height", "polygon", "status",
+                    "evidence", "counterpart_page",
+                ) if key in item
+            } for item in items]
+
+    downstream_lines: dict[str, list[dict[str, Any]]] = {"left": [], "right": []}
+    for side in ("left", "right"):
+        for line in (pdf_comparison.get("remaining_lines") or {}).get(side, []):
+            page = str(int(line["pdf_page"]))
+            page_masks = masks[side].get(page) or []
+            boxes = line.get("bboxes") or []
+            covered = bool(boxes) and all(any(
+                _point_inside_overlay(
+                    float(box["x"]) + float(box["width"]) / 2,
+                    float(box["y"]) + float(box["height"]) / 2,
+                    mask,
+                )
+                for mask in page_masks
+            ) for box in boxes)
+            if covered:
+                continue
+            downstream_lines[side].append({
+                "id": line["id"],
+                "pdf_page": int(line["pdf_page"]),
+                "text": line["text"],
+                "canonical_text": line["canonical_text"],
+                "bboxes": boxes,
+            })
+
+    excluded_fragment_ids = {
+        "left": sorted(str(item) for item in structured_comparison.get("used_left") or []),
+        "right": sorted(str(item) for item in structured_comparison.get("used_right") or []),
+    }
+    remaining_fragment_ids = {
+        side: sorted(str(item) for item in (
+            structured_comparison.get("remaining") or {}
+        ).get(side, []))
+        for side in ("left", "right")
+    }
+    mask_count = sum(
+        len(items) for side in masks.values() for items in side.values()
+    )
+    payload = {
+        "version": 1,
+        "kind": "stage_comparison_text_exclusions",
+        "pair_id": pair_id,
+        "source_signature": source_signature,
+        "generated_at": generated_at,
+        "policy": {
+            "required_before_downstream_comparison": True,
+            "matched_text_must_not_participate": True,
+            "coordinate_space": "normalized_page_top_left",
+            "applies_to": ["text", "raster", "vector_graphics"],
+        },
+        "excluded_fragment_ids": excluded_fragment_ids,
+        "excluded_pdf_line_ids": pdf_comparison.get("excluded_line_ids") or {
+            "left": [], "right": [],
+        },
+        "exclusion_masks": masks,
+        "downstream_text_input": {
+            "mode": "unmatched_pdf_text_lines",
+            "left": downstream_lines["left"],
+            "right": downstream_lines["right"],
+        },
+        "fallback_remaining_fragment_ids": remaining_fragment_ids,
+        "counts": {
+            "masks": mask_count,
+            "excluded_fragments": sum(map(len, excluded_fragment_ids.values())),
+            "excluded_pdf_lines": sum(len(items) for items in (
+                pdf_comparison.get("excluded_line_ids") or {}
+            ).values()),
+            "downstream_left_lines": len(downstream_lines["left"]),
+            "downstream_right_lines": len(downstream_lines["right"]),
+        },
+    }
+    encoded = json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
+    payload["contract_sha256"] = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    return payload
+
+
+def text_exclusion_contract_is_valid(payload: dict[str, Any] | None) -> bool:
+    if (
+        not isinstance(payload, dict)
+        or payload.get("version") != 1
+        or payload.get("kind") != "stage_comparison_text_exclusions"
+        or not (payload.get("policy") or {}).get(
+            "required_before_downstream_comparison"
+        )
+        or not (payload.get("policy") or {}).get(
+            "matched_text_must_not_participate"
+        )
+    ):
+        return False
+    expected = str(payload.get("contract_sha256") or "")
+    contract = {
+        key: value
+        for key, value in payload.items()
+        if key not in {"contract_sha256", "stale", "valid"}
+    }
+    encoded = json.dumps(
+        contract, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
+    actual = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    return bool(expected) and expected == actual
+
+
+def public_exclusion_view(
+    payload: dict[str, Any] | None, *, stale: bool = False,
+) -> dict[str, Any] | None:
+    if (
+        not isinstance(payload, dict)
+        or payload.get("version") != 1
+        or payload.get("kind") != "stage_comparison_text_exclusions"
+    ):
+        return None
+    return {
+        **payload,
+        "stale": bool(stale),
+        "valid": text_exclusion_contract_is_valid(payload),
+    }
+
+
 def public_view(payload: dict[str, Any] | None, *, stale: bool = False) -> dict[str, Any] | None:
     if not isinstance(payload, dict) or payload.get("version") != 1:
         return None
@@ -1287,6 +1462,7 @@ def public_view(payload: dict[str, Any] | None, *, stale: bool = False) -> dict[
         "source_signature": payload.get("source_signature"),
         "stale": bool(stale),
         "summary": payload.get("summary") or {},
+        "downstream_exclusions": payload.get("downstream_exclusions") or {},
         "link_metrics": payload.get("link_metrics") or [],
         "sheet_link_hints": payload.get("sheet_link_hints") or [],
         "overlays": payload.get("overlays") or {"left": {}, "right": {}},
@@ -1298,5 +1474,7 @@ __all__ = [
     "extract_document_fragments", "compare_fragments", "build_metrics_and_hints",
     "build_overlays", "compare_pdf_text_lines", "compare_exact_text_blocks",
     "apply_pdf_line_metrics", "prefer_pdf_line_overlays",
-    "prefer_exact_block_overlays", "public_view",
+    "prefer_exact_block_overlays", "build_text_exclusion_contract",
+    "text_exclusion_contract_is_valid",
+    "public_exclusion_view", "public_view",
 ]

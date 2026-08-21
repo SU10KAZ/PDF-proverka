@@ -43,6 +43,44 @@ def test_shell_imports_and_object_list_opens(monkeypatch):
     assert store.SHELL_KIND == "stage_comparison_shell"
 
 
+def test_text_exclusion_endpoint_and_downstream_gate(monkeypatch):
+    current = {
+        "version": 1,
+        "kind": "stage_comparison_text_exclusions",
+        "pair_id": "pair",
+        "stale": False,
+        "valid": True,
+        "policy": {"required_before_downstream_comparison": True},
+    }
+    monkeypatch.setattr(store, "get_text_exclusions_state", lambda *_: current)
+    response = TestClient(_app()).get(
+        "/api/stage-comparison/sessions/session/pairs/pair/text-exclusions"
+    )
+    assert response.status_code == 200
+    assert response.json() == current
+    assert store.require_text_exclusions_for_downstream("session", "pair") == current
+
+    monkeypatch.setattr(
+        store, "get_text_exclusions_state", lambda *_: {**current, "stale": True}
+    )
+    try:
+        store.require_text_exclusions_for_downstream("session", "pair")
+    except ValueError as exc:
+        assert str(exc) == "text_exclusions_stale"
+    else:
+        raise AssertionError("stale exclusions must block every downstream stage")
+
+    monkeypatch.setattr(
+        store, "get_text_exclusions_state", lambda *_: {**current, "valid": False}
+    )
+    try:
+        store.require_text_exclusions_for_downstream("session", "pair")
+    except ValueError as exc:
+        assert str(exc) == "text_exclusions_invalid"
+    else:
+        raise AssertionError("invalid exclusions must block every downstream stage")
+
+
 def test_pdf_list_pair_and_raster_page(tmp_path, monkeypatch):
     comparison_root = tmp_path / "comparison-runtime"
     stage_1 = tmp_path / "object" / "comparison" / "stage_1"

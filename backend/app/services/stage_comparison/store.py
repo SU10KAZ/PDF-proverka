@@ -576,7 +576,7 @@ def save_sheet_links(
 def _text_source_signature(pair: dict, links: dict) -> str:
     """Fingerprint all read-only inputs that influence Stage 2."""
     source: dict[str, Any] = {
-        "algorithm": "deterministic_exact_text_v1_12",
+        "algorithm": "deterministic_exact_text_v1_13",
         "links": [
             {
                 "id": link.get("id"),
@@ -632,6 +632,31 @@ def get_text_comparison_state(session_id: str, pair_id: str) -> dict | None:
     )
 
 
+def get_text_exclusions_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.text_exclusions_path(session_id, pair_id))
+    if not isinstance(payload, dict):
+        return None
+    current_signature = _text_source_signature(pair, _load_sheet_links(session_id, pair_id))
+    return text_comparison.public_exclusion_view(
+        payload, stale=payload.get("source_signature") != current_signature
+    )
+
+
+def require_text_exclusions_for_downstream(session_id: str, pair_id: str) -> dict:
+    """Mandatory gate for every later document-comparison stage."""
+    payload = get_text_exclusions_state(session_id, pair_id)
+    if not payload:
+        raise ValueError("text_exclusions_required")
+    if payload.get("stale"):
+        raise ValueError("text_exclusions_stale")
+    if not payload.get("valid"):
+        raise ValueError("text_exclusions_invalid")
+    return payload
+
+
 def run_text_comparison(session_id: str, pair_id: str) -> dict:
     """Build the deterministic text overlay without mutating PDFs or links."""
     with _lock:
@@ -644,8 +669,19 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
             raise ValueError("accepted_sheet_links_required")
         signature = _text_source_signature(pair, links_payload)
         existing = _read_json(paths_mod.text_comparison_path(session_id, pair_id))
+        existing_exclusions = _read_json(
+            paths_mod.text_exclusions_path(session_id, pair_id)
+        )
         # Identical inputs return the byte-for-byte same deterministic result.
-        if isinstance(existing, dict) and existing.get("version") == 1 and existing.get("source_signature") == signature:
+        if (
+            isinstance(existing, dict)
+            and existing.get("version") == 1
+            and existing.get("source_signature") == signature
+            and isinstance(existing_exclusions, dict)
+            and existing_exclusions.get("version") == 1
+            and existing_exclusions.get("source_signature") == signature
+            and text_comparison.text_exclusion_contract_is_valid(existing_exclusions)
+        ):
             return text_comparison.public_view(existing, stale=False) or {}
 
         suggestions = _load_sheet_suggestions(session_id, pair_id) or {}
@@ -733,11 +769,20 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
             overlays, block_overlays
         )
         summary["exact_block_matches"] = len(block_matches)
+        generated_at = _utc_now()
+        exclusion_contract = text_comparison.build_text_exclusion_contract(
+            pair_id=pair_id,
+            source_signature=signature,
+            generated_at=generated_at,
+            structured_comparison=comparison,
+            pdf_comparison=pdf_line_comparison,
+            overlays=overlays,
+        )
         payload = {
             "version": 1,
             "pair_id": pair_id,
-            "algorithm": "deterministic_exact_text_v1_12",
-            "generated_at": _utc_now(),
+            "algorithm": "deterministic_exact_text_v1_13",
+            "generated_at": generated_at,
             "source_signature": signature,
             "fragments": fragments,
             "matches": comparison["matches"],
@@ -747,6 +792,13 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
             "link_metrics": metrics,
             "sheet_link_hints": hints,
             "summary": summary,
+            "downstream_exclusions": {
+                "required": True,
+                "artifact": "text_exclusions.json",
+                "version": exclusion_contract["version"],
+                "contract_sha256": exclusion_contract["contract_sha256"],
+                "counts": exclusion_contract["counts"],
+            },
             "constraints": {
                 "llm": False,
                 "vision": False,
@@ -756,6 +808,10 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
                 "sheet_links_modified_automatically": False,
             },
         }
+        _atomic_write_json(
+            paths_mod.text_exclusions_path(session_id, pair_id),
+            exclusion_contract,
+        )
         _atomic_write_json(paths_mod.text_comparison_path(session_id, pair_id), payload)
         return text_comparison.public_view(payload, stale=False) or {}
 
@@ -1362,6 +1418,8 @@ __all__ = [
     "run_sheet_matching",
     "save_sheet_links",
     "get_text_comparison_state",
+    "get_text_exclusions_state",
+    "require_text_exclusions_for_downstream",
     "run_text_comparison",
     "render_pdf_page_svg",
     "page_svg_payload",

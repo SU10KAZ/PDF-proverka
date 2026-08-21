@@ -402,3 +402,58 @@ def test_exact_block_overlay_replaces_only_masks_inside_block() -> None:
     }
     result = tc.prefer_exact_block_overlays(current, blocks)
     assert {item["id"] for item in result["left"]["1"]} == {"block", "outside"}
+
+
+def test_exclusion_contract_contains_only_unmasked_downstream_text() -> None:
+    structured = {
+        "used_left": {"left_matched"},
+        "used_right": {"right_matched"},
+        "remaining": {"left": ["left_open"], "right": ["right_open"]},
+    }
+    def line(line_id: str, x: float) -> dict:
+        return {
+            "id": line_id,
+            "pdf_page": 1,
+            "text": line_id,
+            "canonical_text": line_id,
+            "bboxes": [{"x": x, "y": 0.2, "width": 0.1, "height": 0.03}],
+        }
+    pdf_comparison = {
+        "excluded_line_ids": {"left": ["same_l"], "right": ["same_r"]},
+        "remaining_lines": {
+            "left": [line("covered", 0.2), line("left_difference", 0.8)],
+            "right": [line("right_difference", 0.8)],
+        },
+    }
+    overlays = {
+        "left": {"1": [{
+            "id": "mask", "x": 0.1, "y": 0.1, "width": 0.5, "height": 0.5,
+            "status": "same_on_linked_sheet", "evidence": "pdf_text_line",
+        }]},
+        "right": {},
+    }
+    contract = tc.build_text_exclusion_contract(
+        pair_id="pair", source_signature="signature", generated_at="now",
+        structured_comparison=structured, pdf_comparison=pdf_comparison,
+        overlays=overlays,
+    )
+    assert contract["policy"]["matched_text_must_not_participate"] is True
+    assert contract["excluded_fragment_ids"] == {
+        "left": ["left_matched"], "right": ["right_matched"]
+    }
+    assert [
+        item["id"] for item in contract["downstream_text_input"]["left"]
+    ] == ["left_difference"]
+    assert contract["counts"] == {
+        "masks": 1,
+        "excluded_fragments": 2,
+        "excluded_pdf_lines": 2,
+        "downstream_left_lines": 1,
+        "downstream_right_lines": 1,
+    }
+    assert len(contract["contract_sha256"]) == 64
+    public = tc.public_exclusion_view(contract, stale=True)
+    assert public["stale"] is True
+    assert public["valid"] is True
+    contract["downstream_text_input"]["left"][0]["text"] = "tampered"
+    assert tc.public_exclusion_view(contract)["valid"] is False

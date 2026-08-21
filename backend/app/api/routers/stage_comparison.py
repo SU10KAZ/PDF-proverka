@@ -241,6 +241,17 @@ async def get_text_comparison(session_id: str, pair_id: str):
     return payload or {"version": 1, "pair_id": pair_id, "status": "not_started"}
 
 
+@router.get("/sessions/{session_id}/pairs/{pair_id}/text-exclusions")
+async def get_text_exclusions(session_id: str, pair_id: str):
+    try:
+        payload = await run_in_threadpool(
+            store.get_text_exclusions_state, session_id, pair_id
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return payload or {"version": 1, "pair_id": pair_id, "status": "not_started"}
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-thumb")
 async def get_page_thumb(
     request: Request,
