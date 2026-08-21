@@ -928,6 +928,193 @@ def build_overlays(matches: list[dict[str, Any]], labels: dict[str, dict[int, st
     return overlays
 
 
+def _pdf_line_fragments(
+    document: Any, pages: set[int], side: str, fitz: Any,
+) -> dict[int, list[dict[str, Any]]]:
+    """Build exact visual-line units directly from a vector PDF text layer."""
+    output: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    for pdf_page in sorted(pages):
+        if pdf_page < 1 or pdf_page > document.page_count:
+            continue
+        page = document[pdf_page - 1]
+        text_page = page.get_textpage()
+        words = page.get_text("words", sort=True, textpage=text_page)
+        lines, _ = _pdf_text_lines(page, words, fitz)
+        for order, (rectangle, text) in enumerate(lines):
+            canonical = canonicalize_text(text)
+            if len(canonical) < 4 or not any(char.isalnum() for char in canonical):
+                continue
+            box = _normalized_bbox(page, rectangle, fitz)
+            if not box:
+                continue
+            identity = f"{side}|{pdf_page}|{order}|{canonical}"
+            output[pdf_page].append({
+                "id": "pdfline_" + hashlib.sha1(identity.encode("utf-8")).hexdigest()[:16],
+                "stage": "stage_1" if side == "left" else "stage_2",
+                "pdf_page": pdf_page,
+                "text": text,
+                "canonical_text": canonical,
+                "source_kind": "pdf_line",
+                "order": order,
+                "bboxes": [box],
+            })
+    return output
+
+
+def compare_pdf_text_lines(
+    left_pdf_path: Path, right_pdf_path: Path, links: list[dict[str, Any]], fitz: Any,
+) -> dict[str, Any]:
+    """Prove unchanged visual lines without depending on Markdown segmentation."""
+    normalized_links = sorted(links, key=lambda item: (
+        min(item.get("left_pages") or [10**9]),
+        min(item.get("right_pages") or [10**9]),
+        str(item.get("id") or ""),
+    ))
+    left_pages = {
+        int(page) for link in normalized_links for page in link.get("left_pages") or []
+    }
+    right_pages = {
+        int(page) for link in normalized_links for page in link.get("right_pages") or []
+    }
+    with fitz.open(str(left_pdf_path)) as left_document, fitz.open(
+        str(right_pdf_path)
+    ) as right_document:
+        left_by_page = _pdf_line_fragments(left_document, left_pages, "left", fitz)
+        right_by_page = _pdf_line_fragments(right_document, right_pages, "right", fitz)
+
+    matches: list[dict[str, Any]] = []
+    metrics: list[dict[str, Any]] = []
+    used_left: set[str] = set()
+    used_right: set[str] = set()
+    for link in normalized_links:
+        left_group = [
+            fragment
+            for page in link.get("left_pages") or []
+            for fragment in left_by_page.get(int(page), [])
+            if fragment["id"] not in used_left
+        ]
+        right_group = [
+            fragment
+            for page in link.get("right_pages") or []
+            for fragment in right_by_page.get(int(page), [])
+            if fragment["id"] not in used_right
+        ]
+        left_exact: dict[str, list[dict]] = defaultdict(list)
+        right_exact: dict[str, list[dict]] = defaultdict(list)
+        for fragment in left_group:
+            left_exact[str(fragment["canonical_text"])].append(fragment)
+        for fragment in right_group:
+            right_exact[str(fragment["canonical_text"])].append(fragment)
+        match_start = len(matches)
+        for canonical in sorted(set(left_exact) & set(right_exact)):
+            for left, right in _safe_exact_pairs(
+                left_exact[canonical], right_exact[canonical]
+            ):
+                used_left.add(str(left["id"]))
+                used_right.add(str(right["id"]))
+                matches.append(_match_record(
+                    left, right, "same_on_linked_sheet", link,
+                    canonical_text=canonical, evidence="pdf_text_line",
+                ))
+        link_matches = matches[match_start:]
+        left_chars = sum(len(str(item["canonical_text"])) for item in left_group)
+        right_chars = sum(len(str(item["canonical_text"])) for item in right_group)
+        matched_chars = sum(
+            2 * len(str(item["canonical_text"])) for item in link_matches
+        )
+        total_chars = left_chars + right_chars
+        metrics.append({
+            "link_id": link.get("id"),
+            "left_text_chars": left_chars,
+            "right_text_chars": right_chars,
+            "matched_chars": matched_chars,
+            "total_chars": total_chars,
+            "matches": len(link_matches),
+            "linked_percent": round(100 * matched_chars / total_chars, 1)
+            if total_chars else 0,
+        })
+    matches.sort(key=lambda item: (
+        item["left_page"], item["right_page"], item["id"]
+    ))
+    total_chars = sum(int(item["total_chars"]) for item in metrics)
+    matched_chars = sum(int(item["matched_chars"]) for item in metrics)
+    return {
+        "matches": matches,
+        "link_metrics": metrics,
+        "summary": {
+            "matches": len(matches),
+            "matched_chars": matched_chars,
+            "total_chars": total_chars,
+            "linked_percent": round(100 * matched_chars / total_chars, 1)
+            if total_chars else 0,
+        },
+    }
+
+
+def apply_pdf_line_metrics(
+    metrics: list[dict[str, Any]], summary: dict[str, Any],
+    pdf_comparison: dict[str, Any],
+) -> None:
+    """Make UI percentages describe the same PDF-line layer it displays."""
+    pdf_by_link = {
+        str(item.get("link_id") or ""): item
+        for item in pdf_comparison.get("link_metrics") or []
+    }
+    for metric in metrics:
+        direct = pdf_by_link.get(str(metric.get("link_id") or ""))
+        if not direct or not int(direct.get("total_chars") or 0):
+            continue
+        linked = float(direct.get("linked_percent") or 0)
+        elsewhere = min(
+            float((metric.get("combined") or {}).get("elsewhere_percent") or 0),
+            max(0.0, 100.0 - linked),
+        )
+        metric["pdf_text_layer"] = direct
+        metric["combined"] = {
+            "linked_percent": round(linked, 1),
+            "elsewhere_percent": round(elsewhere, 1),
+            "remaining_percent": round(max(0.0, 100.0 - linked - elsewhere), 1),
+        }
+    direct_summary = pdf_comparison.get("summary") or {}
+    if int(direct_summary.get("total_chars") or 0):
+        linked = float(direct_summary.get("linked_percent") or 0)
+        elsewhere = min(
+            float(summary.get("found_elsewhere_percent") or 0),
+            max(0.0, 100.0 - linked),
+        )
+        summary["linked_percent"] = round(linked, 1)
+        summary["found_elsewhere_percent"] = round(elsewhere, 1)
+        summary["remaining_percent"] = round(
+            max(0.0, 100.0 - linked - elsewhere), 1
+        )
+        summary["pdf_line_matches"] = int(direct_summary.get("matches") or 0)
+
+
+def prefer_pdf_line_overlays(
+    structured: dict[str, dict[str, list[dict[str, Any]]]],
+    pdf_lines: dict[str, dict[str, list[dict[str, Any]]]],
+) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    """Use full PDF-line masks where available and retain elsewhere markers."""
+    result: dict[str, dict[str, list[dict[str, Any]]]] = {"left": {}, "right": {}}
+    for side in ("left", "right"):
+        pages = set(structured.get(side, {})) | set(pdf_lines.get(side, {}))
+        for page in pages:
+            direct = list(pdf_lines.get(side, {}).get(page) or [])
+            existing = list(structured.get(side, {}).get(page) or [])
+            if direct:
+                existing = [
+                    item for item in existing
+                    if item.get("status") == "found_on_other_sheet"
+                ]
+                combined = existing + direct
+            else:
+                combined = existing
+            result[side][page] = sorted(
+                combined, key=lambda item: (item["y"], item["x"], item["id"])
+            )
+    return result
+
+
 def public_view(payload: dict[str, Any] | None, *, stale: bool = False) -> dict[str, Any] | None:
     if not isinstance(payload, dict) or payload.get("version") != 1:
         return None
@@ -947,5 +1134,6 @@ def public_view(payload: dict[str, Any] | None, *, stale: bool = False) -> dict[
 __all__ = [
     "canonicalize_text", "parse_markdown_fragments", "attach_pdf_locations",
     "extract_document_fragments", "compare_fragments", "build_metrics_and_hints",
-    "build_overlays", "public_view",
+    "build_overlays", "compare_pdf_text_lines", "apply_pdf_line_metrics",
+    "prefer_pdf_line_overlays", "public_view",
 ]

@@ -576,7 +576,7 @@ def save_sheet_links(
 def _text_source_signature(pair: dict, links: dict) -> str:
     """Fingerprint all read-only inputs that influence Stage 2."""
     source: dict[str, Any] = {
-        "algorithm": "deterministic_exact_text_v1_8",
+        "algorithm": "deterministic_exact_text_v1_11",
         "links": [
             {
                 "id": link.get("id"),
@@ -688,17 +688,46 @@ def run_text_comparison(session_id: str, pair_id: str) -> dict:
             labels["left"],
             labels["right"],
         )
+        pdf_line_comparison = text_comparison.compare_pdf_text_lines(
+            Path(str((pair.get("left") or {})["pdf_path"])),
+            Path(str((pair.get("right") or {})["pdf_path"])),
+            links,
+            fitz,
+        )
+        text_comparison.apply_pdf_line_metrics(
+            metrics, summary, pdf_line_comparison
+        )
+        pdf_metrics_by_link = {
+            str(item.get("link_id") or ""): item
+            for item in pdf_line_comparison.get("link_metrics") or []
+        }
+        hints = [
+            hint for hint in hints
+            if float(pdf_metrics_by_link.get(
+                str(hint.get("link_id") or ""), {}
+            ).get("linked_percent") or 0) < 80.0
+        ]
+        summary["hints"] = len(hints)
+        structured_overlays = text_comparison.build_overlays(
+            comparison["matches"], labels
+        )
+        pdf_line_overlays = text_comparison.build_overlays(
+            pdf_line_comparison["matches"], labels
+        )
+        overlays = text_comparison.prefer_pdf_line_overlays(
+            structured_overlays, pdf_line_overlays
+        )
         payload = {
             "version": 1,
             "pair_id": pair_id,
-            "algorithm": "deterministic_exact_text_v1_8",
+            "algorithm": "deterministic_exact_text_v1_11",
             "generated_at": _utc_now(),
             "source_signature": signature,
             "fragments": fragments,
             "matches": comparison["matches"],
             "remaining": comparison["remaining"],
             "remaining_status": "remaining_for_comparison",
-            "overlays": text_comparison.build_overlays(comparison["matches"], labels),
+            "overlays": overlays,
             "link_metrics": metrics,
             "sheet_link_hints": hints,
             "summary": summary,

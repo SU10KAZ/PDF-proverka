@@ -257,3 +257,77 @@ def test_pdf_text_location_is_read_only(tmp_path: Path) -> None:
         numbered_fragment["text"]
     )
     assert before == after
+
+
+def test_pdf_line_comparison_masks_only_exact_visual_lines(tmp_path: Path) -> None:
+    paths = {}
+    for side, changed in (("left", "Площадь 15,2 м2"), ("right", "Площадь 15,8 м2")):
+        path = tmp_path / f"{side}.pdf"
+        document = fitz.open()
+        page = document.new_page()
+        page.insert_text((72, 100), "Exact visual line in both documents")
+        page.insert_text((72, 130), changed)
+        document.save(path)
+        document.close()
+        paths[side] = path
+    comparison = tc.compare_pdf_text_lines(
+        paths["left"], paths["right"], [_link()], fitz
+    )
+    matches = comparison["matches"]
+    assert len(matches) == 1
+    assert matches[0]["evidence"] == "pdf_text_line"
+    assert matches[0]["left_bboxes"] and matches[0]["right_bboxes"]
+    assert "exact visual line" in matches[0]["canonical_text"]
+    assert comparison["summary"]["linked_percent"] < 100
+
+
+def test_pdf_line_metrics_drive_the_displayed_percentages() -> None:
+    metrics = [{
+        "link_id": "manual_link",
+        "combined": {
+            "linked_percent": 12.5,
+            "elsewhere_percent": 4.1,
+            "remaining_percent": 83.4,
+        },
+    }]
+    summary = {
+        "linked_percent": 12.5,
+        "found_elsewhere_percent": 4.1,
+        "remaining_percent": 83.4,
+    }
+    pdf_comparison = {
+        "link_metrics": [{
+            "link_id": "manual_link", "total_chars": 1000,
+            "matched_chars": 998, "matches": 20, "linked_percent": 99.8,
+        }],
+        "summary": {
+            "total_chars": 1000, "matched_chars": 998,
+            "matches": 20, "linked_percent": 99.8,
+        },
+    }
+    tc.apply_pdf_line_metrics(metrics, summary, pdf_comparison)
+    assert metrics[0]["combined"] == {
+        "linked_percent": 99.8,
+        "elsewhere_percent": 0.2,
+        "remaining_percent": 0.0,
+    }
+    assert summary["linked_percent"] == 99.8
+    assert summary["remaining_percent"] == 0.0
+
+
+def test_pdf_line_overlays_replace_fragment_masks_but_keep_elsewhere_marker() -> None:
+    structured = {
+        "left": {"1": [
+            {"id": "fragment", "x": 0.1, "y": 0.1, "status": "same_on_linked_sheet"},
+            {"id": "elsewhere", "x": 0.2, "y": 0.2, "status": "found_on_other_sheet"},
+        ]},
+        "right": {},
+    }
+    pdf_lines = {
+        "left": {"1": [
+            {"id": "line", "x": 0.1, "y": 0.1, "status": "same_on_linked_sheet"},
+        ]},
+        "right": {},
+    }
+    result = tc.prefer_pdf_line_overlays(structured, pdf_lines)
+    assert [item["id"] for item in result["left"]["1"]] == ["line", "elsewhere"]
