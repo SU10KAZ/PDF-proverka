@@ -11887,6 +11887,7 @@ const app = createApp({
         const scPageError = reactive({left: '', right: ''});
         const scTextSearchQuery = reactive({left: '', right: ''});
         const scTextSearchPages = reactive({left: [], right: []});
+        const scTextSearchHighlights = reactive({left: {}, right: {}});
         const scTextSearchIndex = reactive({left: -1, right: -1});
         const scTextSearchSubmitted = reactive({left: '', right: ''});
         const scTextSearchLoading = reactive({left: false, right: false});
@@ -13896,6 +13897,7 @@ const app = createApp({
             scTextSearchRequest[side] = null;
             if (clearQuery) scTextSearchQuery[side] = '';
             scTextSearchPages[side] = [];
+            scTextSearchHighlights[side] = {};
             scTextSearchIndex[side] = -1;
             scTextSearchSubmitted[side] = '';
             scTextSearchLoading[side] = false;
@@ -13931,6 +13933,19 @@ const app = createApp({
             }
         }
 
+        function scTextSearchHighlightsFor(side, page) {
+            return scTextSearchHighlights[side][Number(page)] || [];
+        }
+
+        function scTextSearchHighlightStyle(highlight) {
+            return {
+                left: `${Number(highlight.x || 0) * 100}%`,
+                top: `${Number(highlight.y || 0) * 100}%`,
+                width: `${Number(highlight.width || 0) * 100}%`,
+                height: `${Number(highlight.height || 0) * 100}%`,
+            };
+        }
+
         async function scSearchText(side) {
             const query = String(scTextSearchQuery[side] || '').trim();
             if (!query || !scPageApiBase() || scViewerEmpty[side]) return;
@@ -13949,6 +13964,7 @@ const app = createApp({
             scTextSearchLoading[side] = true;
             scTextSearchError[side] = '';
             scTextSearchPages[side] = [];
+            scTextSearchHighlights[side] = {};
             scTextSearchIndex[side] = -1;
             try {
                 const params = new URLSearchParams({side, query});
@@ -13961,9 +13977,18 @@ const app = createApp({
                 scTextSearchSubmitted[side] = query;
                 scTextSearchHasLayer[side] = data.has_text_layer !== false;
                 scTextSearchTotalMatches[side] = Number(data.total_matches || 0);
-                scTextSearchPages[side] = (Array.isArray(data.pages) ? data.pages : [])
-                    .map(item => Number(item && item.page))
-                    .filter(page => Number.isInteger(page) && page >= 1 && page <= scPageCount(side));
+                const pageResults = (Array.isArray(data.pages) ? data.pages : [])
+                    .filter(item => {
+                        const page = Number(item && item.page);
+                        return Number.isInteger(page) && page >= 1 && page <= scPageCount(side);
+                    });
+                scTextSearchPages[side] = pageResults.map(item => Number(item.page));
+                const highlights = {};
+                for (const item of pageResults) {
+                    highlights[Number(item.page)] = (Array.isArray(item.highlights) ? item.highlights : [])
+                        .filter(highlight => highlight && Number(highlight.width) > 0 && Number(highlight.height) > 0);
+                }
+                scTextSearchHighlights[side] = highlights;
                 if (scTextSearchPages[side].length) {
                     scTextSearchIndex[side] = 0;
                     scOpenTextSearchPage(side, scTextSearchPages[side][0]);
@@ -15456,6 +15481,7 @@ const app = createApp({
             scCurrentPage, scViewerEmpty, scPageCount, scChangePage,
             scTextSearchQuery, scTextSearchLoading, scTextSearchError,
             scResetTextSearch, scSearchText, scTextSearchStatus, scTextSearchTitle,
+            scTextSearchHighlightsFor, scTextSearchHighlightStyle,
             scSyncView, scViewMode, scSetViewMode,
             scZoomPercent, scZoomBy, scZoomFit, scZoomActualSize,
             scPagePreview, scPageTiles, scPageLoading, scPageError,

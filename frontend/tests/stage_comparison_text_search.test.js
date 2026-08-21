@@ -23,4 +23,15 @@ describe('stage comparison PDF text search', () => {
     expect(app).toContain('(scTextSearchIndex[side] + 1) % pages.length');
     expect(app).toContain('scOpenTextSearchPage(side, pages[scTextSearchIndex[side]])');
   });
+
+  it('draws independent coordinate highlights over paged and continuous sheets', () => {
+    expect(app).toContain('const scTextSearchHighlights = reactive({left: {}, right: {}})');
+    expect(app).toContain('function scTextSearchHighlightsFor(side, page)');
+    expect(app).toContain('function scTextSearchHighlightStyle(highlight)');
+    expect(html.match(/class="sc-text-highlight"/g)).toHaveLength(2);
+    expect(html).toContain('scTextSearchHighlightsFor(side, scCurrentPage[side])');
+    expect(html).toContain('scTextSearchHighlightsFor(side, entry.page)');
+    expect(css).toContain('.sc-text-highlight {');
+    expect(css).toContain('pointer-events: none;');
+  });
 });

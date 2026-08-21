@@ -5723,6 +5723,10 @@
                                          class="sc-page-tile" :src="tile.url" decoding="async"
                                          draggable="false" alt=""
                                          :style="{left: tile.left + 'px', top: tile.top + 'px', width: tile.width + 'px', height: tile.height + 'px'}">
+                                    <i v-for="(highlight, index) in scTextSearchHighlightsFor(side, scCurrentPage[side])"
+                                       :key="side + '-search-' + scCurrentPage[side] + '-' + index"
+                                       class="sc-text-highlight" aria-hidden="true"
+                                       :style="scTextSearchHighlightStyle(highlight)"></i>
                                 </div>
                                 <div v-if="scPageLoading[side]" class="sc-vector-pane__note">Загрузка страницы…</div>
                                 <div v-else-if="scPageError[side]" class="sc-vector-pane__note sc-vector-pane__note--error">
@@ -5757,6 +5761,10 @@
                                              :key="tile.key" class="sc-continuous-page__tile"
                                              :src="tile.url" decoding="async" draggable="false" alt=""
                                              :style="{left: tile.left + '%', top: tile.top + '%', width: tile.width + '%', height: tile.height + '%'}">
+                                        <i v-for="(highlight, index) in entry.page ? scTextSearchHighlightsFor(side, entry.page) : []"
+                                           :key="side + '-continuous-search-' + entry.page + '-' + index"
+                                           class="sc-text-highlight" aria-hidden="true"
+                                           :style="scTextSearchHighlightStyle(highlight)"></i>
                                         <div v-if="entry.placeholder" class="sc-continuous-page__missing">
                                             <span>Лист отсутствует в этой стадии</span>
                                         </div>

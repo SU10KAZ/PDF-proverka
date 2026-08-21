@@ -703,6 +703,72 @@ def _pdf_page_search_texts(pdf_path: Path) -> list[str]:
     return texts
 
 
+def _pdf_page_search_highlights(page, normalized_query: str) -> list[dict[str, float]]:
+    """Return normalized rectangles for every word touched by a match.
+
+    The viewer renders a raster page at several resolutions, so PDF points
+    would tie the response to one particular preview size.  Fractions of the
+    rotated page rectangle remain valid for previews, tiles and continuous
+    mode alike.  Matching the normalized word stream also keeps Cyrillic
+    case-insensitivity identical to the page-level search above.
+    """
+    words: list[dict] = []
+    text_parts: list[str] = []
+    cursor = 0
+    for raw_word in page.get_text("words", sort=True):
+        word_text = _normalize_pdf_search_text(raw_word[4])
+        if not word_text:
+            continue
+        if text_parts:
+            cursor += 1
+        start = cursor
+        cursor += len(word_text)
+        text_parts.append(word_text)
+        words.append({
+            "start": start,
+            "end": cursor,
+            "rect": tuple(float(value) for value in raw_word[:4]),
+        })
+
+    normalized_text = " ".join(text_parts)
+    if not normalized_text or normalized_query not in normalized_text:
+        return []
+
+    fitz = _import_fitz()
+    page_rect = page.rect
+    if not page_rect.width or not page_rect.height:
+        return []
+    rotation_matrix = page.rotation_matrix
+    highlights: list[dict[str, float]] = []
+    match_start = 0
+    while True:
+        match_start = normalized_text.find(normalized_query, match_start)
+        if match_start < 0:
+            break
+        match_end = match_start + len(normalized_query)
+        for word in words:
+            if word["end"] <= match_start or word["start"] >= match_end:
+                continue
+            rect = fitz.Rect(word["rect"])
+            if page.rotation:
+                rect = rect * rotation_matrix
+            x = max(0.0, min(1.0, (rect.x0 - page_rect.x0) / page_rect.width))
+            y = max(0.0, min(1.0, (rect.y0 - page_rect.y0) / page_rect.height))
+            right = max(x, min(1.0, (rect.x1 - page_rect.x0) / page_rect.width))
+            bottom = max(y, min(1.0, (rect.y1 - page_rect.y0) / page_rect.height))
+            if right > x and bottom > y:
+                highlights.append({
+                    "x": round(x, 6),
+                    "y": round(y, 6),
+                    "width": round(right - x, 6),
+                    "height": round(bottom - y, 6),
+                })
+        # Match ``str.count`` semantics used by the existing result counter:
+        # occurrences do not overlap.
+        match_start = match_end
+    return highlights
+
+
 def pdf_text_search_payload(
     session_id: str,
     pair_id: str,
@@ -716,11 +782,18 @@ def pdf_text_search_payload(
 
     pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
     page_texts = _pdf_page_search_texts(pdf_path)
-    matches = [
+    matches: list[dict] = [
         {"page": index + 1, "matches": text.count(normalized_query)}
         for index, text in enumerate(page_texts)
         if normalized_query in text
     ]
+    if matches:
+        fitz = _import_fitz()
+        with fitz.open(str(pdf_path)) as document:
+            for match in matches:
+                match["highlights"] = _pdf_page_search_highlights(
+                    document[int(match["page"]) - 1], normalized_query
+                )
     return {
         "query": str(query).strip(),
         "pages": matches,
