@@ -1,11 +1,14 @@
 """Persistence for PDF pairs, text-only sheet suggestions and user links."""
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import os
+import re
 import threading
 import uuid
+from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -438,22 +441,123 @@ def save_sheet_links(
         return get_sheet_matching_state(session_id, pair_id)
 
 
-def render_pdf_page_svg(session_id: str, pair_id: str, side: str, page: int) -> bytes:
+# MuPDF нумерует clip- и font-идентификаторы заново на каждой странице
+# (clip_1, font_386_0, ...). Обе страницы пары вставляются в ОДИН документ
+# фронтенда, поэтому одинаковые id столкнутся: `url(#clip_1)` правой панели
+# разрешится в первый по документу элемент, то есть в clip-path ЛЕВОЙ. Префикс
+# по стороне разводит пространства имён ещё на сервере — один проход по строке,
+# результат кэшируется.
+_SVG_ID_ANCHOR_RE = re.compile(r'(\bid="|url\(#|\bhref="#)')
+
+# Просмотрщик вставляет страницу инлайновым SVG, а не через <img>, — значит,
+# скрипт внутри SVG выполнился бы в контексте портала (в <img> он был инертен).
+# Писатель SVG в MuPDF таких узлов не порождает, но PDF приносит пользователь,
+# поэтому активные узлы снимаем до отдачи. Проверки-подстроки дешёвые: регулярки
+# запускаются, только если подозрительный фрагмент реально есть.
+_SVG_ACTIVE_RE = re.compile(
+    r"<\s*(script|foreignObject|iframe|object|embed)\b[\s\S]*?<\s*/\s*\1\s*>"
+    r"|<\s*(script|foreignObject|iframe|object|embed)\b[^>]*/\s*>",
+    re.IGNORECASE,
+)
+_SVG_HANDLER_RE = re.compile(r"""\son[a-zA-Z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)""")
+_SVG_JS_URL_RE = re.compile(r'(?i)(href|xlink:href)\s*=\s*"\s*javascript:[^"]*"')
+
+
+def _harden_svg(svg: str) -> str:
+    lowered = svg.lower()
+    if any(token in lowered for token in ("<script", "<foreignobject", "<iframe", "<object", "<embed")):
+        svg = _SVG_ACTIVE_RE.sub("", svg)
+    if " on" in lowered:
+        svg = _SVG_HANDLER_RE.sub("", svg)
+    if "javascript:" in lowered:
+        svg = _SVG_JS_URL_RE.sub(r'\1="#"', svg)
+    return svg
+
+# Кэш готовых страниц: ключ включает mtime/размер PDF, поэтому перезалитый
+# документ инвалидирует запись сам. Храним ТОЛЬКО gzip (≈0,5 МБ против ≈6 МБ
+# исходника) — при листании туда-сюда повторный рендер не нужен.
+_SVG_CACHE_LIMIT = 12
+_SVG_GZIP_LEVEL = 6
+_svg_cache: "OrderedDict[str, dict]" = OrderedDict()
+_svg_cache_lock = threading.Lock()
+
+
+def _svg_id_prefix(side: str) -> str:
+    return "scl_" if side == "left" else "scr_"
+
+
+def _namespace_svg_ids(svg: str, prefix: str) -> str:
+    return _SVG_ID_ANCHOR_RE.sub(lambda match: match.group(1) + prefix, svg)
+
+
+def _resolve_pair_pdf(session_id: str, pair_id: str, side: str) -> Path:
     if side not in {"left", "right"}:
         raise ValueError("side must be 'left' or 'right'")
-    if page < 1:
-        raise ValueError("page must be >= 1")
     pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
     if pair is None:
         raise KeyError("pair_not_found")
     pdf_path = Path(str((pair.get(side) or {}).get("pdf_path") or ""))
     if not pdf_path.is_file():
         raise FileNotFoundError(f"pdf_not_found:{pdf_path}")
+    return pdf_path
+
+
+def render_pdf_page_svg(session_id: str, pair_id: str, side: str, page: int) -> bytes:
+    if page < 1:
+        raise ValueError("page must be >= 1")
+    pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
     fitz = _import_fitz()
     with fitz.open(str(pdf_path)) as document:
         if page > document.page_count:
             raise ValueError(f"page_out_of_range:{page}>doc:{document.page_count}")
-        return document[page - 1].get_svg_image(text_as_path=True).encode("utf-8")
+        svg = document[page - 1].get_svg_image(text_as_path=True)
+    return _harden_svg(_namespace_svg_ids(svg, _svg_id_prefix(side))).encode("utf-8")
+
+
+def page_svg_payload(
+    session_id: str,
+    pair_id: str,
+    side: str,
+    page: int,
+    accept_gzip: bool = True,
+) -> dict:
+    """Векторная страница для просмотрщика: gzip-тело + ETag.
+
+    Сжатие делаем здесь (уровень 6, в threadpool роутера), а не в общем
+    GZipMiddleware: тот жмёт уровнем 9 прямо в event loop, а лист формата A1
+    после `text_as_path` весит ~6 МБ — это ~113 мс блокировки цикла на каждую
+    открытую страницу против ~45 мс вне его.
+    """
+    if page < 1:
+        raise ValueError("page must be >= 1")
+    pdf_path = _resolve_pair_pdf(session_id, pair_id, side)
+    try:
+        stat = pdf_path.stat()
+        signature = f"{stat.st_mtime_ns}:{stat.st_size}"
+    except OSError:
+        signature = "nostat"
+    key = f"{pdf_path}|{signature}|{side}|{page}"
+
+    with _svg_cache_lock:
+        entry = _svg_cache.get(key)
+        if entry is not None:
+            _svg_cache.move_to_end(key)
+
+    if entry is None:
+        raw = render_pdf_page_svg(session_id, pair_id, side, page)
+        entry = {
+            "gzip": gzip.compress(raw, _SVG_GZIP_LEVEL),
+            "etag": '"' + hashlib.sha1(raw).hexdigest()[:24] + '"',
+        }
+        with _svg_cache_lock:
+            _svg_cache[key] = entry
+            _svg_cache.move_to_end(key)
+            while len(_svg_cache) > _SVG_CACHE_LIMIT:
+                _svg_cache.popitem(last=False)
+
+    if accept_gzip:
+        return {"body": entry["gzip"], "encoding": "gzip", "etag": entry["etag"]}
+    return {"body": gzip.decompress(entry["gzip"]), "encoding": None, "etag": entry["etag"]}
 
 
 def _parse_allowlist() -> list[Path]:
@@ -497,5 +601,6 @@ __all__ = [
     "run_sheet_matching",
     "save_sheet_links",
     "render_pdf_page_svg",
+    "page_svg_payload",
     "assert_path_in_allowlist",
 ]

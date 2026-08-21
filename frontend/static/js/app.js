@@ -11842,10 +11842,35 @@ const app = createApp({
         const scLinkEditorRightPages = ref([]);
         const scLinkEditorSourceIndex = ref(null);
         const scCurrentPage = reactive({left: 1, right: 1});
-        const scZoom = ref(1);
-        const scSyncScroll = ref(true);
+        // ─── Просмотрщик листов: общий видовой порт двух панелей ───────────
+        // Панели показывают РАЗНЫЕ листы разного формата (A4 стадии П против
+        // A1 стадии РД), поэтому синхронизировать пиксели прокрутки нельзя.
+        // Состояние вида хранится в нормированных координатах листа
+        // (cx/cy ∈ [0,1] — точка листа в центре панели, zoom=1 — лист целиком),
+        // и каждая панель переводит их в свои единицы. Одна и та же область
+        // чертежа оказывается в одном и том же месте обеих панелей.
+        //
+        // Само состояние НЕ реактивно: pan/zoom пишет transform прямо в DOM
+        // внутри requestAnimationFrame, минуя перерисовку Vue — иначе на
+        // 30 000 SVG-узлов каждое движение колеса стоило бы кадр.
+        const SC_ZOOM_MIN = 0.1;
+        const SC_ZOOM_MAX = 100;
+        const SC_SVG_CACHE_BUDGET = 24e6;   // символов, ≈24 МБ разметки
+        const scSyncView = ref(true);
+        const scZoomPercent = ref(100);
         const scPaneRefs = reactive({left: null, right: null});
-        let scScrollSyncing = false;
+        const scStageRefs = reactive({left: null, right: null});
+        const scPageSvg = reactive({left: '', right: ''});
+        const scPageLoading = reactive({left: false, right: false});
+        const scPageError = reactive({left: '', right: ''});
+        const scViews = {left: {zoom: 1, cx: 0.5, cy: 0.5}, right: {zoom: 1, cx: 0.5, cy: 0.5}};
+        const scPageDims = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
+        const scPaneSize = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
+        const scSvgCache = new Map();
+        const scSvgRequest = {left: null, right: null};
+        let scViewFrame = 0;
+        let scPanState = null;
+        let scPanBoostTimer = 0;
 
         const scSelectedObject = computed(() =>
             scObjects.value.find(item => item.id === currentObjectId.value) || null
@@ -12672,6 +12697,7 @@ const app = createApp({
             scSelectedPdf.right = data.pair.right.pdf_path;
             scCurrentPage.left = 1;
             scCurrentPage.right = 1;
+            scZoomFit();
             scTab.value = 'links';
             scFocusLeftPage(1);
         }
@@ -12854,10 +12880,6 @@ const app = createApp({
             if (row.leftPages.length) scCurrentPage.left = row.leftPages[0];
             if (row.rightPages.length) scCurrentPage.right = row.rightPages[0];
             scLinkEditorOpen.value = false;
-            for (const side of ['left', 'right']) {
-                const pane = scPaneRefs[side];
-                if (pane) pane.scrollTo({top: 0, left: 0});
-            }
         }
 
         function scReasonLabel(reason) {
@@ -13052,38 +13074,373 @@ const app = createApp({
             const limit = scPageCount(side);
             scCurrentPage[side] = Math.min(limit || 1, Math.max(1, scCurrentPage[side] + delta));
             if (side === 'left') scFocusLeftPage(scCurrentPage.left);
+        }
+
+        // ─── Просмотрщик: геометрия ───────────────────────────────────────
+        // При связанном виде обе панели читают ОДИН объект состояния, поэтому
+        // «синхронно» получается по построению, без копирования и дрожания.
+        function scViewFor(side) {
+            return scSyncView.value ? scViews.left : scViews[side];
+        }
+
+        function scMeasurePane(side) {
             const pane = scPaneRefs[side];
-            if (pane) pane.scrollTo({top: 0, left: 0});
+            if (!pane) return;
+            scPaneSize[side] = {w: pane.clientWidth, h: pane.clientHeight};
+        }
+
+        // Масштаб «лист целиком» — своя величина для каждой панели, потому что
+        // форматы листов и ширины панелей различаются.
+        function scFitScale(side) {
+            const dims = scPageDims[side];
+            const pane = scPaneSize[side];
+            if (!dims.w || !dims.h || !pane.w || !pane.h) return 1;
+            return Math.min(pane.w / dims.w, pane.h / dims.h);
+        }
+
+        function scScaleFor(side) {
+            return scFitScale(side) * scViewFor(side).zoom;
+        }
+
+        function scClampView(side) {
+            const view = scViewFor(side);
+            view.zoom = Math.min(SC_ZOOM_MAX, Math.max(SC_ZOOM_MIN, view.zoom));
+            const sides = scSyncView.value ? ['left', 'right'] : [side];
+            for (const axis of ['x', 'y']) {
+                const key = axis === 'x' ? 'cx' : 'cy';
+                let half = Infinity;
+                for (const item of sides) {
+                    const dims = scPageDims[item];
+                    const pane = scPaneSize[item];
+                    const span = (axis === 'x' ? dims.w : dims.h) * scScaleFor(item);
+                    if (!span || !pane.w || !pane.h) continue;
+                    half = Math.min(half, (axis === 'x' ? pane.w : pane.h) / 2 / span);
+                }
+                if (!Number.isFinite(half)) {
+                    view[key] = Math.min(1, Math.max(0, view[key]));
+                } else if (half >= 0.5) {
+                    view[key] = 0.5;                     // лист виден целиком
+                } else {
+                    view[key] = Math.min(1 - half, Math.max(half, view[key]));
+                }
+            }
+        }
+
+        function scApplyView() {
+            for (const side of ['left', 'right']) {
+                const stage = scStageRefs[side];
+                const pane = scPaneRefs[side];
+                if (!stage || !pane) continue;
+                const dims = scPageDims[side];
+                if (!dims.w || !dims.h) {
+                    stage.style.transform = '';
+                    continue;
+                }
+                const view = scViewFor(side);
+                const scale = scScaleFor(side);
+                const left = scPaneSize[side].w / 2 - view.cx * dims.w * scale;
+                const top = scPaneSize[side].h / 2 - view.cy * dims.h * scale;
+                stage.style.width = dims.w + 'px';
+                stage.style.height = dims.h + 'px';
+                stage.style.transform =
+                    `translate(${left.toFixed(2)}px, ${top.toFixed(2)}px) scale(${scale})`;
+            }
+            const percent = Math.round(scViewFor('left').zoom * 100);
+            if (percent !== scZoomPercent.value) scZoomPercent.value = percent;
+        }
+
+        // Кадры склеиваются: несколько событий в одном кадре дают один расчёт.
+        // Стороны при этом клампятся обе, иначе склейка события правой панели
+        // с событием левой потеряла бы ограничение одной из них.
+        function scScheduleView() {
+            if (scViewFrame) return;
+            scViewFrame = requestAnimationFrame(() => {
+                scViewFrame = 0;
+                scClampView('left');
+                if (!scSyncView.value) scClampView('right');
+                scApplyView();
+            });
+        }
+
+        // ─── Просмотрщик: ввод ────────────────────────────────────────────
+        function scWheelPixels(event) {
+            // DOM_DELTA_LINE / DOM_DELTA_PAGE приводим к пикселям, иначе один
+            // «щелчок» мыши в Firefox сдвигал бы лист на три пикселя.
+            const factor = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 800 : 1;
+            return {x: event.deltaX * factor, y: event.deltaY * factor};
+        }
+
+        function scZoomAt(side, multiplier, clientX, clientY) {
+            scDropPanBoost();
+            const pane = scPaneRefs[side];
+            const dims = scPageDims[side];
+            const view = scViewFor(side);
+            if (!pane || !dims.w || !dims.h) {
+                view.zoom *= multiplier;
+                scScheduleView();
+                return;
+            }
+            const rect = pane.getBoundingClientRect();
+            const offsetX = (clientX == null ? rect.width / 2 : clientX - rect.left) - rect.width / 2;
+            const offsetY = (clientY == null ? rect.height / 2 : clientY - rect.top) - rect.height / 2;
+            const before = scScaleFor(side);
+            // Нормированная точка листа под курсором — она обязана остаться на
+            // месте, и на второй панели тоже (координаты общие).
+            const anchorX = view.cx + offsetX / (dims.w * before);
+            const anchorY = view.cy + offsetY / (dims.h * before);
+            view.zoom = Math.min(SC_ZOOM_MAX, Math.max(SC_ZOOM_MIN, view.zoom * multiplier));
+            const after = scScaleFor(side);
+            view.cx = anchorX - offsetX / (dims.w * after);
+            view.cy = anchorY - offsetY / (dims.h * after);
+            scScheduleView();
+        }
+
+        function scSetPanBoost(active) {
+            for (const side of ['left', 'right']) {
+                const stage = scStageRefs[side];
+                if (stage) stage.style.willChange = active ? 'transform' : '';
+            }
+        }
+
+        // Сдвиг не меняет масштаб, поэтому закреплённый растр слоя остаётся
+        // точным: композитор двигает готовые тайлы вместо перерисовки 30 000
+        // узлов SVG — на листе A1 это 33 мс на кадр против 67 мс. Для зума
+        // промоушен, наоборот, заморозил бы растр и лист бы мылился, поэтому
+        // там слой снимаем сразу и Chrome растрирует вектор заново.
+        function scBoostPan() {
+            if (scPanBoostTimer) clearTimeout(scPanBoostTimer);
+            else scSetPanBoost(true);
+            scPanBoostTimer = setTimeout(() => {
+                scPanBoostTimer = 0;
+                scSetPanBoost(false);
+            }, 200);
+        }
+
+        function scDropPanBoost() {
+            if (!scPanBoostTimer) return;
+            clearTimeout(scPanBoostTimer);
+            scPanBoostTimer = 0;
+            scSetPanBoost(false);
+        }
+
+        function scPanBy(side, deltaX, deltaY) {
+            const dims = scPageDims[side];
+            const scale = scScaleFor(side);
+            if (!dims.w || !dims.h || !scale) return;
+            const view = scViewFor(side);
+            view.cx += deltaX / (dims.w * scale);
+            view.cy += deltaY / (dims.h * scale);
+            scBoostPan();
+            scScheduleView();
+        }
+
+        function scOnViewerWheel(side, event) {
+            event.preventDefault();          // Ctrl+колесо иначе зумит браузер
+            scMeasurePane(side);
+            const delta = scWheelPixels(event);
+            if (event.ctrlKey || event.metaKey) {
+                scZoomAt(side, Math.exp(-delta.y * 0.0025), event.clientX, event.clientY);
+                return;
+            }
+            const horizontal = event.shiftKey && !delta.x ? delta.y : delta.x;
+            const vertical = event.shiftKey && !delta.x ? 0 : delta.y;
+            scPanBy(side, horizontal, vertical);
+        }
+
+        function scOnViewerPanStart(side, event) {
+            if (event.button !== 0) return;
+            const pane = scPaneRefs[side];
+            if (!pane) return;
+            scMeasurePane(side);
+            scPanState = {side, x: event.clientX, y: event.clientY, pointerId: event.pointerId};
+            pane.classList.add('is-panning');
+            // Захват указателя удерживает сдвиг, когда курсор ушёл за панель.
+            // На неактивном pointerId он бросает NotFoundError — сдвиг работает
+            // и без захвата, поэтому отказ гасим.
+            try { pane.setPointerCapture(event.pointerId); } catch (error) { /* без захвата */ }
+            event.preventDefault();
+        }
+
+        function scOnViewerPanMove(event) {
+            if (!scPanState || event.pointerId !== scPanState.pointerId) return;
+            scPanBy(scPanState.side, scPanState.x - event.clientX, scPanState.y - event.clientY);
+            scPanState.x = event.clientX;
+            scPanState.y = event.clientY;
+        }
+
+        function scOnViewerPanEnd(event) {
+            if (!scPanState || event.pointerId !== scPanState.pointerId) return;
+            const pane = scPaneRefs[scPanState.side];
+            if (pane) {
+                pane.classList.remove('is-panning');
+                try { pane.releasePointerCapture(event.pointerId); } catch (error) { /* не был захвачен */ }
+            }
+            scPanState = null;
+        }
+
+        function scOnViewerDoubleClick(side, event) {
+            scMeasurePane(side);
+            scZoomAt(side, event.altKey ? 1 / 2 : 2, event.clientX, event.clientY);
         }
 
         function scZoomBy(multiplier) {
-            scZoom.value = Math.max(0.5, Math.min(4, scZoom.value * multiplier));
+            scMeasurePane('left');
+            scZoomAt('left', multiplier, null, null);
         }
 
-        function scZoomReset() {
-            scZoom.value = 1;
+        function scZoomFit() {
+            for (const side of ['left', 'right']) {
+                scMeasurePane(side);
+                const view = scViews[side];
+                view.zoom = 1;
+                view.cx = 0.5;
+                view.cy = 0.5;
+            }
+            scScheduleView();
+        }
+
+        // 1:1 — один пункт PDF на один CSS-пиксель левой панели. Для листа A1 в
+        // узкой панели это уже сильное увеличение, поэтому опора — левая сторона.
+        function scZoomActualSize() {
+            scMeasurePane('left');
+            const fit = scFitScale('left');
+            if (!fit) return;
+            scZoomAt('left', (1 / fit) / scViewFor('left').zoom, null, null);
         }
 
         function scSetPaneRef(side, element) {
-            if (element) scPaneRefs[side] = element;
+            const previous = scPaneRefs[side];
+            if (previous === element) return;
+            if (previous && previous.__scDetachViewer) previous.__scDetachViewer();
+            scPaneRefs[side] = element || null;
+            if (!element) return;
+            const onWheel = event => scOnViewerWheel(side, event);
+            const onDown = event => scOnViewerPanStart(side, event);
+            const onDouble = event => scOnViewerDoubleClick(side, event);
+            // wheel вешаем вручную: нужен строго {passive: false}, иначе
+            // preventDefault для Ctrl+колеса игнорируется и зумится страница.
+            element.addEventListener('wheel', onWheel, {passive: false});
+            element.addEventListener('pointerdown', onDown);
+            element.addEventListener('pointermove', scOnViewerPanMove);
+            element.addEventListener('pointerup', scOnViewerPanEnd);
+            element.addEventListener('pointercancel', scOnViewerPanEnd);
+            element.addEventListener('dblclick', onDouble);
+            const observer = typeof ResizeObserver === 'function'
+                ? new ResizeObserver(() => { scMeasurePane(side); scScheduleView(); })
+                : null;
+            if (observer) observer.observe(element);
+            element.__scDetachViewer = () => {
+                element.removeEventListener('wheel', onWheel);
+                element.removeEventListener('pointerdown', onDown);
+                element.removeEventListener('pointermove', scOnViewerPanMove);
+                element.removeEventListener('pointerup', scOnViewerPanEnd);
+                element.removeEventListener('pointercancel', scOnViewerPanEnd);
+                element.removeEventListener('dblclick', onDouble);
+                if (observer) observer.disconnect();
+                delete element.__scDetachViewer;
+            };
+            scMeasurePane(side);
+            scScheduleView();
         }
 
-        function scOnViewerScroll(side, event) {
-            if (!scSyncScroll.value || scScrollSyncing) return;
-            const source = event.currentTarget;
-            const target = scPaneRefs[side === 'left' ? 'right' : 'left'];
-            if (!source || !target) return;
-            const verticalRange = source.scrollHeight - source.clientHeight;
-            const horizontalRange = source.scrollWidth - source.clientWidth;
-            scScrollSyncing = true;
-            target.scrollTop = verticalRange > 0
-                ? (source.scrollTop / verticalRange) * Math.max(0, target.scrollHeight - target.clientHeight)
-                : 0;
-            target.scrollLeft = horizontalRange > 0
-                ? (source.scrollLeft / horizontalRange) * Math.max(0, target.scrollWidth - target.clientWidth)
-                : 0;
-            requestAnimationFrame(() => { scScrollSyncing = false; });
+        function scSetStageRef(side, element) {
+            scStageRefs[side] = element || null;
+            if (element) scScheduleView();
         }
+
+        // ─── Просмотрщик: загрузка вектора ────────────────────────────────
+        function scSvgCachePut(url, markup) {
+            scSvgCache.set(url, markup);
+            let total = 0;
+            for (const value of scSvgCache.values()) total += value.length;
+            for (const key of scSvgCache.keys()) {
+                if (total <= SC_SVG_CACHE_BUDGET) break;
+                if (key === url) continue;
+                total -= scSvgCache.get(key).length;
+                scSvgCache.delete(key);
+            }
+        }
+
+        // Размеры листа берём из самого SVG: viewBox задан в пунктах PDF и уже
+        // учитывает поворот страницы, отдельный запрос к бэкенду не нужен.
+        function scSvgDimensions(markup) {
+            const head = markup.slice(0, 2048);
+            const viewBox = head.match(/viewBox="\s*([-\d.]+)[,\s]+([-\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/);
+            if (viewBox) {
+                const w = Number(viewBox[3]);
+                const h = Number(viewBox[4]);
+                if (w > 0 && h > 0) return {w, h};
+            }
+            const width = head.match(/\swidth="([\d.]+)/);
+            const height = head.match(/\sheight="([\d.]+)/);
+            const w = Number(width && width[1]);
+            const h = Number(height && height[1]);
+            return w > 0 && h > 0 ? {w, h} : {w: 0, h: 0};
+        }
+
+        function scApplyPageSvg(side, markup) {
+            scPageDims[side] = scSvgDimensions(markup);
+            scPageSvg[side] = markup;
+            scMeasurePane(side);
+            scScheduleView();
+        }
+
+        async function scLoadPageSvg(side) {
+            const url = scPageSrcUrl(side);
+            if (scSvgRequest[side]) scSvgRequest[side].abort();
+            if (!url) {
+                scSvgRequest[side] = null;
+                scPageLoading[side] = false;
+                scPageError[side] = '';
+                scApplyPageSvg(side, '');
+                return;
+            }
+            const cached = scSvgCache.get(url);
+            if (cached !== undefined) {
+                scSvgRequest[side] = null;
+                scPageLoading[side] = false;
+                scPageError[side] = '';
+                scApplyPageSvg(side, cached);
+                return;
+            }
+            const controller = new AbortController();
+            scSvgRequest[side] = controller;
+            scPageLoading[side] = true;
+            scPageError[side] = '';
+            try {
+                const response = await fetch(url, {signal: controller.signal});
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const markup = await response.text();
+                if (scSvgRequest[side] !== controller) return;
+                scSvgCachePut(url, markup);
+                scApplyPageSvg(side, markup);
+            } catch (error) {
+                if (controller.signal.aborted) return;
+                scPageError[side] = 'Не удалось загрузить вектор: ' + String(error.message || error);
+                scApplyPageSvg(side, '');
+            } finally {
+                if (scSvgRequest[side] === controller) {
+                    scSvgRequest[side] = null;
+                    scPageLoading[side] = false;
+                }
+            }
+        }
+
+        watch(
+            () => [scActivePair.value && scActivePair.value.id, scCurrentPage.left],
+            () => { if (currentView.value === 'stage-comparison') scLoadPageSvg('left'); },
+        );
+        watch(
+            () => [scActivePair.value && scActivePair.value.id, scCurrentPage.right],
+            () => { if (currentView.value === 'stage-comparison') scLoadPageSvg('right'); },
+        );
+        watch(scSyncView, linked => {
+            // Отвязали — правая панель продолжает с того же места, а не прыгает
+            // к своему старому виду; связали — подхватывает вид левой.
+            if (linked) scViews.left = {...scViews.left};
+            else scViews.right = {...scViews.left};
+            scScheduleView();
+        });
 
         watch(currentObjectId, () => {
             if (currentView.value === 'stage-comparison') scLoadObjects();
@@ -13462,8 +13819,9 @@ const app = createApp({
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,
             scAcceptSuggestion, scApplyLinkEditor, scDeleteSheetMapRow, scDeleteCurrentLink,
             scCurrentPage, scPageCount, scPageSrcUrl, scChangePage,
-            scZoom, scSyncScroll, scZoomBy, scZoomReset,
-            scSetPaneRef, scOnViewerScroll,
+            scSyncView, scZoomPercent, scZoomBy, scZoomFit, scZoomActualSize,
+            scPageSvg, scPageLoading, scPageError, scSetStageRef,
+            scSetPaneRef,
         };
     }
 });

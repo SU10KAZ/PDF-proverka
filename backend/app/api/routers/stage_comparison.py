@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import logging
 
-from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
@@ -184,13 +184,17 @@ async def save_sheet_links(session_id: str, pair_id: str, request: SaveSheetLink
 
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-svg")
 async def get_page_svg(
+    request: Request,
     session_id: str,
     pair_id: str,
     side: str = Query(..., pattern="^(left|right)$"),
     page: int = Query(1, ge=1),
 ):
+    accept_gzip = "gzip" in (request.headers.get("accept-encoding") or "").lower()
     try:
-        payload = await run_in_threadpool(store.render_pdf_page_svg, session_id, pair_id, side, page)
+        payload = await run_in_threadpool(
+            store.page_svg_payload, session_id, pair_id, side, page, accept_gzip
+        )
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     except FileNotFoundError as exc:
@@ -200,4 +204,12 @@ async def get_page_svg(
     except Exception as exc:  # noqa: BLE001
         logger.exception("page-svg render failed")
         raise HTTPException(500, f"Ошибка векторного рендера страницы: {exc}") from exc
-    return Response(payload, media_type="image/svg+xml", headers={"Cache-Control": "private, max-age=3600"})
+
+    headers = {"Cache-Control": "private, max-age=3600", "ETag": payload["etag"]}
+    # Просмотрщик листает страницы туда-обратно; 304 экономит мегабайты вектора.
+    if request.headers.get("if-none-match") == payload["etag"]:
+        return Response(status_code=304, headers=headers)
+    if payload["encoding"]:
+        headers["Content-Encoding"] = payload["encoding"]
+        headers["Vary"] = "Accept-Encoding"
+    return Response(payload["body"], media_type="image/svg+xml", headers=headers)

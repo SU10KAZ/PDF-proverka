@@ -26,10 +26,43 @@ describe('documentation comparison shell', () => {
 
   it('renders only the vector PDF endpoint', () => {
     expect(app).toContain('/page-svg?side=${side}&page=${scCurrentPage[side]}');
-    expect(html).toContain('<img :src="scPageSrcUrl(side)"');
     expect(html).not.toContain('page-image');
     expect(app).not.toContain('page-image');
     expect(app).not.toContain('block-image');
+  });
+
+  it('inlines the page SVG instead of rasterising it through <img>', () => {
+    expect(html).toContain('class="sc-vector-stage"');
+    expect(html).toContain('v-html="scPageSvg[side]"');
+    expect(html).not.toContain('<img :src="scPageSrcUrl(side)"');
+    expect(css).toContain('.sc-vector-stage > svg');
+    // will-change закрепил бы растровый масштаб слоя — лист мылился бы при зуме
+    expect(css).not.toMatch(/\.sc-vector-stage\s*\{[^}]*will-change/);
+  });
+
+  it('drives both panes from one normalised viewport', () => {
+    expect(app).toContain('function scViewFor(side)');
+    expect(app).toContain('return scSyncView.value ? scViews.left : scViews[side]');
+    expect(app).toContain('function scFitScale(side)');
+    expect(app).toContain('function scApplyView()');
+    expect(app).toContain('scScheduleView');
+    expect(app).toContain('requestAnimationFrame');
+  });
+
+  it('promotes the layer for panning only, never for zooming', () => {
+    // will-change при зуме заморозил бы растровый масштаб слоя → мыло
+    expect(app).toContain('function scBoostPan()');
+    expect(app).toContain('function scDropPanBoost()');
+    expect(app).toContain("stage.style.willChange = active ? 'transform' : ''");
+    expect(app).toMatch(/function scZoomAt\([^)]*\)\s*\{\s*\n\s*scDropPanBoost\(\);/);
+    expect(app).toMatch(/scBoostPan\(\);\s*\n\s*scScheduleView\(\);/);
+  });
+
+  it('zooms on Ctrl+wheel and scrolls the sheet on a bare wheel', () => {
+    expect(app).toContain('function scOnViewerWheel(side, event)');
+    expect(app).toContain('if (event.ctrlKey || event.metaKey)');
+    expect(app).toContain("addEventListener('wheel', onWheel, {passive: false})");
+    expect(app).toContain('const SC_ZOOM_MAX = 100;');
   });
 
   it('runs only the new Markdown sheet matcher', () => {

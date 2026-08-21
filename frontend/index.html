@@ -5585,12 +5585,14 @@
                     </div>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-toolbar">
-                        <label><input type="checkbox" v-model="scSyncScroll"> Синхронная прокрутка</label>
+                        <label><input type="checkbox" v-model="scSyncView"> Синхронный вид</label>
+                        <span class="sc-viewer-hint">Ctrl + колесо — масштаб, колесо — прокрутка, перетаскивание — сдвиг</span>
                         <span class="sc-viewer-toolbar__spacer"></span>
-                        <button class="btn btn-sm" @click="scZoomBy(0.8)">−</button>
-                        <strong>{{ Math.round(scZoom * 100) }}%</strong>
-                        <button class="btn btn-sm" @click="scZoomBy(1.25)">+</button>
-                        <button class="btn btn-sm" @click="scZoomReset()">100%</button>
+                        <button class="btn btn-sm" title="Уменьшить" @click="scZoomBy(1 / 1.25)">−</button>
+                        <strong class="sc-viewer-zoom" title="100% — лист целиком">{{ scZoomPercent }}%</strong>
+                        <button class="btn btn-sm" title="Увеличить" @click="scZoomBy(1.25)">+</button>
+                        <button class="btn btn-sm" @click="scZoomFit()">Вписать</button>
+                        <button class="btn btn-sm" title="1 пункт PDF = 1 пиксель" @click="scZoomActualSize()">1:1</button>
                     </div>
                     <div class="sc-vector-viewer">
                         <section v-for="side in ['left', 'right']" :key="side" class="sc-vector-pane-wrap">
@@ -5605,10 +5607,13 @@
                                     <button class="btn btn-sm" :disabled="scCurrentPage[side] >= scPageCount(side)" @click="scChangePage(side, 1)">→</button>
                                 </div>
                             </div>
-                            <div class="sc-vector-pane" :ref="element => scSetPaneRef(side, element)"
-                                 @scroll="scOnViewerScroll(side, $event)">
-                                <img :src="scPageSrcUrl(side)" :alt="'PDF ' + side + ', страница ' + scCurrentPage[side]"
-                                     :style="{width: (scZoom * 100) + '%'}" draggable="false">
+                            <div class="sc-vector-pane" :ref="element => scSetPaneRef(side, element)">
+                                <div class="sc-vector-stage" :ref="element => scSetStageRef(side, element)"
+                                     v-html="scPageSvg[side]"></div>
+                                <div v-if="scPageLoading[side]" class="sc-vector-pane__note">Загрузка вектора…</div>
+                                <div v-else-if="scPageError[side]" class="sc-vector-pane__note sc-vector-pane__note--error">
+                                    {{ scPageError[side] }}
+                                </div>
                             </div>
                         </section>
                     </div>

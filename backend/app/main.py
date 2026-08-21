@@ -150,7 +150,8 @@ async def lifespan(app: FastAPI):
 
 
 _GZIP_SKIP_PATH_RE = re.compile(
-    r"^/api/(tiles/.+/blocks/(image|region-image)/|document/.+/page/)"
+    r"^/api/(tiles/.+/blocks/(image|region-image)/|document/.+/page/"
+    r"|stage-comparison/sessions/.+/page-svg)"
 )
 
 
