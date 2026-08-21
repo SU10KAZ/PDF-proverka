@@ -14702,13 +14702,44 @@ const app = createApp({
             }
         }
 
+        // Одна сорвавшаяся картинка навсегда рисовала «Не удалось загрузить
+        // preview»: повтора не было. Сервер при этом отвечает 200 — за сутки в
+        // журнале 518 preview и ни одной ошибки, — а браузер обрывает часть
+        // запросов сам: лимит соединений на хост (портал отдаёт ещё под 18 000
+        // тайлов), перерисовка списка, обрыв туннеля. Пробуем ещё дважды.
+        //
+        // Ключ — сам URL: у каждой страницы свой счётчик, и он сбрасывается,
+        // как только адрес меняется. Метка попытки в адресе обязательна, иначе
+        // браузер отдаст неудавшийся ответ из своего кэша.
+        const SC_PREVIEW_RETRIES = 2;
+        const scPreviewAttempt = new Map();
+
+        function scSchedulePreviewRetry(url, apply) {
+            if (!url) return false;
+            const key = url.split('&retry=')[0];
+            const used = scPreviewAttempt.get(key) || 0;
+            if (used >= SC_PREVIEW_RETRIES) return false;
+            scPreviewAttempt.set(key, used + 1);
+            setTimeout(() => apply(`${key}&retry=${used + 1}`), 400 * (used + 1));
+            return true;
+        }
+
+        function scForgetPreviewRetry(url) {
+            if (url) scPreviewAttempt.delete(url.split('&retry=')[0]);
+        }
+
         function scOnContinuousPreviewLoad(side, page) {
+            scForgetPreviewRetry(scContinuousPreview[side][page]);
             scContinuousLoading[side][page] = false;
             scContinuousError[side][page] = '';
             scScheduleContinuousTileRefresh(side, true);
         }
 
         function scOnContinuousPreviewError(side, page) {
+            const retried = scSchedulePreviewRetry(scContinuousPreview[side][page], url => {
+                if (scContinuousPreview[side][page]) scContinuousPreview[side][page] = url;
+            });
+            if (retried) return;
             scContinuousLoading[side][page] = false;
             scContinuousError[side][page] = 'Не удалось загрузить preview страницы';
         }
@@ -14865,6 +14896,7 @@ const app = createApp({
 
         function scOnPagePreviewLoad(side, event) {
             if (event.currentTarget.getAttribute('src') !== scPagePreview[side]) return;
+            scForgetPreviewRetry(scPagePreview[side]);
             scPageLoading[side] = false;
             scPageError[side] = '';
             scScheduleTileRefresh(side, true);
@@ -14872,6 +14904,10 @@ const app = createApp({
 
         function scOnPagePreviewError(side, event) {
             if (event.currentTarget.getAttribute('src') !== scPagePreview[side]) return;
+            const retried = scSchedulePreviewRetry(scPagePreview[side], url => {
+                if (scPagePreview[side]) scPagePreview[side] = url;
+            });
+            if (retried) return;
             scPageLoading[side] = false;
             scPageError[side] = 'Не удалось загрузить preview страницы';
         }

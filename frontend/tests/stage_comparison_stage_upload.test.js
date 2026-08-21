@@ -162,6 +162,27 @@ describe('documentation comparison shell', () => {
     expect(css).toContain('.sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }');
   });
 
+  it('retries a failed page preview before showing the error', () => {
+    // одна сорвавшаяся картинка навсегда рисовала «Не удалось загрузить preview»
+    expect(app).toContain('const SC_PREVIEW_RETRIES = 2;');
+    expect(app).toContain('function scSchedulePreviewRetry(url, apply)');
+    expect(app).toContain('function scForgetPreviewRetry(url)');
+    // ключ — URL без метки: у каждой страницы свой счётчик, сбрасывается сам
+    expect(app).toContain("const key = url.split('&retry=')[0];");
+    expect(app).toContain('if (used >= SC_PREVIEW_RETRIES) return false;');
+    // метка в адресе обязательна: иначе браузер отдаст неудавшийся ответ из кэша
+    expect(app).toContain('apply(`${key}&retry=${used + 1}`)');
+    // сообщение показывается только когда повторы исчерпаны
+    for (const handler of ['scOnContinuousPreviewError', 'scOnPagePreviewError']) {
+      const body = app.slice(app.indexOf(`function ${handler}`), app.indexOf(`function ${handler}`) + 460);
+      expect(body).toContain('if (retried) return;');
+      expect(body).toContain('Не удалось загрузить preview страницы');
+    }
+    // после удачной загрузки счётчик сбрасывается
+    expect(app).toContain('scForgetPreviewRetry(scContinuousPreview[side][page]);');
+    expect(app).toContain('scForgetPreviewRetry(scPagePreview[side]);');
+  });
+
   it('saves the project arrangement without pressing a button', () => {
     // расстановка уезжала на сервер только по кнопке, а при загрузке серверная
     // копия побеждает локальный черновик — обновление страницы её теряло
