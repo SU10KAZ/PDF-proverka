@@ -12285,6 +12285,26 @@ const app = createApp({
             scPairingSaveMessage.value = loadedFromServer ? 'Загружено сохранённое сопоставление' : '';
         }
 
+        // Расстановка проектов уезжала на сервер только по кнопке «Сохранить», а
+        // при загрузке серверная копия побеждает локальный черновик
+        // (см. scInitializeDocumentOrder). Стоило обновить страницу, не нажав
+        // кнопку, — и расстановка возвращалась к прежней. Сохраняем сами, с
+        // задержкой: перетаскивание даёт десятки изменений подряд.
+        let scPairingSaveTimer = 0;
+
+        function scSchedulePairingSave() {
+            if (!scSession.value) return;
+            if (scPairingSaveTimer) clearTimeout(scPairingSaveTimer);
+            scPairingSaveTimer = setTimeout(() => {
+                scPairingSaveTimer = 0;
+                if (scPairingSaving.value || scPairingMatching.value) {
+                    scSchedulePairingSave();   // занято — вернёмся позже
+                    return;
+                }
+                scSaveDocumentPairing();
+            }, 600);
+        }
+
         function scPersistDocumentOrder(markDirty = true) {
             const storageKey = scPairOrderStorageKey();
             if (!storageKey) return;
@@ -12297,6 +12317,7 @@ const app = createApp({
             } catch (_) {}
             if (markDirty) {
                 scPairingDirty.value = true;
+                scSchedulePairingSave();
                 scPairingSaveError.value = '';
                 scPairingSaveMessage.value = '';
             }

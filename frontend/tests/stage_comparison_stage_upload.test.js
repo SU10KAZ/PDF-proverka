@@ -162,6 +162,18 @@ describe('documentation comparison shell', () => {
     expect(css).toContain('.sc-shell--viewer .sc-viewer-layout { flex: 1; height: auto; min-height: 0; }');
   });
 
+  it('saves the project arrangement without pressing a button', () => {
+    // расстановка уезжала на сервер только по кнопке, а при загрузке серверная
+    // копия побеждает локальный черновик — обновление страницы её теряло
+    expect(app).toContain('function scSchedulePairingSave()');
+    expect(app).toContain('scSchedulePairingSave();');
+    expect(app).toMatch(/scPersistDocumentOrder\(markDirty = true\)/);
+    // задержка: перетаскивание даёт десятки изменений подряд
+    expect(app).toContain('scPairingSaveTimer = setTimeout(');
+    // и повтор, если сохранение уже идёт
+    expect(app).toContain('scSchedulePairingSave();   // занято — вернёмся позже');
+  });
+
   it('keeps the viewer toolbar down to zoom controls', () => {
     // синхронный вид больше не выключается вручную — панели всегда связаны
     expect(html).not.toContain('v-model="scSyncView"');
