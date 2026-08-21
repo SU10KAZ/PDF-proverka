@@ -12240,6 +12240,19 @@ const app = createApp({
             (scTextFinalComparison.value && !scTextFinalComparison.value.stale)
             || (scTextDifferences.value && !scTextDifferences.value.stale)
         ));
+        const scTextAiReviewCompleted = computed(() => Boolean(
+            scTextFinalComparison.value
+            && !scTextFinalComparison.value.stale
+            && scTextFinalComparison.value.review_status === 'completed'
+        ));
+        const scCanRunTextAiReview = computed(() => Boolean(
+            scActivePair.value
+            && scTextDifferences.value
+            && !scTextDifferences.value.stale
+            && !scTextComparisonLoading.value
+            && !scTextDifferencesLoading.value
+            && !scTextAiReviewLoading.value
+        ));
         const scTextResultSummary = computed(() => {
             const finalResult = scTextFinalComparison.value;
             if (finalResult && !finalResult.stale) {
@@ -15876,6 +15889,7 @@ const app = createApp({
             scTextDifferences, scTextDifferencesLoading, scTextDifferencesError,
             scTextAiReview, scTextFinalComparison, scTextAiReviewLoading, scTextAiReviewError,
             scTextAllDifferenceGroups, scTextDifferenceGroups, scTextResultAvailable,
+            scTextAiReviewCompleted, scCanRunTextAiReview,
             scTextResultSummary, scTextHasUncertain, scTextAiTransitions,
             scTextDifferenceFilter, scTextDifferenceSearch, scTextDifferenceFilterOptions,
             scTextBucketExpanded, scToggleTextBucket,

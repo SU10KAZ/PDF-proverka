@@ -5892,9 +5892,17 @@
                         </p>
                         <p v-else>Выберите пару документов на вкладке «Загрузка документации».</p>
                     </div>
-                    <span v-if="scTextResultAvailable" class="sc-differences__ready">
-                        Готовый результат
-                    </span>
+                    <div v-if="scTextResultAvailable" class="sc-differences__head-actions">
+                        <span class="sc-differences__ready">Готовый результат</span>
+                        <button v-if="!scTextAiReviewCompleted && scTextDifferences && !scTextDifferences.stale"
+                                type="button" class="btn btn-primary"
+                                :disabled="!scCanRunTextAiReview"
+                                @click="scRunTextAiReview()">
+                            {{ scTextAiReviewLoading
+                                ? 'ИИ проверяет…'
+                                : (scTextFinalComparison ? 'Повторить ИИ-проверку' : 'Запустить ИИ-проверку') }}
+                        </button>
+                    </div>
                     <button v-else type="button" class="btn btn-primary"
                             :disabled="!scActivePair || scTextComparisonLoading || scTextDifferencesLoading || scTextAiReviewLoading"
                             @click="scTextComparison && !scTextComparison.stale ? scRunTextDifferences() : scRunTextComparison()">

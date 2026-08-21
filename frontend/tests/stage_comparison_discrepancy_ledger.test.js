@@ -105,6 +105,9 @@ describe('Stage 4 discrepancy ledger', () => {
 
   it('shows deterministic fallback without claiming AI review', () => {
     expect(html).toContain('Только детерминированная проверка');
+    expect(html).toContain('Запустить ИИ-проверку');
+    expect(html).toContain('@click="scRunTextAiReview()"');
+    expect(app).toContain('const scCanRunTextAiReview = computed(() => Boolean(');
     const review = {sheet_groups: [{id: 'g1', status: 'failed', decisions: []}]};
     expect(ledger.groupAiDiagnostics(review, 'g1')).toBeNull();
   });
@@ -114,6 +117,7 @@ describe('Stage 4 discrepancy ledger', () => {
     expect(tabButton).toContain("@click=\"scTab='diffs'\"");
     expect(tabButton).not.toContain('scRunTextAiReview');
     expect(tabButton).not.toContain('/text-ai-review');
+    expect(html).toContain('v-if="!scTextAiReviewCompleted && scTextDifferences && !scTextDifferences.stale"');
   });
 
   it('uses factual summaries and keeps uncertainty diagnostics collapsed', () => {

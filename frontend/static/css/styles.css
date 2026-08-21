@@ -4736,6 +4736,7 @@ tr.row-rejected td.sc-cell-goto {
     background: var(--card-bg);
 }
 .sc-differences__head p { margin: 5px 0 0; color: var(--text-muted); }
+.sc-differences__head-actions { display: flex; align-items: center; gap: 8px; }
 .sc-differences__ready {
     padding: 7px 11px;
     border-radius: 999px;
