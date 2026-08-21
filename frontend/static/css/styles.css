@@ -4036,15 +4036,32 @@ tr.row-rejected td.sc-cell-goto {
     cursor: pointer;
 }
 .sc-thumbs__list { display: grid; align-content: start; gap: 6px; padding: 8px; overflow-y: auto; }
+.sc-thumbs__hint { padding: 6px 10px 0; color: var(--text3); font-size: 10px; line-height: 1.35; }
+.sc-thumbs__picked { display: flex; align-items: center; gap: 5px; color: var(--accent, #0f766e); font-size: 10px; }
+.sc-thumbs__picked button {
+    border: 0;
+    color: var(--text3);
+    background: transparent;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
 .sc-thumbs__row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 18px 1fr 1fr;
+    align-items: center;
     gap: 5px;
     padding: 4px;
     border: 1px solid transparent;
     border-radius: var(--radius);
     background: transparent;
     cursor: pointer;
+}
+.sc-thumbs__num {
+    color: var(--text3);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
 }
 .sc-thumbs__row:hover { background: var(--bg2, #f8f9fa); }
 .sc-thumbs__row.is-active { border-color: var(--accent, #0f9f8f); background: rgba(15, 159, 143, .08); }
@@ -4065,6 +4082,12 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 10px;
     font-style: normal;
 }
+.sc-thumbs__cell[draggable="true"] { cursor: grab; }
+.sc-thumbs__cell.is-selected { outline: 2px solid var(--accent, #0f9f8f); outline-offset: -1px; }
+/* Пустое место — цель перестановки, поэтому оно обязано читаться как цель, а
+   не как поломанная миниатюра. */
+.sc-thumbs__cell.is-empty { border-style: dashed; background: var(--bg2, #f4f6f8); }
+.sc-thumbs__cell.is-drop { border-color: var(--accent, #0f9f8f); box-shadow: inset 0 0 0 2px var(--accent, #0f9f8f); }
 .sc-thumbs__cell small {
     position: absolute;
     right: 2px;

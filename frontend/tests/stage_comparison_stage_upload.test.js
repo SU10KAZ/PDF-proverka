@@ -126,11 +126,50 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
   });
 
+  it('numbers the pairs down the left edge of the strip', () => {
+    expect(html).toContain('<span class="sc-thumbs__num">{{ row.index + 1 }}</span>');
+    expect(css).toContain('grid-template-columns: 18px 1fr 1fr;');
+  });
+
+  it('moves marked sheets by drag and drop into empty slots', () => {
+    // двигаем ОДНУ сторону: строка — это пара, её место выводится из связей
+    expect(app).toContain('function scPlanThumbMove(side, pages, targetIndex)');
+    expect(app).toContain('function scLinksFromThumbRows(rows)');
+    expect(app).toContain('async function scMoveThumbSheets(side, pages, targetIndex)');
+    expect(app).toContain('await scPersistLinks(links, unlinked);');
+    // раскладка только по свободным местам — чужие пары не рвём
+    expect(app).toContain("if (rows[index][key].length) continue;");
+    // явной связью становится только изменённая строка
+    expect(app).toContain("reason: ['user_reordered'],");
+    expect(app).toContain('} else if (previous && previous.explicitLinkIndex !== null) {');
+    expect(html).toContain('@drop.prevent="scThumbDropOn(row, side)"');
+    expect(html).toContain(':draggable="scThumbDraggable(row, side)"');
+  });
+
+  it('marks sheets with Ctrl or Shift and drags the whole selection', () => {
+    expect(app).toContain('function scSelectThumbCell(event, row, side)');
+    expect(app).toContain('const additive = event.ctrlKey || event.metaKey;');
+    expect(app).toContain('const ranged = event.shiftKey;');
+    // обычный клик остаётся переходом к паре
+    expect(app).toContain('if (scSelectThumbCell(event, row, side)) return;');
+    expect(app).toContain('scOpenThumbRow(row);');
+    expect(html).toContain('выбрано {{ scThumbSelection.pages.length }}');
+  });
+
+  it('auto-scrolls the strip while dragging near its edges', () => {
+    // dragover при неподвижном курсоре не приходит — крутим в своём кадре
+    expect(app).toContain('function scThumbAutoScrollTick()');
+    expect(app).toContain('requestAnimationFrame(scThumbAutoScrollTick)');
+    expect(app).toContain('function scStopThumbAutoScroll()');
+    expect(app).toContain('scStopThumbAutoScroll();');
+  });
+
   it('keeps the thumbnail strip display-only', () => {
     // «как в PDF-XChange, но только отображение»: никаких действий над листами
     const panel = html.slice(html.indexOf('class="sc-thumbs"'), html.indexOf('class="sc-vector-viewer"'));
+    // перестановка листов есть, действий НАД листами (поворот, печать, удаление) — нет
     expect(panel).not.toMatch(/Повернуть|Печать|Удалить|Извлечь|Вставить/);
-    expect(panel.match(/<button/g).length).toBe(2);   // закрыть + строка полосы
+    expect(panel.match(/<button/g).length).toBe(2);   // закрыть панель + сбросить выбор
   });
 
   it('manages every PDF pair in its own draggable row', () => {

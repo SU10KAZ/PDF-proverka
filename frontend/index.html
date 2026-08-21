@@ -5633,24 +5633,41 @@
                     <aside v-if="scThumbsOpen" class="sc-thumbs" aria-label="Миниатюры листов">
                         <div class="sc-thumbs__head">
                             <span>Миниатюры</span>
+                            <span v-if="scThumbSelection.pages.length" class="sc-thumbs__picked">
+                                выбрано {{ scThumbSelection.pages.length }}
+                                <button type="button" @click.stop="scClearThumbSelection()">сбросить</button>
+                            </span>
                             <button type="button" class="sc-thumbs__close" aria-label="Закрыть миниатюры"
                                     @click="scToggleThumbs()">&times;</button>
                         </div>
+                        <p class="sc-thumbs__hint">Ctrl или Shift — отметить листы, перетаскиванием — переставить</p>
                         <div class="sc-thumbs__list">
-                            <button v-for="row in scThumbRows" :key="row.key" type="button"
-                                    class="sc-thumbs__row" :class="{'is-active': scThumbRowActive(row)}"
-                                    :title="scThumbRowTitle(row)" @click="scOpenThumbRow(row)">
+                            <div v-for="row in scThumbRows" :key="row.key"
+                                 class="sc-thumbs__row" :class="{'is-active': scThumbRowActive(row)}"
+                                 :title="scThumbRowTitle(row)" role="button" tabindex="0"
+                                 @click="scOpenThumbRow(row)"
+                                 @keydown.enter.prevent="scOpenThumbRow(row)">
+                                <span class="sc-thumbs__num">{{ row.index + 1 }}</span>
                                 <span v-for="side in ['left', 'right']" :key="row.key + '-' + side"
-                                      class="sc-thumbs__cell">
-                                    <img v-if="side === 'left' ? row.leftPage : row.rightPage"
-                                         :src="scThumbUrl(side, side === 'left' ? row.leftPage : row.rightPage)"
+                                      class="sc-thumbs__cell"
+                                      :class="{
+                                          'is-selected': scThumbSelected(side, scThumbPage(row, side)),
+                                          'is-empty': !scThumbPage(row, side),
+                                          'is-drop': scThumbDragOver.index === row.index && scThumbDragOver.side === side,
+                                      }"
+                                      :draggable="scThumbDraggable(row, side)"
+                                      @click.stop="scThumbCellClick($event, row, side)"
+                                      @dragstart="scThumbDragStart($event, row, side)"
+                                      @dragover.prevent="scThumbDragOverCell($event, row, side)"
+                                      @drop.prevent="scThumbDropOn(row, side)"
+                                      @dragend="scThumbDragEnd()">
+                                    <img v-if="scThumbPage(row, side)"
+                                         :src="scThumbUrl(side, scThumbPage(row, side))"
                                          loading="lazy" decoding="async" draggable="false" alt="">
-                                    <i v-else>нет</i>
-                                    <small v-if="side === 'left' ? row.leftPage : row.rightPage">
-                                        {{ side === 'left' ? row.leftPage : row.rightPage }}
-                                    </small>
+                                    <i v-else>пусто</i>
+                                    <small v-if="scThumbPage(row, side)">{{ scThumbPage(row, side) }}</small>
                                 </span>
-                            </button>
+                            </div>
                             <div v-if="!scThumbRows.length" class="sc-thumbs__empty">Листов нет</div>
                         </div>
                     </aside>

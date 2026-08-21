@@ -13364,6 +13364,7 @@ const app = createApp({
             if (mapped.length) {
                 return mapped.map((row, index) => ({
                     key: 'thumb-map-' + (row.key || index),
+                    index,
                     leftPage: (row.leftPages || [])[0] || null,
                     rightPage: (row.rightPages || [])[0] || null,
                     source: row,
@@ -13374,11 +13375,229 @@ const app = createApp({
             const length = Math.max(leftCount, rightCount);
             return Array.from({length}, (_, index) => ({
                 key: 'thumb-page-' + index,
+                index,
                 leftPage: index < leftCount ? index + 1 : null,
                 rightPage: index < rightCount ? index + 1 : null,
                 source: null,
             }));
         });
+
+        // ─── Перестановка листов в полосе ─────────────────────────────────
+        // Двигаем ОДНУ сторону: строка полосы — это пара, и её положение
+        // выводится из связей, а не хранится отдельно. Поэтому перестановка —
+        // это переназначение связей, после которого карта листов сверху
+        // пересобирается сама из тех же данных.
+        const scThumbSelection = reactive({side: null, pages: []});
+        const scThumbDragOver = reactive({index: null, side: null});
+        let scThumbDrag = null;
+        let scThumbAutoScroll = null;
+
+        function scThumbPage(row, side) {
+            return side === 'left' ? row.leftPage : row.rightPage;
+        }
+
+        function scThumbSelected(side, page) {
+            return Boolean(page)
+                && scThumbSelection.side === side
+                && scThumbSelection.pages.includes(Number(page));
+        }
+
+        function scThumbDraggable(row, side) {
+            // В запасном режиме (карта листов ещё не построена) переставлять
+            // нечего: связей нет, сохранять результат некуда.
+            return Boolean(row.source && scThumbPage(row, side) && !scLinkSaving.value);
+        }
+
+        function scSelectThumbCell(event, row, side) {
+            const page = Number(scThumbPage(row, side));
+            if (!page || !row.source) return false;
+            const additive = event.ctrlKey || event.metaKey;
+            const ranged = event.shiftKey;
+            if (!additive && !ranged) return false;
+            if (scThumbSelection.side !== side) {
+                scThumbSelection.side = side;
+                scThumbSelection.pages = [];
+            }
+            if (ranged && scThumbSelection.pages.length) {
+                const order = scThumbRows.value
+                    .map(item => Number(scThumbPage(item, side)))
+                    .filter(Boolean);
+                const anchor = order.indexOf(Number(scThumbSelection.pages[scThumbSelection.pages.length - 1]));
+                const target = order.indexOf(page);
+                if (anchor >= 0 && target >= 0) {
+                    const [from, to] = anchor <= target ? [anchor, target] : [target, anchor];
+                    const range = order.slice(from, to + 1);
+                    scThumbSelection.pages = [...new Set([...scThumbSelection.pages, ...range])];
+                    return true;
+                }
+            }
+            const at = scThumbSelection.pages.indexOf(page);
+            if (at >= 0) scThumbSelection.pages.splice(at, 1);
+            else scThumbSelection.pages.push(page);
+            if (!scThumbSelection.pages.length) scThumbSelection.side = null;
+            return true;
+        }
+
+        // Обычный клик — переход к паре, клик с Ctrl/Shift — пометка листа.
+        // Разделение по модификатору, а не по отдельной зоне: полоса узкая, и
+        // отдельный чекбокс съел бы место, ради которого её и открывают.
+        function scThumbCellClick(event, row, side) {
+            if (scSelectThumbCell(event, row, side)) return;
+            scOpenThumbRow(row);
+        }
+
+        function scClearThumbSelection() {
+            scThumbSelection.side = null;
+            scThumbSelection.pages = [];
+        }
+
+        // Список длиннее экрана, а перетаскивание идёт снизу вверх: без
+        // подкрутки у края до пустых мест наверху просто не дотянуться.
+        // dragover при неподвижном курсоре не приходит, поэтому крутим в
+        // отдельном кадре по последней известной точке.
+        function scThumbAutoScrollTick() {
+            if (!scThumbAutoScroll) return;
+            const {list, y} = scThumbAutoScroll;
+            const rect = list.getBoundingClientRect();
+            const zone = 48;
+            let step = 0;
+            if (y - rect.top < zone) step = -Math.ceil((zone - (y - rect.top)) / 3);
+            else if (rect.bottom - y < zone) step = Math.ceil((zone - (rect.bottom - y)) / 3);
+            if (step) list.scrollTop += step;
+            scThumbAutoScroll.frame = requestAnimationFrame(scThumbAutoScrollTick);
+        }
+
+        function scStopThumbAutoScroll() {
+            if (!scThumbAutoScroll) return;
+            cancelAnimationFrame(scThumbAutoScroll.frame);
+            scThumbAutoScroll = null;
+        }
+
+        function scThumbDragStart(event, row, side) {
+            if (!scThumbDraggable(row, side)) {
+                event.preventDefault();
+                return;
+            }
+            const page = Number(scThumbPage(row, side));
+            if (!scThumbSelected(side, page)) {
+                scThumbSelection.side = side;
+                scThumbSelection.pages = [page];
+            }
+            // Тащим в порядке строк, а не в порядке кликов — иначе выбранные
+            // листы легли бы вперемешку.
+            const order = scThumbRows.value
+                .map(item => Number(scThumbPage(item, side)))
+                .filter(item => scThumbSelection.pages.includes(item));
+            scThumbDrag = {side, pages: order};
+            if (event.dataTransfer) {
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', `${side}:${order.join(',')}`);
+            }
+            const list = document.querySelector('.sc-thumbs__list');
+            if (list) {
+                scStopThumbAutoScroll();
+                scThumbAutoScroll = {list, y: event.clientY, frame: 0};
+                scThumbAutoScroll.frame = requestAnimationFrame(scThumbAutoScrollTick);
+            }
+        }
+
+        function scThumbDragOverCell(event, row, side) {
+            if (!scThumbDrag || scThumbDrag.side !== side) return;
+            if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+            if (scThumbAutoScroll) scThumbAutoScroll.y = event.clientY;
+            scThumbDragOver.index = row.index;
+            scThumbDragOver.side = side;
+        }
+
+        function scThumbDragEnd() {
+            scThumbDrag = null;
+            scThumbDragOver.index = null;
+            scThumbDragOver.side = null;
+            scStopThumbAutoScroll();
+        }
+
+        function scThumbDropOn(row, side) {
+            const drag = scThumbDrag;
+            scThumbDragEnd();
+            if (!drag || drag.side !== side || !row.source) return;
+            scMoveThumbSheets(side, drag.pages, row.index);
+        }
+
+        // Раскладываем по ближайшим СВОБОДНЫМ местам вниз от цели и не трогаем
+        // уже сложившиеся пары: перестановка не должна молча разрывать чужую
+        // связь, которую инженер подтвердил раньше.
+        function scPlanThumbMove(side, pages, targetIndex) {
+            const key = side === 'left' ? 'leftPages' : 'rightPages';
+            const moving = pages.map(Number).filter(Boolean);
+            const rows = scSheetMapRows.value.map(row => ({
+                key: row.key,
+                leftPages: [...row.leftPages],
+                rightPages: [...row.rightPages],
+            }));
+            const movingSet = new Set(moving);
+            rows.forEach(row => {
+                row[key] = row[key].filter(page => !movingSet.has(Number(page)));
+            });
+            const queue = [...moving];
+            for (let index = Math.max(0, targetIndex); index < rows.length && queue.length; index += 1) {
+                if (rows[index][key].length) continue;
+                rows[index][key] = [queue.shift()];
+            }
+            queue.forEach(page => {
+                const row = {key: `moved-${side}-${page}`, leftPages: [], rightPages: []};
+                row[key] = [page];
+                rows.push(row);
+            });
+            return rows;
+        }
+
+        // Явными связями делаем только ИЗМЕНЁННЫЕ строки. Иначе разовая
+        // перестановка перекрасила бы всю карту в «Ручная» и стёрла бы
+        // уверенность автосопоставления на строках, которых никто не трогал.
+        function scLinksFromThumbRows(rows) {
+            const before = new Map(scSheetMapRows.value.map(row => [row.key, row]));
+            const links = [];
+            const unlinked = new Set(scUnlinkedLeftPages.value.map(Number));
+            for (const row of rows) {
+                const previous = before.get(row.key);
+                const changed = !previous
+                    || previous.leftPages.join(',') !== row.leftPages.join(',')
+                    || previous.rightPages.join(',') !== row.rightPages.join(',');
+                if (row.leftPages.length && row.rightPages.length) {
+                    row.leftPages.forEach(page => unlinked.delete(Number(page)));
+                    if (changed) {
+                        links.push({
+                            left_pages: row.leftPages,
+                            right_pages: row.rightPages,
+                            source: 'manual',
+                            confidence: 'manual',
+                            reason: ['user_reordered'],
+                        });
+                    } else if (previous && previous.explicitLinkIndex !== null) {
+                        links.push({
+                            left_pages: row.leftPages,
+                            right_pages: row.rightPages,
+                            source: previous.source || 'manual',
+                            confidence: previous.confidence || 'manual',
+                            reason: previous.reason || [],
+                        });
+                    }
+                } else if (row.leftPages.length) {
+                    // лист без пары обязан остаться без пары: без явной пометки
+                    // автосопоставление вернуло бы ему прежний правый лист
+                    row.leftPages.forEach(page => unlinked.add(Number(page)));
+                }
+            }
+            return {links, unlinked: [...unlinked].sort((a, b) => a - b)};
+        }
+
+        async function scMoveThumbSheets(side, pages, targetIndex) {
+            if (!pages.length || scLinkSaving.value) return;
+            const planned = scPlanThumbMove(side, pages, targetIndex);
+            const {links, unlinked} = scLinksFromThumbRows(planned);
+            scClearThumbSelection();
+            await scPersistLinks(links, unlinked);
+        }
 
         function scThumbRowActive(row) {
             if (row.source) return scSheetMapRowActive(row.source);
@@ -14369,6 +14588,10 @@ const app = createApp({
             // Панель миниатюр листов (только отображение и переход)
             scThumbsOpen, scToggleThumbs, scThumbRows, scThumbUrl,
             scThumbRowActive, scThumbRowTitle, scOpenThumbRow,
+            scThumbPage, scThumbSelected, scThumbDraggable, scThumbSelection,
+            scThumbDragOver, scSelectThumbCell, scClearThumbSelection,
+            scThumbDragStart, scThumbDragOverCell, scThumbDragEnd, scThumbDropOn,
+            scThumbCellClick,
             scSheetMapSideLabel, scSheetMapStatus, scSheetMapRowActive,
             scSheetMapOptions, scSheetMapSelectionValue, scApplySheetMapSelection,
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,
