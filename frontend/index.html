@@ -5929,6 +5929,8 @@
                           class="is-ai-reviewed">
                         Проверено ИИ
                     </span>
+                    <span v-else-if="scTextFinalComparison && scTextFinalComparison.review_status === 'partial'"
+                          class="is-warning">Частично проверено ИИ</span>
                     <span v-else class="is-warning">Только детерминированная проверка</span>
                 </section>
 

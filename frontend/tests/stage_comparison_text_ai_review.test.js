@@ -33,6 +33,8 @@ describe('Stage 4 semantic AI reviewer', () => {
     expect(html).toContain('ИИ скорректировал:');
     expect(html).toContain('Требует проверки:');
     expect(html).toContain('Только детерминированная проверка');
+    expect(html).toContain('Частично проверено ИИ');
+    expect(html).toContain("scTextFinalComparison.review_status === 'partial'");
     expect(html).toContain('Запустить ИИ-проверку');
     expect(html).toContain('Повторить ИИ-проверку');
     expect(app).toContain("scTextFinalComparison.value.review_status === 'completed'");
