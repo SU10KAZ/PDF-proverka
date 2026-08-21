@@ -5617,6 +5617,53 @@
                             Обработать
                         </button>
                     </section>
+                    <section v-if="scMatchState && scMatchState.links && scMatchState.links.links.length"
+                             class="sc-text-comparison-summary">
+                        <div class="sc-text-comparison-summary__head">
+                            <div>
+                                <strong>Текст</strong>
+                                <span v-if="scTextComparison && scTextComparison.stale" class="is-stale">
+                                    карта листов изменилась — нужен пересчёт
+                                </span>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary"
+                                    :disabled="scTextComparisonLoading || scLinkSaving"
+                                    @click="scRunTextComparison()">
+                                {{ scTextComparisonLoading ? 'Сравниваем…' : (scTextComparison ? 'Пересчитать текст' : 'Сравнить текст') }}
+                            </button>
+                        </div>
+                        <div v-if="scTextComparison && (scSelectedTextMetric || scTextComparison.summary)"
+                             class="sc-text-comparison-summary__metrics">
+                            <template v-if="scSelectedTextMetric">
+                                <span>На текущей связи <b>{{ scSelectedTextMetric.combined.linked_percent }}%</b></span>
+                                <span>На других листах <b>{{ scSelectedTextMetric.combined.elsewhere_percent }}%</b></span>
+                                <span>Осталось для проверки <b>{{ scSelectedTextMetric.combined.remaining_percent }}%</b></span>
+                            </template>
+                            <template v-else>
+                                <span>На текущих связях <b>{{ scTextComparison.summary.linked_percent }}%</b></span>
+                                <span>На других листах <b>{{ scTextComparison.summary.found_elsewhere_percent }}%</b></span>
+                                <span>Осталось для проверки <b>{{ scTextComparison.summary.remaining_percent }}%</b></span>
+                            </template>
+                        </div>
+                        <div v-for="hint in scSelectedTextHints" :key="hint.id"
+                             class="sc-text-link-hint" :class="{'is-strong': hint.kind === 'likely_incorrect'}">
+                            <span class="sc-text-link-hint__icon">⚠</span>
+                            <div>
+                                <strong>{{ hint.kind === 'likely_incorrect' ? 'Возможно неверно сопоставлены листы' : 'Возможна дополнительная связь' }}</strong>
+                                <span>{{ hint.actual_label }} · {{ hint.matched_fragments }} фрагм. · {{ Math.round(hint.share_of_remaining_text * 100) }}% остатка</span>
+                            </div>
+                            <div class="sc-text-link-hint__actions">
+                                <button type="button" class="btn btn-sm" @click="scOpenTextHint(hint)">Открыть</button>
+                                <button type="button" class="btn btn-sm" :disabled="scLinkSaving"
+                                        @click="scApplyTextHint(hint, false)">Добавить связь</button>
+                                <button v-if="hint.kind === 'likely_incorrect'" type="button" class="btn btn-sm"
+                                        :disabled="scLinkSaving" @click="scApplyTextHint(hint, true)">Заменить связь</button>
+                            </div>
+                        </div>
+                        <div v-if="scTextComparisonError" class="sc-text-comparison-summary__error">
+                            {{ scTextComparisonError }}
+                        </div>
+                    </section>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-shell">
                     <div class="sc-viewer-toolbar">
@@ -5733,6 +5780,11 @@
                                          class="sc-page-tile" :src="tile.url" decoding="async"
                                          draggable="false" alt=""
                                          :style="{left: tile.left + 'px', top: tile.top + 'px', width: tile.width + 'px', height: tile.height + 'px'}">
+                                    <i v-for="overlay in scTextComparisonOverlaysFor(side, scCurrentPage[side])"
+                                       :key="overlay.id" class="sc-text-comparison-mask"
+                                       :class="{'is-elsewhere': overlay.status === 'found_on_other_sheet'}"
+                                       :title="overlay.title" :aria-label="overlay.title"
+                                       :style="scTextComparisonOverlayStyle(overlay)"></i>
                                     <i v-for="(highlight, index) in scTextSearchHighlightsFor(side, scCurrentPage[side])"
                                        :key="side + '-search-' + scCurrentPage[side] + '-' + index"
                                        class="sc-text-highlight"
@@ -5773,6 +5825,12 @@
                                              :key="tile.key" class="sc-continuous-page__tile"
                                              :src="tile.url" decoding="async" draggable="false" alt=""
                                              :style="{left: tile.left + '%', top: tile.top + '%', width: tile.width + '%', height: tile.height + '%'}">
+                                        <i v-for="overlay in entry.page ? scTextComparisonOverlaysFor(side, entry.page) : []"
+                                           :key="side + '-continuous-mask-' + overlay.id"
+                                           class="sc-text-comparison-mask"
+                                           :class="{'is-elsewhere': overlay.status === 'found_on_other_sheet'}"
+                                           :title="overlay.title" :aria-label="overlay.title"
+                                           :style="scTextComparisonOverlayStyle(overlay)"></i>
                                         <i v-for="(highlight, index) in entry.page ? scTextSearchHighlightsFor(side, entry.page) : []"
                                            :key="side + '-continuous-search-' + entry.page + '-' + index"
                                            class="sc-text-highlight"

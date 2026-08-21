@@ -57,6 +57,10 @@ def sheet_links_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "sheet_links.json"
 
 
+def text_comparison_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "text_comparison.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -72,5 +76,6 @@ __all__ = [
     "pair_json_path",
     "sheet_match_suggestions_path",
     "sheet_links_path",
+    "text_comparison_path",
     "index_json_path",
 ]

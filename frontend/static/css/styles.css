@@ -4388,6 +4388,44 @@ tr.row-rejected td.sc-cell-goto {
 .sc-pair-row-status--error { color: #b91c1c; background: #fee2e2; }
 .sc-pair-row-status--incomplete { color: #92400e; background: #fef3c7; }
 .sc-pair-row-error { grid-column: 1 / -1; overflow: hidden; color: #b91c1c; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.sc-text-comparison-summary {
+    display: grid;
+    gap: 7px;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface, #fff);
+    font-size: 11px;
+}
+.sc-text-comparison-summary__head,
+.sc-text-comparison-summary__metrics,
+.sc-text-link-hint,
+.sc-text-link-hint__actions { display: flex; align-items: center; }
+.sc-text-comparison-summary__head { justify-content: space-between; gap: 10px; }
+.sc-text-comparison-summary__head > div { display: flex; align-items: baseline; gap: 8px; }
+.sc-text-comparison-summary__head .is-stale { color: #b45309; font-size: 10px; }
+.sc-text-comparison-summary__metrics { flex-wrap: wrap; gap: 5px; }
+.sc-text-comparison-summary__metrics span {
+    padding: 3px 7px;
+    border-radius: 999px;
+    color: var(--text2);
+    background: var(--bg2, #f1f5f9);
+}
+.sc-text-link-hint {
+    gap: 8px;
+    padding: 6px 8px;
+    border: 1px solid #f3d18a;
+    border-radius: 6px;
+    background: #fffbeb;
+    color: #713f12;
+}
+.sc-text-link-hint.is-strong { border-color: #f59e0b; background: #fef3c7; }
+.sc-text-link-hint__icon { flex: 0 0 auto; }
+.sc-text-link-hint > div:nth-child(2) { display: grid; min-width: 0; }
+.sc-text-link-hint > div:nth-child(2) span { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.sc-text-link-hint__actions { gap: 4px; margin-left: auto; }
+.sc-text-comparison-summary__error { color: #b91c1c; }
 /* Панель инструментов принадлежит просмотрщику, а не висит над ним отдельной
    карточкой: рамка и скругление — у общей оболочки, здесь только разделитель. */
 .sc-viewer-shell {
@@ -4478,6 +4516,33 @@ tr.row-rejected td.sc-cell-goto {
 }
 .sc-page-preview { width: 100%; height: 100%; }
 .sc-page-tile { position: absolute; z-index: 1; }
+.sc-text-comparison-mask {
+    position: absolute;
+    z-index: 2;
+    box-sizing: border-box;
+    min-width: 2px;
+    min-height: 2px;
+    border-radius: 1px;
+    background: rgba(100, 116, 139, .54);
+    box-shadow: inset 0 0 0 1px rgba(71, 85, 105, .16);
+    mix-blend-mode: multiply;
+    cursor: help;
+}
+.sc-text-comparison-mask.is-elsewhere::after {
+    content: "↗";
+    position: absolute;
+    right: -7px;
+    top: -8px;
+    display: grid;
+    width: 13px;
+    height: 13px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #475569;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.8);
+    font: 700 9px/1 sans-serif;
+}
 .sc-text-highlight {
     position: absolute;
     z-index: 3;

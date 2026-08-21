@@ -217,6 +217,30 @@ async def save_sheet_links(session_id: str, pair_id: str, request: SaveSheetLink
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.post("/sessions/{session_id}/pairs/{pair_id}/text-comparison")
+async def rebuild_text_comparison(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(store.run_text_comparison, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
+        raise HTTPException(400, f"Не удалось сравнить текст: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("deterministic text comparison failed")
+        raise HTTPException(500, f"Ошибка сравнения текста: {exc}") from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/text-comparison")
+async def get_text_comparison(session_id: str, pair_id: str):
+    try:
+        payload = await run_in_threadpool(
+            store.get_text_comparison_state, session_id, pair_id
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return payload or {"version": 1, "pair_id": pair_id, "status": "not_started"}
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-thumb")
 async def get_page_thumb(
     request: Request,

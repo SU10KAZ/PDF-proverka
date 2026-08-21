@@ -18,6 +18,7 @@ from . import paths as paths_mod
 from . import scanner as scanner_mod
 from . import document_matching
 from . import sheet_matching
+from . import text_comparison
 
 
 SHELL_KIND = "stage_comparison_shell"
@@ -363,6 +364,7 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "left_page_count": _page_count((pair["left"] or {})["pdf_path"]),
         "right_page_count": _page_count((pair["right"] or {})["pdf_path"]),
         "sheet_matching": get_sheet_matching_state(session_id, pair_id),
+        "text_comparison": get_text_comparison_state(session_id, pair_id),
     }
 
 
@@ -569,6 +571,148 @@ def save_sheet_links(
         }
         _atomic_write_json(paths_mod.sheet_links_path(session_id, pair_id), payload)
         return get_sheet_matching_state(session_id, pair_id)
+
+
+def _text_source_signature(pair: dict, links: dict) -> str:
+    """Fingerprint all read-only inputs that influence Stage 2."""
+    source: dict[str, Any] = {
+        "algorithm": "deterministic_exact_text_v1_2",
+        "links": [
+            {
+                "id": link.get("id"),
+                "left_pages": sorted(int(page) for page in link.get("left_pages") or []),
+                "right_pages": sorted(int(page) for page in link.get("right_pages") or []),
+            }
+            for link in links.get("links") or []
+        ],
+        "documents": {},
+    }
+    for side in ("left", "right"):
+        document = pair.get(side) or {}
+        entries = {}
+        for kind in ("pdf_path", "md_path"):
+            path = Path(str(document.get(kind) or ""))
+            try:
+                stat = path.stat()
+                entries[kind] = [str(path.resolve()), stat.st_size, stat.st_mtime_ns]
+            except OSError:
+                entries[kind] = [str(path), None, None]
+        source["documents"][side] = entries
+    encoded = json.dumps(source, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _sheet_labels(index: list[dict]) -> dict[int, str]:
+    labels: dict[int, str] = {}
+    for item in index:
+        page = int(item["pdf_page"])
+        sheet = str(item.get("sheet_number") or "").strip()
+        title = re.sub(r"\s+", " ", str(item.get("title") or "")).strip().rstrip(".")
+        if sheet:
+            labels[page] = f"Лист {sheet}" + (f" — {title}" if title else "")
+        else:
+            labels[page] = f"Страница {page}"
+    return labels
+
+
+def get_text_comparison_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.text_comparison_path(session_id, pair_id))
+    if not isinstance(payload, dict) or payload.get("version") != 1:
+        return None
+    current_signature = _text_source_signature(pair, _load_sheet_links(session_id, pair_id))
+    return text_comparison.public_view(
+        payload, stale=payload.get("source_signature") != current_signature
+    )
+
+
+def run_text_comparison(session_id: str, pair_id: str) -> dict:
+    """Build the deterministic text overlay without mutating PDFs or links."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        links_payload = _load_sheet_links(session_id, pair_id)
+        links = list(links_payload.get("links") or [])
+        if not links:
+            raise ValueError("accepted_sheet_links_required")
+        signature = _text_source_signature(pair, links_payload)
+        existing = _read_json(paths_mod.text_comparison_path(session_id, pair_id))
+        # Identical inputs return the byte-for-byte same deterministic result.
+        if isinstance(existing, dict) and existing.get("version") == 1 and existing.get("source_signature") == signature:
+            return text_comparison.public_view(existing, stale=False) or {}
+
+        suggestions = _load_sheet_suggestions(session_id, pair_id) or {}
+        indexes: dict[str, list[dict]] = {}
+        fragments: dict[str, list[dict]] = {}
+        fitz = _import_fitz()
+        for side, stage in (("left", "stage_1"), ("right", "stage_2")):
+            document = pair.get(side) or {}
+            pdf_path = Path(str(document.get("pdf_path") or ""))
+            markdown_path = Path(str(document.get("md_path") or ""))
+            if not markdown_path.is_file():
+                markdown_path = pdf_path.parent / "document.md"
+            if not pdf_path.is_file():
+                raise FileNotFoundError(pdf_path)
+            if not markdown_path.is_file():
+                raise FileNotFoundError(markdown_path)
+            page_count = _page_count(str(pdf_path))
+            index = list(suggestions.get(f"{side}_sheet_index") or [])
+            if not index:
+                index = sheet_matching.placeholder_sheet_index(page_count)
+            indexes[side] = index
+            fragments[side] = text_comparison.extract_document_fragments(
+                stage=stage,
+                markdown_path=markdown_path,
+                pdf_path=pdf_path,
+                sheet_index=index,
+                fitz=fitz,
+            )
+
+        comparison = text_comparison.compare_fragments(
+            fragments["left"], fragments["right"], links,
+            left_page_count=_page_count(str((pair.get("left") or {})["pdf_path"])),
+            right_page_count=_page_count(str((pair.get("right") or {})["pdf_path"])),
+        )
+        labels = {
+            "left": _sheet_labels(indexes["left"]),
+            "right": _sheet_labels(indexes["right"]),
+        }
+        metrics, hints, summary = text_comparison.build_metrics_and_hints(
+            comparison,
+            fragments["left"],
+            fragments["right"],
+            links,
+            labels["left"],
+            labels["right"],
+        )
+        payload = {
+            "version": 1,
+            "pair_id": pair_id,
+            "algorithm": "deterministic_exact_text_v1_2",
+            "generated_at": _utc_now(),
+            "source_signature": signature,
+            "fragments": fragments,
+            "matches": comparison["matches"],
+            "remaining": comparison["remaining"],
+            "remaining_status": "remaining_for_comparison",
+            "overlays": text_comparison.build_overlays(comparison["matches"], labels),
+            "link_metrics": metrics,
+            "sheet_link_hints": hints,
+            "summary": summary,
+            "constraints": {
+                "llm": False,
+                "vision": False,
+                "ocr_rerun": False,
+                "vector_graphics_comparison": False,
+                "pdf_modified": False,
+                "sheet_links_modified_automatically": False,
+            },
+        }
+        _atomic_write_json(paths_mod.text_comparison_path(session_id, pair_id), payload)
+        return text_comparison.public_view(payload, stale=False) or {}
 
 
 # MuPDF нумерует clip- и font-идентификаторы заново на каждой странице
@@ -1172,6 +1316,8 @@ __all__ = [
     "get_sheet_matching_state",
     "run_sheet_matching",
     "save_sheet_links",
+    "get_text_comparison_state",
+    "run_text_comparison",
     "render_pdf_page_svg",
     "page_svg_payload",
     "page_thumbnail_payload",

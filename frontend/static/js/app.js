@@ -11839,6 +11839,9 @@ const app = createApp({
         const scProcessing = ref(false);
         const scProcessingError = ref('');
         const scMatchState = ref(null);
+        const scTextComparison = ref(null);
+        const scTextComparisonLoading = ref(false);
+        const scTextComparisonError = ref('');
         const scLinkSaving = ref(false);
         const scLinkEditorOpen = ref(false);
         const scLinkEditorMode = ref('replace');
@@ -12179,6 +12182,25 @@ const app = createApp({
             for (const sheet of all) orderedPages.push(Number(sheet.pdf_page));
             const byPage = new Map(all.map(sheet => [Number(sheet.pdf_page), sheet]));
             return [...new Set(orderedPages)].map(page => byPage.get(page)).filter(Boolean);
+        });
+        const scSelectedTextMetric = computed(() => {
+            const metrics = (scTextComparison.value && scTextComparison.value.link_metrics) || [];
+            const leftPage = Number(scCurrentPage.left);
+            const rightPage = Number(scCurrentPage.right);
+            return metrics.find(metric =>
+                (metric.left_pages || []).map(Number).includes(leftPage)
+                && (metric.right_pages || []).map(Number).includes(rightPage)
+            ) || metrics.find(metric =>
+                (metric.left_pages || []).map(Number).includes(leftPage)
+            ) || metrics.find(metric =>
+                (metric.right_pages || []).map(Number).includes(rightPage)
+            ) || null;
+        });
+        const scSelectedTextHints = computed(() => {
+            if (scTextComparison.value && scTextComparison.value.stale) return [];
+            const hints = (scTextComparison.value && scTextComparison.value.sheet_link_hints) || [];
+            const metric = scSelectedTextMetric.value;
+            return metric ? hints.filter(hint => hint.link_id === metric.link_id) : [];
         });
 
         function scStageInfo(stageName) {
@@ -12961,6 +12983,8 @@ const app = createApp({
             scPairData.value = data;
             scActivePair.value = data.pair;
             scMatchState.value = data.sheet_matching || null;
+            scTextComparison.value = data.text_comparison || null;
+            scTextComparisonError.value = '';
             scSelectedPdf.left = data.pair.left.pdf_path;
             scSelectedPdf.right = data.pair.right.pdf_path;
             scViewerEmpty.left = false;
@@ -13116,6 +13140,87 @@ const app = createApp({
             } finally {
                 scProcessing.value = false;
             }
+        }
+
+        async function scRunTextComparison() {
+            if (!scActivePair.value || scTextComparisonLoading.value) return;
+            scTextComparisonLoading.value = true;
+            scTextComparisonError.value = '';
+            try {
+                const response = await fetch(
+                    scPairUrl(scActivePair.value.id, '/text-comparison'),
+                    {method: 'POST'},
+                );
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scTextComparison.value = data;
+            } catch (error) {
+                scTextComparisonError.value = String(error.message || error);
+            } finally {
+                scTextComparisonLoading.value = false;
+            }
+        }
+
+        function scTextComparisonOverlaysFor(side, page) {
+            if (scTextComparison.value && scTextComparison.value.stale) return [];
+            const overlays = scTextComparison.value && scTextComparison.value.overlays;
+            return (overlays && overlays[side] && overlays[side][String(Number(page))]) || [];
+        }
+
+        function scTextComparisonOverlayStyle(overlay) {
+            return {
+                left: `${Number(overlay.x || 0) * 100}%`,
+                top: `${Number(overlay.y || 0) * 100}%`,
+                width: `${Number(overlay.width || 0) * 100}%`,
+                height: `${Number(overlay.height || 0) * 100}%`,
+            };
+        }
+
+        function scOpenTextHint(hint) {
+            if (!hint) return;
+            if (scViewMode.value !== 'paged') scSetViewMode('paged');
+            const sourceSide = hint.source_side;
+            const targetSide = hint.target_side;
+            scSetViewerEmpty(sourceSide, false);
+            scSetViewerEmpty(targetSide, false);
+            scCurrentPage[sourceSide] = Number(hint.source_page);
+            scCurrentPage[targetSide] = Number(hint.actual_page);
+            nextTick(() => scZoomFit());
+        }
+
+        async function scApplyTextHint(hint, replace = false) {
+            if (!hint || scLinkSaving.value) return;
+            const links = scSheetLinks.value.map(link => ({
+                ...link,
+                left_pages: [...(link.left_pages || [])].map(Number),
+                right_pages: [...(link.right_pages || [])].map(Number),
+            }));
+            const index = links.findIndex(link => String(link.id) === String(hint.link_id));
+            if (index < 0) return;
+            const actual = Number(hint.actual_page);
+            if (hint.source_side === 'left') {
+                links[index].right_pages = replace
+                    ? [actual]
+                    : [...new Set([...links[index].right_pages, actual])].sort((a, b) => a - b);
+            } else {
+                for (let itemIndex = links.length - 1; itemIndex >= 0; itemIndex -= 1) {
+                    if (itemIndex === index) continue;
+                    links[itemIndex].left_pages = links[itemIndex].left_pages.filter(page => page !== actual);
+                    if (!links[itemIndex].left_pages.length) links.splice(itemIndex, 1);
+                }
+                const currentIndex = links.findIndex(link => String(link.id) === String(hint.link_id));
+                if (currentIndex < 0) return;
+                links[currentIndex].left_pages = replace
+                    ? [actual]
+                    : [...new Set([...links[currentIndex].left_pages, actual])].sort((a, b) => a - b);
+            }
+            const changed = links.find(link => String(link.id) === String(hint.link_id));
+            if (changed) {
+                changed.source = 'manual';
+                changed.confidence = 'manual';
+                changed.reason = ['user_accepted_text_hint'];
+            }
+            await scPersistLinks(links, scUnlinkedLeftPages.value);
         }
 
         function scSheetIndexEntryFor(side, page) {
@@ -13386,6 +13491,9 @@ const app = createApp({
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scMatchState.value = data;
+                if (scTextComparison.value) {
+                    scTextComparison.value = {...scTextComparison.value, stale: true};
+                }
                 scFocusLeftPage(scCurrentPage.left);
             } catch (error) {
                 scProcessingError.value = String(error.message || error);
@@ -15555,6 +15663,10 @@ const app = createApp({
             scActivePair, scPairData, scPairLoading,
             scProcessing, scProcessingError,
             scMatchState, scMatchSummary, scSuggestions, scLeftSuggestion,
+            scTextComparison, scTextComparisonLoading, scTextComparisonError,
+            scSelectedTextMetric, scSelectedTextHints, scRunTextComparison,
+            scTextComparisonOverlaysFor, scTextComparisonOverlayStyle,
+            scOpenTextHint, scApplyTextHint,
             scSheetLinks, scSheetMapRows, scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,
             scSheetMapCollapsed, scToggleSheetMap,
