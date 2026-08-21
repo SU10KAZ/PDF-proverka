@@ -5616,6 +5616,9 @@
                     </section>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-toolbar">
+                        <button class="btn btn-sm sc-thumbs-toggle" :class="{'is-active': scThumbsOpen}"
+                                :aria-pressed="scThumbsOpen ? 'true' : 'false'"
+                                title="Миниатюры листов" @click="scToggleThumbs()">Миниатюры</button>
                         <label><input type="checkbox" v-model="scSyncView"> Синхронный вид</label>
                         <span class="sc-viewer-hint" v-if="scViewMode === 'paged'">Ctrl + колесо — масштаб, колесо — прокрутка, перетаскивание — сдвиг</span>
                         <span class="sc-viewer-hint" v-else>Непрерывная прокрутка всех страниц, Ctrl + колесо — масштаб</span>
@@ -5626,6 +5629,31 @@
                         <button class="btn btn-sm" @click="scZoomFit()">Вписать</button>
                         <button class="btn btn-sm" title="1 пункт PDF = 1 пиксель" @click="scZoomActualSize()">1:1</button>
                     </div>
+                    <div class="sc-viewer-layout">
+                    <aside v-if="scThumbsOpen" class="sc-thumbs" aria-label="Миниатюры листов">
+                        <div class="sc-thumbs__head">
+                            <span>Миниатюры</span>
+                            <button type="button" class="sc-thumbs__close" aria-label="Закрыть миниатюры"
+                                    @click="scToggleThumbs()">&times;</button>
+                        </div>
+                        <div class="sc-thumbs__list">
+                            <button v-for="row in scThumbRows" :key="row.key" type="button"
+                                    class="sc-thumbs__row" :class="{'is-active': scThumbRowActive(row)}"
+                                    :title="scThumbRowTitle(row)" @click="scOpenThumbRow(row)">
+                                <span v-for="side in ['left', 'right']" :key="row.key + '-' + side"
+                                      class="sc-thumbs__cell">
+                                    <img v-if="side === 'left' ? row.leftPage : row.rightPage"
+                                         :src="scThumbUrl(side, side === 'left' ? row.leftPage : row.rightPage)"
+                                         loading="lazy" decoding="async" draggable="false" alt="">
+                                    <i v-else>нет</i>
+                                    <small v-if="side === 'left' ? row.leftPage : row.rightPage">
+                                        {{ side === 'left' ? row.leftPage : row.rightPage }}
+                                    </small>
+                                </span>
+                            </button>
+                            <div v-if="!scThumbRows.length" class="sc-thumbs__empty">Листов нет</div>
+                        </div>
+                    </aside>
                     <div class="sc-vector-viewer">
                         <section v-for="side in ['left', 'right']" :key="side" class="sc-vector-pane-wrap">
                             <div class="sc-vector-pane-head">
@@ -5680,6 +5708,7 @@
                                     title="Непрерывный режим" aria-label="Непрерывный режим"
                                     @click="scSetViewMode('continuous')"><i class="sc-view-mode-icon sc-view-mode-icon--continuous"></i></button>
                         </div>
+                    </div>
                     </div>
                 </template>
             </div>

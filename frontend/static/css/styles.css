@@ -3998,6 +3998,85 @@ tr.row-rejected td.sc-cell-goto {
     text-transform: uppercase;
 }
 .sc-shell-muted { color: var(--text3); font-size: 12px; }
+/* ─── Панель миниатюр листов ─────────────────────────────────────────────
+   Только ориентация: пара мини-кропов в строке и переход по клику. Ширина
+   колонки фиксированная, потому что просмотрщик рядом обязан сохранять свою
+   ширину при открытии панели, а не «прыгать» вслед за содержимым. */
+.sc-viewer-layout { display: flex; align-items: flex-start; gap: 12px; }
+.sc-viewer-layout > .sc-vector-viewer { flex: 1; min-width: 0; }
+.sc-thumbs {
+    display: flex;
+    flex: 0 0 268px;
+    flex-direction: column;
+    max-height: min(72vh, 900px);
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--surface, #fff);
+}
+.sc-thumbs__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border2);
+    color: var(--text3);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.sc-thumbs__close {
+    border: 0;
+    background: transparent;
+    color: var(--text3);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+}
+.sc-thumbs__list { display: grid; align-content: start; gap: 6px; padding: 8px; overflow-y: auto; }
+.sc-thumbs__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    padding: 4px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    background: transparent;
+    cursor: pointer;
+}
+.sc-thumbs__row:hover { background: var(--bg2, #f8f9fa); }
+.sc-thumbs__row.is-active { border-color: var(--accent, #0f9f8f); background: rgba(15, 159, 143, .08); }
+.sc-thumbs__row:focus-visible { outline: 2px solid #60a5fa; outline-offset: -2px; }
+.sc-thumbs__cell {
+    position: relative;
+    display: block;
+    min-height: 54px;
+    border: 1px solid var(--border2);
+    background: #fff;
+}
+.sc-thumbs__cell img { display: block; width: 100%; height: auto; }
+.sc-thumbs__cell i {
+    display: grid;
+    min-height: 54px;
+    place-items: center;
+    color: var(--text3);
+    font-size: 10px;
+    font-style: normal;
+}
+.sc-thumbs__cell small {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: rgba(15, 23, 42, .72);
+    color: #fff;
+    font-size: 9px;
+}
+.sc-thumbs__empty { padding: 16px; color: var(--text3); font-size: 12px; text-align: center; }
+.sc-thumbs-toggle.is-active { border-color: var(--accent, #0f9f8f); color: var(--accent, #0f9f8f); }
 .sc-vector-viewer { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .sc-upload-button { position: relative; overflow: hidden; }
 .sc-upload-button input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
@@ -4401,6 +4480,8 @@ tr.row-rejected td.sc-cell-goto {
 .sc-sheet-map-editor select { flex: 1; min-width: 260px; }
 
 @media (max-width: 900px) {
+    .sc-viewer-layout { flex-direction: column; }
+    .sc-thumbs { flex: 0 0 auto; align-self: stretch; max-height: 40vh; }
     .sc-vector-viewer { grid-template-columns: 1fr; }
     .sc-vector-pane,
     .sc-continuous-pane { height: 60vh; }

@@ -13333,6 +13333,101 @@ const app = createApp({
             await scPersistLinks(links, unlinked);
         }
 
+        // ─── Панель миниатюр листов ───────────────────────────────────────
+        // Нужна только для ориентации: мини-кропы пар листов слева, клик —
+        // переход. Никаких действий над страницами (поворот, печать, удаление)
+        // здесь нет и не предполагается.
+        const scThumbsOpen = ref(false);
+        try { scThumbsOpen.value = localStorage.getItem('stage-comparison:thumbs') === '1'; } catch (_) {}
+        watch(scThumbsOpen, open => {
+            try { localStorage.setItem('stage-comparison:thumbs', open ? '1' : '0'); } catch (_) {}
+        });
+
+        function scToggleThumbs() {
+            scThumbsOpen.value = !scThumbsOpen.value;
+        }
+
+        function scThumbUrl(side, page) {
+            if (!scSession.value || !scActivePair.value || !page) return '';
+            const sessionId = encodeURIComponent(scSession.value.id);
+            const pairId = encodeURIComponent(scActivePair.value.id);
+            return `/api/stage-comparison/sessions/${sessionId}/pairs/${pairId}`
+                + `/page-thumb?side=${side}&page=${page}&width=200`;
+        }
+
+        // Карта листов уже описывает пары, поэтому полоса строится из неё —
+        // иначе связи пришлось бы считать второй раз и они бы разъезжались.
+        // Пока карты нет, показываем страницы как есть: панель должна работать
+        // сразу после открытия пары, до всякого сопоставления.
+        const scThumbRows = computed(() => {
+            const mapped = scSheetMapRows.value;
+            if (mapped.length) {
+                return mapped.map((row, index) => ({
+                    key: 'thumb-map-' + (row.key || index),
+                    leftPage: (row.leftPages || [])[0] || null,
+                    rightPage: (row.rightPages || [])[0] || null,
+                    source: row,
+                }));
+            }
+            const leftCount = scPageCount('left');
+            const rightCount = scPageCount('right');
+            const length = Math.max(leftCount, rightCount);
+            return Array.from({length}, (_, index) => ({
+                key: 'thumb-page-' + index,
+                leftPage: index < leftCount ? index + 1 : null,
+                rightPage: index < rightCount ? index + 1 : null,
+                source: null,
+            }));
+        });
+
+        function scThumbRowActive(row) {
+            if (row.source) return scSheetMapRowActive(row.source);
+            return Number(row.leftPage) === Number(scCurrentPage.left);
+        }
+
+        function scThumbRowTitle(row) {
+            if (!row.source) {
+                return `Страница ${row.leftPage || '—'} ↔ страница ${row.rightPage || '—'}`;
+            }
+            return scSheetMapSideLabel(row.source.leftPages, 'left')
+                + ' ↔ ' + scSheetMapSideLabel(row.source.rightPages, 'right');
+        }
+
+        function scOpenThumbRow(row) {
+            if (row.source) {
+                scOpenSheetMapRow(row.source);
+                return;
+            }
+            if (row.leftPage) scFocusLeftPage(row.leftPage);
+            if (row.rightPage) scSwitchRightPage(row.rightPage);
+        }
+
+        // Полоса длиннее экрана, и при листании в просмотрщике активная пара
+        // уходит за край. Крутим сам список, а не страницу: scrollIntoView
+        // утащил бы за собой панели просмотрщика.
+        function scRevealActiveThumb() {
+            const list = document.querySelector('.sc-thumbs__list');
+            const row = list && list.querySelector('.sc-thumbs__row.is-active');
+            if (!row) return;
+            const listRect = list.getBoundingClientRect();
+            const rowRect = row.getBoundingClientRect();
+            if (rowRect.top < listRect.top) {
+                list.scrollTop -= listRect.top - rowRect.top;
+            } else if (rowRect.bottom > listRect.bottom) {
+                list.scrollTop += rowRect.bottom - listRect.bottom;
+            }
+        }
+
+        watch(
+            () => [scCurrentPage.left, scCurrentPage.right, scThumbsOpen.value],
+            () => {
+                if (currentView.value === 'stage-comparison' && scThumbsOpen.value) {
+                    scRevealActiveThumb();
+                }
+            },
+            {flush: 'post'},
+        );
+
         function scPageCount(side) {
             return Number(scPairData.value && scPairData.value[`${side}_page_count`] || 0);
         }
@@ -14271,6 +14366,9 @@ const app = createApp({
             scPairRowStatus, scPairRowBusy, scPairRowError,
             scAutoMatchDocumentProjects, scSaveDocumentPairing,
             scSheetIndexEntryFor, scSheetIndexTitle, scReasonLabel,
+            // Панель миниатюр листов (только отображение и переход)
+            scThumbsOpen, scToggleThumbs, scThumbRows, scThumbUrl,
+            scThumbRowActive, scThumbRowTitle, scOpenThumbRow,
             scSheetMapSideLabel, scSheetMapStatus, scSheetMapRowActive,
             scSheetMapOptions, scSheetMapSelectionValue, scApplySheetMapSelection,
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,

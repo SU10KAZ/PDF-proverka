@@ -102,6 +102,37 @@ describe('documentation comparison shell', () => {
     expect(app).not.toContain('while (right.length < length) right.push(null);');
   });
 
+  it('opens a left thumbnail strip of sheet pairs on a button', () => {
+    expect(html).toContain('title="Миниатюры листов" @click="scToggleThumbs()"');
+    expect(html).toContain('<aside v-if="scThumbsOpen" class="sc-thumbs"');
+    expect(html).toContain('class="sc-thumbs__row"');
+    expect(html).toContain("scOpenThumbRow(row)");
+    // ленивая загрузка нативная: полоса тянет только видимые кропы
+    expect(html).toContain('loading="lazy" decoding="async"');
+    expect(app).toContain('/page-thumb?side=${side}&page=${page}&width=200');
+    expect(css).toContain('.sc-viewer-layout { display: flex;');
+    expect(css).toContain('flex: 0 0 268px;');
+  });
+
+  it('builds the strip from the sheet map and falls back to raw pages', () => {
+    // связи считаются один раз — иначе полоса и карта разъедутся
+    expect(app).toContain('const mapped = scSheetMapRows.value;');
+    expect(app).toContain("key: 'thumb-map-'");
+    expect(app).toContain("key: 'thumb-page-'");
+    expect(app).toContain('function scOpenThumbRow(row)');
+    expect(app).toContain('scOpenSheetMapRow(row.source);');
+    // активная пара сама подкручивается: крутим список, не страницу
+    expect(app).toContain('function scRevealActiveThumb()');
+    expect(app).not.toContain(".sc-thumbs__row.is-active').scrollIntoView");
+  });
+
+  it('keeps the thumbnail strip display-only', () => {
+    // «как в PDF-XChange, но только отображение»: никаких действий над листами
+    const panel = html.slice(html.indexOf('class="sc-thumbs"'), html.indexOf('class="sc-vector-viewer"'));
+    expect(panel).not.toMatch(/Повернуть|Печать|Удалить|Извлечь|Вставить/);
+    expect(panel.match(/<button/g).length).toBe(2);   // закрыть + строка полосы
+  });
+
   it('manages every PDF pair in its own draggable row', () => {
     expect(html).not.toContain('id="sc-left-pdf"');
     expect(html).not.toContain('id="sc-right-pdf"');
