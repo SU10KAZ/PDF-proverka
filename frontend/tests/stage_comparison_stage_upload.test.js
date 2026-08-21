@@ -347,8 +347,8 @@ describe('documentation comparison shell', () => {
   it('offers paged tile and lazy continuous preview modes', () => {
     expect(html).toContain('aria-label="Постраничный режим"');
     expect(html).toContain('aria-label="Непрерывный режим"');
-    expect(html).toContain('v-for="page in scContinuousPages(side)"');
-    expect(html).toContain(':src="scContinuousPreview[side][page]"');
+    expect(html).toContain('v-for="entry in scContinuousEntries(side)"');
+    expect(html).toContain(':src="scContinuousPreview[side][entry.page]"');
     expect(app).toContain('function scLoadContinuousWindow(side, centerPage)');
     expect(app).toContain('for (let page = Math.max(1, center - 2)');
     expect(app).toContain("'stage-comparison:view-mode'");

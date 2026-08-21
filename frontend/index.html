@@ -5685,6 +5685,7 @@
                                 <div class="sc-page-controls">
                                     <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] <= 1" @click="scChangePage(side, -1)">←</button>
                                     <span v-if="scViewerEmpty[side]">Пусто</span>
+                                    <span v-else-if="scViewMode === 'continuous' && scContinuousCurrentIsPlaceholder(side)">Нет листа</span>
                                     <span v-else>{{ scCurrentPage[side] }} / {{ scPageCount(side) }}</span>
                                     <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] >= scPageCount(side)" @click="scChangePage(side, 1)">→</button>
                                 </div>
@@ -5719,25 +5720,30 @@
                                  @pointercancel="scOnContinuousPanEnd($event)"
                                  @dblclick="scOnContinuousDoubleClick(side, $event)">
                                 <template v-if="!scViewerEmpty[side]">
-                                    <article v-for="page in scContinuousPages(side)" :key="side+'-continuous-'+page"
+                                    <article v-for="entry in scContinuousEntries(side)" :key="side+'-continuous-'+entry.key"
                                              class="sc-continuous-page"
-                                             :class="{'is-current': page === scCurrentPage[side]}"
-                                             :data-sc-page="page"
-                                             :style="scContinuousPageStyle(side, page)">
-                                        <img v-if="scContinuousPreview[side][page]"
+                                             :class="{'is-current': scContinuousSlotActive(side, entry), 'is-placeholder': entry.placeholder}"
+                                             :data-sc-slot="entry.key"
+                                             :data-sc-page="entry.page || null"
+                                             :data-sc-counterpart-page="entry.counterpartPage || null"
+                                             :style="scContinuousPageStyle(side, entry)">
+                                        <img v-if="entry.page && scContinuousPreview[side][entry.page]"
                                              class="sc-continuous-page__preview"
-                                             :src="scContinuousPreview[side][page]" loading="lazy" decoding="async"
+                                             :src="scContinuousPreview[side][entry.page]" loading="lazy" decoding="async"
                                              draggable="false" alt=""
-                                             @load="scOnContinuousPreviewLoad(side, page)"
-                                             @error="scOnContinuousPreviewError(side, page)">
-                                        <img v-for="tile in scContinuousTiles[side][page] || []"
+                                             @load="scOnContinuousPreviewLoad(side, entry.page)"
+                                             @error="scOnContinuousPreviewError(side, entry.page)">
+                                        <img v-for="tile in entry.page ? (scContinuousTiles[side][entry.page] || []) : []"
                                              :key="tile.key" class="sc-continuous-page__tile"
                                              :src="tile.url" decoding="async" draggable="false" alt=""
                                              :style="{left: tile.left + '%', top: tile.top + '%', width: tile.width + '%', height: tile.height + '%'}">
-                                        <div v-if="!scContinuousPreview[side][page] || scContinuousLoading[side][page] || scContinuousError[side][page]"
+                                        <div v-if="entry.placeholder" class="sc-continuous-page__missing">
+                                            <span>Лист отсутствует в этой стадии</span>
+                                        </div>
+                                        <div v-else-if="!scContinuousPreview[side][entry.page] || scContinuousLoading[side][entry.page] || scContinuousError[side][entry.page]"
                                              class="sc-continuous-page__placeholder">
-                                            <span v-if="scContinuousError[side][page]">{{ scContinuousError[side][page] }}</span>
-                                            <span v-else>{{ scContinuousLoading[side][page] ? 'Загрузка…' : 'Страница ' + page }}</span>
+                                            <span v-if="scContinuousError[side][entry.page]">{{ scContinuousError[side][entry.page] }}</span>
+                                            <span v-else>{{ scContinuousLoading[side][entry.page] ? 'Загрузка…' : 'Страница ' + entry.page }}</span>
                                         </div>
                                     </article>
                                 </template>

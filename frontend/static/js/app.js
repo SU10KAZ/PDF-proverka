@@ -11891,6 +11891,7 @@ const app = createApp({
         const scContinuousDims = reactive({left: {}, right: {}});
         const scContinuousSignatures = reactive({left: {}, right: {}});
         const scContinuousTiles = reactive({left: {}, right: {}});
+        const scContinuousCurrentSlot = reactive({left: '', right: ''});
         const scViews = {left: {zoom: 1, cx: 0.5, cy: 0.5}, right: {zoom: 1, cx: 0.5, cy: 0.5}};
         const scPageDims = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
         const scPaneSize = {left: {w: 0, h: 0}, right: {w: 0, h: 0}};
@@ -12058,6 +12059,32 @@ const app = createApp({
                 || left.sortRight - right.sortRight
                 || left.sequence - right.sequence
             ));
+        });
+        // Непрерывный просмотр строится по ОБЩИМ строкам карты, а не по двум
+        // независимым спискам PDF-страниц. Если лист существует только в одной
+        // стадии, в другой остаётся слот-заглушка — последующие пары больше не
+        // съезжают вверх и сохраняют одинаковую вертикальную последовательность.
+        const scContinuousSlots = computed(() => {
+            const rows = scSheetMapRows.value;
+            if (!rows.length) {
+                const length = Math.max(scPageCount('left'), scPageCount('right'));
+                return Array.from({length}, (_, index) => ({
+                    key: `page-slot-${index + 1}`,
+                    leftPage: index < scPageCount('left') ? index + 1 : null,
+                    rightPage: index < scPageCount('right') ? index + 1 : null,
+                }));
+            }
+            return rows.flatMap(row => {
+                const leftPages = (row.leftPages || []).map(Number).filter(Boolean);
+                const rightPages = (row.rightPages || []).map(Number).filter(Boolean);
+                const length = Math.max(1, leftPages.length, rightPages.length);
+                return Array.from({length}, (_, index) => ({
+                    key: `${row.key}:${index}`,
+                    rowKey: row.key,
+                    leftPage: leftPages[index] || null,
+                    rightPage: rightPages[index] || null,
+                }));
+            });
         });
         const scCurrentExplicitLinks = computed(() => scSheetLinks.value.filter(link =>
             (link.left_pages || []).map(Number).includes(Number(scCurrentPage.left))
@@ -12877,6 +12904,7 @@ const app = createApp({
                 scContinuousRequests[side].clear();
                 scContinuousProgrammaticTarget[side] = null;
                 scContinuousPageFromScroll[side] = null;
+                scContinuousCurrentSlot[side] = '';
                 if (scContinuousTileRefreshTimer[side]) clearTimeout(scContinuousTileRefreshTimer[side]);
                 scContinuousTileRefreshTimer[side] = 0;
                 if (scContinuousProgrammaticTimer[side]) clearTimeout(scContinuousProgrammaticTimer[side]);
@@ -13069,12 +13097,18 @@ const app = createApp({
         }
 
         function scSheetMapRowActive(row) {
+            const activeSlot = scContinuousSlots.value.find(slot =>
+                slot.key === scContinuousCurrentSlot.left
+                || slot.key === scContinuousCurrentSlot.right
+            );
+            const continuousRowMatches = scViewMode.value === 'continuous'
+                && activeSlot && activeSlot.rowKey === row.key;
             const leftMatches = row.leftPages.length
                 ? !scViewerEmpty.left && row.leftPages.includes(Number(scCurrentPage.left))
-                : scViewerEmpty.left;
+                : continuousRowMatches || scViewerEmpty.left;
             const rightMatches = row.rightPages.length
                 ? !scViewerEmpty.right && row.rightPages.includes(Number(scCurrentPage.right))
-                : scViewerEmpty.right;
+                : continuousRowMatches || scViewerEmpty.right;
             return leftMatches && rightMatches;
         }
 
@@ -13102,6 +13136,7 @@ const app = createApp({
             scContinuousTiles[side] = {};
             scContinuousProgrammaticTarget[side] = null;
             scContinuousPageFromScroll[side] = null;
+            scContinuousCurrentSlot[side] = '';
             if (scContinuousTileRefreshTimer[side]) clearTimeout(scContinuousTileRefreshTimer[side]);
             scContinuousTileRefreshTimer[side] = 0;
             if (scContinuousProgrammaticTimer[side]) clearTimeout(scContinuousProgrammaticTimer[side]);
@@ -13111,6 +13146,27 @@ const app = createApp({
         }
 
         function scOpenSheetMapRow(row) {
+            if (scViewMode.value === 'continuous') {
+                const slot = scContinuousSlots.value.find(item => item.rowKey === row.key);
+                for (const side of ['left', 'right']) {
+                    const pages = side === 'left' ? row.leftPages : row.rightPages;
+                    scContinuousPageFromScroll[side] = pages[0] || scCurrentPage[side];
+                    scSetViewerEmpty(side, scPageCount(side) <= 0);
+                    if (pages.length) {
+                        scCurrentPage[side] = pages[0];
+                        scLoadContinuousWindow(side, pages[0]);
+                    }
+                    if (slot) scContinuousCurrentSlot[side] = slot.key;
+                }
+                if (slot) {
+                    nextTick(() => {
+                        scScrollContinuousToSlot('left', slot.key);
+                        scScrollContinuousToSlot('right', slot.key);
+                    });
+                }
+                scLinkEditorOpen.value = false;
+                return;
+            }
             for (const side of ['left', 'right']) {
                 const pages = side === 'left' ? row.leftPages : row.rightPages;
                 scSetViewerEmpty(side, !pages.length);
@@ -13130,7 +13186,41 @@ const app = createApp({
             return labels[reason] || reason;
         }
 
+        function scNavigateContinuousPage(side, page) {
+            const sourcePage = Math.min(
+                scPageCount(side) || 1,
+                Math.max(1, Number(page) || 1),
+            );
+            const slot = scContinuousSlotForPage(side, sourcePage);
+            const targetSide = side === 'left' ? 'right' : 'left';
+            const targetPage = slot
+                && (targetSide === 'left' ? slot.leftPage : slot.rightPage);
+            scContinuousPageFromScroll[side] = sourcePage;
+            scSetViewerEmpty(side, scPageCount(side) <= 0);
+            scCurrentPage[side] = sourcePage;
+            scLoadContinuousWindow(side, sourcePage);
+            if (slot) {
+                scContinuousCurrentSlot[side] = slot.key;
+                scContinuousCurrentSlot[targetSide] = slot.key;
+                scContinuousPageFromScroll[targetSide] = targetPage || scCurrentPage[targetSide];
+                scSetViewerEmpty(targetSide, scPageCount(targetSide) <= 0);
+                if (targetPage) {
+                    scCurrentPage[targetSide] = targetPage;
+                    scLoadContinuousWindow(targetSide, targetPage);
+                }
+                nextTick(() => {
+                    scScrollContinuousToSlot(side, slot.key);
+                    scScrollContinuousToSlot(targetSide, slot.key);
+                });
+            }
+        }
+
         function scFocusLeftPage(page) {
+            if (scViewMode.value === 'continuous') {
+                scNavigateContinuousPage('left', page);
+                scLinkEditorOpen.value = false;
+                return;
+            }
             scSetViewerEmpty('left', false);
             scCurrentPage.left = Math.min(scPageCount('left') || 1, Math.max(1, Number(page) || 1));
             const rightPages = scCurrentRightPages.value;
@@ -13140,6 +13230,10 @@ const app = createApp({
         }
 
         function scSwitchRightPage(page) {
+            if (scViewMode.value === 'continuous') {
+                scNavigateContinuousPage('right', page);
+                return;
+            }
             scSetViewerEmpty('right', false);
             scCurrentPage.right = Math.min(scPageCount('right') || 1, Math.max(1, Number(page) || 1));
         }
@@ -13718,6 +13812,13 @@ const app = createApp({
 
         function scChangePage(side, delta) {
             const limit = scPageCount(side);
+            if (scViewMode.value === 'continuous') {
+                scNavigateContinuousPage(
+                    side,
+                    Math.min(limit || 1, Math.max(1, scCurrentPage[side] + delta)),
+                );
+                return;
+            }
             scSetViewerEmpty(side, false);
             scCurrentPage[side] = Math.min(limit || 1, Math.max(1, scCurrentPage[side] + delta));
             if (side === 'left') scFocusLeftPage(scCurrentPage.left);
@@ -14090,12 +14191,46 @@ const app = createApp({
             if (element) scScheduleView();
         }
 
-        function scContinuousPages(side) {
-            return Array.from({length: scPageCount(side)}, (_, index) => index + 1);
+        function scContinuousEntries(side) {
+            const pageKey = side === 'left' ? 'leftPage' : 'rightPage';
+            const counterpartKey = side === 'left' ? 'rightPage' : 'leftPage';
+            return scContinuousSlots.value.map(slot => ({
+                key: slot.key,
+                page: slot[pageKey] || null,
+                counterpartPage: slot[counterpartKey] || null,
+                placeholder: !slot[pageKey],
+            }));
         }
 
-        function scContinuousPageStyle(side, page) {
-            const dims = scContinuousDims[side][page];
+        function scContinuousSlotForPage(side, page) {
+            const pageKey = side === 'left' ? 'leftPage' : 'rightPage';
+            return scContinuousSlots.value.find(slot =>
+                Number(slot[pageKey]) === Number(page)
+            ) || null;
+        }
+
+        function scContinuousCurrentIsPlaceholder(side) {
+            const slot = scContinuousSlots.value.find(item =>
+                item.key === scContinuousCurrentSlot[side]
+            );
+            const pageKey = side === 'left' ? 'leftPage' : 'rightPage';
+            return Boolean(slot && !slot[pageKey]);
+        }
+
+        function scContinuousSlotActive(side, entry) {
+            if (scContinuousCurrentSlot[side]) {
+                return entry.key === scContinuousCurrentSlot[side];
+            }
+            return Boolean(entry.page && Number(entry.page) === Number(scCurrentPage[side]));
+        }
+
+        function scContinuousPageStyle(side, entry) {
+            const page = typeof entry === 'object' ? entry.page : entry;
+            const counterpartPage = typeof entry === 'object' ? entry.counterpartPage : null;
+            const targetSide = side === 'left' ? 'right' : 'left';
+            const dims = page
+                ? scContinuousDims[side][page]
+                : counterpartPage ? scContinuousDims[targetSide][counterpartPage] : null;
             const ratio = dims && dims.w && dims.h ? `${dims.w} / ${dims.h}` : '1.414 / 1';
             return {
                 width: `${(scContinuousZoom.value * 100).toFixed(2)}%`,
@@ -14119,7 +14254,7 @@ const app = createApp({
             const contentY = pane.scrollTop + viewportY;
             let chosen = null;
             let nearestDistance = Infinity;
-            for (const sheet of pane.querySelectorAll('[data-sc-page]')) {
+            for (const sheet of pane.querySelectorAll('[data-sc-slot]')) {
                 const top = sheet.offsetTop;
                 const bottom = top + sheet.offsetHeight;
                 if (contentY >= top && contentY <= bottom) {
@@ -14134,7 +14269,9 @@ const app = createApp({
             }
             if (!chosen || !chosen.offsetWidth || !chosen.offsetHeight) return;
             return {
-                page: Number(chosen.dataset.scPage),
+                slot: String(chosen.dataset.scSlot || ''),
+                page: Number(chosen.dataset.scPage) || null,
+                counterpartPage: Number(chosen.dataset.scCounterpartPage) || null,
                 x: Math.min(1, Math.max(0, (contentX - chosen.offsetLeft) / chosen.offsetWidth)),
                 y: Math.min(1, Math.max(0, (contentY - chosen.offsetTop) / chosen.offsetHeight)),
                 viewportX: pane.clientWidth ? viewportX / pane.clientWidth : 0.5,
@@ -14177,7 +14314,9 @@ const app = createApp({
         function scSetContinuousAnchor(side, page, anchor) {
             const pane = scContinuousPaneRefs[side];
             if (!pane || scViewerEmpty[side] || !anchor) return;
-            const sheet = pane.querySelector(`[data-sc-page="${Number(page)}"]`);
+            const sheet = anchor.slot
+                ? pane.querySelector(`[data-sc-slot="${anchor.slot}"]`)
+                : pane.querySelector(`[data-sc-page="${Number(page)}"]`);
             if (!sheet) return;
             const viewportX = (Number(anchor.viewportX) || 0) * pane.clientWidth;
             const viewportY = (Number(anchor.viewportY) || 0) * pane.clientHeight;
@@ -14191,12 +14330,26 @@ const app = createApp({
         }
 
         function scScrollContinuousToPage(side, page) {
+            const slot = scContinuousSlotForPage(side, page);
+            if (slot) scContinuousCurrentSlot[side] = slot.key;
             scSetContinuousAnchor(side, page, {
+                slot: slot && slot.key,
                 x: 0.5, y: 0.5, viewportX: 0.5, viewportY: 0.5,
             });
         }
 
+        function scScrollContinuousToSlot(side, slot) {
+            scContinuousCurrentSlot[side] = slot;
+            scSetContinuousAnchor(side, null, {
+                slot, x: 0.5, y: 0.5, viewportX: 0.5, viewportY: 0.5,
+            });
+        }
+
         function scContinuousCounterpart(side, page) {
+            const slot = scContinuousSlotForPage(side, page);
+            if (slot) {
+                return side === 'left' ? slot.rightPage : slot.leftPage;
+            }
             const sourceKey = side === 'left' ? 'leftPages' : 'rightPages';
             const targetKey = side === 'left' ? 'rightPages' : 'leftPages';
             const row = scSheetMapRows.value.find(item =>
@@ -14224,33 +14377,47 @@ const app = createApp({
             scCurrentPage[side] = limited;
         }
 
-        function scUpdateContinuousPages(side, page) {
-            scSetContinuousPageFromScroll(side, page);
+        function scUpdateContinuousPages(side, anchorOrPage) {
+            const anchor = typeof anchorOrPage === 'object'
+                ? anchorOrPage
+                : {page: Number(anchorOrPage) || null};
+            if (anchor.slot) scContinuousCurrentSlot[side] = anchor.slot;
+            if (anchor.page) scSetContinuousPageFromScroll(side, anchor.page);
             scLinkEditorOpen.value = false;
             if (!scSyncView.value) return null;
             const targetSide = side === 'left' ? 'right' : 'left';
-            const targetPage = scContinuousCounterpart(side, page);
-            if (!targetPage) return null;
-            if (scViewerEmpty[targetSide]) scContinuousPageFromScroll[targetSide] = targetPage;
+            const slot = anchor.slot
+                ? scContinuousSlots.value.find(item => item.key === anchor.slot)
+                : null;
+            const targetPage = anchor.counterpartPage || (slot
+                ? (targetSide === 'left' ? slot.leftPage : slot.rightPage)
+                : scContinuousCounterpart(side, anchor.page));
+            if (anchor.slot) scContinuousCurrentSlot[targetSide] = anchor.slot;
+            if (!scPageCount(targetSide)) return null;
+            if (scViewerEmpty[targetSide]) {
+                scContinuousPageFromScroll[targetSide] = targetPage || scCurrentPage[targetSide];
+            }
             scSetViewerEmpty(targetSide, false);
-            scSetContinuousPageFromScroll(targetSide, targetPage);
-            return {side: targetSide, page: targetPage};
+            if (targetPage) scSetContinuousPageFromScroll(targetSide, targetPage);
+            return {side: targetSide, page: targetPage || null};
         }
 
         function scSyncContinuousAnchor(side, anchor) {
             if (!scSyncView.value || !anchor) return;
             const targetSide = side === 'left' ? 'right' : 'left';
-            const targetPage = scContinuousCounterpart(side, anchor.page);
-            if (!targetPage || scViewerEmpty[targetSide]) return;
-            scLoadContinuousWindow(targetSide, targetPage);
+            const targetPage = anchor.counterpartPage
+                || (anchor.page ? scContinuousCounterpart(side, anchor.page) : null);
+            if (!scPageCount(targetSide)) return;
+            scSetViewerEmpty(targetSide, false);
+            if (targetPage) scLoadContinuousWindow(targetSide, targetPage);
             nextTick(() => scSetContinuousAnchor(targetSide, targetPage, anchor));
         }
 
         function scContinuousZoomAt(side, multiplier, clientX, clientY) {
             const anchor = scContinuousAnchorAt(side, clientX, clientY);
             if (anchor) {
-                const target = scUpdateContinuousPages(side, anchor.page);
-                if (target) scLoadContinuousWindow(target.side, target.page);
+                const target = scUpdateContinuousPages(side, anchor);
+                if (target && target.page) scLoadContinuousWindow(target.side, target.page);
             }
             scContinuousZoom.value = Math.min(
                 SC_ZOOM_MAX,
@@ -14293,26 +14460,43 @@ const app = createApp({
             try { localStorage.setItem('stage-comparison:view-mode', mode); } catch (_) {}
             if (mode === 'continuous') {
                 for (const side of ['left', 'right']) {
+                    scContinuousPageFromScroll[side] = scCurrentPage[side];
                     if (scPageInfoRequest[side]) scPageInfoRequest[side].abort();
                     scPageInfoRequest[side] = null;
                     scPageLoading[side] = false;
                     scPageTiles[side] = [];
+                    scSetViewerEmpty(side, scPageCount(side) <= 0);
                 }
                 scContinuousZoom.value = 1;
                 scZoomPercent.value = 100;
+                const selectedSlot = scContinuousSlotForPage('left', scCurrentPage.left)
+                    || scContinuousSlotForPage('right', scCurrentPage.right);
                 for (const side of ['left', 'right']) {
-                    if (!scViewerEmpty[side]) scLoadContinuousWindow(side, scCurrentPage[side]);
+                    const page = selectedSlot
+                        ? (side === 'left' ? selectedSlot.leftPage : selectedSlot.rightPage)
+                        : scCurrentPage[side];
+                    if (selectedSlot) scContinuousCurrentSlot[side] = selectedSlot.key;
+                    if (!scViewerEmpty[side] && page) scLoadContinuousWindow(side, page);
                 }
                 nextTick(() => {
                     for (const side of ['left', 'right']) {
-                        scScrollContinuousToPage(side, scCurrentPage[side]);
+                        if (selectedSlot) scScrollContinuousToSlot(side, selectedSlot.key);
+                        else scScrollContinuousToPage(side, scCurrentPage[side]);
                     }
                 });
             } else {
+                const selectedSlot = scContinuousSlots.value.find(slot =>
+                    slot.key === scContinuousCurrentSlot.left
+                    || slot.key === scContinuousCurrentSlot.right
+                );
                 for (const side of ['left', 'right']) {
                     for (const controller of scContinuousRequests[side].values()) controller.abort();
                     scContinuousRequests[side].clear();
                     scContinuousTiles[side] = {};
+                    const page = selectedSlot
+                        && (side === 'left' ? selectedSlot.leftPage : selectedSlot.rightPage);
+                    if (selectedSlot) scSetViewerEmpty(side, !page);
+                    if (page) scCurrentPage[side] = page;
                     scLoadPageRaster(side);
                 }
                 nextTick(scScheduleView);
@@ -14381,10 +14565,10 @@ const app = createApp({
                 scContinuousScrollFrame[side] = 0;
                 if (scConsumeContinuousProgrammaticScroll(side, pane)) return;
                 const anchor = scContinuousAnchorAt(side);
-                if (!anchor || !anchor.page) return;
-                scLoadContinuousWindow(side, anchor.page);
-                const target = scUpdateContinuousPages(side, anchor.page);
-                if (target) scLoadContinuousWindow(target.side, target.page);
+                if (!anchor) return;
+                if (anchor.page) scLoadContinuousWindow(side, anchor.page);
+                const target = scUpdateContinuousPages(side, anchor);
+                if (target && target.page) scLoadContinuousWindow(target.side, target.page);
                 scSyncContinuousAnchor(side, anchor);
             });
         }
@@ -14421,14 +14605,20 @@ const app = createApp({
                 // Загрузка точного формата листа меняет высоту всей ленты.
                 // Сохраняем точку под центром окна, чтобы лента не уезжала и
                 // обработчик scroll не принимал сдвиг разметки за жест пользователя.
-                const anchor = scContinuousAnchorAt(side);
+                const anchors = {
+                    left: scContinuousAnchorAt('left'),
+                    right: scContinuousAnchorAt('right'),
+                };
                 scContinuousDims[side][page] = {w: width, h: height};
                 scContinuousSignatures[side][page] = String(info.signature || '');
                 scContinuousPreview[side][page] = scPagePreviewUrl(
                     side, page, SC_CONTINUOUS_PREVIEW_WIDTH, scContinuousSignatures[side][page],
                 );
                 nextTick(() => {
-                    if (anchor) scSetContinuousAnchor(side, anchor.page, anchor);
+                    for (const anchorSide of ['left', 'right']) {
+                        const anchor = anchors[anchorSide];
+                        if (anchor) scSetContinuousAnchor(anchorSide, anchor.page, anchor);
+                    }
                     scScheduleContinuousTileRefresh(side);
                 });
             } catch (error) {
@@ -14655,8 +14845,8 @@ const app = createApp({
                     const anchor = scContinuousAnchorAt('left') || scContinuousAnchorAt('right');
                     if (anchor) {
                         const sourceSide = scViewerEmpty.left ? 'right' : 'left';
-                        const target = scUpdateContinuousPages(sourceSide, anchor.page);
-                        if (target) scLoadContinuousWindow(target.side, target.page);
+                        const target = scUpdateContinuousPages(sourceSide, anchor);
+                        if (target && target.page) scLoadContinuousWindow(target.side, target.page);
                         scSyncContinuousAnchor(sourceSide, anchor);
                     }
                 }
@@ -15064,7 +15254,8 @@ const app = createApp({
             scOnPagePreviewLoad, scOnPagePreviewError, scSetStageRef,
             scSetPaneRef,
             scContinuousPreview, scContinuousLoading, scContinuousError, scContinuousTiles,
-            scContinuousPages, scContinuousPageStyle, scSetContinuousPaneRef,
+            scContinuousEntries, scContinuousPageStyle, scContinuousSlotActive,
+            scContinuousCurrentIsPlaceholder, scSetContinuousPaneRef,
             scOnContinuousPreviewLoad, scOnContinuousPreviewError,
             scOnContinuousWheel, scOnContinuousScroll,
             scOnContinuousPanStart, scOnContinuousPanMove, scOnContinuousPanEnd,

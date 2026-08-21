@@ -37,4 +37,14 @@ describe('continuous comparison viewer', () => {
     expect(css).toContain('.sc-continuous-pane.is-panning { cursor: grabbing; }');
     expect(css).toContain('.sc-continuous-page__tile {');
   });
+
+  it('keeps unmatched map rows aligned with same-size placeholder sheets', () => {
+    expect(app).toContain('const scContinuousSlots = computed(() =>');
+    expect(app).toContain('leftPage: leftPages[index] || null');
+    expect(app).toContain('rightPage: rightPages[index] || null');
+    expect(app).toContain('counterpartPage ? scContinuousDims[targetSide][counterpartPage] : null');
+    expect(html).toContain("'is-placeholder': entry.placeholder");
+    expect(html).toContain('Лист отсутствует в этой стадии');
+    expect(css).toContain('.sc-continuous-page.is-placeholder {');
+  });
 });
