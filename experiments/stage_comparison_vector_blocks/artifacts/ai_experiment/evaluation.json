@@ -1,0 +1,68 @@
+{
+  "schema_version": "vision-vector-llm-evaluation-v0.1",
+  "model": "gpt-5.6-sol",
+  "pairs": 5,
+  "rubric": "Human research score from 1 (poor) to 5 (strong) against the diagnostic crops and recorded vector evidence. Compactness considers both transported payload and observed invocation tokens.",
+  "input_metrics": {
+    "vision": {
+      "prompt_characters": 739,
+      "image_count": 10,
+      "image_bytes": 3095180,
+      "invocation_tokens_reported": 38069
+    },
+    "vector": {
+      "prompt_characters": 137896,
+      "image_count": 0,
+      "invocation_tokens_reported": 70631
+    }
+  },
+  "scores": {
+    "vision": {
+      "accuracy": 23,
+      "completeness": 24,
+      "verifiability": 19,
+      "compactness": 15,
+      "total_out_of_100": 81
+    },
+    "vector": {
+      "accuracy": 21,
+      "completeness": 19,
+      "verifiability": 24,
+      "compactness": 15,
+      "total_out_of_100": 79
+    }
+  },
+  "pair_assessment": [
+    {
+      "pair_id": "ss_scheme_text_changed",
+      "vision": "Correct and visually specific.",
+      "vector": "Correct, equally specific, and more traceable to exact text/topology evidence.",
+      "winner": "TIE"
+    },
+    {
+      "pair_id": "ss_table_graphic",
+      "vision": "Correctly treats the visible table/detail as unchanged.",
+      "vector": "Correct class but falsely interprets crop/span fragmentation as a newly added position 1.",
+      "winner": "VISION"
+    },
+    {
+      "pair_id": "ar_plan",
+      "vision": "Calls it identical but cannot verify tiny text at raster resolution.",
+      "vector": "Calls it near-identical and quantifies the one-command difference and caps.",
+      "winner": "VECTOR"
+    },
+    {
+      "pair_id": "vk_nodes",
+      "vision": "Finds the added notes and -0.034 annotation, but overstates them as a structural geometry change.",
+      "vector": "Verifies near-identical geometry but misses the added annotations because the embedded font map is broken.",
+      "winner": "VISION"
+    },
+    {
+      "pair_id": "eom_singleline_changed",
+      "vision": "Correct and semantically rich, including the four explicit branches.",
+      "vector": "Correct, similarly detailed, and every statement is traceable to deterministic data.",
+      "winner": "TIE"
+    }
+  ],
+  "conclusion": "Vision was slightly more accurate/complete overall; VectorDescription+diff was materially more verifiable. Vector payload was 21x smaller by transported bytes, but the current verbose Level 3 used 1.85x the reported model tokens. Neither arm dominates; a gated hybrid is justified."
+}

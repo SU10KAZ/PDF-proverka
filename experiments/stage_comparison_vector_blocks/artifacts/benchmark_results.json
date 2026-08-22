@@ -1,0 +1,701 @@
+{
+  "block_count": 20,
+  "manifest": "artifacts/block_pairs.json",
+  "pair_count": 10,
+  "pairs": [
+    {
+      "discipline": "SS",
+      "geometry_similarity": 0.866387,
+      "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+      "left_extraction_seconds": 0.07537,
+      "left_quality": "GOOD",
+      "pair_id": "ss_scheme_text_changed",
+      "right_extraction_seconds": 0.098516,
+      "right_quality": "GOOD",
+      "selected_tolerance": 0.01,
+      "status": "STRUCTURE_SAME_VALUES_CHANGED",
+      "text_reliable": true,
+      "text_similarity": 0.913706,
+      "topology_similarity": 0.732688,
+      "type": "low-current scheme; text-heavy; repeated symbols"
+    },
+    {
+      "discipline": "SS",
+      "geometry_similarity": 1.0,
+      "human_expected": "NEAR_IDENTICAL",
+      "left_extraction_seconds": 4.534796,
+      "left_quality": "LIMITED_CAPPED",
+      "pair_id": "ss_plan_dense",
+      "right_extraction_seconds": 5.072152,
+      "right_quality": "LIMITED_CAPPED",
+      "selected_tolerance": 0.01,
+      "status": "NEAR_IDENTICAL",
+      "text_reliable": true,
+      "text_similarity": 1.0,
+      "topology_similarity": 0.996092,
+      "type": "dense plan; complex block; repeated symbols"
+    },
+    {
+      "discipline": "SS",
+      "geometry_similarity": 1.0,
+      "human_expected": "IDENTICAL",
+      "left_extraction_seconds": 0.027667,
+      "left_quality": "GOOD",
+      "pair_id": "ss_simple_node",
+      "right_extraction_seconds": 0.028837,
+      "right_quality": "GOOD",
+      "selected_tolerance": 0.001,
+      "status": "IDENTICAL",
+      "text_reliable": true,
+      "text_similarity": 1.0,
+      "topology_similarity": 1.0,
+      "type": "simple engineering node"
+    },
+    {
+      "discipline": "SS",
+      "geometry_similarity": 0.996547,
+      "human_expected": "NEAR_IDENTICAL",
+      "left_extraction_seconds": 0.131269,
+      "left_quality": "GOOD",
+      "pair_id": "ss_table_graphic",
+      "right_extraction_seconds": 0.136122,
+      "right_quality": "GOOD",
+      "selected_tolerance": 0.01,
+      "status": "NEAR_IDENTICAL",
+      "text_reliable": true,
+      "text_similarity": 0.929188,
+      "topology_similarity": 0.861078,
+      "type": "table plus engineering graphic; text-heavy"
+    },
+    {
+      "discipline": "AR",
+      "geometry_similarity": 0.999917,
+      "human_expected": "NEAR_IDENTICAL",
+      "left_extraction_seconds": 3.650289,
+      "left_quality": "LIMITED_CAPPED",
+      "pair_id": "ar_plan",
+      "right_extraction_seconds": 3.431203,
+      "right_quality": "LIMITED_CAPPED",
+      "selected_tolerance": 0.0025,
+      "status": "NEAR_IDENTICAL",
+      "text_reliable": true,
+      "text_similarity": 1.0,
+      "topology_similarity": 0.998688,
+      "type": "architectural plan; repeated elements"
+    },
+    {
+      "discipline": "AR",
+      "geometry_similarity": 1.0,
+      "human_expected": "NEAR_IDENTICAL",
+      "left_extraction_seconds": 6.975431,
+      "left_quality": "LIMITED_CAPPED",
+      "pair_id": "ar_wall_sections",
+      "right_extraction_seconds": 8.744669,
+      "right_quality": "LIMITED_CAPPED",
+      "selected_tolerance": 0.005,
+      "status": "NEAR_IDENTICAL",
+      "text_reliable": true,
+      "text_similarity": 1.0,
+      "topology_similarity": 0.966878,
+      "type": "architectural sections; repeated details"
+    },
+    {
+      "discipline": "VK",
+      "geometry_similarity": 0.992971,
+      "human_expected": "NEAR_IDENTICAL",
+      "left_extraction_seconds": 14.656252,
+      "left_quality": "GOOD",
+      "pair_id": "vk_plan",
+      "right_extraction_seconds": 14.263419,
+      "right_quality": "GOOD",
+      "selected_tolerance": 0.005,
+      "status": "NEAR_IDENTICAL",
+      "text_reliable": false,
+      "text_similarity": 0.5629,
+      "topology_similarity": 0.970443,
+      "type": "plumbing plan; labels and repeated symbols"
+    },
+    {
+      "discipline": "VK",
+      "geometry_similarity": 0.991042,
+      "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+      "left_extraction_seconds": 18.392425,
+      "left_quality": "LIMITED_CAPPED",
+      "pair_id": "vk_nodes",
+      "right_extraction_seconds": 18.731397,
+      "right_quality": "LIMITED_CAPPED",
+      "selected_tolerance": 0.01,
+      "status": "NEAR_IDENTICAL",
+      "text_reliable": false,
+      "text_similarity": 0.442726,
+      "topology_similarity": 0.980043,
+      "type": "plumbing engineering nodes; tall complex block"
+    },
+    {
+      "discipline": "VK",
+      "geometry_similarity": 0.994833,
+      "human_expected": "NEAR_IDENTICAL",
+      "left_extraction_seconds": 12.51664,
+      "left_quality": "LIMITED_CAPPED",
+      "pair_id": "vk_node_plan",
+      "right_extraction_seconds": 11.185152,
+      "right_quality": "LIMITED_CAPPED",
+      "selected_tolerance": 0.005,
+      "status": "NEAR_IDENTICAL",
+      "text_reliable": false,
+      "text_similarity": 0.421319,
+      "topology_similarity": 0.89308,
+      "type": "plumbing node and plan; mixed geometry"
+    },
+    {
+      "discipline": "EOM",
+      "geometry_similarity": 0.173922,
+      "human_expected": "STRUCTURE_CHANGED",
+      "left_extraction_seconds": 0.357364,
+      "left_quality": "GOOD",
+      "pair_id": "eom_singleline_changed",
+      "right_extraction_seconds": 0.601871,
+      "right_quality": "GOOD",
+      "selected_tolerance": 0.01,
+      "status": "STRUCTURE_CHANGED",
+      "text_reliable": true,
+      "text_similarity": 0.250633,
+      "topology_similarity": 0.610228,
+      "type": "electrical single-line scheme; repeated devices; table plus graphic"
+    }
+  ],
+  "research_only": true,
+  "schema_version": "vector-block-benchmark-results-v0.1",
+  "sizes": [
+    {
+      "block_id": "blk_13624dcbe2024b148a2027e1b68e2a0d",
+      "compact": {
+        "bytes": 3381,
+        "estimated_tokens": 764,
+        "lines": 538
+      },
+      "grouped": {
+        "bytes": 33474,
+        "estimated_tokens": 8288,
+        "lines": 2942
+      },
+      "normalized": {
+        "bytes": 37645,
+        "estimated_tokens": 9412,
+        "lines": 8428
+      },
+      "primitive_count": 39,
+      "raw": {
+        "bytes": 42380,
+        "estimated_tokens": 10595,
+        "lines": 8428
+      },
+      "text_items": 100,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_11f1168f77f84b9283dec8a7bc14e9bb",
+      "compact": {
+        "bytes": 3701,
+        "estimated_tokens": 846,
+        "lines": 584
+      },
+      "grouped": {
+        "bytes": 40906,
+        "estimated_tokens": 10147,
+        "lines": 4154
+      },
+      "normalized": {
+        "bytes": 89837,
+        "estimated_tokens": 22460,
+        "lines": 16828
+      },
+      "primitive_count": 159,
+      "raw": {
+        "bytes": 97743,
+        "estimated_tokens": 24436,
+        "lines": 16828
+      },
+      "text_items": 97,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_d90a5202d19446f98ac56faa29fa1866",
+      "compact": {
+        "bytes": 13194,
+        "estimated_tokens": 3221,
+        "lines": 2752
+      },
+      "grouped": {
+        "bytes": 156971,
+        "estimated_tokens": 39165,
+        "lines": 14830
+      },
+      "normalized": {
+        "bytes": 3795484,
+        "estimated_tokens": 948871,
+        "lines": 941442
+      },
+      "primitive_count": 1604,
+      "raw": {
+        "bytes": 4668446,
+        "estimated_tokens": 1167112,
+        "lines": 941442
+      },
+      "text_items": 522,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_1aa5b443eecf469baf0b5eb1ad7f1d90",
+      "compact": {
+        "bytes": 13193,
+        "estimated_tokens": 3220,
+        "lines": 2752
+      },
+      "grouped": {
+        "bytes": 157998,
+        "estimated_tokens": 39422,
+        "lines": 15015
+      },
+      "normalized": {
+        "bytes": 3790097,
+        "estimated_tokens": 947525,
+        "lines": 940012
+      },
+      "primitive_count": 1604,
+      "raw": {
+        "bytes": 4661887,
+        "estimated_tokens": 1165472,
+        "lines": 940012
+      },
+      "text_items": 522,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_b211a2e9337f4919a1778e0cff077036",
+      "compact": {
+        "bytes": 1516,
+        "estimated_tokens": 364,
+        "lines": 191
+      },
+      "grouped": {
+        "bytes": 8600,
+        "estimated_tokens": 2135,
+        "lines": 730
+      },
+      "normalized": {
+        "bytes": 2262,
+        "estimated_tokens": 566,
+        "lines": 520
+      },
+      "primitive_count": 2,
+      "raw": {
+        "bytes": 2563,
+        "estimated_tokens": 641,
+        "lines": 520
+      },
+      "text_items": 31,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_73badd6d4cb245f0a6938b14d5fd3f8b",
+      "compact": {
+        "bytes": 1516,
+        "estimated_tokens": 364,
+        "lines": 191
+      },
+      "grouped": {
+        "bytes": 8600,
+        "estimated_tokens": 2135,
+        "lines": 730
+      },
+      "normalized": {
+        "bytes": 2262,
+        "estimated_tokens": 566,
+        "lines": 520
+      },
+      "primitive_count": 2,
+      "raw": {
+        "bytes": 2563,
+        "estimated_tokens": 641,
+        "lines": 520
+      },
+      "text_items": 31,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_17e54c2231764e31a50c9d0562062595",
+      "compact": {
+        "bytes": 2648,
+        "estimated_tokens": 620,
+        "lines": 387
+      },
+      "grouped": {
+        "bytes": 15505,
+        "estimated_tokens": 3834,
+        "lines": 1264
+      },
+      "normalized": {
+        "bytes": 63477,
+        "estimated_tokens": 15870,
+        "lines": 16466
+      },
+      "primitive_count": 11,
+      "raw": {
+        "bytes": 74130,
+        "estimated_tokens": 18533,
+        "lines": 16466
+      },
+      "text_items": 54,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_d3ec638f07c74c30a7c1e377d31c3cb2",
+      "compact": {
+        "bytes": 2708,
+        "estimated_tokens": 633,
+        "lines": 402
+      },
+      "grouped": {
+        "bytes": 16523,
+        "estimated_tokens": 4087,
+        "lines": 1326
+      },
+      "normalized": {
+        "bytes": 62057,
+        "estimated_tokens": 15515,
+        "lines": 16230
+      },
+      "primitive_count": 7,
+      "raw": {
+        "bytes": 72564,
+        "estimated_tokens": 18141,
+        "lines": 16230
+      },
+      "text_items": 58,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_36924229bfbd4815a97d05574630c024",
+      "compact": {
+        "bytes": 19061,
+        "estimated_tokens": 4676,
+        "lines": 3877
+      },
+      "grouped": {
+        "bytes": 170410,
+        "estimated_tokens": 42513,
+        "lines": 13276
+      },
+      "normalized": {
+        "bytes": 5137515,
+        "estimated_tokens": 1284379,
+        "lines": 683552
+      },
+      "primitive_count": 14800,
+      "raw": {
+        "bytes": 5253493,
+        "estimated_tokens": 1313374,
+        "lines": 683552
+      },
+      "text_items": 836,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_82b6b709d49f4212a51406e6718d4cc4",
+      "compact": {
+        "bytes": 19078,
+        "estimated_tokens": 4680,
+        "lines": 3879
+      },
+      "grouped": {
+        "bytes": 170273,
+        "estimated_tokens": 42479,
+        "lines": 13263
+      },
+      "normalized": {
+        "bytes": 5137795,
+        "estimated_tokens": 1284449,
+        "lines": 683508
+      },
+      "primitive_count": 14799,
+      "raw": {
+        "bytes": 5253176,
+        "estimated_tokens": 1313294,
+        "lines": 683508
+      },
+      "text_items": 836,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_3f8c724069da4c16ab2ad2b4937b30ea",
+      "compact": {
+        "bytes": 5314,
+        "estimated_tokens": 1311,
+        "lines": 833
+      },
+      "grouped": {
+        "bytes": 42535,
+        "estimated_tokens": 10616,
+        "lines": 3775
+      },
+      "normalized": {
+        "bytes": 6754329,
+        "estimated_tokens": 1688583,
+        "lines": 882994
+      },
+      "primitive_count": 20000,
+      "raw": {
+        "bytes": 6953742,
+        "estimated_tokens": 1738436,
+        "lines": 882994
+      },
+      "text_items": 119,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_b848efce2b7945d99d79a0e62f91b3d1",
+      "compact": {
+        "bytes": 5250,
+        "estimated_tokens": 1295,
+        "lines": 830
+      },
+      "grouped": {
+        "bytes": 43444,
+        "estimated_tokens": 10844,
+        "lines": 3799
+      },
+      "normalized": {
+        "bytes": 6749934,
+        "estimated_tokens": 1687484,
+        "lines": 882994
+      },
+      "primitive_count": 20000,
+      "raw": {
+        "bytes": 6953934,
+        "estimated_tokens": 1738484,
+        "lines": 882994
+      },
+      "text_items": 119,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_12e23ade2e3941858eaad46999854805",
+      "compact": {
+        "bytes": 8226,
+        "estimated_tokens": 2057,
+        "lines": 1114
+      },
+      "grouped": {
+        "bytes": 57380,
+        "estimated_tokens": 14345,
+        "lines": 4506
+      },
+      "normalized": {
+        "bytes": 1077605,
+        "estimated_tokens": 269402,
+        "lines": 139312
+      },
+      "primitive_count": 3163,
+      "raw": {
+        "bytes": 1099198,
+        "estimated_tokens": 274800,
+        "lines": 139312
+      },
+      "text_items": 232,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_e17fec33dede49a1afd852a3722772e3",
+      "compact": {
+        "bytes": 9281,
+        "estimated_tokens": 2321,
+        "lines": 1136
+      },
+      "grouped": {
+        "bytes": 60257,
+        "estimated_tokens": 15065,
+        "lines": 4683
+      },
+      "normalized": {
+        "bytes": 1076736,
+        "estimated_tokens": 269184,
+        "lines": 139338
+      },
+      "primitive_count": 3163,
+      "raw": {
+        "bytes": 1099275,
+        "estimated_tokens": 274819,
+        "lines": 139338
+      },
+      "text_items": 237,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_7c569840edbd4ba799ae8d2caa95a21f",
+      "compact": {
+        "bytes": 16362,
+        "estimated_tokens": 4069,
+        "lines": 1933
+      },
+      "grouped": {
+        "bytes": 121364,
+        "estimated_tokens": 30320,
+        "lines": 9059
+      },
+      "normalized": {
+        "bytes": 6815900,
+        "estimated_tokens": 1703975,
+        "lines": 880762
+      },
+      "primitive_count": 20000,
+      "raw": {
+        "bytes": 6967411,
+        "estimated_tokens": 1741853,
+        "lines": 880762
+      },
+      "text_items": 421,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_3cf60019068e48acabf0a44cdfcf1213",
+      "compact": {
+        "bytes": 15911,
+        "estimated_tokens": 3956,
+        "lines": 1693
+      },
+      "grouped": {
+        "bytes": 109842,
+        "estimated_tokens": 27439,
+        "lines": 8167
+      },
+      "normalized": {
+        "bytes": 6817323,
+        "estimated_tokens": 1704331,
+        "lines": 880772
+      },
+      "primitive_count": 20000,
+      "raw": {
+        "bytes": 6966573,
+        "estimated_tokens": 1741644,
+        "lines": 880772
+      },
+      "text_items": 360,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_d2335c3dbca34b82b596cf3ee382a4db",
+      "compact": {
+        "bytes": 13103,
+        "estimated_tokens": 3269,
+        "lines": 1300
+      },
+      "grouped": {
+        "bytes": 88105,
+        "estimated_tokens": 22020,
+        "lines": 7463
+      },
+      "normalized": {
+        "bytes": 6836644,
+        "estimated_tokens": 1709161,
+        "lines": 885852
+      },
+      "primitive_count": 20000,
+      "raw": {
+        "bytes": 6980987,
+        "estimated_tokens": 1745247,
+        "lines": 885852
+      },
+      "text_items": 243,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "blk_c2dfc4b446614255bc825df6b6288587",
+      "compact": {
+        "bytes": 12998,
+        "estimated_tokens": 3243,
+        "lines": 1277
+      },
+      "grouped": {
+        "bytes": 89623,
+        "estimated_tokens": 22399,
+        "lines": 7624
+      },
+      "normalized": {
+        "bytes": 6842270,
+        "estimated_tokens": 1710568,
+        "lines": 887092
+      },
+      "primitive_count": 20000,
+      "raw": {
+        "bytes": 6988279,
+        "estimated_tokens": 1747070,
+        "lines": 887092
+      },
+      "text_items": 237,
+      "vector_quality": "LIMITED_CAPPED"
+    },
+    {
+      "block_id": "manual_eom_v001_page9_type1",
+      "compact": {
+        "bytes": 4579,
+        "estimated_tokens": 1013,
+        "lines": 571
+      },
+      "grouped": {
+        "bytes": 39884,
+        "estimated_tokens": 9839,
+        "lines": 3792
+      },
+      "normalized": {
+        "bytes": 335055,
+        "estimated_tokens": 83764,
+        "lines": 57008
+      },
+      "primitive_count": 704,
+      "raw": {
+        "bytes": 355844,
+        "estimated_tokens": 88961,
+        "lines": 57008
+      },
+      "text_items": 73,
+      "vector_quality": "GOOD"
+    },
+    {
+      "block_id": "blk_7dfdc73b7a264c69b0ca8c2caef11995",
+      "compact": {
+        "bytes": 8040,
+        "estimated_tokens": 1835,
+        "lines": 1493
+      },
+      "grouped": {
+        "bytes": 86661,
+        "estimated_tokens": 21490,
+        "lines": 7821
+      },
+      "normalized": {
+        "bytes": 116752,
+        "estimated_tokens": 29188,
+        "lines": 24242
+      },
+      "primitive_count": 164,
+      "raw": {
+        "bytes": 130870,
+        "estimated_tokens": 32718,
+        "lines": 24242
+      },
+      "text_items": 299,
+      "vector_quality": "GOOD"
+    }
+  ],
+  "status_counts": {
+    "IDENTICAL": 1,
+    "NEAR_IDENTICAL": 7,
+    "STRUCTURE_CHANGED": 1,
+    "STRUCTURE_SAME_VALUES_CHANGED": 1
+  },
+  "timing_seconds": {
+    "comparison_total": 37.929843,
+    "extraction_total": 123.610842
+  }
+}

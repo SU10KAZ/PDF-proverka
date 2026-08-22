@@ -1,0 +1,217 @@
+{
+  "schema_version": "vector-block-benchmark-v0.1",
+  "research_only": true,
+  "selection_method": "Manual pairing after page-text search and visual inspection; production sheet/block matching was not used or modified.",
+  "pairs": [
+    {
+      "pair_id": "ss_scheme_text_changed",
+      "discipline": "SS",
+      "type": "low-current scheme; text-heavy; repeated symbols",
+      "reason": "Same CCTV structural scheme with visibly changed system/camera labels.",
+      "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+      "left": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "page_index": 5,
+        "block_id": "blk_13624dcbe2024b148a2027e1b68e2a0d",
+        "bbox_norm": [0.030090421438217163, 0.012994349002838135, 0.9898177683353424, 0.3752070367336273]
+      },
+      "right": {
+        "version": "v003",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "page_index": 5,
+        "block_id": "blk_11f1168f77f84b9283dec8a7bc14e9bb",
+        "bbox_norm": [0.02961629629135132, 0.013081371784210205, 0.9908167719841003, 0.37837013602256775]
+      }
+    },
+    {
+      "pair_id": "ss_plan_dense",
+      "discipline": "SS",
+      "type": "dense plan; complex block; repeated symbols",
+      "reason": "Dense real plan with slightly different crop height.",
+      "human_expected": "NEAR_IDENTICAL",
+      "left": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "page_index": 7,
+        "block_id": "blk_d90a5202d19446f98ac56faa29fa1866",
+        "bbox_norm": [0.009230971336364746, 0.0, 0.9994679689407349, 0.7758837086715362]
+      },
+      "right": {
+        "version": "v003",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "page_index": 7,
+        "block_id": "blk_1aa5b443eecf469baf0b5eb1ad7f1d90",
+        "bbox_norm": [0.009230971336364746, 0.0, 0.9994679689407349, 0.759651807472305]
+      }
+    },
+    {
+      "pair_id": "ss_simple_node",
+      "discipline": "SS",
+      "type": "simple engineering node",
+      "reason": "Small, visually identical camera connection detail.",
+      "human_expected": "IDENTICAL",
+      "left": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "page_index": 14,
+        "block_id": "blk_b211a2e9337f4919a1778e0cff077036",
+        "bbox_norm": [0.0881819874048233, 0.2882640212774277, 0.5287128537893295, 0.5545097142457962]
+      },
+      "right": {
+        "version": "v003",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "page_index": 14,
+        "block_id": "blk_73badd6d4cb245f0a6938b14d5fd3f8b",
+        "bbox_norm": [0.0881819874048233, 0.2882640212774277, 0.5287128537893295, 0.5545097142457962]
+      }
+    },
+    {
+      "pair_id": "ss_table_graphic",
+      "discipline": "SS",
+      "type": "table plus engineering graphic; text-heavy",
+      "reason": "Mixed table/graphic block with changed crop padding.",
+      "human_expected": "NEAR_IDENTICAL",
+      "left": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "page_index": 15,
+        "block_id": "blk_17e54c2231764e31a50c9d0562062595",
+        "bbox_norm": [0.046373365041617126, 0.11941060885178932, 0.8525564803804995, 0.706372615742979]
+      },
+      "right": {
+        "version": "v003",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "page_index": 15,
+        "block_id": "blk_d3ec638f07c74c30a7c1e377d31c3cb2",
+        "bbox_norm": [0.04836829836829837, 0.10220801995606438, 0.8397435897435898, 0.7236987219469719]
+      }
+    },
+    {
+      "pair_id": "ar_plan",
+      "discipline": "AR",
+      "type": "architectural plan; repeated elements",
+      "reason": "Large architectural plan from consecutive real versions.",
+      "human_expected": "NEAR_IDENTICAL",
+      "left": {
+        "version": "v001",
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "page_index": 8,
+        "block_id": "blk_36924229bfbd4815a97d05574630c024",
+        "bbox_norm": [0.022951479766458626, 0.007126567844925884, 0.6217032413931951, 0.9908779931584949]
+      },
+      "right": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "page_index": 8,
+        "block_id": "blk_82b6b709d49f4212a51406e6718d4cc4",
+        "bbox_norm": [0.023376623376623374, 0.00857835309203823, 0.6238317757009346, 0.9904689470224114]
+      }
+    },
+    {
+      "pair_id": "ar_wall_sections",
+      "discipline": "AR",
+      "type": "architectural sections; repeated details",
+      "reason": "Several repeated wall sections inside one block.",
+      "human_expected": "NEAR_IDENTICAL",
+      "left": {
+        "version": "v001",
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "page_index": 13,
+        "block_id": "blk_3f8c724069da4c16ab2ad2b4937b30ea",
+        "bbox_norm": [0.41929848138691034, 0.3845496009122007, 0.843703803252251, 0.6755986316989738]
+      },
+      "right": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "page_index": 13,
+        "block_id": "blk_b848efce2b7945d99d79a0e62f91b3d1",
+        "bbox_norm": [0.4238462746143341, 0.3842254877090454, 0.8426327407360077, 0.6745918989181519]
+      }
+    },
+    {
+      "pair_id": "vk_plan",
+      "discipline": "VK",
+      "type": "plumbing plan; labels and repeated symbols",
+      "reason": "Large VK plan with nearly equal manually paired extents.",
+      "human_expected": "NEAR_IDENTICAL",
+      "left": {
+        "version": "v001",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "page_index": 5,
+        "block_id": "blk_12e23ade2e3941858eaad46999854805",
+        "bbox_norm": [0.05016317963600159, 0.009301990270614624, 0.6681880056858063, 0.848704606294632]
+      },
+      "right": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "page_index": 5,
+        "block_id": "blk_e17fec33dede49a1afd852a3722772e3",
+        "bbox_norm": [0.04789525270462036, 0.009159773588180542, 0.6673479080200195, 0.8476087749004364]
+      }
+    },
+    {
+      "pair_id": "vk_nodes",
+      "discipline": "VK",
+      "type": "plumbing engineering nodes; tall complex block",
+      "reason": "Multiple VK connection details with dense labels.",
+      "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+      "left": {
+        "version": "v001",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "page_index": 8,
+        "block_id": "blk_7c569840edbd4ba799ae8d2caa95a21f",
+        "bbox_norm": [0.02226443588733673, 0.0, 0.45511864125728607, 0.9887108504772186]
+      },
+      "right": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "page_index": 8,
+        "block_id": "blk_3cf60019068e48acabf0a44cdfcf1213",
+        "bbox_norm": [0.01965601965601966, 0.0017388552317053254, 0.46928746928746934, 0.9981029029988565]
+      }
+    },
+    {
+      "pair_id": "vk_node_plan",
+      "discipline": "VK",
+      "type": "plumbing node and plan; mixed geometry",
+      "reason": "VK node/plan block with slightly different crop extents.",
+      "human_expected": "NEAR_IDENTICAL",
+      "left": {
+        "version": "v001",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "page_index": 11,
+        "block_id": "blk_d2335c3dbca34b82b596cf3ee382a4db",
+        "bbox_norm": [0.018328696489334106, 0.002146989107131958, 0.5161558747235082, 0.5867864828409218]
+      },
+      "right": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "page_index": 11,
+        "block_id": "blk_c2dfc4b446614255bc825df6b6288587",
+        "bbox_norm": [0.017839640378952026, 0.003336876630783081, 0.5227995480454231, 0.5830469829391108]
+      }
+    },
+    {
+      "pair_id": "eom_singleline_changed",
+      "discipline": "EOM",
+      "type": "electrical single-line scheme; repeated devices; table plus graphic",
+      "reason": "Manually paired first floor-panel scheme after a page insertion; v001 compresses intermediate outgoing circuits, v002 draws four explicitly.",
+      "human_expected": "STRUCTURE_CHANGED",
+      "left": {
+        "version": "v001",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/document.pdf",
+        "page_index": 8,
+        "block_id": "manual_eom_v001_page9_type1",
+        "bbox_norm": [0.04, 0.025, 0.245, 0.94]
+      },
+      "right": {
+        "version": "v002",
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+        "page_index": 10,
+        "block_id": "blk_7dfdc73b7a264c69b0ca8c2caef11995",
+        "bbox_norm": [0.022608695652173914, 0.00922126361253583, 0.24521739130434783, 0.6639309801025798]
+      }
+    }
+  ]
+}

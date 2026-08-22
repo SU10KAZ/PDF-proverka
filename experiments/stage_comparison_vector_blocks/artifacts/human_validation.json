@@ -1,0 +1,71 @@
+{
+  "schema_version": "vector-block-human-validation-v0.1",
+  "method": "Each LEFT/RIGHT diagnostic crop was inspected visually at readable resolution after deterministic comparison. Raster was used only for this validation, never by extractor or comparator.",
+  "counts": {
+    "CORRECT": 8,
+    "PARTIALLY_CORRECT": 2,
+    "WRONG": 0
+  },
+  "pairs": [
+    {
+      "pair_id": "ss_scheme_text_changed",
+      "human_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+      "correctness": "CORRECT",
+      "explanation": "The layout and connections are visually unchanged; OSPD/camera/room labels change. The comparator finds the value changes and avoids treating l-versus-re command packaging as a structural change."
+    },
+    {
+      "pair_id": "ss_plan_dense",
+      "human_verdict": "NEAR_IDENTICAL",
+      "correctness": "CORRECT",
+      "explanation": "The dense plan content is visually the same; the slightly different crop height and PDF precision are absorbed only at the 1% guarded tolerance."
+    },
+    {
+      "pair_id": "ss_simple_node",
+      "human_verdict": "IDENTICAL",
+      "correctness": "CORRECT",
+      "explanation": "The small connection node is visually and exactly vector-identical."
+    },
+    {
+      "pair_id": "ss_table_graphic",
+      "human_verdict": "NEAR_IDENTICAL",
+      "correctness": "CORRECT",
+      "explanation": "The camera mounting detail and visible table rows match; crop padding and text-span fragmentation differ."
+    },
+    {
+      "pair_id": "ar_plan",
+      "human_verdict": "NEAR_IDENTICAL",
+      "correctness": "CORRECT",
+      "explanation": "The architecture, annotations and revision marks match visually; one low-level line command and the bbox differ."
+    },
+    {
+      "pair_id": "ar_wall_sections",
+      "human_verdict": "NEAR_IDENTICAL",
+      "correctness": "CORRECT",
+      "explanation": "The repeated wall sections and labels match; normalization plus 0.5% tolerance removes PDF precision/crop noise."
+    },
+    {
+      "pair_id": "vk_plan",
+      "human_verdict": "NEAR_IDENTICAL",
+      "correctness": "CORRECT",
+      "explanation": "The plan and system routes match; a few tiny presentation markers and the crop differ, while the embedded-font text is undecodable in both PDFs."
+    },
+    {
+      "pair_id": "vk_nodes",
+      "human_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+      "correctness": "PARTIALLY_CORRECT",
+      "explanation": "The two engineering systems are geometrically the same, but RIGHT includes an additional notes area and a -0.034 annotation. The comparator returns NEAR_IDENTICAL because the embedded-font text is undecodable and therefore deliberately excluded."
+    },
+    {
+      "pair_id": "vk_node_plan",
+      "human_verdict": "NEAR_IDENTICAL",
+      "correctness": "PARTIALLY_CORRECT",
+      "explanation": "The visible geometry is near-identical, so the status is right, but text/value equality cannot be verified from the broken vector font mapping without OCR or Vision."
+    },
+    {
+      "pair_id": "eom_singleline_changed",
+      "human_verdict": "STRUCTURE_CHANGED",
+      "correctness": "CORRECT",
+      "explanation": "The generalized first/n-th outgoing circuits become four explicit QD/Wh/QF branches with changed loads and table content; geometry, topology and text all change strongly."
+    }
+  ]
+}

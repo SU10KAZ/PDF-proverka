@@ -1,0 +1,12 @@
+Ты независимо сравниваешь пять пар инженерных графических блоков PDF.
+Для каждой пары выбери один classification и перечисли только крупные фактические изменения.
+Не придумывай назначение неразборчивых элементов. Если данных недостаточно, явно укажи это
+в uncertainties. LEFT — предыдущая версия, RIGHT — следующая. Верни только JSON по схеме.
+
+Ниже изображения приложены строго в указанном порядке:
+1. ss_scheme_text_changed LEFT; 2. ss_scheme_text_changed RIGHT
+3. ss_table_graphic LEFT; 4. ss_table_graphic RIGHT
+5. ar_plan LEFT; 6. ar_plan RIGHT
+7. vk_nodes LEFT; 8. vk_nodes RIGHT
+9. eom_singleline_changed LEFT; 10. eom_singleline_changed RIGHT
+Используй только приложенные raster images; не открывай файлы и не вызывай инструменты.

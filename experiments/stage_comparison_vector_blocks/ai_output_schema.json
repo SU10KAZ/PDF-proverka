@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pairs"],
+  "properties": {
+    "pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pair_id", "classification", "major_changes", "evidence", "uncertainties"],
+        "properties": {
+          "pair_id": {"type": "string"},
+          "classification": {
+            "type": "string",
+            "enum": ["IDENTICAL", "NEAR_IDENTICAL", "STRUCTURE_SAME_VALUES_CHANGED", "STRUCTURE_CHANGED", "INSUFFICIENT_DATA"]
+          },
+          "major_changes": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "uncertainties": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
