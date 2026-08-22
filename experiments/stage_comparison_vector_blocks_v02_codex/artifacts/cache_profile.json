@@ -1,0 +1,54 @@
+{
+  "blocks_on_same_page": 5,
+  "cold": {
+    "end_to_end_seconds": 0.122992,
+    "page_payload_seconds": 0.023886
+  },
+  "dense_page_payload_profile": {
+    "cache_bytes": 392298,
+    "cold_cache_build_seconds": 0.208074,
+    "drawings": 15352,
+    "five_repeated_raw_page_reads_seconds": 0.761321,
+    "page_index": 14,
+    "real_pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+    "simulated_blocks": 5,
+    "speedup_repeated_vs_cold_shared": 3.659,
+    "speedup_repeated_vs_memory": 2818.561,
+    "speedup_repeated_vs_warm_disk": 7.974,
+    "warm_disk_seconds": 0.095473,
+    "warm_memory_seconds": 0.00027
+  },
+  "full_benchmark": {
+    "block_extractions": 78,
+    "cache_bytes": 199364433,
+    "cache_stats": {
+      "disk_hits": 0,
+      "get_drawings_calls": 68,
+      "get_text_calls": 68,
+      "memory_hits": 10,
+      "misses": 68,
+      "pdf_sha_calls": 10,
+      "requests": 78
+    },
+    "median_block_seconds": 2.027546
+  },
+  "get_drawings_calls_for_five_cached_blocks": 1,
+  "page_index": 4,
+  "real_pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+  "repeated_uncached_baseline_seconds": 0.168538,
+  "schema_version": "vector-cache-profile-v0.2-codex",
+  "speedup": {
+    "five_blocks_uncached_vs_shared_page": 1.37,
+    "five_blocks_uncached_vs_warm": 1.615,
+    "page_payload_cold_to_disk": 3.465,
+    "page_payload_cold_to_memory": 104.657
+  },
+  "temporary_cache_bytes": 51323,
+  "warm_disk": {
+    "end_to_end_seconds": 0.104346,
+    "page_payload_seconds": 0.006893
+  },
+  "warm_memory": {
+    "page_payload_seconds": 0.000228
+  }
+}

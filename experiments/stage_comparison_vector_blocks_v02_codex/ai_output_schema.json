@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["pairs"],
+  "additionalProperties": false,
+  "properties": {
+    "pairs": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["pair_id", "classification", "major_changes", "evidence", "uncertainties", "traceability"],
+        "additionalProperties": false,
+        "properties": {
+          "pair_id": {"type": "string"},
+          "classification": {
+            "enum": ["IDENTICAL", "NEAR_IDENTICAL", "STYLE_ONLY_CHANGED", "STRUCTURE_SAME_VALUES_CHANGED", "STRUCTURE_CHANGED", "INSUFFICIENT_VECTOR_DATA", "CROP_MISMATCH"]
+          },
+          "major_changes": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "uncertainties": {"type": "array", "items": {"type": "string"}},
+          "traceability": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["claim", "source"],
+              "additionalProperties": false,
+              "properties": {
+                "claim": {"type": "string"},
+                "source": {"enum": ["VECTOR", "VISION", "BOTH"]}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

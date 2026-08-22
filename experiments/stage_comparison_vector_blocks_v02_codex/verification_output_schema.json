@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["samples"],
+  "additionalProperties": false,
+  "properties": {
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sample_id", "status", "verified_facts", "missing_facts", "suspicious_facts", "evidence", "limitations"],
+        "additionalProperties": false,
+        "properties": {
+          "sample_id": {"type": "string"},
+          "status": {"enum": ["VERIFIED", "PARTIAL", "FAILED"]},
+          "verified_facts": {"type": "array", "items": {"type": "string"}},
+          "missing_facts": {"type": "array", "items": {"type": "string"}},
+          "suspicious_facts": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "limitations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

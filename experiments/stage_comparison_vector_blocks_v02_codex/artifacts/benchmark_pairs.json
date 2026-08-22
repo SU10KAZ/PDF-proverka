@@ -1,0 +1,1466 @@
+{
+  "baseline_commit": "1619fc3f",
+  "discipline_limit": "Available active corpus supplied paired block manifests for AR/OV/SS/VK; EOM was manually page-shift paired. KJ/KM/GP lacked usable paired versions.",
+  "pairs": [
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+        "important_factual_changes": [
+          "ОСПД2.1 → ОСПД1.1",
+          "Удалено слово «выезда» в подписи контроля паркинга."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.030090421438217163,
+          0.012994349002838135,
+          0.9898177683353424,
+          0.3752070367336273
+        ],
+        "block_id": "blk_13624dcbe2024b148a2027e1b68e2a0d",
+        "page_index": 5,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_scheme_text_changed",
+      "reason": "Same CCTV structural scheme with visibly changed system/camera labels.",
+      "right": {
+        "bbox_norm": [
+          0.02961629629135132,
+          0.013081371784210205,
+          0.9908167719841003,
+          0.37837013602256775
+        ],
+        "block_id": "blk_11f1168f77f84b9283dec8a7bc14e9bb",
+        "page_index": 5,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "low-current scheme; text-heavy; repeated symbols"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Смысловая геометрия плана совпадает; высота crop немного различается."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.009230971336364746,
+          0.0,
+          0.9994679689407349,
+          0.7758837086715362
+        ],
+        "block_id": "blk_d90a5202d19446f98ac56faa29fa1866",
+        "page_index": 7,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_plan_dense",
+      "reason": "Dense real plan with slightly different crop height.",
+      "right": {
+        "bbox_norm": [
+          0.009230971336364746,
+          0.0,
+          0.9994679689407349,
+          0.759651807472305
+        ],
+        "block_id": "blk_1aa5b443eecf469baf0b5eb1ad7f1d90",
+        "page_index": 7,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "dense plan; complex block; repeated symbols"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_OK",
+        "expected_verdict": "IDENTICAL",
+        "important_factual_changes": [
+          "Графика и подписи узла совпадают точно."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.0881819874048233,
+          0.2882640212774277,
+          0.5287128537893295,
+          0.5545097142457962
+        ],
+        "block_id": "blk_b211a2e9337f4919a1778e0cff077036",
+        "page_index": 14,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_simple_node",
+      "reason": "Small, visually identical camera connection detail.",
+      "right": {
+        "bbox_norm": [
+          0.0881819874048233,
+          0.2882640212774277,
+          0.5287128537893295,
+          0.5545097142457962
+        ],
+        "block_id": "blk_73badd6d4cb245f0a6938b14d5fd3f8b",
+        "page_index": 14,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "simple engineering node"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Узел крепления совпадает; границы crop и разбиение текста различаются."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.046373365041617126,
+          0.11941060885178932,
+          0.8525564803804995,
+          0.706372615742979
+        ],
+        "block_id": "blk_17e54c2231764e31a50c9d0562062595",
+        "page_index": 15,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_table_graphic",
+      "reason": "Mixed table/graphic block with changed crop padding.",
+      "right": {
+        "bbox_norm": [
+          0.04836829836829837,
+          0.10220801995606438,
+          0.8397435897435898,
+          0.7236987219469719
+        ],
+        "block_id": "blk_d3ec638f07c74c30a7c1e377d31c3cb2",
+        "page_index": 15,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "table plus engineering graphic; text-heavy"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "План и ревизионные отметки совпадают; блок плотный и capped."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.022951479766458626,
+          0.007126567844925884,
+          0.6217032413931951,
+          0.9908779931584949
+        ],
+        "block_id": "blk_36924229bfbd4815a97d05574630c024",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan",
+      "reason": "Large architectural plan from consecutive real versions.",
+      "right": {
+        "bbox_norm": [
+          0.023376623376623374,
+          0.00857835309203823,
+          0.6238317757009346,
+          0.9904689470224114
+        ],
+        "block_id": "blk_82b6b709d49f4212a51406e6718d4cc4",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "architectural plan; repeated elements"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Повторяющиеся разрезы стен и подписи визуально совпадают; segment/topology caps требуют Hybrid."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.41929848138691034,
+          0.3845496009122007,
+          0.843703803252251,
+          0.6755986316989738
+        ],
+        "block_id": "blk_3f8c724069da4c16ab2ad2b4937b30ea",
+        "page_index": 13,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_wall_sections",
+      "reason": "Several repeated wall sections inside one block.",
+      "right": {
+        "bbox_norm": [
+          0.4238462746143341,
+          0.3842254877090454,
+          0.8426327407360077,
+          0.6745918989181519
+        ],
+        "block_id": "blk_b848efce2b7945d99d79a0e62f91b3d1",
+        "page_index": 13,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "architectural sections; repeated details"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Геометрия плана совпадает; embedded-font text не читается надёжно."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.05016317963600159,
+          0.009301990270614624,
+          0.6681880056858063,
+          0.848704606294632
+        ],
+        "block_id": "blk_12e23ade2e3941858eaad46999854805",
+        "page_index": 5,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_plan",
+      "reason": "Large VK plan with nearly equal manually paired extents.",
+      "right": {
+        "bbox_norm": [
+          0.04789525270462036,
+          0.009159773588180542,
+          0.6673479080200195,
+          0.8476087749004364
+        ],
+        "block_id": "blk_e17fec33dede49a1afd852a3722772e3",
+        "page_index": 5,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "plumbing plan; labels and repeated symbols"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+        "important_factual_changes": [
+          "Справа добавлены примечания и отметка −0,034; основные узлы совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.02226443588733673,
+          0.0,
+          0.45511864125728607,
+          0.9887108504772186
+        ],
+        "block_id": "blk_7c569840edbd4ba799ae8d2caa95a21f",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_nodes",
+      "reason": "Multiple VK connection details with dense labels.",
+      "right": {
+        "bbox_norm": [
+          0.01965601965601966,
+          0.0017388552317053254,
+          0.46928746928746934,
+          0.9981029029988565
+        ],
+        "block_id": "blk_3cf60019068e48acabf0a44cdfcf1213",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "plumbing engineering nodes; tall complex block"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Геометрия узлов совпадает; текст требует Vision из-за font mapping."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.018328696489334106,
+          0.002146989107131958,
+          0.5161558747235082,
+          0.5867864828409218
+        ],
+        "block_id": "blk_d2335c3dbca34b82b596cf3ee382a4db",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_node_plan",
+      "reason": "VK node/plan block with slightly different crop extents.",
+      "right": {
+        "bbox_norm": [
+          0.017839640378952026,
+          0.003336876630783081,
+          0.5227995480454231,
+          0.5830469829391108
+        ],
+        "block_id": "blk_c2dfc4b446614255bc825df6b6288587",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "plumbing node and plan; mixed geometry"
+    },
+    {
+      "discipline": "EOM",
+      "ground_truth": {
+        "expected_route": "VISION_ONLY",
+        "expected_verdict": "CROP_MISMATCH",
+        "important_factual_changes": [
+          "Semantic extents crop различаются, поэтому Vector verdict должен остановиться на CROP_MISMATCH.",
+          "По Vision две обобщённые ветви заменены четырьмя явными QD/Wh/QF ветвями.",
+          "Расчётные нагрузки 13/14/16/18 кВт заменены повторяющимся вариантом 13 кВт."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.04,
+          0.025,
+          0.245,
+          0.94
+        ],
+        "block_id": "manual_eom_v001_page9_type1",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "eom_singleline_changed",
+      "reason": "Manually paired first floor-panel scheme after a page insertion; v001 compresses intermediate outgoing circuits, v002 draws four explicitly.",
+      "right": {
+        "bbox_norm": [
+          0.022608695652173914,
+          0.00922126361253583,
+          0.24521739130434783,
+          0.6639309801025798
+        ],
+        "block_id": "blk_7dfdc73b7a264c69b0ca8c2caef11995",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Baseline manual pairing from commit 1619fc3f; crop revalidated for v02.",
+      "type": "electrical single-line scheme; repeated devices; table plus graphic"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VISION_ONLY",
+        "expected_verdict": "CROP_MISMATCH",
+        "important_factual_changes": [
+          "Версии показывают разные смысловые экстенты одного большого плана; прямое block-normalized сравнение недопустимо."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.015247285366,
+          0.003040969372,
+          0.804989531648,
+          0.989119887352
+        ],
+        "block_id": "blk_fbcc7cf80170404892bedddc7f5cc68e",
+        "page_index": 6,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_crop_mismatch_page07",
+      "right": {
+        "bbox_norm": [
+          0.011965870857,
+          0.004747629166,
+          0.838002026081,
+          0.989980876446
+        ],
+        "block_id": "blk_634dd5b79f9346b5b9e4d01a5e59726f",
+        "page_index": 6,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "real dense plan; semantic crop mismatch"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "IDENTICAL",
+        "important_factual_changes": [
+          "План, оси, подписи и exact vector signature совпадают; topology cap сохраняет Hybrid route."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.028638452291,
+          0.00943377614,
+          0.645064383745,
+          0.990422099829
+        ],
+        "block_id": "blk_3b3aec40658045fbb98ddb801e115b41",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_plan_page09",
+      "right": {
+        "bbox_norm": [
+          0.028638452291,
+          0.00943377614,
+          0.645064383745,
+          0.990422099829
+        ],
+        "block_id": "blk_552c36eb68f949eeb46ca7b578f3283f",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "dense plan; same crop"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_OK",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Криволинейный план и трасса совпадают; все шесть evidence gates проходят без caps."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.033347070217,
+          0.010010570288,
+          0.687705278397,
+          0.797078877687
+        ],
+        "block_id": "blk_e1d399f4675849219328e15935bad316",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_plan_page11",
+      "right": {
+        "bbox_norm": [
+          0.033388227224,
+          0.0100068748,
+          0.687898606062,
+          0.796978324652
+        ],
+        "block_id": "blk_bca79355a8d940258f6e13e33b450608",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "curved plan; repeated labels"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "IDENTICAL",
+        "important_factual_changes": [
+          "План, синяя трасса и exact vector signature совпадают; topology cap сохраняет Hybrid route."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.037466198206,
+          0.019195258617,
+          0.496481031179,
+          0.924373865128
+        ],
+        "block_id": "blk_adc391730ffc4d2586f0006020d048ec",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_plan_page12",
+      "right": {
+        "bbox_norm": [
+          0.037466198206,
+          0.019195258617,
+          0.496481031179,
+          0.924373865128
+        ],
+        "block_id": "blk_790d85eb4d304084abc9de2165787783",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "tall plan"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Длинный план и цветные трассы совпадают; правый crop немного шире."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.005198448896,
+          0.002940684557,
+          0.740782244072,
+          0.985914677382
+        ],
+        "block_id": "blk_f99e8e966cea44aea69979480dabcba6",
+        "page_index": 12,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_plan_page13",
+      "right": {
+        "bbox_norm": [
+          0.005198448896,
+          0.002940684557,
+          0.745220520099,
+          0.985914677382
+        ],
+        "block_id": "blk_7680e3e8f14f457ba5f99af006a21af4",
+        "page_index": 12,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "long dense plan"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Наклонный план и синяя трасса совпадают; padding crop различается."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.015422077922,
+          0.00689331932,
+          0.835227272727,
+          0.992637982088
+        ],
+        "block_id": "blk_7f0f3c77addf44fc8656d6d8397ef376",
+        "page_index": 13,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_plan_page14",
+      "right": {
+        "bbox_norm": [
+          0.013230429989,
+          0.009363361163,
+          0.836824696803,
+          0.985493762426
+        ],
+        "block_id": "blk_5cf2e6a664ca4027b705c14f73735ead",
+        "page_index": 13,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "angled plan"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_OK",
+        "expected_verdict": "IDENTICAL",
+        "important_factual_changes": [
+          "Три узла и их подписи визуально и по crop совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.057725250721,
+          0.015084996819,
+          0.984821617603,
+          0.368088796735
+        ],
+        "block_id": "blk_546083b72a744614ac9dd0090cfb213a",
+        "page_index": 16,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_detail_page17",
+      "right": {
+        "bbox_norm": [
+          0.057725250721,
+          0.015084996819,
+          0.984821617603,
+          0.368088796735
+        ],
+        "block_id": "blk_14d0b1e2de3e48b38cd2e708d2d84b43",
+        "page_index": 16,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "simple details; hatches"
+    },
+    {
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_route": "VECTOR_OK",
+        "expected_verdict": "IDENTICAL",
+        "important_factual_changes": [
+          "Строки спецификации и сетка таблицы визуально совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.045557409525,
+          0.014387667179,
+          0.994608968496,
+          0.787125170231
+        ],
+        "block_id": "blk_1e6b496d718740deb5bbc73ec0ca3306",
+        "page_index": 18,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "pair_id": "ss_table_page19",
+      "right": {
+        "bbox_norm": [
+          0.045557409525,
+          0.014387667179,
+          0.994608968496,
+          0.787125170231
+        ],
+        "block_id": "blk_26e345ae1c614eecad4b894e4d5193ba",
+        "page_index": 18,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+        "version": "v003"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "equipment table; text-heavy"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Красные и синие трассы, помещения и оси совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.038392484188,
+          0.009733885527,
+          0.669744431973,
+          0.852668017149
+        ],
+        "block_id": "blk_4bf7cb4b5c8745e4b84c1765a798ba13",
+        "page_index": 6,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_plan_page07",
+      "right": {
+        "bbox_norm": [
+          0.035954266787,
+          0.009103685617,
+          0.669747918844,
+          0.854747205973
+        ],
+        "block_id": "blk_38634c774ac341408511ce0d252846e3",
+        "page_index": 6,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "plumbing plan"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Трассы и инженерные узлы плана совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.054941415787,
+          0.009542196989,
+          0.679214000702,
+          0.828260689974
+        ],
+        "block_id": "blk_67633b17aa9d46dea652c99bad9743a6",
+        "page_index": 7,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_plan_page08",
+      "right": {
+        "bbox_norm": [
+          0.053095191717,
+          0.008923023939,
+          0.678584843874,
+          0.83082357049
+        ],
+        "block_id": "blk_e566e7f21b2140c98e7652f3eab75900",
+        "page_index": 7,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "plumbing plan"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Две схемы стояков совпадают; вертикальный padding crop различается."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.021403091558,
+          0.006732119656,
+          0.536266349584,
+          0.671528935705
+        ],
+        "block_id": "blk_6a5de03a4afa40c7a7747adbf9c62109",
+        "page_index": 9,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_plan_page10",
+      "right": {
+        "bbox_norm": [
+          0.02476683259,
+          0.011115521193,
+          0.536024821487,
+          0.64959409833
+        ],
+        "block_id": "blk_63a6c0ccfcf94fb79c40ddf7e83ca94b",
+        "page_index": 9,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "two riser diagrams"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Набор схем и узлов совпадает; мелкий текст требует Vision."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.027095064521,
+          0.007588088512,
+          0.405974722027,
+          0.988243758678
+        ],
+        "block_id": "blk_994c950db379410b86c701fd60e36e56",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_nodes_page11",
+      "right": {
+        "bbox_norm": [
+          0.026232466102,
+          0.007474780083,
+          0.410966481958,
+          0.986751258373
+        ],
+        "block_id": "blk_2cb30408c82044caa1fdce62b5c96a96",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "multiple engineering nodes"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Компоновка стояков и труб совпадает; crop height различается."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.015643802647,
+          0.010219698728,
+          0.521058965102,
+          0.840570220391
+        ],
+        "block_id": "blk_ac23f3fc7f7f42e7a61b4efe7bd2d4fc",
+        "page_index": 15,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_diagrams_page16",
+      "right": {
+        "bbox_norm": [
+          0.013513513514,
+          0.005216565557,
+          0.518427518428,
+          0.860733316856
+        ],
+        "block_id": "blk_d344edef80a8489fad5677986ef975fc",
+        "page_index": 15,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "riser diagrams"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+        "important_factual_changes": [
+          "Основная аксонометрия совпадает; в RIGHT добавлен многострочный блок примечаний у нижней границы."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.431934493347,
+          0.002173124142,
+          0.891504605937,
+          0.995290856962
+        ],
+        "block_id": "blk_ea2bc6b4de4b406d9fef6ea5ff9eebee",
+        "page_index": 16,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_axono_page17",
+      "right": {
+        "bbox_norm": [
+          0.435729367536,
+          0.004488673046,
+          0.8765327502,
+          0.996485416128
+        ],
+        "block_id": "blk_972098b0570344e49e54c396ea55d3c3",
+        "page_index": 16,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "axonometric diagram"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Три инженерные схемы и узлы совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.013582438231,
+          0.005307883024,
+          0.87853577733,
+          0.563086711179
+        ],
+        "block_id": "blk_e6921c281fb040439a5ffacdfb818d55",
+        "page_index": 17,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_diagrams_page18",
+      "right": {
+        "bbox_norm": [
+          0.014287441969,
+          0.007499247789,
+          0.878169447184,
+          0.555263426159
+        ],
+        "block_id": "blk_6a452addf6134686831a50ee2dd17379",
+        "page_index": 17,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "multiple diagrams"
+    },
+    {
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Аксонометрия совпадает; снизу различается включённый в crop фрагмент таблицы."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.386559802713,
+          0.005865033704,
+          0.843232044199,
+          0.985325662285
+        ],
+        "block_id": "blk_f3952b21781b408dbda489fc25845e05",
+        "page_index": 19,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "vk_axono_page20",
+      "right": {
+        "bbox_norm": [
+          0.385749385749,
+          0.005216565695,
+          0.842751842752,
+          0.944198390816
+        ],
+        "block_id": "blk_9d7bfa92dbd3476aaf0f2d7a194c1297",
+        "page_index": 19,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "axonometric diagram; crop padding"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Большой план и ревизионные отметки совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.015809713716,
+          0.007046506946,
+          0.837487537388,
+          0.995772095832
+        ],
+        "block_id": "blk_5ef204dbfe96487da0692e278679a81f",
+        "page_index": 4,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page05",
+      "right": {
+        "bbox_norm": [
+          0.011321097612,
+          0,
+          0.838389320925,
+          0.994469195604
+        ],
+        "block_id": "blk_268725917f604096be71a1ee6d4f0ccf",
+        "page_index": 4,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "large dense architecture plan"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "План помещений и плотные аннотации совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.023152808536,
+          0.317274800456,
+          0.599355747936,
+          0.986031927024
+        ],
+        "block_id": "blk_f808177d1ca141a684ce53a4a5c94580",
+        "page_index": 6,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page07",
+      "right": {
+        "bbox_norm": [
+          0.023684293032,
+          0.313269571709,
+          0.592018157244,
+          0.983285933733
+        ],
+        "block_id": "blk_528240b7b24c4460a032144842731cab",
+        "page_index": 6,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "dense apartment plan"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "План совпадает; левый padding заметно различается, но semantic extent сохранён."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.05154016509,
+          0.001710376283,
+          0.569156432454,
+          0.934150513113
+        ],
+        "block_id": "blk_0ce1019e612345b48fe5db00037023fa",
+        "page_index": 7,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page08",
+      "right": {
+        "bbox_norm": [
+          0.026860624552,
+          0.00513240695,
+          0.57000147979,
+          0.958884984255
+        ],
+        "block_id": "blk_46ce98f3f24b4cc0a0075926b417cf6d",
+        "page_index": 7,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "dense apartment plan; crop padding"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Вертикальный фрагмент плана совпадает; crop width различается."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.023958123616,
+          0.007981755986,
+          0.388765854641,
+          0.959806157355
+        ],
+        "block_id": "blk_2e4fcac867994d36988bf5efad0d15b0",
+        "page_index": 9,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page10",
+      "right": {
+        "bbox_norm": [
+          0.021873325109,
+          0.005778491497,
+          0.366597729147,
+          0.987143874168
+        ],
+        "block_id": "blk_0b196bf490e04861893a35859f883ad4",
+        "page_index": 9,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "tall apartment plan"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Широкий план помещений совпадает."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.01599247413,
+          0.004561003421,
+          0.449267571563,
+          0.55330672748
+        ],
+        "block_id": "blk_c1072b23eb2f4d408aec5696d1c5af68",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page11",
+      "right": {
+        "bbox_norm": [
+          0.019934371114,
+          0.007294774055,
+          0.459769800305,
+          0.54314750433
+        ],
+        "block_id": "blk_52c37a67088c4779924d4210ba9b8f80",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "wide apartment plan"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Геометрия и ревизионные пометки совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.024159452386,
+          0.007126567845,
+          0.617877994765,
+          0.551596351197
+        ],
+        "block_id": "blk_dce28beee72d40028cb5bf61c856a661",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page12",
+      "right": {
+        "bbox_norm": [
+          0.020189225674,
+          0.012357413769,
+          0.623842775822,
+          0.533009946346
+        ],
+        "block_id": "blk_303ff7cecbbd4bdd91e949dea1f13648",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "wide apartment plan"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Узкий вертикальный план и подписи совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.013976616046,
+          0.008551881414,
+          0.241365407875,
+          0.999429874572
+        ],
+        "block_id": "blk_080fac3e518047229caf432e7178a4f8",
+        "page_index": 12,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page13",
+      "right": {
+        "bbox_norm": [
+          0.014584980905,
+          0.009525895119,
+          0.246118582785,
+          0.989805817604
+        ],
+        "block_id": "blk_5154285adb8d43e5911c5a83cd1bc85b",
+        "page_index": 12,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "narrow tall plan"
+    },
+    {
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Контур двора, помещения и ревизионные отметки совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.01509756445,
+          0.008858465875,
+          0.838769406068,
+          0.984296355949
+        ],
+        "block_id": "blk_55c46b96b32c42bcb1f65a385201c02c",
+        "page_index": 15,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ar_plan_page16",
+      "right": {
+        "bbox_norm": [
+          0.031004846096,
+          0,
+          0.838874578476,
+          0.996325880289
+        ],
+        "block_id": "blk_4e1a412900e64600b2f01fa87dfd5fec",
+        "page_index": 15,
+        "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "large courtyard plan"
+    },
+    {
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "План этажа и цветная трасса вентиляции совпадают; лист сдвинут на одну страницу."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.019841269841,
+          0.011221643992,
+          0.993386243386,
+          0.824790833443
+        ],
+        "block_id": "blk_75fa57b1daea4023915bf824f2eac458",
+        "page_index": 8,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ov_plan_floor04",
+      "right": {
+        "bbox_norm": [
+          0.017690390348,
+          0.018894642591,
+          0.999505788088,
+          0.803808420897
+        ],
+        "block_id": "blk_2cbc90bfff2e4cf3ac01b1573cfbd5c7",
+        "page_index": 9,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "ventilation floor plan"
+    },
+    {
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "План и магистраль совпадают; лист сдвинут на одну страницу."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.017195767196,
+          0.011221643992,
+          0.993386243386,
+          0.807958367454
+        ],
+        "block_id": "blk_7a93d50b432641eda7fe5aa726452100",
+        "page_index": 9,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ov_plan_floor05",
+      "right": {
+        "bbox_norm": [
+          0.018988192081,
+          0.012599945068,
+          1,
+          0.805625617504
+        ],
+        "block_id": "blk_70eca0411db047eb86e0f374d45be47f",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "ventilation floor plan"
+    },
+    {
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Протяжённый план и вентиляционные трассы совпадают."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.025132275132,
+          0.008416232994,
+          0.994708994709,
+          0.847234121428
+        ],
+        "block_id": "blk_2212f35196ec4143ad0db68029a2ccb3",
+        "page_index": 10,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ov_plan_floor06",
+      "right": {
+        "bbox_norm": [
+          0.017172962427,
+          0.01264795661,
+          0.998101204634,
+          0.855030046804
+        ],
+        "block_id": "blk_515c6ef44da248c4bd0928ac1a5c194a",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "ventilation floor plan"
+    },
+    {
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_route": "VECTOR_WITH_VISION",
+        "expected_verdict": "STRUCTURE_CHANGED",
+        "important_factual_changes": [
+          "В RIGHT из нескольких розовых зон удалены внутренние контуры/символы оборудования.",
+          "Crop справа шире, поэтому точная локализация требует Hybrid, но общая область достаточна для подтверждения удаления."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.056878306878,
+          0.01496748302,
+          0.82671957672,
+          0.905532722699
+        ],
+        "block_id": "blk_28ef636509184e52b6709241f6189393",
+        "page_index": 11,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ov_plan_floor07",
+      "right": {
+        "bbox_norm": [
+          0.046208530806,
+          0.011731030769,
+          0.900473933649,
+          0.926751430783
+        ],
+        "block_id": "blk_447b14f9866c41c7b4ecd5078bfd8066",
+        "page_index": 12,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "curved ventilation plan"
+    },
+    {
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_route": "VECTOR_OK",
+        "expected_verdict": "NEAR_IDENTICAL",
+        "important_factual_changes": [
+          "Состав таблицы оборудования и количества визуально совпадают; экспортная упаковка/границы слегка различаются."
+        ]
+      },
+      "left": {
+        "bbox_norm": [
+          0.045454545455,
+          0.011539615156,
+          0.986013986014,
+          0.51104009978
+        ],
+        "block_id": "blk_21446c486e0f453890207c46506b5945",
+        "page_index": 12,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/document.pdf",
+        "version": "v001"
+      },
+      "pair_id": "ov_equipment_table",
+      "right": {
+        "bbox_norm": [
+          0.045246809721,
+          0.012170508504,
+          0.994272977114,
+          0.508374914527
+        ],
+        "block_id": "blk_a56f604b46114e28841e0af4a8425d86",
+        "page_index": 13,
+        "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/document.pdf",
+        "version": "v002"
+      },
+      "selection": "Manual same-semantic-block pairing after side-by-side crop inspection.",
+      "type": "equipment table; text-heavy"
+    }
+  ],
+  "research_only": true,
+  "schema_version": "vector-block-benchmark-v0.2-codex",
+  "selection_method": "39 explicit real block pairs. Metadata shortlist only; every final crop pair was manually inspected. No automatic block matcher."
+}

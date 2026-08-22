@@ -1,0 +1,172 @@
+{
+  "aggregate": {
+    "change_only_median_bytes": 8518.0,
+    "change_only_median_estimated_tokens": 1979.0,
+    "median_reduction_percent": 68.819,
+    "old_l3_median_bytes": 29124.5,
+    "old_l3_median_estimated_tokens": 6806.5,
+    "real_model_token_probe": {
+      "input_token_reduction_percent": 47.476,
+      "l3_change_only": {
+        "latency_seconds": 6.952327,
+        "model": "gpt-5.6-sol",
+        "pairs": 3,
+        "payload": {
+          "bytes": 46263,
+          "estimated_tokens": 11479
+        },
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 29459,
+          "output_tokens": 25,
+          "total_tokens": null
+        }
+      },
+      "old_l3": {
+        "latency_seconds": 6.600092,
+        "model": "gpt-5.6-sol",
+        "pairs": 3,
+        "payload": {
+          "bytes": 129594,
+          "estimated_tokens": 31759
+        },
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 56087,
+          "output_tokens": 25,
+          "total_tokens": null
+        }
+      },
+      "pair_ids": [
+        "ss_scheme_text_changed",
+        "ar_plan",
+        "vk_nodes"
+      ]
+    },
+    "sample_pairs": 10
+  },
+  "comparison": "Baseline v0.1 full compact Level 3 + filtered diff versus v0.2 change-only evidence.",
+  "pairs": [
+    {
+      "estimated_reduction_percent": 79.097,
+      "l3_change_only": {
+        "bytes": 2263,
+        "estimated_tokens": 551
+      },
+      "old_l3": {
+        "bytes": 11494,
+        "estimated_tokens": 2636
+      },
+      "pair_id": "ss_scheme_text_changed"
+    },
+    {
+      "estimated_reduction_percent": 77.229,
+      "l3_change_only": {
+        "bytes": 7435,
+        "estimated_tokens": 1859
+      },
+      "old_l3": {
+        "bytes": 33302,
+        "estimated_tokens": 8164
+      },
+      "pair_id": "ss_plan_dense"
+    },
+    {
+      "estimated_reduction_percent": 84.211,
+      "l3_change_only": {
+        "bytes": 791,
+        "estimated_tokens": 198
+      },
+      "old_l3": {
+        "bytes": 5139,
+        "estimated_tokens": 1254
+      },
+      "pair_id": "ss_simple_node"
+    },
+    {
+      "estimated_reduction_percent": 88.991,
+      "l3_change_only": {
+        "bytes": 938,
+        "estimated_tokens": 228
+      },
+      "old_l3": {
+        "bytes": 9008,
+        "estimated_tokens": 2071
+      },
+      "pair_id": "ss_table_graphic"
+    },
+    {
+      "estimated_reduction_percent": 76.159,
+      "l3_change_only": {
+        "bytes": 10015,
+        "estimated_tokens": 2504
+      },
+      "old_l3": {
+        "bytes": 42766,
+        "estimated_tokens": 10503
+      },
+      "pair_id": "ar_plan"
+    },
+    {
+      "estimated_reduction_percent": 44.912,
+      "l3_change_only": {
+        "bytes": 7167,
+        "estimated_tokens": 1792
+      },
+      "old_l3": {
+        "bytes": 13204,
+        "estimated_tokens": 3253
+      },
+      "pair_id": "ar_wall_sections"
+    },
+    {
+      "estimated_reduction_percent": 34.912,
+      "l3_change_only": {
+        "bytes": 27651,
+        "estimated_tokens": 6913
+      },
+      "old_l3": {
+        "bytes": 42849,
+        "estimated_tokens": 10621
+      },
+      "pair_id": "vk_plan"
+    },
+    {
+      "estimated_reduction_percent": 50.736,
+      "l3_change_only": {
+        "bytes": 27596,
+        "estimated_tokens": 6827
+      },
+      "old_l3": {
+        "bytes": 56283,
+        "estimated_tokens": 13858
+      },
+      "pair_id": "vk_nodes"
+    },
+    {
+      "estimated_reduction_percent": 36.824,
+      "l3_change_only": {
+        "bytes": 38103,
+        "estimated_tokens": 9503
+      },
+      "old_l3": {
+        "bytes": 60708,
+        "estimated_tokens": 15042
+      },
+      "pair_id": "vk_node_plan"
+    },
+    {
+      "estimated_reduction_percent": 61.479,
+      "l3_change_only": {
+        "bytes": 9601,
+        "estimated_tokens": 2099
+      },
+      "old_l3": {
+        "bytes": 24947,
+        "estimated_tokens": 5449
+      },
+      "pair_id": "eom_singleline_changed"
+    }
+  ],
+  "schema_version": "vector-prompt-size-v0.2-codex"
+}

@@ -1,0 +1,1692 @@
+{
+  "analysis": {
+    "benchmark_blocks": 78,
+    "controlled_corruption_detection": 1.0,
+    "controlled_exact_status_accuracy": 0.875,
+    "controlled_failed_detected": true,
+    "high_confidence_blocks": 16,
+    "interpretation": "The separate verifier is useful for error localization but unsafe as a permission gate. On the same ten hard pairs it regressed Hybrid exact-class accuracy from 0.9 to 0.5; use deterministic gates and one fused Hybrid call for risky comparisons.",
+    "manual_recheck_findings": [
+      {
+        "expected_status": "PARTIAL",
+        "reason": "description contains non-visible title-block/signature spans at the crop boundary",
+        "sample_id": "real_eom_singleline_changed_left"
+      },
+      {
+        "expected_status": "PARTIAL",
+        "reason": "visible title and upper layer labels are absent from the PDF text extraction",
+        "sample_id": "new_gp_road_detail"
+      }
+    ],
+    "pipeline_B_hard_pair_experiment": {
+      "automatic_evaluation": {
+        "correctness": 0.5,
+        "false_structural_change": 2,
+        "manual_claim_review_pending": false,
+        "missed_change_class": 4,
+        "rows": [
+          {
+            "actual": "STRUCTURE_SAME_VALUES_CHANGED",
+            "classification_correct": true,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "major_changes": [
+              "Левая ветвь переименована: ОСПД2.1 и ВК2.1.1.1–ВК2.1.1.3 заменены на ОСПД1.1 и ВК1.1.1.1–ВК1.1.1.3; помещение изменено с (2.Т.6) на (1.Т.4).",
+              "Подпись парковочной ветви сокращена с контроля въезда/выезда до контроля въезда."
+            ],
+            "missed_change_class": false,
+            "pair_id": "ss_scheme_text_changed",
+            "traceability_sources": [
+              "BOTH"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "major_changes": [],
+            "missed_change_class": false,
+            "pair_id": "ss_plan_dense",
+            "traceability_sources": [
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": true,
+            "expected": "CROP_MISMATCH",
+            "false_structural_change": false,
+            "major_changes": [
+              "LEFT и RIGHT показывают разные по форме и охвату окна одного сложного плана: LEFT заметно более вертикальный, RIGHT — более широкий горизонтальный фрагмент."
+            ],
+            "missed_change_class": false,
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "major_changes": [],
+            "missed_change_class": false,
+            "pair_id": "ar_plan",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": true,
+            "major_changes": [
+              "Изменена векторная структура листа: число точек ветвления уменьшилось с 4523 до 4401, компонентов — с 349 до 343.",
+              "Зафиксирована широкая переразметка повторяющихся паттернов и стилей при отсутствии текстовых замен."
+            ],
+            "missed_change_class": false,
+            "pair_id": "ar_plan_page08",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "major_changes": [
+              "В RIGHT добавлены многочисленные мелкие красные точечные маркеры у сантехнических приборов и соединений; основные трассы не переложены."
+            ],
+            "missed_change_class": false,
+            "pair_id": "vk_plan",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": false,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "major_changes": [],
+            "missed_change_class": true,
+            "pair_id": "vk_nodes",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": true,
+            "major_changes": [
+              "В RIGHT векторное представление содержит на 4506 сегментов меньше: 11150 против 6644.",
+              "Число точек ветвления уменьшилось со 159 до 122 при топологическом сходстве 0.805281."
+            ],
+            "missed_change_class": true,
+            "pair_id": "vk_axono_page17",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "major_changes": [
+              "В видимой части LEFT показаны первое и n-е квартирные ответвления с многоточием, тогда как RIGHT показывает четыре явных ответвления QD1–QD4, Wh1–Wh4 и QF1–QF4.",
+              "RIGHT имеет более полный заголовок и иной боковой охват листа."
+            ],
+            "missed_change_class": true,
+            "pair_id": "eom_singleline_changed",
+            "traceability_sources": [
+              "BOTH"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "major_changes": [
+              "RIGHT охватывает больше правой и нижней части листа, включая более полный штамп и проектные реквизиты."
+            ],
+            "missed_change_class": true,
+            "pair_id": "ov_plan_floor07",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          }
+        ]
+      },
+      "block_verification_count": 20,
+      "block_verifications": {
+        "real_ar_plan_left": {
+          "limitations": [
+            "Список labels компактно усечен, а насыщенность листа не позволяет проверить все 836 текстовых фрагментов.",
+            "Топология ограничена cap-флагом, поэтому ее точные показатели не подтверждаются."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Показан сложный повернутый архитектурный план с несколькими блоками, размерными цепями и повторяющимися ячейками.",
+            "Оси П.* и 3.*, приведенные размеры и высотные отметки соответствуют изображению.",
+            "В правом верхнем углу присутствует отдельное сечение, согласующееся с инженерными отметками.",
+            "Большое число повторяющихся прямоугольников и окружностей соответствует модульным участкам и маркерам плана."
+          ]
+        },
+        "real_ar_plan_page08_left": {
+          "limitations": [
+            "Точный счёт тысяч линейных примитивов визуально не проверяем."
+          ],
+          "missing_facts": [
+            "Заголовок «Фрагмент 2 (1 : 100)» и назначение основных зон не представлены в доступной части labels.",
+            "Большая часть красных и бордовых аннотаций отсутствует из-за усечения списка."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Набор осей П.А–П.Ж, 2.1–2.11 и многочисленных размерных значений соответствует видимому архитектурному фрагменту.",
+            "Преобладание линий и наличие повторяющихся прямоугольников и окружностей согласуются с плотной размерной разметкой.",
+            "Вертикальная компоновка и занимаемая область листа соответствуют content_extent."
+          ]
+        },
+        "real_ar_plan_page08_right": {
+          "limitations": [
+            "Топология ограничена, а точные количественные показатели невозможно подтвердить визуально."
+          ],
+          "missing_facts": [
+            "Не отражён заголовок листа и смысловая организация помещений.",
+            "Усечён список многочисленных локальных обозначений."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Основные осевые обозначения и размерные значения соответствуют растру.",
+            "Преобладание линейных примитивов согласуется с чрезвычайно плотной архитектурной и размерной графикой.",
+            "Изменённый относительно левой версии масштаб и охват корректно отражены другим content_extent."
+          ]
+        },
+        "real_ar_plan_right": {
+          "limitations": [
+            "Точный состав всех примитивов и 836 текстовых фрагментов визуально не проверяется.",
+            "Топологические данные заявлены как capped."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Повернутый архитектурный план, модульные группы, размерные цепи и отдельное сечение соответствуют описанию.",
+            "Перечисленные осевые обозначения, размеры и высотные отметки видимы на растре.",
+            "Плотность линейной и повторяющейся геометрии правдоподобно отражена сводкой примитивов."
+          ]
+        },
+        "real_eom_singleline_changed_left": {
+          "limitations": [
+            "Возможно, часть подозрительных подписей относится к содержимому исходного листа за пределами показанного crop."
+          ],
+          "missing_facts": [
+            "В описании не зафиксировано, что промежуточные ответвления на растре заменены вертикальным многоточием.",
+            "Не отражено видимое обрезание заголовка правой границей crop."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [
+            "Labels содержат «Стояк 2 от ВРУ-К» и реквизиты согласования/подписей, которые в данном растре не видны."
+          ],
+          "verified_facts": [
+            "Основная однолинейная схема с первым и n-м квартирными ответвлениями, шинами N/PE, счетчиками Wh и аппаратами QD/QF соответствует растру.",
+            "Таблица условных обозначений и примечание представлены корректными ключевыми подписями.",
+            "Кабельные обозначения и расчетные нагрузки нескольких типов квартир совпадают с видимым текстом."
+          ]
+        },
+        "real_eom_singleline_changed_right": {
+          "limitations": [
+            "Labels усечены после части примечания, но основная видимая структура покрыта.",
+            "Точные счетчики кривых и топологии визуально не проверяются."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Показана однолинейная схема этажного щита типа 1 с четырьмя квартирными ответвлениями.",
+            "Повторяются QD1–QD4, Wh1–Wh4 и QF1–QF4, а справа расположены шины N, PE и фазные проводники.",
+            "Заголовок, кабельные обозначения, таблица условных обозначений и примечание соответствуют растру."
+          ]
+        },
+        "real_ov_plan_floor07_left": {
+          "limitations": [
+            "Список labels усечён, а точные topology counts ограничены, но важная структура представлена."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Подписи помещений 7.7.ПОН.1–7.7.ПОН.11, коридора, лестничной клетки, лифтового холла и террасы соответствуют плану.",
+            "Обозначения осей 7.А–7.Б и 7.1–7.9 согласуются с растром.",
+            "Внешние решётки и места установки оборудования представлены в labels.",
+            "Набор криволинейных paths, окружностей и повторяющихся прямоугольников соответствует видимой структуре плана."
+          ]
+        },
+        "real_ov_plan_floor07_right": {
+          "limitations": [
+            "labels_truncated и topology_capped не позволяют проверить все локальные подписи и точные счётчики."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Описание корректно отражает помещения, оси, коридор, лестнично-лифтовой узел и террасу.",
+            "Подписи мест установки Вмо7.4, Вк7.2, Вм7.5 и Всу7.3 соответствуют видимым выноскам.",
+            "Наличие данных штампа и названия раздела согласуется с более широким охватом правого варианта.",
+            "Примитивный состав соответствует криволинейному плану с выделенными прямоугольными зонами."
+          ]
+        },
+        "real_ss_crop_mismatch_page07_left": {
+          "limitations": [
+            "Labels усечены и разбиты на короткие PDF-спаны, поэтому их семантическая полнота ограничена.",
+            "Топология и группы повторов capped; точные счетчики визуально не подтверждаются."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Описание соответствует плотному генеральному/архитектурному плану с несколькими корпусами, парковочными рядами, осями и большим количеством выносок.",
+            "Многочисленные повторяющиеся прямоугольные и округлые элементы согласуются с парковочными местами и автомобильными контурами.",
+            "Больший объем текста и примитивов согласуется с широким охватом этого crop."
+          ]
+        },
+        "real_ss_crop_mismatch_page07_right": {
+          "limitations": [
+            "Список labels усечен и фрагментирован.",
+            "Топологические показатели capped и не могут быть проверены визуально."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Описание соответствует более горизонтальному crop того же сложного плана с корпусами, парковками, осями и выносками.",
+            "Повторяющиеся прямоугольные и округлые элементы согласуются с видимыми парковочными рядами.",
+            "Меньшее число текстовых элементов и примитивов относительно другого crop правдоподобно соответствует сокращенному охвату."
+          ]
+        },
+        "real_ss_plan_dense_left": {
+          "limitations": [
+            "Из-за ограничения patterns/topology точные структурные счётчики ненадёжны для визуальной проверки."
+          ],
+          "missing_facts": [
+            "Не отражены явно важные группы плана: парковочные ряды с автомобилями и крупный блок помещений.",
+            "Список подписей существенно усечён."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Description соответствует плотному полноформатному плану с большим количеством линейной геометрии, круговых маркеров и повторяющихся объектов.",
+            "Фрагменты осевых обозначений П.30–П.48 согласуются с видимыми маркерами.",
+            "Почти полное заполнение листа соответствует content_extent."
+          ]
+        },
+        "real_ss_plan_dense_right": {
+          "limitations": [
+            "Точные edge-anchor и topology counts нельзя надёжно подтвердить по растру."
+          ],
+          "missing_facts": [
+            "Не названы основные смысловые зоны плана и повторяющиеся автомобили.",
+            "Текстовое содержимое представлено лишь усечённым фрагментом."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Плотность и типы примитивов соответствуют сложному парковочно-архитектурному плану.",
+            "Осевые подписи П.30–П.48 согласуются с видимыми обозначениями.",
+            "Повторяющиеся прямоугольные и многосегментные элементы правдоподобно соответствуют видимым сериям объектов."
+          ]
+        },
+        "real_ss_scheme_text_changed_left": {
+          "limitations": [
+            "Точные численные показатели примитивов и топологии по растру независимо не проверяются."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Схема охватывает корпуса 7, 4, 5 и 6, пристройки и нижний уровень помещений связи.",
+            "Обозначения ОСПД2.1, ОСПД4.1, ОСПД5.1, ОСПД5.2 и ОСПД6.1 соответствуют изображению.",
+            "Подписи датчиков, PoE-групп и контроля въезда/выезда согласуются с растром."
+          ]
+        },
+        "real_ss_scheme_text_changed_right": {
+          "limitations": [
+            "Точные количества скрытых или фоновых прямоугольников визуально не подтверждаются."
+          ],
+          "missing_facts": [],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "VERIFIED",
+          "suspicious_facts": [],
+          "verified_facts": [
+            "Основная компоновка схемы и перечисленные корпуса, пристройки и помещения соответствуют растру.",
+            "Левая ветвь правильно обозначена как ОСПД1.1, ВК1.1.1.1–ВК1.1.1.3 и помещение (1.Т.4).",
+            "Подпись парковочной ветви правильно содержит только контроль въезда."
+          ]
+        },
+        "real_vk_axono_page17_left": {
+          "limitations": [
+            "Точная локализация отдельных извлечённых линий недоступна, но противоречие content_extent достаточно существенное."
+          ],
+          "missing_facts": [
+            "Не отражена полноформатная аксонометрическая сеть, занимающая почти весь лист.",
+            "Не представлены отдельные верхние канализационные ветви и правые узловые схемы в пригодной структурированной форме.",
+            "Большинство инженерных подписей утрачено."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "FAILED",
+          "suspicious_facts": [
+            "content_extent заявляет ширину около 0.09 листа, тогда как видимая схема распределена почти по всей ширине.",
+            "Тысячи привязок к левому краю противоречат распределению графики на растре.",
+            "Все примитивы сведены к линиям, текст почти полностью повреждён."
+          ],
+          "verified_facts": [
+            "Небольшое число отметок и диаметров частично совпадает с видимыми подписями."
+          ]
+        },
+        "real_vk_axono_page17_right": {
+          "limitations": [
+            "Несмотря на частичное совпадение нескольких отметок, основное пространственное описание существенно неверно."
+          ],
+          "missing_facts": [
+            "Основная пространственно разнесённая аксонометрическая сеть не представлена корректной структурой.",
+            "Правые узлы и верхняя канализационная часть не отражены содержательно.",
+            "Большинство видимых инженерных значений и подписей отсутствует или испорчено."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "FAILED",
+          "suspicious_facts": [
+            "Заявленная ширина content_extent около 0.086 резко расходится с почти полноширинным содержимым растра.",
+            "Чрезмерное число left edge anchors указывает на сильное искажение или обрезку геометрии.",
+            "TEXT_BROKEN и набор управляющих символов не соответствуют хорошо читаемым русским надписям изображения."
+          ],
+          "verified_facts": [
+            "Несколько высотных отметок частично соответствуют растру."
+          ]
+        },
+        "real_vk_nodes_left": {
+          "limitations": [
+            "Сегменты и топология capped; точные структурные счётчики неполны."
+          ],
+          "missing_facts": [
+            "Текстовые названия арматуры и оборудования в основном не восстановлены.",
+            "Не выделено разделение между верхней водопроводной схемой и нижней канализационной схемой."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [
+            "Значительная доля labels и часть engineering_values содержат управляющие символы и нечитаемое декодирование."
+          ],
+          "verified_facts": [
+            "Линейно насыщенное описание соответствует двум расположенным друг над другом сантехническим узлам.",
+            "Инженерные значения DN15, DN20, Ø16, Ø20, Ø25 и высотные отметки частично совпадают с растром.",
+            "Наличие большого числа линий согласуется со стенами, штриховкой, трубами и размерными выносками."
+          ]
+        },
+        "real_vk_nodes_right": {
+          "limitations": [
+            "Primitive count достиг лимита, topology также capped."
+          ],
+          "missing_facts": [
+            "Большинство русских подписей оборудования и пояснений не восстановлено.",
+            "Смысловое разделение цветных водопроводных линий и оранжевой канализации не описано."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [
+            "Текстовые поля сильно повреждены управляющими символами, несмотря на читаемый текст в растре."
+          ],
+          "verified_facts": [
+            "Общая двухъярусная компоновка сантехнических узлов соответствует изображению.",
+            "Значения DN15, DN20, Ø16×2,2, Ø25×3,5 и несколько высотных отметок частично распознаны верно.",
+            "Почти сплошной линейный состав правдоподобен для показанной инженерной деталировки."
+          ]
+        },
+        "real_vk_plan_left": {
+          "limitations": [
+            "Мелкие подписи и точные количества линий визуально не проверяются."
+          ],
+          "missing_facts": [
+            "Не отражены надежным текстом заголовок плана, подписи фрагментов и значительная часть инженерных обозначений.",
+            "Не описана заметная цветовая структура красных, синих и пурпурных трасс."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [
+            "Большая доля управляющих символов подтверждает, что извлеченный кириллический текст ненадежен.",
+            "Нормализованная ширина content_extent выглядит плохо согласованной с почти полноширинным содержимым растра."
+          ],
+          "verified_facts": [
+            "Растр действительно является насыщенным планом этажа с инженерными трассами, помещениями, осями и размерами.",
+            "Идентификаторы помещений вида 4.263.x–4.270.x и часть числовых размеров соответствуют изображению.",
+            "Преобладание линейной геометрии согласуется с планом."
+          ]
+        },
+        "real_vk_plan_right": {
+          "limitations": [
+            "Точные геометрические и топологические счетчики по растру не подтверждаются."
+          ],
+          "missing_facts": [
+            "Нет надежного представления большинства кириллических подписей и заголовка.",
+            "Цветные трассы и многочисленные красные точечные маркеры явно не выделены как отдельные факты."
+          ],
+          "policy": "May downgrade or add bounded facts; never overrides failed deterministic gates or vector coordinates.",
+          "status": "PARTIAL",
+          "suspicious_facts": [
+            "Заявленное состояние TEXT_BROKEN подтверждается большим числом нечитаемых управляющих символов.",
+            "Показатель content_extent по ширине сомнителен относительно видимого охвата плана."
+          ],
+          "verified_facts": [
+            "Основная структура плана этажа, помещения, оси, размеры и инженерные трассы соответствуют растру.",
+            "Номера помещений серии 4.263.x–4.265.x подтверждаются.",
+            "Дополнительные мелкие красные маркеры отличают этот вариант и согласуются с небольшим изменением состава примитивов."
+          ]
+        }
+      },
+      "comparison_metadata": {
+        "image_count": 20,
+        "latency_seconds": 111.635079,
+        "model": "gpt-5.6-sol",
+        "prompt": {
+          "bytes": 180783,
+          "estimated_tokens": 42537
+        },
+        "returncode": 0,
+        "stderr_tail": " to read OAuth tokens from keyring: Platform secure storage failure: zbus error: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.secrets was not provided by any .service files\n2026-08-22T21:50:23.829608Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n2026-08-22T21:50:32.419986Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/5 in 195ms)... turn_id=01a02b74-1580-7153-be42-d3c507fc551a retries=1 max_retries=5 sampling_error=stream disconnected before completion: websocket closed by server before response.completed\n2026-08-22T21:50:34.264227Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (2/5 in 374ms)... turn_id=01a02b74-1580-7153-be42-d3c507fc551a retries=2 max_retries=5 sampling_error=stream disconnected before completion: websocket closed by server before response.completed\n2026-08-22T21:50:36.397029Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (3/5 in 849ms)... turn_id=01a02b74-1580-7153-be42-d3c507fc551a retries=3 max_retries=5 sampling_error=stream disconnected before completion: websocket closed by server before response.completed\n2026-08-22T21:50:41.734880Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (4/5 in 1.587s)... turn_id=01a02b74-1580-7153-be42-d3c507fc551a retries=4 max_retries=5 sampling_error=stream disconnected before completion: websocket closed by server before response.completed\n2026-08-22T21:50:47.542989Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (5/5 in 2.942s)... turn_id=01a02b74-1580-7153-be42-d3c507fc551a retries=5 max_retries=5 sampling_error=stream disconnected before completion: websocket closed by server before response.completed\n2026-08-22T21:50:52.213636Z  WARN codex_core::client: falling back to HTTP\n",
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 117569,
+          "output_tokens": 6272,
+          "total_tokens": null
+        }
+      },
+      "comparison_output": {
+        "pairs": [
+          {
+            "classification": "STRUCTURE_SAME_VALUES_CHANGED",
+            "evidence": [
+              "Векторный diff содержит только локальные замены подписей и значений без подтвержденной перекомпоновки схемы.",
+              "На растрах совпадают корпуса, помещения, устройства и трассы соединений."
+            ],
+            "major_changes": [
+              "Левая ветвь переименована: ОСПД2.1 и ВК2.1.1.1–ВК2.1.1.3 заменены на ОСПД1.1 и ВК1.1.1.1–ВК1.1.1.3; помещение изменено с (2.Т.6) на (1.Т.4).",
+              "Подпись парковочной ветви сокращена с контроля въезда/выезда до контроля въезда."
+            ],
+            "pair_id": "ss_scheme_text_changed",
+            "traceability": [
+              {
+                "claim": "Идентификаторы левой ветви и помещения изменены.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Контроль въезда/выезда заменен контролем только въезда.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Основная топология схемы сохранена.",
+                "source": "BOTH"
+              }
+            ],
+            "uncertainties": [
+              "Гейт style_ok не пройден, хотя зарегистрированных пар стилевых изменений нет; это не позволяет отдельно подтвердить полное стилевое равенство."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Текстовых добавлений, удалений и замен не обнаружено.",
+              "Геометрическое сходство равно 1.0; число сегментов изменилось лишь с 88752 до 88609.",
+              "Растры визуально совпадают по парковочным рядам, помещениям, осям и выноскам."
+            ],
+            "major_changes": [],
+            "pair_id": "ss_plan_dense",
+            "traceability": [
+              {
+                "claim": "Содержательных изменений текста не обнаружено.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Планы визуально практически совпадают.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Имеются небольшие остаточные различия примитивов и топологии.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Гейты geometry_ok, topology_ok и caps_ok не пройдены; точная причина небольших различий примитивов и паттернов не локализована.",
+              "Зафиксированы 15 сопоставленных стилевых различий, которые визуально не образуют заметного изменения листа."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "Детерминированная диагностика установила crop mismatch; отношения сторон 1.132278 и 1.779843.",
+              "Геометрическое сходство 0.327333 и разница в 13069 сегментов согласуются с различным охватом, а не с надежно сопоставимой редакцией всего плана.",
+              "На растрах видны общие корпуса, парковочные ряды и оси, но разные внешние области листа."
+            ],
+            "major_changes": [
+              "LEFT и RIGHT показывают разные по форме и охвату окна одного сложного плана: LEFT заметно более вертикальный, RIGHT — более широкий горизонтальный фрагмент."
+            ],
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability": [
+              {
+                "claim": "Сравниваются разные области одного плана.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Отношения сторон и геометрический охват существенно различаются.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Общие видимые зоны относятся к одной планировочной основе.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Из-за несовпадающих crop нельзя надежно отделить реальные проектные изменения от отсутствующих областей.",
+              "Извлеченные текстовые различия фрагментированы и в значительной степени обусловлены разным охватом."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Добавленного, удаленного или измененного текста нет.",
+              "Геометрическое сходство равно 0.999917; число сегментов отличается на один, а число компонентов одинаково — 224.",
+              "На растрах совпадают повернутый план, размерные цепи, модульные группы и правое верхнее сечение."
+            ],
+            "major_changes": [],
+            "pair_id": "ar_plan",
+            "traceability": [
+              {
+                "claim": "Текст и основная геометрия практически совпадают.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Имеются остаточные стилевые и топологические различия.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Гейты geometry_ok, topology_ok, caps_ok и style_ok не пройдены.",
+              "Зарегистрированы многочисленные сопоставленные изменения цвета штрихов, но их инженерное значение и точная локализация не подтверждены визуально."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "Детерминированный вердикт — STRUCTURE_CHANGED; не пройдены geometry_ok, topology_ok, caps_ok и style_ok.",
+              "Геометрическое сходство составляет 0.948292 при одинаковом числе сегментов 14493, что указывает не на простое добавление или удаление текста.",
+              "Растры сохраняют общий план, но отличаются масштабом/размещением и локальной графической плотностью."
+            ],
+            "major_changes": [
+              "Изменена векторная структура листа: число точек ветвления уменьшилось с 4523 до 4401, компонентов — с 349 до 343.",
+              "Зафиксирована широкая переразметка повторяющихся паттернов и стилей при отсутствии текстовых замен."
+            ],
+            "pair_id": "ar_plan_page08",
+            "traceability": [
+              {
+                "claim": "Топологические счетчики и состав повторов изменились.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Общая планировочная основа сохранена.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Точные локальные инженерные изменения не установлены.",
+                "source": "BOTH"
+              }
+            ],
+            "uncertainties": [
+              "Точные измененные помещения или конструктивные элементы по предоставленным сводкам не локализованы.",
+              "Vision-описания частичные, а style diff усечен; часть массовых различий может относиться к представлению или сопоставлению примитивов."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Геометрическое сходство равно 0.992971; число сегментов изменилось с 3180 до 3183, компонентов — с 18 до 19.",
+              "На растрах совпадают стены, помещения, красные контуры и сине-пурпурные инженерные трассы.",
+              "Vision verifier отдельно подтверждает наличие дополнительных красных маркеров в RIGHT."
+            ],
+            "major_changes": [
+              "В RIGHT добавлены многочисленные мелкие красные точечные маркеры у сантехнических приборов и соединений; основные трассы не переложены."
+            ],
+            "pair_id": "vk_plan",
+            "traceability": [
+              {
+                "claim": "Основная планировка и трассировка сохранены.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "В RIGHT появились дополнительные красные маркеры.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Количественные геометрические различия малы.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Гейт text_ok не пройден: большая часть извлеченного текста повреждена управляющими символами.",
+              "Стилевой diff усечен, поэтому точный перечень мелких графических изменений ненадежен."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Геометрическое сходство равно 0.991042; число сегментов отличается на один.",
+              "Оба растра показывают одинаковую двухъярусную компоновку водопроводного узла сверху и канализационного узла снизу.",
+              "Основные цветные трубопроводы, приборы и размерные цепи визуально совпадают."
+            ],
+            "major_changes": [],
+            "pair_id": "vk_nodes",
+            "traceability": [
+              {
+                "claim": "Основная инженерная геометрия практически совпадает.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Различия текста ненадежны из-за поврежденного извлечения.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Остаточные топологические различия невелики относительно размера листа.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Не пройдены geometry_ok, text_ok, topology_ok, caps_ok и style_ok.",
+              "Текст сильно поврежден декодированием, а массовые стилевые сопоставления усечены; различия записей диаметров нельзя уверенно считать редакцией проекта.",
+              "На RIGHT видна дополнительная крайняя правая область с примечанием, но crop mismatch детерминированно не установлен."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "Детерминированный вердикт — STRUCTURE_CHANGED; одновременно не пройдены geometry_ok, text_ok, topology_ok, caps_ok и style_ok.",
+              "Растры сохраняют сходную общую аксонометрическую композицию, но это не отменяет крупного детерминированного расхождения состава векторов.",
+              "Оба Vision verifier получили FAILED из-за сильного несоответствия описанного пространственного охвата фактическому полноширинному растру."
+            ],
+            "major_changes": [
+              "В RIGHT векторное представление содержит на 4506 сегментов меньше: 11150 против 6644.",
+              "Число точек ветвления уменьшилось со 159 до 122 при топологическом сходстве 0.805281."
+            ],
+            "pair_id": "vk_axono_page17",
+            "traceability": [
+              {
+                "claim": "Состав сегментов и топология существенно изменились.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Общая видимая аксонометрическая схема остается похожей.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Точная локализация структурных изменений ненадежна.",
+                "source": "BOTH"
+              }
+            ],
+            "uncertainties": [
+              "Из-за FAILED-верификации и поврежденного текста невозможно надежно указать, какие именно трубопроводы или узлы соответствуют потерянным сегментам.",
+              "Визуальная близость общих сетей конфликтует с крупным векторным расхождением; точная инженерная семантика изменений не установлена."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "Детерминированная диагностика установила crop mismatch; отношения сторон равны 0.634296 и 0.721282, наблюдается сильный дисбаланс граничных привязок.",
+              "Геометрическое сходство низкое — 0.173922, а число сегментов различается на 1429.",
+              "Vision подтверждает различное представление квартирных ответвлений и обрезанный заголовок LEFT."
+            ],
+            "major_changes": [
+              "В видимой части LEFT показаны первое и n-е квартирные ответвления с многоточием, тогда как RIGHT показывает четыре явных ответвления QD1–QD4, Wh1–Wh4 и QF1–QF4.",
+              "RIGHT имеет более полный заголовок и иной боковой охват листа."
+            ],
+            "pair_id": "eom_singleline_changed",
+            "traceability": [
+              {
+                "claim": "Crop и граничный охват двух изображений неэквивалентны.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Видимое представление ответвлений различается.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Различия вне общей области нельзя трактовать как подтвержденное изменение конструкции.",
+                "source": "BOTH"
+              }
+            ],
+            "uncertainties": [
+              "Из-за неэквивалентных границ нельзя уверенно разделить реальную переработку схемы и различия охвата листа.",
+              "Часть добавленного текста относится к областям и штампу, отсутствующим в LEFT crop, поэтому не считается изменением конструкции."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "Детерминированная диагностика установила crop mismatch из-за асимметричного охвата; правая граница content extent различается примерно на 0.105 нормализованной ширины.",
+              "На общей области совпадают криволинейный контур корпуса, помещения, оси, лестнично-лифтовой узел и терраса.",
+              "Добавленный текст RIGHT преимущественно относится к штампу, стадии, дате и адресу."
+            ],
+            "major_changes": [
+              "RIGHT охватывает больше правой и нижней части листа, включая более полный штамп и проектные реквизиты."
+            ],
+            "pair_id": "ov_plan_floor07",
+            "traceability": [
+              {
+                "claim": "RIGHT содержит более полный штамп вследствие более широкого охвата.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Основная планировка в общей области совпадает.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Диагностика фиксирует асимметричный crop.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Не пройдены geometry_ok, topology_ok, crop_ok, caps_ok и style_ok; точные локальные различия паттернов неинтерпретируемы как изменения конструкции.",
+              "Из-за различного охвата нельзя полностью исключить дополнительные изменения за пределами общей области."
+            ]
+          }
+        ]
+      },
+      "manual_evaluation": {
+        "actual_batched_model_invocations": 3,
+        "classification_misses": 5,
+        "completeness": 0.7,
+        "conceptual_vision_calls": 30,
+        "conclusion": "A separate verifier anchored the comparator on crop/style/vector-count warnings. It found the EOM change but misclassified it, missed the OV removal, and regressed exact class accuracy versus the single fused Hybrid arm.",
+        "correctness": 0.5,
+        "false_structural_change": 2,
+        "found_change_but_misclassified": 1,
+        "method": "Every major-change claim was checked against the same fixed human ground truth and source-crop review used for the three original arms.",
+        "missed_important_change": 3,
+        "normalization_note": "Eight reused block verifications are charged as 8/12 of their original batch; the other 12 verifications and ten-pair comparator use measured totals.",
+        "normalized_relevant_input_tokens": 210089,
+        "normalized_relevant_latency_seconds": 337.757797,
+        "rows": [
+          {
+            "actual": "STRUCTURE_SAME_VALUES_CHANGED",
+            "classification_correct": true,
+            "completeness": 1.0,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "found_change_but_misclassified": false,
+            "major_changes": [
+              "Левая ветвь переименована: ОСПД2.1 и ВК2.1.1.1–ВК2.1.1.3 заменены на ОСПД1.1 и ВК1.1.1.1–ВК1.1.1.3; помещение изменено с (2.Т.6) на (1.Т.4).",
+              "Подпись парковочной ветви сокращена с контроля въезда/выезда до контроля въезда."
+            ],
+            "missed_change_class": false,
+            "missed_important_change": false,
+            "pair_id": "ss_scheme_text_changed",
+            "traceability_sources": [
+              "BOTH"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1.0,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "found_change_but_misclassified": false,
+            "major_changes": [],
+            "missed_change_class": false,
+            "missed_important_change": false,
+            "pair_id": "ss_plan_dense",
+            "traceability_sources": [
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": true,
+            "completeness": 1.0,
+            "expected": "CROP_MISMATCH",
+            "false_structural_change": false,
+            "found_change_but_misclassified": false,
+            "major_changes": [
+              "LEFT и RIGHT показывают разные по форме и охвату окна одного сложного плана: LEFT заметно более вертикальный, RIGHT — более широкий горизонтальный фрагмент."
+            ],
+            "missed_change_class": false,
+            "missed_important_change": false,
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1.0,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "found_change_but_misclassified": false,
+            "major_changes": [],
+            "missed_change_class": false,
+            "missed_important_change": false,
+            "pair_id": "ar_plan",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "completeness": 1.0,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": true,
+            "found_change_but_misclassified": false,
+            "major_changes": [
+              "Изменена векторная структура листа: число точек ветвления уменьшилось с 4523 до 4401, компонентов — с 349 до 343.",
+              "Зафиксирована широкая переразметка повторяющихся паттернов и стилей при отсутствии текстовых замен."
+            ],
+            "missed_change_class": false,
+            "missed_important_change": false,
+            "pair_id": "ar_plan_page08",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1.0,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "found_change_but_misclassified": false,
+            "major_changes": [
+              "В RIGHT добавлены многочисленные мелкие красные точечные маркеры у сантехнических приборов и соединений; основные трассы не переложены."
+            ],
+            "missed_change_class": false,
+            "missed_important_change": false,
+            "pair_id": "vk_plan",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": false,
+            "completeness": 0.0,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "found_change_but_misclassified": false,
+            "major_changes": [],
+            "missed_change_class": true,
+            "missed_important_change": true,
+            "pair_id": "vk_nodes",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "completeness": 0.0,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": true,
+            "found_change_but_misclassified": false,
+            "major_changes": [
+              "В RIGHT векторное представление содержит на 4506 сегментов меньше: 11150 против 6644.",
+              "Число точек ветвления уменьшилось со 159 до 122 при топологическом сходстве 0.805281."
+            ],
+            "missed_change_class": true,
+            "missed_important_change": true,
+            "pair_id": "vk_axono_page17",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "completeness": 1.0,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "found_change_but_misclassified": true,
+            "major_changes": [
+              "В видимой части LEFT показаны первое и n-е квартирные ответвления с многоточием, тогда как RIGHT показывает четыре явных ответвления QD1–QD4, Wh1–Wh4 и QF1–QF4.",
+              "RIGHT имеет более полный заголовок и иной боковой охват листа."
+            ],
+            "missed_change_class": true,
+            "missed_important_change": false,
+            "pair_id": "eom_singleline_changed",
+            "traceability_sources": [
+              "BOTH"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "completeness": 0.0,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "found_change_but_misclassified": false,
+            "major_changes": [
+              "RIGHT охватывает больше правой и нижней части листа, включая более полный штамп и проектные реквизиты."
+            ],
+            "missed_change_class": true,
+            "missed_important_change": true,
+            "pair_id": "ov_plan_floor07",
+            "traceability_sources": [
+              "BOTH",
+              "VECTOR",
+              "VISION"
+            ]
+          }
+        ]
+      },
+      "new_verification_count": 12,
+      "new_verifier_metadata": {
+        "image_count": 12,
+        "latency_seconds": 103.443472,
+        "model": "gpt-5.6-sol",
+        "prompt": {
+          "bytes": 54898,
+          "estimated_tokens": 13203
+        },
+        "usage": {
+          "cached_input_tokens": 9984,
+          "input_tokens": 59047,
+          "output_tokens": 5805,
+          "total_tokens": null
+        }
+      },
+      "pair_ids": [
+        "ss_scheme_text_changed",
+        "ss_plan_dense",
+        "ss_crop_mismatch_page07",
+        "ar_plan",
+        "ar_plan_page08",
+        "vk_plan",
+        "vk_nodes",
+        "vk_axono_page17",
+        "eom_singleline_changed",
+        "ov_plan_floor07"
+      ],
+      "reused_verification_count": 8,
+      "schema_version": "vector-verified-pipeline-v0.2-codex"
+    },
+    "pipelines": {
+      "A_diff_vision_only": {
+        "diff_vision_calls": 34,
+        "estimated_verification_input_tokens": 0,
+        "estimated_verification_latency_seconds": 0,
+        "total_vision_calls": 34,
+        "verification_calls": 0
+      },
+      "B_verify_all_then_diff": {
+        "diff_vision_calls": 34,
+        "estimated_verification_input_tokens": 250899,
+        "estimated_verification_latency_seconds": 1052.969,
+        "estimated_verification_output_tokens": 45359,
+        "total_vision_calls": 112,
+        "verification_calls": 78
+      },
+      "C_verify_risky_then_diff": {
+        "diff_vision_calls": 34,
+        "estimated_verification_input_tokens": 199432,
+        "estimated_verification_latency_seconds": 836.975,
+        "estimated_verification_output_tokens": 36054,
+        "total_vision_calls": 96,
+        "verification_calls": 62
+      }
+    },
+    "real_accuracy": 0.733333,
+    "risky_blocks": 62,
+    "status_counts": {
+      "PARTIAL": 4,
+      "VERIFIED": 11
+    }
+  },
+  "metadata": [
+    {
+      "image_count": 12,
+      "latency_seconds": 184.018869,
+      "model": "gpt-5.6-sol",
+      "prompt": {
+        "bytes": 49697,
+        "estimated_tokens": 11775
+      },
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 50210,
+        "output_tokens": 7901,
+        "total_tokens": null
+      }
+    },
+    {
+      "image_count": 11,
+      "latency_seconds": 126.471884,
+      "model": "gpt-5.6-sol",
+      "prompt": {
+        "bytes": 25634,
+        "estimated_tokens": 6207
+      },
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 23773,
+        "output_tokens": 5474,
+        "total_tokens": null
+      }
+    }
+  ],
+  "model": "gpt-5.6-sol",
+  "research_only": true,
+  "samples": [
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "На растре видны подписи «Разрез 1-1», «Разрез 2-2», «FIREFIX» и «TEHSTRONG FIREWALL PP».",
+        "Слева присутствует размер L и обозначения а, 1 и 2."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "VERIFIED",
+      "group": "existing_real",
+      "limitations": [
+        "Точные числа примитивов, сегментов и топологических узлов визуально не проверяются."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ss_detail_page17_left",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Показаны продольный узел кабельной проходки и два поперечных разреза.",
+        "Заголовок, обозначения разрезов, кабеля, гильзы, огнестойкой пены, герметика и строительной конструкции соответствуют изображению.",
+        "Повторяющиеся прямоугольные элементы и штрихованные/заполненные области согласуются с узлом."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "Различимы подписи кабеля, гильзы, огнестойкой пены, герметика и строительной конструкции.",
+        "Заголовок и обозначения обоих разрезов совпадают."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "VERIFIED",
+      "group": "existing_real",
+      "limitations": [
+        "Точные статистические показатели геометрии нельзя подтвердить по растру."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ss_detail_page17_right",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Показаны продольный узел кабельной проходки и два поперечных разреза.",
+        "Перечисленные подписи материалов и элементов соответствуют растру.",
+        "Структура практически совпадает с описанием левого варианта."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "На изображении читается заголовок «План 2-16 этажа с системами В1, Т3, К1 (1:75)».",
+        "В описании этот заголовок и многие подписи представлены поврежденными символами, хотя номера помещений сохранились."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "PARTIAL",
+      "group": "existing_real",
+      "limitations": [
+        "Мелкие подписи и точные количества линий визуально не проверяются."
+      ],
+      "missing_facts": [
+        "Не отражены надежным текстом заголовок плана, подписи фрагментов и значительная часть инженерных обозначений.",
+        "Не описана заметная цветовая структура красных, синих и пурпурных трасс."
+      ],
+      "sample_id": "real_vk_plan_left",
+      "suspicious_facts": [
+        "Большая доля управляющих символов подтверждает, что извлеченный кириллический текст ненадежен.",
+        "Нормализованная ширина content_extent выглядит плохо согласованной с почти полноширинным содержимым растра."
+      ],
+      "verified_facts": [
+        "Растр действительно является насыщенным планом этажа с инженерными трассами, помещениями, осями и размерами.",
+        "Идентификаторы помещений вида 4.263.x–4.270.x и часть числовых размеров соответствуют изображению.",
+        "Преобладание линейной геометрии согласуется с планом."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "Растр содержит тот же план 2–16 этажей, но с дополнительными красными точками.",
+        "Читаемые номера помещений и отдельные размеры совпадают с неповрежденными элементами labels."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "PARTIAL",
+      "group": "existing_real",
+      "limitations": [
+        "Точные геометрические и топологические счетчики по растру не подтверждаются."
+      ],
+      "missing_facts": [
+        "Нет надежного представления большинства кириллических подписей и заголовка.",
+        "Цветные трассы и многочисленные красные точечные маркеры явно не выделены как отдельные факты."
+      ],
+      "sample_id": "real_vk_plan_right",
+      "suspicious_facts": [
+        "Заявленное состояние TEXT_BROKEN подтверждается большим числом нечитаемых управляющих символов.",
+        "Показатель content_extent по ширине сомнителен относительно видимого охвата плана."
+      ],
+      "verified_facts": [
+        "Основная структура плана этажа, помещения, оси, размеры и инженерные трассы соответствуют растру.",
+        "Номера помещений серии 4.263.x–4.265.x подтверждаются.",
+        "Дополнительные мелкие красные маркеры отличают этот вариант и согласуются с небольшим изменением состава примитивов."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": false,
+      "evidence": [
+        "На растре видны «Фрагмент 3 (1:100)», «Сечение 7-7 (1:50)» и отметки −3,365, −3,810, −3,910, −4,410.",
+        "Различимы перечисленные оси и основные размерные значения."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "PARTIAL",
+      "group": "existing_real",
+      "limitations": [
+        "Список labels компактно усечен, а насыщенность листа не позволяет проверить все 836 текстовых фрагментов.",
+        "Топология ограничена cap-флагом, поэтому ее точные показатели не подтверждаются."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ar_plan_left",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Показан сложный повернутый архитектурный план с несколькими блоками, размерными цепями и повторяющимися ячейками.",
+        "Оси П.* и 3.*, приведенные размеры и высотные отметки соответствуют изображению.",
+        "В правом верхнем углу присутствует отдельное сечение, согласующееся с инженерными отметками.",
+        "Большое число повторяющихся прямоугольников и окружностей соответствует модульным участкам и маркерам плана."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": false,
+      "evidence": [
+        "В верхнем правом сечении видны те же четыре отрицательные отметки.",
+        "Нижние и боковые цепочки осей 3.* и П.* согласуются с labels."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "PARTIAL",
+      "group": "existing_real",
+      "limitations": [
+        "Точный состав всех примитивов и 836 текстовых фрагментов визуально не проверяется.",
+        "Топологические данные заявлены как capped."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ar_plan_right",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Повернутый архитектурный план, модульные группы, размерные цепи и отдельное сечение соответствуют описанию.",
+        "Перечисленные осевые обозначения, размеры и высотные отметки видимы на растре.",
+        "Плотность линейной и повторяющейся геометрии правдоподобно отражена сводкой примитивов."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "На изображении присутствуют QD1/QDn, Wh1/Whn, QF1/QFn, шины N и PE, таблица и примечание.",
+        "Внизу справа видна только подпись «Стояк 1 от ВРУ-К»."
+      ],
+      "expected_reason": "description contains non-visible title-block/signature spans at the crop boundary",
+      "expected_status": "PARTIAL",
+      "group": "existing_real",
+      "limitations": [
+        "Возможно, часть подозрительных подписей относится к содержимому исходного листа за пределами показанного crop."
+      ],
+      "missing_facts": [
+        "В описании не зафиксировано, что промежуточные ответвления на растре заменены вертикальным многоточием.",
+        "Не отражено видимое обрезание заголовка правой границей crop."
+      ],
+      "sample_id": "real_eom_singleline_changed_left",
+      "suspicious_facts": [
+        "Labels содержат «Стояк 2 от ВРУ-К» и реквизиты согласования/подписей, которые в данном растре не видны."
+      ],
+      "verified_facts": [
+        "Основная однолинейная схема с первым и n-м квартирными ответвлениями, шинами N/PE, счетчиками Wh и аппаратами QD/QF соответствует растру.",
+        "Таблица условных обозначений и примечание представлены корректными ключевыми подписями.",
+        "Кабельные обозначения и расчетные нагрузки нескольких типов квартир совпадают с видимым текстом."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "На растре читается заголовок «Принципиальная схема этажного щита тип 1 для подключения квартир».",
+        "Видны четыре горизонтальных ряда и обозначения QD, Wh, QF, C25, N, PE, L1–L3."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "VERIFIED",
+      "group": "existing_real",
+      "limitations": [
+        "Labels усечены после части примечания, но основная видимая структура покрыта.",
+        "Точные счетчики кривых и топологии визуально не проверяются."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_eom_singleline_changed_right",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Показана однолинейная схема этажного щита типа 1 с четырьмя квартирными ответвлениями.",
+        "Повторяются QD1–QD4, Wh1–Wh4 и QF1–QF4, а справа расположены шины N, PE и фазные проводники.",
+        "Заголовок, кабельные обозначения, таблица условных обозначений и примечание соответствуют растру."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": false,
+      "evidence": [
+        "На растре видны многочисленные осевые маркеры П.* и повторяющиеся парковочные ячейки.",
+        "План содержит несколько разнесенных строительных блоков и плотную сеть выносных линий."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "PARTIAL",
+      "group": "existing_real",
+      "limitations": [
+        "Labels усечены и разбиты на короткие PDF-спаны, поэтому их семантическая полнота ограничена.",
+        "Топология и группы повторов capped; точные счетчики визуально не подтверждаются."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ss_crop_mismatch_page07_left",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Описание соответствует плотному генеральному/архитектурному плану с несколькими корпусами, парковочными рядами, осями и большим количеством выносок.",
+        "Многочисленные повторяющиеся прямоугольные и округлые элементы согласуются с парковочными местами и автомобильными контурами.",
+        "Больший объем текста и примитивов согласуется с широким охватом этого crop."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": false,
+      "evidence": [
+        "На растре присутствуют осевые обозначения П.* и множество повторяющихся контуров автомобилей.",
+        "Основной строительный блок слева и парковочные блоки справа отражают заявленную сложную геометрию."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "PARTIAL",
+      "group": "existing_real",
+      "limitations": [
+        "Список labels усечен и фрагментирован.",
+        "Топологические показатели capped и не могут быть проверены визуально."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ss_crop_mismatch_page07_right",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Описание соответствует более горизонтальному crop того же сложного плана с корпусами, парковками, осями и выносками.",
+        "Повторяющиеся прямоугольные и округлые элементы согласуются с видимыми парковочными рядами.",
+        "Меньшее число текстовых элементов и примитивов относительно другого crop правдоподобно соответствует сокращенному охвату."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "Видны позиции Пс5.1, Пс5.1.1, Пз7.1, Пк7.2, Пс3.1 и Пс3.2.",
+        "Читаются поставщик ООО «ТПК Промаэротехника» и значения 38,9/13,1, 83,7/16,4, 83,7/17,6."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "VERIFIED",
+      "group": "existing_real",
+      "limitations": [
+        "Labels усечены ближе к последним строкам, но основная табличная структура и данные представлены.",
+        "Точные счетчики ячеек визуально не аудируются."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ov_equipment_table_left",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Растр представляет девятиколоночную таблицу оборудования с заголовком, нумерацией колонок и несколькими строками вентиляторов.",
+        "Марки VRK-PatAIR, поставщик, единица «шт.», количество и значения массы соответствуют изображению.",
+        "Многочисленные прямоугольники согласуются с сеткой таблицы."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "Видны те же позиции и модели VRK-PatAIR, что перечислены в labels.",
+        "Заголовки колонок «Поз.», «Поставщик», «Ед. измерения», «Кол.», «Масса 1 ед., кг» и «Примечание» присутствуют."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "VERIFIED",
+      "group": "existing_real",
+      "limitations": [
+        "Конец списка labels усечен, хотя видимые ключевые строки покрыты.",
+        "Точные количества сегментов и связностей нельзя подтвердить визуально."
+      ],
+      "missing_facts": [],
+      "sample_id": "real_ov_equipment_table_right",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Девятиколоночная таблица, ее заголовки, нумерация и строки оборудования соответствуют описанию.",
+        "Марки оборудования, поставщик, единицы, количества и массы совпадают с растром.",
+        "Повторяющаяся прямоугольная геометрия корректно отражает сетку таблицы."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "Над разрезом видна таблица со значительно более чем десятью строками текста.",
+        "Нижняя половина изображения занята продолжающимися слоями конструкции."
+      ],
+      "expected_reason": "visible title and upper layer labels are absent from the PDF text extraction",
+      "expected_status": "PARTIAL",
+      "group": "new_real",
+      "limitations": [
+        "Точные количества примитивов, контуров и топологических узлов по растру не проверяются надежно."
+      ],
+      "missing_facts": [
+        "Не отражены заголовок и подзаголовок чертежа.",
+        "Отсутствуют несколько видимых верхних строк спецификации слоев, включая плитку и основания."
+      ],
+      "sample_id": "new_gp_road_detail",
+      "suspicious_facts": [
+        "Заявленные 10 текстовых фрагментов существенно меньше числа видимых строк.",
+        "Указанная вертикальная граница content_extent не согласуется с конструкцией, продолжающейся почти до низа изображения."
+      ],
+      "verified_facts": [
+        "Показан многослойный конструктивный разрез с несколькими штрихованными слоями.",
+        "В растре присутствуют перечисленные нижние строки о геотекстиле, песке, ГОСТ и переменной толщине."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "Заголовки «Закладная деталь ЗД-2» и «1-1» отчетливо видны.",
+        "Компоновка двух проекций и четыре повторяющихся крепежных обозначения совпадают с описанием."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "VERIFIED",
+      "group": "new_real",
+      "limitations": [
+        "Точные счетчики сегментов и топологических пересечений визуально не подтверждаются."
+      ],
+      "missing_facts": [],
+      "sample_id": "new_kj_embedded_detail",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Виден чертеж «Закладная деталь ЗД-2» с видом спереди и разрезом 1-1.",
+        "Основной вид содержит квадратную пластину и четыре одинаковых крепежных элемента.",
+        "Разрез показывает вертикальную пластину и выступающие стержни.",
+        "Размерные подписи 200, 55, 90, 240, 250, 10 и обозначение «10-250, 4 шт.» соответствуют растру."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "На растре читаются К1, К2, К3, К4, К5, К6 и К7.",
+        "Подписи подземных автостоянок и пристроек расположены между соответствующими корпусами.",
+        "По периметру присутствует множество круглых координатных марок."
+      ],
+      "expected_reason": "deterministic quality flags",
+      "expected_status": "VERIFIED",
+      "group": "new_real",
+      "limitations": [
+        "Список labels явно фрагментирован и помечен как усеченный, поэтому отдельные составные подписи восстановлены не полностью.",
+        "Точные статистические счетчики геометрии по растру не проверяются."
+      ],
+      "missing_facts": [],
+      "sample_id": "new_km_connection",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Описание соответствует схеме взаимного расположения корпусов К1–К7.",
+        "Видны две зоны подземной автостоянки и несколько пристроек между корпусами.",
+        "Круглые осевые обозначения, контуры корпусов и этажность представлены в описании."
+      ]
+    },
+    {
+      "actual_status": "VERIFIED",
+      "correct": true,
+      "evidence": [
+        "На растре можно непосредственно сосчитать четырнадцать ветвей и четырнадцать круглых символов.",
+        "Текстовые подписи полностью совпадают с expected_labels."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "VERIFIED",
+      "group": "controlled",
+      "limitations": [
+        "Внутренние счетчики сегментов и branch_points нельзя точно подтвердить только визуально."
+      ],
+      "missing_facts": [],
+      "sample_id": "controlled_correct",
+      "suspicious_facts": [],
+      "verified_facts": [
+        "Видны 14 вертикальных ветвей на общей горизонтальной шине.",
+        "Все подписи QF1–QF14 присутствуют и расположены последовательно.",
+        "Заголовок сообщает «2 inputs · 14 branches»."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "Крайняя правая ветвь имеет подпись QF14.",
+        "На изображении явно написано «14 branches»."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "PARTIAL",
+      "group": "controlled",
+      "limitations": [
+        "Точная низкоуровневая топология визуально не проверяется."
+      ],
+      "missing_facts": [
+        "В expected_labels пропущена видимая подпись QF14.",
+        "В declared_facts отсутствует правильное значение 14 для principal_branches."
+      ],
+      "sample_id": "controlled_removed_element",
+      "suspicious_facts": [
+        "principal_branches=13 противоречит видимым 14 ветвям, заголовку и собственному списку labels.",
+        "expected_labels противоречит полному списку labels, где QF14 присутствует."
+      ],
+      "verified_facts": [
+        "Геометрия, заголовок и фактический список labels описывают 14 ветвей QF1–QF14.",
+        "Общая горизонтальная шина и повторяющиеся круглые символы соответствуют растру."
+      ]
+    },
+    {
+      "actual_status": "FAILED",
+      "correct": false,
+      "evidence": [
+        "На растре видны 14 вертикальных ветвей.",
+        "Заголовок прямо содержит «14 branches»."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "PARTIAL",
+      "group": "controlled",
+      "limitations": [],
+      "missing_facts": [
+        "Корректное число главных ветвей — 14."
+      ],
+      "sample_id": "controlled_wrong_count",
+      "suspicious_facts": [
+        "principal_branches=18 является существенным неверным структурным утверждением."
+      ],
+      "verified_facts": [
+        "Все подписи QF1–QF14 и общий шинный рисунок соответствуют изображению.",
+        "input_count=2 согласуется с текстом заголовка."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "Между QF6 и QF8 на растре отчетливо присутствует QF7."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "PARTIAL",
+      "group": "controlled",
+      "limitations": [
+        "Точные топологические счетчики по изображению не проверяются."
+      ],
+      "missing_facts": [
+        "В expected_labels и labels отсутствует видимая подпись QF7."
+      ],
+      "sample_id": "controlled_missing_label",
+      "suspicious_facts": [
+        "labels_truncated=false не объясняет пропуск QF7.",
+        "text_span_count=15 не согласуется с сокращенным представленным списком labels."
+      ],
+      "verified_facts": [
+        "Видны общая шина и 14 вертикальных ветвей.",
+        "Большинство перечисленных подписей QF соответствует растру.",
+        "Заголовок правильно сообщает 14 ветвей."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "Изображение показывает регулярную шину с четырнадцатью однотипными ответвлениями, без видимых дополнительных десяти структурных развилок."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "PARTIAL",
+      "group": "controlled",
+      "limitations": [
+        "Точное машинное определение branch_points зависит от сегментации кривых и не выводится из растра с достаточной надежностью."
+      ],
+      "missing_facts": [
+        "Надежно подтвержденная топологическая статистика branch_points отсутствует."
+      ],
+      "sample_id": "controlled_wrong_topology",
+      "suspicious_facts": [
+        "branch_points=68 не обосновано простой видимой топологией и не может считаться подтвержденным по растру."
+      ],
+      "verified_facts": [
+        "Основная видимая структура корректна: общая шина, 14 ветвей и подписи QF1–QF14.",
+        "Число компонентов и ветвей не противоречит общей схеме."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "На растре отчетливо читаются QF1–QF14 и «2 inputs · 14 branches»."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "PARTIAL",
+      "group": "controlled",
+      "limitations": [
+        "Геометрические счетчики отдельно от поврежденного текста визуально не проверяются."
+      ],
+      "missing_facts": [
+        "В labels отсутствуют читаемые на растре QF1–QF14 и заголовок."
+      ],
+      "sample_id": "controlled_broken_text",
+      "suspicious_facts": [
+        "Два фрагмента «���» не соответствуют хорошо читаемому тексту изображения.",
+        "replacement_chars=0 противоречит отображаемым символам замены.",
+        "Метрики 69 characters и 15 spans плохо согласуются с фактически представленными двумя поврежденными labels."
+      ],
+      "verified_facts": [
+        "Геометрическая основа с общей шиной и 14 ветвями соответствует изображению.",
+        "Статус TEXT_BROKEN правильно сигнализирует о проблеме представления текста."
+      ]
+    },
+    {
+      "actual_status": "PARTIAL",
+      "correct": true,
+      "evidence": [
+        "На изображении после QF4 продолжаются подписи вплоть до QF14.",
+        "Все четырнадцать однотипных ветвей видимы целиком."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "PARTIAL",
+      "group": "controlled",
+      "limitations": [
+        "Каппирование геометрии и топологии ограничивает полноту проверки соответствующих статистик."
+      ],
+      "missing_facts": [
+        "В фактическом поле labels отсутствуют QF5–QF14 и заголовок."
+      ],
+      "sample_id": "controlled_capped_geometry",
+      "suspicious_facts": [
+        "labels_truncated=false противоречит явной неполноте labels.",
+        "Из-за segments_capped=true и topology_capped=true точные геометрические и топологические счетчики нельзя считать полностью подтвержденными."
+      ],
+      "verified_facts": [
+        "В expected_labels правильно перечислены QF1–QF14.",
+        "Видны 14 ветвей, общая шина и заголовок о двух входах и четырнадцати ветвях.",
+        "principal_branches=14 соответствует растру."
+      ]
+    },
+    {
+      "actual_status": "FAILED",
+      "correct": true,
+      "evidence": [
+        "Представленный crop содержит только большую окружность с текстом «OTHER CROP»."
+      ],
+      "expected_reason": "controlled corruption ground truth",
+      "expected_status": "FAILED",
+      "group": "controlled",
+      "limitations": [],
+      "missing_facts": [
+        "На растре отсутствуют электрическая шина, 14 ветвей, круглые коммутационные символы и подписи QF1–QF14."
+      ],
+      "sample_id": "controlled_wrong_crop",
+      "suspicious_facts": [
+        "Вся VectorBlockDescription относится к другому изображению."
+      ],
+      "verified_facts": []
+    }
+  ],
+  "schema_version": "vector-description-verification-v0.2-codex"
+}

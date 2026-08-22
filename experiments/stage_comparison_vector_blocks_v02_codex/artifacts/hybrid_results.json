@@ -1,0 +1,1278 @@
+{
+  "arms": {
+    "hybrid": {
+      "metadata": {
+        "image_count": 20,
+        "latency_seconds": 234.472388,
+        "model": "gpt-5.6-sol",
+        "prompt": {
+          "bytes": 158331,
+          "estimated_tokens": 38854
+        },
+        "returncode": 0,
+        "stderr_tail": "Reading prompt from stdin...\n2026-08-22T21:20:46.650620Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T21:20:46.682606Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T21:20:46.814882Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n2026-08-22T21:20:46.830458Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: Platform secure storage failure: zbus error: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.secrets was not provided by any .service files\n2026-08-22T21:20:47.074098Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n",
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 114008,
+          "output_tokens": 9135,
+          "total_tokens": null
+        }
+      },
+      "output": {
+        "pairs": [
+          {
+            "classification": "STRUCTURE_SAME_VALUES_CHANGED",
+            "evidence": [
+              "Расположение блоков, соединений и ответвлений визуально не изменилось.",
+              "Vector diff фиксирует только изменения подписей и числовых обозначений при вердикте STRUCTURE_SAME_VALUES_CHANGED."
+            ],
+            "major_changes": [
+              "Обозначения левого блока изменены с серии 2.1 на 1.1, включая ОСПД, три ВК и номер помещения.",
+              "Подпись контроля парковки сокращена: на RIGHT отсутствует «/выезда».",
+              "Помещение СС изменено с «(2.Т.6)» на «(1.Т.4)»."
+            ],
+            "pair_id": "ss_scheme_text_changed",
+            "traceability": [
+              {
+                "claim": "Изменены обозначения серии 2.1 на 1.1 и номер помещения.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Из подписи контроля удалено «/выезда».",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Геометрия соединений сохранена.",
+                "source": "BOTH"
+              }
+            ],
+            "uncertainties": [
+              "Vector-проверка стиля не пройдена, однако отдельного видимого изменения оформления не установлено."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "На растрах не видно пропущенных ветвей, контуров помещений или крупных изменений планировки.",
+              "Vector geometry similarity равна 1.0; различия составляют 143 сегмента из примерно 88 тысяч, topology similarity — 0.996."
+            ],
+            "major_changes": [],
+            "pair_id": "ss_plan_dense",
+            "traceability": [
+              {
+                "claim": "Крупные структурные изменения визуально отсутствуют.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Геометрия практически совпадает.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Из-за плотности и масштаба нельзя исключить единичные изменения тонких линий или мелких символов.",
+              "Vector geometry/topology были ограничены по объему анализа."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "LEFT включает больше верхней и левой части, тогда как RIGHT смещен и увеличен относительно центрально-нижней области.",
+              "Crop diagnostics фиксирует значительное различие пропорций при очень малом показателе асимметричного геометрического покрытия."
+            ],
+            "major_changes": [
+              "LEFT и RIGHT показывают существенно разные поля обзора и масштаб одной планировки.",
+              "В общей центральной области крупного изменения здания или парковочных рядов не обнаружено."
+            ],
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability": [
+              {
+                "claim": "Основное несоответствие вызвано границей и масштабом crop.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "В общей области крупной конструктивной перестройки не видно.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Участки, присутствующие только в одном crop, нельзя сравнить.",
+              "Мелкие подписи и локальные линии общей области недостаточно различимы для надежной проверки."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Все крупные стены, проемы, размерные цепочки и выделенные красным элементы занимают одинаковые положения.",
+              "Vector diff содержит одинаковые тексты, 18139 против 18138 сегментов и geometry similarity 0.999917."
+            ],
+            "major_changes": [],
+            "pair_id": "ar_plan",
+            "traceability": [
+              {
+                "claim": "Крупные линии и ветви не добавлены и не удалены.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Различие геометрии ограничено одним сегментом.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Мелкие цветные обозначения и отдельные размерные штрихи неразборчивы на данном масштабе.",
+              "Vector style/topology были ограничены по объему анализа."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "После учета различного масштаба все крупные наружные и внутренние стены, проемы и нижний детализированный блок имеют соответствия.",
+              "Число vector-сегментов одинаково — 14493 с каждой стороны; добавленных или удаленных текстов не найдено."
+            ],
+            "major_changes": [],
+            "pair_id": "ar_plan_page08",
+            "traceability": [
+              {
+                "claim": "Крупных пропущенных ветвей или стен визуально не найдено.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Количество сегментов и текстовый состав совпадают.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Vector topology сообщает локальные расхождения, которые не удается подтвердить визуально как крупные изменения.",
+              "Плотные красные и серые аннотации могут скрывать мелкие изменения."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Красные, синие и пурпурные магистрали проходят по тем же коридорам и подключаются к тем же группам помещений.",
+              "Vector geometry similarity составляет 0.992971 при разнице всего в три сегмента и одном компоненте."
+            ],
+            "major_changes": [
+              "На RIGHT заметнее многочисленные небольшие красные круглые маркеры около сантехнических узлов; основные трассы не изменены."
+            ],
+            "pair_id": "vk_plan",
+            "traceability": [
+              {
+                "claim": "Основная трассировка систем сохранена.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "На RIGHT красные точечные маркеры визуально выражены сильнее.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Из-за поврежденного vector-текста нельзя надежно подтвердить изменения мелких подписей и чисел.",
+              "Неясно, являются ли красные маркеры новыми объектами или результатом изменения их отображения."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Верхняя сине-пурпурная и нижняя оранжевая схемы сохраняют те же основные ветви, приборные подключения и стояки.",
+              "Vector geometry содержит 20086 и 20087 сегментов с similarity 0.991042."
+            ],
+            "major_changes": [],
+            "pair_id": "vk_nodes",
+            "traceability": [
+              {
+                "claim": "Крупных добавлений или удалений трубопроводов не видно.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Vector-геометрия различается одним сегментом.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Поврежденное извлечение шрифта не позволяет надежно сопоставить мелкие подписи и отметки.",
+              "Часть примечаний у правой границы видна только на RIGHT из-за различного масштаба размещения."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_SAME_VALUES_CHANGED",
+            "evidence": [
+              "Синие, пурпурные и оранжевые трубопроводы имеют одинаковую общую трассировку и подключения.",
+              "Vector geometry coverage близка к полной с similarity 0.999711, несмотря на различное представление сегментов."
+            ],
+            "major_changes": [
+              "На RIGHT внизу добавлен видимый блок «Примечание» с несколькими строками текста.",
+              "Основные аксонометрические ветви и два узла справа сохранены."
+            ],
+            "pair_id": "vk_axono_page17",
+            "traceability": [
+              {
+                "claim": "На RIGHT присутствует дополнительный блок примечаний.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Основная геометрия трубопроводов совпадает.",
+                "source": "BOTH"
+              }
+            ],
+            "uncertainties": [
+              "Содержание добавленного блока примечаний и большинство мелких числовых отметок неразборчивы.",
+              "Vector-текст поврежден, а сильная разница числа сегментов может отражать способ экспорта или оформления."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "Количество явно начерченных отходящих квартирных цепей увеличено с двух шаблонных до четырех отдельных цепей; это видно внутри общей области и не объясняется crop.",
+              "Vector diff фиксирует добавление обозначений Wh4, QF4, QD4 и множества новых параметров."
+            ],
+            "major_changes": [
+              "Обобщенная схема LEFT с первой и n-й линиями и многоточием заменена на RIGHT четырьмя явно показанными квартирными линиями QD1–QD4, Wh1–Wh4 и QF1–QF4.",
+              "Изменены заголовок, таблица описаний и набор кабельных и защитных обозначений."
+            ],
+            "pair_id": "eom_singleline_changed",
+            "traceability": [
+              {
+                "claim": "Четыре явные цепи заменили обобщенную схему первой и n-й цепей.",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Crop mismatch не объясняет изменение числа цепей.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Границы страниц различаются, поэтому крайние надписи и штампы нельзя сопоставлять напрямую.",
+              "Некоторые мелкие характеристики кабелей неразборчивы и не перечислены."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "Различия оборудования видны в верхних помещениях и в крупной правой зоне внутри общей области плана.",
+              "Vector diff подтверждает добавление значения 0,81 м²; различие штампа и правой границы соответствует crop mismatch."
+            ],
+            "major_changes": [
+              "На RIGHT из нескольких розовых штрихованных зон удалены внутренние контуры и символы оборудования, присутствующие на LEFT.",
+              "Форма и площадь ряда розовых зон установки изменены.",
+              "В подписях наружных решеток на RIGHT добавлено значение площади 0,81 м²."
+            ],
+            "pair_id": "ov_plan_floor07",
+            "traceability": [
+              {
+                "claim": "В штрихованных зонах изменены или удалены внутренние символы оборудования.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Добавлено значение площади 0,81 м².",
+                "source": "BOTH"
+              },
+              {
+                "claim": "Различие штампа обусловлено границей crop.",
+                "source": "BOTH"
+              }
+            ],
+            "uncertainties": [
+              "Нижний правый штамп охвачен по-разному и не учитывается как изменение проекта.",
+              "Точные марки удаленных внутренних символов на растре читаются недостаточно уверенно."
+            ]
+          }
+        ]
+      }
+    },
+    "vector": {
+      "metadata": {
+        "image_count": 0,
+        "latency_seconds": 121.837126,
+        "model": "gpt-5.6-sol",
+        "prompt": {
+          "bytes": 155942,
+          "estimated_tokens": 38468
+        },
+        "returncode": 0,
+        "stderr_tail": "2026-08-22T21:14:41.164827Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T21:14:41.176733Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T21:14:41.235735Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n2026-08-22T21:14:41.269510Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: Platform secure storage failure: zbus error: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.secrets was not provided by any .service files\n2026-08-22T21:14:41.990021Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n",
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 65547,
+          "output_tokens": 5386,
+          "total_tokens": null
+        }
+      },
+      "output": {
+        "pairs": [
+          {
+            "classification": "STRUCTURE_SAME_VALUES_CHANGED",
+            "evidence": [
+              "Геометрическая схожесть 0.866387 при явных сопоставленных заменах текста.",
+              "Стилевые пары не изменены: changed_pairs=0."
+            ],
+            "major_changes": [
+              "Иерархические обозначения изменены с 2.1/2.1.1.x на 1.1/1.1.1.x.",
+              "Обозначение «(2.6)» изменено на «(1.4)».",
+              "Фраза сокращена до «Контроль въезда в»; часть про выезд удалена."
+            ],
+            "pair_id": "ss_scheme_text_changed",
+            "traceability": [
+              {
+                "claim": "Изменены номера разделов и подпись контроля.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Изменений стиля в сопоставленных парах не зафиксировано.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Проверка style_ok не пройдена; растровой проверки нет."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Текстовых добавлений, удалений и замен нет.",
+              "Геометрическая схожесть 1.0; число сегментов изменилось на 143 из примерно 88,7 тыс.",
+              "Топологическая схожесть 0.996092; компоненты 393→397."
+            ],
+            "major_changes": [],
+            "pair_id": "ss_plan_dense",
+            "traceability": [
+              {
+                "claim": "Содержательных изменений текста не обнаружено.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Геометрия практически совпадает.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Не пройдены geometry_ok, topology_ok и caps_ok; локальные расхождения толщины и цвета могут быть артефактами сопоставления."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "Диагностика crop: mismatch=true, отношение сторон 1.132278→1.779843.",
+              "Геометрическое покрытие взаимного содержимого около 0.33; схожесть 0.327333."
+            ],
+            "major_changes": [
+              "Сравниваемые области имеют существенно разные границы и пропорции."
+            ],
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability": [
+              {
+                "claim": "Основное расхождение вызвано несовпадением областей сравнения.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Текстовые и геометрические различия смешаны с несовпадением crop; конструктивные изменения достоверно не выделяются без растра.",
+              "Список различий паттернов усечён."
+            ]
+          },
+          {
+            "classification": "STYLE_ONLY_CHANGED",
+            "evidence": [
+              "Текстовых изменений нет.",
+              "Геометрическая схожесть 0.999917; сегменты 18139→18138.",
+              "Число компонентов неизменно: 224; топологическая схожесть 0.998688."
+            ],
+            "major_changes": [
+              "Изменены цвета линий; зафиксировано 104 изменения stroke и одно изменение ширины."
+            ],
+            "pair_id": "ar_plan",
+            "traceability": [
+              {
+                "claim": "Конструкция и текст практически сохранены.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Подтверждены изменения оформления линий.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Перечень стилевых изменений усечён; не пройдены caps_ok, geometry_ok, topology_ok и style_ok."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "Геометрическая схожесть 0.948292.",
+              "Ветвления 4523→4401, компоненты 349→343; топологическая схожесть 0.98763.",
+              "Изменено 1435 стилевых пар, преимущественно stroke; текстовых изменений нет."
+            ],
+            "major_changes": [
+              "Изменены геометрия и топология плана.",
+              "Зафиксированы массовые изменения оформления линий."
+            ],
+            "pair_id": "ar_plan_page08",
+            "traceability": [
+              {
+                "claim": "Геометрический и топологический состав изменён.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Текстовых изменений не обнаружено.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Точная локализация изменений невозможна по усечённому списку стилей; растровой проверки нет.",
+              "Не пройдены geometry_ok, topology_ok, caps_ok и style_ok."
+            ]
+          },
+          {
+            "classification": "NEAR_IDENTICAL",
+            "evidence": [
+              "Геометрическая схожесть 0.992971; число сегментов 3180→3183.",
+              "Ветвления 1076→1074, компоненты 18→19.",
+              "Надёжно читаемых сопоставленных изменений значений нет."
+            ],
+            "major_changes": [],
+            "pair_id": "vk_plan",
+            "traceability": [
+              {
+                "claim": "Геометрия и топология почти совпадают.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Текстовые различия нельзя надёжно прочитать.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Извлечённый текст повреждён кодировкой, поэтому подписи не интерпретировались.",
+              "Список стилевых различий усечён; text_ok не пройден."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_SAME_VALUES_CHANGED",
+            "evidence": [
+              "Геометрическая схожесть 0.991042; число сегментов отличается на один.",
+              "Читаемые старые и новые отметки присутствуют соответственно в removed_text и added_text.",
+              "Топологическая схожесть 0.980043."
+            ],
+            "major_changes": [
+              "Изменён набор читаемых отметок: слева −0,030, −0,050, −0,057, −0,016, +0,010; справа −0,034, −0,019, −0,061, −0,017, +0,008."
+            ],
+            "pair_id": "vk_nodes",
+            "traceability": [
+              {
+                "claim": "Набор числовых отметок изменён.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Основная геометрия сохранена.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Однозначное попарное позиционное соответствие отметок не предоставлено.",
+              "Большая часть текста повреждена кодировкой; текстовый и стилевой списки усечены."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "Число сегментов уменьшилось с 11150 до 6644.",
+              "Число ветвлений уменьшилось с 159 до 122; топологическая схожесть 0.805281.",
+              "Число компонентов осталось равным 8."
+            ],
+            "major_changes": [
+              "Существенно изменён векторный состав и топология аксонометрии."
+            ],
+            "pair_id": "vk_axono_page17",
+            "traceability": [
+              {
+                "claim": "Векторный и топологический состав существенно изменён.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Число связных компонентов не изменилось.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Подписи преимущественно повреждены кодировкой и не интерпретировались.",
+              "Не пройдены geometry_ok, text_ok, topology_ok, caps_ok и style_ok; растровой проверки нет."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "Диагностика crop: mismatch=true; отношение сторон 0.634296→0.721282.",
+              "Геометрическая схожесть всего 0.173922 при покрытии 0.147845 и 0.2.",
+              "Выражен дисбаланс краевых привязок: 0.964286."
+            ],
+            "major_changes": [
+              "Границы сравниваемых фрагментов однолинейной схемы не совпадают."
+            ],
+            "pair_id": "eom_singleline_changed",
+            "traceability": [
+              {
+                "claim": "Сравниваются существенно разные области чертежа.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Из-за несовпадения crop нельзя достоверно отделить изменения схемы от различий охвата.",
+              "Текстовый список усечён; растровой проверки нет."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "Диагностика crop: mismatch=true; зафиксировано асимметричное покрытие содержимого 0.050334.",
+              "Отношение сторон 1.222489→1.320297; геометрическая схожесть 0.70225.",
+              "Среди добавленного текста присутствуют поля основной надписи, включая «Стадия», «Корпус 7» и «07.2026»."
+            ],
+            "major_changes": [
+              "Области сравнения различаются; новая область включает дополнительный текст основной надписи."
+            ],
+            "pair_id": "ov_plan_floor07",
+            "traceability": [
+              {
+                "claim": "Дополнительный текст связан с различием охвата чертежа.",
+                "source": "VECTOR"
+              },
+              {
+                "claim": "Диагностика подтверждает несовпадение crop.",
+                "source": "VECTOR"
+              }
+            ],
+            "uncertainties": [
+              "Конструктивные изменения плана нельзя надёжно отделить от различий crop без растра.",
+              "Не пройдены geometry_ok, topology_ok, crop_ok, caps_ok и style_ok."
+            ]
+          }
+        ]
+      }
+    },
+    "vision": {
+      "metadata": {
+        "image_count": 20,
+        "latency_seconds": 243.547636,
+        "model": "gpt-5.6-sol",
+        "prompt": {
+          "bytes": 1452,
+          "estimated_tokens": 270
+        },
+        "returncode": 0,
+        "stderr_tail": "Reading prompt from stdin...\n2026-08-22T21:16:43.071436Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T21:16:43.098232Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T21:16:43.208343Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n2026-08-22T21:16:43.217211Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: Platform secure storage failure: zbus error: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.secrets was not provided by any .service files\n2026-08-22T21:16:43.506202Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n",
+        "usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 62511,
+          "output_tokens": 10324,
+          "total_tokens": null
+        }
+      },
+      "output": {
+        "pairs": [
+          {
+            "classification": "STRUCTURE_SAME_VALUES_CHANGED",
+            "evidence": [
+              "Boxes, connections, device counts, and cable routing remain visually aligned.",
+              "The changed labels occupy the same corresponding locations in both drawings."
+            ],
+            "major_changes": [
+              "The first three device identifiers change from the BK2.1.1.x series to BK1.1.1.x.",
+              "The lower-left device/room labels change from ОСПД2.1 and «Помещение СС (2.Т.6)» to ОСПД1.1 and «Помещение СС (1.Т.4)».",
+              "The parking label changes from entry/exit control to entry-only control."
+            ],
+            "pair_id": "ss_scheme_text_changed",
+            "traceability": [
+              {
+                "claim": "The diagram geometry and connectivity are unchanged while several labels change.",
+                "source": "VISION"
+              },
+              {
+                "claim": "The lower-left identifiers and parking-control wording differ.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Other very small labels may contain differences that are not reliably legible."
+            ]
+          },
+          {
+            "classification": "INSUFFICIENT_VECTOR_DATA",
+            "evidence": [
+              "The overall building, parking, grid, and boundary geometry appears aligned.",
+              "The drawing is extremely dense and many annotations are too small and faint for reliable comparison."
+            ],
+            "major_changes": [],
+            "pair_id": "ss_plan_dense",
+            "traceability": [
+              {
+                "claim": "No macro-level layout difference is visible.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Fine-detail comparison is inconclusive at the supplied scale.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Changes confined to small identifiers, dimensions, or fine linework cannot be excluded without vector data or enlarged crops."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "LEFT includes additional upper-left and lower plan areas, while RIGHT is centered more tightly on the central buildings and parking.",
+              "Shared buildings, parking rows, axes, and boundary lines correspond in the overlap."
+            ],
+            "major_changes": [
+              "The rasters show substantially different framing and aspect ratio of the same plan."
+            ],
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability": [
+              {
+                "claim": "The principal difference is viewport coverage rather than an evident construction change.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Areas visible in only one crop cannot be compared for revisions."
+            ]
+          },
+          {
+            "classification": "IDENTICAL",
+            "evidence": [
+              "Plan walls, openings, dimensions, red annotations, section markers, and the upper-right detail coincide visually.",
+              "No added, removed, or displaced element is visible."
+            ],
+            "major_changes": [],
+            "pair_id": "ar_plan",
+            "traceability": [
+              {
+                "claim": "No visible graphical difference exists between the supplied rasters.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "The smallest annotation characters were not independently readable, although their rendered positions and shapes appear the same."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "The title, upper room groups, central circulation, lower dense block, and grid axes correspond after accounting for scale and offset.",
+              "Outer margins and the plan’s bounding position differ."
+            ],
+            "major_changes": [
+              "The same plan is rendered at a different scale and horizontal position within the raster."
+            ],
+            "pair_id": "ar_plan_page08",
+            "traceability": [
+              {
+                "claim": "Visible differences are dominated by framing and scale.",
+                "source": "VISION"
+              },
+              {
+                "claim": "No structural change is evident in corresponding plan regions.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Tiny annotation-value changes cannot be ruled out because the images are not directly registered."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "The added circles are visible around fixture groups and pipe junctions on both sides of the plan and along central branches.",
+              "The main red, blue, and magenta pipe routes otherwise remain visually aligned."
+            ],
+            "major_changes": [
+              "Numerous small red circular point symbols are added throughout the plumbing layout in RIGHT."
+            ],
+            "pair_id": "vk_plan",
+            "traceability": [
+              {
+                "claim": "RIGHT contains many graphical node symbols absent from LEFT.",
+                "source": "VISION"
+              },
+              {
+                "claim": "The principal pipe routing remains substantially unchanged.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "The raster alone does not establish the engineering meaning of the new point symbols."
+            ]
+          },
+          {
+            "classification": "CROP_MISMATCH",
+            "evidence": [
+              "The two principal node-detail panels and their colored pipe routes correspond in the shared area.",
+              "RIGHT shows a partial marginal note block and a far-right elevation callout not visible in LEFT."
+            ],
+            "major_changes": [
+              "The page content is framed and scaled differently, exposing additional material at the far-right edge in RIGHT."
+            ],
+            "pair_id": "vk_nodes",
+            "traceability": [
+              {
+                "claim": "The shared engineering details are visually consistent.",
+                "source": "VISION"
+              },
+              {
+                "claim": "Non-overlapping right-edge content prevents a complete revision assessment.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Because the differing material lies at the crop boundary, it cannot be determined whether it is newly added or merely outside the LEFT viewport."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "The colored axonometric pipe networks, drainage assemblies, two upper-right node details, legend, and title block otherwise correspond.",
+              "The notes occupy previously blank sheet space rather than replacing a pipe-network element."
+            ],
+            "major_changes": [
+              "A multi-line notes block is present along the lower-left edge in RIGHT and absent in LEFT."
+            ],
+            "pair_id": "vk_axono_page17",
+            "traceability": [
+              {
+                "claim": "RIGHT adds a lower-left textual annotation block.",
+                "source": "VISION"
+              },
+              {
+                "claim": "No visible pipe-route change accompanies that annotation addition.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "The note text is too small for a dependable line-by-line transcription.",
+              "No fine-label comparison was possible across the full schematic."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "LEFT shows an upper row, three ellipsis dots, and a lower generic n-row; RIGHT shows four complete parallel rows.",
+              "Each new row has its own feeder, protective device, meter, breaker, and bus connection."
+            ],
+            "major_changes": [
+              "The generic repeated-feeder representation in LEFT is replaced by four explicit feeder/meter/breaker rows in RIGHT.",
+              "Branch identifiers are expanded to QD1–QD4, Wh1–Wh4, and QF1–QF4.",
+              "The drawing title and several cable callouts are revised."
+            ],
+            "pair_id": "eom_singleline_changed",
+            "traceability": [
+              {
+                "claim": "The number and representation of feeder branches change materially.",
+                "source": "VISION"
+              },
+              {
+                "claim": "RIGHT explicitly enumerates four branch assemblies.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Some conductor-size characters are small, so exact cable-value transcription is not asserted."
+            ]
+          },
+          {
+            "classification": "STRUCTURE_CHANGED",
+            "evidence": [
+              "Several upper, central-right, and lower-left hatched zones contain circular or diamond-like equipment symbols in LEFT but not in RIGHT.",
+              "The architectural shell, rooms, axes, and general positions of the pink zones remain aligned."
+            ],
+            "major_changes": [
+              "Internal equipment/fan glyphs are removed from multiple pink hatched installation zones in RIGHT."
+            ],
+            "pair_id": "ov_plan_floor07",
+            "traceability": [
+              {
+                "claim": "Multiple equipment symbols visible in LEFT are absent in corresponding RIGHT locations.",
+                "source": "VISION"
+              },
+              {
+                "claim": "The underlying floor-plan geometry remains substantially unchanged.",
+                "source": "VISION"
+              }
+            ],
+            "uncertainties": [
+              "Raster evidence cannot distinguish intentional equipment removal from suppression of a drawing layer."
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "human_evaluation": {
+    "arms": {
+      "hybrid": {
+        "completeness": 0.9,
+        "correctness": 0.9,
+        "false_structural_change": 0,
+        "input_tokens": 114008,
+        "latency_seconds": 234.472388,
+        "missed_change": 1,
+        "output_tokens": 9135,
+        "pairs": [
+          {
+            "actual": "STRUCTURE_SAME_VALUES_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_scheme_text_changed",
+            "traceability_claims": 3,
+            "traceability_sources": [
+              "BOTH"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_plan_dense",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "CROP_MISMATCH",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "BOTH",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ar_plan",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ar_plan_page08",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "vk_plan",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "BOTH",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": false,
+            "completeness": 0,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "missed_change": true,
+            "pair_id": "vk_nodes",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_SAME_VALUES_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "vk_axono_page17",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "BOTH",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "eom_singleline_changed",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "BOTH",
+              "VISION"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ov_plan_floor07",
+            "traceability_claims": 3,
+            "traceability_sources": [
+              "BOTH",
+              "VISION"
+            ]
+          }
+        ],
+        "traceability_claims": 22,
+        "traceability_source_tag_coverage": 1.0
+      },
+      "vector": {
+        "completeness": 0.65,
+        "correctness": 0.5,
+        "false_structural_change": 3,
+        "input_tokens": 65547,
+        "latency_seconds": 121.837126,
+        "missed_change": 4,
+        "output_tokens": 5386,
+        "pairs": [
+          {
+            "actual": "STRUCTURE_SAME_VALUES_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_scheme_text_changed",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_plan_dense",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "CROP_MISMATCH",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability_claims": 1,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STYLE_ONLY_CHANGED",
+            "classification_correct": false,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": true,
+            "missed_change": false,
+            "pair_id": "ar_plan",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": true,
+            "missed_change": false,
+            "pair_id": "ar_plan_page08",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "NEAR_IDENTICAL",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "vk_plan",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_SAME_VALUES_CHANGED",
+            "classification_correct": true,
+            "completeness": 0.5,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "missed_change": true,
+            "pair_id": "vk_nodes",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "completeness": 0,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": true,
+            "missed_change": true,
+            "pair_id": "vk_axono_page17",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "completeness": 0,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "missed_change": true,
+            "pair_id": "eom_singleline_changed",
+            "traceability_claims": 1,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "completeness": 0,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "missed_change": true,
+            "pair_id": "ov_plan_floor07",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VECTOR"
+            ]
+          }
+        ],
+        "traceability_claims": 18,
+        "traceability_source_tag_coverage": 1.0
+      },
+      "vision": {
+        "completeness": 0.9,
+        "correctness": 0.4,
+        "false_structural_change": 2,
+        "input_tokens": 62511,
+        "latency_seconds": 243.547636,
+        "missed_change": 1,
+        "output_tokens": 10324,
+        "pairs": [
+          {
+            "actual": "STRUCTURE_SAME_VALUES_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_scheme_text_changed",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "INSUFFICIENT_VECTOR_DATA",
+            "classification_correct": false,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_plan_dense",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "CROP_MISMATCH",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ss_crop_mismatch_page07",
+            "traceability_claims": 1,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "IDENTICAL",
+            "classification_correct": false,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ar_plan",
+            "traceability_claims": 1,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ar_plan_page08",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "completeness": 1,
+            "expected": "NEAR_IDENTICAL",
+            "false_structural_change": true,
+            "missed_change": false,
+            "pair_id": "vk_plan",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "CROP_MISMATCH",
+            "classification_correct": false,
+            "completeness": 0,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": false,
+            "missed_change": true,
+            "pair_id": "vk_nodes",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": false,
+            "completeness": 1,
+            "expected": "STRUCTURE_SAME_VALUES_CHANGED",
+            "false_structural_change": true,
+            "missed_change": false,
+            "pair_id": "vk_axono_page17",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "eom_singleline_changed",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          },
+          {
+            "actual": "STRUCTURE_CHANGED",
+            "classification_correct": true,
+            "completeness": 1,
+            "expected": "STRUCTURE_CHANGED",
+            "false_structural_change": false,
+            "missed_change": false,
+            "pair_id": "ov_plan_floor07",
+            "traceability_claims": 2,
+            "traceability_sources": [
+              "VISION"
+            ]
+          }
+        ],
+        "traceability_claims": 18,
+        "traceability_source_tag_coverage": 1.0
+      }
+    },
+    "conclusion": "Hybrid removed false structural calls and raised classification correctness, but cost more tokens than either single arm and still missed the subtle VK notes/value case.",
+    "ground_truth": {
+      "ar_plan": "NEAR_IDENTICAL",
+      "ar_plan_page08": "NEAR_IDENTICAL",
+      "eom_singleline_changed": "STRUCTURE_CHANGED",
+      "ov_plan_floor07": "STRUCTURE_CHANGED",
+      "ss_crop_mismatch_page07": "CROP_MISMATCH",
+      "ss_plan_dense": "NEAR_IDENTICAL",
+      "ss_scheme_text_changed": "STRUCTURE_SAME_VALUES_CHANGED",
+      "vk_axono_page17": "STRUCTURE_SAME_VALUES_CHANGED",
+      "vk_nodes": "STRUCTURE_SAME_VALUES_CHANGED",
+      "vk_plan": "NEAR_IDENTICAL"
+    },
+    "method": "Every output claim was checked against the manually reviewed source crops; the model was not the judge."
+  },
+  "model": "gpt-5.6-sol",
+  "pair_ids": [
+    "ss_scheme_text_changed",
+    "ss_plan_dense",
+    "ss_crop_mismatch_page07",
+    "ar_plan",
+    "ar_plan_page08",
+    "vk_plan",
+    "vk_nodes",
+    "vk_axono_page17",
+    "eom_singleline_changed",
+    "ov_plan_floor07"
+  ],
+  "schema_version": "vector-hybrid-experiment-v0.2-codex"
+}

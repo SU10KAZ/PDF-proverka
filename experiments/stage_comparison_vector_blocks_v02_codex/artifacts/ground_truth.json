@@ -1,0 +1,322 @@
+{
+  "judge": "Manual side-by-side raster inspection by the researcher; no model output used as ground truth.",
+  "pairs": [
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+      "important_factual_changes": [
+        "ОСПД2.1 → ОСПД1.1",
+        "Удалено слово «выезда» в подписи контроля паркинга."
+      ],
+      "pair_id": "ss_scheme_text_changed"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Смысловая геометрия плана совпадает; высота crop немного различается."
+      ],
+      "pair_id": "ss_plan_dense"
+    },
+    {
+      "expected_route": "VECTOR_OK",
+      "expected_verdict": "IDENTICAL",
+      "important_factual_changes": [
+        "Графика и подписи узла совпадают точно."
+      ],
+      "pair_id": "ss_simple_node"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Узел крепления совпадает; границы crop и разбиение текста различаются."
+      ],
+      "pair_id": "ss_table_graphic"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "План и ревизионные отметки совпадают; блок плотный и capped."
+      ],
+      "pair_id": "ar_plan"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Повторяющиеся разрезы стен и подписи визуально совпадают; segment/topology caps требуют Hybrid."
+      ],
+      "pair_id": "ar_wall_sections"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Геометрия плана совпадает; embedded-font text не читается надёжно."
+      ],
+      "pair_id": "vk_plan"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+      "important_factual_changes": [
+        "Справа добавлены примечания и отметка −0,034; основные узлы совпадают."
+      ],
+      "pair_id": "vk_nodes"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Геометрия узлов совпадает; текст требует Vision из-за font mapping."
+      ],
+      "pair_id": "vk_node_plan"
+    },
+    {
+      "expected_route": "VISION_ONLY",
+      "expected_verdict": "CROP_MISMATCH",
+      "important_factual_changes": [
+        "Semantic extents crop различаются, поэтому Vector verdict должен остановиться на CROP_MISMATCH.",
+        "По Vision две обобщённые ветви заменены четырьмя явными QD/Wh/QF ветвями.",
+        "Расчётные нагрузки 13/14/16/18 кВт заменены повторяющимся вариантом 13 кВт."
+      ],
+      "pair_id": "eom_singleline_changed"
+    },
+    {
+      "expected_route": "VISION_ONLY",
+      "expected_verdict": "CROP_MISMATCH",
+      "important_factual_changes": [
+        "Версии показывают разные смысловые экстенты одного большого плана; прямое block-normalized сравнение недопустимо."
+      ],
+      "pair_id": "ss_crop_mismatch_page07"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "IDENTICAL",
+      "important_factual_changes": [
+        "План, оси, подписи и exact vector signature совпадают; topology cap сохраняет Hybrid route."
+      ],
+      "pair_id": "ss_plan_page09"
+    },
+    {
+      "expected_route": "VECTOR_OK",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Криволинейный план и трасса совпадают; все шесть evidence gates проходят без caps."
+      ],
+      "pair_id": "ss_plan_page11"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "IDENTICAL",
+      "important_factual_changes": [
+        "План, синяя трасса и exact vector signature совпадают; topology cap сохраняет Hybrid route."
+      ],
+      "pair_id": "ss_plan_page12"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Длинный план и цветные трассы совпадают; правый crop немного шире."
+      ],
+      "pair_id": "ss_plan_page13"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Наклонный план и синяя трасса совпадают; padding crop различается."
+      ],
+      "pair_id": "ss_plan_page14"
+    },
+    {
+      "expected_route": "VECTOR_OK",
+      "expected_verdict": "IDENTICAL",
+      "important_factual_changes": [
+        "Три узла и их подписи визуально и по crop совпадают."
+      ],
+      "pair_id": "ss_detail_page17"
+    },
+    {
+      "expected_route": "VECTOR_OK",
+      "expected_verdict": "IDENTICAL",
+      "important_factual_changes": [
+        "Строки спецификации и сетка таблицы визуально совпадают."
+      ],
+      "pair_id": "ss_table_page19"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Красные и синие трассы, помещения и оси совпадают."
+      ],
+      "pair_id": "vk_plan_page07"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Трассы и инженерные узлы плана совпадают."
+      ],
+      "pair_id": "vk_plan_page08"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Две схемы стояков совпадают; вертикальный padding crop различается."
+      ],
+      "pair_id": "vk_plan_page10"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Набор схем и узлов совпадает; мелкий текст требует Vision."
+      ],
+      "pair_id": "vk_nodes_page11"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Компоновка стояков и труб совпадает; crop height различается."
+      ],
+      "pair_id": "vk_diagrams_page16"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "STRUCTURE_SAME_VALUES_CHANGED",
+      "important_factual_changes": [
+        "Основная аксонометрия совпадает; в RIGHT добавлен многострочный блок примечаний у нижней границы."
+      ],
+      "pair_id": "vk_axono_page17"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Три инженерные схемы и узлы совпадают."
+      ],
+      "pair_id": "vk_diagrams_page18"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Аксонометрия совпадает; снизу различается включённый в crop фрагмент таблицы."
+      ],
+      "pair_id": "vk_axono_page20"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Большой план и ревизионные отметки совпадают."
+      ],
+      "pair_id": "ar_plan_page05"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "План помещений и плотные аннотации совпадают."
+      ],
+      "pair_id": "ar_plan_page07"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "План совпадает; левый padding заметно различается, но semantic extent сохранён."
+      ],
+      "pair_id": "ar_plan_page08"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Вертикальный фрагмент плана совпадает; crop width различается."
+      ],
+      "pair_id": "ar_plan_page10"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Широкий план помещений совпадает."
+      ],
+      "pair_id": "ar_plan_page11"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Геометрия и ревизионные пометки совпадают."
+      ],
+      "pair_id": "ar_plan_page12"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Узкий вертикальный план и подписи совпадают."
+      ],
+      "pair_id": "ar_plan_page13"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Контур двора, помещения и ревизионные отметки совпадают."
+      ],
+      "pair_id": "ar_plan_page16"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "План этажа и цветная трасса вентиляции совпадают; лист сдвинут на одну страницу."
+      ],
+      "pair_id": "ov_plan_floor04"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "План и магистраль совпадают; лист сдвинут на одну страницу."
+      ],
+      "pair_id": "ov_plan_floor05"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Протяжённый план и вентиляционные трассы совпадают."
+      ],
+      "pair_id": "ov_plan_floor06"
+    },
+    {
+      "expected_route": "VECTOR_WITH_VISION",
+      "expected_verdict": "STRUCTURE_CHANGED",
+      "important_factual_changes": [
+        "В RIGHT из нескольких розовых зон удалены внутренние контуры/символы оборудования.",
+        "Crop справа шире, поэтому точная локализация требует Hybrid, но общая область достаточна для подтверждения удаления."
+      ],
+      "pair_id": "ov_plan_floor07"
+    },
+    {
+      "expected_route": "VECTOR_OK",
+      "expected_verdict": "NEAR_IDENTICAL",
+      "important_factual_changes": [
+        "Состав таблицы оборудования и количества визуально совпадают; экспортная упаковка/границы слегка различаются."
+      ],
+      "pair_id": "ov_equipment_table"
+    }
+  ],
+  "schema_version": "vector-block-ground-truth-v0.2-codex"
+}
