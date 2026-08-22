@@ -652,7 +652,9 @@ def estimate_alignment(
         return hit / max(len(sample), 1)
 
     # Coarse pass over a wide uniform-scale range, then a fine pass around the winner.
-    best = ((0.0, 0.0), 1.0, -1.0)
+    # Seed with the identity so that ties never invent a transform: on an identical pair the
+    # search would otherwise report the first equally-scoring candidate it happened to try.
+    best = ((0.0, 0.0), 1.0, score(0.0, 0.0, 1.0, 0.008))
     for s in [0.85 + i * 0.01 for i in range(31)]:
         for tx in [i * 0.01 for i in range(-12, 13)]:
             for ty in [i * 0.01 for i in range(-12, 13)]:
@@ -660,6 +662,7 @@ def estimate_alignment(
                 if value > best[2]:
                     best = ((tx, ty), s, value)
     (tx0, ty0), s0, _ = best
+    best = ((0.0, 0.0), 1.0, score(0.0, 0.0, 1.0, 0.003))
     for s in [s0 + i * 0.002 for i in range(-5, 6)]:
         for tx in [tx0 + i * 0.001 for i in range(-8, 9)]:
             for ty in [ty0 + i * 0.001 for i in range(-8, 9)]:

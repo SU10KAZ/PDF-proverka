@@ -895,8 +895,8 @@ def crop_for(pair_id: str, side: str) -> Path:
 
 def crop_for_description(description: dict[str, Any], out_png: str | Path,
                          zoom: float = 1.35) -> Path:
-    source = description["source"]["pdf"] if schema_of(description) == "v0.1" else description["source"]["pdf"]
-    page_index = description.get("page_index", description.get("source", {}).get("page_index"))
+    source = description["source"]["pdf"]  # absolute in v0.1, repo-relative in v0.2
+    page_index = description.get("page_index", description["source"].get("page_index"))
     bbox = description.get("bbox_norm_on_page") or description["source"]["bbox_norm"]
     return render_crop(source, int(page_index), bbox, out_png, zoom)
 

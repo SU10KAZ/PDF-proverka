@@ -329,3 +329,15 @@ python -m experiments.stage_comparison_vector_architecture_opus.probes.ptn_recut
 # size-mixed S5c classes, full q sweep, raw-geometry digests) were run as inline python heredocs;
 # each is a few lines over ptn_motifs.build_motifs / extractor._primitive_pattern and is quoted above.
 ```
+
+## Reproducibility note (state of the artifacts after this verification)
+
+- `ptn_run_signatures` and `ptn_pair_diff` were re-run in place. Every reported aggregate
+  (`groups_left/right`, `shared`, `changed_n`, `appeared_n`, `disappeared_n`, `max_abs_delta`, all
+  `*_groups` / `*_instances` / `*_top` counts) reproduced **exactly**. The regenerated JSON differs from
+  the pre-run copy only in the tie order inside the truncated `changed` / `appeared_top` /
+  `disappeared_top` display lists (dict iteration order over equal-count keys) and in `elapsed_s`.
+  `ptn_signature_summary.json` is byte-equal ignoring `elapsed_s`.
+- `ptn_recut ar_wall_sections 60000` was re-run to check P4/claim 2; the 48 MB descriptions it produces
+  were deleted again afterwards, per `artifacts/ptn/REGENERATE.md`.
+- Nothing outside `experiments/stage_comparison_vector_architecture_opus/` was written.

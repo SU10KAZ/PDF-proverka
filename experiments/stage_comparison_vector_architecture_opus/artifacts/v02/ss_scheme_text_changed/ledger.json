@@ -1,16 +1,16 @@
 {
   "schema_version": "vector-block-objects-research-v0.2",
   "quality": {
-    "alignment_fit": 0.685,
+    "alignment_fit": 0.608,
     "alignment_shift": [
-      0.0,
-      0.0
+      0.002,
+      -0.001
     ],
     "alignment_scale": [
-      1.0,
-      1.0
+      0.994,
+      0.994
     ],
-    "matched_objects": 90,
+    "matched_objects": 89,
     "left_objects": 130,
     "right_objects": 136,
     "left_text_readable_ratio": 1.0,
@@ -331,8 +331,8 @@
     },
     {
       "kind": "objects_only_on_one_side",
-      "removed": 40,
-      "added": 46,
+      "removed": 41,
+      "added": 47,
       "removed_sample": [
         {
           "id": "o1",

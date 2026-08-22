@@ -1,0 +1,600 @@
+{
+  "schema_version": "vector-block-objects-research-v0.2",
+  "block_id": "blk_b211a2e9337f4919a1778e0cff077036",
+  "source": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 14,
+    "bbox_norm": [
+      0.0881819874048233,
+      0.2882640212774277,
+      0.5287128537893295,
+      0.5545097142457962
+    ]
+  },
+  "stats": {
+    "stroke_count": 45,
+    "own_median_stroke_length": 0.018783,
+    "scale_used": 0.018783,
+    "chains": 31,
+    "long_run_threshold": 0.063,
+    "cluster_radius": 0.02817,
+    "symbol_candidates": 3,
+    "marks": 3,
+    "linear_objects": 9,
+    "repeated_families": 0,
+    "largest_family": 0
+  },
+  "objects": [
+    {
+      "id": "o1",
+      "class": "linear_object",
+      "stroke_count": 1,
+      "bbox": [
+        0.10045,
+        0.07265,
+        0.35531,
+        0.07265
+      ],
+      "cx": 0.22788,
+      "cy": 0.07265,
+      "extent": 0.25487,
+      "filled": false,
+      "straightness": 1.0,
+      "signature": "lin0.32/1.0",
+      "signature_oriented": "lin0.32/1.0"
+    },
+    {
+      "id": "o2",
+      "class": "mark",
+      "stroke_count": 1,
+      "bbox": [
+        0.35531,
+        0.07265,
+        0.36172,
+        0.07265
+      ],
+      "cx": 0.35852,
+      "cy": 0.07265,
+      "extent": 0.00641,
+      "filled": false,
+      "signature": "d9651bb8e0",
+      "signature_oriented": "e3fef2ff39"
+    },
+    {
+      "id": "o3",
+      "class": "linear_object",
+      "stroke_count": 1,
+      "bbox": [
+        0.3361,
+        0.07265,
+        0.36172,
+        0.20122
+      ],
+      "cx": 0.34891,
+      "cy": 0.13694,
+      "extent": 0.1311,
+      "filled": false,
+      "straightness": 1.0,
+      "signature": "lin0.17/1.0",
+      "signature_oriented": "lin0.17/1.0"
+    },
+    {
+      "id": "o4",
+      "class": "mark",
+      "stroke_count": 1,
+      "bbox": [
+        0.3306,
+        0.19345,
+        0.34113,
+        0.209
+      ],
+      "cx": 0.33586,
+      "cy": 0.20122,
+      "extent": 0.01555,
+      "filled": false,
+      "signature": "59a127541c",
+      "signature_oriented": "fb10f8f9b6"
+    },
+    {
+      "id": "o5",
+      "class": "linear_object",
+      "stroke_count": 1,
+      "bbox": [
+        0.30361,
+        0.20122,
+        0.44454,
+        0.20122
+      ],
+      "cx": 0.37407,
+      "cy": 0.20122,
+      "extent": 0.14093,
+      "filled": false,
+      "straightness": 1.0,
+      "signature": "lin0.18/1.0",
+      "signature_oriented": "lin0.18/1.0"
+    },
+    {
+      "id": "o6",
+      "class": "symbol_candidate",
+      "stroke_count": 5,
+      "bbox": [
+        0.4331,
+        0.18979,
+        0.46376,
+        0.21266
+      ],
+      "cx": 0.44843,
+      "cy": 0.20122,
+      "extent": 0.03066,
+      "filled": false,
+      "signature": "f1aa049120",
+      "signature_oriented": "ce730584c0"
+    },
+    {
+      "id": "o7",
+      "class": "linear_object",
+      "stroke_count": 4,
+      "bbox": [
+        0.46376,
+        0.16736,
+        0.67973,
+        0.23508
+      ],
+      "cx": 0.57174,
+      "cy": 0.20122,
+      "extent": 0.56738,
+      "filled": false,
+      "straightness": 0.399,
+      "signature": "lin0.72/0.4",
+      "signature_oriented": "lin0.72/0.4"
+    },
+    {
+      "id": "o8",
+      "class": "symbol_candidate",
+      "stroke_count": 12,
+      "bbox": [
+        0.67973,
+        0.18979,
+        0.75294,
+        0.21266
+      ],
+      "cx": 0.71633,
+      "cy": 0.20122,
+      "extent": 0.07321,
+      "filled": false,
+      "signature": "5a6d1b865c",
+      "signature_oriented": "0ac05ef8c3"
+    },
+    {
+      "id": "o9",
+      "class": "linear_object",
+      "stroke_count": 3,
+      "bbox": [
+        0.75294,
+        0.1875,
+        0.8655,
+        0.21495
+      ],
+      "cx": 0.80922,
+      "cy": 0.20122,
+      "extent": 0.25258,
+      "filled": false,
+      "straightness": 0.459,
+      "signature": "lin0.32/0.5",
+      "signature_oriented": "lin0.32/0.5"
+    },
+    {
+      "id": "o10",
+      "class": "linear_object",
+      "stroke_count": 4,
+      "bbox": [
+        0.75294,
+        0.17423,
+        0.88792,
+        0.22822
+      ],
+      "cx": 0.82043,
+      "cy": 0.20122,
+      "extent": 0.37795,
+      "filled": false,
+      "straightness": 0.385,
+      "signature": "lin0.48/0.4",
+      "signature_oriented": "lin0.48/0.4"
+    },
+    {
+      "id": "o11",
+      "class": "linear_object",
+      "stroke_count": 4,
+      "bbox": [
+        0.37728,
+        0.09827,
+        0.75294,
+        0.32111
+      ],
+      "cx": 0.56511,
+      "cy": 0.20969,
+      "extent": 1.19699,
+      "filled": false,
+      "straightness": 0.365,
+      "signature": "lin1.52/0.4",
+      "signature_oriented": "lin1.52/0.4"
+    },
+    {
+      "id": "o12",
+      "class": "symbol_candidate",
+      "stroke_count": 5,
+      "bbox": [
+        0.54063,
+        0.21038,
+        0.55847,
+        0.23463
+      ],
+      "cx": 0.54955,
+      "cy": 0.22251,
+      "extent": 0.02425,
+      "filled": false,
+      "signature": "5ace7b3458",
+      "signature_oriented": "5bcc1f7c85"
+    },
+    {
+      "id": "o13",
+      "class": "linear_object",
+      "stroke_count": 1,
+      "bbox": [
+        0.69986,
+        0.20122,
+        0.71633,
+        0.36229
+      ],
+      "cx": 0.7081,
+      "cy": 0.28175,
+      "extent": 0.1619,
+      "filled": false,
+      "straightness": 1.0,
+      "signature": "lin0.21/1.0",
+      "signature_oriented": "lin0.21/1.0"
+    },
+    {
+      "id": "o14",
+      "class": "linear_object",
+      "stroke_count": 1,
+      "bbox": [
+        0.43859,
+        0.36229,
+        0.693,
+        0.36229
+      ],
+      "cx": 0.56579,
+      "cy": 0.36229,
+      "extent": 0.25441,
+      "filled": false,
+      "straightness": 1.0,
+      "signature": "lin0.32/1.0",
+      "signature_oriented": "lin0.32/1.0"
+    },
+    {
+      "id": "o15",
+      "class": "mark",
+      "stroke_count": 1,
+      "bbox": [
+        0.693,
+        0.36229,
+        0.69986,
+        0.36229
+      ],
+      "cx": 0.69643,
+      "cy": 0.36229,
+      "extent": 0.00686,
+      "filled": false,
+      "signature": "deb04acb55",
+      "signature_oriented": "eb2d871887"
+    }
+  ],
+  "repeated": [],
+  "texts": [
+    {
+      "id": "t1",
+      "text": "Кабель \"витаяпара\", кат.5е, 4 пары",
+      "identity": "Кабель \"витаяпара\", кат.5е, 4 пары",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.10182,
+        0.05791,
+        0.34787,
+        0.07291
+      ],
+      "rotation": 0.0,
+      "font_size": 7.87,
+      "cx": 0.22485,
+      "cy": 0.06541
+    },
+    {
+      "id": "t2",
+      "text": "Кабель \"витаяпара\", кат.5е, 4 пары",
+      "identity": "Кабель \"витаяпара\", кат.5е, 4 пары",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.43996,
+        0.34755,
+        0.68601,
+        0.36255
+      ],
+      "rotation": 0.0,
+      "font_size": 7.87,
+      "cx": 0.56299,
+      "cy": 0.35505
+    },
+    {
+      "id": "t3",
+      "text": "КР",
+      "identity": "КР",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.73098,
+        0.07685,
+        0.75295,
+        0.09814
+      ],
+      "rotation": 0.0,
+      "font_size": 11.17,
+      "cx": 0.74196,
+      "cy": 0.0875
+    },
+    {
+      "id": "t4",
+      "text": "БГЗ",
+      "identity": "БГЗ",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.64312,
+        0.14594,
+        0.674,
+        0.16724
+      ],
+      "rotation": 0.0,
+      "font_size": 11.17,
+      "cx": 0.65856,
+      "cy": 0.15659
+    },
+    {
+      "id": "t5",
+      "text": "IN",
+      "identity": "IN",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.47337,
+        0.19032,
+        0.48847,
+        0.21162
+      ],
+      "rotation": 0.0,
+      "font_size": 11.17,
+      "cx": 0.48092,
+      "cy": 0.20097
+    },
+    {
+      "id": "t6",
+      "text": "OUT",
+      "identity": "OUT",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.64633,
+        0.19261,
+        0.6788,
+        0.21391
+      ],
+      "rotation": 0.0,
+      "font_size": 11.17,
+      "cx": 0.66256,
+      "cy": 0.20326
+    },
+    {
+      "id": "t7",
+      "text": "ВК",
+      "identity": "ВК",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.86184,
+        0.15189,
+        0.88382,
+        0.17318
+      ],
+      "rotation": 0.0,
+      "font_size": 11.17,
+      "cx": 0.87283,
+      "cy": 0.16253
+    },
+    {
+      "id": "t8",
+      "text": "RJ-45 (PoE)",
+      "identity": "RJ-45 (PoE)",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.76255,
+        0.19169,
+        0.85954,
+        0.21299
+      ],
+      "rotation": 0.0,
+      "font_size": 11.17,
+      "cx": 0.81105,
+      "cy": 0.20234
+    },
+    {
+      "id": "t9",
+      "text": "кОСПД3.1/ОСПД6.3",
+      "identity": "кОСПД3.1/ОСПД6.3",
+      "readable": true,
+      "numeric": false,
+      "bbox": [
+        0.143,
+        0.19032,
+        0.29946,
+        0.21162
+      ],
+      "rotation": 0.0,
+      "font_size": 11.17,
+      "cx": 0.22123,
+      "cy": 0.20097
+    }
+  ],
+  "relations": [
+    {
+      "type": "labels",
+      "evidence": "unbound",
+      "text": "t1",
+      "object": null
+    },
+    {
+      "type": "labels",
+      "evidence": "unbound",
+      "text": "t2",
+      "object": null
+    },
+    {
+      "type": "labels",
+      "evidence": "unbound",
+      "text": "t3",
+      "object": null
+    },
+    {
+      "type": "labels",
+      "evidence": "unbound",
+      "text": "t4",
+      "object": null
+    },
+    {
+      "type": "labels",
+      "evidence": "unique_proximity",
+      "text": "t5",
+      "object": "o6"
+    },
+    {
+      "type": "labels",
+      "evidence": "unique_proximity",
+      "text": "t6",
+      "object": "o8"
+    },
+    {
+      "type": "labels",
+      "evidence": "unbound",
+      "text": "t7",
+      "object": null
+    },
+    {
+      "type": "labels",
+      "evidence": "unbound",
+      "text": "t8",
+      "object": null
+    },
+    {
+      "type": "labels",
+      "evidence": "unbound",
+      "text": "t9",
+      "object": null
+    },
+    {
+      "type": "touches",
+      "object": "o2",
+      "other": "o1"
+    },
+    {
+      "type": "touches",
+      "object": "o2",
+      "other": "o3"
+    },
+    {
+      "type": "touches",
+      "object": "o4",
+      "other": "o3"
+    },
+    {
+      "type": "touches",
+      "object": "o4",
+      "other": "o5"
+    },
+    {
+      "type": "touches",
+      "object": "o6",
+      "other": "o5"
+    },
+    {
+      "type": "touches",
+      "object": "o6",
+      "other": "o7"
+    },
+    {
+      "type": "touches",
+      "object": "o6",
+      "other": "o11"
+    },
+    {
+      "type": "touches",
+      "object": "o8",
+      "other": "o7"
+    },
+    {
+      "type": "touches",
+      "object": "o8",
+      "other": "o9"
+    },
+    {
+      "type": "touches",
+      "object": "o8",
+      "other": "o10"
+    },
+    {
+      "type": "touches",
+      "object": "o8",
+      "other": "o11"
+    },
+    {
+      "type": "touches",
+      "object": "o8",
+      "other": "o13"
+    },
+    {
+      "type": "touches",
+      "object": "o12",
+      "other": "o7"
+    },
+    {
+      "type": "touches",
+      "object": "o12",
+      "other": "o11"
+    },
+    {
+      "type": "touches",
+      "object": "o15",
+      "other": "o13"
+    },
+    {
+      "type": "touches",
+      "object": "o15",
+      "other": "o14"
+    },
+    {
+      "type": "contains",
+      "object": "o7",
+      "other": "o12"
+    },
+    {
+      "type": "contains",
+      "object": "o11",
+      "other": "o6"
+    },
+    {
+      "type": "contains",
+      "object": "o11",
+      "other": "o12"
+    }
+  ]
+}

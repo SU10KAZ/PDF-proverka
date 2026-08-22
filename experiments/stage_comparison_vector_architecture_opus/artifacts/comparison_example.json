@@ -1,42 +1,65 @@
 {
-  "_about": "L3 deterministic change ledger for one real pair, in the proposed v0.2 shape. All strings and counts are measured, not illustrative: they come from experiments/stage_comparison_vector_architecture_opus/artifacts/v02/ss_scheme_text_changed/{left,right}.json, produced by poc/objects_v02.py on the real v002 and v003 PDFs of 13AB-РД-СОТ-К7 V1, page index 5.",
-
+  "_about": "L3 deterministic change ledger for one real pair, in the proposed v0.2 shape. PROVENANCE, stated honestly. The text-level facts are measured: the strings, the designation counts and the per-side text diff were computed from the real v002 and v003 PDFs of 13AB-РД-СОТ-К7 V1 page index 5 (ОСПД2.1→ОСПД1.1, Помещение СС (2.Т.6)→(1.Т.4), ВК2.1.1.1-3→ВК1.1.1.1-3, «Контроль въезда/выезда в» → «Контроль въезда в»; ВК 15/15, ОСПД 5/5, Корпус 4/4, PoE 3/3), as are the alignment numbers and the object/text totals from poc/objects_v02.py. The OBJECT BINDINGS (o_sw_1, o_cam_1..3, o_room_1 and the relations that attach the changed strings to them) are ILLUSTRATIVE of the contract shape: the PoC grouper over-segments this block (101 symbol candidates for roughly 30 real symbols), so it cannot yet produce those bindings itself. Measured detector quality for grouping lives in the obj and ptn probes, not here.",
   "schema_version": "vector-block-comparison-v0.2",
   "left_block_id": "blk_13624dcbe2024b148a2027e1b68e2a0d",
   "right_block_id": "blk_11f1168f77f84b9283dec8a7bc14e9bb",
-
   "alignment": {
     "kind": "similarity_translation_uniform_scale",
-    "shift_n": [0.0, 0.0],
-    "scale": 1.0,
-    "fit": 0.875,
+    "shift_n": [
+      0.002,
+      -0.001
+    ],
+    "scale": 0.994,
+    "fit": 0.608,
     "residual_tolerance_n": 0.0025,
     "aspect_left": 3.747,
     "aspect_right": 3.721,
     "aspect_mismatch": 0.007,
     "_why": "Alignment is a separate step from normalisation. Finding O9: without it the comparator must run at 1 % tolerance to absorb a systematic crop offset; a four-parameter fit lifts coverage at 0.25 % from 0.365 to 0.913 on vk_nodes and from 0.590 to 0.9997 on ss_plan_dense. Every change smaller than the tolerance is invisible, so the tolerance must be earned, not assumed."
   },
-
   "evidence": {
-    "geometry": {"coverage_left": 0.87, "coverage_right": 0.87, "tolerance_n": 0.0025, "verdict": "SUBSTANTIALLY_SAME"},
+    "geometry": {
+      "coverage_left": 0.87,
+      "coverage_right": 0.87,
+      "tolerance_n": 0.0025,
+      "verdict": "SUBSTANTIALLY_SAME"
+    },
     "objects": {
-      "matched": 90,
+      "matched": 89,
       "left_total": 130,
       "right_total": 136,
-      "unmatched_left": 40,
-      "unmatched_right": 46,
+      "unmatched_left": 41,
+      "unmatched_right": 47,
       "verdict": "SAME_LAYOUT"
     },
     "families": {
-      "fam_camera_triangle": {"left": 25, "right": 25},
-      "fam_crossed_square": {"left": 5, "right": 5},
+      "fam_camera_triangle": {
+        "left": 25,
+        "right": 25
+      },
+      "fam_crossed_square": {
+        "left": 5,
+        "right": 5
+      },
       "verdict": "CARDINALITY_UNCHANGED"
     },
     "designations": {
-      "ВК": {"left": 15, "right": 15},
-      "ОСПД": {"left": 5, "right": 5},
-      "Корпус": {"left": 4, "right": 4},
-      "PoE": {"left": 3, "right": 3},
+      "ВК": {
+        "left": 15,
+        "right": 15
+      },
+      "ОСПД": {
+        "left": 5,
+        "right": 5
+      },
+      "Корпус": {
+        "left": 4,
+        "right": 4
+      },
+      "PoE": {
+        "left": 3,
+        "right": 3
+      },
       "verdict": "COUNTS_UNCHANGED",
       "_why": "Measured independently by the hybrid probe: designation counting over merged text lines produced exactly Wh 0→4, QD 0→4, QF 0→4, ЩМкв 0→4 on the one pair with a real structural change and 0 false statements on all 7 quiet pairs, where repeated_elements produced 169 false `count changed` statements."
     },
@@ -54,7 +77,6 @@
       "verdict": "NO_CROP_ARTEFACT"
     }
   },
-
   "changes": [
     {
       "id": "c1",
@@ -63,7 +85,12 @@
       "family": "fam_crossed_square",
       "before": "ОСПД2.1",
       "after": "ОСПД1.1",
-      "bbox_n": [0.06429, 0.18572, 0.07840, 0.21795],
+      "bbox_n": [
+        0.06429,
+        0.18572,
+        0.0784,
+        0.21795
+      ],
       "binding_evidence": "centred_beside_within_symbol_pitch",
       "candidates_in_corridor": 1,
       "confidence": "high"
@@ -74,7 +101,12 @@
       "object_class": "area_object",
       "before": "Помещение СС (2.Т.6)",
       "after": "Помещение СС (1.Т.4)",
-      "bbox_n": [0.05330, 0.17414, 0.16490, 0.23920],
+      "bbox_n": [
+        0.0533,
+        0.17414,
+        0.1649,
+        0.2392
+      ],
       "binding_evidence": "inside_closed_contour",
       "candidates_in_corridor": 1,
       "confidence": "high"
@@ -85,10 +117,26 @@
       "object_class": "symbol_candidate",
       "family": "fam_camera_triangle",
       "count": 3,
-      "before": ["ВК2.1.1.1", "ВК2.1.1.2", "ВК2.1.1.3"],
-      "after": ["ВК1.1.1.1", "ВК1.1.1.2", "ВК1.1.1.3"],
-      "bbox_n": [0.06117, 0.09512, 0.13476, 0.10039],
-      "related_to": ["c1", "c2"],
+      "before": [
+        "ВК2.1.1.1",
+        "ВК2.1.1.2",
+        "ВК2.1.1.3"
+      ],
+      "after": [
+        "ВК1.1.1.1",
+        "ВК1.1.1.2",
+        "ВК1.1.1.3"
+      ],
+      "bbox_n": [
+        0.06117,
+        0.09512,
+        0.13476,
+        0.10039
+      ],
+      "related_to": [
+        "c1",
+        "c2"
+      ],
       "relation": "all three connect to the object of c1 and sit inside the object of c2",
       "confidence": "high"
     },
@@ -97,25 +145,28 @@
       "kind": "annotation_text_changed",
       "before": "Контроль въезда/выезда в подземный паркинг",
       "after": "Контроль въезда в подземный паркинг",
-      "bbox_n": [0.37682, 0.04065, 0.52392, 0.06100],
+      "bbox_n": [
+        0.37682,
+        0.04065,
+        0.52392,
+        0.061
+      ],
       "binding_evidence": "unbound_annotation",
       "confidence": "medium",
       "_caveat": "Measured honestly: the left side stores this as two printed lines ('Контроль' + 'въезда/выезда в') and the right side as one ('Контроль въезда в'). Line merging is not enough for wrapped labels; a paragraph-level grouping is needed before the strings can be compared as one value. Reported as medium confidence for that reason."
     }
   ],
-
   "not_changed": {
-    "object_count": "130 vs 136 objects, 90 matched under a 0.875 alignment fit; the residue is grouping jitter, not design change",
+    "object_count": "130 против 136 объектов, 89 сопоставлено при качестве выравнивания 0.608; остаток — дрожание группировки PoC, а не изменение проекта",
     "family_cardinalities": "25 cameras and 5 switches on both sides",
     "connectivity": "every matched camera keeps its link to the same switch",
     "designation_prefix_counts": "ВК 15/15, ОСПД 5/5, Корпус 4/4, PoE 3/3"
   },
-
   "uncertainty": [
-    "Object grouping in this PoC over-segments: 101 symbol candidates were produced for roughly 30 real symbols. Family cardinality is therefore reported from designation counting, which is stable, rather than from geometric grouping, which is not.",
-    "c4 depends on paragraph grouping that is not implemented; the change is real but its exact before/after string is reconstructed from two lines."
+    "Object grouping in the PoC over-segments: 101 symbol candidates for roughly 30 real symbols, and 89 of 130 objects match under an alignment fit of 0.608. Family cardinality is therefore reported from designation counting, which is stable, rather than from geometric grouping, which is not.",
+    "The bindings of c1..c3 to specific object ids are illustrative; the underlying string changes and counts are measured.",
+    "c4 depends on paragraph grouping that is not implemented; the change is real but its exact before/after string is reconstructed from two printed lines on the left and one on the right."
   ],
-
   "_what_v0_1_said_instead": {
     "status": "STRUCTURE_SAME_VALUES_CHANGED",
     "how_it_got_there": "Not from the text. Ablation shows that blanking geometry.extraction.source_item_counts — the counts of PDF `l` and `re` path operators — turns this verdict into STRUCTURE_CHANGED. The only correct values-changed verdict in the whole benchmark rests on a PDF-packaging heuristic (signoise S9).",
