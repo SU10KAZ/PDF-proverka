@@ -13526,6 +13526,36 @@ const app = createApp({
             return leftMatches && rightMatches;
         }
 
+        function scCurrentSheetMapRow() {
+            return scSheetMapRows.value.find(row => scSheetMapRowActive(row)) || null;
+        }
+
+        function scCanDeleteCurrentSheetLink() {
+            const row = scCurrentSheetMapRow();
+            return Boolean(row && row.leftPages.length && row.rightPages.length);
+        }
+
+        function scCanAddEmptySheet(side) {
+            if (!['left', 'right'].includes(side)) return false;
+            const row = scCurrentSheetMapRow();
+            const ownPages = row && (side === 'left' ? row.leftPages : row.rightPages);
+            const otherPages = row && (side === 'left' ? row.rightPages : row.leftPages);
+            return Boolean(ownPages && ownPages.length && otherPages && otherPages.length);
+        }
+
+        async function scDeleteCurrentSheetLink() {
+            if (scLinkSaving.value) return;
+            const row = scCurrentSheetMapRow();
+            if (!row || !row.leftPages.length || !row.rightPages.length) return;
+            await scDeleteSheetMapRow(row);
+        }
+
+        async function scAddEmptySheet(side) {
+            if (scLinkSaving.value || !scCanAddEmptySheet(side)) return;
+            const row = scCurrentSheetMapRow();
+            await scApplySheetMapSelection(row, side, '__empty__');
+        }
+
         function scSetViewerEmpty(side, empty) {
             scViewerEmpty[side] = Boolean(empty);
             if (!empty) return;
@@ -15970,6 +16000,8 @@ const app = createApp({
             scThumbDragStart, scThumbDragOverCell, scThumbDragEnd, scThumbDropOn,
             scThumbCellClick,
             scSheetMapSideLabel, scSheetMapStatus, scSheetMapRowActive,
+            scCanDeleteCurrentSheetLink, scCanAddEmptySheet,
+            scDeleteCurrentSheetLink, scAddEmptySheet,
             scSheetMapOptions, scSheetMapSelectionValue, scApplySheetMapSelection,
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,

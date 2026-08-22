@@ -5764,8 +5764,12 @@
                                                placeholder="Текст"
                                                @input="scResetTextSearch(side)">
                                         <button type="submit" class="btn btn-sm"
+                                                title="Найти" aria-label="Найти"
                                                 :disabled="scViewerEmpty[side] || scTextSearchLoading[side] || !scTextSearchQuery[side].trim()">
-                                            Найти
+                                            <svg class="sc-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                                <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                                                <path d="M15.5 15.5 21 21"></path>
+                                            </svg>
                                         </button>
                                         <span class="sc-text-search__nav" aria-label="Переход по найденному тексту">
                                             <button type="button" class="btn btn-sm"
@@ -5783,6 +5787,26 @@
                                             {{ scTextSearchStatus(side) }}
                                         </small>
                                     </form>
+                                    <div class="sc-sheet-slot-controls" aria-label="Управление связью текущих листов">
+                                        <button type="button" class="btn btn-sm sc-icon-button sc-icon-button--danger"
+                                                title="Удалить текущую связь листов"
+                                                aria-label="Удалить текущую связь листов"
+                                                :disabled="scLinkSaving || !scCanDeleteCurrentSheetLink()"
+                                                @click="scDeleteCurrentSheetLink()">
+                                            <svg class="sc-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"></path>
+                                            </svg>
+                                        </button>
+                                        <button type="button" class="btn btn-sm sc-icon-button"
+                                                :title="'Добавить пустой лист в ' + (side === 'left' ? 'stage_1' : 'stage_2')"
+                                                :aria-label="'Добавить пустой лист в ' + (side === 'left' ? 'stage_1' : 'stage_2')"
+                                                :disabled="scLinkSaving || !scCanAddEmptySheet(side)"
+                                                @click="scAddEmptySheet(side)">
+                                            <svg class="sc-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M6 3h8l4 4v14H6zM14 3v5h5M9 14h6M12 11v6"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
                                     <div class="sc-page-controls">
                                         <button class="btn btn-sm" :disabled="scViewerEmpty[side] || scCurrentPage[side] <= 1" @click="scChangePage(side, -1)">←</button>
                                         <span v-if="scViewerEmpty[side]">Пусто</span>

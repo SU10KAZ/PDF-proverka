@@ -110,6 +110,18 @@ describe('documentation comparison shell', () => {
     expect(app).toContain("'user_accepted'");
   });
 
+  it('manages the current sheet relation with compact icon buttons', () => {
+    expect(html).toContain('aria-label="Удалить текущую связь листов"');
+    expect(html).toContain("'Добавить пустой лист в '");
+    expect(html).toContain('@click="scDeleteCurrentSheetLink()"');
+    expect(html).toContain('@click="scAddEmptySheet(side)"');
+    expect(app).toContain('function scCurrentSheetMapRow()');
+    expect(app).toContain('function scDeleteCurrentSheetLink()');
+    expect(app).toContain("scApplySheetMapSelection(row, side, '__empty__')");
+    expect(css).toContain('.sc-sheet-slot-controls {');
+    expect(css).toContain('.sc-action-icon {');
+  });
+
   it('drops pair rows that are empty on both sides, keeping one-sided holes', () => {
     // чистим ДАННЫЕ, а не вывод: перетаскивание адресуется scPairRows.value[row.index],
     // и фильтр отображения разошёлся бы с этой адресацией

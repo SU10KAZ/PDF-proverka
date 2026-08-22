@@ -10,7 +10,9 @@ describe('stage comparison PDF text search', () => {
     expect(html).toContain('v-model="scTextSearchQuery[side]"');
     expect(html).toContain('@submit.prevent="scSearchText(side)"');
     expect(html).toContain('Поиск по тексту в');
-    expect(html).toContain('Найти');
+    expect(html).toContain('title="Найти" aria-label="Найти"');
+    expect(html).toContain('<circle cx="10.5" cy="10.5" r="6.5"></circle>');
+    expect(html).not.toContain('>\n                                            Найти\n');
     expect(css).toContain('.sc-text-search input {');
     expect(css).toContain('width: 112px;');
   });
