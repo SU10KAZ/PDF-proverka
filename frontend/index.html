@@ -5555,6 +5555,29 @@
                                 </button>
                             </div>
                         </div>
+                        <div v-if="scActiveSheetLinkRepair" class="sc-sheet-repair">
+                            <div class="sc-sheet-repair__summary">
+                                <span class="sc-sheet-repair__icon" aria-hidden="true">✓</span>
+                                <strong>
+                                    Автоматически исправлено сопоставление:
+                                    {{ scActiveSheetLinkRepair.changes.length }}
+                                </strong>
+                                <details>
+                                    <summary>Что изменено</summary>
+                                    <div v-for="change in scActiveSheetLinkRepair.changes"
+                                         :key="change.right_page" class="sc-sheet-repair__change">
+                                        <span>П: {{ change.left_page_before || '—' }} → {{ change.left_page_after }}</span>
+                                        <span>РД: {{ change.right_page }}</span>
+                                        <small>{{ change.left_title_after }} ↔ {{ change.right_title }}</small>
+                                    </div>
+                                </details>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                    :disabled="scSheetLinkRepairUndoLoading"
+                                    @click="scUndoSheetLinkRepair()">
+                                {{ scSheetLinkRepairUndoLoading ? 'Отменяем и пересчитываем…' : '↶ Отменить' }}
+                            </button>
+                        </div>
                         <div v-if="!scSheetMapCollapsed && scMatchState.suggestions.status === 'sheet_index_unavailable'"
                              class="sc-sheet-map__warning">
                             HTML-оглавление листов недоступно. Автосопоставление отключено; страницы оставлены для ручной связи.

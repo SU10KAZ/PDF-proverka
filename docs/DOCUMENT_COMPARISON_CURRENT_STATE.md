@@ -318,15 +318,26 @@ Claude моделей, режимы с deterministic hint и без него. Pr
 
 ## Этап 5: основные изменения проекта
 
-Этап 5 работает только поверх неизменяемого `text_final_comparison.json` и
-создаёт отдельный `project_change_summary.json`. Полные MD, PDF, изображения,
-растр и графика в модель не передаются. Stage 3/4 artifacts и `sheet_links.json`
-слой не изменяет.
+Этап 5 работает поверх `text_final_comparison.json` и создаёт отдельный
+`project_change_summary.json`. Полные MD, PDF, изображения, растр и графика в
+модель не передаются. Классификатор не изменяет Stage 3/4 evidence.
 
 Перед ИИ для каждой принятой sheet group выполняется консервативный purpose
 precheck по сохранённым названиям листов. Результат `PAIR_OK` допускает
-классификацию, `PAIR_REVIEW_REQUIRED` создаёт заметный REVIEW и принудительно
-оставляет `project_changes` пустым; связь автоматически не исправляется.
+классификацию. Для `PAIR_REVIEW_REQUIRED` backend один раз пытается исправить
+связь по HTML-оглавлению: только уникальное точное название либо mutual-best
+fuzzy match не ниже `0.94` с одинаковым типом листа и уникальным отрывом.
+Many-to-many, generic/дублирующиеся названия и неполные цепочки не меняются.
+Допустимы атомарные swap и циклы; manual link меняется только при HIGH proof.
+После изменения `sheet_links.json` этапы 2–5 полностью пересчитываются, но не
+более одного repair cycle за запуск. Если доказательства недостаточны, группа
+остаётся заметным REVIEW с пустым `project_changes`.
+
+Каждая автопочинка хранится отдельно в `sheet_link_repairs.json`: полные before
+и after snapshots, правило, similarity, страницы/заголовки, время, статус и
+признак пересчёта зависимых artifacts. В карте листов показывается компактная
+история и кнопка отката. Откат восстанавливает snapshot и также пересчитывает
+этапы 2–5; последующее ручное редактирование помечает старый откат superseded.
 
 Каждый атомарный CHANGED/REMOVED/ADDED/UNCERTAIN получает устойчивый
 `evidence_id`. `gpt-5.6-luna` с `medium` effort возвращает только класс
@@ -342,10 +353,19 @@ IDs, неподтверждённые числа/обозначения, инж�
 ответе вся группа показывается как REVIEW; частичные технические догадки из неё
 не публикуются. Успешные группы переиспользуются при retry.
 
+Экспликации, таблицы, легенды, примечания, маркировка, обозначения, номера,
+категории, выноски, заголовки, расшифровки, нумерация и форматирование по
+умолчанию относятся к `SERVICE_STRUCTURE`: появление записи на чертеже не
+считается появлением самого объекта. Явно добавленные/удалённые двери, проёмы,
+лестницы, помещения и оборудование, а также подтверждённые площади, нагрузки,
+размеры, материалы и принципы решений остаются `PROJECT_CHANGE`. Неоднозначное
+смешение аннотации и объекта остаётся `REVIEW`.
+
 Контракт `project_change_summary.json` хранит source signature, версии prompt и
 validator, model/effort, usage, purpose status, три массива агрегатов, полные
-atomic details и явные ограничения `stage4_immutable`, `sheet_links_mutated:
-false`, `images_sent: false`, `counts_computed_by_backend: true`.
+atomic details и явные ограничения `stage4_immutable`, `images_sent: false`,
+`counts_computed_by_backend: true`. Изменения sheet links трассируются не внутри
+модельного ответа, а отдельным repair audit.
 
 На вкладке «Расхождения» основным слоем являются карточки «Основные изменения
 проекта». Детали каждого агрегата раскрывают все atomic evidence и переходы к
@@ -359,6 +379,9 @@ API:
   переиспользовать актуальные успешные группы;
 - `GET .../pairs/{pair_id}/text-change-summary` — получить артефакт и признак
   актуальности.
+- `GET .../pairs/{pair_id}/sheet-link-repairs` — получить audit починок;
+- `POST .../pairs/{pair_id}/sheet-link-repairs/{repair_id}/undo` — безопасно
+  отменить актуальную починку и пересчитать этапы 2–5.
 
 Инженерные решения, которые нельзя ломать:
 
@@ -391,6 +414,7 @@ image fingerprint, block/entities matching, change regions/groups,
 Основные точки входа:
 
 - `backend/app/services/stage_comparison/sheet_matching.py`;
+- `backend/app/services/stage_comparison/sheet_link_repair.py`;
 - `backend/app/services/stage_comparison/text_differences.py`;
 - `backend/app/services/stage_comparison/text_ai_reviewer.py`;
 - `backend/app/services/stage_comparison/project_change_summary.py`;

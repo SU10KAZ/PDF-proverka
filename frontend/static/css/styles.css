@@ -5106,6 +5106,33 @@ tr.row-rejected td.sc-cell-goto {
     font-size: 11px;
 }
 .sc-sheet-map__toggle:hover { background: var(--bg2, #f8f9fa); }
+.sc-sheet-repair {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 12px;
+    border-bottom: 1px solid #a7f3d0;
+    background: #ecfdf5;
+    color: #065f46;
+    font-size: 11px;
+}
+.sc-sheet-repair__summary { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; min-width: 0; }
+.sc-sheet-repair__icon {
+    display: grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #059669;
+    font-weight: 800;
+}
+.sc-sheet-repair details { position: relative; }
+.sc-sheet-repair summary { cursor: pointer; color: #047857; text-decoration: underline; }
+.sc-sheet-repair__change { display: grid; gap: 2px; margin-top: 5px; color: var(--text); }
+.sc-sheet-repair__change span { margin-right: 8px; font-weight: 600; }
+.sc-sheet-repair__change small { color: var(--text3); }
 .sc-sheet-map__warning {
     padding: 9px 12px;
     border-top: 1px solid color-mix(in srgb, #d97706 28%, transparent);

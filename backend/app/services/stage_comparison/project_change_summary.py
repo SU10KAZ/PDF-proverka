@@ -16,8 +16,8 @@ from typing import Any, Iterable
 
 VERSION = 1
 KIND = "stage_comparison_project_change_summary"
-PROMPT_VERSION = "stage5_project_change_aggregator_v2"
-VALIDATOR_VERSION = "stage5_project_change_validator_v3"
+PROMPT_VERSION = "stage5_project_change_aggregator_v3"
+VALIDATOR_VERSION = "stage5_project_change_validator_v6"
 PRODUCTION_MODEL = "gpt-5.6-luna"
 PRODUCTION_REASONING_EFFORT = "medium"
 
@@ -69,15 +69,56 @@ _STRUCTURE_RE = re.compile(
     r"справк\w*\s+о\s+(?:внесенных\s+)?изменени",
     re.I,
 )
+_DRAWING_INFORMATION_RE = re.compile(
+    r"экспликац|таблиц|легенд|примечани|маркировк|обозначени|"
+    r"добавлен\w*\s+строк|удален\w*\s+строк|"
+    r"номер\s+(?:позици|помещени|марки|узла|выноск)|категори[яи]|"
+    r"выноск|заголов|расшифровк|форматирован|нумерац|подпис[ьи]\s+(?:к|на|под)|"
+    r"условн\w*\s+(?:обозначени|знак)|оформлени|"
+    r"марка\s+(?:помещени|пола|двери|окна|проема|узла)",
+    re.I,
+)
+_ACTUAL_PARAMETER_CHANGE_RE = re.compile(
+    r"(?:площад|мощност|нагруз|размер|ширин|высот|длин|толщин|диаметр|сечени|"
+    r"расход|давлени|температур|этажност|количеств\w*\s+этаж)"
+    r"[^.\n]{0,100}(?:измен|увелич|уменьш|замен|с\s+\d|до\s+\d)|"
+    r"(?:измен|увелич|уменьш|замен)[^.\n]{0,80}"
+    r"(?:площад|мощност|нагруз|размер|ширин|высот|длин|толщин|диаметр|сечени|"
+    r"расход|давлени|температур|этажност)",
+    re.I,
+)
+_ACTUAL_OBJECT_CHANGE_RE = re.compile(
+    r"(?:добавлен|устроен|исключен|удален|перенесен|изменен|заменен)\w*\s+"
+    r"(?:двер|лестниц|проем|окн|перегород|стен|помещени|оборудован|щит|вру|грщ|"
+    r"кабел|трасс|вентилятор|насос)\w*\b|"
+    r"(?:двер|лестниц|проем|окн|перегород|стен|помещени|оборудован|щит|вру|грщ|"
+    r"кабел|трасс|вентилятор|насос)\w*[^.\n]{0,70}"
+    r"(?:добавлен|исключен|удален|перенесен|изменен|заменен)",
+    re.I,
+)
+_DIRECT_ACTUAL_OBJECT_CHANGE_RE = re.compile(
+    r"(?:добавлен|устроен|исключен|удален|перенесен|изменен|заменен)\w*\s+"
+    r"(?:двер|лестниц|проем|окн|перегород|стен|помещени|оборудован|щит|вру|грщ|"
+    r"кабел|трасс|вентилятор|насос)\w*\b|"
+    r"(?:двер|лестниц|проем|окн|перегород|стен|оборудован|щит|вру|грщ|кабел|трасс|"
+    r"вентилятор|насос)\w*(?:\s+[a-zа-я0-9.-]+){0,3}\s+"
+    r"(?:добавлен|исключен|удален|перенесен|изменен|заменен)\w*\b",
+    re.I,
+)
+_AMBIGUOUS_CHANGE_RE = re.compile(
+    r"(?:уточнен|скорректирован|изменен)\w*\s+(?:элемент|решение|информаци|данн)\b"
+    r"|(?:добавлен|удален)\w*\s+(?:фрагмент|позици)\b",
+    re.I,
+)
 _RENAME_RE = re.compile(r"переимен|изменен\w*\s+(?:названи|обозначени)|сохранен\w*\s+с\s+ин(?:ой|ым)\s+", re.I)
 _PROJECT_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("areas", re.compile(r"\bплощад[ьи]|\bм[²2]\b", re.I)),
     ("floors", re.compile(r"этажност|количеств\w*\s+этаж|до\s+\d+\s+этаж", re.I)),
     ("electrical_load", re.compile(r"электрическ\w*\s+нагруз|суммарн\w*\s+нагруз|мощност|расчетн\w*\s+ток|напряжени", re.I)),
     ("calculation_method", re.compile(r"метод\w*\s+расчет|принцип\w*\s+расчет|расчет\w*\s+по\s+(?:кратност|вредност)|формул", re.I)),
-    ("consumer_composition", re.compile(r"состав\w*\s+потребител|наименовани[ея]\s+потребител|добавлен\w*\s+(?:строк|нагруз|потребител)", re.I)),
+    ("consumer_composition", re.compile(r"состав\w*\s+потребител|наименовани[ея]\s+потребител|добавлен\w*\s+(?:нагруз|потребител)", re.I)),
     ("room_composition", re.compile(r"состав\w*\s+помещен|назначени[ея]\s+помещен|техническ\w*\s+помещен", re.I)),
-    ("dimensions", re.compile(r"толщин|диаметр|сечени|размер|длин|высот|отметк", re.I)),
+    ("dimensions", re.compile(r"толщин|диаметр|сечени|размер|ширин|длин|высот|отметк", re.I)),
     ("materials", re.compile(r"материал|марка\s+(?:бетона|стали)|тип\s+перегород", re.I)),
     ("equipment_parameters", re.compile(r"тип\s+оборудован|марка\s+оборудован|количеств\w*\s+оборудован|производительност|расход|давлени|температур", re.I)),
     ("system_configuration", re.compile(r"схем\w*\s+подключен|источник\w*\s+питан|резервирован|секционирован|трасс|принцип\w*\s+работ", re.I)),
@@ -144,9 +185,12 @@ group_id вроде g_areas или g_uncertain. Смысловые агрега�
 
 Для каждого evidence_id выбери ровно один класс:
 - SERVICE_STRUCTURE: оформление, организация/заказчик/СРО/ГИП/подписи/даты/шифры,
-  нумерация и структура комплекта, состав/разбиение/переименование листов;
+  нумерация и структура комплекта, состав/разбиение/переименование листов, а также
+  информация НА ЧЕРТЕЖЕ: экспликации, таблицы, легенды, примечания, маркировка,
+  обозначения, номера, категории, выноски, заголовки, расшифровки и форматирование;
 - PROJECT_CHANGE: параметры объекта, систем и решений — площади, этажность, нагрузки,
-  размеры, материалы, оборудование, потребители, методы расчёта и принципы работы;
+  размеры, материалы, оборудование, потребители, методы расчёта и принципы работы,
+  фактически добавленные/удалённые двери, проёмы, лестницы и другие элементы объекта;
 - REVIEW: UNCERTAIN, OCR/неоднозначность, справка без подтверждения, спорное переименование.
 
 Объединяй evidence только по одному инженерному признаку: площади отдельно, нагрузки
@@ -155,6 +199,12 @@ Pure rename без изменения параметров — SERVICE_STRUCTURE
 PROJECT_CHANGE. Для страницы «Содержание тома» все изменения структуры документации —
 SERVICE_STRUCTURE. Сведения из «Справки об изменениях» без подтверждающего project evidence
 относи в REVIEW.
+
+Не считай появление строки, марки, номера, категории, выноски или экспликации появлением
+самого помещения/двери/оборудования. Если evidence подтверждает только аннотацию чертежа,
+это SERVICE_STRUCTURE. Если нельзя отличить аннотацию от реального изменения объекта,
+это REVIEW. Сильное явное изменение параметра (например, площадь 10 -> 12 м2) остаётся
+PROJECT_CHANGE, даже если значение записано в таблице или примечании.
 
 title должен быть кратким factual выводом без Markdown. НЕ пиши в title агрегированное
 число вроде «20 помещений» или «11 нагрузок»: backend сам посчитает evidence_ids и добавит
@@ -269,6 +319,25 @@ def deterministic_class_hint(evidence: dict[str, Any], group: dict[str, Any]) ->
         )
         return "REVIEW", category
     project_category = next((category for category, pattern in _PROJECT_PATTERNS if pattern.search(text)), "")
+    drawing_information = bool(_DRAWING_INFORMATION_RE.search(text))
+    before_numbers = set(_NUMBER_RE.findall(str(evidence.get("before") or "")))
+    after_numbers = set(_NUMBER_RE.findall(str(evidence.get("after") or "")))
+    summary_text = _normalize(str(evidence.get("summary") or ""))
+    explicit_numeric_change = bool(
+        before_numbers ^ after_numbers
+        or re.search(r"\bс\s+\d+(?:[.,]\d+)?\s+до\s+\d", summary_text)
+    )
+    actual_parameter = bool(
+        project_category and explicit_numeric_change
+        and _ACTUAL_PARAMETER_CHANGE_RE.search(text)
+    )
+    actual_object = bool(_ACTUAL_OBJECT_CHANGE_RE.search(text))
+    direct_actual_object = bool(_DIRECT_ACTUAL_OBJECT_CHANGE_RE.search(text))
+    if drawing_information and not actual_parameter and not direct_actual_object:
+        category = "formatting" if re.search(r"форматирован|оформлени", text) else "documentation_structure"
+        return "SERVICE_STRUCTURE", category
+    if _AMBIGUOUS_CHANGE_RE.search(text) and not actual_parameter and not actual_object:
+        return "REVIEW", "uncertain"
     if _RENAME_RE.search(text):
         if project_category or len(set(_NUMBER_RE.findall(str(evidence.get("before") or ""))) ^ set(
             _NUMBER_RE.findall(str(evidence.get("after") or ""))
@@ -281,6 +350,8 @@ def deterministic_class_hint(evidence: dict[str, Any], group: dict[str, Any]) ->
         return "SERVICE_STRUCTURE", "administrative"
     if project_category:
         return "PROJECT_CHANGE", project_category
+    if actual_object:
+        return "PROJECT_CHANGE", "other_project"
     return "UNCLASSIFIED", "uncertain"
 
 
@@ -403,10 +474,29 @@ def validate_group_response(response_group: Any, source_group: dict[str, Any]) -
         if any(value not in evidence_by_id for value in ids):
             raise SummaryValidationError(f"{prefix}_hallucinated_evidence")
         selected = [evidence_by_id[value] for value in ids]
-        if item_class == "PROJECT_CHANGE" and any(
-            value["deterministic_class_hint"] == "SERVICE_STRUCTURE" for value in selected
-        ):
-            raise SummaryValidationError(f"{prefix}_project_from_service_evidence")
+        hints = {value["deterministic_class_hint"] for value in selected}
+        if item_class == "PROJECT_CHANGE" and "SERVICE_STRUCTURE" in hints:
+            if hints <= {"SERVICE_STRUCTURE", "UNCLASSIFIED"}:
+                item_class = "SERVICE_STRUCTURE"
+                categories = {
+                    value["deterministic_category_hint"] for value in selected
+                    if value["deterministic_class_hint"] == "SERVICE_STRUCTURE"
+                }
+                category = next(iter(categories)) if len(categories) == 1 else "documentation_structure"
+            else:
+                item_class = "REVIEW"
+                category = "uncertain"
+        if item_class == "SERVICE_STRUCTURE" and "PROJECT_CHANGE" in hints:
+            if hints <= {"PROJECT_CHANGE", "UNCLASSIFIED"}:
+                item_class = "PROJECT_CHANGE"
+                categories = {
+                    value["deterministic_category_hint"] for value in selected
+                    if value["deterministic_class_hint"] == "PROJECT_CHANGE"
+                }
+                category = next(iter(categories)) if len(categories) == 1 else "other_project"
+            else:
+                item_class = "REVIEW"
+                category = "uncertain"
         if item_class != "REVIEW" and any(
             value["deterministic_class_hint"] == "REVIEW" for value in selected
         ):

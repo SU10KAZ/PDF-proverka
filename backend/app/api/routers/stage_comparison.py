@@ -217,6 +217,27 @@ async def save_sheet_links(session_id: str, pair_id: str, request: SaveSheetLink
         raise HTTPException(400, str(exc)) from exc
 
 
+@router.get("/sessions/{session_id}/pairs/{pair_id}/sheet-link-repairs")
+async def get_sheet_link_repairs(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(store.get_sheet_link_repairs_state, session_id, pair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-link-repairs/{repair_id}/undo")
+async def undo_sheet_link_repair(session_id: str, pair_id: str, repair_id: str):
+    try:
+        return await store.undo_sheet_link_repair(session_id, pair_id, repair_id)
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
+        raise HTTPException(400, f"Не удалось отменить исправление связей: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("sheet-link repair undo failed")
+        raise HTTPException(500, f"Ошибка отмены исправления связей: {exc}") from exc
+
+
 @router.post("/sessions/{session_id}/pairs/{pair_id}/text-comparison")
 async def rebuild_text_comparison(session_id: str, pair_id: str):
     try:

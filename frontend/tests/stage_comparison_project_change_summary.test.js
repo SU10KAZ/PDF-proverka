@@ -43,4 +43,15 @@ describe('Stage 5 project change summary', () => {
     expect(html).toContain('Технические выводы для этой пары не сформированы');
     expect(html).toContain('<section v-else class="sc-project-group__changes">');
   });
+
+  it('shows audited automatic sheet-link repairs and offers a recomputing undo', () => {
+    expect(html).toContain('Автоматически исправлено сопоставление:');
+    expect(html).toContain('scActiveSheetLinkRepair.changes.length');
+    expect(html).toContain('Что изменено');
+    expect(html).toContain("@click=\"scUndoSheetLinkRepair()\"");
+    expect(app).toContain('data.sheet_link_repairs || null');
+    expect(app).toContain('/sheet-link-repairs/${encodeURIComponent(repair.id)}/undo');
+    expect(app).toContain('data.sheet_link_repair_applied');
+    expect(app).toContain("label: 'Исправлено автоматически'");
+  });
 });

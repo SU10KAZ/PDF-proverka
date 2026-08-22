@@ -18,6 +18,7 @@ from . import paths as paths_mod
 from . import scanner as scanner_mod
 from . import document_matching
 from . import sheet_matching
+from . import sheet_link_repair
 from . import text_comparison
 from . import text_differences
 from . import text_ai_reviewer
@@ -368,6 +369,7 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "left_page_count": _page_count((pair["left"] or {})["pdf_path"]),
         "right_page_count": _page_count((pair["right"] or {})["pdf_path"]),
         "sheet_matching": get_sheet_matching_state(session_id, pair_id),
+        "sheet_link_repairs": get_sheet_link_repairs_state(session_id, pair_id),
         "text_comparison": get_text_comparison_state(session_id, pair_id),
         "text_differences": get_text_differences_state(session_id, pair_id),
         "text_ai_review": get_text_ai_review_state(session_id, pair_id),
@@ -403,6 +405,37 @@ def _load_sheet_links(session_id: str, pair_id: str) -> dict:
         return _empty_sheet_links(pair_id)
     payload.setdefault("unlinked_left_pages", [])
     return payload
+
+
+def _load_sheet_link_repairs(session_id: str, pair_id: str) -> dict:
+    payload = _read_json(paths_mod.sheet_link_repairs_path(session_id, pair_id))
+    if (
+        not isinstance(payload, dict)
+        or payload.get("version") != sheet_link_repair.VERSION
+        or payload.get("kind") != sheet_link_repair.KIND
+        or not isinstance(payload.get("repairs"), list)
+    ):
+        return sheet_link_repair.empty_artifact(pair_id)
+    return payload
+
+
+def get_sheet_link_repairs_state(session_id: str, pair_id: str) -> dict:
+    if _load_session_meta(session_id) is None or _load_pair(session_id, pair_id) is None:
+        raise KeyError("pair_not_found")
+    return sheet_link_repair.public_view(_load_sheet_link_repairs(session_id, pair_id))
+
+
+def _supersede_active_sheet_link_repairs(session_id: str, pair_id: str) -> None:
+    artifact = _load_sheet_link_repairs(session_id, pair_id)
+    changed = False
+    for repair in artifact.get("repairs") or []:
+        if repair.get("status") == "applied":
+            repair["status"] = "superseded"
+            repair["superseded_at"] = _utc_now()
+            changed = True
+    if changed:
+        artifact["updated_at"] = _utc_now()
+        _atomic_write_json(paths_mod.sheet_link_repairs_path(session_id, pair_id), artifact)
 
 
 def _matching_summary(suggestions: dict | None, links: dict) -> dict:
@@ -554,7 +587,7 @@ def save_sheet_links(
             if right_pages[0] < 1 or right_pages[-1] > right_count:
                 raise ValueError("right_page_out_of_range")
             source = str(raw.get("source") or "manual")
-            if source not in {"auto", "manual"}:
+            if source not in {"auto", "manual", "auto_repair"}:
                 raise ValueError("invalid_link_source")
             confidence = str(raw.get("confidence") or ("manual" if source == "manual" else "medium"))
             reason = [str(item) for item in raw.get("reason") or [] if str(item)]
@@ -578,6 +611,7 @@ def save_sheet_links(
             "updated_at": _utc_now(),
         }
         _atomic_write_json(paths_mod.sheet_links_path(session_id, pair_id), payload)
+        _supersede_active_sheet_link_repairs(session_id, pair_id)
         return get_sheet_matching_state(session_id, pair_id)
 
 
@@ -801,7 +835,110 @@ def get_project_change_summary_state(session_id: str, pair_id: str) -> dict | No
     return project_change_summary.public_view(payload, stale=stale)
 
 
-async def run_project_change_summary(session_id: str, pair_id: str) -> dict:
+def _apply_sheet_link_repair(
+    session_id: str, pair_id: str, source_groups: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Persist at most one atomic high-confidence plan for this Stage 5 run."""
+    problem_group_ids = {
+        str(group.get("group_id") or "") for group in source_groups
+        if (group.get("pair_precheck") or {}).get("status")
+        == project_change_summary.PAIR_REVIEW_REQUIRED
+    }
+    if not problem_group_ids:
+        return None
+    links = _load_sheet_links(session_id, pair_id)
+    suggestions = _load_sheet_suggestions(session_id, pair_id) or {}
+    plan = sheet_link_repair.plan_repairs(links, suggestions, problem_group_ids)
+    if plan is None:
+        return None
+    artifact = _load_sheet_link_repairs(session_id, pair_id)
+    # Undo is a durable human decision.  The exact same source state must not
+    # silently reapply itself on the next Stage 5 button press.
+    if any(
+        item.get("source_signature") == plan["source_signature"]
+        and item.get("status") == "undone"
+        for item in artifact.get("repairs") or []
+    ):
+        return None
+    now = _utc_now()
+    after_snapshot = dict(plan["after_snapshot"])
+    after_snapshot["updated_at"] = now
+    repair = {
+        "id": _new_id("slr_", 12), "status": "applied",
+        "created_at": now, "undone_at": None, "superseded_at": None,
+        "source_signature": plan["source_signature"], "confidence": "high",
+        "reason": "stage5_sheet_purpose_conflict_with_unique_title_repair",
+        "before_links": plan["before_links"], "after_links": plan["after_links"],
+        "changes": plan["changes"],
+        "before_snapshot": plan["before_snapshot"], "after_snapshot": after_snapshot,
+        "dependent_artifacts_recomputed": False,
+    }
+    artifact.setdefault("repairs", []).append(repair)
+    artifact["updated_at"] = now
+    _atomic_write_json(paths_mod.sheet_links_path(session_id, pair_id), after_snapshot)
+    _atomic_write_json(paths_mod.sheet_link_repairs_path(session_id, pair_id), artifact)
+    return repair
+
+
+def _mark_sheet_link_repair_recomputed(
+    session_id: str, pair_id: str, repair_id: str,
+) -> None:
+    with _lock:
+        artifact = _load_sheet_link_repairs(session_id, pair_id)
+        for repair in artifact.get("repairs") or []:
+            if repair.get("id") == repair_id:
+                repair["dependent_artifacts_recomputed"] = True
+                repair["recomputed_at"] = _utc_now()
+                break
+        artifact["updated_at"] = _utc_now()
+        _atomic_write_json(paths_mod.sheet_link_repairs_path(session_id, pair_id), artifact)
+
+
+async def _recompute_after_sheet_link_change(
+    session_id: str, pair_id: str,
+) -> dict[str, Any]:
+    run_text_comparison(session_id, pair_id)
+    run_text_differences(session_id, pair_id)
+    await run_text_ai_review(session_id, pair_id)
+    return await run_project_change_summary(
+        session_id, pair_id, _allow_sheet_link_repair=False,
+    )
+
+
+async def undo_sheet_link_repair(
+    session_id: str, pair_id: str, repair_id: str,
+) -> dict[str, Any]:
+    """Restore the latest safe snapshot, then rebuild Stages 2 through 5."""
+    with _lock:
+        if _load_session_meta(session_id) is None or _load_pair(session_id, pair_id) is None:
+            raise KeyError("pair_not_found")
+        artifact = _load_sheet_link_repairs(session_id, pair_id)
+        active = [item for item in artifact.get("repairs") or [] if item.get("status") == "applied"]
+        if not active or str(active[-1].get("id")) != str(repair_id):
+            raise ValueError("sheet_link_repair_not_active")
+        repair = active[-1]
+        current = _load_sheet_links(session_id, pair_id)
+        expected = dict(repair.get("after_snapshot") or {})
+        current_compare = {key: value for key, value in current.items() if key != "updated_at"}
+        expected_compare = {key: value for key, value in expected.items() if key != "updated_at"}
+        if current_compare != expected_compare:
+            raise ValueError("sheet_links_changed_after_repair")
+        restored = dict(repair.get("before_snapshot") or {})
+        restored["updated_at"] = _utc_now()
+        repair["status"] = "undone"
+        repair["undone_at"] = _utc_now()
+        repair["dependent_artifacts_recomputed"] = False
+        artifact["updated_at"] = _utc_now()
+        _atomic_write_json(paths_mod.sheet_links_path(session_id, pair_id), restored)
+        _atomic_write_json(paths_mod.sheet_link_repairs_path(session_id, pair_id), artifact)
+    await _recompute_after_sheet_link_change(session_id, pair_id)
+    _mark_sheet_link_repair_recomputed(session_id, pair_id, repair_id)
+    return get_pair_view(session_id, pair_id) or {}
+
+
+async def run_project_change_summary(
+    session_id: str, pair_id: str, *, _allow_sheet_link_repair: bool = True,
+) -> dict:
     """Classify and aggregate immutable Stage 4 evidence into engineering facts."""
     with _lock:
         pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
@@ -812,9 +949,18 @@ async def run_project_change_summary(session_id: str, pair_id: str) -> dict:
         )
         if not isinstance(final_comparison, dict) or signature is None:
             raise ValueError("text_final_comparison_required")
+        repair = (
+            _apply_sheet_link_repair(session_id, pair_id, source_groups)
+            if _allow_sheet_link_repair else None
+        )
+        if repair is not None:
+            repair_id = str(repair["id"])
+        else:
+            repair_id = ""
         existing = _read_json(paths_mod.project_change_summary_path(session_id, pair_id))
         if (
-            isinstance(existing, dict)
+            not repair_id
+            and isinstance(existing, dict)
             and existing.get("version") == project_change_summary.VERSION
             and existing.get("source_signature") == signature
             and existing.get("status") == "completed"
@@ -833,6 +979,15 @@ async def run_project_change_summary(session_id: str, pair_id: str) -> dict:
                 }
             )
         } if isinstance(existing, dict) else {}
+
+    if repair_id:
+        result = await _recompute_after_sheet_link_change(session_id, pair_id)
+        _mark_sheet_link_repair_recomputed(session_id, pair_id, repair_id)
+        return {
+            **result,
+            "sheet_link_repair_applied": True,
+            "sheet_link_repair_id": repair_id,
+        }
 
     results: list[dict[str, Any]] = []
     fresh_model_calls = 0
@@ -1881,8 +2036,10 @@ __all__ = [
     "suggest_document_pairing",
     "get_pair_view",
     "get_sheet_matching_state",
+    "get_sheet_link_repairs_state",
     "run_sheet_matching",
     "save_sheet_links",
+    "undo_sheet_link_repair",
     "get_text_comparison_state",
     "get_text_exclusions_state",
     "require_text_exclusions_for_downstream",

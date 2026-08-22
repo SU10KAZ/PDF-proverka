@@ -271,3 +271,98 @@ def test_unconfirmed_change_register_claim_stays_review():
     assert summary.deterministic_class_hint(item, {
         "left_labels": ["Страница 3"], "right_labels": ["Страница 3"],
     }) == ("REVIEW", "floors")
+
+
+@pytest.mark.parametrize("text", [
+    "Добавлена экспликация помещений этажа.",
+    "В таблице появилась новая строка обозначений.",
+    "Изменена легенда условных обозначений.",
+    "Удалено примечание к плану.",
+    "Изменена маркировка двери Д-1 на Д-2.",
+    "Добавлено обозначение утепления наружной стены.",
+    "Изменён номер позиции оборудования.",
+    "Добавлена категория «Технические помещения».",
+    "Добавлена выноска к узлу.",
+    "Изменён заголовок таблицы.",
+    "Добавлена расшифровка марки.",
+    "Изменено форматирование таблицы.",
+    "Изменена нумерация помещений.",
+    "Добавлены обозначения марок помещения, пола и двери.",
+    "Удалены обозначения утепления наружной стены.",
+])
+def test_drawing_information_defaults_to_service_structure(text: str):
+    assert classify(text)[0] == "SERVICE_STRUCTURE"
+
+
+@pytest.mark.parametrize(("text", "category"), [
+    ("Добавлена дверь Д-17.", "other_project"),
+    ("Удалена лестница между первым и вторым этажами.", "other_project"),
+    ("Ширина проёма изменена с 900 до 1200 мм.", "dimensions"),
+    ("Площадь помещения изменена с 18 до 21 м2.", "areas"),
+    ("Электрическая нагрузка изменена с 20 до 25 кВт.", "electrical_load"),
+    ("Изменён принцип работы системы вентиляции.", "system_configuration"),
+    ("Заменён материал наружной стены.", "materials"),
+    ("Перенесено оборудование вентиляционной установки.", "other_project"),
+    ("Добавлено помещение электрощитовой.", "other_project"),
+])
+def test_actual_object_or_parameter_change_stays_project(text: str, category: str):
+    assert classify(text) == ("PROJECT_CHANGE", category)
+
+
+def test_actual_parameter_in_explication_table_stays_project_change():
+    assert classify(
+        "В таблице экспликации площадь помещения изменена с 10 до 12 м2.",
+        before="10 м2", after="12 м2",
+    ) == ("PROJECT_CHANGE", "areas")
+
+
+def test_unchanged_dimensions_inside_renamed_note_do_not_make_it_project_change():
+    assert classify(
+        "Изменено обозначение помещений: «кладовых» заменено на «кладковых».",
+        before="Перегородки кладовых высотой 2,85 м и 3,0 м.",
+        after="Перегородки кладковых высотой 2,85 м и 3,0 м.",
+    )[0] == "SERVICE_STRUCTURE"
+
+
+def test_added_table_row_without_confirmed_object_is_service_structure():
+    assert classify("Добавлена строка ПОН: 2, 18,20.")[0] == "SERVICE_STRUCTURE"
+
+
+def test_ambiguous_element_change_stays_review():
+    assert classify("Скорректирован элемент на плане.") == ("REVIEW", "uncertain")
+
+
+def test_validator_reclassifies_drawing_only_model_item_as_service():
+    item = evidence("explication-1", "Добавлена экспликация помещений этажа.", status="ADDED")
+    group = source_group([item])
+    normalized = summary.validate_group_response({"group_id": "group-1", "items": [{
+        "class": "PROJECT_CHANGE", "category": "room_composition",
+        "title": "Добавлена экспликация помещений этажа",
+        "evidence_ids": ["explication-1"],
+    }]}, group)
+    assert normalized[0]["class"] == "SERVICE_STRUCTURE"
+    assert normalized[0]["category"] == "documentation_structure"
+
+
+def test_validator_reclassifies_actual_door_model_item_as_project():
+    item = evidence("door-1", "Добавлена дверь Д-17.", status="ADDED")
+    group = source_group([item])
+    normalized = summary.validate_group_response({"group_id": "group-1", "items": [{
+        "class": "SERVICE_STRUCTURE", "category": "documentation_structure",
+        "title": "Добавлена дверь Д-17", "evidence_ids": ["door-1"],
+    }]}, group)
+    assert normalized[0]["class"] == "PROJECT_CHANGE"
+    assert normalized[0]["category"] == "other_project"
+
+
+def test_validator_keeps_mixed_project_and_drawing_aggregate_in_review():
+    project = evidence("door-1", "Добавлена дверь Д-17.", status="ADDED")
+    drawing = evidence("mark-1", "Добавлена маркировка двери Д-17.", status="ADDED")
+    group = source_group([project, drawing])
+    normalized = summary.validate_group_response({"group_id": "group-1", "items": [{
+        "class": "SERVICE_STRUCTURE", "category": "documentation_structure",
+        "title": "Добавлена дверь Д-17 и ее маркировка",
+        "evidence_ids": ["door-1", "mark-1"],
+    }]}, group)
+    assert normalized[0]["class"] == "REVIEW"
+    assert normalized[0]["category"] == "uncertain"

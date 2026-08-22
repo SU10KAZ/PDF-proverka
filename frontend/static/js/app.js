@@ -11839,6 +11839,8 @@ const app = createApp({
         const scProcessing = ref(false);
         const scProcessingError = ref('');
         const scMatchState = ref(null);
+        const scSheetLinkRepairs = ref(null);
+        const scSheetLinkRepairUndoLoading = ref(false);
         const scTextComparison = ref(null);
         const scTextComparisonLoading = ref(false);
         const scTextComparisonError = ref('');
@@ -12008,6 +12010,10 @@ const app = createApp({
             (scMatchState.value && scMatchState.value.links && scMatchState.value.links.links) || []
         );
         const scAcceptedSheetLinksReady = computed(() => scSheetLinks.value.length > 0);
+        const scActiveSheetLinkRepair = computed(() => {
+            const active = (scSheetLinkRepairs.value && scSheetLinkRepairs.value.active_repairs) || [];
+            return active.length ? active[active.length - 1] : null;
+        });
         const scUnlinkedLeftPages = computed(() =>
             (scMatchState.value && scMatchState.value.links
                 && scMatchState.value.links.unlinked_left_pages) || []
@@ -12185,6 +12191,9 @@ const app = createApp({
             }
             if (scCurrentExplicitLinks.value.some(link => link.source === 'manual')) {
                 return {tone: 'manual', label: 'Вручную'};
+            }
+            if (scCurrentExplicitLinks.value.some(link => link.source === 'auto_repair')) {
+                return {tone: 'high', label: 'Исправлено автоматически'};
             }
             const suggestion = scLeftSuggestion.value;
             if (suggestion && suggestion.primary_right_page && suggestion.confidence === 'high') {
@@ -13142,6 +13151,7 @@ const app = createApp({
             scPairData.value = data;
             scActivePair.value = data.pair;
             scMatchState.value = data.sheet_matching || null;
+            scSheetLinkRepairs.value = data.sheet_link_repairs || null;
             scTextComparison.value = data.text_comparison || null;
             scTextComparisonError.value = '';
             scTextDifferences.value = data.text_differences || null;
@@ -13417,6 +13427,14 @@ const app = createApp({
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scProjectChangeSummary.value = data;
+                if (data.sheet_link_repair_applied) {
+                    const pairResponse = await fetch(scPairUrl(scActivePair.value.id, ''));
+                    const pairData = await pairResponse.json().catch(() => ({}));
+                    if (!pairResponse.ok) {
+                        throw new Error(pairData.detail || ('HTTP ' + pairResponse.status));
+                    }
+                    scActivatePairData(pairData);
+                }
             } catch (error) {
                 scProjectChangeSummaryError.value = scTextOperationErrorMessage(error);
             } finally {
@@ -13560,8 +13578,35 @@ const app = createApp({
             if (row.source === 'manual' || row.confidence === 'manual') {
                 return {tone: 'manual', label: 'Ручная'};
             }
+            if (row.source === 'auto_repair') {
+                return {tone: 'high', label: 'Исправлено автоматически'};
+            }
             if (row.confidence === 'high') return {tone: 'high', label: 'Высокая'};
             return {tone: 'review', label: 'Проверить'};
+        }
+
+        async function scUndoSheetLinkRepair() {
+            const repair = scActiveSheetLinkRepair.value;
+            if (!scActivePair.value || !repair || scSheetLinkRepairUndoLoading.value) return;
+            scSheetLinkRepairUndoLoading.value = true;
+            scProcessingError.value = '';
+            try {
+                const response = await fetch(
+                    scPairUrl(
+                        scActivePair.value.id,
+                        `/sheet-link-repairs/${encodeURIComponent(repair.id)}/undo`,
+                    ),
+                    {method: 'POST'},
+                );
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scActivatePairData(data);
+                scTab.value = 'links';
+            } catch (error) {
+                scProcessingError.value = String(error.message || error);
+            } finally {
+                scSheetLinkRepairUndoLoading.value = false;
+            }
         }
 
         function scToggleSheetMap() {
@@ -13817,6 +13862,7 @@ const app = createApp({
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scMatchState.value = data;
+                scSheetLinkRepairs.value = null;
                 if (scTextComparison.value) {
                     scTextComparison.value = {...scTextComparison.value, stale: true};
                 }
@@ -16046,6 +16092,7 @@ const app = createApp({
             scRunTextDifferences, scRunTextAiReview, scRunProjectChangeSummary,
             scOpenDifferenceSource,
             scSheetLinks, scAcceptedSheetLinksReady, scSheetMapRows, scPendingSuggestedLinkRows,
+            scSheetLinkRepairs, scActiveSheetLinkRepair, scSheetLinkRepairUndoLoading,
             scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,
             scSheetMapCollapsed, scToggleSheetMap,
@@ -16069,6 +16116,7 @@ const app = createApp({
             scThumbDragStart, scThumbDragOverCell, scThumbDragEnd, scThumbDropOn,
             scThumbCellClick,
             scSheetMapSideLabel, scSheetMapStatus, scSheetMapRowActive,
+            scUndoSheetLinkRepair,
             scCanDeleteCurrentSheetLink, scCanAddEmptySheet,
             scDeleteCurrentSheetLink, scAddEmptySheet,
             scSheetMapOptions, scSheetMapSelectionValue, scApplySheetMapSelection,
