@@ -1,0 +1,42 @@
+{
+ "ar_plan": {
+  "unit": "prim",
+  "units": 430,
+  "S1_groups>=2": 49,
+  "S5c_groups>=2": 32,
+  "instances_in_multi_orientation_classes": 275,
+  "share": 0.64
+ },
+ "ss_plan_dense": {
+  "unit": "prim",
+  "units": 1202,
+  "S1_groups>=2": 89,
+  "S5c_groups>=2": 98,
+  "instances_in_multi_orientation_classes": 538,
+  "share": 0.448
+ },
+ "eom_singleline_changed": {
+  "unit": "prim",
+  "units": 302,
+  "S1_groups>=2": 40,
+  "S5c_groups>=2": 51,
+  "instances_in_multi_orientation_classes": 169,
+  "share": 0.56
+ },
+ "ss_scheme_text_changed": {
+  "unit": "prim",
+  "units": 23,
+  "S1_groups>=2": 1,
+  "S5c_groups>=2": 1,
+  "instances_in_multi_orientation_classes": 0,
+  "share": 0.0
+ },
+ "vk_nodes": {
+  "unit": "prim",
+  "units": 31,
+  "S1_groups>=2": 5,
+  "S5c_groups>=2": 5,
+  "instances_in_multi_orientation_classes": 0,
+  "share": 0.0
+ }
+}

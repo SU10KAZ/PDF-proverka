@@ -1,0 +1,262 @@
+{
+ "per_table": {
+  "ss_table_graphic_left": {
+   "table_shape_detected": [
+    10,
+    2
+   ],
+   "gt_shape": [
+    10,
+    2
+   ],
+   "gt_cells_scored": 20,
+   "correct": 20,
+   "wrong": 0,
+   "missing": 0,
+   "cell_accuracy": 1.0,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 20,
+   "nonempty_correct": 20,
+   "nonempty_accuracy": 1.0,
+   "multi_span_cells_in_scored_region": 9,
+   "multi_span_correct": 9,
+   "multi_span_join_accuracy": 1.0,
+   "errors": []
+  },
+  "ss_table_graphic_right": {
+   "table_shape_detected": [
+    10,
+    2
+   ],
+   "gt_shape": [
+    10,
+    2
+   ],
+   "gt_cells_scored": 20,
+   "correct": 20,
+   "wrong": 0,
+   "missing": 0,
+   "cell_accuracy": 1.0,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 20,
+   "nonempty_correct": 20,
+   "nonempty_accuracy": 1.0,
+   "multi_span_cells_in_scored_region": 9,
+   "multi_span_correct": 9,
+   "multi_span_join_accuracy": 1.0,
+   "errors": []
+  },
+  "eom_singleline_changed_left": {
+   "table_shape_detected": [
+    5,
+    2
+   ],
+   "gt_shape": [
+    5,
+    2
+   ],
+   "gt_cells_scored": 10,
+   "correct": 10,
+   "wrong": 0,
+   "missing": 0,
+   "cell_accuracy": 1.0,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 9,
+   "nonempty_correct": 9,
+   "nonempty_accuracy": 1.0,
+   "multi_span_cells_in_scored_region": 5,
+   "multi_span_correct": 5,
+   "multi_span_join_accuracy": 1.0,
+   "errors": []
+  },
+  "eom_singleline_changed_right": {
+   "table_shape_detected": [
+    5,
+    2
+   ],
+   "gt_shape": [
+    5,
+    2
+   ],
+   "gt_cells_scored": 10,
+   "correct": 10,
+   "wrong": 0,
+   "missing": 0,
+   "cell_accuracy": 1.0,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 9,
+   "nonempty_correct": 9,
+   "nonempty_accuracy": 1.0,
+   "multi_span_cells_in_scored_region": 5,
+   "multi_span_correct": 5,
+   "multi_span_join_accuracy": 1.0,
+   "errors": []
+  },
+  "fresh_sot_k7_cable_journal": {
+   "table_shape_detected": [
+    17,
+    7
+   ],
+   "gt_shape": [
+    8,
+    7
+   ],
+   "gt_cells_scored": 56,
+   "correct": 56,
+   "wrong": 0,
+   "missing": 0,
+   "cell_accuracy": 1.0,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 56,
+   "nonempty_correct": 56,
+   "nonempty_accuracy": 1.0,
+   "multi_span_cells_in_scored_region": 38,
+   "multi_span_correct": 38,
+   "multi_span_join_accuracy": 1.0,
+   "errors": []
+  },
+  "fresh_sot_k7_specification": {
+   "table_shape_detected": [
+    24,
+    9
+   ],
+   "gt_shape": [
+    10,
+    9
+   ],
+   "gt_cells_scored": 90,
+   "correct": 90,
+   "wrong": 0,
+   "missing": 0,
+   "cell_accuracy": 1.0,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 61,
+   "nonempty_correct": 61,
+   "nonempty_accuracy": 1.0,
+   "multi_span_cells_in_scored_region": 18,
+   "multi_span_correct": 18,
+   "multi_span_join_accuracy": 1.0,
+   "errors": []
+  },
+  "fresh_aps_k3_specification": {
+   "table_shape_detected": [
+    20,
+    9
+   ],
+   "gt_shape": [
+    10,
+    9
+   ],
+   "gt_cells_scored": 90,
+   "correct": 87,
+   "wrong": 3,
+   "missing": 0,
+   "cell_accuracy": 0.9667,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 61,
+   "nonempty_correct": 58,
+   "nonempty_accuracy": 0.9508,
+   "multi_span_cells_in_scored_region": 5,
+   "multi_span_correct": 2,
+   "multi_span_join_accuracy": 0.4,
+   "errors": [
+    {
+     "row": 0,
+     "col": 3,
+     "expected": "Код оборудования, изделия, материала",
+     "got": "Код обору- дования, изделия, материала"
+    },
+    {
+     "row": 0,
+     "col": 5,
+     "expected": "Единица измерения",
+     "got": "Единица изме- рения"
+    },
+    {
+     "row": 0,
+     "col": 6,
+     "expected": "Количество",
+     "got": "Коли- чество"
+    }
+   ]
+  },
+  "fresh_askuvt_cable_journal": {
+   "table_shape_detected": [
+    20,
+    10
+   ],
+   "gt_shape": [
+    10,
+    10
+   ],
+   "gt_cells_scored": 100,
+   "correct": 100,
+   "wrong": 0,
+   "missing": 0,
+   "cell_accuracy": 1.0,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 60,
+   "nonempty_correct": 60,
+   "nonempty_accuracy": 1.0,
+   "multi_span_cells_in_scored_region": 11,
+   "multi_span_correct": 11,
+   "multi_span_join_accuracy": 1.0,
+   "errors": []
+  },
+  "fresh_kk_pa_specification": {
+   "table_shape_detected": [
+    22,
+    9
+   ],
+   "gt_shape": [
+    10,
+    9
+   ],
+   "gt_cells_scored": 90,
+   "correct": 89,
+   "wrong": 1,
+   "missing": 0,
+   "cell_accuracy": 0.9889,
+   "cell_accuracy_dehyphenated": 1.0,
+   "nonempty_accuracy_dehyphenated": 1.0,
+   "nonempty_gt_cells": 59,
+   "nonempty_correct": 58,
+   "nonempty_accuracy": 0.9831,
+   "multi_span_cells_in_scored_region": 8,
+   "multi_span_correct": 7,
+   "multi_span_join_accuracy": 0.875,
+   "errors": [
+    {
+     "row": 0,
+     "col": 5,
+     "expected": "Единица измерения",
+     "got": "Единица измере- ния"
+    }
+   ]
+  }
+ },
+ "totals": {
+  "gt_cells": 486,
+  "correct": 482,
+  "pred_cells": 0,
+  "multi_span_gt": 108,
+  "multi_span_correct": 104,
+  "nonempty_gt": 355,
+  "nonempty_correct": 351,
+  "correct_dehyphenated": 486,
+  "nonempty_correct_dehyphenated": 355,
+  "cell_accuracy": 0.9918,
+  "nonempty_accuracy": 0.9887,
+  "multi_span_join_accuracy": 0.963,
+  "cell_accuracy_dehyphenated": 1.0,
+  "nonempty_accuracy_dehyphenated": 1.0
+ }
+}

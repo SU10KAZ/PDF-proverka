@@ -1,0 +1,178 @@
+{
+ "probe": "tcf_p4b_bezier",
+ "curve_steps": 6,
+ "cases": {
+  "radius_0.01": {
+   "segments_route1_24gon": 24,
+   "segments_route2_bezier": 24,
+   "route1_vs_route2": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "route2_vs_route2_rotated_start": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "route1_perimeter": 0.062653,
+   "route2_perimeter": 0.062661,
+   "true_circumference": 0.062832
+  },
+  "radius_0.03": {
+   "segments_route1_24gon": 24,
+   "segments_route2_bezier": 24,
+   "route1_vs_route2": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "route2_vs_route2_rotated_start": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "route1_perimeter": 0.187958,
+   "route2_perimeter": 0.187983,
+   "true_circumference": 0.188496
+  },
+  "radius_0.08": {
+   "segments_route1_24gon": 24,
+   "segments_route2_bezier": 24,
+   "route1_vs_route2": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "route2_vs_route2_rotated_start": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "route1_perimeter": 0.501221,
+   "route2_perimeter": 0.501288,
+   "true_circumference": 0.502655
+  }
+ },
+ "corpus_census": {
+  "ar_plan": {
+   "source_item_counts": {
+    "c": 454,
+    "l": 14367,
+    "re": 262
+   },
+   "primitive_types": {
+    "filled_polygon": 264,
+    "line": 14361,
+    "circle": 93,
+    "curve": 82
+   }
+  },
+  "ar_wall_sections": {
+   "source_item_counts": {
+    "c": 24,
+    "l": 35959,
+    "re": 62
+   },
+   "primitive_types": {
+    "filled_polygon": 62,
+    "circle": 6,
+    "line": 19932
+   }
+  },
+  "eom_singleline_changed": {
+   "source_item_counts": {
+    "c": 316,
+    "l": 1335,
+    "qu": 20
+   },
+   "primitive_types": {
+    "filled_polygon": 4,
+    "path": 21,
+    "polyline": 72,
+    "line": 396,
+    "circle": 34,
+    "curve": 176,
+    "ellipse": 1
+   }
+  },
+  "ss_plan_dense": {
+   "source_item_counts": {
+    "c": 224,
+    "l": 86803,
+    "re": 154
+   },
+   "primitive_types": {
+    "filled_polygon": 154,
+    "path": 949,
+    "polyline": 251,
+    "line": 194,
+    "circle": 56
+   }
+  },
+  "ss_scheme_text_changed": {
+   "source_item_counts": {
+    "l": 729
+   },
+   "primitive_types": {
+    "path": 36,
+    "line": 2,
+    "polyline": 1
+   }
+  },
+  "ss_simple_node": {
+   "source_item_counts": {
+    "l": 60
+   },
+   "primitive_types": {
+    "path": 2
+   }
+  },
+  "ss_table_graphic": {
+   "source_item_counts": {
+    "l": 1625
+   },
+   "primitive_types": {
+    "path": 8,
+    "polyline": 2,
+    "line": 1
+   }
+  },
+  "vk_node_plan": {
+   "source_item_counts": {
+    "l": 37414,
+    "re": 233
+   },
+   "primitive_types": {
+    "filled_polygon": 236,
+    "line": 19764
+   }
+  },
+  "vk_nodes": {
+   "source_item_counts": {
+    "l": 164716,
+    "re": 28
+   },
+   "primitive_types": {
+    "filled_polygon": 31,
+    "line": 19969
+   }
+  },
+  "vk_plan": {
+   "source_item_counts": {
+    "l": 3155,
+    "re": 8
+   },
+   "primitive_types": {
+    "filled_polygon": 8,
+    "line": 3155
+   }
+  }
+ }
+}

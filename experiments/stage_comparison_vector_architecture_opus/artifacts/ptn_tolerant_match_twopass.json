@@ -1,0 +1,1736 @@
+{
+ "ss_scheme_text_changed": {
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "motifs_left": 63,
+  "motifs_right": 135,
+  "clusters_repeated": 11,
+  "clusters_changed": 9,
+  "clusters_appeared": 3,
+  "clusters_disappeared": 0,
+  "max_abs_delta": 19,
+  "top": [
+   {
+    "left": 15,
+    "right": 16,
+    "nseg": 4,
+    "diag": 23.01
+   },
+   {
+    "left": 15,
+    "right": 15,
+    "nseg": 4,
+    "diag": 12.94
+   },
+   {
+    "left": 13,
+    "right": 13,
+    "nseg": 2,
+    "diag": 14.8
+   },
+   {
+    "left": 0,
+    "right": 19,
+    "nseg": 12,
+    "diag": 33.33
+   },
+   {
+    "left": 3,
+    "right": 16,
+    "nseg": 8,
+    "diag": 37.04
+   },
+   {
+    "left": 1,
+    "right": 14,
+    "nseg": 20,
+    "diag": 27.05
+   },
+   {
+    "left": 7,
+    "right": 8,
+    "nseg": 6,
+    "diag": 32.24
+   },
+   {
+    "left": 0,
+    "right": 15,
+    "nseg": 4,
+    "diag": 48.55
+   },
+   {
+    "left": 3,
+    "right": 9,
+    "nseg": 4,
+    "diag": 18.93
+   },
+   {
+    "left": 0,
+    "right": 3,
+    "nseg": 16,
+    "diag": 50.05
+   },
+   {
+    "left": 1,
+    "right": 2,
+    "nseg": 8,
+    "diag": 40.32
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 0,
+    "right": 19,
+    "nseg": 12,
+    "diag": 33.33
+   },
+   {
+    "left": 0,
+    "right": 15,
+    "nseg": 4,
+    "diag": 48.55
+   },
+   {
+    "left": 3,
+    "right": 16,
+    "nseg": 8,
+    "diag": 37.04
+   },
+   {
+    "left": 1,
+    "right": 14,
+    "nseg": 20,
+    "diag": 27.05
+   },
+   {
+    "left": 3,
+    "right": 9,
+    "nseg": 4,
+    "diag": 18.93
+   },
+   {
+    "left": 0,
+    "right": 3,
+    "nseg": 16,
+    "diag": 50.05
+   },
+   {
+    "left": 15,
+    "right": 16,
+    "nseg": 4,
+    "diag": 23.01
+   },
+   {
+    "left": 7,
+    "right": 8,
+    "nseg": 6,
+    "diag": 32.24
+   },
+   {
+    "left": 1,
+    "right": 2,
+    "nseg": 8,
+    "diag": 40.32
+   }
+  ],
+  "elapsed_s": 0.1,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "ss_plan_dense": {
+  "human_expected": "NEAR_IDENTICAL",
+  "motifs_left": 3879,
+  "motifs_right": 3877,
+  "clusters_repeated": 235,
+  "clusters_changed": 2,
+  "clusters_appeared": 0,
+  "clusters_disappeared": 0,
+  "max_abs_delta": 1,
+  "top": [
+   {
+    "left": 474,
+    "right": 474,
+    "nseg": 12,
+    "diag": 10.52
+   },
+   {
+    "left": 348,
+    "right": 348,
+    "nseg": 85,
+    "diag": 42.93
+   },
+   {
+    "left": 188,
+    "right": 188,
+    "nseg": 8,
+    "diag": 0.96
+   },
+   {
+    "left": 175,
+    "right": 175,
+    "nseg": 14,
+    "diag": 26.25
+   },
+   {
+    "left": 174,
+    "right": 174,
+    "nseg": 4,
+    "diag": 4.62
+   },
+   {
+    "left": 156,
+    "right": 156,
+    "nseg": 4,
+    "diag": 0.34
+   },
+   {
+    "left": 90,
+    "right": 90,
+    "nseg": 25,
+    "diag": 88.89
+   },
+   {
+    "left": 85,
+    "right": 85,
+    "nseg": 106,
+    "diag": 88.89
+   },
+   {
+    "left": 84,
+    "right": 84,
+    "nseg": 17,
+    "diag": 46.08
+   },
+   {
+    "left": 78,
+    "right": 78,
+    "nseg": 382,
+    "diag": 113.8
+   },
+   {
+    "left": 59,
+    "right": 59,
+    "nseg": 4,
+    "diag": 6.72
+   },
+   {
+    "left": 53,
+    "right": 53,
+    "nseg": 27,
+    "diag": 24.44
+   },
+   {
+    "left": 45,
+    "right": 45,
+    "nseg": 2,
+    "diag": 3.57
+   },
+   {
+    "left": 44,
+    "right": 44,
+    "nseg": 92,
+    "diag": 102.7
+   },
+   {
+    "left": 38,
+    "right": 38,
+    "nseg": 121,
+    "diag": 360.63
+   },
+   {
+    "left": 36,
+    "right": 36,
+    "nseg": 3,
+    "diag": 8.52
+   },
+   {
+    "left": 36,
+    "right": 36,
+    "nseg": 3,
+    "diag": 8.45
+   },
+   {
+    "left": 33,
+    "right": 33,
+    "nseg": 4,
+    "diag": 7.32
+   },
+   {
+    "left": 27,
+    "right": 27,
+    "nseg": 2,
+    "diag": 3.22
+   },
+   {
+    "left": 25,
+    "right": 25,
+    "nseg": 3,
+    "diag": 8.32
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 10,
+    "right": 9,
+    "nseg": 84,
+    "diag": 243.03
+   },
+   {
+    "left": 1,
+    "right": 2,
+    "nseg": 4,
+    "diag": 24.14
+   }
+  ],
+  "elapsed_s": 14.6,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "ss_simple_node": {
+  "human_expected": "IDENTICAL",
+  "motifs_left": 6,
+  "motifs_right": 6,
+  "clusters_repeated": 2,
+  "clusters_changed": 0,
+  "clusters_appeared": 0,
+  "clusters_disappeared": 0,
+  "max_abs_delta": 0,
+  "top": [
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 3,
+    "diag": 16.8
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 2,
+    "diag": 13.42
+   }
+  ],
+  "changed_top": [],
+  "elapsed_s": 0.1,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "ss_table_graphic": {
+  "human_expected": "NEAR_IDENTICAL",
+  "motifs_left": 75,
+  "motifs_right": 74,
+  "clusters_repeated": 15,
+  "clusters_changed": 1,
+  "clusters_appeared": 0,
+  "clusters_disappeared": 0,
+  "max_abs_delta": 1,
+  "top": [
+   {
+    "left": 9,
+    "right": 8,
+    "nseg": 2,
+    "diag": 13.2
+   },
+   {
+    "left": 8,
+    "right": 8,
+    "nseg": 9,
+    "diag": 103.36
+   },
+   {
+    "left": 5,
+    "right": 5,
+    "nseg": 2,
+    "diag": 6.74
+   },
+   {
+    "left": 4,
+    "right": 4,
+    "nseg": 4,
+    "diag": 8.96
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 10,
+    "diag": 33.61
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 9,
+    "diag": 13.21
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 7,
+    "diag": 14.64
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 4,
+    "diag": 24.0
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 8,
+    "diag": 9.03
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 7,
+    "diag": 12.11
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 6,
+    "diag": 119.02
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 4,
+    "diag": 8.06
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 4,
+    "diag": 4.25
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 3,
+    "diag": 11.72
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 3,
+    "diag": 3.26
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 9,
+    "right": 8,
+    "nseg": 2,
+    "diag": 13.2
+   }
+  ],
+  "elapsed_s": 0.1,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "ar_plan": {
+  "human_expected": "NEAR_IDENTICAL",
+  "motifs_left": 1184,
+  "motifs_right": 1184,
+  "clusters_repeated": 110,
+  "clusters_changed": 0,
+  "clusters_appeared": 0,
+  "clusters_disappeared": 0,
+  "max_abs_delta": 0,
+  "top": [
+   {
+    "left": 214,
+    "right": 214,
+    "nseg": 4,
+    "diag": 9.38
+   },
+   {
+    "left": 200,
+    "right": 200,
+    "nseg": 84,
+    "diag": 209.06
+   },
+   {
+    "left": 56,
+    "right": 56,
+    "nseg": 24,
+    "diag": 16.04
+   },
+   {
+    "left": 52,
+    "right": 52,
+    "nseg": 5,
+    "diag": 7.17
+   },
+   {
+    "left": 24,
+    "right": 24,
+    "nseg": 7,
+    "diag": 7.44
+   },
+   {
+    "left": 23,
+    "right": 23,
+    "nseg": 4,
+    "diag": 69.76
+   },
+   {
+    "left": 21,
+    "right": 21,
+    "nseg": 25,
+    "diag": 70.76
+   },
+   {
+    "left": 20,
+    "right": 20,
+    "nseg": 8,
+    "diag": 25.36
+   },
+   {
+    "left": 18,
+    "right": 18,
+    "nseg": 4,
+    "diag": 43.03
+   },
+   {
+    "left": 16,
+    "right": 16,
+    "nseg": 40,
+    "diag": 5.15
+   },
+   {
+    "left": 14,
+    "right": 14,
+    "nseg": 6,
+    "diag": 49.82
+   },
+   {
+    "left": 12,
+    "right": 12,
+    "nseg": 22,
+    "diag": 1.26
+   },
+   {
+    "left": 12,
+    "right": 12,
+    "nseg": 2,
+    "diag": 0.13
+   },
+   {
+    "left": 11,
+    "right": 11,
+    "nseg": 28,
+    "diag": 40.09
+   },
+   {
+    "left": 11,
+    "right": 11,
+    "nseg": 25,
+    "diag": 62.63
+   },
+   {
+    "left": 11,
+    "right": 11,
+    "nseg": 11,
+    "diag": 79.84
+   },
+   {
+    "left": 11,
+    "right": 11,
+    "nseg": 9,
+    "diag": 44.04
+   },
+   {
+    "left": 10,
+    "right": 10,
+    "nseg": 85,
+    "diag": 83.37
+   },
+   {
+    "left": 10,
+    "right": 10,
+    "nseg": 2,
+    "diag": 6.91
+   },
+   {
+    "left": 9,
+    "right": 9,
+    "nseg": 2,
+    "diag": 18.22
+   }
+  ],
+  "changed_top": [],
+  "elapsed_s": 2.7,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "ar_wall_sections": {
+  "human_expected": "NEAR_IDENTICAL",
+  "motifs_left": 1597,
+  "motifs_right": 1535,
+  "clusters_repeated": 109,
+  "clusters_changed": 39,
+  "clusters_appeared": 1,
+  "clusters_disappeared": 7,
+  "max_abs_delta": 16,
+  "top": [
+   {
+    "left": 220,
+    "right": 212,
+    "nseg": 3,
+    "diag": 0.47
+   },
+   {
+    "left": 140,
+    "right": 140,
+    "nseg": 7,
+    "diag": 36.23
+   },
+   {
+    "left": 131,
+    "right": 135,
+    "nseg": 2,
+    "diag": 0.25
+   },
+   {
+    "left": 118,
+    "right": 102,
+    "nseg": 3,
+    "diag": 0.47
+   },
+   {
+    "left": 86,
+    "right": 87,
+    "nseg": 2,
+    "diag": 0.3
+   },
+   {
+    "left": 65,
+    "right": 66,
+    "nseg": 2,
+    "diag": 0.25
+   },
+   {
+    "left": 59,
+    "right": 63,
+    "nseg": 2,
+    "diag": 0.34
+   },
+   {
+    "left": 43,
+    "right": 44,
+    "nseg": 2,
+    "diag": 0.3
+   },
+   {
+    "left": 37,
+    "right": 37,
+    "nseg": 2,
+    "diag": 0.38
+   },
+   {
+    "left": 36,
+    "right": 36,
+    "nseg": 2,
+    "diag": 0.22
+   },
+   {
+    "left": 32,
+    "right": 31,
+    "nseg": 2,
+    "diag": 0.42
+   },
+   {
+    "left": 28,
+    "right": 28,
+    "nseg": 18,
+    "diag": 54.57
+   },
+   {
+    "left": 26,
+    "right": 21,
+    "nseg": 3,
+    "diag": 0.43
+   },
+   {
+    "left": 23,
+    "right": 23,
+    "nseg": 3,
+    "diag": 27.36
+   },
+   {
+    "left": 23,
+    "right": 23,
+    "nseg": 2,
+    "diag": 0.34
+   },
+   {
+    "left": 22,
+    "right": 22,
+    "nseg": 2,
+    "diag": 0.38
+   },
+   {
+    "left": 21,
+    "right": 21,
+    "nseg": 3,
+    "diag": 7.13
+   },
+   {
+    "left": 16,
+    "right": 15,
+    "nseg": 5,
+    "diag": 4.97
+   },
+   {
+    "left": 14,
+    "right": 14,
+    "nseg": 2,
+    "diag": 31.72
+   },
+   {
+    "left": 7,
+    "right": 7,
+    "nseg": 18,
+    "diag": 30.52
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 118,
+    "right": 102,
+    "nseg": 3,
+    "diag": 0.47
+   },
+   {
+    "left": 14,
+    "right": 0,
+    "nseg": 2,
+    "diag": 0.22
+   },
+   {
+    "left": 220,
+    "right": 212,
+    "nseg": 3,
+    "diag": 0.47
+   },
+   {
+    "left": 26,
+    "right": 21,
+    "nseg": 3,
+    "diag": 0.43
+   },
+   {
+    "left": 131,
+    "right": 135,
+    "nseg": 2,
+    "diag": 0.25
+   },
+   {
+    "left": 59,
+    "right": 63,
+    "nseg": 2,
+    "diag": 0.34
+   },
+   {
+    "left": 5,
+    "right": 1,
+    "nseg": 2,
+    "diag": 0.22
+   },
+   {
+    "left": 4,
+    "right": 0,
+    "nseg": 2,
+    "diag": 0.17
+   },
+   {
+    "left": 2,
+    "right": 5,
+    "nseg": 4,
+    "diag": 0.67
+   },
+   {
+    "left": 3,
+    "right": 0,
+    "nseg": 3,
+    "diag": 0.59
+   },
+   {
+    "left": 4,
+    "right": 2,
+    "nseg": 4,
+    "diag": 0.64
+   },
+   {
+    "left": 4,
+    "right": 2,
+    "nseg": 2,
+    "diag": 0.27
+   },
+   {
+    "left": 3,
+    "right": 1,
+    "nseg": 3,
+    "diag": 0.65
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 3,
+    "diag": 0.78
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 3,
+    "diag": 0.6
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 3,
+    "diag": 0.57
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 3,
+    "diag": 0.55
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 2,
+    "diag": 0.27
+   },
+   {
+    "left": 86,
+    "right": 87,
+    "nseg": 2,
+    "diag": 0.3
+   },
+   {
+    "left": 65,
+    "right": 66,
+    "nseg": 2,
+    "diag": 0.25
+   }
+  ],
+  "elapsed_s": 5.9,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "vk_plan": {
+  "human_expected": "NEAR_IDENTICAL",
+  "motifs_left": 193,
+  "motifs_right": 194,
+  "clusters_repeated": 31,
+  "clusters_changed": 12,
+  "clusters_appeared": 3,
+  "clusters_disappeared": 4,
+  "max_abs_delta": 5,
+  "top": [
+   {
+    "left": 26,
+    "right": 26,
+    "nseg": 10,
+    "diag": 20.12
+   },
+   {
+    "left": 20,
+    "right": 20,
+    "nseg": 5,
+    "diag": 12.8
+   },
+   {
+    "left": 17,
+    "right": 17,
+    "nseg": 5,
+    "diag": 12.12
+   },
+   {
+    "left": 14,
+    "right": 14,
+    "nseg": 3,
+    "diag": 13.24
+   },
+   {
+    "left": 8,
+    "right": 9,
+    "nseg": 6,
+    "diag": 27.41
+   },
+   {
+    "left": 8,
+    "right": 8,
+    "nseg": 4,
+    "diag": 13.5
+   },
+   {
+    "left": 8,
+    "right": 7,
+    "nseg": 3,
+    "diag": 19.66
+   },
+   {
+    "left": 5,
+    "right": 5,
+    "nseg": 9,
+    "diag": 12.77
+   },
+   {
+    "left": 5,
+    "right": 5,
+    "nseg": 4,
+    "diag": 15.61
+   },
+   {
+    "left": 5,
+    "right": 5,
+    "nseg": 4,
+    "diag": 14.03
+   },
+   {
+    "left": 5,
+    "right": 5,
+    "nseg": 2,
+    "diag": 9.22
+   },
+   {
+    "left": 4,
+    "right": 4,
+    "nseg": 31,
+    "diag": 34.27
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 123,
+    "diag": 141.4
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 10,
+    "diag": 14.64
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 9,
+    "diag": 17.77
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 9,
+    "diag": 17.69
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 2,
+    "diag": 45.6
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 2,
+    "diag": 0.91
+   },
+   {
+    "left": 2,
+    "right": 3,
+    "nseg": 4,
+    "diag": 12.03
+   },
+   {
+    "left": 5,
+    "right": 0,
+    "nseg": 3,
+    "diag": 10.67
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 5,
+    "right": 0,
+    "nseg": 3,
+    "diag": 10.67
+   },
+   {
+    "left": 0,
+    "right": 5,
+    "nseg": 3,
+    "diag": 10.08
+   },
+   {
+    "left": 0,
+    "right": 5,
+    "nseg": 2,
+    "diag": 12.13
+   },
+   {
+    "left": 4,
+    "right": 0,
+    "nseg": 4,
+    "diag": 15.82
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 14,
+    "diag": 47.73
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 11,
+    "diag": 63.39
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 2,
+    "diag": 2.6
+   },
+   {
+    "left": 8,
+    "right": 9,
+    "nseg": 6,
+    "diag": 27.41
+   },
+   {
+    "left": 8,
+    "right": 7,
+    "nseg": 3,
+    "diag": 19.66
+   },
+   {
+    "left": 2,
+    "right": 3,
+    "nseg": 4,
+    "diag": 12.03
+   },
+   {
+    "left": 2,
+    "right": 1,
+    "nseg": 100,
+    "diag": 71.31
+   },
+   {
+    "left": 2,
+    "right": 1,
+    "nseg": 2,
+    "diag": 4.49
+   }
+  ],
+  "elapsed_s": 0.5,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "vk_nodes": {
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "motifs_left": 937,
+  "motifs_right": 926,
+  "clusters_repeated": 111,
+  "clusters_changed": 59,
+  "clusters_appeared": 5,
+  "clusters_disappeared": 5,
+  "max_abs_delta": 9,
+  "top": [
+   {
+    "left": 71,
+    "right": 74,
+    "nseg": 15,
+    "diag": 36.0
+   },
+   {
+    "left": 57,
+    "right": 57,
+    "nseg": 2,
+    "diag": 1.11
+   },
+   {
+    "left": 48,
+    "right": 56,
+    "nseg": 101,
+    "diag": 59.81
+   },
+   {
+    "left": 40,
+    "right": 40,
+    "nseg": 5,
+    "diag": 31.82
+   },
+   {
+    "left": 29,
+    "right": 30,
+    "nseg": 2,
+    "diag": 1.2
+   },
+   {
+    "left": 31,
+    "right": 22,
+    "nseg": 3,
+    "diag": 1.11
+   },
+   {
+    "left": 26,
+    "right": 26,
+    "nseg": 2,
+    "diag": 1.02
+   },
+   {
+    "left": 22,
+    "right": 22,
+    "nseg": 2,
+    "diag": 1.11
+   },
+   {
+    "left": 21,
+    "right": 21,
+    "nseg": 3,
+    "diag": 1.61
+   },
+   {
+    "left": 19,
+    "right": 19,
+    "nseg": 73,
+    "diag": 61.74
+   },
+   {
+    "left": 19,
+    "right": 18,
+    "nseg": 8,
+    "diag": 44.1
+   },
+   {
+    "left": 17,
+    "right": 20,
+    "nseg": 3,
+    "diag": 1.11
+   },
+   {
+    "left": 17,
+    "right": 15,
+    "nseg": 3,
+    "diag": 1.2
+   },
+   {
+    "left": 16,
+    "right": 16,
+    "nseg": 2,
+    "diag": 1.02
+   },
+   {
+    "left": 15,
+    "right": 16,
+    "nseg": 51,
+    "diag": 59.29
+   },
+   {
+    "left": 15,
+    "right": 15,
+    "nseg": 3,
+    "diag": 1.53
+   },
+   {
+    "left": 14,
+    "right": 13,
+    "nseg": 2,
+    "diag": 1.11
+   },
+   {
+    "left": 13,
+    "right": 11,
+    "nseg": 10,
+    "diag": 56.32
+   },
+   {
+    "left": 12,
+    "right": 12,
+    "nseg": 3,
+    "diag": 1.11
+   },
+   {
+    "left": 12,
+    "right": 10,
+    "nseg": 7,
+    "diag": 12.95
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 31,
+    "right": 22,
+    "nseg": 3,
+    "diag": 1.11
+   },
+   {
+    "left": 48,
+    "right": 56,
+    "nseg": 101,
+    "diag": 59.81
+   },
+   {
+    "left": 8,
+    "right": 0,
+    "nseg": 2,
+    "diag": 0.49
+   },
+   {
+    "left": 7,
+    "right": 0,
+    "nseg": 5,
+    "diag": 1.72
+   },
+   {
+    "left": 1,
+    "right": 6,
+    "nseg": 3,
+    "diag": 1.28
+   },
+   {
+    "left": 71,
+    "right": 74,
+    "nseg": 15,
+    "diag": 36.0
+   },
+   {
+    "left": 17,
+    "right": 20,
+    "nseg": 3,
+    "diag": 1.11
+   },
+   {
+    "left": 11,
+    "right": 8,
+    "nseg": 3,
+    "diag": 1.2
+   },
+   {
+    "left": 4,
+    "right": 7,
+    "nseg": 9,
+    "diag": 82.82
+   },
+   {
+    "left": 5,
+    "right": 2,
+    "nseg": 2,
+    "diag": 1.03
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 30,
+    "diag": 79.05
+   },
+   {
+    "left": 4,
+    "right": 1,
+    "nseg": 5,
+    "diag": 2.64
+   },
+   {
+    "left": 0,
+    "right": 3,
+    "nseg": 5,
+    "diag": 47.0
+   },
+   {
+    "left": 3,
+    "right": 0,
+    "nseg": 5,
+    "diag": 32.77
+   },
+   {
+    "left": 17,
+    "right": 15,
+    "nseg": 3,
+    "diag": 1.2
+   },
+   {
+    "left": 13,
+    "right": 11,
+    "nseg": 10,
+    "diag": 56.32
+   },
+   {
+    "left": 12,
+    "right": 10,
+    "nseg": 7,
+    "diag": 12.95
+   },
+   {
+    "left": 2,
+    "right": 4,
+    "nseg": 10,
+    "diag": 3.73
+   },
+   {
+    "left": 4,
+    "right": 2,
+    "nseg": 7,
+    "diag": 3.49
+   },
+   {
+    "left": 2,
+    "right": 4,
+    "nseg": 5,
+    "diag": 63.64
+   }
+  ],
+  "elapsed_s": 3.9,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "vk_node_plan": {
+  "human_expected": "NEAR_IDENTICAL",
+  "motifs_left": 77,
+  "motifs_right": 96,
+  "clusters_repeated": 19,
+  "clusters_changed": 10,
+  "clusters_appeared": 3,
+  "clusters_disappeared": 2,
+  "max_abs_delta": 8,
+  "top": [
+   {
+    "left": 29,
+    "right": 37,
+    "nseg": 14,
+    "diag": 5.04
+   },
+   {
+    "left": 4,
+    "right": 4,
+    "nseg": 9,
+    "diag": 52.81
+   },
+   {
+    "left": 4,
+    "right": 4,
+    "nseg": 4,
+    "diag": 20.11
+   },
+   {
+    "left": 4,
+    "right": 4,
+    "nseg": 2,
+    "diag": 72.92
+   },
+   {
+    "left": 3,
+    "right": 3,
+    "nseg": 2,
+    "diag": 59.68
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 6,
+    "diag": 2.21
+   },
+   {
+    "left": 1,
+    "right": 3,
+    "nseg": 182,
+    "diag": 41.68
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 34,
+    "diag": 36.1
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 22,
+    "diag": 8.03
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 4,
+    "diag": 45.12
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 4,
+    "diag": 42.54
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 3,
+    "diag": 3.26
+   },
+   {
+    "left": 1,
+    "right": 2,
+    "nseg": 3,
+    "diag": 0.97
+   },
+   {
+    "left": 2,
+    "right": 1,
+    "nseg": 2,
+    "diag": 1.03
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 35,
+    "diag": 56.66
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 23,
+    "diag": 56.56
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 14,
+    "diag": 71.47
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 14,
+    "diag": 58.57
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 4,
+    "diag": 1.5
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 29,
+    "right": 37,
+    "nseg": 14,
+    "diag": 5.04
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 6,
+    "diag": 2.21
+   },
+   {
+    "left": 1,
+    "right": 3,
+    "nseg": 182,
+    "diag": 41.68
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 35,
+    "diag": 56.66
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 23,
+    "diag": 56.56
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 14,
+    "diag": 71.47
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 14,
+    "diag": 58.57
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 4,
+    "diag": 1.5
+   },
+   {
+    "left": 1,
+    "right": 2,
+    "nseg": 3,
+    "diag": 0.97
+   },
+   {
+    "left": 2,
+    "right": 1,
+    "nseg": 2,
+    "diag": 1.03
+   }
+  ],
+  "elapsed_s": 2.3,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ },
+ "eom_singleline_changed": {
+  "human_expected": "STRUCTURE_CHANGED",
+  "motifs_left": 79,
+  "motifs_right": 103,
+  "clusters_repeated": 25,
+  "clusters_changed": 23,
+  "clusters_appeared": 5,
+  "clusters_disappeared": 6,
+  "max_abs_delta": 8,
+  "top": [
+   {
+    "left": 24,
+    "right": 17,
+    "nseg": 24,
+    "diag": 7.98
+   },
+   {
+    "left": 14,
+    "right": 14,
+    "nseg": 6,
+    "diag": 12.22
+   },
+   {
+    "left": 2,
+    "right": 7,
+    "nseg": 5,
+    "diag": 29.95
+   },
+   {
+    "left": 0,
+    "right": 8,
+    "nseg": 5,
+    "diag": 3.57
+   },
+   {
+    "left": 2,
+    "right": 6,
+    "nseg": 2,
+    "diag": 8.43
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 27,
+    "diag": 26.25
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 11,
+    "diag": 54.11
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 7,
+    "diag": 39.28
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 5,
+    "diag": 23.15
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 5,
+    "diag": 10.63
+   },
+   {
+    "left": 0,
+    "right": 5,
+    "nseg": 5,
+    "diag": 3.73
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 4,
+    "diag": 8.02
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 3,
+    "diag": 8.17
+   },
+   {
+    "left": 4,
+    "right": 0,
+    "nseg": 25,
+    "diag": 12.93
+   },
+   {
+    "left": 0,
+    "right": 4,
+    "nseg": 11,
+    "diag": 31.77
+   },
+   {
+    "left": 2,
+    "right": 2,
+    "nseg": 2,
+    "diag": 9.11
+   },
+   {
+    "left": 2,
+    "right": 1,
+    "nseg": 25,
+    "diag": 15.13
+   },
+   {
+    "left": 2,
+    "right": 1,
+    "nseg": 3,
+    "diag": 14.16
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 90,
+    "diag": 8.15
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 26,
+    "diag": 22.91
+   }
+  ],
+  "changed_top": [
+   {
+    "left": 0,
+    "right": 8,
+    "nseg": 5,
+    "diag": 3.57
+   },
+   {
+    "left": 24,
+    "right": 17,
+    "nseg": 24,
+    "diag": 7.98
+   },
+   {
+    "left": 2,
+    "right": 7,
+    "nseg": 5,
+    "diag": 29.95
+   },
+   {
+    "left": 0,
+    "right": 5,
+    "nseg": 5,
+    "diag": 3.73
+   },
+   {
+    "left": 2,
+    "right": 6,
+    "nseg": 2,
+    "diag": 8.43
+   },
+   {
+    "left": 4,
+    "right": 0,
+    "nseg": 25,
+    "diag": 12.93
+   },
+   {
+    "left": 0,
+    "right": 4,
+    "nseg": 11,
+    "diag": 31.77
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 27,
+    "diag": 26.25
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 11,
+    "diag": 54.11
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 7,
+    "diag": 39.28
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 5,
+    "diag": 23.15
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 5,
+    "diag": 10.63
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 4,
+    "diag": 8.02
+   },
+   {
+    "left": 1,
+    "right": 4,
+    "nseg": 3,
+    "diag": 8.17
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 90,
+    "diag": 8.15
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 26,
+    "diag": 22.91
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 25,
+    "diag": 11.13
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 2,
+    "diag": 10.81
+   },
+   {
+    "left": 2,
+    "right": 0,
+    "nseg": 2,
+    "diag": 5.52
+   },
+   {
+    "left": 0,
+    "right": 2,
+    "nseg": 2,
+    "diag": 5.1
+   }
+  ],
+  "elapsed_s": 0.1,
+  "grid": 16,
+  "jaccard_threshold": 0.5
+ }
+}

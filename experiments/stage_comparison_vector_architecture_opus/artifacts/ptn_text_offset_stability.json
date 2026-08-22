@@ -1,0 +1,82 @@
+{
+ "ar_plan/marking circle w/ number": {
+  "instances": 56,
+  "with_text_within_2_diag": 56,
+  "mean_offset_diag": [
+   -0.008,
+   0.054
+  ],
+  "std_offset_diag": [
+   0.0,
+   0.001
+  ],
+  "text_shape_classes": [
+   [
+    "#",
+    56
+   ]
+  ]
+ },
+ "ss_scheme_text_changed/camera lens triangle": {
+  "instances": 15,
+  "with_text_within_2_diag": 15,
+  "mean_offset_diag": [
+   0.427,
+   -1.219
+  ],
+  "std_offset_diag": [
+   0.11,
+   0.053
+  ],
+  "text_shape_classes": [
+   [
+    "#.#.#.#",
+    15
+   ]
+  ]
+ },
+ "ss_scheme_text_changed/OSPD crossed square": {
+  "instances": 5,
+  "with_text_within_2_diag": 5,
+  "mean_offset_diag": [
+   0.822,
+   -0.065
+  ],
+  "std_offset_diag": [
+   0.003,
+   0.001
+  ],
+  "text_shape_classes": [
+   [
+    "A",
+    5
+   ]
+  ]
+ },
+ "eom_singleline_changed/crossed-square marker": {
+  "instances": 14,
+  "with_text_within_2_diag": 0,
+  "mean_offset_diag": [
+   NaN,
+   NaN
+  ],
+  "std_offset_diag": [
+   NaN,
+   NaN
+  ],
+  "text_shape_classes": []
+ },
+ "eom_singleline_changed/terminal circle": {
+  "instances": 24,
+  "with_text_within_2_diag": 0,
+  "mean_offset_diag": [
+   NaN,
+   NaN
+  ],
+  "std_offset_diag": [
+   NaN,
+   NaN
+  ],
+  "text_shape_classes": []
+ }
+}

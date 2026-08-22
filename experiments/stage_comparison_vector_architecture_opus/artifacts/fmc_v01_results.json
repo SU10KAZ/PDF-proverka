@@ -1,0 +1,1805 @@
+[
+ {
+  "pair_id": "fmc_eom_text_as_paths",
+  "discipline": "EOM",
+  "change_class": "TEXT_LAYER_ABSENT_ONE_SIDE",
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "human_expected_ru": "Лист «Общие данные (окончание)» тот же; в новой версии текст стал выбираемым (в старой — в кривых), текст переверстан, в п.2 добавлена ссылка на отдельный том 13АВ-РД-ГРЩ2-ПА, в правом нижнем углу добавлен QR-код.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 1.612,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.2243,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.0043,
+  "right_coverage": 0.4444,
+  "text_similarity": 0.0,
+  "text_reliable": false,
+  "topology_similarity": 0.1193,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED",
+  "left_primitives": 20000,
+  "right_primitives": 5,
+  "left_segments": 119980,
+  "right_segments": 18,
+  "left_texts": 0,
+  "right_texts": 678,
+  "left_hatch": 0,
+  "right_hatch": 0,
+  "differences": [
+   "Добавлено text items: ОБЩИЕ, УКАЗАНИЯ, 1., Основные, положения, Рабочая, Рабочая, документация, документация, внутреннего, внутреннего, электроосвещения, подземной, подземной, подземной, подземной, подземной, подземной, автостоянки, автостоянки",
+   "Число примитивов: 20000 → 5",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.119, ветвления 13 → 0)"
+  ],
+  "n_differences": 4,
+  "text_added": [
+   "ОБЩИЕ",
+   "УКАЗАНИЯ",
+   "1.",
+   "Основные",
+   "положения",
+   "Рабочая",
+   "Рабочая",
+   "документация",
+   "документация",
+   "внутреннего",
+   "внутреннего",
+   "электроосвещения",
+   "подземной",
+   "подземной",
+   "подземной"
+  ],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   953,
+   3506
+  ],
+  "l0_tokens": [
+   2730312,
+   547
+  ]
+ },
+ {
+  "pair_id": "fmc_kj_spec_table_reflow",
+  "discipline": "KJ",
+  "change_class": "LAYOUT_ONLY_NO_ENGINEERING_CHANGE",
+  "human_expected": "NEAR_IDENTICAL",
+  "human_expected_ru": "Изменений по существу нет: в спецификации элементов армирования убран разрыв между строками, позиции 12-поз.м., 12-Г-1, 16-П-1, их диаметры, длины, количества и массы прежние.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.004,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.8405,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.8103,
+  "right_coverage": 0.8707,
+  "text_similarity": 1.0,
+  "text_reliable": true,
+  "topology_similarity": 0.9797,
+  "left_quality": "GOOD",
+  "right_quality": "GOOD",
+  "left_primitives": 9,
+  "right_primitives": 9,
+  "left_segments": 116,
+  "right_segments": 116,
+  "left_texts": 63,
+  "right_texts": 63,
+  "left_hatch": 2,
+  "right_hatch": 2,
+  "differences": [
+   "Топология изменилась (similarity=0.980, ветвления 56 → 52)"
+  ],
+  "n_differences": 1,
+  "text_added": [],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   550,
+   550
+  ],
+  "l0_tokens": [
+   2029,
+   2030
+  ]
+ },
+ {
+  "pair_id": "fmc_kj_steel_table_shift",
+  "discipline": "KJ",
+  "change_class": "PURE_TRANSLATION",
+  "human_expected": "NEAR_IDENTICAL",
+  "human_expected_ru": "Ведомость расхода стали не изменилась (Ø12 3506,33 кг, Ø16 935,90 кг, всего 4442,23 кг) — таблица только смещена по листу.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.002,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.4054,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.4054,
+  "right_coverage": 0.4054,
+  "text_similarity": 1.0,
+  "text_reliable": true,
+  "topology_similarity": 1.0,
+  "left_quality": "GOOD",
+  "right_quality": "GOOD",
+  "left_primitives": 4,
+  "right_primitives": 4,
+  "left_segments": 74,
+  "right_segments": 74,
+  "left_texts": 33,
+  "right_texts": 33,
+  "left_hatch": 2,
+  "right_hatch": 2,
+  "differences": [],
+  "n_differences": 0,
+  "text_added": [],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   400,
+   400
+  ],
+  "l0_tokens": [
+   1187,
+   1187
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_room_schedule_values",
+  "discipline": "EOM",
+  "change_class": "VALUES_CHANGED",
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "human_expected_ru": "В экспликации помещений уточнены площади: лестничная клетка 17,68→17,37 м², кладовая 3.К.8 2,67→2,65 м², итог по этажу 497,57→497,24 м².",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.014,
+  "status": "NEAR_IDENTICAL",
+  "geometry_similarity": 1.0,
+  "selected_tolerance": 0.001,
+  "left_coverage": 1.0,
+  "right_coverage": 1.0,
+  "text_similarity": 0.9951,
+  "text_reliable": true,
+  "topology_similarity": 1.0,
+  "left_quality": "GOOD",
+  "right_quality": "GOOD",
+  "left_primitives": 74,
+  "right_primitives": 74,
+  "left_segments": 328,
+  "right_segments": 328,
+  "left_texts": 226,
+  "right_texts": 226,
+  "left_hatch": 3,
+  "right_hatch": 3,
+  "differences": [
+   "Текст/значение 2,67 → 2,65",
+   "Текст/значение 17,68 → 17,37",
+   "Текст/значение 497,57 → 497,24",
+   "Добавлено text items: 2,65, 17,37, 497,24",
+   "Удалено text items: 2,67, 17,68, 497,57"
+  ],
+  "n_differences": 5,
+  "text_added": [
+   "2,65",
+   "17,37",
+   "497,24"
+  ],
+  "text_removed": [
+   "2,67",
+   "17,68",
+   "497,57"
+  ],
+  "text_value_changes": [
+   {
+    "left": "2,67",
+    "right": "2,65",
+    "category": "numeric",
+    "position_distance_norm": 0.0
+   },
+   {
+    "left": "17,68",
+    "right": "17,37",
+    "category": "numeric",
+    "position_distance_norm": 0.0
+   },
+   {
+    "left": "497,57",
+    "right": "497,24",
+    "category": "numeric",
+    "position_distance_norm": 0.00048
+   }
+  ],
+  "l3_tokens": [
+   1244,
+   1244
+  ],
+  "l0_tokens": [
+   9246,
+   9237
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_tray_plan_geometry",
+  "discipline": "EOM",
+  "change_class": "GEOMETRY_CHANGED_PLUS_NEW_MARKS",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "На плане кабельных лотков −1 этажа перестроен участок в осях 3.И–3.Л (изменены контуры венткамеры и короба) и проставлены отметки высоты h=2650 и h=3350.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 1.155,
+  "status": "NEAR_IDENTICAL",
+  "geometry_similarity": 0.9928,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.9935,
+  "right_coverage": 0.9921,
+  "text_similarity": 0.9892,
+  "text_reliable": true,
+  "topology_similarity": 0.9727,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 1296,
+  "right_primitives": 1509,
+  "left_segments": 25629,
+  "right_segments": 34374,
+  "left_texts": 92,
+  "right_texts": 94,
+  "left_hatch": 30,
+  "right_hatch": 30,
+  "differences": [
+   "Добавлено text items: h=2650, h=3350",
+   "Число примитивов: 1296 → 1509",
+   "Изменены повторяющиеся motifs: 64",
+   "Топология изменилась (similarity=0.973, ветвления 2585 → 2697)"
+  ],
+  "n_differences": 4,
+  "text_added": [
+   "h=2650",
+   "h=3350"
+  ],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   1433,
+   1443
+  ],
+  "l0_tokens": [
+   415767,
+   811329
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_notes_reflow",
+  "discipline": "EOM",
+  "change_class": "TEXT_REFLOW_NO_ENGINEERING_CHANGE",
+  "human_expected": "NEAR_IDENTICAL",
+  "human_expected_ru": "Содержание указаний не изменилось — абзацы переверстаны, исправлена ссылка «ПУЭ, гл. 1.7, п. 1.7.76».",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.077,
+  "status": "INSUFFICIENT_VECTOR_DATA",
+  "geometry_similarity": 0.0,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.0,
+  "right_coverage": 0.0,
+  "text_similarity": 1.0,
+  "text_reliable": true,
+  "topology_similarity": 1.0,
+  "left_quality": "VECTOR_DATA_INSUFFICIENT",
+  "right_quality": "VECTOR_DATA_INSUFFICIENT",
+  "left_primitives": 0,
+  "right_primitives": 0,
+  "left_segments": 0,
+  "right_segments": 0,
+  "left_texts": 586,
+  "right_texts": 586,
+  "left_hatch": 0,
+  "right_hatch": 0,
+  "differences": [],
+  "n_differences": 0,
+  "text_added": [],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   3030,
+   3030
+  ],
+  "l0_tokens": [
+   1,
+   1
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_qr_stamp_only",
+  "discipline": "EOM",
+  "change_class": "ADDED_NON_ENGINEERING_MARK",
+  "human_expected": "NEAR_IDENTICAL",
+  "human_expected_ru": "Инженерных изменений нет: на листе появился QR-код системы документооборота.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.0,
+  "status": "INSUFFICIENT_VECTOR_DATA",
+  "geometry_similarity": 1.0,
+  "selected_tolerance": 0.001,
+  "left_coverage": 1.0,
+  "right_coverage": 1.0,
+  "text_similarity": 1.0,
+  "text_reliable": true,
+  "topology_similarity": 1.0,
+  "left_quality": "VECTOR_DATA_INSUFFICIENT",
+  "right_quality": "VECTOR_DATA_INSUFFICIENT",
+  "left_primitives": 1,
+  "right_primitives": 1,
+  "left_segments": 1,
+  "right_segments": 1,
+  "left_texts": 7,
+  "right_texts": 7,
+  "left_hatch": 0,
+  "right_hatch": 0,
+  "differences": [],
+  "n_differences": 0,
+  "text_added": [],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   271,
+   271
+  ],
+  "l0_tokens": [
+   85,
+   85
+  ]
+ },
+ {
+  "pair_id": "fmc_ov_raster_retile",
+  "discipline": "OV",
+  "change_class": "RASTER_REPACK_NO_CHANGE",
+  "human_expected": "IDENTICAL",
+  "human_expected_ru": "Инженерных изменений нет: тот же вставленный растровый лист, изменена только его нарезка на изображения внутри PDF.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.0,
+  "status": "INSUFFICIENT_VECTOR_DATA",
+  "geometry_similarity": 0.0,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.0,
+  "right_coverage": 0.0,
+  "text_similarity": 1.0,
+  "text_reliable": true,
+  "topology_similarity": 1.0,
+  "left_quality": "VECTOR_DATA_INSUFFICIENT",
+  "right_quality": "VECTOR_DATA_INSUFFICIENT",
+  "left_primitives": 0,
+  "right_primitives": 0,
+  "left_segments": 0,
+  "right_segments": 0,
+  "left_texts": 7,
+  "right_texts": 7,
+  "left_hatch": 0,
+  "right_hatch": 0,
+  "differences": [],
+  "n_differences": 0,
+  "text_added": [],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   283,
+   283
+  ],
+  "l0_tokens": [
+   1,
+   1
+  ]
+ },
+ {
+  "pair_id": "fmc_tx_raster_scan",
+  "discipline": "TX",
+  "change_class": "RASTER_ONLY_UNCHANGED",
+  "human_expected": "IDENTICAL",
+  "human_expected_ru": "Лист — растровый скан, изменений нет.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.0,
+  "status": "INSUFFICIENT_VECTOR_DATA",
+  "geometry_similarity": 0.0,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.0,
+  "right_coverage": 0.0,
+  "text_similarity": 1.0,
+  "text_reliable": false,
+  "topology_similarity": 1.0,
+  "left_quality": "VECTOR_DATA_INSUFFICIENT",
+  "right_quality": "VECTOR_DATA_INSUFFICIENT",
+  "left_primitives": 0,
+  "right_primitives": 0,
+  "left_segments": 0,
+  "right_segments": 0,
+  "left_texts": 0,
+  "right_texts": 0,
+  "left_hatch": 0,
+  "right_hatch": 0,
+  "differences": [],
+  "n_differences": 0,
+  "text_added": [],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   208,
+   208
+  ],
+  "l0_tokens": [
+   1,
+   1
+  ]
+ },
+ {
+  "pair_id": "fmc_ss_a4_to_a3_reissue",
+  "discipline": "SS",
+  "change_class": "FORMAT_AND_PAGE_ORDER_CHANGE",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "Лист «Расчёт сечения кабеля» перевыпущен с A4 на A3: таблица расчёта линий оповещения расширена с 14 до 21 линии (добавлены V15–V21) и все значения пересчитаны (V1: длина 390→230 м, мощность 120→84 Вт, расчётное сечение 0,819→0,338 мм²); таблица перенесена из-под текста вправо; лист переставлен с 31-й на 44-ю страницу.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.447,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.003,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.0003,
+  "right_coverage": 0.0057,
+  "text_similarity": 0.3912,
+  "text_reliable": true,
+  "topology_similarity": 0.5492,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 2530,
+  "right_primitives": 1309,
+  "left_segments": 16540,
+  "right_segments": 11071,
+  "left_texts": 217,
+  "right_texts": 100,
+  "left_hatch": 30,
+  "right_hatch": 25,
+  "differences": [
+   "Текст/значение в.N подл. → л.",
+   "Текст/значение 10.0 → 2",
+   "Текст/значение 132 → 2",
+   "Текст/значение 129 → 2",
+   "Добавлено text items: л., 02.26, Для расчёта сечения кабеля СОУЭ применяется формула: S = p*L*P, U*Uпад, где:, S - искомое значение сечения кабеля;, p - удельное сопротивление материала (для меди 0.0175 Ом*мм, 2, );, L - длина линии оповещения м;, P - суммарная потребляемая мощность оповещателей в линии Вт;, U - напряжение линии оповещения В;, Uпад - допустимое значение падения напряжения в линии оповещения (10 В, что равно 10% общего, напряжения)., Пример проведения расчёта на линии V1 :, Линия оповещения V1 имеет напряжение 100 В, имеет протяжённость, м. Суммарная мощность, оповещателей на линии равна 120 Вт. Исходя из расчёта по приведённой формуле получаем:, S = p*L*P, U*Uпад = 0.0175*230*84, 100*10",
+   "Удалено text items: в.N подл., 1, .Р1, Таблица 1 – Расчёт сечения линий оповещения, Длина, линии, м, Суммарная, мощность, оповещателей, на линии, Напряжение, линии, линии, оповещения, В, оповещения, В, Допустимая, потеря, напряжения, Расчётное, сечение",
+   "Число примитивов: 2530 → 1309",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.549, ветвления 612 → 343)"
+  ],
+  "n_differences": 9,
+  "text_added": [
+   "л.",
+   "02.26",
+   "Для расчёта сечения кабеля СОУЭ применяется формула: S = p*L*P",
+   "U*Uпад, где:",
+   "S - искомое значение сечения кабеля;",
+   "p - удельное сопротивление материала (для меди 0.0175 Ом*мм",
+   "2",
+   ");",
+   "L - длина линии оповещения м;",
+   "P - суммарная потребляемая мощность оповещателей в линии Вт;",
+   "U - напряжение линии оповещения В;",
+   "Uпад - допустимое значение падения напряжения в линии оповещения (10 В, что равно 10% общего",
+   "напряжения).",
+   "Пример проведения расчёта на линии V1 :",
+   "Линия оповещения V1 имеет напряжение 100 В, имеет протяжённость"
+  ],
+  "text_removed": [
+   "в.N подл.",
+   "1",
+   ".Р1",
+   "Таблица 1 – Расчёт сечения линий оповещения",
+   "Длина",
+   "линии, м",
+   "Суммарная",
+   "мощность",
+   "оповещателей",
+   "на линии",
+   "Напряжение",
+   "линии",
+   "линии",
+   "оповещения, В",
+   "оповещения, В"
+  ],
+  "text_value_changes": [
+   {
+    "left": "в.N подл.",
+    "right": "л.",
+    "category": "label",
+    "position_distance_norm": 0.03209
+   },
+   {
+    "left": "10.0",
+    "right": "2",
+    "category": "numeric",
+    "position_distance_norm": 0.03008
+   },
+   {
+    "left": "132",
+    "right": "2",
+    "category": "numeric",
+    "position_distance_norm": 0.01469
+   },
+   {
+    "left": "129",
+    "right": "2",
+    "category": "numeric",
+    "position_distance_norm": 0.00446
+   }
+  ],
+  "l3_tokens": [
+   2159,
+   1710
+  ],
+  "l0_tokens": [
+   339217,
+   205763
+  ]
+ },
+ {
+  "pair_id": "fmc_ov_block_split_widened",
+  "discipline": "OV",
+  "change_class": "ONE_TO_N_BLOCK_SPLIT",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "Лист плана фреонопроводов перевыпущен на более широком формате (1684→2526 pt) и разбит на три блока; часть участков увеличена с ø15,9х0,89 до ø19,1х0,89, добавлены подписи «Подъём на 3 этаж» / «Подъём на 4 этаж», проставлены привязки (120, 250, 270, 390, 430, 480, 1130, 1820) и к огнезащитному коробу добавлена ссылка «см. раздел АР».",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.789,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.519,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.5413,
+  "right_coverage": 0.4967,
+  "text_similarity": 0.6383,
+  "text_reliable": true,
+  "topology_similarity": 0.6278,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 686,
+  "right_primitives": 1034,
+  "left_segments": 9372,
+  "right_segments": 13644,
+  "left_texts": 129,
+  "right_texts": 247,
+  "left_hatch": 30,
+  "right_hatch": 30,
+  "differences": [
+   "Текст/значение 1.4536.6 → Холл",
+   "Текст/значение 2175 → 0,81",
+   "Текст/значение 2175 → 500",
+   "Добавлено text items: 6, 1.9, 1.1, Холл, Холл, Холл, Холл, ая комната, ая комната, ая комната, Жилая комната, С, С, С, С, /, /, /, /, У",
+   "Удалено text items: 1.16, 1.15, 1.4482.7, шлюз с зон, Помещение ревизии ин, 1.4536.6, 2175, ø15,9, ø15,9",
+   "Число примитивов: 686 → 1034",
+   "Изменены повторяющиеся motifs: 84",
+   "Топология изменилась (similarity=0.628, ветвления 2357 → 3252)"
+  ],
+  "n_differences": 8,
+  "text_added": [
+   "6",
+   "1.9",
+   "1.1",
+   "Холл",
+   "Холл",
+   "Холл",
+   "Холл",
+   "ая комната",
+   "ая комната",
+   "ая комната",
+   "Жилая комната",
+   "С",
+   "С",
+   "С",
+   "С"
+  ],
+  "text_removed": [
+   "1.16",
+   "1.15",
+   "1.4482.7",
+   "шлюз с зон",
+   "Помещение ревизии ин",
+   "1.4536.6",
+   "2175",
+   "ø15,9",
+   "ø15,9"
+  ],
+  "text_value_changes": [
+   {
+    "left": "1.4536.6",
+    "right": "Холл",
+    "category": "label",
+    "position_distance_norm": 0.03713
+   },
+   {
+    "left": "2175",
+    "right": "0,81",
+    "category": "numeric",
+    "position_distance_norm": 0.01793
+   },
+   {
+    "left": "2175",
+    "right": "500",
+    "category": "numeric",
+    "position_distance_norm": 0.02236
+   }
+  ],
+  "l3_tokens": [
+   1355,
+   2077
+  ],
+  "l0_tokens": [
+   221239,
+   320886
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_drawing_list_rows",
+  "discipline": "EOM",
+  "change_class": "TABLE_ROWS_ADDED",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "В ведомость рабочих чертежей добавлены листы 43–46 (компоновка УЭРВ и наполняемость гильз, планы кабельных лотков на −1 этаже, в техпространстве и на кровле); формат листа изменён с A4x3 (630х297) на A4x4 (840х297).",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 7.313,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.7396,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.7165,
+  "right_coverage": 0.7627,
+  "text_similarity": 0.9208,
+  "text_reliable": true,
+  "topology_similarity": 0.777,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 2389,
+  "right_primitives": 1804,
+  "left_segments": 34868,
+  "right_segments": 31059,
+  "left_texts": 229,
+  "right_texts": 238,
+  "left_hatch": 22,
+  "right_hatch": 22,
+  "differences": [
+   "Текст/значение на 7 л. → на 11 л.",
+   "Текст/значение Схемы щитов квартирных → Схема квартирного щита механизации",
+   "Текст/значение , Блоки 13А и 13В г. Москва → , Блоки 13А и 13В г . Москва",
+   "Текст/значение , вн.тер.г. муниципальный → , вн.тер .г. муниц",
+   "Текст/значение Покровское → округ Покровское",
+   "Текст/значение Л → Лист",
+   "Добавлено text items: Примечание, на 11 л., 13АВ-РД-ЭМ-К1-П1, Обогревы водостоков, Ведомость рабочих чертежей основного комплекта 13АВ-РД-ЭМ-К1, Лист, Название листа, Схема квартирного щита механизации, безопасную для жизни и здоровья людей эксплуатацию объекта при соблюдении предусмотренных в рабочей, документации мероприятий.»., 43, Компановка УЭРВ и наполняемость гильз, 44, План кабельных лотков на -1 этаже, 45, План кабельных лотков в техпространстве над -1 этажом, 46, План кабельных лотков на кровле, , Блоки 13А и 13В г . Москва, , вн.тер .г. муниц",
+   "Удалено text items: на 7 л., Схемы щитов квартирных, безопасную для жизни и здоровья людей эксплуатацию объекта при соблюдении предусмотренных в рабочей документации, мероприятий.»., , Блоки 13А и 13В г. Москва, , вн.тер.г. муниципальный, Покровское, р, ., и, я, П, №док., Л",
+   "Число примитивов: 2389 → 1804",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.777, ветвления 854 → 850)"
+  ],
+  "n_differences": 11,
+  "text_added": [
+   "Примечание",
+   "на 11 л.",
+   "13АВ-РД-ЭМ-К1-П1",
+   "Обогревы водостоков",
+   "Ведомость рабочих чертежей основного комплекта 13АВ-РД-ЭМ-К1",
+   "Лист",
+   "Название листа",
+   "Схема квартирного щита механизации",
+   "безопасную для жизни и здоровья людей эксплуатацию объекта при соблюдении предусмотренных в рабочей",
+   "документации мероприятий.».",
+   "43",
+   "Компановка УЭРВ и наполняемость гильз",
+   "44",
+   "План кабельных лотков на -1 этаже",
+   "45"
+  ],
+  "text_removed": [
+   "на 7 л.",
+   "Схемы щитов квартирных",
+   "безопасную для жизни и здоровья людей эксплуатацию объекта при соблюдении предусмотренных в рабочей документации",
+   "мероприятий.».",
+   ", Блоки 13А и 13В г. Москва",
+   ", вн.тер.г. муниципальный",
+   "Покровское",
+   "р",
+   ".",
+   "и",
+   "я",
+   "П",
+   "№док.",
+   "Л"
+  ],
+  "text_value_changes": [
+   {
+    "left": "на 7 л.",
+    "right": "на 11 л.",
+    "category": "label",
+    "position_distance_norm": 0.00281
+   },
+   {
+    "left": "Схемы щитов квартирных",
+    "right": "Схема квартирного щита механизации",
+    "category": "label",
+    "position_distance_norm": 0.01012
+   },
+   {
+    "left": ", Блоки 13А и 13В г. Москва",
+    "right": ", Блоки 13А и 13В г . Москва",
+    "category": "engineering_value",
+    "position_distance_norm": 0.03481
+   },
+   {
+    "left": ", вн.тер.г. муниципальный",
+    "right": ", вн.тер .г. муниц",
+    "category": "label",
+    "position_distance_norm": 0.01298
+   },
+   {
+    "left": "Покровское",
+    "right": "округ Покровское",
+    "category": "label",
+    "position_distance_norm": 0.03253
+   },
+   {
+    "left": "Л",
+    "right": "Лист",
+    "category": "label",
+    "position_distance_norm": 0.00982
+   }
+  ],
+  "l3_tokens": [
+   3105,
+   3189
+  ],
+  "l0_tokens": [
+   599275,
+   508214
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_layout_reorg_mismatch",
+  "discipline": "EOM",
+  "change_class": "LAYOUT_REORGANISED_COORD_MATCH_INVALID",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "Сравнивать нечего: в этих границах листа слева находится таблица потребности кабелей и схемы сигнализации, справа — план расстановки панелей ВРУ-НП6. Требуется сопоставление по объектам, а не по координатам.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.062,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.1093,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.153,
+  "right_coverage": 0.0657,
+  "text_similarity": 0.1645,
+  "text_reliable": true,
+  "topology_similarity": 0.0945,
+  "left_quality": "GOOD",
+  "right_quality": "GOOD",
+  "left_primitives": 90,
+  "right_primitives": 1502,
+  "left_segments": 353,
+  "right_segments": 3366,
+  "left_texts": 50,
+  "right_texts": 77,
+  "left_hatch": 0,
+  "right_hatch": 20,
+  "differences": [
+   "Текст/значение KV2 → ОЗДС",
+   "Текст/значение 12 → 500",
+   "Текст/значение наличия напряжения на вводных панелях → 6.БР.1",
+   "Текст/значение Потребность кабелей и проводов → НП6.РП4",
+   "Текст/значение ППГнг(A)-HF → НП6.ВП2",
+   "Текст/значение 65 → 600",
+   "Добавлено text items: 6.Т.6, НП6.РП1, НП6.РП1, НП6.ВП1, НП6.ВП1, НП6.ВП2, НП6.ВП2, НП6.РП2, НП6.РП2, ВРУ, -, НП, 6, НП6.РП4, НП6.РП4, ЩУ-ВРУ.НП6, ЩУ-ВРУ.НП6, НП6.РП3, НП6.РП3, 480",
+   "Удалено text items: 11, 11, 12, 12, 14, 14, KV1, KV2, В схему диспетчеризации, В схему диспетчеризации, Принципиальная схема сигнализации, наличия напряжения на вводных панелях, 21, 22, 24, Принципиальная схема, сигнализации состояния АВР, Потребность кабелей и проводов, Количество, сечение жил,",
+   "Число примитивов: 90 → 1502",
+   "Изменены повторяющиеся motifs: 70",
+   "Топология изменилась (similarity=0.095, ветвления 98 → 750)"
+  ],
+  "n_differences": 11,
+  "text_added": [
+   "6.Т.6",
+   "НП6.РП1",
+   "НП6.РП1",
+   "НП6.ВП1",
+   "НП6.ВП1",
+   "НП6.ВП2",
+   "НП6.ВП2",
+   "НП6.РП2",
+   "НП6.РП2",
+   "ВРУ",
+   "-",
+   "НП",
+   "6",
+   "НП6.РП4",
+   "НП6.РП4"
+  ],
+  "text_removed": [
+   "11",
+   "11",
+   "12",
+   "12",
+   "14",
+   "14",
+   "KV1",
+   "KV2",
+   "В схему диспетчеризации",
+   "В схему диспетчеризации",
+   "Принципиальная схема сигнализации",
+   "наличия напряжения на вводных панелях",
+   "21",
+   "22",
+   "24"
+  ],
+  "text_value_changes": [
+   {
+    "left": "KV2",
+    "right": "ОЗДС",
+    "category": "label",
+    "position_distance_norm": 0.00784
+   },
+   {
+    "left": "12",
+    "right": "500",
+    "category": "numeric",
+    "position_distance_norm": 0.03834
+   },
+   {
+    "left": "наличия напряжения на вводных панелях",
+    "right": "6.БР.1",
+    "category": "label",
+    "position_distance_norm": 0.03989
+   },
+   {
+    "left": "Потребность кабелей и проводов",
+    "right": "НП6.РП4",
+    "category": "label",
+    "position_distance_norm": 0.01678
+   },
+   {
+    "left": "ППГнг(A)-HF",
+    "right": "НП6.ВП2",
+    "category": "label",
+    "position_distance_norm": 0.02902
+   },
+   {
+    "left": "65",
+    "right": "600",
+    "category": "numeric",
+    "position_distance_norm": 0.00899
+   }
+  ],
+  "l3_tokens": [
+   639,
+   1235
+  ],
+  "l0_tokens": [
+   11047,
+   155841
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_cable_table_values",
+  "discipline": "EOM",
+  "change_class": "ENGINEERING_VALUES_CHANGED",
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "human_expected_ru": "В потребности кабелей марка питающего кабеля изменена с 4х(1х120)+1х70 на 4х(1х185)+1х95 (объём 140 м прежний); остальные строки и итоги 520 / 35 м не изменились.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.113,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.2264,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.4451,
+  "right_coverage": 0.0077,
+  "text_similarity": 0.4779,
+  "text_reliable": true,
+  "topology_similarity": 0.1707,
+  "left_quality": "GOOD",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 74,
+  "right_primitives": 1346,
+  "left_segments": 319,
+  "right_segments": 8404,
+  "left_texts": 43,
+  "right_texts": 60,
+  "left_hatch": 2,
+  "right_hatch": 24,
+  "differences": [
+   "Текст/значение Изм. → ул. Лётная",
+   "Текст/значение Семельчук → р",
+   "Текст/значение Булучевский → хите",
+   "Добавлено text items: Длина кабельной линии, Количество, сечение жил,, напряжение, 3х1,5, 3х2,5, 5х16, 5х35, 4х(1х95)+1х50, 4х(1х185)+1х95, 1х240, Итого:, Формат, Дата, Подпись, Стадия, А, р, р, хите",
+   "Удалено text items: чество, ие жил,, яжение, х1,5, х2,5, х16, х25, 95)+1х50, 20)+1х70, 240, того:, П, Кол.уч., Изм., Разработал, ГИП, Проверил, Рук.отдела, Норм.контр., Семельчук",
+   "Число примитивов: 74 → 1346",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.171, ветвления 71 → 428)"
+  ],
+  "n_differences": 8,
+  "text_added": [
+   "Длина кабельной линии",
+   "Количество",
+   "сечение жил,",
+   "напряжение",
+   "3х1,5",
+   "3х2,5",
+   "5х16",
+   "5х35",
+   "4х(1х95)+1х50",
+   "4х(1х185)+1х95",
+   "1х240",
+   "Итого:",
+   "Формат",
+   "Дата",
+   "Подпись"
+  ],
+  "text_removed": [
+   "чество",
+   "ие жил,",
+   "яжение",
+   "х1,5",
+   "х2,5",
+   "х16",
+   "х25",
+   "95)+1х50",
+   "20)+1х70",
+   "240",
+   "того:",
+   "П",
+   "Кол.уч.",
+   "Изм.",
+   "Разработал"
+  ],
+  "text_value_changes": [
+   {
+    "left": "Изм.",
+    "right": "ул. Лётная",
+    "category": "label",
+    "position_distance_norm": 0.02242
+   },
+   {
+    "left": "Семельчук",
+    "right": "р",
+    "category": "label",
+    "position_distance_norm": 0.02248
+   },
+   {
+    "left": "Булучевский",
+    "right": "хите",
+    "category": "label",
+    "position_distance_norm": 0.00863
+   }
+  ],
+  "l3_tokens": [
+   498,
+   1375
+  ],
+  "l0_tokens": [
+   9322,
+   208500
+  ]
+ },
+ {
+  "pair_id": "fmc_gp_section_hatch_dims",
+  "discipline": "GP",
+  "change_class": "DIMENSIONS_AND_HATCH_ADDED_PLUS_LEGEND_SHIFT",
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "human_expected_ru": "На сечении 1–1 лестничного схода тип тротуара изменён с Р4.3 на Р4.2, проставлены высоты ступеней 0,12 м, справа добавлена зона существующего асфальтового покрытия (новая штриховка); условные обозначения генплана сместились и попали в границы блока.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 6.62,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.782,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.9597,
+  "right_coverage": 0.6043,
+  "text_similarity": 0.1271,
+  "text_reliable": true,
+  "topology_similarity": 0.6573,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 12575,
+  "right_primitives": 8088,
+  "left_segments": 13369,
+  "right_segments": 14139,
+  "left_texts": 37,
+  "right_texts": 38,
+  "left_hatch": 30,
+  "right_hatch": 30,
+  "differences": [
+   "Текст/значение итарной охраны → ния",
+   "Текст/значение НА 26.09.24 → границы охранных зон линий и сооружений",
+   "Добавлено text items: ния, границы территорий общего пользования, границы объектов природного комплекса, города Москвы, границы территорий, занятых линейными, объектами, границы зон затопления и подтопления, границы зон I пояса санитарной охраны, границы зон охраняемого военного объекта, границы зон охраняемого природного, ландшафта, границы особо охраняемых зелёных, территорий, границы охранных зон линий и сооружений, связи, границы охранных зон пунктов, государственной геодезической, нивелирной, и гравиметрической сети, границы территорий объектов культурного, наследия",
+   "Удалено text items: ного комплекса, ного комплекса, лезных дорог, ъектов, ъектов, и подтопления, объекта, тарной охраны, военного, передающего, кта, обо, ерритории, ых зелёных, олитена, убопроводов, нктов, ческой,, ческой сети, пловых сетей",
+   "Число примитивов: 12575 → 8088",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.657, ветвления 1927 → 2678)"
+  ],
+  "n_differences": 7,
+  "text_added": [
+   "ния",
+   "границы территорий общего пользования",
+   "границы объектов природного комплекса",
+   "города Москвы",
+   "границы территорий, занятых линейными",
+   "объектами",
+   "границы зон затопления и подтопления",
+   "границы зон I пояса санитарной охраны",
+   "границы зон охраняемого военного объекта",
+   "границы зон охраняемого природного",
+   "ландшафта",
+   "границы особо охраняемых зелёных",
+   "территорий",
+   "границы охранных зон линий и сооружений",
+   "связи"
+  ],
+  "text_removed": [
+   "ного комплекса",
+   "ного комплекса",
+   "лезных дорог",
+   "ъектов",
+   "ъектов",
+   "и подтопления",
+   "объекта",
+   "тарной охраны",
+   "военного",
+   "передающего",
+   "кта",
+   "обо",
+   "ерритории",
+   "ых зелёных",
+   "олитена"
+  ],
+  "text_value_changes": [
+   {
+    "left": "итарной охраны",
+    "right": "ния",
+    "category": "label",
+    "position_distance_norm": 0.02728
+   },
+   {
+    "left": "НА 26.09.24",
+    "right": "границы охранных зон линий и сооружений",
+    "category": "label",
+    "position_distance_norm": 0.01591
+   }
+  ],
+  "l3_tokens": [
+   1406,
+   1486
+  ],
+  "l0_tokens": [
+   1248698,
+   849336
+  ]
+ },
+ {
+  "pair_id": "fmc_ov_page_shift_geometry",
+  "discipline": "OV",
+  "change_class": "PAGE_ORDER_SHIFT_PLUS_GEOMETRY",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "Подобран другой вентилятор: VO-PatAIR-Kp-5-6/9-5,5-2 заменён на VO-PatAIR-Kp-5-6/9-3-2-V1; рабочая точка сместилась Pv 795→757 Па, Ps 633→692 Па (кривая характеристики другая). Лист переставлен с 186-й на 134-ю страницу.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.004,
+  "status": "IDENTICAL",
+  "geometry_similarity": 1.0,
+  "selected_tolerance": 0.001,
+  "left_coverage": 1.0,
+  "right_coverage": 1.0,
+  "text_similarity": 1.0,
+  "text_reliable": false,
+  "topology_similarity": 1.0,
+  "left_quality": "LIMITED",
+  "right_quality": "LIMITED",
+  "left_primitives": 2,
+  "right_primitives": 2,
+  "left_segments": 3,
+  "right_segments": 3,
+  "left_texts": 0,
+  "right_texts": 0,
+  "left_hatch": 0,
+  "right_hatch": 0,
+  "differences": [],
+  "n_differences": 0,
+  "text_added": [],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   216,
+   216
+  ],
+  "l0_tokens": [
+   167,
+   167
+  ]
+ },
+ {
+  "pair_id": "fmc_ar_hatch_sections",
+  "discipline": "AR",
+  "change_class": "DENSE_HATCH_CHANGED",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "На плане кровли пристройки К4/К5 исправлена отметка +59,935 → +4,935; уклоны кровли переназначены (1,63 %→2 %, 2,54 %→3 %, 3,72 %→4 %); добавлены ходовые дорожки и две шахты ОВ с привязками; в условные обозначения добавлены утеплители У2 (100 мм), У4 (50 мм) и штукатурка Ш1 (10 мм); размеры фрагмента 1 уточнены (1070→1080, 770→740, 530→500); изменения обведены облаками ревизии.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 1.571,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.8369,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.8524,
+  "right_coverage": 0.8213,
+  "text_similarity": 0.6431,
+  "text_reliable": true,
+  "topology_similarity": 0.8847,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 900,
+  "right_primitives": 2064,
+  "left_segments": 18622,
+  "right_segments": 31862,
+  "left_texts": 313,
+  "right_texts": 421,
+  "left_hatch": 30,
+  "right_hatch": 30,
+  "differences": [
+   "Текст/значение Тип → -",
+   "Текст/значение 1175 → 1050",
+   "Текст/значение 6000 → 6125",
+   "Текст/значение 1.1 → 740",
+   "Текст/значение 4500 → 2",
+   "Текст/значение -7 → 2",
+   "Текст/значение -7 → 350",
+   "Текст/значение 1,63% → -4.1",
+   "Текст/значение 1,52% → 2%",
+   "Текст/значение 2,54% → 3%",
+   "Текст/значение 2,87% → 3%",
+   "Текст/значение 1,75% → 2%",
+   "Текст/значение 1,60% → 2%",
+   "Текст/значение 3,20% → 3%",
+   "Текст/значение 3,72% → 4%",
+   "Текст/значение 5000 → 4900",
+   "Текст/значение 9820 → 120",
+   "Текст/значение +59,935 → +4,935",
+   "Текст/значение .5980. → У",
+   "Текст/значение .500. → 7(3)",
+   "Добавлено text items: 1, 1, 1, 1, 1, 1, 1, -, -, -, У, У, У, У, У, У, У, У, У, /",
+   "Удалено text items: Тип, -1, Условные обозначения, :, 1175, 6000, 5, 1.1, .4000., 4500, -7, Зонт, по, по, 1,63%, 1,52%, 2,54%, 2,87%, 1,75%, 1,60%",
+   "Число примитивов: 900 → 2064",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.885, ветвления 5696 → 5615)"
+  ],
+  "n_differences": 25,
+  "text_added": [
+   "1",
+   "1",
+   "1",
+   "1",
+   "1",
+   "1",
+   "1",
+   "-",
+   "-",
+   "-",
+   "У",
+   "У",
+   "У",
+   "У",
+   "У"
+  ],
+  "text_removed": [
+   "Тип",
+   "-1",
+   "Условные обозначения",
+   ":",
+   "1175",
+   "6000",
+   "5",
+   "1.1",
+   ".4000.",
+   "4500",
+   "-7",
+   "Зонт",
+   "по",
+   "по",
+   "1,63%"
+  ],
+  "text_value_changes": [
+   {
+    "left": "Тип",
+    "right": "-",
+    "category": "label",
+    "position_distance_norm": 0.00608
+   },
+   {
+    "left": "1175",
+    "right": "1050",
+    "category": "numeric",
+    "position_distance_norm": 0.00835
+   },
+   {
+    "left": "6000",
+    "right": "6125",
+    "category": "numeric",
+    "position_distance_norm": 0.00833
+   },
+   {
+    "left": "1.1",
+    "right": "740",
+    "category": "numeric",
+    "position_distance_norm": 0.03655
+   },
+   {
+    "left": "4500",
+    "right": "2",
+    "category": "numeric",
+    "position_distance_norm": 0.0192
+   },
+   {
+    "left": "-7",
+    "right": "2",
+    "category": "numeric",
+    "position_distance_norm": 0.02998
+   },
+   {
+    "left": "-7",
+    "right": "350",
+    "category": "numeric",
+    "position_distance_norm": 0.02888
+   },
+   {
+    "left": "1,63%",
+    "right": "-4.1",
+    "category": "engineering_value",
+    "position_distance_norm": 0.01396
+   },
+   {
+    "left": "1,52%",
+    "right": "2%",
+    "category": "engineering_value",
+    "position_distance_norm": 0.02063
+   },
+   {
+    "left": "2,54%",
+    "right": "3%",
+    "category": "engineering_value",
+    "position_distance_norm": 0.03135
+   },
+   {
+    "left": "2,87%",
+    "right": "3%",
+    "category": "engineering_value",
+    "position_distance_norm": 0.02686
+   },
+   {
+    "left": "1,75%",
+    "right": "2%",
+    "category": "engineering_value",
+    "position_distance_norm": 0.02404
+   },
+   {
+    "left": "1,60%",
+    "right": "2%",
+    "category": "engineering_value",
+    "position_distance_norm": 0.01879
+   },
+   {
+    "left": "3,20%",
+    "right": "3%",
+    "category": "engineering_value",
+    "position_distance_norm": 0.03411
+   },
+   {
+    "left": "3,72%",
+    "right": "4%",
+    "category": "engineering_value",
+    "position_distance_norm": 0.03102
+   }
+  ],
+  "l3_tokens": [
+   2751,
+   3357
+  ],
+  "l0_tokens": [
+   270264,
+   505440
+  ]
+ },
+ {
+  "pair_id": "fmc_vk_spec_positions",
+  "discipline": "VK",
+  "change_class": "SMALL_REAL_TEXT_CHANGE",
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "human_expected_ru": "В спецификации проставлены номера позиций 81–86 для тройников 45°/67,3° и заглушек DN50/DN110; сами изделия не изменились.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.004,
+  "status": "NEAR_IDENTICAL",
+  "geometry_similarity": 1.0,
+  "selected_tolerance": 0.001,
+  "left_coverage": 1.0,
+  "right_coverage": 1.0,
+  "text_similarity": 0.9338,
+  "text_reliable": true,
+  "topology_similarity": 1.0,
+  "left_quality": "GOOD",
+  "right_quality": "GOOD",
+  "left_primitives": 42,
+  "right_primitives": 42,
+  "left_segments": 157,
+  "right_segments": 157,
+  "left_texts": 20,
+  "right_texts": 26,
+  "left_hatch": 4,
+  "right_hatch": 4,
+  "differences": [
+   "Добавлено text items: 81, 82, 83, 84, 85, 86"
+  ],
+  "n_differences": 1,
+  "text_added": [
+   "81",
+   "82",
+   "83",
+   "84",
+   "85",
+   "86"
+  ],
+  "text_removed": [],
+  "text_value_changes": [],
+  "l3_tokens": [
+   402,
+   428
+  ],
+  "l0_tokens": [
+   4347,
+   4347
+  ]
+ },
+ {
+  "pair_id": "fmc_km_broken_text_swap",
+  "discipline": "KM",
+  "change_class": "UNDECODABLE_TEXT_PLUS_PAGE_SWAP",
+  "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+  "human_expected_ru": "Лист переставлен (был 7-м, стал 8-м); отметка верха конструкций изменена с +55,850 на +52,400, переразмерены траверсы Тр-1/Тр-2/Тр-3 (600→85, 165→55, 35→225, 565→190) и добавлена ссылка «см. л. 2».",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.821,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.4792,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.4637,
+  "right_coverage": 0.4947,
+  "text_similarity": 0.6667,
+  "text_reliable": true,
+  "topology_similarity": 0.794,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 1019,
+  "right_primitives": 1233,
+  "left_segments": 14046,
+  "right_segments": 14082,
+  "left_texts": 447,
+  "right_texts": 417,
+  "left_hatch": 30,
+  "right_hatch": 30,
+  "differences": [
+   "Текст/значение t=200 → Тр-1",
+   "Текст/значение 600 → 85",
+   "Текст/значение 165 → 55",
+   "Текст/значение 35 → 225",
+   "Текст/значение 565 → 190",
+   "Текст/значение 415 → 85",
+   "Текст/значение Тр-3 → Тр-1",
+   "Текст/значение по В → по Б",
+   "Текст/значение 140 → 70",
+   "Текст/значение 600 → 150",
+   "Текст/значение 600 → 560",
+   "Текст/значение по А → Тр-2",
+   "Текст/значение по А → по Д",
+   "Текст/значение 600 → 4.11",
+   "Текст/значение Тр-3 → Ш-1",
+   "Текст/значение 4.3 → 360",
+   "Текст/значение 3400 → 970",
+   "Текст/значение 610 → 4.12",
+   "Текст/значение по б → см. л. 2",
+   "Текст/значение 80 → 90",
+   "Добавлено text items: +52,400, +52,400, +52,400, +52,400, +52,400, +52,400, +52,400, 85, 85, 85, 55, Тр-1, Ш-1, см. л. 2, см. л. 2, по Б, 225, 225, 190, 3350",
+   "Удалено text items: 1, t=200, t=200, +55,850, +55,850, +55,850, +55,850, +55,850, +55,850, +55,850, +55,850, +55,850, +55,850, +55,850, 600, 600, 600, 165, 165, 35",
+   "Число примитивов: 1019 → 1233",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.794, ветвления 6473 → 5641)"
+  ],
+  "n_differences": 25,
+  "text_added": [
+   "+52,400",
+   "+52,400",
+   "+52,400",
+   "+52,400",
+   "+52,400",
+   "+52,400",
+   "+52,400",
+   "85",
+   "85",
+   "85",
+   "55",
+   "Тр-1",
+   "Ш-1",
+   "см. л. 2",
+   "см. л. 2"
+  ],
+  "text_removed": [
+   "1",
+   "t=200",
+   "t=200",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "+55,850",
+   "600"
+  ],
+  "text_value_changes": [
+   {
+    "left": "t=200",
+    "right": "Тр-1",
+    "category": "label",
+    "position_distance_norm": 0.01375
+   },
+   {
+    "left": "600",
+    "right": "85",
+    "category": "numeric",
+    "position_distance_norm": 0.03018
+   },
+   {
+    "left": "165",
+    "right": "55",
+    "category": "numeric",
+    "position_distance_norm": 0.02852
+   },
+   {
+    "left": "35",
+    "right": "225",
+    "category": "numeric",
+    "position_distance_norm": 0.03296
+   },
+   {
+    "left": "565",
+    "right": "190",
+    "category": "numeric",
+    "position_distance_norm": 0.02245
+   },
+   {
+    "left": "415",
+    "right": "85",
+    "category": "numeric",
+    "position_distance_norm": 0.01267
+   },
+   {
+    "left": "Тр-3",
+    "right": "Тр-1",
+    "category": "label",
+    "position_distance_norm": 0.03788
+   },
+   {
+    "left": "по В",
+    "right": "по Б",
+    "category": "label",
+    "position_distance_norm": 0.0089
+   },
+   {
+    "left": "140",
+    "right": "70",
+    "category": "numeric",
+    "position_distance_norm": 0.01311
+   },
+   {
+    "left": "600",
+    "right": "150",
+    "category": "numeric",
+    "position_distance_norm": 0.03781
+   },
+   {
+    "left": "600",
+    "right": "560",
+    "category": "numeric",
+    "position_distance_norm": 0.02935
+   },
+   {
+    "left": "по А",
+    "right": "Тр-2",
+    "category": "label",
+    "position_distance_norm": 0.03308
+   },
+   {
+    "left": "по А",
+    "right": "по Д",
+    "category": "label",
+    "position_distance_norm": 0.01183
+   },
+   {
+    "left": "600",
+    "right": "4.11",
+    "category": "numeric",
+    "position_distance_norm": 0.01786
+   },
+   {
+    "left": "Тр-3",
+    "right": "Ш-1",
+    "category": "label",
+    "position_distance_norm": 0.01956
+   }
+  ],
+  "l3_tokens": [
+   3428,
+   3264
+  ],
+  "l0_tokens": [
+   247675,
+   258945
+  ]
+ },
+ {
+  "pair_id": "fmc_eom_rotated_labels",
+  "discipline": "EOM",
+  "change_class": "ORIENTATION_FLIPPED",
+  "human_expected": "STRUCTURE_CHANGED",
+  "human_expected_ru": "Схема этажного щита перевыпущена на большем формате и перекомпонована: вертикальные подписи развёрнуты, добавлены сведения по автоматам C25 и УЗО 40А/100 мА.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 0.173,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.1166,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.1299,
+  "right_coverage": 0.1034,
+  "text_similarity": 0.1886,
+  "text_reliable": true,
+  "topology_similarity": 0.5065,
+  "left_quality": "GOOD",
+  "right_quality": "GOOD",
+  "left_primitives": 1021,
+  "right_primitives": 311,
+  "left_segments": 4196,
+  "right_segments": 4343,
+  "left_texts": 89,
+  "right_texts": 656,
+  "left_hatch": 11,
+  "right_hatch": 30,
+  "differences": [
+   "Текст/значение Шина PE → /",
+   "Текст/значение 100мА, → ; cosf=0,93; Ip=21,2A",
+   "Текст/значение селективный, → кв",
+   "Текст/значение УЭРВ IP31 → ППГнг",
+   "Текст/значение Шина N → УЭРВ",
+   "Текст/значение Шина PE → ,",
+   "Текст/значение ППГнг(А)-HF 5х6 мм → ; cosf=0,93; Ip=21,2A",
+   "Текст/значение 2 → 6",
+   "Текст/значение Whn → PE",
+   "Текст/значение QFn → Шина",
+   "Текст/значение 1-ком., 2-ком., 3Е-ком. кв-ры: → (",
+   "Текст/значение cosf=0,93; → ком",
+   "Текст/значение ) → Счетчик",
+   "Текст/значение 2 → 16",
+   "Текст/значение ) → ²",
+   "Текст/значение 3-ком.,4Е-ком. кв-ры: → ком",
+   "Текст/значение cosf=0,93; → 1-",
+   "Текст/значение ЩМкв1 → х",
+   "Текст/значение Стояк 1 от ВРУ-К → проектирование",
+   "Текст/значение Стояк 2 от ВРУ-К → кабель",
+   "Добавлено text items: Условное, обозначение, Описание, Wh1...Whn, QF1...QFn, QD1...QDn, Выключатель, дифференциального, тока, тока, 40, 40, 40, 40, 40, 40, 40, 40, 40, А",
+   "Удалено text items: Шина N, Шина N, Шина PE, Шина PE, Пу, Пу, тока 40А,, 100мА,, селективный,, УЭРВ IP31, ППГнг(А)-HF 5х6 мм, ППГнг(А)-HF 5х6 мм, 2, Whn, QFn, 1-ком., 2-ком., 3Е-ком. кв-ры:, Pp=13кВт;, cosf=0,93;, cosf=0,93;, cosf=0,93;",
+   "Число примитивов: 1021 → 311",
+   "Изменены повторяющиеся motifs: 63",
+   "Топология изменилась (similarity=0.507, ветвления 626 → 1098)"
+  ],
+  "n_differences": 25,
+  "text_added": [
+   "Условное",
+   "обозначение",
+   "Описание",
+   "Wh1...Whn",
+   "QF1...QFn",
+   "QD1...QDn",
+   "Выключатель",
+   "дифференциального",
+   "тока",
+   "тока",
+   "40",
+   "40",
+   "40",
+   "40",
+   "40"
+  ],
+  "text_removed": [
+   "Шина N",
+   "Шина N",
+   "Шина PE",
+   "Шина PE",
+   "Пу",
+   "Пу",
+   "тока 40А,",
+   "100мА,",
+   "селективный,",
+   "УЭРВ IP31",
+   "ППГнг(А)-HF 5х6 мм",
+   "ППГнг(А)-HF 5х6 мм",
+   "2",
+   "Whn",
+   "QFn"
+  ],
+  "text_value_changes": [
+   {
+    "left": "Шина PE",
+    "right": "/",
+    "category": "label",
+    "position_distance_norm": 0.01512
+   },
+   {
+    "left": "100мА,",
+    "right": "; cosf=0,93; Ip=21,2A",
+    "category": "engineering_value",
+    "position_distance_norm": 0.0145
+   },
+   {
+    "left": "селективный,",
+    "right": "кв",
+    "category": "label",
+    "position_distance_norm": 0.01177
+   },
+   {
+    "left": "УЭРВ IP31",
+    "right": "ППГнг",
+    "category": "label",
+    "position_distance_norm": 0.01108
+   },
+   {
+    "left": "Шина N",
+    "right": "УЭРВ",
+    "category": "label",
+    "position_distance_norm": 0.01178
+   },
+   {
+    "left": "Шина PE",
+    "right": ",",
+    "category": "label",
+    "position_distance_norm": 0.03917
+   },
+   {
+    "left": "ППГнг(А)-HF 5х6 мм",
+    "right": "; cosf=0,93; Ip=21,2A",
+    "category": "engineering_value",
+    "position_distance_norm": 0.0378
+   },
+   {
+    "left": "2",
+    "right": "6",
+    "category": "numeric",
+    "position_distance_norm": 0.0139
+   },
+   {
+    "left": "Whn",
+    "right": "PE",
+    "category": "label",
+    "position_distance_norm": 0.02156
+   },
+   {
+    "left": "QFn",
+    "right": "Шина",
+    "category": "label",
+    "position_distance_norm": 0.03851
+   },
+   {
+    "left": "1-ком., 2-ком., 3Е-ком. кв-ры:",
+    "right": "(",
+    "category": "label",
+    "position_distance_norm": 0.00292
+   },
+   {
+    "left": "cosf=0,93;",
+    "right": "ком",
+    "category": "label",
+    "position_distance_norm": 0.00865
+   },
+   {
+    "left": ")",
+    "right": "Счетчик",
+    "category": "label",
+    "position_distance_norm": 0.03799
+   },
+   {
+    "left": "2",
+    "right": "16",
+    "category": "numeric",
+    "position_distance_norm": 0.0318
+   },
+   {
+    "left": ")",
+    "right": "²",
+    "category": "label",
+    "position_distance_norm": 0.01768
+   }
+  ],
+  "l3_tokens": [
+   1293,
+   3369
+  ],
+  "l0_tokens": [
+   123136,
+   71726
+  ]
+ },
+ {
+  "pair_id": "fmc_crop_mismatch_same_sheet",
+  "discipline": "EOM",
+  "change_class": "CROP_MISMATCH_NO_CHANGE",
+  "human_expected": "IDENTICAL",
+  "human_expected_ru": "Изменений нет: это один и тот же фрагмент листа, взятый с другими границами блока.",
+  "left_seconds": 0.0,
+  "right_seconds": 0.0,
+  "compare_seconds": 1.249,
+  "status": "STRUCTURE_CHANGED",
+  "geometry_similarity": 0.4751,
+  "selected_tolerance": 0.01,
+  "left_coverage": 0.4823,
+  "right_coverage": 0.4679,
+  "text_similarity": 0.2637,
+  "text_reliable": true,
+  "topology_similarity": 0.9297,
+  "left_quality": "LIMITED_CAPPED",
+  "right_quality": "LIMITED_CAPPED",
+  "left_primitives": 1337,
+  "right_primitives": 1214,
+  "left_segments": 26967,
+  "right_segments": 26183,
+  "left_texts": 78,
+  "right_texts": 10,
+  "left_hatch": 30,
+  "right_hatch": 30,
+  "differences": [
+   "Добавлено text items: Перф, Лоток ПЭ, . 300, h=3350",
+   "Удалено text items: 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3.",
+   "Число примитивов: 1337 → 1214",
+   "Изменены повторяющиеся motifs: 100",
+   "Топология изменилась (similarity=0.930, ветвления 2399 → 2417)"
+  ],
+  "n_differences": 5,
+  "text_added": [
+   "Перф",
+   "Лоток ПЭ",
+   ". 300",
+   "h=3350"
+  ],
+  "text_removed": [
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3.",
+   "3."
+  ],
+  "text_value_changes": [],
+  "l3_tokens": [
+   1386,
+   1130
+  ],
+  "l0_tokens": [
+   513068,
+   645721
+  ]
+ }
+]

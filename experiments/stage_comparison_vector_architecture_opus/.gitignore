@@ -1,0 +1,4 @@
+# Regenerable heavy caches. Not results — re-created by the probe scripts named beside them.
+artifacts/ptn/recut/
+__pycache__/
+*.pyc

@@ -1,0 +1,20 @@
+{
+ "left": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v002/02_work/document.pdf",
+ "right": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/02_work/document.pdf",
+ "page_index": 8,
+ "right_page_index": 8,
+ "dpi": 110.0,
+ "page_size_left": [
+  1684.0,
+  1191.0
+ ],
+ "page_size_right": [
+  1684.0,
+  1191.0
+ ],
+ "changed_pixels": 0,
+ "compared_pixels": 4682860,
+ "changed_pixel_share": 0.0,
+ "changed_regions_found": 0,
+ "regions": []
+}

@@ -1,0 +1,140 @@
+[
+ {
+  "case": "a_identical_bbox",
+  "left_bbox": [
+   0.1,
+   0.25,
+   0.42,
+   0.8
+  ],
+  "right_bbox": [
+   0.1,
+   0.25,
+   0.42,
+   0.8
+  ],
+  "status": "IDENTICAL",
+  "geometry": 1.0,
+  "text": 1.0,
+  "topology": 1.0,
+  "left_texts": 78,
+  "right_texts": 78,
+  "left_segments": 26967,
+  "right_segments": 26967
+ },
+ {
+  "case": "b_pure_translation",
+  "left_bbox": [
+   0.1,
+   0.25,
+   0.42,
+   0.8
+  ],
+  "right_bbox": [
+   0.16,
+   0.29,
+   0.48,
+   0.8400000000000001
+  ],
+  "status": "STRUCTURE_CHANGED",
+  "geometry": 0.4842,
+  "text": 0.2621,
+  "topology": 0.8172,
+  "left_texts": 78,
+  "right_texts": 14,
+  "left_segments": 26967,
+  "right_segments": 28320
+ },
+ {
+  "case": "b2_small_translation",
+  "left_bbox": [
+   0.1,
+   0.25,
+   0.42,
+   0.8
+  ],
+  "right_bbox": [
+   0.11,
+   0.26,
+   0.43,
+   0.81
+  ],
+  "status": "STRUCTURE_CHANGED",
+  "geometry": 0.7213,
+  "text": 0.272,
+  "topology": 0.9724,
+  "left_texts": 78,
+  "right_texts": 8,
+  "left_segments": 26967,
+  "right_segments": 30327
+ },
+ {
+  "case": "c_concentric_scale_91",
+  "left_bbox": [
+   0.1,
+   0.25,
+   0.42,
+   0.8
+  ],
+  "right_bbox": [
+   0.11504000000000003,
+   0.27585,
+   0.40496,
+   0.7741500000000001
+  ],
+  "status": "STRUCTURE_CHANGED",
+  "geometry": 0.7205,
+  "text": 0.2683,
+  "topology": 0.9314,
+  "left_texts": 78,
+  "right_texts": 6,
+  "left_segments": 26967,
+  "right_segments": 20417
+ },
+ {
+  "case": "c2_concentric_scale_99",
+  "left_bbox": [
+   0.1,
+   0.25,
+   0.42,
+   0.8
+  ],
+  "right_bbox": [
+   0.10160000000000002,
+   0.25275000000000003,
+   0.4184,
+   0.79725
+  ],
+  "status": "NEAR_IDENTICAL",
+  "geometry": 0.9893,
+  "text": 1.0,
+  "topology": 0.9808,
+  "left_texts": 78,
+  "right_texts": 78,
+  "left_segments": 26967,
+  "right_segments": 25982
+ },
+ {
+  "case": "d_probe_actual",
+  "left_bbox": [
+   0.1,
+   0.25,
+   0.42,
+   0.8
+  ],
+  "right_bbox": [
+   0.16,
+   0.29,
+   0.45,
+   0.83
+  ],
+  "status": "STRUCTURE_CHANGED",
+  "geometry": 0.4751,
+  "text": 0.2637,
+  "topology": 0.9297,
+  "left_texts": 78,
+  "right_texts": 10,
+  "left_segments": 26967,
+  "right_segments": 26183
+ }
+]

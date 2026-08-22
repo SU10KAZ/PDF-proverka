@@ -1,0 +1,644 @@
+{
+ "rows": [
+  {
+   "block": "vk_plan_left",
+   "perturbation": "shift",
+   "amount": 0.002,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    3160
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.996803,
+   "left_coverage": 0.993606,
+   "topology_similarity": 0.977006,
+   "text_similarity": 1.0,
+   "elapsed_s": 12.2
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "shift",
+   "amount": 0.005,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    3160
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.998721,
+   "left_coverage": 0.997442,
+   "topology_similarity": 0.976891,
+   "text_similarity": 1.0,
+   "elapsed_s": 10.9
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "shift",
+   "amount": 0.01,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    3160
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 1.0,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.974424,
+   "text_similarity": 0.986406,
+   "elapsed_s": 11.5
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "shift",
+   "amount": 0.02,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    3099
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.99984,
+   "left_coverage": 0.99968,
+   "topology_similarity": 0.945607,
+   "text_similarity": 0.9869,
+   "elapsed_s": 12.4
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "shift",
+   "amount": 0.05,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    2939
+   ],
+   "status": "STRUCTURE_CHANGED",
+   "geometry_similarity": 0.792039,
+   "left_coverage": 0.79156,
+   "topology_similarity": 0.919625,
+   "text_similarity": 0.95302,
+   "elapsed_s": 12.3
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "iso",
+   "amount": 1.005,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    3307
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.990738,
+   "left_coverage": 0.998082,
+   "topology_similarity": 0.923501,
+   "text_similarity": 0.991416,
+   "elapsed_s": 12.5
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "iso",
+   "amount": 1.01,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    3383
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.987041,
+   "left_coverage": 0.998721,
+   "topology_similarity": 0.921639,
+   "text_similarity": 0.991416,
+   "elapsed_s": 11.7
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "iso",
+   "amount": 1.02,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    3180,
+    3555
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.991424,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.906814,
+   "text_similarity": 0.991416,
+   "elapsed_s": 12.2
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "iso",
+   "amount": 1.05,
+   "aspect_ratio_change": 1.0134,
+   "segments": [
+    3180,
+    4060
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.994483,
+   "left_coverage": 0.998721,
+   "topology_similarity": 0.883842,
+   "text_similarity": 0.9625,
+   "elapsed_s": 12.3
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "iso",
+   "amount": 1.1,
+   "aspect_ratio_change": 1.0367,
+   "segments": [
+    3180,
+    4385
+   ],
+   "status": "STRUCTURE_CHANGED",
+   "geometry_similarity": 0.746085,
+   "left_coverage": 0.838555,
+   "topology_similarity": 0.827879,
+   "text_similarity": 0.944785,
+   "elapsed_s": 12.3
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_w",
+   "amount": 1.005,
+   "aspect_ratio_change": 1.005,
+   "segments": [
+    3180,
+    3182
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.987856,
+   "left_coverage": 0.988811,
+   "topology_similarity": 0.974555,
+   "text_similarity": 0.997859,
+   "elapsed_s": 12.3
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_w",
+   "amount": 1.01,
+   "aspect_ratio_change": 1.01,
+   "segments": [
+    3180,
+    3182
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.996964,
+   "left_coverage": 0.998402,
+   "topology_similarity": 0.963746,
+   "text_similarity": 0.997859,
+   "elapsed_s": 12.7
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_w",
+   "amount": 1.02,
+   "aspect_ratio_change": 1.02,
+   "segments": [
+    3180,
+    3203
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999841,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.990129,
+   "text_similarity": 0.997859,
+   "elapsed_s": 12.9
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_w",
+   "amount": 1.05,
+   "aspect_ratio_change": 1.05,
+   "segments": [
+    3180,
+    3203
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 1.0,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.964808,
+   "text_similarity": 0.974895,
+   "elapsed_s": 12.0
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_w",
+   "amount": 1.1,
+   "aspect_ratio_change": 1.1,
+   "segments": [
+    3180,
+    3205
+   ],
+   "status": "STRUCTURE_CHANGED",
+   "geometry_similarity": 0.978612,
+   "left_coverage": 0.965153,
+   "topology_similarity": 0.969774,
+   "text_similarity": 0.965803,
+   "elapsed_s": 12.2
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_h",
+   "amount": 1.005,
+   "aspect_ratio_change": 0.995,
+   "segments": [
+    3180,
+    3305
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.994142,
+   "left_coverage": 0.999361,
+   "topology_similarity": 0.912385,
+   "text_similarity": 0.99569,
+   "elapsed_s": 12.9
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_h",
+   "amount": 1.01,
+   "aspect_ratio_change": 0.9901,
+   "segments": [
+    3180,
+    3381
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.988556,
+   "left_coverage": 0.999361,
+   "topology_similarity": 0.879358,
+   "text_similarity": 0.99569,
+   "elapsed_s": 12.7
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_h",
+   "amount": 1.02,
+   "aspect_ratio_change": 0.9804,
+   "segments": [
+    3180,
+    3532
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.991367,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.900205,
+   "text_similarity": 0.99569,
+   "elapsed_s": 11.9
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_h",
+   "amount": 1.05,
+   "aspect_ratio_change": 0.9652,
+   "segments": [
+    3180,
+    4035
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.99698,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.867689,
+   "text_similarity": 0.99569,
+   "elapsed_s": 11.4
+  },
+  {
+   "block": "vk_plan_left",
+   "perturbation": "aniso_h",
+   "amount": 1.1,
+   "aspect_ratio_change": 0.9424,
+   "segments": [
+    3180,
+    4356
+   ],
+   "status": "STRUCTURE_CHANGED",
+   "geometry_similarity": 0.765485,
+   "left_coverage": 0.86477,
+   "topology_similarity": 0.811263,
+   "text_similarity": 0.989293,
+   "elapsed_s": 12.7
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "shift",
+   "amount": 0.002,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.999102,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "shift",
+   "amount": 0.005,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    710,
+    710
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.998592,
+   "left_coverage": 0.998592,
+   "topology_similarity": 1.0,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "shift",
+   "amount": 0.01,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    710,
+    710
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.998592,
+   "left_coverage": 0.998592,
+   "topology_similarity": 1.0,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "shift",
+   "amount": 0.02,
+   "aspect_ratio_change": 0.9906,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.997889,
+   "left_coverage": 0.998592,
+   "topology_similarity": 0.999102,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "shift",
+   "amount": 0.05,
+   "aspect_ratio_change": 0.9606,
+   "segments": [
+    710,
+    649
+   ],
+   "status": "STRUCTURE_CHANGED",
+   "geometry_similarity": 0.85956,
+   "left_coverage": 0.840845,
+   "topology_similarity": 0.940314,
+   "text_similarity": 0.988435,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "iso",
+   "amount": 1.005,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.999102,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "iso",
+   "amount": 1.01,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    710,
+    712
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.998596,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.979267,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "iso",
+   "amount": 1.02,
+   "aspect_ratio_change": 1.0,
+   "segments": [
+    710,
+    712
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.998596,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.933108,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "iso",
+   "amount": 1.05,
+   "aspect_ratio_change": 0.9863,
+   "segments": [
+    710,
+    713
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.996488,
+   "left_coverage": 0.997183,
+   "topology_similarity": 0.928864,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "iso",
+   "amount": 1.1,
+   "aspect_ratio_change": 0.9596,
+   "segments": [
+    710,
+    714
+   ],
+   "status": "STRUCTURE_CHANGED",
+   "geometry_similarity": 0.772442,
+   "left_coverage": 0.761972,
+   "topology_similarity": 0.934282,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_w",
+   "amount": 1.005,
+   "aspect_ratio_change": 1.005,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.999102,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_w",
+   "amount": 1.01,
+   "aspect_ratio_change": 1.01,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.979968,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_w",
+   "amount": 1.02,
+   "aspect_ratio_change": 1.02,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.933809,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_w",
+   "amount": 1.05,
+   "aspect_ratio_change": 1.0356,
+   "segments": [
+    710,
+    712
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.998596,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.929564,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_w",
+   "amount": 1.1,
+   "aspect_ratio_change": 1.042,
+   "segments": [
+    710,
+    713
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.998597,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.934982,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_h",
+   "amount": 1.005,
+   "aspect_ratio_change": 0.995,
+   "segments": [
+    710,
+    710
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 1.0,
+   "left_coverage": 1.0,
+   "topology_similarity": 1.0,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_h",
+   "amount": 1.01,
+   "aspect_ratio_change": 0.9901,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.999744,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_h",
+   "amount": 1.02,
+   "aspect_ratio_change": 0.9804,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.999744,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_h",
+   "amount": 1.05,
+   "aspect_ratio_change": 0.9524,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "NEAR_IDENTICAL",
+   "geometry_similarity": 0.999297,
+   "left_coverage": 1.0,
+   "topology_similarity": 0.999744,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  },
+  {
+   "block": "ss_scheme_left",
+   "perturbation": "aniso_h",
+   "amount": 1.1,
+   "aspect_ratio_change": 0.9209,
+   "segments": [
+    710,
+    711
+   ],
+   "status": "STRUCTURE_CHANGED",
+   "geometry_similarity": 0.830394,
+   "left_coverage": 0.819718,
+   "topology_similarity": 0.999744,
+   "text_similarity": 1.0,
+   "elapsed_s": 0.1
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "label": "vk_nodes_notes_block",
+    "zoom": 2.0,
+    "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/vk_nodes_notes_block_z2.png",
+    "width": 966,
+    "height": 1276,
+    "bytes": 109142
+  },
+  {
+    "label": "vk_nodes_notes_block",
+    "zoom": 4.0,
+    "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/vk_nodes_notes_block_z4.png",
+    "width": 1931,
+    "height": 2552,
+    "bytes": 267251
+  },
+  {
+    "label": "ss_table_extra_contour",
+    "zoom": 2.0,
+    "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/ss_table_extra_contour_z2.png",
+    "width": 1885,
+    "height": 472,
+    "bytes": 92011
+  },
+  {
+    "label": "ss_table_extra_contour",
+    "zoom": 4.0,
+    "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/ss_table_extra_contour_z4.png",
+    "width": 3770,
+    "height": 943,
+    "bytes": 216456
+  },
+  {
+    "label": "eom_branch_group",
+    "zoom": 2.0,
+    "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/eom_branch_group_z2.png",
+    "width": 619,
+    "height": 703,
+    "bytes": 60066
+  },
+  {
+    "label": "eom_branch_group",
+    "zoom": 4.0,
+    "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/eom_branch_group_z4.png",
+    "width": 1238,
+    "height": 1405,
+    "bytes": 131930
+  }
+]

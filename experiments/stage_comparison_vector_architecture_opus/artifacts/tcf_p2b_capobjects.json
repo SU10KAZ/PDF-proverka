@@ -1,0 +1,77 @@
+{
+ "probe": "tcf_p2b_capobjects",
+ "cap": 8000,
+ "A_object_mutilation": {
+  "ar_plan": {
+   "primitives_with_segments": 14753,
+   "fully_retained": 7235,
+   "partially_retained_mutilated": 34,
+   "fully_dropped": 7484,
+   "mutilated_share": 0.0023
+  },
+  "ar_wall_sections": {
+   "primitives_with_segments": 20000,
+   "fully_retained": 7698,
+   "partially_retained_mutilated": 4,
+   "fully_dropped": 12298,
+   "mutilated_share": 0.0002
+  },
+  "ss_plan_dense": {
+   "primitives_with_segments": 1600,
+   "fully_retained": 429,
+   "partially_retained_mutilated": 635,
+   "fully_dropped": 536,
+   "mutilated_share": 0.3969
+  },
+  "vk_node_plan": {
+   "primitives_with_segments": 20000,
+   "fully_retained": 7417,
+   "partially_retained_mutilated": 88,
+   "fully_dropped": 12495,
+   "mutilated_share": 0.0044
+  },
+  "vk_nodes": {
+   "primitives_with_segments": 20000,
+   "fully_retained": 7918,
+   "partially_retained_mutilated": 1,
+   "fully_dropped": 12081,
+   "mutilated_share": 0.0001
+  }
+ },
+ "B_round_shape_census": {
+  "ar_plan": {
+   "24": 93
+  },
+  "ar_wall_sections": {
+   "24": 6
+  },
+  "eom_singleline_changed": {
+   "24": 34
+  },
+  "ss_plan_dense": {
+   "24": 204
+  }
+ },
+ "C_circle_aspect_after_normalization": {
+  "ar_plan": {
+   "circles": 93,
+   "min_aspect": 1.158,
+   "max_aspect": 1.169
+  },
+  "ar_wall_sections": {
+   "circles": 6,
+   "min_aspect": 0.323,
+   "max_aspect": 0.323
+  },
+  "eom_singleline_changed": {
+   "circles": 35,
+   "min_aspect": 1.571,
+   "max_aspect": 5.84
+  },
+  "ss_plan_dense": {
+   "circles": 56,
+   "min_aspect": 0.546,
+   "max_aspect": 0.563
+  }
+ }
+}

@@ -1,0 +1,95 @@
+{
+  "_about": "L4 — the minimal payload the model actually needs, for three real pairs. Track A's vector arm sent 53,299 tokens for five pairs and reported 70,631 total; a payload of this shape measured 3,940 tokens for the same five pairs (13.5x) and 20,483 tokens end to end against Vision's 38,069. The rule: the model never sees the block, only what changed, which objects it touched, before/after, the structural context needed to phrase it, and the uncertainty.",
+
+  "_rules": [
+    "No hashes. Measured: 6,105 tokens of sha256/pattern ids in Track A's prompt that the model cannot cross-reference against anything.",
+    "No full text lists. Measured: L3.texts alone was 26,471 tokens, 49.7 % of the vector prompt.",
+    "No method telemetry (tolerance sweeps, unmatched id lists, coverage tables). Measured: 1,914 tokens of it.",
+    "No unreadable text. Measured: 13,232 tokens of spans the extractor itself flagged UNDECODABLE were sent anyway; on vk_nodes that was 60.7 % of the payload.",
+    "Every change carries its own confidence and evidence, so the model can refuse to phrase a weak one instead of guessing.",
+    "Crop artefacts are named as such and never presented as design changes."
+  ],
+
+  "payloads": [
+    {
+      "pair_id": "ss_scheme_text_changed",
+      "_ground_truth": "СС structural scheme of a CCTV system. One switch and its room were renumbered and the three cameras hanging off it were renumbered with it; one annotation lost the words «/выезда». Nothing else moved.",
+      "payload": {
+        "block": {"kind": "scheme", "discipline_hint": "SS", "quality": "GOOD", "text_readable": 1.0},
+        "alignment": {"fit": 0.875, "scale": 1.0, "aspect_mismatch": 0.007},
+        "unchanged": {
+          "families": {"camera_triangle": 25, "crossed_square": 5},
+          "designations": {"ВК": 15, "ОСПД": 5, "Корпус": 4, "PoE": 3},
+          "connectivity": "every matched camera keeps its link to the same switch"
+        },
+        "changes": [
+          {"id": "c1", "kind": "designation", "object": "switch symbol, bottom-left, room band −1 этаж", "before": "ОСПД2.1", "after": "ОСПД1.1", "confidence": "high"},
+          {"id": "c2", "kind": "designation", "object": "room containing c1", "before": "Помещение СС (2.Т.6)", "after": "Помещение СС (1.Т.4)", "confidence": "high"},
+          {"id": "c3", "kind": "designation_group", "object": "3 cameras connected to c1", "before": ["ВК2.1.1.1", "ВК2.1.1.2", "ВК2.1.1.3"], "after": ["ВК1.1.1.1", "ВК1.1.1.2", "ВК1.1.1.3"], "confidence": "high"},
+          {"id": "c4", "kind": "annotation", "before": "Контроль въезда/выезда в подземный паркинг", "after": "Контроль въезда в подземный паркинг", "confidence": "medium", "uncertainty": "reconstructed from two printed lines on the left side and one on the right; paragraph grouping not implemented"}
+        ]
+      },
+      "expected_output": "Коммутатор ОСПД2.1 переименован в ОСПД1.1 вместе со своим помещением (2.Т.6 → 1.Т.4) и тремя подключёнными камерами (ВК2.1.1.1–3 → ВК1.1.1.1–3). Состав оборудования не изменился: 25 камер, 5 коммутаторов. Подпись зоны контроля изменена: «въезда/выезда» → «въезда»."
+    },
+
+    {
+      "pair_id": "eom_singleline_changed",
+      "_ground_truth": "П→РД: a generalised floor-panel scheme (two drawn branches with an ellipsis meaning «n such circuits») is replaced by four explicitly drawn branches. All four are now labelled with the same 13 kW load case; the 14, 16 and 18 kW cases disappeared. Cable callouts were added.",
+      "_caveat": "This payload is what the v0.2 shape WOULD carry. The designation counts are measured (hybrid probe H10: Wh 0→4, QD 0→4, QF 0→4, ЩМкв 0→4, with zero false statements on the seven quiet pairs). The branch-cardinality change is NOT yet derivable from generic geometry: a relation graph over crude clusters gives ≈31 % precision on that statement (relgraph R11). It is derivable from designation counting, which is why designations must be a first-class identity carrier.",
+      "payload": {
+        "block": {"kind": "single_line_scheme", "discipline_hint": "EOM", "quality": "GOOD", "text_readable": 1.0},
+        "alignment": {"fit": 0.49, "scale": 0.98, "aspect_mismatch": 0.137, "warning": "aspect mismatch 13.7 % — the two crops do not cover the same extent; positional statements are unsafe"},
+        "changes": [
+          {"id": "c1", "kind": "family_cardinality", "family": "outgoing_branch", "identified_by": "designation prefix ЩМкв", "before": 2, "after": 4, "before_members": ["ЩМкв1", "ЩМквn"], "after_members": ["ЩМкв1", "ЩМкв2", "ЩМкв3", "ЩМкв4"], "note": "the left side uses an ellipsis placeholder «n»", "confidence": "high"},
+          {"id": "c2", "kind": "family_cardinality", "family": "device", "identified_by": "designation prefixes QD / Wh / QF", "before": {"QD": 2, "Wh": 2, "QF": 2}, "after": {"QD": 4, "Wh": 4, "QF": 4}, "confidence": "high"},
+          {"id": "c3", "kind": "value_set_removed", "object": "load cases listed against the branches", "before": ["Рр=13 кВт", "Рр=14 кВт", "Рр=16 кВт", "Рр=18 кВт"], "after": ["Рр=13 кВт ×4"], "confidence": "high", "why_it_matters": "three of the four design load cases are no longer represented"},
+          {"id": "c4", "kind": "value_removed", "object": "legend row for QF", "before": "C25 -для 1, 2, 3 и 4 Е комн. квартир / C32 -для 4 комн. квартир", "after": "C25 -для 1, 2, 3 и 4 Е комн. квартир", "confidence": "high"},
+          {"id": "c5", "kind": "annotation_added", "object": "cable callouts at the N and PE buses", "after": ["ПуГПнг(A)-HF 1×25 мм²", "ПуГПнг(A)-HF 1×16 мм²"], "confidence": "medium"},
+          {"id": "c6", "kind": "value_added", "object": "devices QD1..QD4 and QF1..QF4", "after": {"QD": "40А", "QF": "C25"}, "confidence": "high"}
+        ],
+        "not_reported": [
+          "segment coverage 0.174 — after correcting the page-rotation frame this rises to 0.495, so 38.9 % of the apparent geometric dissimilarity was an extraction defect, not a design change (relgraph R4). A number that unstable must not reach the model.",
+          "«число примитивов 704 → 164» — PDF path packaging",
+          "«repeated motifs Jaccard 0.000» — the left PDF writes bus circles as 34 `circle` primitives and the right as 147 `curve` primitives (relgraph R12)"
+        ]
+      },
+      "expected_output": "Обобщённая схема заменена детальной: вместо двух ветвей с многоточием («n цепей») показаны четыре явные ветви ЩМкв1…ЩМкв4 с аппаратами QD1…QD4 (40 А), счётчиками Wh1…Wh4 и автоматами QF1…QF4 (C25). Расчётные случаи 14, 16 и 18 кВт исчезли — все четыре ветви показаны для 13 кВт; из легенды QF удалено исполнение C32 для 4-комнатных квартир. Добавлены выноски кабеля стояка ПуГПнг(A)-HF 1×25 мм² и 1×16 мм²."
+    },
+
+    {
+      "pair_id": "ss_table_graphic",
+      "_ground_truth": "Nothing changed. The right crop is 15.26 pt narrower and starts 14.48 pt higher, which truncates six words mid-string and pulls table row 1 into the right crop only.",
+      "payload": {
+        "block": {"kind": "detail_plus_table", "discipline_hint": "SS", "quality": "GOOD", "text_readable": 1.0},
+        "alignment": {"fit": 0.99, "scale": 1.019, "aspect_mismatch": 0.073},
+        "unchanged": {
+          "table": "10 rows × 2 columns, all cell values identical",
+          "geometry": "detail geometry matches at 0.5 % tolerance after alignment"
+        },
+        "changes": [],
+        "crop_artefacts": [
+          {"kind": "crop_artefact", "detail": "table row «1 Монтажная коробка RVi 2BM» lies at page y 77.6–88.7; the left crop starts at y 100.5 and the right at y 86.1, so the row is present only on the right", "not_a_design_change": true},
+          {"kind": "crop_artefact", "detail": "6 words truncated mid-string by the 15.26 pt narrower right crop: видеокамера→видеокаме, витую→вит, протяжко→протя, под→по", "not_a_design_change": true}
+        ]
+      },
+      "expected_output": "Изменений нет. Различия у границ кадра объясняются разным кадрированием блока: строка «1 Монтажная коробка RVi 2BM» попала только в правый кроп, а шесть слов обрезаны правой границей.",
+      "_why_this_matters": "This is the pair where Track A's vector arm produced its one clear false positive («добавлена позиция 1») and Vision was scored better. With page-level crop attribution the deterministic layer answers it correctly with zero model calls: 4 of 16 change events on this pair are provably crop artefacts, and the same predicate produced zero false attributions on the seven quiet pairs. Feeding that evidence to the model flipped its answer to the correct NEAR_IDENTICAL with zero major_changes."
+    }
+  ],
+
+  "_measured_sizes": {
+    "track_a_vector_prompt_5_pairs_tokens": 53299,
+    "track_a_vector_call_total_tokens": 70631,
+    "vision_call_total_tokens": 38069,
+    "minimal_payload_5_pairs_tokens": 3940,
+    "minimal_payload_end_to_end_tokens": 20483,
+    "per_pair": {
+      "ar_plan": {"track_a": 15035, "minimal": 118},
+      "vk_nodes": {"track_a": 23199, "minimal": 162},
+      "ss_table_graphic": {"track_a": 2961, "minimal": 273},
+      "ss_scheme_text_changed": {"track_a": 3953, "minimal": 604},
+      "eom_singleline_changed": {"track_a": 8151, "minimal": 2783}
+    },
+    "_note": "The eom pair plateaus at 2.9x rather than 100x because a span/line diff has no notion that C11/C15/C25 are the same repeated object. That plateau is exactly the boundary between the backbone and the object layer."
+  }
+}

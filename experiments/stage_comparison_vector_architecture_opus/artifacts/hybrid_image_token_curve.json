@@ -1,0 +1,55 @@
+{
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "low",
+  "baseline": 13892,
+  "rows": [
+    {
+      "w": 320,
+      "h": 320,
+      "raw_patches": 100,
+      "measured_image_tokens": 169,
+      "tokens_per_raw_patch": 1.69,
+      "png_bytes": 1057
+    },
+    {
+      "w": 640,
+      "h": 640,
+      "raw_patches": 400,
+      "measured_image_tokens": 529,
+      "tokens_per_raw_patch": 1.3225,
+      "png_bytes": 2713
+    },
+    {
+      "w": 1024,
+      "h": 1024,
+      "raw_patches": 1024,
+      "measured_image_tokens": 1279,
+      "tokens_per_raw_patch": 1.249,
+      "png_bytes": 5687
+    },
+    {
+      "w": 1280,
+      "h": 1280,
+      "raw_patches": 1600,
+      "measured_image_tokens": 1971,
+      "tokens_per_raw_patch": 1.2319,
+      "png_bytes": 8121
+    },
+    {
+      "w": 2048,
+      "h": 2048,
+      "raw_patches": 4096,
+      "measured_image_tokens": 3051,
+      "tokens_per_raw_patch": 0.7449,
+      "png_bytes": 18170
+    },
+    {
+      "w": 2560,
+      "h": 2560,
+      "raw_patches": 6400,
+      "measured_image_tokens": 3051,
+      "tokens_per_raw_patch": 0.4767,
+      "png_bytes": 26856
+    }
+  ]
+}

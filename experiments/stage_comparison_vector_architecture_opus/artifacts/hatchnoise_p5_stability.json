@@ -1,0 +1,35 @@
+{
+ "probe": "hatchnoise_p5_stability",
+ "blocks": [
+  {
+   "block": "ar_wall_sections",
+   "left_pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+   "right_pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+   "note": "byte-identical PDFs (O1); only the crop box differs by ~0.1%",
+   "segments_left": 35867,
+   "segments_right": 35867,
+   "segments_matched_by_raw_coordinates": 35867,
+   "decision_flips": 142,
+   "decision_flip_frac_of_matched": 0.00396,
+   "segments_only_in_left": 0,
+   "segments_only_in_right": 0,
+   "dropped_left_frac": 0.875,
+   "dropped_right_frac": 0.8771
+  },
+  {
+   "block": "ar_plan",
+   "left_pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+   "right_pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+   "note": "byte-identical PDFs (O1); only the crop box differs by ~0.1%",
+   "segments_left": 17878,
+   "segments_right": 17877,
+   "segments_matched_by_raw_coordinates": 17869,
+   "decision_flips": 475,
+   "decision_flip_frac_of_matched": 0.02658,
+   "segments_only_in_left": 9,
+   "segments_only_in_right": 8,
+   "dropped_left_frac": 0.6295,
+   "dropped_right_frac": 0.6481
+  }
+ ]
+}

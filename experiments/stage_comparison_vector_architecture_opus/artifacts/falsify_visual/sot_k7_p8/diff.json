@@ -1,0 +1,65 @@
+{
+ "left": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v001/02_work/document.pdf",
+ "right": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+ "page_index": 8,
+ "right_page_index": 8,
+ "dpi": 110.0,
+ "page_size_left": [
+  1785.8,
+  841.9
+ ],
+ "page_size_right": [
+  1785.8,
+  841.9
+ ],
+ "changed_pixels": 395,
+ "compared_pixels": 3512223,
+ "changed_pixel_share": 0.00011246,
+ "changed_regions_found": 2,
+ "regions": [
+  {
+   "region": 1,
+   "dirty_pixels": 347,
+   "rect_pt": [
+    335.13,
+    162.33,
+    450.33,
+    246.11
+   ],
+   "bbox_norm_left": [
+    0.1876580651913759,
+    0.192806057609153,
+    0.2521655251009114,
+    0.2923188615364578
+   ],
+   "bbox_norm_right": [
+    0.1876580651913759,
+    0.192806057609153,
+    0.2521655251009114,
+    0.2923188615364578
+   ]
+  },
+  {
+   "region": 2,
+   "dirty_pixels": 45,
+   "rect_pt": [
+    225.16,
+    162.33,
+    324.65,
+    230.4
+   ],
+   "bbox_norm_left": [
+    0.1260827625504557,
+    0.192806057609153,
+    0.1817937506541454,
+    0.2736602108000882
+   ],
+   "bbox_norm_right": [
+    0.1260827625504557,
+    0.192806057609153,
+    0.1817937506541454,
+    0.2736602108000882
+   ]
+  }
+ ]
+}

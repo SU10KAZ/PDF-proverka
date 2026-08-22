@@ -1,0 +1,194 @@
+{
+ "rows": [
+  {
+   "pair": "ar_plan",
+   "side": "left",
+   "spans": 836,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ar_plan",
+   "side": "right",
+   "spans": 836,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ar_wall_sections",
+   "side": "left",
+   "spans": 119,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ar_wall_sections",
+   "side": "right",
+   "spans": 119,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "eom_singleline_changed",
+   "side": "left",
+   "spans": 73,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "eom_singleline_changed",
+   "side": "right",
+   "spans": 299,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_plan_dense",
+   "side": "left",
+   "spans": 522,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_plan_dense",
+   "side": "right",
+   "spans": 522,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_scheme_text_changed",
+   "side": "left",
+   "spans": 100,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_scheme_text_changed",
+   "side": "right",
+   "spans": 97,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_simple_node",
+   "side": "left",
+   "spans": 31,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_simple_node",
+   "side": "right",
+   "spans": 31,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_table_graphic",
+   "side": "left",
+   "spans": 54,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "ss_table_graphic",
+   "side": "right",
+   "spans": 58,
+   "spans_with_control_chars": 0,
+   "share": 0.0,
+   "sample": []
+  },
+  {
+   "pair": "vk_node_plan",
+   "side": "left",
+   "spans": 243,
+   "spans_with_control_chars": 132,
+   "share": 0.5432,
+   "sample": [
+    "\u0004\u0005\u0006\u0007\b",
+    "\u000e3/4\"",
+    "\u0013\u0014\u0014\u0015\u0016\u0017",
+    "\u0001\u0018\b\u0019 \u001a\b\u0018\u001b \u001b"
+   ]
+  },
+  {
+   "pair": "vk_node_plan",
+   "side": "right",
+   "spans": 237,
+   "spans_with_control_chars": 73,
+   "share": 0.308,
+   "sample": [
+    "\u001a !\u0005 \u0014 \"",
+    "\u0011\u0018\u0018 \u0015\u0016",
+    "\u0003\u0005\u0006 *\u0005\u0003\u0007\b\u0007+",
+    "\u0014 ,\u0015. \u0018\u0003\u0011\b\u0007\u0010\u0007., DN20"
+   ]
+  },
+  {
+   "pair": "vk_nodes",
+   "side": "left",
+   "spans": 421,
+   "spans_with_control_chars": 207,
+   "share": 0.4917,
+   "sample": [
+    "\u0004\u0018 \u0015\u0015 . \u0016\u0011",
+    "\u0010-#\u0004-\u0010$1-$4",
+    "\u0013\u0018( )\u0018\u0013\u0011*\u0011+",
+    "\u0013\u0018( )\u0018\u0013\u0011*\u0011+"
+   ]
+  },
+  {
+   "pair": "vk_nodes",
+   "side": "right",
+   "spans": 360,
+   "spans_with_control_chars": 88,
+   "share": 0.2444,
+   "sample": [
+    "\u0005\u0015 \u0014/. *\u0007/",
+    "\u000f-3!-\u000f 1- 4",
+    "\u0003\u0005\u0006 7\u0005\u0003\u0007\b\u00078",
+    "\u0003\u0005\u0006 7\u0005\u0003\u0007\b\u00078"
+   ]
+  },
+  {
+   "pair": "vk_plan",
+   "side": "left",
+   "spans": 232,
+   "spans_with_control_chars": 61,
+   "share": 0.2629,
+   "sample": [
+    "\u000e1",
+    "\u001b(\u0019\u001a\u001a$-) \u001b*\u0019($' ($+$)\u0015$($+",
+    "\u001b\u0015,-$)\u0015$($+ \u0017$\u0015&.\u0019' ($+/ ()$+\u001612 ')",
+    "\u001b$(\u0016& 4\u0016\u001a\u0016 %\u00165 &"
+   ]
+  },
+  {
+   "pair": "vk_plan",
+   "side": "right",
+   "spans": 237,
+   "spans_with_control_chars": 74,
+   "share": 0.3122,
+   "sample": [
+    "\u000f1",
+    "\u0007234\u0014-\b \u0006\u0006\u0007-\u0018\u0011-\u0016 \b\u00074 \b\u0007\u0010\u0007\u0018\u0003\u0007\b\u0007\u0010",
+    "\u000356\u0007\u0018\u0003\u0007\b\u0007\u0010 +\u0007\u000337 4 \b\u0007\u0010\u0002 (\u0018\u0007\u0010\u00059:\u00114)",
+    "\u0002-\u0007\b\u00053 \u0004\u0005\u0006\u0005\u0015\u00112\u0005\u000e\u00113"
+   ]
+  }
+ ]
+}

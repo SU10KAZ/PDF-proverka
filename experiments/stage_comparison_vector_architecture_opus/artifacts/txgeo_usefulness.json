@@ -1,0 +1,418 @@
+{
+ "n": 22,
+ "summary": {
+  "RECOVERED": 13,
+  "PARTIAL": 4,
+  "WRONG_VALUE": 4,
+  "NOT_RECOVERED": 1
+ },
+ "rows": [
+  {
+   "block": "ss_simple_node",
+   "text": "Кабель\"витаяпара\",кат.5е, 4пары",
+   "occurrence": 0,
+   "human_referent": "the incoming twisted-pair cable line entering the block from the left",
+   "relation_that_should_carry_it": "leader",
+   "detector_primary": "leader",
+   "relations_fired": [
+    "leader"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "ss_simple_node",
+   "text": "КР",
+   "occurrence": 0,
+   "human_referent": "the large outer rectangle (кроссовое помещение)",
+   "relation_that_should_carry_it": "contour_caption",
+   "detector_primary": "contour_caption",
+   "relations_fired": [
+    "along_line",
+    "contour_caption"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "ss_simple_node",
+   "text": "БГЗ",
+   "occurrence": 0,
+   "human_referent": "the inner rectangle (блок грозозащиты)",
+   "relation_that_should_carry_it": "contour_caption",
+   "detector_primary": "contour_caption",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "along_line",
+    "contour_caption",
+    "between_extension_lines"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "ss_simple_node",
+   "text": "IN",
+   "occurrence": 0,
+   "human_referent": "interior of the БГЗ rectangle, input side",
+   "relation_that_should_carry_it": "enclosure_tight",
+   "detector_primary": "enclosure_tight",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "band_association",
+    "between_extension_lines",
+    "enclosure_tight"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "ss_simple_node",
+   "text": "RJ-45 (PoE)",
+   "occurrence": 0,
+   "human_referent": "interior of the ВК rectangle (видеокамера)",
+   "relation_that_should_carry_it": "enclosure_tight",
+   "detector_primary": "symbol_cluster",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "along_line",
+    "symbol_cluster",
+    "contour_caption",
+    "band_association",
+    "between_extension_lines",
+    "enclosure_tight"
+   ],
+   "type_fired": true,
+   "verdict": "PARTIAL"
+  },
+  {
+   "block": "ss_simple_node",
+   "text": "кОСПД3.1/ОСПД6.3",
+   "occurrence": 0,
+   "human_referent": "the horizontal cable line running to the left edge",
+   "relation_that_should_carry_it": "leader",
+   "detector_primary": "leader",
+   "relations_fired": [
+    "leader",
+    "band_association"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "Засыпка",
+   "occurrence": 0,
+   "human_referent": "the керамзит backfill hatch in section 1-1 (two branches)",
+   "relation_that_should_carry_it": "leader",
+   "detector_primary": "leader",
+   "relations_fired": [
+    "leader",
+    "along_line"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "2650",
+   "occurrence": 0,
+   "human_referent": "distance between axes П.Т and П.С in section 1-1",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "dimension_interval",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "along_line",
+    "dimension_line_only",
+    "dimension_interval",
+    "symbol_cluster",
+    "band_association",
+    "between_extension_lines",
+    "enclosure_tight"
+   ],
+   "type_fired": true,
+   "printed_value_mm": 2650,
+   "measured_mm_at_sheet_scale": 275.2,
+   "value_error_pct": 89.6,
+   "verdict": "WRONG_VALUE",
+   "ticks_in_reach": 2,
+   "line_candidates": 3
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "1370",
+   "occurrence": 0,
+   "human_referent": "vertical distance between marks -0,430 and -1,800 in section 1-1",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "dimension_interval",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "along_line",
+    "dimension_line_only",
+    "dimension_interval",
+    "symbol_cluster",
+    "band_association",
+    "between_extension_lines",
+    "enclosure_tight"
+   ],
+   "type_fired": true,
+   "printed_value_mm": 1370,
+   "measured_mm_at_sheet_scale": 258.2,
+   "value_error_pct": 81.2,
+   "verdict": "WRONG_VALUE",
+   "ticks_in_reach": 2,
+   "line_candidates": 3
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "1370",
+   "occurrence": 1,
+   "human_referent": "vertical distance between marks -0,430 and -1,800 in section 3-3",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "dimension_interval",
+   "relations_fired": [
+    "along_line",
+    "dimension_line_only",
+    "dimension_interval",
+    "band_association",
+    "between_extension_lines"
+   ],
+   "type_fired": true,
+   "printed_value_mm": 1370,
+   "measured_mm_at_sheet_scale": 1371.6,
+   "value_error_pct": 0.1,
+   "verdict": "RECOVERED",
+   "ticks_in_reach": 2,
+   "line_candidates": 1
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "300",
+   "occurrence": 0,
+   "human_referent": "wall thickness at the bottom of section 3-3",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "dimension_interval",
+   "relations_fired": [
+    "grid_cell",
+    "leader",
+    "along_line",
+    "dimension_line_only",
+    "dimension_interval",
+    "contour_caption",
+    "between_extension_lines"
+   ],
+   "type_fired": true,
+   "printed_value_mm": 300,
+   "measured_mm_at_sheet_scale": 300.6,
+   "value_error_pct": 0.2,
+   "verdict": "RECOVERED",
+   "ticks_in_reach": 2,
+   "line_candidates": 2
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "250",
+   "occurrence": 0,
+   "human_referent": "slab thickness at the top of section 3-3",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "band_association",
+   "relations_fired": [
+    "band_association"
+   ],
+   "type_fired": false,
+   "printed_value_mm": 250,
+   "verdict": "NOT_RECOVERED"
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "П.Т",
+   "occurrence": 0,
+   "human_referent": "the axis line the circle mark hangs on",
+   "relation_that_should_carry_it": "symbol_cluster",
+   "detector_primary": "leader",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "leader",
+    "along_line",
+    "symbol_cluster",
+    "band_association",
+    "between_extension_lines",
+    "enclosure_tight"
+   ],
+   "type_fired": true,
+   "verdict": "PARTIAL"
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "-0,430",
+   "occurrence": 0,
+   "human_referent": "the level line with the elevation arrow in section 1-1",
+   "relation_that_should_carry_it": "elevation_mark(MISSING TYPE)",
+   "detector_primary": "band_association",
+   "relations_fired": [
+    "along_line",
+    "band_association"
+   ],
+   "type_fired": false,
+   "verdict": "PARTIAL"
+  },
+  {
+   "block": "fresh_kj_sections",
+   "text": "400",
+   "occurrence": 1,
+   "human_referent": "bottom vertical dimension in section 3-3",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "dimension_interval",
+   "relations_fired": [
+    "leader",
+    "along_line",
+    "dimension_line_only",
+    "dimension_interval",
+    "band_association"
+   ],
+   "type_fired": true,
+   "printed_value_mm": 400,
+   "measured_mm_at_sheet_scale": 448.7,
+   "value_error_pct": 12.2,
+   "verdict": "WRONG_VALUE",
+   "ticks_in_reach": 2,
+   "line_candidates": 2
+  },
+  {
+   "block": "fresh_ar_lintels",
+   "text": "40",
+   "occurrence": 0,
+   "human_referent": "the 40 mm leg of the уголок 40x4 in the ПР-11 section",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "dimension_interval",
+   "relations_fired": [
+    "grid_cell",
+    "along_line",
+    "dimension_line_only",
+    "dimension_interval",
+    "band_association",
+    "between_extension_lines",
+    "repeated_label"
+   ],
+   "type_fired": true,
+   "printed_value_mm": 40,
+   "measured_mm_at_sheet_scale": 39.8,
+   "value_error_pct": 0.5,
+   "verdict": "RECOVERED",
+   "ticks_in_reach": 2,
+   "line_candidates": 4
+  },
+  {
+   "block": "fresh_ar_lintels",
+   "text": "200",
+   "occurrence": 0,
+   "human_referent": "the 200 mm width of the ПР-11 lintel section",
+   "relation_that_should_carry_it": "dimension_interval",
+   "detector_primary": "dimension_interval",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "leader",
+    "along_line",
+    "dimension_line_only",
+    "dimension_interval",
+    "symbol_cluster",
+    "contour_caption",
+    "band_association",
+    "between_extension_lines",
+    "repeated_label",
+    "enclosure_tight"
+   ],
+   "type_fired": true,
+   "printed_value_mm": 200,
+   "measured_mm_at_sheet_scale": 36.4,
+   "value_error_pct": 81.8,
+   "verdict": "WRONG_VALUE",
+   "ticks_in_reach": 8,
+   "line_candidates": 2
+  },
+  {
+   "block": "fresh_ar_lintels",
+   "text": "Уголок40х4, 2шт.",
+   "occurrence": 0,
+   "human_referent": "the angle steel drawn in the ПР-11 section, reached by an arrow leader",
+   "relation_that_should_carry_it": "leader",
+   "detector_primary": "contour_caption",
+   "relations_fired": [
+    "grid_cell",
+    "contour_caption",
+    "band_association",
+    "between_extension_lines",
+    "repeated_label"
+   ],
+   "type_fired": false,
+   "verdict": "PARTIAL"
+  },
+  {
+   "block": "fresh_ar_lintels",
+   "text": "ПР-11",
+   "occurrence": 0,
+   "human_referent": "table cell in column «Марка перемычки», row 1",
+   "relation_that_should_carry_it": "grid_cell",
+   "detector_primary": "grid_cell",
+   "relations_fired": [
+    "grid_cell",
+    "band_association"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "fresh_ar_lintels",
+   "text": "Анкер",
+   "occurrence": 0,
+   "human_referent": "the anchor symbol in the ПР-12 wall view, reached by an arrow leader",
+   "relation_that_should_carry_it": "leader",
+   "detector_primary": "leader",
+   "relations_fired": [
+    "leader",
+    "along_line",
+    "band_association",
+    "between_extension_lines"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "fresh_ar_legend",
+   "text": "С-10,кирпичные стены- 120мм",
+   "occurrence": 0,
+   "human_referent": "the hatch swatch immediately to the left in the same legend row",
+   "relation_that_should_carry_it": "band_association",
+   "detector_primary": "band_association",
+   "relations_fired": [
+    "band_association"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  },
+  {
+   "block": "fresh_ar_legend",
+   "text": "+4.500",
+   "occurrence": 0,
+   "human_referent": "the boxed elevation symbol drawn around the text",
+   "relation_that_should_carry_it": "symbol_cluster",
+   "detector_primary": "symbol_cluster",
+   "relations_fired": [
+    "enclosure",
+    "grid_cell",
+    "symbol_cluster",
+    "band_association",
+    "enclosure_tight"
+   ],
+   "type_fired": true,
+   "verdict": "RECOVERED"
+  }
+ ]
+}

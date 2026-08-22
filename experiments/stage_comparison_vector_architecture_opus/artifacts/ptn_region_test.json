@@ -1,0 +1,82 @@
+{
+ "pair": "ar_plan",
+ "side": "left",
+ "regions_px": {
+  "hatch": [
+   1340,
+   440,
+   1460,
+   720
+  ],
+  "symbol": [
+   1520,
+   110,
+   1720,
+   1460
+  ]
+ },
+ "regions": {
+  "hatch": {
+   "rect_pt": [
+    1046.8,
+    337.8,
+    1135.6,
+    545.1
+   ],
+   "segments_in_region": 59,
+   "motifs_in_region": 0,
+   "S1_groups": 0,
+   "S1_groups_repeated": 0,
+   "S1_largest": 0,
+   "S2_groups": 0,
+   "S2_groups_repeated": 0,
+   "S2_largest": 0,
+   "S3_groups": 0,
+   "S3_groups_repeated": 0,
+   "S3_largest": 0,
+   "S4_groups": 0,
+   "S4_groups_repeated": 0,
+   "S4_largest": 0,
+   "S5_groups": 0,
+   "S5_groups_repeated": 0,
+   "S5_largest": 0,
+   "S5c_groups": 0,
+   "S5c_groups_repeated": 0,
+   "S5c_largest": 0
+  },
+  "symbol": {
+   "rect_pt": [
+    1180.0,
+    93.5,
+    1328.1,
+    1093.1
+   ],
+   "segments_in_region": 1437,
+   "motifs_in_region": 51,
+   "S1_groups": 37,
+   "S1_groups_repeated": 8,
+   "S1_largest": 6,
+   "S2_groups": 37,
+   "S2_groups_repeated": 8,
+   "S2_largest": 6,
+   "S3_groups": 40,
+   "S3_groups_repeated": 6,
+   "S3_largest": 5,
+   "S4_groups": 40,
+   "S4_groups_repeated": 6,
+   "S4_largest": 6,
+   "S5_groups": 34,
+   "S5_groups_repeated": 8,
+   "S5_largest": 6,
+   "S5c_groups": 32,
+   "S5c_groups_repeated": 9,
+   "S5c_largest": 5,
+   "mean_nseg": 6.86,
+   "mean_straightness": 0.0804,
+   "mean_closure": 0.49,
+   "frac_closed_2d": 0.157,
+   "frac_text_inside": 0.137,
+   "frac_labeled": 0.529
+  }
+ }
+}

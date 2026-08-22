@@ -1,0 +1,331 @@
+{
+ "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+ "page_index": 7,
+ "filters": {
+  "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+  "page": 7,
+  "min_seg": 6,
+  "max_seg": 200,
+  "min_size": 5.0,
+  "max_size": 80.0,
+  "min_cycles": 1,
+  "groups": 8,
+  "cap": 24,
+  "out": "falsify_spread_ss_sot_p7.json"
+ },
+ "note": "shape_similarity is the same order-independent directional segment coverage idea comparator._directional_segment_coverage uses, on component-normalized coordinates; 1.0 means the two instances are the same normalized shape.",
+ "groups": [
+  {
+   "l3_key": "[{\"l\": 25}, 1, {\"1\": 1, \"2\": 23, \"3\": 1}, 25, 0.3]",
+   "instances_compared": 24,
+   "pairs": 276,
+   "min": 0.0,
+   "median": 0.0,
+   "mean": 0.4783,
+   "max": 1.0,
+   "pairs_below_0_985": 144,
+   "pairs_below_0_90": 144,
+   "share_below_0_985": 0.5217,
+   "example_bboxes": [
+    [
+     348.96,
+     30.48,
+     371.52,
+     106.56
+    ],
+    [
+     348.96,
+     1714.32,
+     371.52,
+     1790.64
+    ],
+    [
+     825.12,
+     30.48,
+     847.92,
+     106.56
+    ],
+    [
+     825.12,
+     1714.32,
+     847.92,
+     1790.64
+    ]
+   ],
+   "n_segments": 25
+  },
+  {
+   "l3_key": "[{\"l\": 9}, 1, {\"2\": 9}, 9, 1.0]",
+   "instances_compared": 24,
+   "pairs": 276,
+   "min": 0.0,
+   "median": 0.0,
+   "mean": 0.159,
+   "max": 1.0,
+   "pairs_below_0_985": 264,
+   "pairs_below_0_90": 264,
+   "share_below_0_985": 0.9565,
+   "example_bboxes": [
+    [
+     3015.36,
+     450.24,
+     3020.4,
+     455.52
+    ],
+    [
+     3015.36,
+     419.04,
+     3020.4,
+     424.32
+    ],
+    [
+     3015.36,
+     521.04,
+     3020.4,
+     526.32
+    ],
+    [
+     3015.36,
+     489.84,
+     3020.4,
+     495.12
+    ]
+   ],
+   "n_segments": 9
+  },
+  {
+   "l3_key": "[{\"l\": 96}, 1, {\"2\": 48}, 96, 1.0]",
+   "instances_compared": 19,
+   "pairs": 171,
+   "min": 0.0208,
+   "median": 0.1875,
+   "mean": 0.474,
+   "max": 1.0,
+   "pairs_below_0_985": 106,
+   "pairs_below_0_90": 106,
+   "share_below_0_985": 0.6199,
+   "example_bboxes": [
+    [
+     1986.72,
+     1226.64,
+     2014.32,
+     1254.0
+    ],
+    [
+     1986.72,
+     1323.12,
+     2014.32,
+     1350.48
+    ],
+    [
+     1986.72,
+     1464.72,
+     2014.32,
+     1492.08
+    ],
+    [
+     1986.72,
+     1551.84,
+     2014.32,
+     1579.2
+    ]
+   ],
+   "n_segments": 96
+  },
+  {
+   "l3_key": "[{\"l\": 52}, 1, {\"2\": 26}, 52, 1.3]",
+   "instances_compared": 17,
+   "pairs": 136,
+   "min": 0.0,
+   "median": 0.1154,
+   "mean": 0.414,
+   "max": 1.0,
+   "pairs_below_0_985": 90,
+   "pairs_below_0_90": 86,
+   "share_below_0_985": 0.6618,
+   "example_bboxes": [
+    [
+     1972.32,
+     1215.36,
+     2009.76,
+     1244.4
+    ],
+    [
+     1972.32,
+     1311.84,
+     2009.76,
+     1340.88
+    ],
+    [
+     1972.32,
+     1453.44,
+     2009.76,
+     1482.48
+    ],
+    [
+     1972.32,
+     1540.56,
+     2009.76,
+     1569.6
+    ]
+   ],
+   "n_segments": 52
+  },
+  {
+   "l3_key": "[{\"l\": 106}, 1, {\"1\": 5, \"2\": 96, \"3\": 5}, 106, 1.8]",
+   "instances_compared": 17,
+   "pairs": 136,
+   "min": 0.5,
+   "median": 1.0,
+   "mean": 0.7582,
+   "max": 1.0,
+   "pairs_below_0_985": 66,
+   "pairs_below_0_90": 66,
+   "share_below_0_985": 0.4853,
+   "example_bboxes": [
+    [
+     2261.04,
+     1255.68,
+     2338.32,
+     1299.36
+    ],
+    [
+     2713.92,
+     654.24,
+     2791.44,
+     697.92
+    ],
+    [
+     2713.92,
+     486.24,
+     2791.44,
+     529.92
+    ],
+    [
+     2713.92,
+     557.04,
+     2791.44,
+     600.96
+    ]
+   ],
+   "n_segments": 106
+  },
+  {
+   "l3_key": "[{\"l\": 62}, 1, {\"1\": 4, \"2\": 54, \"3\": 4}, 62, 1.9]",
+   "instances_compared": 14,
+   "pairs": 91,
+   "min": 0.4194,
+   "median": 1.0,
+   "mean": 0.7448,
+   "max": 1.0,
+   "pairs_below_0_985": 40,
+   "pairs_below_0_90": 40,
+   "share_below_0_985": 0.4396,
+   "example_bboxes": [
+    [
+     547.68,
+     1215.12,
+     624.24,
+     1255.92
+    ],
+    [
+     547.68,
+     1144.32,
+     624.24,
+     1185.12
+    ],
+    [
+     1344.24,
+     1543.92,
+     1420.8,
+     1584.72
+    ],
+    [
+     870.96,
+     1144.32,
+     947.28,
+     1185.12
+    ]
+   ],
+   "n_segments": 62
+  },
+  {
+   "l3_key": "[{\"l\": 14}, 2, {\"2\": 4, \"3\": 2}, 14, 2.0]",
+   "instances_compared": 10,
+   "pairs": 45,
+   "min": 0.8571,
+   "median": 0.8571,
+   "mean": 0.9238,
+   "max": 1.0,
+   "pairs_below_0_985": 24,
+   "pairs_below_0_90": 24,
+   "share_below_0_985": 0.5333,
+   "example_bboxes": [
+    [
+     584.16,
+     1038.72,
+     612.72,
+     1053.12
+    ],
+    [
+     2746.08,
+     386.88,
+     2774.64,
+     401.28
+    ],
+    [
+     1536.48,
+     1038.72,
+     1565.04,
+     1053.12
+    ],
+    [
+     1298.4,
+     1038.72,
+     1326.96,
+     1053.12
+    ]
+   ],
+   "n_segments": 14
+  },
+  {
+   "l3_key": "[{\"l\": 25}, 1, {\"1\": 1, \"2\": 23, \"3\": 1}, 25, 0.5]",
+   "instances_compared": 10,
+   "pairs": 45,
+   "min": 0.0,
+   "median": 0.0,
+   "mean": 0.2098,
+   "max": 1.0,
+   "pairs_below_0_985": 41,
+   "pairs_below_0_90": 41,
+   "share_below_0_985": 0.9111,
+   "example_bboxes": [
+    [
+     100.56,
+     415.68,
+     134.4,
+     488.64
+    ],
+    [
+     535.68,
+     1591.44,
+     569.52,
+     1664.64
+    ],
+    [
+     572.4,
+     1727.76,
+     602.4,
+     1789.92
+    ],
+    [
+     388.8,
+     1242.96,
+     418.56,
+     1305.12
+    ]
+   ],
+   "n_segments": 25
+  }
+ ]
+}

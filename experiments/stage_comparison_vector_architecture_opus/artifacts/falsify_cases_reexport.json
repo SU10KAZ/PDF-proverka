@@ -1,0 +1,76 @@
+{
+ "cases": [
+  {
+   "case_id": "B_reexport_ak_k6_p14_wholepage",
+   "note": "13АВ-РД-АК-К6 (Книга 1) page 15 (index 14), v001 vs v002. Raster diff at 110 dpi = 0 changed pixels (visually identical), text multiset identical, but PDF line operators 7099 -> 19322 and quantized segment Jaccard 0.492.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+    "page_index": 14,
+    "bbox_norm": [
+     0.001,
+     0.001,
+     0.999,
+     0.999
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+    "page_index": 14,
+    "bbox_norm": [
+     0.001,
+     0.001,
+     0.999,
+     0.999
+    ]
+   }
+  },
+  {
+   "case_id": "B_reexport_ak_k6_p14_left_half",
+   "note": "Same page pair, left half as a block.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+    "page_index": 14,
+    "bbox_norm": [
+     0.02,
+     0.02,
+     0.5,
+     0.9
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+    "page_index": 14,
+    "bbox_norm": [
+     0.02,
+     0.02,
+     0.5,
+     0.9
+    ]
+   }
+  },
+  {
+   "case_id": "B_reexport_ak_k3_p23_wholepage",
+   "note": "13АВ-РД-АК-К3 (Книга 1) page 24 (index 23), v001 vs v002; text identical, quantized segment Jaccard 0.753.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v001/02_work/document.pdf",
+    "page_index": 23,
+    "bbox_norm": [
+     0.001,
+     0.001,
+     0.999,
+     0.999
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v002/02_work/document.pdf",
+    "page_index": 23,
+    "bbox_norm": [
+     0.001,
+     0.001,
+     0.999,
+     0.999
+    ]
+   }
+  }
+ ]
+}

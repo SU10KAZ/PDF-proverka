@@ -1,0 +1,338 @@
+{
+ "probe": "tcf_p4_curves",
+ "curve_steps": 6,
+ "tolerance": 0.0025,
+ "A_cubic_flattening": {
+  "ss_simple_node": {
+   "cubic_items_measured": 0,
+   "seconds": 0.0,
+   "max_error_pt": null,
+   "median_error_pt": null,
+   "max_error_norm": null,
+   "median_error_norm": null,
+   "share_error_above_tolerance": null
+  },
+  "ss_scheme_text_changed": {
+   "cubic_items_measured": 0,
+   "seconds": 0.0,
+   "max_error_pt": null,
+   "median_error_pt": null,
+   "max_error_norm": null,
+   "median_error_norm": null,
+   "share_error_above_tolerance": null
+  },
+  "eom_singleline_changed": {
+   "cubic_items_measured": 316,
+   "seconds": 0.4,
+   "max_error_pt": 0.06695,
+   "median_error_pt": 0.00109,
+   "max_error_norm": 0.00012,
+   "median_error_norm": 2e-06,
+   "share_error_above_tolerance": 0.0
+  },
+  "vk_plan": {
+   "cubic_items_measured": 0,
+   "seconds": 4.6,
+   "max_error_pt": null,
+   "median_error_pt": null,
+   "max_error_norm": null,
+   "median_error_norm": null,
+   "share_error_above_tolerance": null
+  }
+ },
+ "B_circle_census": {
+  "ar_plan": {
+   "circles": 93,
+   "median_radius_norm": 0.00398,
+   "max_radius_norm": 0.00795,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "ar_wall_sections": {
+   "circles": 6,
+   "median_radius_norm": 0.01736,
+   "max_radius_norm": 0.02314,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "eom_singleline_changed": {
+   "circles": 35,
+   "median_radius_norm": 0.00577,
+   "max_radius_norm": 0.01682,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "ss_plan_dense": {
+   "circles": 56,
+   "median_radius_norm": 0.00461,
+   "max_radius_norm": 0.00461,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "ss_scheme_text_changed": {
+   "circles": 0,
+   "median_radius_norm": null,
+   "max_radius_norm": null,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "ss_simple_node": {
+   "circles": 0,
+   "median_radius_norm": null,
+   "max_radius_norm": null,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "ss_table_graphic": {
+   "circles": 0,
+   "median_radius_norm": null,
+   "max_radius_norm": null,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "vk_node_plan": {
+   "circles": 0,
+   "median_radius_norm": null,
+   "max_radius_norm": null,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "vk_nodes": {
+   "circles": 0,
+   "median_radius_norm": null,
+   "max_radius_norm": null,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "vk_plan": {
+   "circles": 0,
+   "median_radius_norm": null,
+   "max_radius_norm": null,
+   "circles_whose_24gon_inset_exceeds_tolerance": 0,
+   "radius_needed_to_exceed_tolerance": 0.2922
+  },
+  "_inset_factor": 0.008555
+ },
+ "C_synthetic_reflattening_coverage": {
+  "radius_0.01": {
+   "same_encoding": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "phase_shift_half_step": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.0,
+    "0.01": 0.0
+   },
+   "steps_16_vs_24": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.0,
+    "0.01": 0.833333
+   },
+   "steps_32_vs_24": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.583333,
+    "0.01": 0.583333
+   }
+  },
+  "radius_0.03": {
+   "same_encoding": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "phase_shift_half_step": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.0,
+    "0.01": 0.0
+   },
+   "steps_16_vs_24": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.0,
+    "0.01": 0.833333
+   },
+   "steps_32_vs_24": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.583333,
+    "0.01": 0.583333
+   }
+  },
+  "radius_0.08": {
+   "same_encoding": {
+    "0.001": 1.0,
+    "0.0025": 1.0,
+    "0.005": 1.0,
+    "0.01": 1.0
+   },
+   "phase_shift_half_step": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.0,
+    "0.01": 0.0
+   },
+   "steps_16_vs_24": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.0,
+    "0.01": 0.833333
+   },
+   "steps_32_vs_24": {
+    "0.001": 0.0,
+    "0.0025": 0.0,
+    "0.005": 0.583333,
+    "0.01": 0.583333
+   }
+  }
+ },
+ "D_normalization_anisotropy": {
+  "ar_plan/left": {
+   "block_width_pt": 1427.4,
+   "block_height_pt": 1656.4,
+   "aspect": 0.862,
+   "tolerance_pt_x": 3.568,
+   "tolerance_pt_y": 4.141
+  },
+  "ar_plan/right": {
+   "block_width_pt": 1431.4,
+   "block_height_pt": 1653.3,
+   "aspect": 0.866,
+   "tolerance_pt_x": 3.579,
+   "tolerance_pt_y": 4.133
+  },
+  "ar_wall_sections/left": {
+   "block_width_pt": 1515.8,
+   "block_height_pt": 490.1,
+   "aspect": 3.093,
+   "tolerance_pt_x": 3.79,
+   "tolerance_pt_y": 1.225
+  },
+  "ar_wall_sections/right": {
+   "block_width_pt": 1495.8,
+   "block_height_pt": 488.9,
+   "aspect": 3.059,
+   "tolerance_pt_x": 3.739,
+   "tolerance_pt_y": 1.222
+  },
+  "eom_singleline_changed/left": {
+   "block_width_pt": 488.7,
+   "block_height_pt": 770.5,
+   "aspect": 0.634,
+   "tolerance_pt_x": 1.222,
+   "tolerance_pt_y": 1.926
+  },
+  "eom_singleline_changed/right": {
+   "block_width_pt": 562.3,
+   "block_height_pt": 779.5,
+   "aspect": 0.721,
+   "tolerance_pt_x": 1.406,
+   "tolerance_pt_y": 1.949
+  },
+  "ss_plan_dense/left": {
+   "block_width_pt": 3337.4,
+   "block_height_pt": 1849.6,
+   "aspect": 1.804,
+   "tolerance_pt_x": 8.344,
+   "tolerance_pt_y": 4.624
+  },
+  "ss_plan_dense/right": {
+   "block_width_pt": 3337.4,
+   "block_height_pt": 1810.9,
+   "aspect": 1.843,
+   "tolerance_pt_x": 8.344,
+   "tolerance_pt_y": 4.527
+  },
+  "ss_scheme_text_changed/left": {
+   "block_width_pt": 1616.0,
+   "block_height_pt": 431.3,
+   "aspect": 3.747,
+   "tolerance_pt_x": 4.04,
+   "tolerance_pt_y": 1.078
+  },
+  "ss_scheme_text_changed/right": {
+   "block_width_pt": 1618.5,
+   "block_height_pt": 434.9,
+   "aspect": 3.721,
+   "tolerance_pt_x": 4.046,
+   "tolerance_pt_y": 1.087
+  },
+  "ss_simple_node/left": {
+   "block_width_pt": 524.5,
+   "block_height_pt": 224.2,
+   "aspect": 2.34,
+   "tolerance_pt_x": 1.311,
+   "tolerance_pt_y": 0.56
+  },
+  "ss_simple_node/right": {
+   "block_width_pt": 524.5,
+   "block_height_pt": 224.2,
+   "aspect": 2.34,
+   "tolerance_pt_x": 1.311,
+   "tolerance_pt_y": 0.56
+  },
+  "ss_table_graphic/left": {
+   "block_width_pt": 959.9,
+   "block_height_pt": 494.2,
+   "aspect": 1.942,
+   "tolerance_pt_x": 2.4,
+   "tolerance_pt_y": 1.235
+  },
+  "ss_table_graphic/right": {
+   "block_width_pt": 942.2,
+   "block_height_pt": 523.2,
+   "aspect": 1.801,
+   "tolerance_pt_x": 2.356,
+   "tolerance_pt_y": 1.308
+  },
+  "vk_node_plan/left": {
+   "block_width_pt": 1186.8,
+   "block_height_pt": 984.5,
+   "aspect": 1.205,
+   "tolerance_pt_x": 2.967,
+   "tolerance_pt_y": 2.461
+  },
+  "vk_node_plan/right": {
+   "block_width_pt": 1203.8,
+   "block_height_pt": 976.2,
+   "aspect": 1.233,
+   "tolerance_pt_x": 3.01,
+   "tolerance_pt_y": 2.441
+  },
+  "vk_nodes/left": {
+   "block_width_pt": 1031.9,
+   "block_height_pt": 1665.0,
+   "aspect": 0.62,
+   "tolerance_pt_x": 2.58,
+   "tolerance_pt_y": 4.162
+  },
+  "vk_nodes/right": {
+   "block_width_pt": 1071.9,
+   "block_height_pt": 1677.9,
+   "aspect": 0.639,
+   "tolerance_pt_x": 2.68,
+   "tolerance_pt_y": 4.195
+  },
+  "vk_plan/left": {
+   "block_width_pt": 1561.1,
+   "block_height_pt": 999.7,
+   "aspect": 1.562,
+   "tolerance_pt_x": 3.903,
+   "tolerance_pt_y": 2.499
+  },
+  "vk_plan/right": {
+   "block_width_pt": 1564.7,
+   "block_height_pt": 998.6,
+   "aspect": 1.567,
+   "tolerance_pt_x": 3.912,
+   "tolerance_pt_y": 2.496
+  }
+ }
+}

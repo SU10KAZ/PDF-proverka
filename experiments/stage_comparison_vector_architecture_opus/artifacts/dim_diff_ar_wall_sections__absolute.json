@@ -1,0 +1,18 @@
+{
+ "pair": "ar_wall_sections",
+ "frame": "absolute",
+ "match_tolerance": 6.0,
+ "only_corroborated_bindings": true,
+ "left_dimensions": 58,
+ "right_dimensions": 58,
+ "matched": 58,
+ "unchanged": 58,
+ "global_drift": [
+  0.0,
+  0.0
+ ],
+ "chain_retiled": [],
+ "value_changed": [],
+ "removed": [],
+ "added": []
+}

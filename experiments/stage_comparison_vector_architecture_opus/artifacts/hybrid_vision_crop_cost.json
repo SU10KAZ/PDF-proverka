@@ -1,0 +1,134 @@
+{
+  "codex_version": "codex-cli 0.149.0-alpha.4.1",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "low",
+  "baseline_input_tokens_runs": [
+    13985,
+    13892,
+    13892
+  ],
+  "baseline_used": 13892,
+  "rows": [
+    {
+      "label": "benchmark:ss_simple_node/left.png",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_blocks/artifacts/diagnostics/ss_simple_node/left.png",
+      "width": 709,
+      "height": 304,
+      "png_bytes": 12705,
+      "input_tokens_total": 14213,
+      "measured_image_tokens": 321,
+      "patch_model_prediction": 230,
+      "raw_patches_uncapped": 230
+    },
+    {
+      "label": "benchmark:ss_table_graphic/left.png",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_blocks/artifacts/diagnostics/ss_table_graphic/left.png",
+      "width": 1297,
+      "height": 668,
+      "png_bytes": 97466,
+      "input_tokens_total": 14971,
+      "measured_image_tokens": 1079,
+      "patch_model_prediction": 861,
+      "raw_patches_uncapped": 861
+    },
+    {
+      "label": "benchmark:eom_singleline_changed/left.png",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_blocks/artifacts/diagnostics/eom_singleline_changed/left.png",
+      "width": 661,
+      "height": 1041,
+      "png_bytes": 88859,
+      "input_tokens_total": 14769,
+      "measured_image_tokens": 877,
+      "patch_model_prediction": 693,
+      "raw_patches_uncapped": 693
+    },
+    {
+      "label": "benchmark:ar_plan/left.png",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_blocks/artifacts/diagnostics/ar_plan/left.png",
+      "width": 1928,
+      "height": 2237,
+      "png_bytes": 870319,
+      "input_tokens_total": 16860,
+      "measured_image_tokens": 2968,
+      "patch_model_prediction": 1512,
+      "raw_patches_uncapped": 4270
+    },
+    {
+      "label": "benchmark:ss_plan_dense/left.png",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_blocks/artifacts/diagnostics/ss_plan_dense/left.png",
+      "width": 4506,
+      "height": 2498,
+      "png_bytes": 1397141,
+      "input_tokens_total": 16701,
+      "measured_image_tokens": 2809,
+      "patch_model_prediction": 1508,
+      "raw_patches_uncapped": 11139
+    },
+    {
+      "label": "tight:vk_nodes_notes_block_z2",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/vk_nodes_notes_block_z2.png",
+      "width": 966,
+      "height": 1276,
+      "png_bytes": 109142,
+      "input_tokens_total": 15430,
+      "measured_image_tokens": 1538,
+      "patch_model_prediction": 1240,
+      "raw_patches_uncapped": 1240
+    },
+    {
+      "label": "tight:vk_nodes_notes_block_z4",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/vk_nodes_notes_block_z4.png",
+      "width": 1931,
+      "height": 2552,
+      "png_bytes": 267251,
+      "input_tokens_total": 16883,
+      "measured_image_tokens": 2991,
+      "patch_model_prediction": 1530,
+      "raw_patches_uncapped": 4880
+    },
+    {
+      "label": "tight:ss_table_extra_contour_z2",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/ss_table_extra_contour_z2.png",
+      "width": 1885,
+      "height": 472,
+      "png_bytes": 92011,
+      "input_tokens_total": 15005,
+      "measured_image_tokens": 1113,
+      "patch_model_prediction": 885,
+      "raw_patches_uncapped": 885
+    },
+    {
+      "label": "tight:ss_table_extra_contour_z4",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/ss_table_extra_contour_z4.png",
+      "width": 3770,
+      "height": 943,
+      "png_bytes": 216456,
+      "input_tokens_total": 15171,
+      "measured_image_tokens": 1279,
+      "patch_model_prediction": 1444,
+      "raw_patches_uncapped": 3540
+    },
+    {
+      "label": "tight:eom_branch_group_z2",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/eom_branch_group_z2.png",
+      "width": 619,
+      "height": 703,
+      "png_bytes": 60066,
+      "input_tokens_total": 14469,
+      "measured_image_tokens": 577,
+      "patch_model_prediction": 440,
+      "raw_patches_uncapped": 440
+    },
+    {
+      "label": "tight:eom_branch_group_z4",
+      "path": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_architecture_opus/artifacts/hybrid_crops/eom_branch_group_z4.png",
+      "width": 1238,
+      "height": 1405,
+      "png_bytes": 131930,
+      "input_tokens_total": 16000,
+      "measured_image_tokens": 2108,
+      "patch_model_prediction": 1476,
+      "raw_patches_uncapped": 1716
+    }
+  ]
+}

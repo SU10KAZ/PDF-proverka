@@ -1,0 +1,23 @@
+{"RECOVERED": 13, "PARTIAL": 4, "WRONG_VALUE": 4, "NOT_RECOVERED": 1}
+ss_simple_node      Кабель"витаяпара",кат.5е, 4пар   want=leader                   got=leader               RECOVERED     
+ss_simple_node      КР                               want=contour_caption          got=contour_caption      RECOVERED     
+ss_simple_node      БГЗ                              want=contour_caption          got=contour_caption      RECOVERED     
+ss_simple_node      IN                               want=enclosure_tight          got=enclosure_tight      RECOVERED     
+ss_simple_node      RJ-45 (PoE)                      want=enclosure_tight          got=symbol_cluster       PARTIAL       
+ss_simple_node      кОСПД3.1/ОСПД6.3                 want=leader                   got=leader               RECOVERED     
+fresh_kj_sections   Засыпка                          want=leader                   got=leader               RECOVERED     
+fresh_kj_sections   2650                             want=dimension_interval       got=dimension_interval   WRONG_VALUE     printed=2650mm measured=275.2mm err=89.6% ticks=2 lines=3
+fresh_kj_sections   1370                             want=dimension_interval       got=dimension_interval   WRONG_VALUE     printed=1370mm measured=258.2mm err=81.2% ticks=2 lines=3
+fresh_kj_sections   1370                             want=dimension_interval       got=dimension_interval   RECOVERED       printed=1370mm measured=1371.6mm err=0.1% ticks=2 lines=1
+fresh_kj_sections   300                              want=dimension_interval       got=dimension_interval   RECOVERED       printed=300mm measured=300.6mm err=0.2% ticks=2 lines=2
+fresh_kj_sections   250                              want=dimension_interval       got=band_association     NOT_RECOVERED 
+fresh_kj_sections   П.Т                              want=symbol_cluster           got=leader               PARTIAL       
+fresh_kj_sections   -0,430                           want=elevation_mark(MISSING   got=band_association     PARTIAL       
+fresh_kj_sections   400                              want=dimension_interval       got=dimension_interval   WRONG_VALUE     printed=400mm measured=448.7mm err=12.2% ticks=2 lines=2
+fresh_ar_lintels    40                               want=dimension_interval       got=dimension_interval   RECOVERED       printed=40mm measured=39.8mm err=0.5% ticks=2 lines=4
+fresh_ar_lintels    200                              want=dimension_interval       got=dimension_interval   WRONG_VALUE     printed=200mm measured=36.4mm err=81.8% ticks=8 lines=2
+fresh_ar_lintels    Уголок40х4, 2шт.                 want=leader                   got=contour_caption      PARTIAL       
+fresh_ar_lintels    ПР-11                            want=grid_cell                got=grid_cell            RECOVERED     
+fresh_ar_lintels    Анкер                            want=leader                   got=leader               RECOVERED     
+fresh_ar_legend     С-10,кирпичные стены- 120мм      want=band_association         got=band_association     RECOVERED     
+fresh_ar_legend     +4.500                           want=symbol_cluster           got=symbol_cluster       RECOVERED     

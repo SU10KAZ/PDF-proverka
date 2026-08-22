@@ -1,0 +1,167 @@
+{
+ "probe": "hatchnoise_p4b_universal",
+ "blocks": [
+  "ar_layered_plan",
+  "ar41_k5_plan",
+  "ar41_k6_plan",
+  "eom_em_k1",
+  "ss_askuvt_k1",
+  "ss_soue_k3k6",
+  "tx_tx2_k4",
+  "km_nvf_facade"
+ ],
+ "universal_safe_analysis": [
+  {
+   "max_fg_eaten_allowed": 0.01,
+   "n_settings": 2,
+   "n_settings_total": 560,
+   "best": {
+    "setting": [
+     1000000,
+     1000000,
+     0.8,
+     0.0
+    ],
+    "max_fg_eaten": 0.0014,
+    "mean_bg_removed": 0.000275,
+    "per_block_bg_removed": [
+     0.0022,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "per_block_fg_eaten": [
+     0.0,
+     0.0014,
+     0.0004,
+     0.0,
+     0.0003,
+     0.0001,
+     0.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "max_fg_eaten_allowed": 0.02,
+   "n_settings": 2,
+   "n_settings_total": 560,
+   "best": {
+    "setting": [
+     1000000,
+     1000000,
+     0.8,
+     0.0
+    ],
+    "max_fg_eaten": 0.0014,
+    "mean_bg_removed": 0.000275,
+    "per_block_bg_removed": [
+     0.0022,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "per_block_fg_eaten": [
+     0.0,
+     0.0014,
+     0.0004,
+     0.0,
+     0.0003,
+     0.0001,
+     0.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "max_fg_eaten_allowed": 0.05,
+   "n_settings": 4,
+   "n_settings_total": 560,
+   "best": {
+    "setting": [
+     1000000,
+     1000000,
+     0.55,
+     0.0
+    ],
+    "max_fg_eaten": 0.0274,
+    "mean_bg_removed": 0.11108749999999999,
+    "per_block_bg_removed": [
+     0.0053,
+     0.0,
+     0.0255,
+     0.8482,
+     0.0,
+     0.0097,
+     0.0,
+     0.0
+    ],
+    "per_block_fg_eaten": [
+     0.0235,
+     0.0274,
+     0.0004,
+     0.0,
+     0.0003,
+     0.0079,
+     0.0155,
+     0.0
+    ]
+   }
+  },
+  {
+   "max_fg_eaten_allowed": 0.1,
+   "n_settings": 4,
+   "n_settings_total": 560,
+   "best": {
+    "setting": [
+     1000000,
+     1000000,
+     0.55,
+     0.0
+    ],
+    "max_fg_eaten": 0.0274,
+    "mean_bg_removed": 0.11108749999999999,
+    "per_block_bg_removed": [
+     0.0053,
+     0.0,
+     0.0255,
+     0.8482,
+     0.0,
+     0.0097,
+     0.0,
+     0.0
+    ],
+    "per_block_fg_eaten": [
+     0.0235,
+     0.0274,
+     0.0004,
+     0.0,
+     0.0003,
+     0.0079,
+     0.0155,
+     0.0
+    ]
+   }
+  }
+ ],
+ "per_sheet_oracle_bg_removed": {
+  "ar_layered_plan": 0.7915,
+  "ar41_k5_plan": 0.0,
+  "ar41_k6_plan": 0.2706,
+  "eom_em_k1": 0.9529,
+  "ss_askuvt_k1": 0.0,
+  "ss_soue_k3k6": 0.8088,
+  "tx_tx2_k4": 0.0,
+  "km_nvf_facade": 0.0
+ },
+ "per_sheet_oracle_mean": 0.353,
+ "per_sheet_oracle_zero_blocks": 4
+}

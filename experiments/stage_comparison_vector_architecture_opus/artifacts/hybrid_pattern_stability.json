@@ -1,0 +1,170 @@
+{
+  "ss_scheme_text_changed": {
+    "left_patterns": 1,
+    "right_patterns": 11,
+    "shared_pattern_ids": 1,
+    "jaccard": 0.091,
+    "shared_with_identical_count": 1,
+    "shared_with_changed_count": 0,
+    "left_types": [
+      "path"
+    ],
+    "right_types": [
+      "filled_polygon",
+      "path"
+    ],
+    "left_pdf_sha8": "a3e7451c",
+    "right_pdf_sha8": "5560a190"
+  },
+  "ss_plan_dense": {
+    "left_patterns": 100,
+    "right_patterns": 100,
+    "shared_pattern_ids": 64,
+    "jaccard": 0.471,
+    "shared_with_identical_count": 55,
+    "shared_with_changed_count": 9,
+    "left_types": [
+      "circle",
+      "filled_polygon",
+      "path",
+      "polyline"
+    ],
+    "right_types": [
+      "circle",
+      "filled_polygon",
+      "path",
+      "polyline"
+    ],
+    "left_pdf_sha8": "a3e7451c",
+    "right_pdf_sha8": "5560a190"
+  },
+  "ss_simple_node": {
+    "left_patterns": 0,
+    "right_patterns": 0,
+    "shared_pattern_ids": 0,
+    "jaccard": 0.0,
+    "shared_with_identical_count": 0,
+    "shared_with_changed_count": 0,
+    "left_types": [],
+    "right_types": [],
+    "left_pdf_sha8": "a3e7451c",
+    "right_pdf_sha8": "5560a190"
+  },
+  "ss_table_graphic": {
+    "left_patterns": 0,
+    "right_patterns": 0,
+    "shared_pattern_ids": 0,
+    "jaccard": 0.0,
+    "shared_with_identical_count": 0,
+    "shared_with_changed_count": 0,
+    "left_types": [],
+    "right_types": [],
+    "left_pdf_sha8": "a3e7451c",
+    "right_pdf_sha8": "5560a190"
+  },
+  "ar_plan": {
+    "left_patterns": 65,
+    "right_patterns": 64,
+    "shared_pattern_ids": 58,
+    "jaccard": 0.817,
+    "shared_with_identical_count": 31,
+    "shared_with_changed_count": 27,
+    "left_types": [
+      "circle",
+      "curve",
+      "filled_polygon"
+    ],
+    "right_types": [
+      "circle",
+      "curve",
+      "filled_polygon"
+    ],
+    "left_pdf_sha8": "3d7242cd",
+    "right_pdf_sha8": "3d7242cd"
+  },
+  "ar_wall_sections": {
+    "left_patterns": 11,
+    "right_patterns": 10,
+    "shared_pattern_ids": 8,
+    "jaccard": 0.615,
+    "shared_with_identical_count": 8,
+    "shared_with_changed_count": 0,
+    "left_types": [
+      "circle",
+      "filled_polygon"
+    ],
+    "right_types": [
+      "circle",
+      "filled_polygon"
+    ],
+    "left_pdf_sha8": "3d7242cd",
+    "right_pdf_sha8": "3d7242cd"
+  },
+  "vk_plan": {
+    "left_patterns": 0,
+    "right_patterns": 1,
+    "shared_pattern_ids": 0,
+    "jaccard": 0.0,
+    "shared_with_identical_count": 0,
+    "shared_with_changed_count": 0,
+    "left_types": [],
+    "right_types": [
+      "filled_polygon"
+    ],
+    "left_pdf_sha8": "360626f0",
+    "right_pdf_sha8": "61d95a84"
+  },
+  "vk_nodes": {
+    "left_patterns": 4,
+    "right_patterns": 4,
+    "shared_pattern_ids": 3,
+    "jaccard": 0.6,
+    "shared_with_identical_count": 0,
+    "shared_with_changed_count": 3,
+    "left_types": [
+      "filled_polygon"
+    ],
+    "right_types": [
+      "filled_polygon"
+    ],
+    "left_pdf_sha8": "360626f0",
+    "right_pdf_sha8": "61d95a84"
+  },
+  "vk_node_plan": {
+    "left_patterns": 35,
+    "right_patterns": 33,
+    "shared_pattern_ids": 20,
+    "jaccard": 0.417,
+    "shared_with_identical_count": 6,
+    "shared_with_changed_count": 14,
+    "left_types": [
+      "filled_polygon"
+    ],
+    "right_types": [
+      "filled_polygon"
+    ],
+    "left_pdf_sha8": "360626f0",
+    "right_pdf_sha8": "61d95a84"
+  },
+  "eom_singleline_changed": {
+    "left_patterns": 22,
+    "right_patterns": 28,
+    "shared_pattern_ids": 0,
+    "jaccard": 0.0,
+    "shared_with_identical_count": 0,
+    "shared_with_changed_count": 0,
+    "left_types": [
+      "circle",
+      "curve",
+      "filled_polygon",
+      "path",
+      "polyline"
+    ],
+    "right_types": [
+      "curve",
+      "filled_polygon"
+    ],
+    "left_pdf_sha8": "ee122c12",
+    "right_pdf_sha8": "77460c9d"
+  }
+}

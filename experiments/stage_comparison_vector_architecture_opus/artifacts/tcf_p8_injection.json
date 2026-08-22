@@ -1,0 +1,811 @@
+{
+ "probe": "tcf_p8_injection",
+ "tolerance": 0.0025,
+ "cap": 8000,
+ "blocks": {
+  "ss_simple_node": {
+   "segments_total": 45,
+   "segments_capped": false,
+   "runs": {
+    "k=1": {
+     "segments_added": 27,
+     "topology_similarity": 0.766876,
+     "geometry_similarity_selected": 0.8125,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      19,
+      19
+     ],
+     "branch_points": [
+      24,
+      28
+     ],
+     "node_count": [
+      60,
+      75
+     ],
+     "connected_components": [
+      7,
+      7
+     ],
+     "closed_contours": [
+      0,
+      1
+     ],
+     "segments_used": [
+      45,
+      72
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": false
+    },
+    "k=2": {
+     "segments_added": 54,
+     "topology_similarity": 0.697062,
+     "geometry_similarity_selected": 0.732323,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      19,
+      18
+     ],
+     "branch_points": [
+      24,
+      32
+     ],
+     "node_count": [
+      60,
+      90
+     ],
+     "connected_components": [
+      7,
+      7
+     ],
+     "closed_contours": [
+      0,
+      2
+     ],
+     "segments_used": [
+      45,
+      99
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": false
+    },
+    "k=5": {
+     "segments_added": 135,
+     "topology_similarity": 0.488129,
+     "geometry_similarity_selected": 0.661111,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      19,
+      13
+     ],
+     "branch_points": [
+      24,
+      54
+     ],
+     "node_count": [
+      60,
+      133
+     ],
+     "connected_components": [
+      7,
+      6
+     ],
+     "closed_contours": [
+      0,
+      5
+     ],
+     "segments_used": [
+      45,
+      180
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": false
+    },
+    "k=20": {
+     "segments_added": 540,
+     "topology_similarity": 0.279225,
+     "geometry_similarity_selected": 0.566667,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      19,
+      9
+     ],
+     "branch_points": [
+      24,
+      162
+     ],
+     "node_count": [
+      60,
+      345
+     ],
+     "connected_components": [
+      7,
+      3
+     ],
+     "closed_contours": [
+      0,
+      20
+     ],
+     "segments_used": [
+      45,
+      585
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": false
+    }
+   }
+  },
+  "ss_scheme_text_changed": {
+   "segments_total": 710,
+   "segments_capped": false,
+   "runs": {
+    "k=1": {
+     "segments_added": 27,
+     "topology_similarity": 0.931256,
+     "geometry_similarity_selected": 0.981682,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      818,
+      818
+     ],
+     "branch_points": [
+      218,
+      222
+     ],
+     "node_count": [
+      1122,
+      1137
+     ],
+     "connected_components": [
+      407,
+      407
+     ],
+     "closed_contours": [
+      1,
+      2
+     ],
+     "segments_used": [
+      710,
+      737
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": true
+    },
+    "k=2": {
+     "segments_added": 54,
+     "topology_similarity": 0.901288,
+     "geometry_similarity_selected": 0.96466,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      818,
+      815
+     ],
+     "branch_points": [
+      218,
+      225
+     ],
+     "node_count": [
+      1122,
+      1152
+     ],
+     "connected_components": [
+      407,
+      406
+     ],
+     "closed_contours": [
+      1,
+      3
+     ],
+     "segments_used": [
+      710,
+      764
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": true
+    },
+    "k=5": {
+     "segments_added": 135,
+     "topology_similarity": 0.803977,
+     "geometry_similarity_selected": 0.920118,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      818,
+      810
+     ],
+     "branch_points": [
+      218,
+      252
+     ],
+     "node_count": [
+      1122,
+      1197
+     ],
+     "connected_components": [
+      407,
+      404
+     ],
+     "closed_contours": [
+      1,
+      6
+     ],
+     "segments_used": [
+      710,
+      845
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": false
+    },
+    "k=20": {
+     "segments_added": 540,
+     "topology_similarity": 0.662018,
+     "geometry_similarity_selected": 0.7864,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      818,
+      790
+     ],
+     "branch_points": [
+      218,
+      341
+     ],
+     "node_count": [
+      1122,
+      1408
+     ],
+     "connected_components": [
+      407,
+      391
+     ],
+     "closed_contours": [
+      1,
+      21
+     ],
+     "segments_used": [
+      710,
+      1250
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": false
+    }
+   }
+  },
+  "eom_singleline_changed": {
+   "segments_total": 3294,
+   "segments_capped": false,
+   "runs": {
+    "k=1": {
+     "segments_added": 27,
+     "topology_similarity": 0.986336,
+     "geometry_similarity_selected": 0.996086,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      606,
+      606
+     ],
+     "branch_points": [
+      482,
+      489
+     ],
+     "node_count": [
+      1300,
+      1312
+     ],
+     "connected_components": [
+      303,
+      303
+     ],
+     "closed_contours": [
+      58,
+      59
+     ],
+     "segments_used": [
+      3294,
+      3321
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=2": {
+     "segments_added": 54,
+     "topology_similarity": 0.98441,
+     "geometry_similarity_selected": 0.991935,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      606,
+      605
+     ],
+     "branch_points": [
+      482,
+      496
+     ],
+     "node_count": [
+      1300,
+      1330
+     ],
+     "connected_components": [
+      303,
+      302
+     ],
+     "closed_contours": [
+      58,
+      60
+     ],
+     "segments_used": [
+      3294,
+      3348
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=5": {
+     "segments_added": 135,
+     "topology_similarity": 0.963052,
+     "geometry_similarity_selected": 0.989064,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      606,
+      599
+     ],
+     "branch_points": [
+      482,
+      512
+     ],
+     "node_count": [
+      1300,
+      1370
+     ],
+     "connected_components": [
+      303,
+      301
+     ],
+     "closed_contours": [
+      58,
+      63
+     ],
+     "segments_used": [
+      3294,
+      3429
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=20": {
+     "segments_added": 540,
+     "topology_similarity": 0.866279,
+     "geometry_similarity_selected": 0.958007,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      606,
+      591
+     ],
+     "branch_points": [
+      482,
+      609
+     ],
+     "node_count": [
+      1300,
+      1589
+     ],
+     "connected_components": [
+      303,
+      294
+     ],
+     "closed_contours": [
+      58,
+      78
+     ],
+     "segments_used": [
+      3294,
+      3834
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": true
+    }
+   }
+  },
+  "vk_plan": {
+   "segments_total": 3128,
+   "segments_capped": false,
+   "runs": {
+    "k=1": {
+     "segments_added": 27,
+     "topology_similarity": 0.97788,
+     "geometry_similarity_selected": 0.995721,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      41,
+      41
+     ],
+     "branch_points": [
+      1076,
+      1082
+     ],
+     "node_count": [
+      1179,
+      1194
+     ],
+     "connected_components": [
+      18,
+      17
+     ],
+     "closed_contours": [
+      8,
+      9
+     ],
+     "segments_used": [
+      3128,
+      3155
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=2": {
+     "segments_added": 54,
+     "topology_similarity": 0.967971,
+     "geometry_similarity_selected": 0.991672,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      41,
+      41
+     ],
+     "branch_points": [
+      1076,
+      1086
+     ],
+     "node_count": [
+      1179,
+      1201
+     ],
+     "connected_components": [
+      18,
+      18
+     ],
+     "closed_contours": [
+      8,
+      10
+     ],
+     "segments_used": [
+      3128,
+      3182
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=5": {
+     "segments_added": 135,
+     "topology_similarity": 0.921688,
+     "geometry_similarity_selected": 0.987741,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      41,
+      41
+     ],
+     "branch_points": [
+      1076,
+      1107
+     ],
+     "node_count": [
+      1179,
+      1246
+     ],
+     "connected_components": [
+      18,
+      16
+     ],
+     "closed_contours": [
+      8,
+      13
+     ],
+     "segments_used": [
+      3128,
+      3263
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=20": {
+     "segments_added": 540,
+     "topology_similarity": 0.814196,
+     "geometry_similarity_selected": 0.952154,
+     "geometry_selected_tolerance": 0.01,
+     "endpoints": [
+      41,
+      39
+     ],
+     "branch_points": [
+      1076,
+      1185
+     ],
+     "node_count": [
+      1179,
+      1416
+     ],
+     "connected_components": [
+      18,
+      16
+     ],
+     "closed_contours": [
+      8,
+      28
+     ],
+     "segments_used": [
+      3128,
+      3668
+     ],
+     "geometry_similarity_ge_0985": false,
+     "topology_similarity_ge_085": false
+    }
+   }
+  },
+  "ss_plan_dense": {
+   "segments_total": 84439,
+   "segments_capped": true,
+   "runs": {
+    "k=1": {
+     "segments_added": 27,
+     "topology_similarity": 0.998879,
+     "geometry_similarity_selected": 0.99975,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      946,
+      948
+     ],
+     "branch_points": [
+      4636,
+      4640
+     ],
+     "node_count": [
+      6153,
+      6157
+     ],
+     "connected_components": [
+      393,
+      393
+     ],
+     "closed_contours": [
+      382,
+      383
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=2": {
+     "segments_added": 54,
+     "topology_similarity": 0.997073,
+     "geometry_similarity_selected": 0.9995,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      946,
+      945
+     ],
+     "branch_points": [
+      4636,
+      4639
+     ],
+     "node_count": [
+      6153,
+      6155
+     ],
+     "connected_components": [
+      393,
+      390
+     ],
+     "closed_contours": [
+      382,
+      384
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=5": {
+     "segments_added": 135,
+     "topology_similarity": 0.994668,
+     "geometry_similarity_selected": 0.99875,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      946,
+      959
+     ],
+     "branch_points": [
+      4636,
+      4639
+     ],
+     "node_count": [
+      6153,
+      6163
+     ],
+     "connected_components": [
+      393,
+      392
+     ],
+     "closed_contours": [
+      382,
+      387
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=20": {
+     "segments_added": 540,
+     "topology_similarity": 0.982681,
+     "geometry_similarity_selected": 0.995708,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      946,
+      972
+     ],
+     "branch_points": [
+      4636,
+      4632
+     ],
+     "node_count": [
+      6153,
+      6194
+     ],
+     "connected_components": [
+      393,
+      391
+     ],
+     "closed_contours": [
+      382,
+      402
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    }
+   }
+  },
+  "ar_plan": {
+   "segments_total": 18080,
+   "segments_capped": true,
+   "runs": {
+    "k=1": {
+     "segments_added": 27,
+     "topology_similarity": 0.999291,
+     "geometry_similarity_selected": 0.999833,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      768,
+      768
+     ],
+     "branch_points": [
+      4879,
+      4878
+     ],
+     "node_count": [
+      6003,
+      6002
+     ],
+     "connected_components": [
+      224,
+      224
+     ],
+     "closed_contours": [
+      357,
+      358
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=2": {
+     "segments_added": 54,
+     "topology_similarity": 0.998447,
+     "geometry_similarity_selected": 0.999708,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      768,
+      767
+     ],
+     "branch_points": [
+      4879,
+      4880
+     ],
+     "node_count": [
+      6003,
+      6001
+     ],
+     "connected_components": [
+      224,
+      224
+     ],
+     "closed_contours": [
+      357,
+      359
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=5": {
+     "segments_added": 135,
+     "topology_similarity": 0.996308,
+     "geometry_similarity_selected": 0.999333,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      768,
+      766
+     ],
+     "branch_points": [
+      4879,
+      4885
+     ],
+     "node_count": [
+      6003,
+      6010
+     ],
+     "connected_components": [
+      224,
+      224
+     ],
+     "closed_contours": [
+      357,
+      362
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    },
+    "k=20": {
+     "segments_added": 540,
+     "topology_similarity": 0.986403,
+     "geometry_similarity_selected": 0.997333,
+     "geometry_selected_tolerance": 0.001,
+     "endpoints": [
+      768,
+      758
+     ],
+     "branch_points": [
+      4879,
+      4889
+     ],
+     "node_count": [
+      6003,
+      6017
+     ],
+     "connected_components": [
+      224,
+      224
+     ],
+     "closed_contours": [
+      357,
+      377
+     ],
+     "segments_used": [
+      8000,
+      8000
+     ],
+     "geometry_similarity_ge_0985": true,
+     "topology_similarity_ge_085": true
+    }
+   }
+  }
+ }
+}

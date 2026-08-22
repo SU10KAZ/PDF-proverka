@@ -1,0 +1,23 @@
+{
+  "vk_nodes": {
+    "clean_match_rate": 0.528,
+    "clean_n": 214,
+    "broken_match_rate_raw": 0.0,
+    "broken_match_rate_glyph": 0.029,
+    "broken_n": 207
+  },
+  "vk_node_plan": {
+    "clean_match_rate": 0.694,
+    "clean_n": 111,
+    "broken_match_rate_raw": 0.0,
+    "broken_match_rate_glyph": 0.015,
+    "broken_n": 132
+  },
+  "vk_plan": {
+    "clean_match_rate": 0.766,
+    "clean_n": 171,
+    "broken_match_rate_raw": 0.0,
+    "broken_match_rate_glyph": 0.492,
+    "broken_n": 61
+  }
+}

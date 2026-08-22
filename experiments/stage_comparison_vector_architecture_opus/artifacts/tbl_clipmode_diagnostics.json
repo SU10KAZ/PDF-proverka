@@ -1,0 +1,58 @@
+{
+ "left": {
+  "region": [
+   55.21,
+   100.53,
+   1015.09,
+   594.71
+  ],
+  "table_right_ruling_x": 1190.4,
+  "table_top_ruling_y": 14.16,
+  "rulings_full": [
+   86,
+   93
+  ],
+  "rulings_after_crop": [
+   47,
+   70
+  ],
+  "table_candidates_full_page": 3,
+  "table_candidates_after_crop": 1,
+  "candidate_bboxes_after_crop": [
+   [
+    802.8,
+    116.2,
+    864.7,
+    274.8
+   ]
+  ]
+ },
+ "right": {
+  "region": [
+   57.59,
+   86.05,
+   999.83,
+   609.3
+  ],
+  "table_right_ruling_x": 1190.4,
+  "table_top_ruling_y": 14.16,
+  "rulings_full": [
+   86,
+   93
+  ],
+  "rulings_after_crop": [
+   48,
+   69
+  ],
+  "table_candidates_full_page": 3,
+  "table_candidates_after_crop": 1,
+  "candidate_bboxes_after_crop": [
+   [
+    802.8,
+    93.4,
+    864.7,
+    274.8
+   ]
+  ]
+ }
+}

@@ -1,0 +1,22 @@
+{
+  "note": "Blocks used by the dim_* probe. First three pairs are Track A's; the last two are fresh pairs found by this probe (real consecutive revisions of the same sheet, different bytes).",
+  "pairs": [
+    {"pair_id": "ar_wall_sections", "disc": "AR", "source": "track_a",
+     "left":  {"pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf", "page": 13, "bbox_norm": [0.41929848138691034, 0.3845496009122007, 0.843703803252251, 0.6755986316989738]},
+     "right": {"pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf", "page": 13, "bbox_norm": [0.4238462746143341, 0.3842254877090454, 0.8426327407360077, 0.6745918989181519]}},
+    {"pair_id": "vk_nodes", "disc": "VK", "source": "track_a",
+     "left":  {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf", "page": 8, "bbox_norm": [0.02226443588733673, 0.0, 0.45511864125728607, 0.9887108504772186]},
+     "right": {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf", "page": 8, "bbox_norm": [0.01965601965601966, 0.0017388552317053254, 0.46928746928746934, 0.9981029029988565]}},
+    {"pair_id": "vk_node_plan", "disc": "VK", "source": "track_a",
+     "left":  {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf", "page": 11, "bbox_norm": [0.018328696489334106, 0.002146989107131958, 0.5161558747235082, 0.5867864828409218]},
+     "right": {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf", "page": 11, "bbox_norm": [0.017839640378952026, 0.003336876630783081, 0.5227995480454231, 0.5830469829391108]}},
+    {"pair_id": "ar_roof_plan", "disc": "AR", "source": "fresh_probe",
+     "sheet": "13АВ-РД-АР3-К6 lst 2 'Кладочный план кровли'",
+     "left":  {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К6/versions/v001/02_work/document.pdf", "page": 5, "bbox_norm": [0.04, 0.03, 0.41, 0.53]},
+     "right": {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К6/versions/v002/02_work/document.pdf", "page": 6, "bbox_norm": [0.04, 0.03, 0.41, 0.53]}},
+    {"pair_id": "kj_slab_top", "disc": "KJ", "source": "fresh_probe",
+     "sheet": "13АВ-РД-КЖ5.24.2-К2 lst 4 'Схема верхнего армирования'",
+     "left":  {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.24.2-К2/versions/v001/02_work/document.pdf", "page": 8, "bbox_norm": [0.04, 0.03, 0.40, 0.72]},
+     "right": {"pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.24.2-К2/versions/v002/02_work/document.pdf", "page": 9, "bbox_norm": [0.04, 0.03, 0.40, 0.72]}}
+  ]
+}

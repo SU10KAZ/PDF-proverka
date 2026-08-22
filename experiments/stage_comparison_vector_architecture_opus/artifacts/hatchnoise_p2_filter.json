@@ -1,0 +1,251 @@
+{
+ "probe": "hatchnoise_p2_filter_render",
+ "filter_defaults": {
+  "angle_bucket_deg": 5.0,
+  "length_decades": 6.0,
+  "max_hatch_length": 0.06,
+  "max_hatch_segments": 3,
+  "min_family": 24,
+  "support_radius": 0.02,
+  "min_support": 5,
+  "tiny_motif_max_len": 0.02,
+  "tiny_motif_min_count": 12,
+  "light_stroke_luminance": 0.62,
+  "dust_length": 0.0015
+ },
+ "blocks": {
+  "vk_plan": {
+   "block": "vk_plan",
+   "discipline": "VK",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+   "page_index": 5,
+   "bbox_norm": [
+    0.05024154589371981,
+    0.00929432013769363,
+    0.6681159420289855,
+    0.848710601719198
+   ],
+   "segments": 505213,
+   "primitives": 883686,
+   "texts": 131,
+   "dropped": 501945,
+   "dropped_frac": 0.9935,
+   "per_rule_dropped_segments": {
+    "P1": 439806,
+    "P2": 276288,
+    "P3": 383320,
+    "P4": 479321
+   },
+   "primitives_dropped": 501849,
+   "primitives_dropped_frac": 0.9959,
+   "elapsed_s": 136.1,
+   "renders": [
+    "artifacts/hatchnoise/vk_plan/00_pdf_crop.png",
+    "artifacts/hatchnoise/vk_plan/01_all_segments.png",
+    "artifacts/hatchnoise/vk_plan/02_keep.png",
+    "artifacts/hatchnoise/vk_plan/03_drop.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_P1.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_P2.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_P3.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_P4.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_R1.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_R2.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_R3.png",
+    "artifacts/hatchnoise/vk_plan/04_drop_R4.png"
+   ]
+  },
+  "ss_plan_dense": {
+   "block": "ss_plan_dense",
+   "discipline": "SS",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+   "page_index": 7,
+   "bbox_norm": [
+    0.009230971336364746,
+    0.0,
+    0.9994679689407349,
+    0.7758837086715362
+   ],
+   "segments": 84439,
+   "primitives": 1604,
+   "texts": 522,
+   "dropped": 74561,
+   "dropped_frac": 0.883,
+   "per_rule_dropped_segments": {
+    "P1": 0,
+    "P2": 108,
+    "P3": 74529,
+    "P4": 62
+   },
+   "primitives_dropped": 1097,
+   "primitives_dropped_frac": 0.6856,
+   "elapsed_s": 5.6,
+   "renders": [
+    "artifacts/hatchnoise/ss_plan_dense/00_pdf_crop.png",
+    "artifacts/hatchnoise/ss_plan_dense/01_all_segments.png",
+    "artifacts/hatchnoise/ss_plan_dense/02_keep.png",
+    "artifacts/hatchnoise/ss_plan_dense/03_drop.png",
+    "artifacts/hatchnoise/ss_plan_dense/04_drop_P2.png",
+    "artifacts/hatchnoise/ss_plan_dense/04_drop_P3.png",
+    "artifacts/hatchnoise/ss_plan_dense/04_drop_P4.png"
+   ]
+  },
+  "ar_wall_sections": {
+   "block": "ar_wall_sections",
+   "discipline": "AR",
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+   "page_index": 13,
+   "bbox_norm": [
+    0.41929848138691034,
+    0.3845496009122007,
+    0.843703803252251,
+    0.6755986316989738
+   ],
+   "segments": 33427,
+   "primitives": 36027,
+   "texts": 119,
+   "dropped": 31628,
+   "dropped_frac": 0.9462,
+   "per_rule_dropped_segments": {
+    "P1": 28218,
+    "P2": 20232,
+    "P3": 1138,
+    "P4": 22589
+   },
+   "primitives_dropped": 31559,
+   "primitives_dropped_frac": 0.9534,
+   "elapsed_s": 5.4,
+   "renders": [
+    "artifacts/hatchnoise/ar_wall_sections/00_pdf_crop.png",
+    "artifacts/hatchnoise/ar_wall_sections/01_all_segments.png",
+    "artifacts/hatchnoise/ar_wall_sections/02_keep.png",
+    "artifacts/hatchnoise/ar_wall_sections/03_drop.png",
+    "artifacts/hatchnoise/ar_wall_sections/04_drop_P1.png",
+    "artifacts/hatchnoise/ar_wall_sections/04_drop_P2.png",
+    "artifacts/hatchnoise/ar_wall_sections/04_drop_P3.png",
+    "artifacts/hatchnoise/ar_wall_sections/04_drop_P4.png"
+   ]
+  },
+  "ar_plan": {
+   "block": "ar_plan",
+   "discipline": "AR",
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+   "page_index": 8,
+   "bbox_norm": [
+    0.022951479766458626,
+    0.007126567844925884,
+    0.6217032413931951,
+    0.9908779931584949
+   ],
+   "segments": 18080,
+   "primitives": 14800,
+   "texts": 836,
+   "dropped": 11407,
+   "dropped_frac": 0.6309,
+   "per_rule_dropped_segments": {
+    "P1": 5949,
+    "P2": 3882,
+    "P3": 3399,
+    "P4": 3401
+   },
+   "primitives_dropped": 10557,
+   "primitives_dropped_frac": 0.7156,
+   "elapsed_s": 2.5,
+   "renders": [
+    "artifacts/hatchnoise/ar_plan/00_pdf_crop.png",
+    "artifacts/hatchnoise/ar_plan/01_all_segments.png",
+    "artifacts/hatchnoise/ar_plan/02_keep.png",
+    "artifacts/hatchnoise/ar_plan/03_drop.png",
+    "artifacts/hatchnoise/ar_plan/04_drop_P1.png",
+    "artifacts/hatchnoise/ar_plan/04_drop_P2.png",
+    "artifacts/hatchnoise/ar_plan/04_drop_P3.png",
+    "artifacts/hatchnoise/ar_plan/04_drop_P4.png"
+   ]
+  },
+  "ar_layered_plan": {
+   "block": "ar_layered_plan",
+   "discipline": "AR",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v001/02_work/document.pdf",
+   "page_index": 24,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.87,
+    0.72
+   ],
+   "segments": 122227,
+   "primitives": 87395,
+   "texts": 655,
+   "dropped": 86779,
+   "dropped_frac": 0.71,
+   "per_rule_dropped_segments": {
+    "P1": 64300,
+    "P2": 42251,
+    "P3": 1476,
+    "P4": 69090
+   },
+   "primitives_dropped": 75634,
+   "primitives_dropped_frac": 0.88,
+   "elapsed_s": 20.7,
+   "renders": [
+    "artifacts/hatchnoise/ar_layered_plan/00_pdf_crop.png",
+    "artifacts/hatchnoise/ar_layered_plan/01_all_segments.png",
+    "artifacts/hatchnoise/ar_layered_plan/02_keep.png",
+    "artifacts/hatchnoise/ar_layered_plan/03_drop.png",
+    "artifacts/hatchnoise/ar_layered_plan/04_drop_P1.png",
+    "artifacts/hatchnoise/ar_layered_plan/04_drop_P2.png",
+    "artifacts/hatchnoise/ar_layered_plan/04_drop_P3.png",
+    "artifacts/hatchnoise/ar_layered_plan/04_drop_P4.png"
+   ],
+   "ground_truth": {
+    "class_counts": {
+     "furniture": 9235,
+     "foreground": 45386,
+     "hatch": 67407,
+     "underlay": 199
+    },
+    "true_positive": 67941,
+    "false_positive": 18838,
+    "false_negative": 8900,
+    "true_negative": 26548,
+    "precision": 0.7829,
+    "recall": 0.8842,
+    "foreground_eaten_frac": 0.4151
+   }
+  },
+  "ov_nodes_hatch": {
+   "block": "ov_nodes_hatch",
+   "discipline": "OV",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К4 V1/versions/v001/02_work/document.pdf",
+   "page_index": 13,
+   "bbox_norm": [
+    0.015,
+    0.01,
+    0.86,
+    0.86
+   ],
+   "segments": 423535,
+   "primitives": 128788,
+   "texts": 1,
+   "dropped": 383792,
+   "dropped_frac": 0.9062,
+   "per_rule_dropped_segments": {
+    "P1": 64030,
+    "P2": 283233,
+    "P3": 0,
+    "P4": 372129
+   },
+   "primitives_dropped": 121640,
+   "primitives_dropped_frac": 0.959,
+   "elapsed_s": 55.8,
+   "renders": [
+    "artifacts/hatchnoise/ov_nodes_hatch/00_pdf_crop.png",
+    "artifacts/hatchnoise/ov_nodes_hatch/01_all_segments.png",
+    "artifacts/hatchnoise/ov_nodes_hatch/02_keep.png",
+    "artifacts/hatchnoise/ov_nodes_hatch/03_drop.png",
+    "artifacts/hatchnoise/ov_nodes_hatch/04_drop_P1.png",
+    "artifacts/hatchnoise/ov_nodes_hatch/04_drop_P2.png",
+    "artifacts/hatchnoise/ov_nodes_hatch/04_drop_P4.png"
+   ]
+  }
+ }
+}

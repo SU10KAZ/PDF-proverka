@@ -1,0 +1,690 @@
+{
+ "research_only": true,
+ "rows": [
+  {
+   "pair_id": "ss_scheme_text_changed",
+   "side": "left",
+   "page_rotation": 0,
+   "page_rect": [
+    1683.8,
+    1190.6
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    1683.8,
+    1190.4
+   ],
+   "texts_extent": [
+    17.7,
+    60.4,
+    1669.8,
+    1189.1
+   ],
+   "block_rect": [
+    50.7,
+    15.5,
+    1666.7,
+    446.7
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    50.7,
+    15.5,
+    1666.7,
+    446.7
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ss_scheme_text_changed",
+   "side": "right",
+   "page_rotation": 0,
+   "page_rect": [
+    1683.8,
+    1190.6
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    1683.8,
+    1190.4
+   ],
+   "texts_extent": [
+    17.7,
+    60.4,
+    1669.8,
+    1189.1
+   ],
+   "block_rect": [
+    49.9,
+    15.6,
+    1668.4,
+    450.5
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    49.9,
+    15.6,
+    1668.4,
+    450.5
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ss_plan_dense",
+   "side": "left",
+   "page_rotation": 0,
+   "page_rect": [
+    3370.3,
+    2383.9
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    3370.3,
+    2383.7
+   ],
+   "texts_extent": [
+    17.7,
+    37.4,
+    3356.3,
+    2382.4
+   ],
+   "block_rect": [
+    31.1,
+    0.0,
+    3368.5,
+    1849.6
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    31.1,
+    0.0,
+    3368.5,
+    1849.6
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ss_plan_dense",
+   "side": "right",
+   "page_rotation": 0,
+   "page_rect": [
+    3370.3,
+    2383.9
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    3370.3,
+    2383.7
+   ],
+   "texts_extent": [
+    17.7,
+    37.4,
+    3356.3,
+    2382.4
+   ],
+   "block_rect": [
+    31.1,
+    0.0,
+    3368.5,
+    1810.9
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    31.1,
+    0.0,
+    3368.5,
+    1810.9
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ss_simple_node",
+   "side": "left",
+   "page_rotation": 0,
+   "page_rect": [
+    1190.6,
+    841.9
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    1190.4,
+    841.7
+   ],
+   "texts_extent": [
+    17.7,
+    30.8,
+    1176.6,
+    840.4
+   ],
+   "block_rect": [
+    105.0,
+    242.7,
+    629.5,
+    466.9
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    105.0,
+    242.7,
+    629.5,
+    466.9
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ss_simple_node",
+   "side": "right",
+   "page_rotation": 0,
+   "page_rect": [
+    1190.6,
+    841.9
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    1190.4,
+    841.7
+   ],
+   "texts_extent": [
+    17.7,
+    30.8,
+    1176.6,
+    840.4
+   ],
+   "block_rect": [
+    105.0,
+    242.7,
+    629.5,
+    466.9
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    105.0,
+    242.7,
+    629.5,
+    466.9
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ss_table_graphic",
+   "side": "left",
+   "page_rotation": 0,
+   "page_rect": [
+    1190.6,
+    841.9
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    1190.4,
+    841.7
+   ],
+   "texts_extent": [
+    17.7,
+    31.0,
+    1176.6,
+    840.4
+   ],
+   "block_rect": [
+    55.2,
+    100.5,
+    1015.1,
+    594.7
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    55.2,
+    100.5,
+    1015.1,
+    594.7
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ss_table_graphic",
+   "side": "right",
+   "page_rotation": 0,
+   "page_rect": [
+    1190.6,
+    841.9
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    1190.4,
+    841.7
+   ],
+   "texts_extent": [
+    17.7,
+    31.0,
+    1176.6,
+    840.4
+   ],
+   "block_rect": [
+    57.6,
+    86.1,
+    999.8,
+    609.3
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    57.6,
+    86.1,
+    999.8,
+    609.3
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ar_plan",
+   "side": "left",
+   "page_rotation": 0,
+   "page_rect": [
+    2383.9,
+    1683.8
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    2383.9,
+    1683.7
+   ],
+   "texts_extent": [
+    18.0,
+    38.5,
+    2360.5,
+    1680.2
+   ],
+   "block_rect": [
+    54.7,
+    12.0,
+    1482.1,
+    1668.4
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    54.7,
+    12.0,
+    1482.1,
+    1668.4
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ar_plan",
+   "side": "right",
+   "page_rotation": 0,
+   "page_rect": [
+    2383.9,
+    1683.8
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    2383.9,
+    1683.7
+   ],
+   "texts_extent": [
+    18.0,
+    38.5,
+    2360.5,
+    1680.2
+   ],
+   "block_rect": [
+    55.7,
+    14.4,
+    1487.2,
+    1667.7
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    55.7,
+    14.4,
+    1487.2,
+    1667.7
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ar_wall_sections",
+   "side": "left",
+   "page_rotation": 0,
+   "page_rect": [
+    3571.6,
+    1683.8
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    3571.6,
+    1683.7
+   ],
+   "texts_extent": [
+    18.0,
+    89.6,
+    3548.2,
+    1680.2
+   ],
+   "block_rect": [
+    1497.6,
+    647.5,
+    3013.4,
+    1137.6
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    1497.6,
+    647.5,
+    3013.4,
+    1137.6
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "ar_wall_sections",
+   "side": "right",
+   "page_rotation": 0,
+   "page_rect": [
+    3571.6,
+    1683.8
+   ],
+   "drawings_extent": [
+    0.0,
+    0.0,
+    3571.6,
+    1683.7
+   ],
+   "texts_extent": [
+    18.0,
+    89.6,
+    3548.2,
+    1680.2
+   ],
+   "block_rect": [
+    1513.8,
+    647.0,
+    3009.6,
+    1135.9
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    1513.8,
+    647.0,
+    3009.6,
+    1135.9
+   ],
+   "overlap_fraction_of_block": 1.0
+  },
+  {
+   "pair_id": "vk_plan",
+   "side": "left",
+   "page_rotation": 90,
+   "page_rect": [
+    2526.0,
+    1191.0
+   ],
+   "drawings_extent": [
+    0.0,
+    0.5,
+    1190.4,
+    2526.0
+   ],
+   "texts_extent": [
+    34.3,
+    19.9,
+    1189.5,
+    2525.0
+   ],
+   "block_rect": [
+    126.7,
+    11.1,
+    1687.8,
+    1010.8
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    1515.2,
+    126.7,
+    2514.9,
+    1687.8
+   ],
+   "overlap_fraction_of_block": 0.0978
+  },
+  {
+   "pair_id": "vk_plan",
+   "side": "right",
+   "page_rotation": 90,
+   "page_rect": [
+    2526.0,
+    1191.0
+   ],
+   "drawings_extent": [
+    0.0,
+    0.5,
+    1190.4,
+    2526.0
+   ],
+   "texts_extent": [
+    34.3,
+    19.9,
+    1189.5,
+    2525.0
+   ],
+   "block_rect": [
+    121.0,
+    10.9,
+    1685.7,
+    1009.5
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    1516.5,
+    121.0,
+    2515.1,
+    1685.7
+   ],
+   "overlap_fraction_of_block": 0.0962
+  },
+  {
+   "pair_id": "vk_nodes",
+   "side": "left",
+   "page_rotation": 90,
+   "page_rect": [
+    2384.0,
+    1684.0
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    1683.8,
+    2384.0
+   ],
+   "texts_extent": [
+    23.8,
+    19.5,
+    1683.0,
+    2381.6
+   ],
+   "block_rect": [
+    53.1,
+    0.0,
+    1085.0,
+    1665.0
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    719.0,
+    53.1,
+    2384.0,
+    1085.0
+   ],
+   "overlap_fraction_of_block": 0.2198
+  },
+  {
+   "pair_id": "vk_nodes",
+   "side": "right",
+   "page_rotation": 90,
+   "page_rect": [
+    2384.0,
+    1684.0
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    1683.8,
+    2384.0
+   ],
+   "texts_extent": [
+    22.1,
+    19.5,
+    1683.0,
+    2381.6
+   ],
+   "block_rect": [
+    46.9,
+    2.9,
+    1118.8,
+    1680.8
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    703.2,
+    46.9,
+    2381.1,
+    1118.8
+   ],
+   "overlap_fraction_of_block": 0.2477
+  },
+  {
+   "pair_id": "vk_node_plan",
+   "side": "left",
+   "page_rotation": 90,
+   "page_rect": [
+    2384.0,
+    1684.0
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    1683.8,
+    2384.0
+   ],
+   "texts_extent": [
+    48.3,
+    19.5,
+    1683.0,
+    2381.6
+   ],
+   "block_rect": [
+    43.7,
+    3.6,
+    1230.5,
+    988.1
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    1395.9,
+    43.7,
+    2380.4,
+    1230.5
+   ],
+   "overlap_fraction_of_block": 0.0
+  },
+  {
+   "pair_id": "vk_node_plan",
+   "side": "right",
+   "page_rotation": 90,
+   "page_rect": [
+    2384.0,
+    1684.0
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    1683.8,
+    2384.0
+   ],
+   "texts_extent": [
+    48.3,
+    19.5,
+    1683.0,
+    2381.6
+   ],
+   "block_rect": [
+    42.5,
+    5.6,
+    1246.4,
+    981.9
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    1402.1,
+    42.5,
+    2378.4,
+    1246.4
+   ],
+   "overlap_fraction_of_block": 0.0
+  },
+  {
+   "pair_id": "eom_singleline_changed",
+   "side": "left",
+   "page_rotation": 270,
+   "page_rect": [
+    2383.9,
+    842.0
+   ],
+   "drawings_extent": [
+    0.0,
+    0.1,
+    841.8,
+    2383.9
+   ],
+   "texts_extent": [
+    1.4,
+    18.1,
+    815.9,
+    2370.7
+   ],
+   "block_rect": [
+    95.4,
+    21.1,
+    584.1,
+    791.5
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    21.1,
+    258.0,
+    791.5,
+    746.7
+   ],
+   "overlap_fraction_of_block": 0.6343
+  },
+  {
+   "pair_id": "eom_singleline_changed",
+   "side": "right",
+   "page_rotation": 0,
+   "page_rect": [
+    2525.8,
+    1190.6
+   ],
+   "drawings_extent": [
+    0.0,
+    -0.0,
+    2525.8,
+    1190.4
+   ],
+   "texts_extent": [
+    17.6,
+    28.5,
+    2512.9,
+    1189.1
+   ],
+   "block_rect": [
+    57.1,
+    11.0,
+    619.4,
+    790.5
+   ],
+   "geometry_rect_mapped_into_page_space": [
+    57.1,
+    11.0,
+    619.4,
+    790.5
+   ],
+   "overlap_fraction_of_block": 1.0
+  }
+ ],
+ "rotated_blocks": 7,
+ "total_blocks": 20,
+ "mixed_rotation_pairs": [
+  "eom_singleline_changed"
+ ]
+}

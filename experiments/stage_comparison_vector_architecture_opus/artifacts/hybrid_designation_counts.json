@@ -1,0 +1,195 @@
+{
+  "per_pair": {
+    "ss_scheme_text_changed": {
+      "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 10,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "ss_plan_dense": {
+      "human_expected": "NEAR_IDENTICAL",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 81,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "ss_simple_node": {
+      "human_expected": "IDENTICAL",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 0,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "ss_table_graphic": {
+      "human_expected": "NEAR_IDENTICAL",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 0,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "ar_plan": {
+      "human_expected": "NEAR_IDENTICAL",
+      "same_pdf_bytes": true,
+      "S1_pattern_count_changes": 40,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "ar_wall_sections": {
+      "human_expected": "NEAR_IDENTICAL",
+      "same_pdf_bytes": true,
+      "S1_pattern_count_changes": 5,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "vk_plan": {
+      "human_expected": "NEAR_IDENTICAL",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 1,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "vk_nodes": {
+      "human_expected": "STRUCTURE_SAME_VALUES_CHANGED",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 5,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "vk_node_plan": {
+      "human_expected": "NEAR_IDENTICAL",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 42,
+      "S2_span_designation_changes": {},
+      "S3_line_designation_changes": {}
+    },
+    "eom_singleline_changed": {
+      "human_expected": "STRUCTURE_CHANGED",
+      "same_pdf_bytes": false,
+      "S1_pattern_count_changes": 50,
+      "S2_span_designation_changes": {
+        "C": [
+          0,
+          4
+        ],
+        "IP": [
+          0,
+          1
+        ],
+        "L": [
+          6,
+          3
+        ],
+        "QD": [
+          0,
+          4
+        ],
+        "QF": [
+          0,
+          4
+        ],
+        "Wh": [
+          0,
+          4
+        ]
+      },
+      "S3_line_designation_changes": {
+        "C": [
+          0,
+          4
+        ],
+        "QD": [
+          0,
+          4
+        ],
+        "QF": [
+          0,
+          4
+        ],
+        "Wh": [
+          0,
+          4
+        ],
+        "ЩМкв": [
+          0,
+          4
+        ]
+      }
+    }
+  },
+  "summary": {
+    "quiet_pairs": [
+      "ss_plan_dense",
+      "ss_simple_node",
+      "ss_table_graphic",
+      "ar_plan",
+      "ar_wall_sections",
+      "vk_plan",
+      "vk_node_plan"
+    ],
+    "S1_false_statements": 169,
+    "S2_false_statements": 0,
+    "S3_false_statements": 0,
+    "S1_on_same_pdf_bytes": {
+      "ar_plan": 40,
+      "ar_wall_sections": 5
+    },
+    "S2_on_same_pdf_bytes": {
+      "ar_plan": {},
+      "ar_wall_sections": {}
+    },
+    "S3_on_same_pdf_bytes": {
+      "ar_plan": {},
+      "ar_wall_sections": {}
+    },
+    "eom_S3": {
+      "C": [
+        0,
+        4
+      ],
+      "QD": [
+        0,
+        4
+      ],
+      "QF": [
+        0,
+        4
+      ],
+      "Wh": [
+        0,
+        4
+      ],
+      "ЩМкв": [
+        0,
+        4
+      ]
+    },
+    "eom_S2": {
+      "C": [
+        0,
+        4
+      ],
+      "IP": [
+        0,
+        1
+      ],
+      "L": [
+        6,
+        3
+      ],
+      "QD": [
+        0,
+        4
+      ],
+      "QF": [
+        0,
+        4
+      ],
+      "Wh": [
+        0,
+        4
+      ]
+    },
+    "eom_S1": 50
+  }
+}

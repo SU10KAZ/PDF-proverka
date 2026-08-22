@@ -1,0 +1,112 @@
+{
+  "codex_harness_baseline_tokens_measured": 13892,
+  "vector": {
+    "reported_total": "70 631",
+    "reported_total_int": 70631,
+    "prompt_bytes_utf8": 144669,
+    "prompt_tokens": 52983,
+    "bytes_per_token": 2.73,
+    "output_tokens": 1471,
+    "harness_baseline": 13892,
+    "accounted": 68346,
+    "residual_reasoning_and_overhead": 2285,
+    "prompt_share_of_bill_pct": 75.0
+  },
+  "vision": {
+    "reported_total_int": 38069,
+    "png_bytes_total": 3095180,
+    "image_tokens_total": 19479,
+    "bytes_per_token": 158.9,
+    "prompt_tokens": 192,
+    "output_tokens": 935,
+    "harness_baseline": 13892,
+    "accounted": 34498,
+    "residual_reasoning_and_overhead": 3571,
+    "image_share_of_bill_pct": 51.2,
+    "images": [
+      {
+        "image": "ss_scheme_text_changed/left.png",
+        "w": 2183,
+        "h": 584,
+        "tokens": 1624,
+        "source": "formula",
+        "png_bytes": 62416
+      },
+      {
+        "image": "ss_scheme_text_changed/right.png",
+        "w": 2186,
+        "h": 588,
+        "tokens": 1624,
+        "source": "formula",
+        "png_bytes": 61390
+      },
+      {
+        "image": "ss_table_graphic/left.png",
+        "w": 1297,
+        "h": 668,
+        "tokens": 1079,
+        "source": "measured",
+        "png_bytes": 97466
+      },
+      {
+        "image": "ss_table_graphic/right.png",
+        "w": 1273,
+        "h": 707,
+        "tokens": 1154,
+        "source": "formula",
+        "png_bytes": 96557
+      },
+      {
+        "image": "ar_plan/left.png",
+        "w": 1928,
+        "h": 2237,
+        "tokens": 2968,
+        "source": "measured",
+        "png_bytes": 870319
+      },
+      {
+        "image": "ar_plan/right.png",
+        "w": 1933,
+        "h": 2233,
+        "tokens": 3051,
+        "source": "formula",
+        "png_bytes": 870550
+      },
+      {
+        "image": "vk_nodes/left.png",
+        "w": 1394,
+        "h": 2248,
+        "tokens": 3051,
+        "source": "formula",
+        "png_bytes": 406689
+      },
+      {
+        "image": "vk_nodes/right.png",
+        "w": 1448,
+        "h": 2267,
+        "tokens": 3051,
+        "source": "formula",
+        "png_bytes": 419249
+      },
+      {
+        "image": "eom_singleline_changed/left.png",
+        "w": 661,
+        "h": 1041,
+        "tokens": 877,
+        "source": "measured",
+        "png_bytes": 88859
+      },
+      {
+        "image": "eom_singleline_changed/right.png",
+        "w": 760,
+        "h": 1054,
+        "tokens": 1000,
+        "source": "formula",
+        "png_bytes": 121685
+      }
+    ]
+  },
+  "byte_efficiency_ratio_image_over_text": 58.2,
+  "gap_reported": 32562,
+  "gap_explained_by_prompt_minus_images": 33504
+}

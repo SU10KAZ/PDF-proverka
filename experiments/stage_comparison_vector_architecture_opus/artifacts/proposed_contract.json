@@ -1,0 +1,268 @@
+{
+  "_about": "VectorBlockDescription v0.2 — proposed contract, illustrated on a REAL block sub-region. Every coordinate, text string and count below was produced by experiments/stage_comparison_vector_architecture_opus/poc/objects_v02.py on projects_v2/.../13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf page index 5, block blk_13624dcbe2024b148a2027e1b68e2a0d. The sub-region shown is the bottom-left corner of the CCTV structural scheme (switch ОСПД2.1 in room 2.Т.6 with its three cameras) so the example stays readable; the real record covers the whole block.",
+  "_layers": {
+    "L0": "raw PDF drawings + text spans — cache only, never in the contract, never in a payload",
+    "L1": "isotropically normalised strokes and printed text lines — cache, comparator reads it",
+    "L2": "graphical objects + relation graph — THIS document",
+    "L3": "deterministic change ledger between two L2 records — see comparison_example.json",
+    "L4": "compact AI payload derived from L3 only — see ai_payload_examples.json"
+  },
+
+  "schema_version": "vector-block-objects-v0.2",
+  "block_id": "blk_13624dcbe2024b148a2027e1b68e2a0d",
+
+  "frame": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "pdf_sha256_prefix": "a3e7451c4e4cc964",
+    "page_index": 5,
+    "page_rotation": 0,
+    "coordinate_frame_resolved": "unrotated_mediabox",
+    "_why": "Finding O13: on /Rotate 90|270 pages page.rect is the display frame while get_drawings() returns unrotated coordinates. 7 of 20 Track A blocks read the wrong region because this was implicit. The frame must be stated, not assumed.",
+    "page_size_pt": [1684.0, 1191.0],
+    "block_bbox_pt": [50.67, 15.48, 1666.67, 446.83],
+    "normalisation": {
+      "kind": "isotropic",
+      "formula": "x_n=(x-x0)/S, y_n=(y-y0)/S, S=max(block_width, block_height)",
+      "scale_pt": 1616.0,
+      "aspect": 3.747,
+      "_why": "Finding O10: dividing x by width and y by height independently places the two paired crops in different metric spaces: at the measured anisotropy of 1.137 a segment at 45 degrees in one side's frame sits at 41.3 degrees in the other's. That is what forces the comparator to a 1 % tolerance."
+    }
+  },
+
+  "quality": {
+    "geometry_retained_fraction": 1.0,
+    "cap_reached": false,
+    "strokes_total": 710,
+    "text_lines_total": 100,
+    "text_readable_fraction": 1.0,
+    "text_identity_source": "unicode",
+    "micro_segment_fraction": 0.0,
+    "objects_unstable_under_parameter_jitter": 0.04,
+    "_gates": "Each number here is a routing signal, not decoration. geometry_retained_fraction < 0.5 or text_readable_fraction < 0.8 or cap_reached routes the block to Vision verification before any comparison."
+  },
+
+  "objects": [
+    {
+      "id": "o_sw_1",
+      "class": "symbol_candidate",
+      "bbox_n": [0.06429, 0.18572, 0.0784, 0.21795],
+      "stroke_count": 6,
+      "closed": true,
+      "shape_signature": "sq+diag2",
+      "shape_signature_rotation_invariant": "c0f6ab80f9",
+      "family": "fam_crossed_square",
+      "provenance": "vector_geometry"
+    },
+    {
+      "id": "o_cam_1",
+      "class": "symbol_candidate",
+      "bbox_n": [0.06117, 0.09512, 0.07105, 0.10039],
+      "stroke_count": 4,
+      "closed": true,
+      "shape_signature": "tri+stem",
+      "family": "fam_camera_triangle",
+      "provenance": "vector_geometry"
+    },
+    {
+      "id": "o_cam_2",
+      "class": "symbol_candidate",
+      "bbox_n": [0.09369, 0.09512, 0.10357, 0.10039],
+      "stroke_count": 4,
+      "closed": true,
+      "shape_signature": "tri+stem",
+      "family": "fam_camera_triangle",
+      "provenance": "vector_geometry"
+    },
+    {
+      "id": "o_cam_3",
+      "class": "symbol_candidate",
+      "bbox_n": [0.12488, 0.09512, 0.13476, 0.10039],
+      "stroke_count": 4,
+      "closed": true,
+      "shape_signature": "tri+stem",
+      "family": "fam_camera_triangle",
+      "provenance": "vector_geometry"
+    },
+    {
+      "id": "o_link_1",
+      "class": "linear_object",
+      "bbox_n": [0.06117, 0.10039, 0.14412, 0.18572],
+      "stroke_count": 11,
+      "total_length_n": 0.2487,
+      "straightness": 0.41,
+      "endpoints_n": [[0.06611, 0.10039], [0.07134, 0.18572]],
+      "provenance": "vector_geometry"
+    },
+    {
+      "id": "o_room_1",
+      "class": "area_object",
+      "bbox_n": [0.05330, 0.17414, 0.16490, 0.23920],
+      "closed": true,
+      "provenance": "vector_geometry"
+    },
+    {
+      "id": "o_band_floor_minus1",
+      "class": "area_object",
+      "bbox_n": [0.02404, 0.15310, 0.97596, 0.24216],
+      "closed": true,
+      "line_style": "dashed",
+      "provenance": "vector_geometry"
+    }
+  ],
+
+  "families": [
+    {
+      "id": "fam_camera_triangle",
+      "count": 25,
+      "member_ids_sample": ["o_cam_1", "o_cam_2", "o_cam_3"],
+      "signature_stability": "rotation_and_mirror_invariant",
+      "_note": "Cardinality is a first-class fact. «Количество камер 25 → 24» is read off this line, not reconstructed from a segment diff."
+    },
+    {
+      "id": "fam_crossed_square",
+      "count": 5,
+      "member_ids_sample": ["o_sw_1"]
+    }
+  ],
+
+  "texts": [
+    {
+      "id": "t1",
+      "unit": "printed_line",
+      "text": "ОСПД2.1",
+      "identity": "ОСПД2.1",
+      "readable": true,
+      "identity_source": "unicode",
+      "bbox_n": [0.08122, 0.20678, 0.09978, 0.21261],
+      "rotation_deg": 0.0,
+      "font_size_pt": 6.0,
+      "_note": "The unit is the printed line, not the PDF span. Measured: 6751 spans collapse to 4597 printed lines, and 23.5 % of multi-span lines have spans that disagree about their own referent (txgeo T11)."
+    },
+    {
+      "id": "t5",
+      "unit": "printed_line",
+      "text": "ВК2.1.1.1",
+      "identity": "ВК2.1.1.1",
+      "readable": true,
+      "identity_source": "unicode",
+      "bbox_n": [0.06162, 0.10178, 0.08028, 0.10761],
+      "rotation_deg": 0.0,
+      "font_size_pt": 6.0
+    },
+    {
+      "id": "t8",
+      "unit": "printed_line",
+      "text": "Помещение СС (2.Т.6)",
+      "identity": "Помещение СС (2.Т.6)",
+      "readable": true,
+      "identity_source": "unicode",
+      "bbox_n": [0.05746, 0.22921, 0.10710, 0.23504],
+      "rotation_deg": 0.0,
+      "font_size_pt": 6.0
+    },
+    {
+      "id": "t_example_broken",
+      "unit": "printed_line",
+      "text": "\u0004\u0018\u001d\u0015\u0015",
+      "identity": "g7c31be16|g3fbb28c7|g10c8a13d|g7c31be16|ga1f0c93e",
+      "readable": false,
+      "identity_source": "glyph_outline_hash",
+      "bbox_n": [0.0, 0.0, 0.0, 0.0],
+      "_note": "Not from this block — shown to define the field. Finding O8: a CAD subset font with an incomplete /ToUnicode yields control characters. Substituting a hash of the embedded glyph outline makes the string comparable across documents (all 99 codes of the v001 subset are present in the v002 subset; word-level F1 on the broken half rises 0.000 → 0.456/0.502/0.588 against an in-block ceiling of 0.466/0.558/0.791). No OCR, no Vision."
+    }
+  ],
+
+  "relations": [
+    {
+      "type": "labels",
+      "text": "t1",
+      "object": "o_sw_1",
+      "evidence": "centred_beside_within_symbol_pitch",
+      "candidates_in_corridor": 1,
+      "confidence": "high",
+      "_why": "Confidence is the number of rival candidates in the corridor, never the distance. Measured: the v0.1 label carries no information — 374 of 374 dimension spans came back `high` at precision 0.348 — while the rival count does: <=2 rivals gives 0.677 and >=3 gives 0.024. Adversarial checking added a nuance worth keeping: v0.1's stored distance_norm does stratify, but INVERTED against its own threshold (precision rises with distance, 0.280 in the nearest quintile against 0.508 in the farthest). The field is usable; the comparison direction in the label is backwards."
+    },
+    {
+      "type": "labels",
+      "text": "t5",
+      "object": "o_cam_1",
+      "evidence": "centred_above_symbol",
+      "candidates_in_corridor": 1,
+      "confidence": "high"
+    },
+    {
+      "type": "labels",
+      "text": "t8",
+      "object": "o_room_1",
+      "evidence": "inside_closed_contour",
+      "candidates_in_corridor": 1,
+      "confidence": "high"
+    },
+    {
+      "type": "connects",
+      "object": "o_link_1",
+      "endpoints": ["o_cam_1", "o_sw_1"],
+      "evidence": "endpoint_within_weld_tolerance",
+      "confidence": "high"
+    },
+    {
+      "type": "contains",
+      "object": "o_room_1",
+      "other": "o_sw_1",
+      "evidence": "closed_contour_containment",
+      "confidence": "high"
+    },
+    {
+      "type": "contains",
+      "object": "o_band_floor_minus1",
+      "other": "o_room_1",
+      "evidence": "closed_contour_containment",
+      "confidence": "medium"
+    },
+    {
+      "type": "member_of",
+      "object": "o_cam_1",
+      "family": "fam_camera_triangle",
+      "confidence": "high"
+    }
+  ],
+
+  "values": [
+    {
+      "id": "v_example_dimension",
+      "kind": "dimension",
+      "printed": "2500",
+      "unit": "mm",
+      "measured_span_pt": 25.03,
+      "implied_scale": "1:99.88",
+      "scale_agrees_with_block": true,
+      "referent": {"kind": "interval", "from_n": [0.1204, 0.4410], "to_n": [0.1454, 0.4410]},
+      "evidence": ["extension_line", "extension_line", "dimension_line", "tick", "tick"],
+      "ticks_in_reach": 2,
+      "confidence": "high",
+      "provenance": "vector_geometry",
+      "_note": "Not from this block (a scheme has no dimensions) — shown to define the field. A dimension is an OBJECT — extension lines, a dimension line, two terminators assembled from their collinear arms, and the number — not a value attached to the nearest line. Measured: on well-formed sections the detector binds 61 of 61 values with no misses and no false positives; assembling the terminator into one slash lifts bindings with <=1 % residual 57 -> 58 and halves the median residual; requiring the extension-line foot lifts corroborated bindings 54 -> 87 (+61 %) on a dense roof plan; 44 of 137 non-corroborated bindings there are leaders, a different object that must be routed away. The printed value times the block scale against the measured span separates correct from wrong bindings by two orders of magnitude (58 bindings at median 0.04 % residual against three at 11 %, 43 % and 154 %), and the fitted scale matches the scale printed on the sheet (1:50.00 vs \"1 : 50\"). Note: a stronger claim that the referent must be a derived interval rather than a primitive did NOT survive adversarial checking — in these CAD PDFs the dimension line is already drawn between the ticks, so the two usually coincide."
+    }
+  ],
+
+  "coarse_descriptor": {
+    "_purpose": "candidate search only, never a verdict. The v0.1 exact signature recovers 1 of 10 true counterparts (recall 0.10); a tolerant coarse descriptor reaches 0.70 exact-bucket recall and rank-1 in 19 of 20 blocks (signoise S7).",
+    "aspect_bucket": 3.7,
+    "object_class_histogram": {"symbol_candidate": 108, "linear_object": 23, "area_object": 9},
+    "family_cardinalities_sorted": [25, 5, 4, 3, 2],
+    "text_line_count_bucket": 100,
+    "designation_prefixes": {"ВК": 25, "ОСПД": 5, "PoE": 3, "Корпус": 4}
+  },
+
+  "_dropped_from_v0_1": {
+    "primitive.raw": "22.8 % of the corpus, read by nothing (signoise S2)",
+    "primitive.style": "27.0 % of the corpus, read by nothing; 242× redundant, becomes a per-block palette (signoise S2, S3)",
+    "anchors": "inert and uninformative: 20.9–185.8 equally eligible primitives inside the anchor radius where confidence says `high` (signoise S5, txgeo T1)",
+    "hatch_like_structures": "saturates its cap of 30 in 6 of 10 blocks; on ss_table_graphic the `hatch` is the table grid (O6)",
+    "dimensions / labels": "regex re-projections of texts that together drop 36 % of all spans — every bare dimension number (O4)",
+    "repeated_elements": "fingerprints filled rectangles and a 24-point circle resampling constant; generates 169 false `count changed` statements across the 7 quiet pairs and scores Jaccard 0.000 on the one pair with a real structural change (O5, hybrid H9)",
+    "topology counts": "connected_components moves 282×, endpoints 259× under tolerance jitter alone; self-similarity 0.43–0.77 against a 0.85 gate (tcf T1, T2)",
+    "structural_signature level_2 and level_3": "zero information beyond level_1 across all 190 cross pairings (signoise S6)",
+    "size_metrics": "self-measurement, recomputable"
+  }
+}

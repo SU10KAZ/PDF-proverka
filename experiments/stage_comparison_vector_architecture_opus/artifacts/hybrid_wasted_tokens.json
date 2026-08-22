@@ -1,0 +1,72 @@
+{
+  "per_pair": {
+    "ss_scheme_text_changed": {
+      "payload_tokens": 3953,
+      "W1_undecodable": 5,
+      "W2_opaque_ids": 641,
+      "W3_method_telemetry": 355,
+      "wasted_total": 1001,
+      "wasted_pct": 25.3,
+      "n_value_changes": 7,
+      "n_value_changes_on_garbage": 0,
+      "left_layer": "GOOD",
+      "right_layer": "GOOD"
+    },
+    "ss_table_graphic": {
+      "payload_tokens": 2961,
+      "W1_undecodable": 5,
+      "W2_opaque_ids": 286,
+      "W3_method_telemetry": 392,
+      "wasted_total": 683,
+      "wasted_pct": 23.1,
+      "n_value_changes": 6,
+      "n_value_changes_on_garbage": 0,
+      "left_layer": "GOOD",
+      "right_layer": "GOOD"
+    },
+    "ar_plan": {
+      "payload_tokens": 15035,
+      "W1_undecodable": 5,
+      "W2_opaque_ids": 2753,
+      "W3_method_telemetry": 398,
+      "wasted_total": 3156,
+      "wasted_pct": 21.0,
+      "n_value_changes": 0,
+      "n_value_changes_on_garbage": 0,
+      "left_layer": "GOOD",
+      "right_layer": "GOOD"
+    },
+    "vk_nodes": {
+      "payload_tokens": 23199,
+      "W1_undecodable": 13212,
+      "W2_opaque_ids": 501,
+      "W3_method_telemetry": 380,
+      "wasted_total": 14093,
+      "wasted_pct": 60.7,
+      "n_value_changes": 100,
+      "n_value_changes_on_garbage": 30,
+      "left_layer": "UNDECODABLE",
+      "right_layer": "UNDECODABLE"
+    },
+    "eom_singleline_changed": {
+      "payload_tokens": 8151,
+      "W1_undecodable": 5,
+      "W2_opaque_ids": 1924,
+      "W3_method_telemetry": 389,
+      "wasted_total": 2318,
+      "wasted_pct": 28.4,
+      "n_value_changes": 20,
+      "n_value_changes_on_garbage": 0,
+      "left_layer": "GOOD",
+      "right_layer": "GOOD"
+    }
+  },
+  "totals": {
+    "W1_undecodable": 13232,
+    "W2_opaque_ids": 6105,
+    "W3_method_telemetry": 1914,
+    "payload": 53299,
+    "wasted_total": 21251,
+    "wasted_pct": 39.9
+  }
+}

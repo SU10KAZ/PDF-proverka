@@ -1,0 +1,166 @@
+{
+  "cases": [
+    {
+      "case_id": "vv009",
+      "mutation": "clean",
+      "expected_status": "VERIFIED",
+      "status": "PARTIAL",
+      "status_acceptable": false,
+      "confidence": "medium",
+      "verified": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C7",
+        "C8",
+        "C9",
+        "C10",
+        "C11",
+        "C13",
+        "C14"
+      ],
+      "missing": [],
+      "suspicious": [
+        {
+          "claim_id": "C6",
+          "why": "more than one symbol type visibly repeats: besides the 15 camera symbols, the square-with-cross ОСПД symbol appears 5 times and the small PoE label box 3 times"
+        }
+      ],
+      "changed_claims": [],
+      "must_name": [],
+      "usage_raw": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 17893,
+        "cache_read_input_tokens": 162924,
+        "output_tokens": 11122,
+        "output_tokens_details": {
+          "thinking_tokens": 10188
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 17893,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 4329,
+            "cache_read_input_tokens": 39148,
+            "cache_creation_input_tokens": 531,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 531
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "usage_payload_attributable": 29025,
+      "duration_ms": 155346,
+      "wall_seconds": 156.85,
+      "crop_bytes": 62416,
+      "fact_sheet_characters": 923
+    },
+    {
+      "case_id": "vv027",
+      "mutation": "deleted_object",
+      "expected_status": "FAILED",
+      "status": "FAILED",
+      "status_acceptable": true,
+      "confidence": "medium",
+      "verified": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C7",
+        "C9",
+        "C10",
+        "C13"
+      ],
+      "missing": [
+        "repeated crossed-square switch symbols (ОСПД blocks, about five of them) not covered by any shape claim"
+      ],
+      "suspicious": [
+        {
+          "claim_id": "C6",
+          "why": "picture shows at least two clearly distinct repeating symbols (detector/camera symbol many times, crossed-square switch symbol several times, plus repeated PoE label boxes), not just one repeating shape"
+        },
+        {
+          "claim_id": "C5",
+          "why": "the obvious repeated symbol appears about fifteen times, more than the stated top repeat count"
+        },
+        {
+          "claim_id": "C8",
+          "why": "drawing is full of closed rectangular boxes, so '1 closed outline' does not match; the 3-line junction count also looks high for this simple box-and-wire layout"
+        },
+        {
+          "claim_id": "C11",
+          "why": "drawing looks complete on all sides — closed dashed frame, whole boxes and full text at top, left and bottom; nothing appears truncated"
+        }
+      ],
+      "changed_claims": [
+        "C1",
+        "C14",
+        "C2",
+        "C4",
+        "C5",
+        "C7",
+        "C8",
+        "C9"
+      ],
+      "must_name": [
+        "middle-right",
+        "ОСПД",
+        "6.1"
+      ],
+      "usage_raw": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 10771,
+        "cache_read_input_tokens": 52759,
+        "output_tokens": 9881,
+        "output_tokens_details": {
+          "thinking_tokens": 9424
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 10771,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 9800,
+            "cache_read_input_tokens": 30973,
+            "cache_creation_input_tokens": 1584,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1584
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "usage_payload_attributable": 20656,
+      "duration_ms": 132014,
+      "wall_seconds": 133.58,
+      "crop_bytes": 62416,
+      "fact_sheet_characters": 919
+    }
+  ],
+  "usage_note": "cache_read_input_tokens is dominated by the Claude Code system prompt (~50k) and is NOT attributable to our payload; usage_payload_attributable = input + cache_creation + output"
+}

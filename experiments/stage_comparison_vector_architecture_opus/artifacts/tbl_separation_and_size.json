@@ -1,0 +1,134 @@
+{
+ "ss_table_graphic": {
+  "left": {
+   "tables_detected": 1,
+   "table_shapes": [
+    [
+     10,
+     2
+    ]
+   ],
+   "table_bboxes": [
+    [
+     802.8,
+     14.2,
+     1176.2,
+     274.8
+    ]
+   ],
+   "block_region": [
+    55.2,
+    100.5,
+    1015.1,
+    594.7
+   ],
+   "text_spans_in_block": 52,
+   "text_spans_inside_a_table": 37,
+   "text_spans_outside_tables_graphic_part": 15,
+   "drawing_segments_in_block": 1598,
+   "drawing_segments_inside_a_table": 11,
+   "drawing_segments_outside_tables_graphic_part": 1587,
+   "table_markdown_chars": 409,
+   "track_a_level3_md_chars": 2369,
+   "track_a_json_chars": 183196
+  },
+  "right": {
+   "tables_detected": 1,
+   "table_shapes": [
+    [
+     10,
+     2
+    ]
+   ],
+   "table_bboxes": [
+    [
+     802.8,
+     14.2,
+     1176.2,
+     274.8
+    ]
+   ],
+   "block_region": [
+    57.6,
+    86.1,
+    999.8,
+    609.3
+   ],
+   "text_spans_in_block": 50,
+   "text_spans_inside_a_table": 35,
+   "text_spans_outside_tables_graphic_part": 15,
+   "drawing_segments_in_block": 1598,
+   "drawing_segments_inside_a_table": 12,
+   "drawing_segments_outside_tables_graphic_part": 1586,
+   "table_markdown_chars": 409,
+   "track_a_level3_md_chars": 2372,
+   "track_a_json_chars": 182312
+  }
+ },
+ "eom_singleline_changed": {
+  "left": {
+   "tables_detected": 1,
+   "table_shapes": [
+    [
+     5,
+     2
+    ]
+   ],
+   "table_bboxes": [
+    [
+     98.2,
+     541.1,
+     367.6,
+     697.0
+    ]
+   ],
+   "block_region": [
+    95.4,
+    21.1,
+    584.1,
+    791.5
+   ],
+   "text_spans_in_block": 71,
+   "text_spans_inside_a_table": 22,
+   "text_spans_outside_tables_graphic_part": 49,
+   "drawing_segments_in_block": 726,
+   "drawing_segments_inside_a_table": 9,
+   "drawing_segments_outside_tables_graphic_part": 717,
+   "table_markdown_chars": 406,
+   "track_a_level3_md_chars": 3683,
+   "track_a_json_chars": 711140
+  },
+  "right": {
+   "tables_detected": 1,
+   "table_shapes": [
+    [
+     5,
+     2
+    ]
+   ],
+   "table_bboxes": [
+    [
+     115.7,
+     544.9,
+     385.0,
+     700.8
+    ]
+   ],
+   "block_region": [
+    57.1,
+    11.0,
+    619.4,
+    790.5
+   ],
+   "text_spans_in_block": 299,
+   "text_spans_inside_a_table": 50,
+   "text_spans_outside_tables_graphic_part": 249,
+   "drawing_segments_in_block": 985,
+   "drawing_segments_inside_a_table": 8,
+   "drawing_segments_outside_tables_graphic_part": 977,
+   "table_markdown_chars": 381,
+   "track_a_level3_md_chars": 3719,
+   "track_a_json_chars": 418655
+  }
+ }
+}

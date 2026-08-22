@@ -1,0 +1,277 @@
+{
+ "probe": "hatchnoise_p0_rotation",
+ "explanation": "page.get_drawings()/get_text() coordinates are in the unrotated page box; page.rect is rotated. Building block_rect from page.rect (extractor.extract_block) therefore clips the wrong window on any page with rotation != 0.",
+ "benchmark_pairs": [
+  {
+   "pair_id": "ss_scheme_text_changed",
+   "discipline": "SS",
+   "left": {
+    "rotation": 0,
+    "page_rect": [
+     1683.8399658203125,
+     1190.6400146484375
+    ],
+    "drawings_page": 101,
+    "drawings_in_block_trackA_window": 35,
+    "drawings_in_block_derotated_window": 35,
+    "ratio": 1.0
+   },
+   "right": {
+    "rotation": 0,
+    "page_rect": [
+     1683.8399658203125,
+     1190.6400146484375
+    ],
+    "drawings_page": 525,
+    "drawings_in_block_trackA_window": 155,
+    "drawings_in_block_derotated_window": 155,
+    "ratio": 1.0
+   }
+  },
+  {
+   "pair_id": "ss_plan_dense",
+   "discipline": "SS",
+   "left": {
+    "rotation": 0,
+    "page_rect": [
+     3370.320068359375,
+     2383.919921875
+    ],
+    "drawings_page": 1726,
+    "drawings_in_block_trackA_window": 1265,
+    "drawings_in_block_derotated_window": 1265,
+    "ratio": 1.0
+   },
+   "right": {
+    "rotation": 0,
+    "page_rect": [
+     3370.320068359375,
+     2383.919921875
+    ],
+    "drawings_page": 1726,
+    "drawings_in_block_trackA_window": 1265,
+    "drawings_in_block_derotated_window": 1265,
+    "ratio": 1.0
+   }
+  },
+  {
+   "pair_id": "ss_simple_node",
+   "discipline": "SS",
+   "left": {
+    "rotation": 0,
+    "page_rect": [
+     1190.6400146484375,
+     841.9199829101562
+    ],
+    "drawings_page": 53,
+    "drawings_in_block_trackA_window": 3,
+    "drawings_in_block_derotated_window": 3,
+    "ratio": 1.0
+   },
+   "right": {
+    "rotation": 0,
+    "page_rect": [
+     1190.6400146484375,
+     841.9199829101562
+    ],
+    "drawings_page": 53,
+    "drawings_in_block_trackA_window": 3,
+    "drawings_in_block_derotated_window": 3,
+    "ratio": 1.0
+   }
+  },
+  {
+   "pair_id": "ss_table_graphic",
+   "discipline": "SS",
+   "left": {
+    "rotation": 0,
+    "page_rect": [
+     1190.6400146484375,
+     841.9199829101562
+    ],
+    "drawings_page": 56,
+    "drawings_in_block_trackA_window": 10,
+    "drawings_in_block_derotated_window": 10,
+    "ratio": 1.0
+   },
+   "right": {
+    "rotation": 0,
+    "page_rect": [
+     1190.6400146484375,
+     841.9199829101562
+    ],
+    "drawings_page": 56,
+    "drawings_in_block_trackA_window": 8,
+    "drawings_in_block_derotated_window": 8,
+    "ratio": 1.0
+   }
+  },
+  {
+   "pair_id": "ar_plan",
+   "discipline": "AR",
+   "left": {
+    "rotation": 0,
+    "page_rect": [
+     2383.93994140625,
+     1683.780029296875
+    ],
+    "drawings_page": 29808,
+    "drawings_in_block_trackA_window": 13195,
+    "drawings_in_block_derotated_window": 13195,
+    "ratio": 1.0
+   },
+   "right": {
+    "rotation": 0,
+    "page_rect": [
+     2383.93994140625,
+     1683.780029296875
+    ],
+    "drawings_page": 29808,
+    "drawings_in_block_trackA_window": 13195,
+    "drawings_in_block_derotated_window": 13195,
+    "ratio": 1.0
+   }
+  },
+  {
+   "pair_id": "ar_wall_sections",
+   "discipline": "AR",
+   "left": {
+    "rotation": 0,
+    "page_rect": [
+     3571.64990234375,
+     1683.780029296875
+    ],
+    "drawings_page": 80231,
+    "drawings_in_block_trackA_window": 24444,
+    "drawings_in_block_derotated_window": 24444,
+    "ratio": 1.0
+   },
+   "right": {
+    "rotation": 0,
+    "page_rect": [
+     3571.64990234375,
+     1683.780029296875
+    ],
+    "drawings_page": 80231,
+    "drawings_in_block_trackA_window": 24444,
+    "drawings_in_block_derotated_window": 24444,
+    "ratio": 1.0
+   }
+  },
+  {
+   "pair_id": "vk_plan",
+   "discipline": "VK",
+   "left": {
+    "rotation": 90,
+    "page_rect": [
+     2526.0,
+     1191.0
+    ],
+    "drawings_page": 885002,
+    "drawings_in_block_trackA_window": 1488,
+    "drawings_in_block_derotated_window": 103269,
+    "ratio": 0.0144
+   },
+   "right": {
+    "rotation": 90,
+    "page_rect": [
+     2526.0,
+     1191.0
+    ],
+    "drawings_page": 900148,
+    "drawings_in_block_trackA_window": 1486,
+    "drawings_in_block_derotated_window": 116234,
+    "ratio": 0.0128
+   }
+  },
+  {
+   "pair_id": "vk_nodes",
+   "discipline": "VK",
+   "left": {
+    "rotation": 90,
+    "page_rect": [
+     2384.0,
+     1684.0
+    ],
+    "drawings_page": 287144,
+    "drawings_in_block_trackA_window": 66946,
+    "drawings_in_block_derotated_window": 36222,
+    "ratio": 1.8482
+   },
+   "right": {
+    "rotation": 90,
+    "page_rect": [
+     2384.0,
+     1684.0
+    ],
+    "drawings_page": 292285,
+    "drawings_in_block_trackA_window": 68098,
+    "drawings_in_block_derotated_window": 36826,
+    "ratio": 1.8492
+   }
+  },
+  {
+   "pair_id": "vk_node_plan",
+   "discipline": "VK",
+   "left": {
+    "rotation": 90,
+    "page_rect": [
+     2384.0,
+     1684.0
+    ],
+    "drawings_page": 231941,
+    "drawings_in_block_trackA_window": 19142,
+    "drawings_in_block_derotated_window": 25547,
+    "ratio": 0.7493
+   },
+   "right": {
+    "rotation": 90,
+    "page_rect": [
+     2384.0,
+     1684.0
+    ],
+    "drawings_page": 232874,
+    "drawings_in_block_trackA_window": 19237,
+    "drawings_in_block_derotated_window": 25543,
+    "ratio": 0.7531
+   }
+  },
+  {
+   "pair_id": "eom_singleline_changed",
+   "discipline": "EOM",
+   "left": {
+    "rotation": 270,
+    "page_rect": [
+     2383.919921875,
+     842.0400390625
+    ],
+    "drawings_page": 5722,
+    "drawings_in_block_trackA_window": 345,
+    "drawings_in_block_derotated_window": 182,
+    "ratio": 1.8956
+   },
+   "right": {
+    "rotation": 0,
+    "page_rect": [
+     2525.760009765625,
+     1190.6400146484375
+    ],
+    "drawings_page": 161,
+    "drawings_in_block_trackA_window": 10,
+    "drawings_in_block_derotated_window": 10,
+    "ratio": 1.0
+   }
+  }
+ ],
+ "corpus_documents_scanned": 570,
+ "corpus_documents_with_any_rotated_page": 159,
+ "corpus_page_rotation_histogram": {
+  "0": 21646,
+  "90": 195,
+  "180": 4,
+  "270": 1191
+ },
+ "corpus_pages_total": 23036,
+ "corpus_pages_rotated": 1390,
+ "elapsed_s": 5.6
+}

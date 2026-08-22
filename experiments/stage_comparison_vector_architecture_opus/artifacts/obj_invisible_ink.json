@@ -1,0 +1,186 @@
+{
+ "probe": "obj",
+ "research_only": true,
+ "pairs": {
+  "ss_scheme_text_changed": {
+   "left": {
+    "segments_all": 691,
+    "segments_inked": 691,
+    "invisible_paths": 0,
+    "invisible_share": 0.0
+   },
+   "right": {
+    "segments_all": 1171,
+    "segments_inked": 691,
+    "invisible_paths": 120,
+    "invisible_share": 0.4099
+   },
+   "delta_all": 480,
+   "delta_inked": 0,
+   "rel_delta_all": 0.4099,
+   "rel_delta_inked": 0.0
+  },
+  "ss_plan_dense": {
+   "left": {
+    "segments_all": 82001,
+    "segments_inked": 81409,
+    "invisible_paths": 148,
+    "invisible_share": 0.0072
+   },
+   "right": {
+    "segments_all": 81860,
+    "segments_inked": 81268,
+    "invisible_paths": 148,
+    "invisible_share": 0.0072
+   },
+   "delta_all": 141,
+   "delta_inked": 141,
+   "rel_delta_all": 0.0017,
+   "rel_delta_inked": 0.0017
+  },
+  "ss_simple_node": {
+   "left": {
+    "segments_all": 45,
+    "segments_inked": 45,
+    "invisible_paths": 0,
+    "invisible_share": 0.0
+   },
+   "right": {
+    "segments_all": 45,
+    "segments_inked": 45,
+    "invisible_paths": 0,
+    "invisible_share": 0.0
+   },
+   "delta_all": 0,
+   "delta_inked": 0,
+   "rel_delta_all": 0.0,
+   "rel_delta_inked": 0.0
+  },
+  "ss_table_graphic": {
+   "left": {
+    "segments_all": 1592,
+    "segments_inked": 1592,
+    "invisible_paths": 0,
+    "invisible_share": 0.0
+   },
+   "right": {
+    "segments_all": 1583,
+    "segments_inked": 1583,
+    "invisible_paths": 0,
+    "invisible_share": 0.0
+   },
+   "delta_all": 9,
+   "delta_inked": 9,
+   "rel_delta_all": 0.0057,
+   "rel_delta_inked": 0.0057
+  },
+  "ar_plan": {
+   "left": {
+    "segments_all": 16582,
+    "segments_inked": 15934,
+    "invisible_paths": 213,
+    "invisible_share": 0.0391
+   },
+   "right": {
+    "segments_all": 16582,
+    "segments_inked": 15934,
+    "invisible_paths": 213,
+    "invisible_share": 0.0391
+   },
+   "delta_all": 0,
+   "delta_inked": 0,
+   "rel_delta_all": 0.0,
+   "rel_delta_inked": 0.0
+  },
+  "ar_wall_sections": {
+   "left": {
+    "segments_all": 24768,
+    "segments_inked": 24596,
+    "invisible_paths": 43,
+    "invisible_share": 0.0069
+   },
+   "right": {
+    "segments_all": 24768,
+    "segments_inked": 24596,
+    "invisible_paths": 43,
+    "invisible_share": 0.0069
+   },
+   "delta_all": 0,
+   "delta_inked": 0,
+   "rel_delta_all": 0.0,
+   "rel_delta_inked": 0.0
+  },
+  "vk_plan": {
+   "left": {
+    "segments_all": 104586,
+    "segments_inked": 84309,
+    "invisible_paths": 20019,
+    "invisible_share": 0.1939
+   },
+   "right": {
+    "segments_all": 153521,
+    "segments_inked": 85985,
+    "invisible_paths": 31839,
+    "invisible_share": 0.4399
+   },
+   "delta_all": 48935,
+   "delta_inked": 1676,
+   "rel_delta_all": 0.3188,
+   "rel_delta_inked": 0.0195
+  },
+  "vk_nodes": {
+   "left": {
+    "segments_all": 36453,
+    "segments_inked": 32745,
+    "invisible_paths": 3666,
+    "invisible_share": 0.1017
+   },
+   "right": {
+    "segments_all": 37057,
+    "segments_inked": 33286,
+    "invisible_paths": 3729,
+    "invisible_share": 0.1018
+   },
+   "delta_all": 604,
+   "delta_inked": 541,
+   "rel_delta_all": 0.0163,
+   "rel_delta_inked": 0.0163
+  },
+  "vk_node_plan": {
+   "left": {
+    "segments_all": 25739,
+    "segments_inked": 23065,
+    "invisible_paths": 2617,
+    "invisible_share": 0.1039
+   },
+   "right": {
+    "segments_all": 25733,
+    "segments_inked": 23061,
+    "invisible_paths": 2617,
+    "invisible_share": 0.1038
+   },
+   "delta_all": 6,
+   "delta_inked": 4,
+   "rel_delta_all": 0.0002,
+   "rel_delta_inked": 0.0002
+  },
+  "eom_singleline_changed": {
+   "left": {
+    "segments_all": 1380,
+    "segments_inked": 1378,
+    "invisible_paths": 1,
+    "invisible_share": 0.0014
+   },
+   "right": {
+    "segments_all": 1859,
+    "segments_inked": 1859,
+    "invisible_paths": 0,
+    "invisible_share": 0.0
+   },
+   "delta_all": 479,
+   "delta_inked": 481,
+   "rel_delta_all": 0.2577,
+   "rel_delta_inked": 0.2587
+  }
+ }
+}

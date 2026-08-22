@@ -1,0 +1,404 @@
+{
+ "schema_version": "vector-block-comparison-research-v0.1",
+ "research_only": true,
+ "left_block_id": "A_l3collision_eom_9seg_L",
+ "right_block_id": "A_l3collision_eom_9seg_R",
+ "status": "STRUCTURE_CHANGED",
+ "exact_vector_signature_equal": false,
+ "normalized_signature_equal": false,
+ "structural_signature_equal": false,
+ "geometry": {
+  "tolerance_experiment": [
+   {
+    "tolerance": 0.001,
+    "similarity": 0.0,
+    "left_coverage": 0.0,
+    "right_coverage": 0.0,
+    "left_used": 26,
+    "right_used": 28,
+    "left_total": 26,
+    "right_total": 28,
+    "capped": false,
+    "left_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ],
+    "right_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ]
+   },
+   {
+    "tolerance": 0.0025,
+    "similarity": 0.0,
+    "left_coverage": 0.0,
+    "right_coverage": 0.0,
+    "left_used": 26,
+    "right_used": 28,
+    "left_total": 26,
+    "right_total": 28,
+    "capped": false,
+    "left_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ],
+    "right_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ]
+   },
+   {
+    "tolerance": 0.005,
+    "similarity": 0.222527,
+    "left_coverage": 0.230769,
+    "right_coverage": 0.214286,
+    "left_used": 26,
+    "right_used": 28,
+    "left_total": 26,
+    "right_total": 28,
+    "capped": false,
+    "left_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ],
+    "right_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ]
+   },
+   {
+    "tolerance": 0.01,
+    "similarity": 0.778846,
+    "left_coverage": 0.807692,
+    "right_coverage": 0.75,
+    "left_used": 26,
+    "right_used": 28,
+    "left_total": 26,
+    "right_total": 28,
+    "capped": false,
+    "left_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ],
+    "right_unmatched_primitive_ids": [
+     "primitive-1",
+     "primitive-1",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2",
+     "primitive-2"
+    ]
+   }
+  ],
+  "primitive_matching_experiment": [
+   {
+    "tolerance": 0.001,
+    "matched": 0,
+    "left_total": 2,
+    "right_total": 2,
+    "left_used": 2,
+    "right_used": 2,
+    "capped": false,
+    "similarity": 0.0,
+    "matches_sample": [],
+    "matches_truncated": false,
+    "left_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ],
+    "right_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ]
+   },
+   {
+    "tolerance": 0.0025,
+    "matched": 0,
+    "left_total": 2,
+    "right_total": 2,
+    "left_used": 2,
+    "right_used": 2,
+    "capped": false,
+    "similarity": 0.0,
+    "matches_sample": [],
+    "matches_truncated": false,
+    "left_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ],
+    "right_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ]
+   },
+   {
+    "tolerance": 0.005,
+    "matched": 0,
+    "left_total": 2,
+    "right_total": 2,
+    "left_used": 2,
+    "right_used": 2,
+    "capped": false,
+    "similarity": 0.0,
+    "matches_sample": [],
+    "matches_truncated": false,
+    "left_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ],
+    "right_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ]
+   },
+   {
+    "tolerance": 0.01,
+    "matched": 0,
+    "left_total": 2,
+    "right_total": 2,
+    "left_used": 2,
+    "right_used": 2,
+    "capped": false,
+    "similarity": 0.0,
+    "matches_sample": [],
+    "matches_truncated": false,
+    "left_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ],
+    "right_unmatched": [
+     "primitive-1",
+     "primitive-2"
+    ]
+   }
+  ],
+  "selected_tolerance": 0.01,
+  "similarity": 0.778846,
+  "left_coverage": 0.807692,
+  "right_coverage": 0.75,
+  "encoding_rewrite_suspected": false
+ },
+ "text": {
+  "similarity": 1.0,
+  "character_stream_similarity": 1.0,
+  "effective_similarity": 1.0,
+  "reliable": false,
+  "left_layer_quality": {
+   "status": "ABSENT",
+   "characters": 0,
+   "suspicious_control_characters": 0,
+   "suspicious_ratio": 0.0
+  },
+  "right_layer_quality": {
+   "status": "ABSENT",
+   "characters": 0,
+   "suspicious_control_characters": 0,
+   "suspicious_ratio": 0.0
+  },
+  "unchanged_occurrences": 0,
+  "left_total": 0,
+  "right_total": 0,
+  "removed": [],
+  "added": [],
+  "value_changes": [],
+  "truncated": false
+ },
+ "topology": {
+  "similarity": 0.950384,
+  "counts": {
+   "node_count": {
+    "left": 30,
+    "right": 31
+   },
+   "edge_count": {
+    "left": 26,
+    "right": 28
+   },
+   "connected_components": {
+    "left": 5,
+    "right": 4
+   },
+   "endpoints": {
+    "left": 7,
+    "right": 6
+   },
+   "branch_points": {
+    "left": 3,
+    "right": 3
+   },
+   "t_junctions": {
+    "left": 1,
+    "right": 1
+   },
+   "x_crossings_unconnected": {
+    "left": 0,
+    "right": 0
+   },
+   "closed_contours": {
+    "left": 1,
+    "right": 1
+   },
+   "nested_contours": {
+    "left": 0,
+    "right": 0
+   }
+  }
+ },
+ "repeated_patterns": {
+  "similarity": 1.0,
+  "changes": [],
+  "truncated": false
+ },
+ "differences": [
+  "Топология изменилась (similarity=0.950, ветвления 3 → 3)"
+ ],
+ "caveats": [
+  "Segment coverage is order- and PDF-path-packaging-independent and uses block-normalized geometry; it does not use affine warping.",
+  "Dense blocks are compared on the longest deterministic segment sample when the explicit cap is reached.",
+  "A geometric X-crossing is not promoted to a connection without junction evidence.",
+  "Undecodable embedded-font text is reported and excluded from status selection; OCR is not used.",
+  "Status thresholds are research thresholds evaluated on this benchmark, not production policy."
+ ]
+}

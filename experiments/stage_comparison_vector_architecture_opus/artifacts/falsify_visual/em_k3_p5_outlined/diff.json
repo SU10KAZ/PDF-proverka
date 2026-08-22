@@ -1,0 +1,43 @@
+{
+ "left": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/document.pdf",
+ "right": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/document.pdf",
+ "page_index": 5,
+ "right_page_index": 5,
+ "dpi": 90.0,
+ "page_size_left": [
+  1785.8,
+  841.9
+ ],
+ "page_size_right": [
+  1785.8,
+  841.9
+ ],
+ "changed_pixels": 320592,
+ "compared_pixels": 2351349,
+ "changed_pixel_share": 0.13634386,
+ "changed_regions_found": 1,
+ "regions": [
+  {
+   "region": 1,
+   "dirty_pixels": 320536,
+   "rect_pt": [
+    0.0,
+    0.0,
+    1836.8,
+    876.8
+   ],
+   "bbox_norm_left": [
+    0.0,
+    0.0,
+    1.0285356107798156,
+    1.04142913554478
+   ],
+   "bbox_norm_right": [
+    0.0,
+    0.0,
+    1.0285356107798156,
+    1.04142913554478
+   ]
+  }
+ ]
+}

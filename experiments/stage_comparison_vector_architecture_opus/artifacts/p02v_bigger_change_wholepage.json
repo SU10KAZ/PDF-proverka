@@ -1,0 +1,78 @@
+[
+ {
+  "tag": "ar12k4_p11",
+  "dirty_pixels": 86775,
+  "status": "NEAR_IDENTICAL",
+  "geom": 0.998417,
+  "topo": 0.992519,
+  "text_eff": 1.0,
+  "text_reliable": true,
+  "prims": [
+   686,
+   702
+  ],
+  "segs": [
+   17354,
+   16266
+  ],
+  "quality": [
+   "LIMITED_CAPPED",
+   "LIMITED_CAPPED"
+  ],
+  "diffs": [
+   "Число примитивов: 686 → 702",
+   "Изменены повторяющиеся motifs: 3"
+  ],
+  "secs": 3.9
+ },
+ {
+  "tag": "ar12k4_p12",
+  "dirty_pixels": 180830,
+  "status": "NEAR_IDENTICAL",
+  "geom": 0.991083,
+  "topo": 0.961004,
+  "text_eff": 1.0,
+  "text_reliable": true,
+  "prims": [
+   3756,
+   3910
+  ],
+  "segs": [
+   54749,
+   52471
+  ],
+  "quality": [
+   "LIMITED_CAPPED",
+   "LIMITED_CAPPED"
+  ],
+  "diffs": [
+   "Число примитивов: 3756 → 3910",
+   "Изменены повторяющиеся motifs: 25",
+   "Топология изменилась (similarity=0.961, ветвления 5154 → 5080)"
+  ],
+  "secs": 8.1
+ },
+ {
+  "tag": "aps_k4_p8_zero_change",
+  "dirty_pixels": 0,
+  "status": "NEAR_IDENTICAL",
+  "geom": 1.0,
+  "topo": 1.0,
+  "text_eff": 1.0,
+  "text_reliable": true,
+  "prims": [
+   14184,
+   14184
+  ],
+  "segs": [
+   38805,
+   38800
+  ],
+  "quality": [
+   "LIMITED_CAPPED",
+   "LIMITED_CAPPED"
+  ],
+  "diffs": [],
+  "secs": 13.1
+ }
+]

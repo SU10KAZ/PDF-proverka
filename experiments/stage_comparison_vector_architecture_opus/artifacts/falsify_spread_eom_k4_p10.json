@@ -1,0 +1,253 @@
+{
+ "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+ "page_index": 10,
+ "filters": {
+  "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+  "page": 10,
+  "min_seg": 6,
+  "max_seg": 200,
+  "min_size": 5.0,
+  "max_size": 80.0,
+  "min_cycles": 1,
+  "groups": 6,
+  "cap": 24,
+  "out": "falsify_spread_eom_k4_p10.json"
+ },
+ "note": "shape_similarity is the same order-independent directional segment coverage idea comparator._directional_segment_coverage uses, on component-normalized coordinates; 1.0 means the two instances are the same normalized shape.",
+ "groups": [
+  {
+   "l3_key": "[{\"l\": 12}, 1, {\"2\": 12}, 12, 1.0]",
+   "instances_compared": 24,
+   "pairs": 276,
+   "min": 1.0,
+   "median": 1.0,
+   "mean": 1.0,
+   "max": 1.0,
+   "pairs_below_0_985": 0,
+   "pairs_below_0_90": 0,
+   "share_below_0_985": 0.0,
+   "example_bboxes": [
+    [
+     1777.44,
+     164.16,
+     1791.6,
+     178.32
+    ],
+    [
+     1761.36,
+     180.48,
+     1775.52,
+     194.64
+    ],
+    [
+     1777.44,
+     180.48,
+     1791.6,
+     194.64
+    ],
+    [
+     1793.76,
+     164.16,
+     1807.92,
+     178.32
+    ]
+   ],
+   "n_segments": 12
+  },
+  {
+   "l3_key": "[{\"l\": 7}, 1, {\"2\": 7}, 7, 1.0]",
+   "instances_compared": 24,
+   "pairs": 276,
+   "min": 0.5714,
+   "median": 1.0,
+   "mean": 0.8561,
+   "max": 1.0,
+   "pairs_below_0_985": 130,
+   "pairs_below_0_90": 130,
+   "share_below_0_985": 0.471,
+   "example_bboxes": [
+    [
+     500.64,
+     490.56,
+     505.92,
+     496.08
+    ],
+    [
+     500.64,
+     496.8,
+     505.92,
+     502.32
+    ],
+    [
+     500.64,
+     503.28,
+     505.92,
+     508.8
+    ],
+    [
+     500.64,
+     509.76,
+     505.92,
+     515.28
+    ]
+   ],
+   "n_segments": 7
+  },
+  {
+   "l3_key": "[{\"l\": 6}, 3, {\"3\": 4}, 6, 1.0]",
+   "instances_compared": 24,
+   "pairs": 276,
+   "min": 1.0,
+   "median": 1.0,
+   "mean": 1.0,
+   "max": 1.0,
+   "pairs_below_0_985": 0,
+   "pairs_below_0_90": 0,
+   "share_below_0_985": 0.0,
+   "example_bboxes": [
+    [
+     548.4,
+     314.64,
+     557.04,
+     323.28
+    ],
+    [
+     514.08,
+     476.16,
+     522.72,
+     484.56
+    ],
+    [
+     564.72,
+     233.76,
+     573.12,
+     242.16
+    ],
+    [
+     582.24,
+     154.56,
+     590.64,
+     163.2
+    ]
+   ],
+   "n_segments": 6
+  },
+  {
+   "l3_key": "[{\"l\": 7, \"re\": 4}, 2, {\"2\": 4, \"3\": 2}, 11, 2.0]",
+   "instances_compared": 7,
+   "pairs": 21,
+   "min": 1.0,
+   "median": 1.0,
+   "mean": 1.0,
+   "max": 1.0,
+   "pairs_below_0_985": 0,
+   "pairs_below_0_90": 0,
+   "share_below_0_985": 0.0,
+   "example_bboxes": [
+    [
+     110.16,
+     387.36,
+     138.48,
+     401.52
+    ],
+    [
+     109.92,
+     151.44,
+     138.24,
+     165.84
+    ],
+    [
+     109.92,
+     230.64,
+     138.24,
+     244.8
+    ],
+    [
+     109.92,
+     311.52,
+     138.24,
+     325.68
+    ]
+   ],
+   "n_segments": 11
+  },
+  {
+   "l3_key": "[{\"l\": 15}, 1, {\"1\": 1, \"2\": 13, \"3\": 1}, 15, 0.9]",
+   "instances_compared": 7,
+   "pairs": 21,
+   "min": 1.0,
+   "median": 1.0,
+   "mean": 1.0,
+   "max": 1.0,
+   "pairs_below_0_985": 0,
+   "pairs_below_0_90": 0,
+   "share_below_0_985": 0.0,
+   "example_bboxes": [
+    [
+     266.64,
+     388.08,
+     284.16,
+     407.52
+    ],
+    [
+     266.64,
+     152.16,
+     284.16,
+     171.84
+    ],
+    [
+     266.64,
+     231.36,
+     284.16,
+     250.8
+    ],
+    [
+     266.64,
+     312.24,
+     284.16,
+     331.68
+    ]
+   ],
+   "n_segments": 15
+  },
+  {
+   "l3_key": "[{\"l\": 7}, 2, {\"2\": 4, \"3\": 2}, 7, 0.7]",
+   "instances_compared": 7,
+   "pairs": 21,
+   "min": 1.0,
+   "median": 1.0,
+   "mean": 1.0,
+   "max": 1.0,
+   "pairs_below_0_985": 0,
+   "pairs_below_0_90": 0,
+   "share_below_0_985": 0.0,
+   "example_bboxes": [
+    [
+     321.6,
+     380.88,
+     344.16,
+     413.04
+    ],
+    [
+     321.6,
+     145.2,
+     344.16,
+     177.36
+    ],
+    [
+     321.6,
+     224.16,
+     344.16,
+     256.32
+    ],
+    [
+     321.6,
+     305.28,
+     344.16,
+     337.2
+    ]
+   ],
+   "n_segments": 7
+  }
+ ]
+}

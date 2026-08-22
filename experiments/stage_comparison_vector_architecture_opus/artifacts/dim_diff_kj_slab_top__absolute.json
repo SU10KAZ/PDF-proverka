@@ -1,0 +1,147 @@
+{
+ "pair": "kj_slab_top",
+ "frame": "absolute",
+ "match_tolerance": 6.0,
+ "only_corroborated_bindings": true,
+ "left_dimensions": 138,
+ "right_dimensions": 142,
+ "matched": 132,
+ "unchanged": 130,
+ "global_drift": [
+  0.0,
+  0.0
+ ],
+ "chain_retiled": [
+  {
+   "left_value": 1500.0,
+   "right_values": [
+    300.0,
+    1000.0,
+    200.0
+   ],
+   "at": [
+    791.875,
+    301.32
+   ],
+   "sentence": "Размерная цепочка: 1500 разбит на 300 + 1000 + 200"
+  },
+  {
+   "left_value": 1400.0,
+   "right_values": [
+    400.0,
+    1000.0
+   ],
+   "at": [
+    729.235,
+    703.8
+   ],
+   "sentence": "Размерная цепочка: 1400 разбит на 400 + 1000"
+  }
+ ],
+ "value_changed": [
+  {
+   "left_value": 1750.0,
+   "right_value": 2250.0,
+   "at_norm": [
+    596.995,
+    699.12
+   ],
+   "match_distance_norm": 0.0,
+   "matched_by": "shared_extension_foot",
+   "left_span_pt": 66.24,
+   "right_span_pt": 85.2,
+   "geometry_moved_with_value": true,
+   "sentence": "Размер 1750 → 2250"
+  },
+  {
+   "left_value": 200.0,
+   "right_value": 150.0,
+   "at_norm": [
+    1275.96,
+    630.595
+   ],
+   "match_distance_norm": 0.0,
+   "matched_by": "shared_extension_foot",
+   "left_span_pt": 7.44,
+   "right_span_pt": 5.76,
+   "geometry_moved_with_value": true,
+   "sentence": "Размер 200 → 150"
+  }
+ ],
+ "removed": [
+  {
+   "value": 4300.0,
+   "at_norm": [
+    859.315,
+    248.4
+   ],
+   "sentence": "Размер 4300 удалён"
+  },
+  {
+   "value": 1000.0,
+   "at_norm": [
+    791.875,
+    254.04
+   ],
+   "sentence": "Размер 1000 удалён"
+  },
+  {
+   "value": 840.0,
+   "at_norm": [
+    816.72,
+    649.555
+   ],
+   "sentence": "Размер 840 удалён"
+  },
+  {
+   "value": 1000.0,
+   "at_norm": [
+    596.995,
+    751.08
+   ],
+   "sentence": "Размер 1000 удалён"
+  }
+ ],
+ "added": [
+  {
+   "value": 1000.0,
+   "at_norm": [
+    785.395,
+    254.04
+   ],
+   "sentence": "Добавлен размер 1000"
+  },
+  {
+   "value": 50.0,
+   "at_norm": [
+    785.395,
+    234.24
+   ],
+   "sentence": "Добавлен размер 50"
+  },
+  {
+   "value": 50.0,
+   "at_norm": [
+    729.235,
+    731.28
+   ],
+   "sentence": "Добавлен размер 50"
+  },
+  {
+   "value": 50.0,
+   "at_norm": [
+    729.235,
+    638.64
+   ],
+   "sentence": "Добавлен размер 50"
+  },
+  {
+   "value": 840.0,
+   "at_norm": [
+    816.72,
+    713.395
+   ],
+   "sentence": "Добавлен размер 840"
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+  "vk_nodes": {
+    "left_spans": 421,
+    "right_spans": 360,
+    "left_broken_spans": 207,
+    "right_broken_spans": 88,
+    "left_broken_resolved_by_glyph": 185,
+    "right_broken_resolved_by_glyph": 70,
+    "all_spans": {
+      "raw_multiset_f1": 0.2894,
+      "glyph_multiset_f1": 0.0179,
+      "raw_stream_similarity": 0.4267,
+      "glyph_stream_similarity": 0.5084
+    },
+    "broken_spans_only": {
+      "raw_multiset_f1": 0.0,
+      "glyph_multiset_f1": 0.0407
+    }
+  },
+  "vk_node_plan": {
+    "left_spans": 243,
+    "right_spans": 237,
+    "left_broken_spans": 132,
+    "right_broken_spans": 73,
+    "left_broken_resolved_by_glyph": 117,
+    "right_broken_resolved_by_glyph": 59,
+    "all_spans": {
+      "raw_multiset_f1": 0.3208,
+      "glyph_multiset_f1": 0.0292,
+      "raw_stream_similarity": 0.3958,
+      "glyph_stream_similarity": 0.6856
+    },
+    "broken_spans_only": {
+      "raw_multiset_f1": 0.0,
+      "glyph_multiset_f1": 0.0195
+    }
+  },
+  "vk_plan": {
+    "left_spans": 232,
+    "right_spans": 237,
+    "left_broken_spans": 61,
+    "right_broken_spans": 74,
+    "left_broken_resolved_by_glyph": 61,
+    "right_broken_resolved_by_glyph": 74,
+    "all_spans": {
+      "raw_multiset_f1": 0.5586,
+      "glyph_multiset_f1": 0.2004,
+      "raw_stream_similarity": 0.5221,
+      "glyph_stream_similarity": 0.5161
+    },
+    "broken_spans_only": {
+      "raw_multiset_f1": 0.0,
+      "glyph_multiset_f1": 0.4444
+    }
+  }
+}

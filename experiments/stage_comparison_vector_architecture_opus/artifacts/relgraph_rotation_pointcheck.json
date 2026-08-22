@@ -1,0 +1,210 @@
+{
+ "research_only": true,
+ "definition": {
+  "points_extracted": "drawing points whose raw get_drawings() coords fall in block_rect (what extract_block keeps)",
+  "points_in_named_region": "drawing points whose page-space (rotation_matrix applied) coords fall in block_rect (what bbox_norm names, and what save_description's diagnostic PNG renders)",
+  "agreement_fraction": "points_in_both / points_in_named_region"
+ },
+ "rows": [
+  {
+   "pair": "ss_scheme_text_changed",
+   "side": "left",
+   "rotation": 0,
+   "page_points": 7324,
+   "points_extracted": 1418,
+   "points_in_named_region": 1418,
+   "points_in_both": 1418,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ss_scheme_text_changed",
+   "side": "right",
+   "rotation": 0,
+   "page_points": 8172,
+   "points_extracted": 1658,
+   "points_in_named_region": 1658,
+   "points_in_both": 1658,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ss_plan_dense",
+   "side": "left",
+   "rotation": 0,
+   "page_points": 179180,
+   "points_extracted": 174326,
+   "points_in_named_region": 174326,
+   "points_in_both": 174326,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ss_plan_dense",
+   "side": "right",
+   "rotation": 0,
+   "page_points": 179180,
+   "points_extracted": 174038,
+   "points_in_named_region": 174038,
+   "points_in_both": 174038,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ss_simple_node",
+   "side": "left",
+   "rotation": 0,
+   "page_points": 4868,
+   "points_extracted": 90,
+   "points_in_named_region": 90,
+   "points_in_both": 90,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ss_simple_node",
+   "side": "right",
+   "rotation": 0,
+   "page_points": 4868,
+   "points_extracted": 90,
+   "points_in_named_region": 90,
+   "points_in_both": 90,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ss_table_graphic",
+   "side": "left",
+   "rotation": 0,
+   "page_points": 7930,
+   "points_extracted": 3196,
+   "points_in_named_region": 3196,
+   "points_in_both": 3196,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ss_table_graphic",
+   "side": "right",
+   "rotation": 0,
+   "page_points": 7930,
+   "points_extracted": 3187,
+   "points_in_named_region": 3187,
+   "points_in_both": 3187,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ar_plan",
+   "side": "left",
+   "rotation": 0,
+   "page_points": 60374,
+   "points_extracted": 30157,
+   "points_in_named_region": 30157,
+   "points_in_both": 30157,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ar_plan",
+   "side": "right",
+   "rotation": 0,
+   "page_points": 60374,
+   "points_extracted": 30155,
+   "points_in_named_region": 30155,
+   "points_in_both": 30155,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ar_wall_sections",
+   "side": "left",
+   "rotation": 0,
+   "page_points": 160998,
+   "points_extracted": 72090,
+   "points_in_named_region": 72090,
+   "points_in_both": 72090,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "ar_wall_sections",
+   "side": "right",
+   "rotation": 0,
+   "page_points": 160998,
+   "points_extracted": 72090,
+   "points_in_named_region": 72090,
+   "points_in_both": 72090,
+   "agreement_fraction": 1.0
+  },
+  {
+   "pair": "vk_plan",
+   "side": "left",
+   "rotation": 90,
+   "page_points": 1770004,
+   "points_extracted": 6132,
+   "points_in_named_region": 1767370,
+   "points_in_both": 3632,
+   "agreement_fraction": 0.0021
+  },
+  {
+   "pair": "vk_plan",
+   "side": "right",
+   "rotation": 90,
+   "page_points": 1800296,
+   "points_extracted": 6127,
+   "points_in_named_region": 1795746,
+   "points_in_both": 3577,
+   "agreement_fraction": 0.002
+  },
+  {
+   "pair": "vk_nodes",
+   "side": "left",
+   "rotation": 90,
+   "page_points": 574304,
+   "points_extracted": 329426,
+   "points_in_named_region": 280623,
+   "points_in_both": 89753,
+   "agreement_fraction": 0.3198
+  },
+  {
+   "pair": "vk_nodes",
+   "side": "right",
+   "rotation": 90,
+   "page_points": 584586,
+   "points_extracted": 334502,
+   "points_in_named_region": 284079,
+   "points_in_both": 89872,
+   "agreement_fraction": 0.3164
+  },
+  {
+   "pair": "vk_node_plan",
+   "side": "left",
+   "rotation": 90,
+   "page_points": 463898,
+   "points_extracted": 75033,
+   "points_in_named_region": 217094,
+   "points_in_both": 0,
+   "agreement_fraction": 0.0
+  },
+  {
+   "pair": "vk_node_plan",
+   "side": "right",
+   "rotation": 90,
+   "page_points": 465764,
+   "points_extracted": 79660,
+   "points_in_named_region": 217080,
+   "points_in_both": 0,
+   "agreement_fraction": 0.0
+  },
+  {
+   "pair": "eom_singleline_changed",
+   "side": "left",
+   "rotation": 270,
+   "page_points": 30794,
+   "points_extracted": 3306,
+   "points_in_named_region": 1646,
+   "points_in_both": 961,
+   "agreement_fraction": 0.5838
+  },
+  {
+   "pair": "eom_singleline_changed",
+   "side": "right",
+   "rotation": 0,
+   "page_points": 19110,
+   "points_extracted": 2239,
+   "points_in_named_region": 2239,
+   "points_in_both": 2239,
+   "agreement_fraction": 1.0
+  }
+ ]
+}

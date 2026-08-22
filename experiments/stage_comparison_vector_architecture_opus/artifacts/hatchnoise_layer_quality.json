@@ -1,0 +1,4805 @@
+{
+ "probe": "hatchnoise_layer_quality",
+ "elapsed_s": 100.1,
+ "ocg_pdfs_examined": 169,
+ "pages_without_layer_names": 59,
+ "pages_degenerate_layer0": 1,
+ "pages_degenerate_single": 1,
+ "pages_informative": 108,
+ "informative_median_hatch_share": 0.002,
+ "informative_mean_hatch_share": 0.109,
+ "rows": [
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v004/02_work/document.pdf",
+   "page": 8,
+   "drawings": 2312,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К3/versions/v003/02_work/document.pdf",
+   "page": 6,
+   "drawings": 4062,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К3-К4/versions/v001/02_work/document.pdf",
+   "page": 5,
+   "drawings": 492,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К3/versions/v001/02_work/document.pdf",
+   "page": 41,
+   "drawings": 9101,
+   "named": 9101,
+   "distinct": 60,
+   "top_share": 0.103,
+   "hatch_share": 0.123,
+   "furniture_share": 0.0,
+   "underlay_share": 0.064,
+   "default_layer0_share": 0.017,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     934
+    ],
+    [
+     "05_Светильники потолок",
+     746
+    ],
+    [
+     "PDF _ERDAL-CEILING-METAL-PANEL",
+     741
+    ],
+    [
+     "06_02_Светильники потолочные",
+     656
+    ],
+    [
+     "Двери",
+     615
+    ],
+    [
+     "G-XREF-____-OTLN",
+     583
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К4/versions/v001/02_work/document.pdf",
+   "page": 15,
+   "drawings": 5549,
+   "named": 5549,
+   "distinct": 52,
+   "top_share": 0.346,
+   "hatch_share": 0.357,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.016,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     1919
+    ],
+    [
+     "A-DETL-GENF-OTLN",
+     1533
+    ],
+    [
+     "Узлы",
+     222
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     218
+    ],
+    [
+     "Импорт в семействах",
+     188
+    ],
+    [
+     "G-____-____-TEXT",
+     132
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v001/02_work/document.pdf",
+   "page": 20,
+   "drawings": 15983,
+   "named": 15983,
+   "distinct": 70,
+   "top_share": 0.423,
+   "hatch_share": 0.161,
+   "furniture_share": 0.022,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.038,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "00_план",
+     6757
+    ],
+    [
+     "IZOLATOR",
+     1409
+    ],
+    [
+     "Двери",
+     1067
+    ],
+    [
+     "Потолки",
+     948
+    ],
+    [
+     "A-FLOR-PATT",
+     898
+    ],
+    [
+     "0",
+     606
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v002/02_work/document.pdf",
+   "page": 20,
+   "drawings": 15983,
+   "named": 15983,
+   "distinct": 70,
+   "top_share": 0.423,
+   "hatch_share": 0.161,
+   "furniture_share": 0.022,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.038,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "00_план",
+     6757
+    ],
+    [
+     "IZOLATOR",
+     1409
+    ],
+    [
+     "Двери",
+     1067
+    ],
+    [
+     "Потолки",
+     948
+    ],
+    [
+     "A-FLOR-PATT",
+     898
+    ],
+    [
+     "0",
+     606
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v003/02_work/document.pdf",
+   "page": 32,
+   "drawings": 6827,
+   "named": 6827,
+   "distinct": 34,
+   "top_share": 0.34,
+   "hatch_share": 0.34,
+   "furniture_share": 0.0,
+   "underlay_share": 0.086,
+   "default_layer0_share": 0.004,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     2324
+    ],
+    [
+     "00_план",
+     944
+    ],
+    [
+     "Двери",
+     648
+    ],
+    [
+     "G-XREF-____-OTLN",
+     587
+    ],
+    [
+     "АИ Отделка",
+     429
+    ],
+    [
+     "A-DETL-GENF-OTLN",
+     303
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К6/versions/v001/02_work/document.pdf",
+   "page": 44,
+   "drawings": 11643,
+   "named": 11084,
+   "distinct": 44,
+   "top_share": 0.364,
+   "hatch_share": 0.386,
+   "furniture_share": 0.0,
+   "underlay_share": 0.053,
+   "default_layer0_share": 0.024,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     4039
+    ],
+    [
+     "Двери",
+     2350
+    ],
+    [
+     "A-DETL-GENF",
+     680
+    ],
+    [
+     "A-DOOR-IDEN",
+     589
+    ],
+    [
+     "G-XREF-____-OTLN",
+     584
+    ],
+    [
+     "11_Развертки",
+     391
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К6/versions/v002/02_work/document.pdf",
+   "page": 44,
+   "drawings": 11643,
+   "named": 11084,
+   "distinct": 44,
+   "top_share": 0.364,
+   "hatch_share": 0.386,
+   "furniture_share": 0.0,
+   "underlay_share": 0.053,
+   "default_layer0_share": 0.024,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     4039
+    ],
+    [
+     "Двери",
+     2350
+    ],
+    [
+     "A-DETL-GENF",
+     680
+    ],
+    [
+     "A-DOOR-IDEN",
+     589
+    ],
+    [
+     "G-XREF-____-OTLN",
+     584
+    ],
+    [
+     "11_Развертки",
+     391
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v001/02_work/document.pdf",
+   "page": 24,
+   "drawings": 89302,
+   "named": 89302,
+   "distinct": 49,
+   "top_share": 0.746,
+   "hatch_share": 0.765,
+   "furniture_share": 0.04,
+   "underlay_share": 0.007,
+   "default_layer0_share": 0.005,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     66587
+    ],
+    [
+     "08_Розетки и выводы",
+     9462
+    ],
+    [
+     "!АДМ-Мебель",
+     3562
+    ],
+    [
+     "Стены штриховка",
+     1772
+    ],
+    [
+     "A-DETL-GENF-OTLN",
+     1015
+    ],
+    [
+     "A-GLAZ-____-OTLN",
+     897
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v002/02_work/document.pdf",
+   "page": 24,
+   "drawings": 89199,
+   "named": 89199,
+   "distinct": 48,
+   "top_share": 0.746,
+   "hatch_share": 0.761,
+   "furniture_share": 0.044,
+   "underlay_share": 0.007,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     66587
+    ],
+    [
+     "08_Розетки и выводы",
+     10227
+    ],
+    [
+     "!АДМ-Мебель",
+     3945
+    ],
+    [
+     "Стены штриховка",
+     1299
+    ],
+    [
+     "A-DETL-GENF-OTLN",
+     991
+    ],
+    [
+     "A-GLAZ-____-OTLN",
+     897
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v001/02_work/document.pdf",
+   "page": 88,
+   "drawings": 6953,
+   "named": 6952,
+   "distinct": 37,
+   "top_share": 0.375,
+   "hatch_share": 0.415,
+   "furniture_share": 0.021,
+   "underlay_share": 0.084,
+   "default_layer0_share": 0.021,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     2604
+    ],
+    [
+     "11_Развертки",
+     1899
+    ],
+    [
+     "08_Розетки и выводы",
+     667
+    ],
+    [
+     "G-XREF-____-OTLN",
+     582
+    ],
+    [
+     "Стены штриховка",
+     278
+    ],
+    [
+     "Импорт в семействах",
+     189
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v002/02_work/document.pdf",
+   "page": 72,
+   "drawings": 11306,
+   "named": 11300,
+   "distinct": 47,
+   "top_share": 0.317,
+   "hatch_share": 0.244,
+   "furniture_share": 0.015,
+   "underlay_share": 0.051,
+   "default_layer0_share": 0.037,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "03_Сантехника",
+     3583
+    ],
+    [
+     "A-WALL-____-PATT",
+     2453
+    ],
+    [
+     "A-FLOR-____-OTLN",
+     877
+    ],
+    [
+     "11_Развертки",
+     748
+    ],
+    [
+     "08_Розетки и выводы",
+     676
+    ],
+    [
+     "G-XREF-____-OTLN",
+     581
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-АОФ-K1-K7_V1/versions/v001/02_work/document.pdf",
+   "page": 61,
+   "drawings": 16928,
+   "named": 281,
+   "distinct": 9,
+   "top_share": 0.662,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.662,
+   "default_layer0_share": 0.021,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     186
+    ],
+    [
+     "_VTB_Light",
+     45
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     23
+    ],
+    [
+     "A-____-NOTE-THIN",
+     8
+    ],
+    [
+     "0",
+     6
+    ],
+    [
+     "MP-1578-00-СПС$0$ВТБ кабели",
+     5
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ОЗДС/versions/v001/02_work/document.pdf",
+   "page": 12,
+   "drawings": 1907,
+   "named": 1907,
+   "distinct": 9,
+   "top_share": 0.565,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.369,
+   "default_layer0_share": 0.007,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ОЗДС",
+     1078
+    ],
+    [
+     "G-XREF-____-OTLN",
+     703
+    ],
+    [
+     "text",
+     62
+    ],
+    [
+     "format",
+     23
+    ],
+    [
+     "Основные надписи",
+     17
+    ],
+    [
+     "0",
+     14
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/document.pdf",
+   "page": 35,
+   "drawings": 31551,
+   "named": 31551,
+   "distinct": 63,
+   "top_share": 0.715,
+   "hatch_share": 0.716,
+   "furniture_share": 0.0,
+   "underlay_share": 0.954,
+   "default_layer0_share": 0.001,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "XREF25|A-WALL-____-PATT",
+     22545
+    ],
+    [
+     "XREF25|S-COLS-____-OTLN",
+     713
+    ],
+    [
+     "XREF25|P-SANR-FIXT-OTLN",
+     637
+    ],
+    [
+     "XREF25|S-GRID-____-OTLN",
+     480
+    ],
+    [
+     "XREF25|I-WALL-____-MCUT",
+     474
+    ],
+    [
+     "XREF25|A-AREA-____-OTLN",
+     461
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/document.pdf",
+   "page": 27,
+   "drawings": 30444,
+   "named": 30444,
+   "distinct": 24,
+   "top_share": 0.43,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.015,
+   "default_layer0_share": 0.001,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13АВ-RD-AR-PA-АР0_2-ПА-2-Маркировочный план -1 этажа подземной автостоянки в осях П_1-П_12-с подписями|A-____-NOTE-TEXT",
+     13083
+    ],
+    [
+     "13АВ-RD-AR-PA-АР0_2-ПА-2-Маркировочный план -1 этажа подземной автостоянки в осях П_1-П_12-с подписями|подложка",
+     12511
+    ],
+    [
+     "XR-ШТАМП|Логотип_Олимпроект",
+     1791
+    ],
+    [
+     "ЭОМ_Распред.сети",
+     1362
+    ],
+    [
+     "XR-ШТАМП|G-XREF-____-OTLN",
+     459
+    ],
+    [
+     "XR-УГО Сила|ЭОМ_Текст",
+     455
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/document.pdf",
+   "page": 24,
+   "drawings": 648,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/document.pdf",
+   "page": 27,
+   "drawings": 648,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/document.pdf",
+   "page": 20,
+   "drawings": 648,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+   "page": 21,
+   "drawings": 640,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v001/02_work/document.pdf",
+   "page": 21,
+   "drawings": 648,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭН_V1/versions/v001/02_work/document.pdf",
+   "page": 15,
+   "drawings": 9447,
+   "named": 9404,
+   "distinct": 9,
+   "top_share": 0.68,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.303,
+   "default_layer0_share": 0.0,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Логотип_Олимпроект",
+     6394
+    ],
+    [
+     "G-XREF-____-OTLN",
+     2848
+    ],
+    [
+     "рамка",
+     94
+    ],
+    [
+     "ШТАМП",
+     47
+    ],
+    [
+     "ФОРМАТ",
+     8
+    ],
+    [
+     "ws-Подписи",
+     6
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v001/02_work/document.pdf",
+   "page": 9,
+   "drawings": 3138,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭОМ-СС-К4_V1/versions/v001/02_work/document.pdf",
+   "page": 12,
+   "drawings": 417,
+   "named": 417,
+   "distinct": 8,
+   "top_share": 0.439,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.381,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Штамп к4|Импорт в семействах",
+     183
+    ],
+    [
+     "0",
+     159
+    ],
+    [
+     "line",
+     28
+    ],
+    [
+     "1Оборудование",
+     22
+    ],
+    [
+     "ЭОМ_Текст",
+     12
+    ],
+    [
+     "AM_0",
+     10
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП1/versions/v001/02_work/document.pdf",
+   "page": 3,
+   "drawings": 6,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП1 V1/versions/v001/02_work/document.pdf",
+   "page": 3,
+   "drawings": 6,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП2/versions/v001/02_work/document.pdf",
+   "page": 8,
+   "drawings": 5844,
+   "named": 5433,
+   "distinct": 36,
+   "top_share": 0.566,
+   "hatch_share": 0.01,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.004,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ОФ_Текст",
+     3075
+    ],
+    [
+     "_GL_01_Границы_ДопБлагоустройство",
+     547
+    ],
+    [
+     "ПЗМ_2_Отметки",
+     289
+    ],
+    [
+     "Логотип_Олимпроект",
+     259
+    ],
+    [
+     "_GL_Оформление",
+     198
+    ],
+    [
+     "ПЗМ_3_Отметки",
+     190
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП2/versions/v002/02_work/document.pdf",
+   "page": 8,
+   "drawings": 5844,
+   "named": 5433,
+   "distinct": 36,
+   "top_share": 0.566,
+   "hatch_share": 0.01,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.004,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ОФ_Текст",
+     3075
+    ],
+    [
+     "_GL_01_Границы_ДопБлагоустройство",
+     547
+    ],
+    [
+     "ПЗМ_2_Отметки",
+     289
+    ],
+    [
+     "Логотип_Олимпроект",
+     259
+    ],
+    [
+     "_GL_Оформление",
+     198
+    ],
+    [
+     "ПЗМ_3_Отметки",
+     190
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП2 V1/versions/v001/02_work/document.pdf",
+   "page": 8,
+   "drawings": 5844,
+   "named": 5433,
+   "distinct": 36,
+   "top_share": 0.566,
+   "hatch_share": 0.01,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.004,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ОФ_Текст",
+     3075
+    ],
+    [
+     "_GL_01_Границы_ДопБлагоустройство",
+     547
+    ],
+    [
+     "ПЗМ_2_Отметки",
+     289
+    ],
+    [
+     "Логотип_Олимпроект",
+     259
+    ],
+    [
+     "_GL_Оформление",
+     198
+    ],
+    [
+     "ПЗМ_3_Отметки",
+     190
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.3-5.2-К3_V1/versions/v001/02_work/document.pdf",
+   "page": 10,
+   "drawings": 1401,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v001/02_work/document.pdf",
+   "page": 6,
+   "drawings": 9058,
+   "named": 8921,
+   "distinct": 14,
+   "top_share": 0.462,
+   "hatch_share": 0.028,
+   "furniture_share": 0.0,
+   "underlay_share": 0.462,
+   "default_layer0_share": 0.264,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     4119
+    ],
+    [
+     "0",
+     2359
+    ],
+    [
+     "ISO_ANNOTATE",
+     1291
+    ],
+    [
+     "Оси",
+     326
+    ],
+    [
+     "Штриховая",
+     247
+    ],
+    [
+     "ISO_ARM",
+     219
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v002/02_work/document.pdf",
+   "page": 6,
+   "drawings": 9058,
+   "named": 8921,
+   "distinct": 14,
+   "top_share": 0.462,
+   "hatch_share": 0.028,
+   "furniture_share": 0.0,
+   "underlay_share": 0.462,
+   "default_layer0_share": 0.264,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     4119
+    ],
+    [
+     "0",
+     2359
+    ],
+    [
+     "ISO_ANNOTATE",
+     1291
+    ],
+    [
+     "Оси",
+     326
+    ],
+    [
+     "Штриховая",
+     247
+    ],
+    [
+     "ISO_ARM",
+     219
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К5/versions/v001/02_work/document.pdf",
+   "page": 6,
+   "drawings": 1254,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К6/versions/v002/02_work/document.pdf",
+   "page": 6,
+   "drawings": 9062,
+   "named": 8950,
+   "distinct": 14,
+   "top_share": 0.423,
+   "hatch_share": 0.083,
+   "furniture_share": 0.0,
+   "underlay_share": 0.423,
+   "default_layer0_share": 0.242,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     3789
+    ],
+    [
+     "0",
+     2170
+    ],
+    [
+     "ISO_ANNOTATE",
+     1253
+    ],
+    [
+     "Штриховая",
+     743
+    ],
+    [
+     "Оси",
+     415
+    ],
+    [
+     "ISO_ARM",
+     180
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К4/versions/v001/02_work/document.pdf",
+   "page": 19,
+   "drawings": 27285,
+   "named": 27285,
+   "distinct": 25,
+   "top_share": 0.752,
+   "hatch_share": 0.089,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.071,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Блоки основные",
+     20520
+    ],
+    [
+     "Штриховка",
+     2436
+    ],
+    [
+     "0",
+     1926
+    ],
+    [
+     "Невидимые",
+     1180
+    ],
+    [
+     "_Крепеж теплоизол.",
+     212
+    ],
+    [
+     "09_СФБ",
+     148
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К5/versions/v001/02_work/document.pdf",
+   "page": 29,
+   "drawings": 46144,
+   "named": 46112,
+   "distinct": 28,
+   "top_share": 0.775,
+   "hatch_share": 0.775,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.077,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "IZOLATOR",
+     35747
+    ],
+    [
+     "_ALT_основание",
+     4197
+    ],
+    [
+     "0",
+     3566
+    ],
+    [
+     "HAUPTPROFIL",
+     390
+    ],
+    [
+     "_ALT_крепеж_металл",
+     342
+    ],
+    [
+     "-FASTENERS",
+     297
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 2/versions/v001/02_work/document.pdf",
+   "page": 14,
+   "drawings": 13432,
+   "named": 13432,
+   "distinct": 19,
+   "top_share": 0.388,
+   "hatch_share": 0.053,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.159,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "основная",
+     5206
+    ],
+    [
+     "!!Подсистема",
+     4419
+    ],
+    [
+     "0",
+     2131
+    ],
+    [
+     "штриховка",
+     711
+    ],
+    [
+     "Утеплитель",
+     200
+    ],
+    [
+     "КМ_ПРОФИЛИ",
+     188
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 3/versions/v001/02_work/document.pdf",
+   "page": 10,
+   "drawings": 24096,
+   "named": 24096,
+   "distinct": 30,
+   "top_share": 0.387,
+   "hatch_share": 0.461,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.232,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Kaft-Штриховка",
+     9336
+    ],
+    [
+     "0",
+     5584
+    ],
+    [
+     "основная",
+     3408
+    ],
+    [
+     "4. Крепление",
+     1196
+    ],
+    [
+     "штриховка",
+     1176
+    ],
+    [
+     "! штриховка",
+     588
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 4/versions/v001/02_work/document.pdf",
+   "page": 19,
+   "drawings": 4768,
+   "named": 4768,
+   "distinct": 15,
+   "top_share": 0.45,
+   "hatch_share": 0.055,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.392,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "!!Подсистема",
+     2146
+    ],
+    [
+     "0",
+     1869
+    ],
+    [
+     "штриховка",
+     261
+    ],
+    [
+     "пунктирная",
+     159
+    ],
+    [
+     "основная",
+     112
+    ],
+    [
+     "Утеплитель",
+     76
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 5/versions/v001/02_work/document.pdf",
+   "page": 12,
+   "drawings": 2298,
+   "named": 2295,
+   "distinct": 14,
+   "top_share": 0.37,
+   "hatch_share": 0.127,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.213,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "основная",
+     849
+    ],
+    [
+     "0",
+     488
+    ],
+    [
+     "!!Плитка",
+     306
+    ],
+    [
+     "! штриховка",
+     150
+    ],
+    [
+     "штриховка",
+     142
+    ],
+    [
+     "Размеры для узлов",
+     78
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-НК1_V1/versions/v001/02_work/document.pdf",
+   "page": 31,
+   "drawings": 0,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К1 V1/versions/v001/02_work/document.pdf",
+   "page": 48,
+   "drawings": 55,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К2 V1/versions/v002/02_work/document.pdf",
+   "page": 43,
+   "drawings": 55,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К4 V1/versions/v002/02_work/document.pdf",
+   "page": 15,
+   "drawings": 928,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К7_V1/versions/v001/02_work/document.pdf",
+   "page": 13,
+   "drawings": 53,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v001/02_work/document.pdf",
+   "page": 86,
+   "drawings": 51,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v002/02_work/document.pdf",
+   "page": 76,
+   "drawings": 52,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К3/versions/v001/02_work/document.pdf",
+   "page": 53,
+   "drawings": 150,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К3 V1/versions/v001/02_work/document.pdf",
+   "page": 51,
+   "drawings": 40,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К5 V1/versions/v001/02_work/document.pdf",
+   "page": 60,
+   "drawings": 156,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К2 (Книга 1) V1/versions/v001/02_work/document.pdf",
+   "page": 26,
+   "drawings": 7364,
+   "named": 7364,
+   "distinct": 34,
+   "top_share": 0.302,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.327,
+   "default_layer0_share": 0.125,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "кабели",
+     2222
+    ],
+    [
+     "000XREF01$0$500-PLUMB",
+     1860
+    ],
+    [
+     "0",
+     918
+    ],
+    [
+     "G-XREF-____-OTLN",
+     548
+    ],
+    [
+     "Логотип_Олимпроект",
+     263
+    ],
+    [
+     "Типовые аннотации",
+     252
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К2 (Книга 2) V1/versions/v001/02_work/document.pdf",
+   "page": 12,
+   "drawings": 34221,
+   "named": 34220,
+   "distinct": 84,
+   "top_share": 0.229,
+   "hatch_share": 0.011,
+   "furniture_share": 0.0,
+   "underlay_share": 0.022,
+   "default_layer0_share": 0.043,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены разрез-1",
+     7828
+    ],
+    [
+     "Типовые аннотации",
+     7278
+    ],
+    [
+     "Импосты витража",
+     3271
+    ],
+    [
+     "Стены разрез-2",
+     2576
+    ],
+    [
+     "кабели",
+     2223
+    ],
+    [
+     "Обобщенные модели",
+     1756
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v001/02_work/document.pdf",
+   "page": 15,
+   "drawings": 1165,
+   "named": 1165,
+   "distinct": 13,
+   "top_share": 0.571,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.571,
+   "default_layer0_share": 0.031,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     665
+    ],
+    [
+     "Логотип_Олимпроект",
+     284
+    ],
+    [
+     "штамп",
+     67
+    ],
+    [
+     "SIMBOL",
+     52
+    ],
+    [
+     "0",
+     36
+    ],
+    [
+     "1_АСКУВТ2",
+     32
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page": 15,
+   "drawings": 1168,
+   "named": 1168,
+   "distinct": 13,
+   "top_share": 0.572,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.572,
+   "default_layer0_share": 0.031,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     668
+    ],
+    [
+     "Логотип_Олимпроект",
+     284
+    ],
+    [
+     "штамп",
+     67
+    ],
+    [
+     "SIMBOL",
+     52
+    ],
+    [
+     "0",
+     36
+    ],
+    [
+     "1_АСКУВТ2",
+     32
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v001/02_work/document.pdf",
+   "page": 10,
+   "drawings": 67923,
+   "named": 67923,
+   "distinct": 48,
+   "top_share": 0.524,
+   "hatch_share": 0.003,
+   "furniture_share": 0.0,
+   "underlay_share": 0.016,
+   "default_layer0_share": 0.066,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     35586
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     13149
+    ],
+    [
+     "Стены разрез",
+     5315
+    ],
+    [
+     "кабели",
+     4622
+    ],
+    [
+     "0",
+     4485
+    ],
+    [
+     "G-XREF-____-OTLN",
+     671
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v002/02_work/document.pdf",
+   "page": 9,
+   "drawings": 1404,
+   "named": 1404,
+   "distinct": 15,
+   "top_share": 0.476,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.476,
+   "default_layer0_share": 0.169,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     668
+    ],
+    [
+     "Логотип_Олимпроект",
+     284
+    ],
+    [
+     "0",
+     237
+    ],
+    [
+     "штамп",
+     87
+    ],
+    [
+     "1_АСКУВТ2",
+     32
+    ],
+    [
+     "SIMBOL",
+     31
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 1)/versions/v001/02_work/document.pdf",
+   "page": 14,
+   "drawings": 5055,
+   "named": 5006,
+   "distinct": 26,
+   "top_share": 0.449,
+   "hatch_share": 0.046,
+   "furniture_share": 0.0,
+   "underlay_share": 0.131,
+   "default_layer0_share": 0.449,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     2246
+    ],
+    [
+     "G-XREF-____-OTLN",
+     658
+    ],
+    [
+     "PDF _0",
+     384
+    ],
+    [
+     "PDF _81 - Надписи",
+     302
+    ],
+    [
+     "Логотип_Олимпроект",
+     279
+    ],
+    [
+     "PDF _Геометрия",
+     211
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page": 15,
+   "drawings": 182300,
+   "named": 182300,
+   "distinct": 44,
+   "top_share": 0.825,
+   "hatch_share": 0.042,
+   "furniture_share": 0.0,
+   "underlay_share": 0.004,
+   "default_layer0_share": 0.015,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "S-GRID-____-OTLN",
+     150390
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     13191
+    ],
+    [
+     "A-WALL-____-PATT",
+     7473
+    ],
+    [
+     "0",
+     2819
+    ],
+    [
+     "кабели",
+     2282
+    ],
+    [
+     "A-GENM-____-OTLN",
+     1550
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 2)/versions/v001/02_work/document.pdf",
+   "page": 8,
+   "drawings": 65651,
+   "named": 65651,
+   "distinct": 51,
+   "top_share": 0.562,
+   "hatch_share": 0.002,
+   "furniture_share": 0.0,
+   "underlay_share": 0.01,
+   "default_layer0_share": 0.009,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     36866
+    ],
+    [
+     "Типовые аннотации",
+     13033
+    ],
+    [
+     "Стены разрез",
+     6523
+    ],
+    [
+     "кабели",
+     2264
+    ],
+    [
+     "Линии",
+     1005
+    ],
+    [
+     "штамп",
+     808
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 2)/versions/v002/02_work/document.pdf",
+   "page": 10,
+   "drawings": 79526,
+   "named": 79526,
+   "distinct": 43,
+   "top_share": 0.504,
+   "hatch_share": 0.002,
+   "furniture_share": 0.0,
+   "underlay_share": 0.008,
+   "default_layer0_share": 0.008,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     40064
+    ],
+    [
+     "Стены разрез",
+     22124
+    ],
+    [
+     "Типовые аннотации",
+     13165
+    ],
+    [
+     "G-XREF-____-OTLN",
+     671
+    ],
+    [
+     "0",
+     624
+    ],
+    [
+     "Окна",
+     599
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 1)/versions/v001/02_work/document.pdf",
+   "page": 18,
+   "drawings": 1235,
+   "named": 1235,
+   "distinct": 11,
+   "top_share": 0.538,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.538,
+   "default_layer0_share": 0.126,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     665
+    ],
+    [
+     "Логотип_Олимпроект",
+     284
+    ],
+    [
+     "0",
+     155
+    ],
+    [
+     "штамп",
+     67
+    ],
+    [
+     "1_АСКУВТ2",
+     32
+    ],
+    [
+     "КИПиА",
+     14
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page": 18,
+   "drawings": 1327,
+   "named": 1327,
+   "distinct": 15,
+   "top_share": 0.501,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.501,
+   "default_layer0_share": 0.165,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "G-XREF-____-OTLN",
+     665
+    ],
+    [
+     "Логотип_Олимпроект",
+     284
+    ],
+    [
+     "0",
+     219
+    ],
+    [
+     "штамп",
+     67
+    ],
+    [
+     "1_АСКУВТ2",
+     32
+    ],
+    [
+     "Habarovsk_Text",
+     15
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v001/02_work/document.pdf",
+   "page": 8,
+   "drawings": 26450,
+   "named": 26424,
+   "distinct": 39,
+   "top_share": 0.493,
+   "hatch_share": 0.198,
+   "furniture_share": 0.0,
+   "underlay_share": 0.03,
+   "default_layer0_share": 0.129,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Типовые аннотации",
+     13018
+    ],
+    [
+     "A-WALL-____-PATT",
+     5235
+    ],
+    [
+     "0",
+     3406
+    ],
+    [
+     "S-GRID-____-OTLN",
+     772
+    ],
+    [
+     "S-COLS-____-OTLN",
+     698
+    ],
+    [
+     "G-XREF-____-OTLN",
+     668
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v002/02_work/document.pdf",
+   "page": 10,
+   "drawings": 32668,
+   "named": 32668,
+   "distinct": 53,
+   "top_share": 0.223,
+   "hatch_share": 0.008,
+   "furniture_share": 0.0,
+   "underlay_share": 0.017,
+   "default_layer0_share": 0.047,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Типовые аннотации",
+     7300
+    ],
+    [
+     "Стены разрез",
+     5994
+    ],
+    [
+     "Линии",
+     4129
+    ],
+    [
+     "ПО_технология",
+     3265
+    ],
+    [
+     "Устанавл. оборуд.",
+     3159
+    ],
+    [
+     "кабели",
+     2222
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+   "page": 22,
+   "drawings": 588,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page": 16,
+   "drawings": 7451,
+   "named": 7450,
+   "distinct": 27,
+   "top_share": 0.607,
+   "hatch_share": 0.033,
+   "furniture_share": 0.0,
+   "underlay_share": 0.09,
+   "default_layer0_share": 0.607,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     4525
+    ],
+    [
+     "G-XREF-____-OTLN",
+     671
+    ],
+    [
+     "PDF _0",
+     384
+    ],
+    [
+     "PDF _81 - Надписи",
+     302
+    ],
+    [
+     "Логотип_Олимпроект",
+     288
+    ],
+    [
+     "PDF _Геометрия",
+     211
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v003/02_work/document.pdf",
+   "page": 16,
+   "drawings": 7455,
+   "named": 7454,
+   "distinct": 27,
+   "top_share": 0.608,
+   "hatch_share": 0.033,
+   "furniture_share": 0.0,
+   "underlay_share": 0.09,
+   "default_layer0_share": 0.608,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     4535
+    ],
+    [
+     "G-XREF-____-OTLN",
+     670
+    ],
+    [
+     "PDF _0",
+     384
+    ],
+    [
+     "PDF _81 - Надписи",
+     302
+    ],
+    [
+     "Логотип_Олимпроект",
+     284
+    ],
+    [
+     "PDF _Геометрия",
+     211
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 2)/versions/v001/02_work/document.pdf",
+   "page": 9,
+   "drawings": 106015,
+   "named": 106015,
+   "distinct": 47,
+   "top_share": 0.727,
+   "hatch_share": 0.058,
+   "furniture_share": 0.0,
+   "underlay_share": 0.007,
+   "default_layer0_share": 0.029,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "S-GRID-____-OTLN",
+     77090
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     13042
+    ],
+    [
+     "A-WALL-____-PATT",
+     6120
+    ],
+    [
+     "0",
+     3047
+    ],
+    [
+     "A-GENM-____-OTLN",
+     1343
+    ],
+    [
+     "I-WALL-____-MCUT",
+     1011
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 2)/versions/v002/02_work/document.pdf",
+   "page": 9,
+   "drawings": 65852,
+   "named": 65833,
+   "distinct": 49,
+   "top_share": 0.557,
+   "hatch_share": 0.003,
+   "furniture_share": 0.0,
+   "underlay_share": 0.01,
+   "default_layer0_share": 0.033,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     36670
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     12966
+    ],
+    [
+     "Стены разрез",
+     4721
+    ],
+    [
+     "кабели",
+     4549
+    ],
+    [
+     "0",
+     2198
+    ],
+    [
+     "G-XREF-____-OTLN",
+     671
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 2)/versions/v003/02_work/document.pdf",
+   "page": 10,
+   "drawings": 56799,
+   "named": 56799,
+   "distinct": 45,
+   "top_share": 0.598,
+   "hatch_share": 0.062,
+   "furniture_share": 0.0,
+   "underlay_share": 0.012,
+   "default_layer0_share": 0.011,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "S-GRID-____-OTLN",
+     33958
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     13003
+    ],
+    [
+     "A-WALL-____-PATT",
+     3245
+    ],
+    [
+     "A-WALL-____-IDEN",
+     953
+    ],
+    [
+     "A-DETL-____-OTLN",
+     807
+    ],
+    [
+     "G-XREF-____-OTLN",
+     670
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v001/02_work/document.pdf",
+   "page": 48,
+   "drawings": 6,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v002/02_work/document.pdf",
+   "page": 48,
+   "drawings": 6,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v001/02_work/document.pdf",
+   "page": 97,
+   "drawings": 269,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v002/02_work/document.pdf",
+   "page": 42,
+   "drawings": 6,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/02_work/document.pdf",
+   "page": 42,
+   "drawings": 6,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v001/02_work/document.pdf",
+   "page": 98,
+   "drawings": 18,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/02_work/document.pdf",
+   "page": 44,
+   "drawings": 35,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К6_V1/versions/v001/02_work/document.pdf",
+   "page": 48,
+   "drawings": 4,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К7_V1/versions/v001/02_work/document.pdf",
+   "page": 16,
+   "drawings": 8302,
+   "named": 8302,
+   "distinct": 37,
+   "top_share": 0.496,
+   "hatch_share": 0.496,
+   "furniture_share": 0.0,
+   "underlay_share": 0.063,
+   "default_layer0_share": 0.015,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13АВ-РД-АР-ТП1_ТП2-2-с подписями|A-WALL-____-PATT",
+     4115
+    ],
+    [
+     "Подписи",
+     1598
+    ],
+    [
+     "G-XREF-____-OTLN",
+     527
+    ],
+    [
+     "13АВ-РД-АР-ТП1_ТП2-2-с подписями|A-DETL-GENF-OTLN",
+     412
+    ],
+    [
+     "Логотип_Олимпроект",
+     257
+    ],
+    [
+     "13АВ-РД-АР-ТП1_ТП2-2-с подписями|G-____-____-DIMS",
+     223
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ/versions/v001/02_work/document.pdf",
+   "page": 74,
+   "drawings": 44511,
+   "named": 44511,
+   "distinct": 58,
+   "top_share": 0.474,
+   "hatch_share": 0.478,
+   "furniture_share": 0.0,
+   "underlay_share": 0.015,
+   "default_layer0_share": 0.015,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     21107
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     12975
+    ],
+    [
+     "P-SANR-FIXT-OTLN",
+     1706
+    ],
+    [
+     "A-GLAZ-____-OTLN",
+     779
+    ],
+    [
+     "0",
+     676
+    ],
+    [
+     "G-XREF-____-OTLN",
+     671
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ_(Книга_1)_V1/versions/v001/02_work/document.pdf",
+   "page": 21,
+   "drawings": 46327,
+   "named": 46327,
+   "distinct": 53,
+   "top_share": 0.46,
+   "hatch_share": 0.46,
+   "furniture_share": 0.0,
+   "underlay_share": 0.014,
+   "default_layer0_share": 0.016,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     21323
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     13014
+    ],
+    [
+     "P-SANR-FIXT-OTLN",
+     2309
+    ],
+    [
+     "A-GENM-____-OTLN",
+     992
+    ],
+    [
+     "A-GLAZ-____-OTLN",
+     881
+    ],
+    [
+     "S-GRID-____-OTLN",
+     814
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ_(Книга_2)_V1/versions/v001/02_work/document.pdf",
+   "page": 25,
+   "drawings": 24194,
+   "named": 24194,
+   "distinct": 56,
+   "top_share": 0.282,
+   "hatch_share": 0.104,
+   "furniture_share": 0.0,
+   "underlay_share": 0.022,
+   "default_layer0_share": 0.027,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-____-NOTE-TEXT",
+     6815
+    ],
+    [
+     "A-WALL-____-PATT",
+     2503
+    ],
+    [
+     "I-WALL-____-OTLN",
+     2495
+    ],
+    [
+     "кабели",
+     2177
+    ],
+    [
+     "P-SANR-FIXT-OTLN",
+     1612
+    ],
+    [
+     "штамп",
+     1044
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ_(Книга_3)_V1/versions/v001/02_work/document.pdf",
+   "page": 41,
+   "drawings": 47330,
+   "named": 47330,
+   "distinct": 51,
+   "top_share": 0.504,
+   "hatch_share": 0.505,
+   "furniture_share": 0.0,
+   "underlay_share": 0.014,
+   "default_layer0_share": 0.004,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     23849
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     13697
+    ],
+    [
+     "ЭОМ",
+     1943
+    ],
+    [
+     "S-COLS-____-OTLN",
+     714
+    ],
+    [
+     "G-XREF-____-OTLN",
+     671
+    ],
+    [
+     "A-GLAZ-CWMG-OTLN",
+     654
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСУД.Л V1/versions/v001/02_work/document.pdf",
+   "page": 45,
+   "drawings": 39283,
+   "named": 39283,
+   "distinct": 54,
+   "top_share": 0.356,
+   "hatch_share": 0.356,
+   "furniture_share": 0.011,
+   "underlay_share": 0.019,
+   "default_layer0_share": 0.041,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     14002
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     12976
+    ],
+    [
+     "S-GRID-____-OTLN",
+     2118
+    ],
+    [
+     "0",
+     1610
+    ],
+    [
+     "A-GLAZ-____-OTLN",
+     1067
+    ],
+    [
+     "P-SANR-FIXT-OTLN",
+     977
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-К1 V1/versions/v001/02_work/document.pdf",
+   "page": 12,
+   "drawings": 34050,
+   "named": 33389,
+   "distinct": 32,
+   "top_share": 0.745,
+   "hatch_share": 0.011,
+   "furniture_share": 0.0,
+   "underlay_share": 0.016,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены разрез",
+     24870
+    ],
+    [
+     "Подписи",
+     1600
+    ],
+    [
+     "Обобщенные модели",
+     1294
+    ],
+    [
+     "Несущие колонны",
+     908
+    ],
+    [
+     "Лестницы",
+     906
+    ],
+    [
+     "Сантехнические приборы",
+     591
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-К2/versions/v001/02_work/document.pdf",
+   "page": 7,
+   "drawings": 3840,
+   "named": 3839,
+   "distinct": 24,
+   "top_share": 0.416,
+   "hatch_share": 0.002,
+   "furniture_share": 0.001,
+   "underlay_share": 0.263,
+   "default_layer0_share": 0.108,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1598
+    ],
+    [
+     "0",
+     415
+    ],
+    [
+     "XREF4|Стены разрез",
+     415
+    ],
+    [
+     "G-XREF-____-OTLN",
+     330
+    ],
+    [
+     "Логотип_Олимпроект",
+     258
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     191
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-К3-6/versions/v001/02_work/document.pdf",
+   "page": 9,
+   "drawings": 21541,
+   "named": 21540,
+   "distinct": 12,
+   "top_share": 0.454,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.025,
+   "default_layer0_share": 0.454,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     9771
+    ],
+    [
+     "СС_ниша_гильзы",
+     8432
+    ],
+    [
+     "Подписи",
+     1600
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "Лотки СС",
+     428
+    ],
+    [
+     "DKC",
+     258
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-К4-5/versions/v001/02_work/document.pdf",
+   "page": 8,
+   "drawings": 5777,
+   "named": 5776,
+   "distinct": 74,
+   "top_share": 0.277,
+   "hatch_share": 0.006,
+   "furniture_share": 0.003,
+   "underlay_share": 0.091,
+   "default_layer0_share": 0.033,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1600
+    ],
+    [
+     "171_18-ГК-АР1_2-К5-7-с подписями|Стены разрез",
+     655
+    ],
+    [
+     "171_18-ГК-АР1_2-К5-6-с подписями|Стены разрез",
+     614
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "171_18-ГК-АР1_2-К5-6-с подписями|Марки помещений",
+     309
+    ],
+    [
+     "Логотип_Олимпроект",
+     257
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-К7 V1/versions/v001/02_work/document.pdf",
+   "page": 5,
+   "drawings": 21569,
+   "named": 21568,
+   "distinct": 46,
+   "top_share": 0.361,
+   "hatch_share": 0.361,
+   "furniture_share": 0.0,
+   "underlay_share": 0.025,
+   "default_layer0_share": 0.015,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13АВ-РД-АР1_2-К3_К4-2-Маркировочный план-с подписями|A-WALL-____-PATT",
+     7780
+    ],
+    [
+     "13АВ-РД-АР1_2-К3_К4-2-Маркировочный план-с подписями|A-DETL-GENF-OTLN",
+     4047
+    ],
+    [
+     "Подписи",
+     1602
+    ],
+    [
+     "13АВ-РД-АР1_2-К3_К4-2-Маркировочный план-с подписями|A-GLAZ-____-OTLN",
+     728
+    ],
+    [
+     "13АВ-РД-АР1_2-К3_К4-2-Маркировочный план-с подписями|A-GENM-____-OTLN",
+     702
+    ],
+    [
+     "13АВ-РД-АР1_2-К3_К4-2-Маркировочный план-с подписями|A-WALL-____-MCUT",
+     561
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v001/02_work/document.pdf",
+   "page": 11,
+   "drawings": 7596,
+   "named": 7596,
+   "distinct": 11,
+   "top_share": 0.361,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.069,
+   "default_layer0_share": 0.007,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Соединительные детали кабельных лотков",
+     2745
+    ],
+    [
+     "Кабельные лотки",
+     1658
+    ],
+    [
+     "Подписи",
+     1597
+    ],
+    [
+     "G-XREF-____-OTLN",
+     527
+    ],
+    [
+     "Текстовые примечания",
+     264
+    ],
+    [
+     "Логотип_Олимпроект",
+     259
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/02_work/document.pdf",
+   "page": 10,
+   "drawings": 5628,
+   "named": 5628,
+   "distinct": 11,
+   "top_share": 0.487,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.094,
+   "default_layer0_share": 0.01,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "E-651-M_CABLE_TRAY",
+     2742
+    ],
+    [
+     "Подписи",
+     1597
+    ],
+    [
+     "G-XREF-____-OTLN",
+     527
+    ],
+    [
+     "Логотип_Олимпроект",
+     259
+    ],
+    [
+     "E-010-M_CENTRE_LINE",
+     205
+    ],
+    [
+     "E-651-A_CABLE_TRAY",
+     117
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-ППТ-ПА_V1/versions/v001/02_work/document.pdf",
+   "page": 37,
+   "drawings": 141,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОВ-К1-К2 V1/versions/v001/02_work/document.pdf",
+   "page": 13,
+   "drawings": 2896,
+   "named": 2894,
+   "distinct": 6,
+   "top_share": 0.563,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.226,
+   "default_layer0_share": 0.113,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1630
+    ],
+    [
+     "G-XREF-____-OTLN",
+     654
+    ],
+    [
+     "0",
+     328
+    ],
+    [
+     "Логотип_Олимпроект",
+     280
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     1
+    ],
+    [
+     "Рамка внешняя",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОВ-К3-6/versions/v001/02_work/document.pdf",
+   "page": 19,
+   "drawings": 3748,
+   "named": 3748,
+   "distinct": 8,
+   "top_share": 0.427,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.141,
+   "default_layer0_share": 0.014,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1599
+    ],
+    [
+     "Схемы подключ",
+     1272
+    ],
+    [
+     "G-XREF-____-OTLN",
+     529
+    ],
+    [
+     "Логотип_Олимпроект",
+     258
+    ],
+    [
+     "0",
+     51
+    ],
+    [
+     "Штампы",
+     22
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОВ-К3-6/versions/v002/02_work/document.pdf",
+   "page": 5,
+   "drawings": 28901,
+   "named": 28448,
+   "distinct": 39,
+   "top_share": 0.726,
+   "hatch_share": 0.047,
+   "furniture_share": 0.0,
+   "underlay_share": 0.019,
+   "default_layer0_share": 0.012,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Стены разрез",
+     20665
+    ],
+    [
+     "Подписи",
+     1600
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Штриховка поверхностей",
+     1178
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Сантехнические приборы",
+     1031
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Оборудование",
+     595
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Окна",
+     565
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОВ-К3-6_(Книга_3)_V1/versions/v001/02_work/document.pdf",
+   "page": 7,
+   "drawings": 13902,
+   "named": 13902,
+   "distinct": 38,
+   "top_share": 0.496,
+   "hatch_share": 0.496,
+   "furniture_share": 0.0,
+   "underlay_share": 0.038,
+   "default_layer0_share": 0.016,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13АВ-RD-K3-АР1_2-К3-29-30-с подписями|A-WALL-____-PATT",
+     6899
+    ],
+    [
+     "Подписи",
+     1600
+    ],
+    [
+     "13АВ-RD-K3-АР1_2-К3-29-30-с подписями|I-WALL-____-OTLN",
+     890
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "13АВ-RD-K3-АР1_2-К3-29-30-с подписями|P-SANR-FIXT-OTLN",
+     491
+    ],
+    [
+     "13АВ-RD-K3-АР1_2-К3-29-30-с подписями|I-WALL-____-MCUT",
+     281
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОВ-К3-6_V1(Книга_2)/versions/v001/02_work/document.pdf",
+   "page": 5,
+   "drawings": 28893,
+   "named": 28441,
+   "distinct": 39,
+   "top_share": 0.727,
+   "hatch_share": 0.047,
+   "furniture_share": 0.0,
+   "underlay_share": 0.019,
+   "default_layer0_share": 0.012,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Стены разрез",
+     20665
+    ],
+    [
+     "Подписи",
+     1600
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Штриховка поверхностей",
+     1178
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Сантехнические приборы",
+     1031
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Оборудование",
+     595
+    ],
+    [
+     "13B-RD-AR-K4_- Маркировочный план 2-го этажа|Окна",
+     565
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОТ-К1-К2/versions/v001/02_work/document.pdf",
+   "page": 10,
+   "drawings": 2489,
+   "named": 2488,
+   "distinct": 5,
+   "top_share": 0.642,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.083,
+   "default_layer0_share": 0.171,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1598
+    ],
+    [
+     "0",
+     425
+    ],
+    [
+     "Логотип_Олимпроект",
+     258
+    ],
+    [
+     "G-XREF-____-OTLN",
+     206
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОТ-К3-6/versions/v001/02_work/document.pdf",
+   "page": 13,
+   "drawings": 5393,
+   "named": 5393,
+   "distinct": 27,
+   "top_share": 0.367,
+   "hatch_share": 0.006,
+   "furniture_share": 0.0,
+   "underlay_share": 0.098,
+   "default_layer0_share": 0.022,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13АВ-RD-K6-АР1_2-К6-Кровля|Стены разрез",
+     1977
+    ],
+    [
+     "Подписи",
+     1598
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "Логотип_Олимпроект",
+     266
+    ],
+    [
+     "СОТ",
+     184
+    ],
+    [
+     "13АВ-RD-K6-АР1_2-К6-Кровля|Оси",
+     150
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОТ-ПА_V1/versions/v001/02_work/document.pdf",
+   "page": 8,
+   "drawings": 29894,
+   "named": 29889,
+   "distinct": 40,
+   "top_share": 0.279,
+   "hatch_share": 0.014,
+   "furniture_share": 0.0,
+   "underlay_share": 0.007,
+   "default_layer0_share": 0.024,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены разрез",
+     8344
+    ],
+    [
+     "Обобщенные модели",
+     7895
+    ],
+    [
+     "Оси",
+     2596
+    ],
+    [
+     "Подписи",
+     1594
+    ],
+    [
+     "Элементы узлов",
+     874
+    ],
+    [
+     "Несущие колонны",
+     872
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v001/02_work/document.pdf",
+   "page": 35,
+   "drawings": 30221,
+   "named": 30220,
+   "distinct": 50,
+   "top_share": 0.737,
+   "hatch_share": 0.743,
+   "furniture_share": 0.0,
+   "underlay_share": 0.017,
+   "default_layer0_share": 0.006,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-WALL-____-PATT",
+     22284
+    ],
+    [
+     "Подписи",
+     1600
+    ],
+    [
+     "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-GLAZ-CWMG-OTLN",
+     570
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|P-SANR-FIXT-OTLN",
+     507
+    ],
+    [
+     "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|I-WALL-____-MCUT",
+     378
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v002/02_work/document.pdf",
+   "page": 41,
+   "drawings": 2627,
+   "named": 2626,
+   "distinct": 5,
+   "top_share": 0.609,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.201,
+   "default_layer0_share": 0.092,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1598
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "Логотип_Олимпроект",
+     258
+    ],
+    [
+     "0",
+     241
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К7 V1/versions/v001/02_work/document.pdf",
+   "page": 17,
+   "drawings": 11035,
+   "named": 11034,
+   "distinct": 6,
+   "top_share": 0.728,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.048,
+   "default_layer0_share": 0.728,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     8033
+    ],
+    [
+     "Подписи",
+     1598
+    ],
+    [
+     "_ОБОРУД",
+     616
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "Логотип_Олимпроект",
+     258
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-ПА/versions/v001/02_work/document.pdf",
+   "page": 25,
+   "drawings": 4511,
+   "named": 2763,
+   "distinct": 8,
+   "top_share": 0.581,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.191,
+   "default_layer0_share": 0.132,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1606
+    ],
+    [
+     "G-XREF-____-OTLN",
+     528
+    ],
+    [
+     "0",
+     365
+    ],
+    [
+     "Логотип_Олимпроект",
+     260
+    ],
+    [
+     "A-____-NOTE-TEXT",
+     1
+    ],
+    [
+     "Рамка внешняя",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-ПА/versions/v002/02_work/document.pdf",
+   "page": 62,
+   "drawings": 58,
+   "named": 58,
+   "distinct": 5,
+   "top_share": 0.586,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.586,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     34
+    ],
+    [
+     "Штамп форматка 2",
+     14
+    ],
+    [
+     "Штамп форматка 1",
+     8
+    ],
+    [
+     "ФОРМАТ",
+     1
+    ],
+    [
+     "TEXT",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ1.1-ПА V1/versions/v001/02_work/document.pdf",
+   "page": 4,
+   "drawings": 1472,
+   "named": 1472,
+   "distinct": 14,
+   "top_share": 0.451,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.397,
+   "default_layer0_share": 0.053,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Импорт в семействах",
+     664
+    ],
+    [
+     "G-XREF-____-OTLN",
+     584
+    ],
+    [
+     "0",
+     78
+    ],
+    [
+     "A-ANNO-NOTE",
+     30
+    ],
+    [
+     "TO-Conn-EL",
+     26
+    ],
+    [
+     "подводки",
+     20
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ1.2-ПА V1/versions/v001/02_work/document.pdf",
+   "page": 19,
+   "drawings": 3744,
+   "named": 3744,
+   "distinct": 1,
+   "top_share": 1.0,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.0,
+   "verdict": "degenerate_single_layer",
+   "top_layers": [
+    [
+     "Слой 1",
+     3744
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К1 V1/versions/v001/02_work/document.pdf",
+   "page": 12,
+   "drawings": 7773,
+   "named": 7773,
+   "distinct": 6,
+   "top_share": 0.843,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.132,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "7Text",
+     6554
+    ],
+    [
+     "0",
+     1024
+    ],
+    [
+     "LAYER5",
+     125
+    ],
+    [
+     "LAYER1",
+     54
+    ],
+    [
+     "标注尺寸层",
+     9
+    ],
+    [
+     "1轮廓实线层",
+     7
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page": 12,
+   "drawings": 7773,
+   "named": 7773,
+   "distinct": 6,
+   "top_share": 0.843,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.132,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "7Text",
+     6554
+    ],
+    [
+     "0",
+     1024
+    ],
+    [
+     "LAYER5",
+     125
+    ],
+    [
+     "LAYER1",
+     54
+    ],
+    [
+     "标注尺寸层",
+     9
+    ],
+    [
+     "1轮廓实线层",
+     7
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К2 V1/versions/v001/02_work/document.pdf",
+   "page": 12,
+   "drawings": 7772,
+   "named": 7772,
+   "distinct": 6,
+   "top_share": 0.843,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.132,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "7Text",
+     6554
+    ],
+    [
+     "0",
+     1024
+    ],
+    [
+     "LAYER5",
+     125
+    ],
+    [
+     "LAYER1",
+     53
+    ],
+    [
+     "标注尺寸层",
+     9
+    ],
+    [
+     "1轮廓实线层",
+     7
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v002/02_work/document.pdf",
+   "page": 8,
+   "drawings": 11782,
+   "named": 11782,
+   "distinct": 39,
+   "top_share": 0.546,
+   "hatch_share": 0.546,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.011,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "A-WALL-____-PATT",
+     6428
+    ],
+    [
+     "A-GENM-____-OTLN",
+     1389
+    ],
+    [
+     "S-COLS-____-OTLN",
+     753
+    ],
+    [
+     "I-WALL-____-MCUT",
+     736
+    ],
+    [
+     "A-WALL-____-MCUT",
+     336
+    ],
+    [
+     "Импорт в семействах",
+     334
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ3 V1/versions/v001/02_work/document.pdf",
+   "page": 18,
+   "drawings": 0,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ3 V1/versions/v002/02_work/document.pdf",
+   "page": 18,
+   "drawings": 0,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-АПН-НС_V2/versions/v001/02_work/document.pdf",
+   "page": 75,
+   "drawings": 79,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+   "page": 11,
+   "drawings": 231941,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+   "page": 11,
+   "drawings": 232874,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К2/versions/v001/02_work/document.pdf",
+   "page": 16,
+   "drawings": 2575,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К2 V1/versions/v001/02_work/document.pdf",
+   "page": 16,
+   "drawings": 2575,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К6 V1/versions/v002/02_work/document.pdf",
+   "page": 15,
+   "drawings": 1282,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-НВ V1/versions/v001/02_work/document.pdf",
+   "page": 74,
+   "drawings": 0,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-НК_V1/versions/v001/02_work/document.pdf",
+   "page": 47,
+   "drawings": 0,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ППТ-ПА V1/versions/v001/02_work/document.pdf",
+   "page": 10,
+   "drawings": 2384,
+   "named": 2384,
+   "distinct": 4,
+   "top_share": 0.67,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.139,
+   "default_layer0_share": 0.083,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Подписи",
+     1598
+    ],
+    [
+     "G-XREF-____-OTLN",
+     331
+    ],
+    [
+     "Логотип_Олимпроект",
+     258
+    ],
+    [
+     "0",
+     197
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ1-Д-РД_V1/versions/v001/02_work/document.pdf",
+   "page": 40,
+   "drawings": 46,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-4-РД_V1/versions/v001/02_work/document.pdf",
+   "page": 103,
+   "drawings": 470,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-5-РД_V1/versions/v001/02_work/document.pdf",
+   "page": 119,
+   "drawings": 260,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-АС-РД_V1/versions/v001/02_work/document.pdf",
+   "page": 78,
+   "drawings": 171,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/SS/documents/СТ26_01-14-УУТЭ1-РД_V1/versions/v001/02_work/document.pdf",
+   "page": 33,
+   "drawings": 0,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-1_V1/versions/v001/02_work/document.pdf",
+   "page": 4,
+   "drawings": 23894,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/02_work/document.pdf",
+   "page": 17,
+   "drawings": 28083,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ1-2_V1/versions/v001/02_work/document.pdf",
+   "page": 7,
+   "drawings": 9188,
+   "named": 651,
+   "distinct": 3,
+   "top_share": 0.985,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.012,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ЭОМ_Схема",
+     641
+    ],
+    [
+     "0",
+     8
+    ],
+    [
+     "Дымоудаление_корректировка",
+     2
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_1-1_V1/versions/v001/02_work/document.pdf",
+   "page": 11,
+   "drawings": 9393,
+   "named": 8828,
+   "distinct": 9,
+   "top_share": 0.868,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.868,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     7662
+    ],
+    [
+     "ЭОМ_схема",
+     727
+    ],
+    [
+     "текст",
+     343
+    ],
+    [
+     "$_Блоки",
+     38
+    ],
+    [
+     "$_Размеры",
+     20
+    ],
+    [
+     "Однолинейная схема",
+     19
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_2-1.1/versions/v001/02_work/document.pdf",
+   "page": 26,
+   "drawings": 36587,
+   "named": 35388,
+   "distinct": 5,
+   "top_share": 0.977,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.0,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ЭОМ_Подложка",
+     34571
+    ],
+    [
+     "ЭОМ_секция_1",
+     404
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     381
+    ],
+    [
+     "ЭОМ_Надписи",
+     17
+    ],
+    [
+     "Лист_Рамка-штамп",
+     15
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЗМ_V1/versions/v001/02_work/document.pdf",
+   "page": 22,
+   "drawings": 59669,
+   "named": 59662,
+   "distinct": 37,
+   "top_share": 0.612,
+   "hatch_share": 0.004,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.0,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     36507
+    ],
+    [
+     "Стены",
+     19560
+    ],
+    [
+     "Обобщенные модели",
+     417
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     398
+    ],
+    [
+     "Элементы узлов",
+     324
+    ],
+    [
+     "Несущие колонны",
+     290
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ОЗДС_V1/versions/v001/02_work/document.pdf",
+   "page": 8,
+   "drawings": 4115,
+   "named": 4115,
+   "distinct": 10,
+   "top_share": 0.893,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.893,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "0",
+     3675
+    ],
+    [
+     "ОЗДС",
+     142
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     126
+    ],
+    [
+     "Тонкие",
+     90
+    ],
+    [
+     "рисунок",
+     36
+    ],
+    [
+     "!1ЭОМ_основной",
+     31
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭМ2-1.2/versions/v001/02_work/document.pdf",
+   "page": 13,
+   "drawings": 1888,
+   "named": 1888,
+   "distinct": 4,
+   "top_share": 0.713,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.003,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ЭОМ_схема",
+     1347
+    ],
+    [
+     "Основная надпись",
+     397
+    ],
+    [
+     "ЭОМ_Надписи",
+     139
+    ],
+    [
+     "0",
+     5
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭМ2-1.3_V1/versions/v001/02_work/document.pdf",
+   "page": 13,
+   "drawings": 2,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭМ2-1.4_V1/versions/v001/02_work/document.pdf",
+   "page": 14,
+   "drawings": 21730,
+   "named": 21730,
+   "distinct": 6,
+   "top_share": 0.922,
+   "hatch_share": 0.018,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.922,
+   "verdict": "degenerate_layer0",
+   "top_layers": [
+    [
+     "0",
+     20025
+    ],
+    [
+     "ЭОМ_схема",
+     902
+    ],
+    [
+     "Основная надпись",
+     397
+    ],
+    [
+     "A-FLOR-____-PATT",
+     382
+    ],
+    [
+     "Текст",
+     12
+    ],
+    [
+     "A-FLOR-____-MCUT",
+     12
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО1-3_V1/versions/v001/02_work/document.pdf",
+   "page": 17,
+   "drawings": 1204,
+   "named": 1204,
+   "distinct": 4,
+   "top_share": 0.669,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.0,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ЭОМ_Схема",
+     806
+    ],
+    [
+     "ЭОМ_текст",
+     377
+    ],
+    [
+     "ЭОМ_надписи",
+     13
+    ],
+    [
+     "Лист_Рамка-штамп",
+     8
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО2-2_V1/versions/v001/02_work/document.pdf",
+   "page": 27,
+   "drawings": 39825,
+   "named": 3194,
+   "distinct": 10,
+   "top_share": 0.434,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.064,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "ЭОМ_рабочая сеть",
+     1386
+    ],
+    [
+     "ЭОМ_текст",
+     687
+    ],
+    [
+     "Light_светильники аварийные",
+     347
+    ],
+    [
+     "ЭОМ_светильники",
+     345
+    ],
+    [
+     "0",
+     205
+    ],
+    [
+     "ЭОМ_светильники аварийные",
+     98
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ОВ_V1/versions/v001/02_work/document.pdf",
+   "page": 15,
+   "drawings": 225,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ТМ_V1/versions/v001/02_work/document.pdf",
+   "page": 23,
+   "drawings": 325,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-ИТП.ТМ/versions/v001/02_work/document.pdf",
+   "page": 68,
+   "drawings": 5,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.5_V1/versions/v001/02_work/document.pdf",
+   "page": 136,
+   "drawings": 0,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.2_V1/versions/v001/02_work/document.pdf",
+   "page": 14,
+   "drawings": 350,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.ДОО_V1/versions/v001/02_work/document.pdf",
+   "page": 15,
+   "drawings": 1079,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/PT/documents/ПД-00542664-НВД_V1/versions/v001/02_work/document.pdf",
+   "page": 7,
+   "drawings": 1423120,
+   "named": 1423080,
+   "distinct": 137,
+   "top_share": 0.901,
+   "hatch_share": 0.002,
+   "furniture_share": 0.0,
+   "underlay_share": 0.007,
+   "default_layer0_share": 0.0,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "6.2_МАФ|11_МАФ",
+     1282871
+    ],
+    [
+     "6.2_ОЗ|10_Деревья кустарники",
+     56988
+    ],
+    [
+     "6.2_покрытия|08_Резиновая крошка Цвет 1 по паркингу",
+     14649
+    ],
+    [
+     "НВК Подложка - Подоснова",
+     6024
+    ],
+    [
+     "6.2_СПИС|_ЭН_Светильники",
+     5499
+    ],
+    [
+     "6.2_топо_серая|Территории",
+     5205
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ДЛ_V1/versions/v001/02_work/document.pdf",
+   "page": 15,
+   "drawings": 42534,
+   "named": 42534,
+   "distinct": 31,
+   "top_share": 0.735,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "S1_L01|Оси",
+     31275
+    ],
+    [
+     "S1_L01|Стены наружные",
+     6377
+    ],
+    [
+     "S1_L01|Стены внутренние",
+     2147
+    ],
+    [
+     "BMS-Cable route",
+     615
+    ],
+    [
+     "S1_L01|Двери",
+     296
+    ],
+    [
+     "S1_L01|Несущие колонны",
+     266
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/02_work/document.pdf",
+   "page": 22,
+   "drawings": 56089,
+   "named": 56089,
+   "distinct": 52,
+   "top_share": 0.46,
+   "hatch_share": 0.001,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.008,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     25783
+    ],
+    [
+     "Стены",
+     24082
+    ],
+    [
+     "Сантехнические приборы",
+     1040
+    ],
+    [
+     "Обобщенные модели",
+     901
+    ],
+    [
+     "Каркас_Импост",
+     540
+    ],
+    [
+     "Основа _2_",
+     446
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/02_work/document.pdf",
+   "page": 35,
+   "drawings": 1431,
+   "named": 1431,
+   "distinct": 8,
+   "top_share": 0.349,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.166,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Схемы подключ",
+     499
+    ],
+    [
+     "АР_Рамка и штамп",
+     397
+    ],
+    [
+     "0",
+     237
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     130
+    ],
+    [
+     "RC-Линии_связи-Питание_12-24В",
+     86
+    ],
+    [
+     "RC-Линии_связи-Адресные",
+     63
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-2_V1/versions/v001/02_work/document.pdf",
+   "page": 34,
+   "drawings": 29922,
+   "named": 29921,
+   "distinct": 46,
+   "top_share": 0.728,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.001,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены",
+     21787
+    ],
+    [
+     "Обобщенные модели",
+     1470
+    ],
+    [
+     "Сантехнические приборы",
+     1416
+    ],
+    [
+     "RC-Извещатели_пожарные",
+     444
+    ],
+    [
+     "Типовые аннотации",
+     433
+    ],
+    [
+     "АР_Рамка и штамп",
+     423
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-3_V1/versions/v001/02_work/document.pdf",
+   "page": 22,
+   "drawings": 37923,
+   "named": 37923,
+   "distinct": 45,
+   "top_share": 0.756,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.001,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены",
+     28652
+    ],
+    [
+     "Сантехнические приборы",
+     1876
+    ],
+    [
+     "Оси",
+     783
+    ],
+    [
+     "Обобщенные модели",
+     665
+    ],
+    [
+     "Каркас_Импост",
+     639
+    ],
+    [
+     "Основа _2_",
+     549
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-4_V1/versions/v001/02_work/document.pdf",
+   "page": 21,
+   "drawings": 17912,
+   "named": 17912,
+   "distinct": 29,
+   "top_share": 0.841,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.841,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "!Подоснова",
+     15063
+    ],
+    [
+     "Обобщенные модели",
+     609
+    ],
+    [
+     "Каркас_Импост",
+     451
+    ],
+    [
+     "Типовые аннотации",
+     429
+    ],
+    [
+     "АР_Рамка и штамп",
+     423
+    ],
+    [
+     "RC-Извещатели_пожарные",
+     218
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-5_V1/versions/v001/02_work/document.pdf",
+   "page": 43,
+   "drawings": 25769,
+   "named": 25769,
+   "distinct": 46,
+   "top_share": 0.596,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.596,
+   "default_layer0_share": 0.001,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "!Подоснова",
+     15364
+    ],
+    [
+     "Стены",
+     4399
+    ],
+    [
+     "Сантехнические приборы",
+     1261
+    ],
+    [
+     "Обобщенные модели",
+     766
+    ],
+    [
+     "Типовые аннотации",
+     490
+    ],
+    [
+     "АР_Рамка и штамп",
+     422
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-6_V1/versions/v001/02_work/document.pdf",
+   "page": 16,
+   "drawings": 580,
+   "named": 580,
+   "distinct": 4,
+   "top_share": 0.702,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "АР_Рамка и штамп",
+     407
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     130
+    ],
+    [
+     "RC-Таблицы",
+     42
+    ],
+    [
+     "0",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-РФ_V1/versions/v001/02_work/document.pdf",
+   "page": 21,
+   "drawings": 34321,
+   "named": 34264,
+   "distinct": 53,
+   "top_share": 0.686,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены",
+     23492
+    ],
+    [
+     "Обобщенные модели",
+     1724
+    ],
+    [
+     "Каркас_Импост",
+     1351
+    ],
+    [
+     "Сантехнические приборы",
+     1005
+    ],
+    [
+     "MEP-Text",
+     1000
+    ],
+    [
+     "!СС ЛОТОК",
+     934
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СДС_V1/versions/v001/02_work/document.pdf",
+   "page": 16,
+   "drawings": 61736,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СКД_V1/versions/v001/02_work/document.pdf",
+   "page": 32,
+   "drawings": 31025,
+   "named": 31023,
+   "distinct": 35,
+   "top_share": 0.65,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     20180
+    ],
+    [
+     "Стены",
+     8320
+    ],
+    [
+     "Обобщенные модели",
+     646
+    ],
+    [
+     "АР_Рамка и штамп",
+     289
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     138
+    ],
+    [
+     "Термическая_воздушная прослойка _3_",
+     131
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТ_V1/versions/v001/02_work/document.pdf",
+   "page": 21,
+   "drawings": 68858,
+   "named": 68832,
+   "distinct": 47,
+   "top_share": 0.483,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.006,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Оси",
+     33224
+    ],
+    [
+     "Стены",
+     28692
+    ],
+    [
+     "Сантехнические приборы",
+     1260
+    ],
+    [
+     "Обобщенные модели",
+     693
+    ],
+    [
+     "Каркас_Импост",
+     616
+    ],
+    [
+     "Основа _2_",
+     569
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТС_V1/versions/v001/02_work/document.pdf",
+   "page": 15,
+   "drawings": 26909,
+   "named": 26779,
+   "distinct": 52,
+   "top_share": 0.678,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены",
+     18161
+    ],
+    [
+     "!СС ЛОТОК",
+     1849
+    ],
+    [
+     "Обобщенные модели",
+     1270
+    ],
+    [
+     "MEP-Text",
+     1000
+    ],
+    [
+     "Рамка",
+     536
+    ],
+    [
+     "Сантехнические приборы",
+     502
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-1_V1/versions/v001/02_work/document.pdf",
+   "page": 42,
+   "drawings": 56824,
+   "named": 56823,
+   "distinct": 24,
+   "top_share": 0.732,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.747,
+   "default_layer0_share": 0.009,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "!Подоснова",
+     41597
+    ],
+    [
+     "Элементы узлов",
+     6539
+    ],
+    [
+     "_0",
+     2228
+    ],
+    [
+     "Обобщенные модели",
+     1875
+    ],
+    [
+     "Подоснова",
+     857
+    ],
+    [
+     "Несущие колонны",
+     824
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/02_work/document.pdf",
+   "page": 54,
+   "drawings": 1715,
+   "named": 1715,
+   "distinct": 12,
+   "top_share": 0.327,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.014,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "12. Коробка монтажная",
+     561
+    ],
+    [
+     "АР_Рамка и штамп",
+     453
+    ],
+    [
+     "2. СОУЭ (SWS-103)",
+     353
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     131
+    ],
+    [
+     "11. СОУЭ колонки (кабель 1х2х1.5)",
+     130
+    ],
+    [
+     "0",
+     24
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-3_V1/versions/v001/02_work/document.pdf",
+   "page": 37,
+   "drawings": 37811,
+   "named": 37811,
+   "distinct": 49,
+   "top_share": 0.763,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.005,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены",
+     28861
+    ],
+    [
+     "Сантехнические приборы",
+     1934
+    ],
+    [
+     "Оси",
+     826
+    ],
+    [
+     "Каркас_Импост",
+     560
+    ],
+    [
+     "Основа _2_",
+     482
+    ],
+    [
+     "АР_Рамка и штамп",
+     456
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-4_V1/versions/v001/02_work/document.pdf",
+   "page": 36,
+   "drawings": 31838,
+   "named": 31838,
+   "distinct": 53,
+   "top_share": 0.762,
+   "hatch_share": 0.001,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.005,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "Стены",
+     24255
+    ],
+    [
+     "Сантехнические приборы",
+     1618
+    ],
+    [
+     "Оси",
+     676
+    ],
+    [
+     "Обобщенные модели",
+     517
+    ],
+    [
+     "Каркас_Импост",
+     516
+    ],
+    [
+     "АР_Рамка и штамп",
+     453
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/02_work/document.pdf",
+   "page": 61,
+   "drawings": 3434,
+   "named": 3434,
+   "distinct": 12,
+   "top_share": 0.423,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.018,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "12. Коробка монтажная",
+     1452
+    ],
+    [
+     "2. СОУЭ (SWS-103)",
+     891
+    ],
+    [
+     "АР_Рамка и штамп",
+     458
+    ],
+    [
+     "11. СОУЭ колонки (кабель 1х2х1.5)",
+     371
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     130
+    ],
+    [
+     "0",
+     63
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-6_V1/versions/v001/02_work/document.pdf",
+   "page": 27,
+   "drawings": 606,
+   "named": 605,
+   "distinct": 4,
+   "top_share": 0.731,
+   "hatch_share": 0.0,
+   "furniture_share": 0.0,
+   "underlay_share": 0.0,
+   "default_layer0_share": 0.002,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "АР_Рамка и штамп",
+     442
+    ],
+    [
+     "EOM_форматка_штамп_подписи",
+     130
+    ],
+    [
+     "RC-Таблицы",
+     32
+    ],
+    [
+     "0",
+     1
+    ]
+   ]
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.3_V1/versions/v001/02_work/document.pdf",
+   "page": 50,
+   "drawings": 628,
+   "named": 0,
+   "distinct": 0,
+   "top_share": null,
+   "hatch_share": null,
+   "verdict": "no_layer_on_page"
+  },
+  {
+   "pdf": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-НВД_V1/versions/v001/02_work/document.pdf",
+   "page": 7,
+   "drawings": 1423120,
+   "named": 1423080,
+   "distinct": 137,
+   "top_share": 0.901,
+   "hatch_share": 0.002,
+   "furniture_share": 0.0,
+   "underlay_share": 0.007,
+   "default_layer0_share": 0.0,
+   "verdict": "informative",
+   "top_layers": [
+    [
+     "6.2_МАФ|11_МАФ",
+     1282871
+    ],
+    [
+     "6.2_ОЗ|10_Деревья кустарники",
+     56988
+    ],
+    [
+     "6.2_покрытия|08_Резиновая крошка Цвет 1 по паркингу",
+     14649
+    ],
+    [
+     "НВК Подложка - Подоснова",
+     6024
+    ],
+    [
+     "6.2_СПИС|_ЭН_Светильники",
+     5499
+    ],
+    [
+     "6.2_топо_серая|Территории",
+     5205
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,92 @@
+{
+ "ar_plan": {
+  "primitives": 14800,
+  "distinct_pdf_paths": 14752,
+  "primitives_per_pdf_path": 1.003,
+  "drawings_intersecting_block": 14752,
+  "crossings": 5000,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "ar_wall_sections": {
+  "primitives": 20000,
+  "distinct_pdf_paths": 20000,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 36027,
+  "crossings": 1009,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "eom_singleline_changed": {
+  "primitives": 704,
+  "distinct_pdf_paths": 685,
+  "primitives_per_pdf_path": 1.028,
+  "drawings_intersecting_block": 687,
+  "crossings": 433,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "ss_plan_dense": {
+  "primitives": 1604,
+  "distinct_pdf_paths": 1604,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 1604,
+  "crossings": 4626,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "ss_scheme_text_changed": {
+  "primitives": 39,
+  "distinct_pdf_paths": 39,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 39,
+  "crossings": 22,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "ss_simple_node": {
+  "primitives": 2,
+  "distinct_pdf_paths": 2,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 3,
+  "crossings": 3,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "ss_table_graphic": {
+  "primitives": 11,
+  "distinct_pdf_paths": 11,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 11,
+  "crossings": 57,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "vk_node_plan": {
+  "primitives": 20000,
+  "distinct_pdf_paths": 20000,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 37641,
+  "crossings": 1887,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "vk_nodes": {
+  "primitives": 20000,
+  "distinct_pdf_paths": 20000,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 164738,
+  "crossings": 1692,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ },
+ "vk_plan": {
+  "primitives": 3163,
+  "distinct_pdf_paths": 3163,
+  "primitives_per_pdf_path": 1.0,
+  "drawings_intersecting_block": 3163,
+  "crossings": 876,
+  "same_pdf_path_same_object": 0,
+  "share_same_pdf_path": 0.0
+ }
+}

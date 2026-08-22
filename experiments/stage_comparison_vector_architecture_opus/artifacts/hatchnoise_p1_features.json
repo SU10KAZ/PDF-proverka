@@ -1,0 +1,3709 @@
+{
+ "probe": "hatchnoise_p1_features",
+ "cross_block_summary": {
+  "motif_repetition": {
+   "blocks": 8,
+   "auc_min": 0.4704,
+   "auc_max": 0.9748,
+   "auc_mean": 0.8505,
+   "auc_values": [
+    0.9417,
+    0.4704,
+    0.825,
+    0.9182,
+    0.8653,
+    0.9404,
+    0.8681,
+    0.9748
+   ],
+   "sign_flips": 1,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.1696,
+    0.0,
+    0.0,
+    0.7886
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "parent_path_segment_count_inv": {
+   "blocks": 8,
+   "auc_min": 0.4849,
+   "auc_max": 0.9524,
+   "auc_mean": 0.8482,
+   "auc_values": [
+    0.8924,
+    0.4849,
+    0.8479,
+    0.9311,
+    0.8862,
+    0.9524,
+    0.8947,
+    0.8963
+   ],
+   "sign_flips": 1,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "parent_path_length_inv": {
+   "blocks": 8,
+   "auc_min": 0.4796,
+   "auc_max": 0.9577,
+   "auc_mean": 0.844,
+   "auc_values": [
+    0.9531,
+    0.4796,
+    0.7896,
+    0.9577,
+    0.8521,
+    0.952,
+    0.8877,
+    0.8805
+   ],
+   "sign_flips": 1,
+   "drop_at_fg99_values": [
+    0.896,
+    0.0145,
+    0.4518,
+    0.6156,
+    0.1655,
+    0.7147,
+    0.07,
+    0.0081
+   ],
+   "drop_at_fg99_median": 0.4518
+  },
+  "seg_length_norm_inv": {
+   "blocks": 8,
+   "auc_min": 0.4785,
+   "auc_max": 0.8358,
+   "auc_mean": 0.6176,
+   "auc_values": [
+    0.8358,
+    0.4785,
+    0.6198,
+    0.5169,
+    0.5952,
+    0.8039,
+    0.5676,
+    0.5234
+   ],
+   "sign_flips": 1,
+   "drop_at_fg99_values": [
+    0.0751,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0093,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "stroke_luminance": {
+   "blocks": 8,
+   "auc_min": 0.1603,
+   "auc_max": 0.8996,
+   "auc_mean": 0.5844,
+   "auc_values": [
+    0.1603,
+    0.876,
+    0.4635,
+    0.8315,
+    0.6477,
+    0.2933,
+    0.5034,
+    0.8996
+   ],
+   "sign_flips": 3,
+   "drop_at_fg99_values": [
+    0.002,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "cell_text_spans_inv": {
+   "blocks": 8,
+   "auc_min": 0.4383,
+   "auc_max": 0.6479,
+   "auc_mean": 0.5619,
+   "auc_values": [
+    0.607,
+    0.5792,
+    0.5339,
+    0.6479,
+    0.5906,
+    0.4383,
+    0.5756,
+    0.5225
+   ],
+   "sign_flips": 1,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "cell_orientation_entropy_inv": {
+   "blocks": 8,
+   "auc_min": 0.2566,
+   "auc_max": 0.7993,
+   "auc_mean": 0.5277,
+   "auc_values": [
+    0.3277,
+    0.4731,
+    0.2566,
+    0.7993,
+    0.4707,
+    0.4557,
+    0.6935,
+    0.7448
+   ],
+   "sign_flips": 5,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0007,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "cell_dominant_angle_share": {
+   "blocks": 8,
+   "auc_min": 0.2063,
+   "auc_max": 0.8349,
+   "auc_mean": 0.525,
+   "auc_values": [
+    0.3533,
+    0.5126,
+    0.2063,
+    0.8349,
+    0.4251,
+    0.47,
+    0.6488,
+    0.7487
+   ],
+   "sign_flips": 4,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0016,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "cell_tiny_frac": {
+   "blocks": 8,
+   "auc_min": 0.3426,
+   "auc_max": 0.7107,
+   "auc_mean": 0.5068,
+   "auc_values": [
+    0.5757,
+    0.5306,
+    0.3947,
+    0.3731,
+    0.4636,
+    0.6637,
+    0.3426,
+    0.7107
+   ],
+   "sign_flips": 4,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "cell_segment_density": {
+   "blocks": 8,
+   "auc_min": 0.3381,
+   "auc_max": 0.8275,
+   "auc_mean": 0.506,
+   "auc_values": [
+    0.5684,
+    0.4241,
+    0.399,
+    0.3381,
+    0.411,
+    0.6833,
+    0.3968,
+    0.8275
+   ],
+   "sign_flips": 5,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0898
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "angle_is_45deg": {
+   "blocks": 8,
+   "auc_min": 0.4607,
+   "auc_max": 0.5835,
+   "auc_mean": 0.5031,
+   "auc_values": [
+    0.5012,
+    0.4953,
+    0.5173,
+    0.4746,
+    0.5835,
+    0.4868,
+    0.5056,
+    0.4607
+   ],
+   "sign_flips": 4,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "stroke_width_inv": {
+   "blocks": 8,
+   "auc_min": 0.2179,
+   "auc_max": 0.8402,
+   "auc_mean": 0.4908,
+   "auc_values": [
+    0.2179,
+    0.581,
+    0.3515,
+    0.3436,
+    0.4096,
+    0.6354,
+    0.8402,
+    0.5472
+   ],
+   "sign_flips": 4,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "is_filled_path": {
+   "blocks": 8,
+   "auc_min": 0.2117,
+   "auc_max": 0.6983,
+   "auc_mean": 0.4233,
+   "auc_values": [
+    0.3146,
+    0.6983,
+    0.3188,
+    0.2117,
+    0.4707,
+    0.3966,
+    0.4813,
+    0.4947
+   ],
+   "sign_flips": 7,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "is_colored": {
+   "blocks": 8,
+   "auc_min": 0.2348,
+   "auc_max": 0.4932,
+   "auc_mean": 0.4171,
+   "auc_values": [
+    0.2348,
+    0.4289,
+    0.4275,
+    0.373,
+    0.438,
+    0.4577,
+    0.4835,
+    0.4932
+   ],
+   "sign_flips": 8,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  },
+  "enclosed_in_closed_contour": {
+   "blocks": 8,
+   "auc_min": 0.2675,
+   "auc_max": 0.6791,
+   "auc_mean": 0.409,
+   "auc_values": [
+    0.2973,
+    0.3558,
+    0.4681,
+    0.6791,
+    0.4505,
+    0.4538,
+    0.2997,
+    0.2675
+   ],
+   "sign_flips": 7,
+   "drop_at_fg99_values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "drop_at_fg99_median": 0.0
+  }
+ },
+ "method": "Ground truth = CAD layer name exposed by PyMuPDF page.get_drawings()['layer']. Layer names are mapped to classes by regex on the NAME only (auditable in layer_to_class). AUC is Mann-Whitney over per-segment feature scores; drop_at_precision reports how much background a single threshold removes while keeping 99% (and 95%) of foreground segments.",
+ "features_tested": [
+  "seg_length_norm_inv",
+  "motif_repetition",
+  "cell_segment_density",
+  "cell_tiny_frac",
+  "cell_dominant_angle_share",
+  "cell_orientation_entropy_inv",
+  "stroke_width_inv",
+  "is_filled_path",
+  "is_colored",
+  "stroke_luminance",
+  "enclosed_in_closed_contour",
+  "cell_text_spans_inv",
+  "parent_path_segment_count_inv",
+  "parent_path_length_inv",
+  "angle_is_45deg"
+ ],
+ "blocks": [
+  {
+   "block": "ar_layered_plan",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v001/02_work/document.pdf",
+   "page_index": 24,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.87,
+    0.72
+   ],
+   "segments": 122227,
+   "primitives": 87395,
+   "texts": 655,
+   "class_counts": {
+    "furniture": 9235,
+    "foreground": 45386,
+    "hatch": 67407,
+    "underlay": 199
+   },
+   "layer_to_class": {
+    "!АДМ-Мебель": "furniture",
+    "!АДМ-Оси_Ном._пера__16": "foreground",
+    "0": "foreground",
+    "08_ Розетки подписи": "foreground",
+    "08_Розетки и выводы": "foreground",
+    "A-AREA-____-IDEN": "foreground",
+    "A-AREA-____-OTLN": "foreground",
+    "A-DETL-GENF-OTLN": "foreground",
+    "A-DETL-____-OTLN": "foreground",
+    "A-DOOR-FRAM-MCUT": "foreground",
+    "A-DOOR-____-MCUT": "foreground",
+    "A-DOOR-____-OTLN": "foreground",
+    "A-FLOR-____-OTLN": "foreground",
+    "A-GLAZ-____-HDLN": "foreground",
+    "A-GLAZ-____-MCUT": "foreground",
+    "A-GLAZ-____-OTLN": "foreground",
+    "A-WALL-____-MCUT": "foreground",
+    "A-WALL-____-OTLN": "foreground",
+    "A-WALL-____-PATT": "hatch",
+    "A-____-NOTE-TEXT": "foreground",
+    "E-COMM-____-OTLN": "foreground",
+    "G-XREF-____-OTLN": "underlay",
+    "G-____-TTLB-OTLN": "foreground",
+    "G-____-____-DIMS": "foreground",
+    "I-WALL-____-MCUT": "foreground",
+    "I-WALL-____-OTLN": "foreground",
+    "M-EQPM-____-OTLN": "foreground",
+    "Opening Swing": "foreground",
+    "Panel": "foreground",
+    "Q-SPCQ-____-OTLN": "foreground",
+    "S-GRID-____-IDEN": "foreground",
+    "S-STRS-____-MBND": "foreground",
+    "S-STRS-____-OTLN": "foreground",
+    "Двери ArchiCAD_Ном._пера__1": "foreground",
+    "Стены 1200": "foreground",
+    "Стены штриховка": "hatch"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 67407,
+     "positive_frac": 0.5515,
+     "features": {
+      "parent_path_length_inv": {
+       "auc": 0.9531,
+       "threshold": -0.00042,
+       "bg_dropped_frac": 0.896,
+       "fg_kept_frac": 0.9903,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00083,
+        "bg_dropped_frac": 0.9019,
+        "fg_kept_frac": 0.9524
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.9417,
+       "threshold": 15455.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 9611.0,
+        "bg_dropped_frac": 0.5982,
+        "fg_kept_frac": 0.9818
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.8924,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.8358,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0751,
+       "fg_kept_frac": 0.9901,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0001,
+        "bg_dropped_frac": 0.224,
+        "fg_kept_frac": 0.9648
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.607,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.5757,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.5684,
+       "threshold": 1178.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 669.0,
+        "bg_dropped_frac": 0.013,
+        "fg_kept_frac": 0.9514
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.5012,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0156,
+        "fg_kept_frac": 0.9869
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.3533,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.68182,
+        "bg_dropped_frac": 0.0078,
+        "fg_kept_frac": 0.9501
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.3277,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.93667,
+        "bg_dropped_frac": 0.0057,
+        "fg_kept_frac": 0.9503
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.3146,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.2973,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_colored": {
+       "auc": 0.2348,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.2179,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.1603,
+       "threshold": 0.7152,
+       "bg_dropped_frac": 0.002,
+       "fg_kept_frac": 0.991,
+       "at_fg_keep_0.95": {
+        "threshold": 0.64525,
+        "bg_dropped_frac": 0.0057,
+        "fg_kept_frac": 0.9831
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 76841,
+     "positive_frac": 0.6287,
+     "features": {
+      "motif_repetition": {
+       "auc": 0.892,
+       "threshold": 15455.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 9611.0,
+        "bg_dropped_frac": 0.5283,
+        "fg_kept_frac": 0.984
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.8875,
+       "threshold": -0.00053,
+       "bg_dropped_frac": 0.7899,
+       "fg_kept_frac": 0.9912,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00083,
+        "bg_dropped_frac": 0.7971,
+        "fg_kept_frac": 0.9526
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.8475,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.7887,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0159,
+       "fg_kept_frac": 0.9984,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0001,
+        "bg_dropped_frac": 0.2031,
+        "fg_kept_frac": 0.9686
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.624,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.5292,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.99583,
+        "bg_dropped_frac": 0.0653,
+        "fg_kept_frac": 0.9537
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.503,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0167,
+        "fg_kept_frac": 0.9892
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.4958,
+       "threshold": 1178.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 682.0,
+        "bg_dropped_frac": 0.0121,
+        "fg_kept_frac": 0.9575
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.314,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.3128,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.2878,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.66667,
+        "bg_dropped_frac": 0.0144,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.2747,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.2734,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.94449,
+        "bg_dropped_frac": 0.0126,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.2642,
+       "threshold": 0.7152,
+       "bg_dropped_frac": 0.004,
+       "fg_kept_frac": 0.9928,
+       "at_fg_keep_0.95": {
+        "threshold": 0.64525,
+        "bg_dropped_frac": 0.0071,
+        "fg_kept_frac": 0.9832
+       }
+      },
+      "is_colored": {
+       "auc": 0.179,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "block": "ar41_k5_plan",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v001/02_work/document.pdf",
+   "page_index": 10,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.87,
+    0.8
+   ],
+   "segments": 18357,
+   "primitives": 9585,
+   "texts": 413,
+   "class_counts": {
+    "hatch": 2202,
+    "foreground": 15813,
+    "furniture": 195,
+    "unlabelled": 147
+   },
+   "layer_to_class": {
+    "!АДМ-Мебель": "furniture",
+    "0": "foreground",
+    "00_план": "foreground",
+    "04_Потолок": "foreground",
+    "09_Отделка": "foreground",
+    "A-ANNO-DIMS": "foreground",
+    "A-ANNO-NOTE": "foreground",
+    "A-ANNO-NOTE-THIN": "foreground",
+    "A-ANNO-NOTE-WIDE": "foreground",
+    "A-AREA-IDEN": "foreground",
+    "A-DETL": "foreground",
+    "A-DETL-GENF-OTLN": "foreground",
+    "A-DETL-____-OTLN": "foreground",
+    "A-DOOR-IDEN": "foreground",
+    "A-FLOR-FNSH": "foreground",
+    "A-FLOR-MCUT": "foreground",
+    "A-FLOR-PATT": "hatch",
+    "A-FLOR-____-OTLN": "foreground",
+    "A-GLAZ-____-HDLN": "foreground",
+    "A-GLAZ-____-OTLN": "foreground",
+    "A-WALL-PATT": "hatch",
+    "EI_DIMS_DETAIL": "foreground",
+    "G-ANNO-DIMS": "foreground",
+    "G-____-TTLB-OTLN": "foreground",
+    "G-____-____-NPLT": "foreground",
+    "I-WALL-____-OTLN": "foreground",
+    "IZOLATOR": "hatch",
+    "PDF _0": "foreground",
+    "PDF _0100-ANTY-A01-DIM": "foreground",
+    "PDF _0100-ANTY-A01-TEXT": "foreground",
+    "PDF _0100-ANTY-A01-TITLE": "foreground",
+    "PDF _0100-ANTY-A02-LEVEL-004": "foreground",
+    "PDF _0100-ANTY-A05-DOORS-XAMMER": "foreground",
+    "PDF _0100-ANTY-A05-PLASTER": "foreground",
+    "PDF _0100-ANTY-A05-PROFIL-PLINTH": "foreground",
+    "PDF _0100-ANTY-A05-PUTTY": "foreground",
+    "PDF _0100-ANTY-A05-SCREED-PLASTER-HATCH": "hatch",
+    "PDF _0100-ANTY-A05-WALL-A200": "foreground",
+    "PDF _0100-ANTY-A05-WALL-AERO-HATCH": "hatch",
+    "PDF _10": "foreground",
+    "PDF _2": "foreground",
+    "PDF _4": "foreground",
+    "PDF _951": "foreground",
+    "PDF _ERDAL-PROFIL-L-30x30x1.5mm": "foreground",
+    "PDF _Системный слой": "foreground",
+    "АИ Отделка": "foreground",
+    "Двери": "foreground",
+    "Линии": "foreground",
+    "Обобщенные модели": "foreground",
+    "Оборудование": "foreground",
+    "Потолки": "foreground",
+    "РАЗВЁРТКИ": "foreground",
+    "Светильники": "foreground",
+    "Стены внутренние": "foreground",
+    "Стены штриховка поверхности": "hatch",
+    "розетки": "foreground"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 2202,
+     "positive_frac": 0.12,
+     "features": {
+      "stroke_luminance": {
+       "auc": 0.876,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.659,
+        "bg_dropped_frac": 0.2602,
+        "fg_kept_frac": 0.9518
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.6983,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.581,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5792,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.5306,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.5126,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.4953,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.03,
+        "fg_kept_frac": 0.9606
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.4849,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.4796,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0145,
+       "fg_kept_frac": 0.9992,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00011,
+        "bg_dropped_frac": 0.1508,
+        "fg_kept_frac": 0.9555
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.4785,
+       "threshold": -1e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9918,
+       "at_fg_keep_0.95": {
+        "threshold": -6e-05,
+        "bg_dropped_frac": 0.0145,
+        "fg_kept_frac": 0.9547
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.4731,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.4704,
+       "threshold": 1502.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1502.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_colored": {
+       "auc": 0.4289,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.4241,
+       "threshold": 572.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 490.0,
+        "bg_dropped_frac": 0.0036,
+        "fg_kept_frac": 0.9651
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.3558,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 2397,
+     "positive_frac": 0.1306,
+     "features": {
+      "stroke_luminance": {
+       "auc": 0.8391,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.659,
+        "bg_dropped_frac": 0.239,
+        "fg_kept_frac": 0.9513
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.6711,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.5728,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5685,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.528,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.5106,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.5037,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.4938,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0275,
+        "fg_kept_frac": 0.9601
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.4936,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.4829,
+       "threshold": 1502.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1502.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.4765,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0134,
+       "fg_kept_frac": 0.9992,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00011,
+        "bg_dropped_frac": 0.1385,
+        "fg_kept_frac": 0.9549
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.4612,
+       "threshold": -1e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9917,
+       "at_fg_keep_0.95": {
+        "threshold": -6e-05,
+        "bg_dropped_frac": 0.0134,
+        "fg_kept_frac": 0.9541
+       }
+      },
+      "is_colored": {
+       "auc": 0.4389,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.4052,
+       "threshold": 572.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 490.0,
+        "bg_dropped_frac": 0.0033,
+        "fg_kept_frac": 0.9647
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.3756,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "block": "ar41_k6_plan",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К6/versions/v001/02_work/document.pdf",
+   "page_index": 44,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.85,
+    0.88
+   ],
+   "segments": 23787,
+   "primitives": 10636,
+   "texts": 425,
+   "class_counts": {
+    "foreground": 15166,
+    "hatch": 4810,
+    "unlabelled": 1715,
+    "underlay": 2096
+   },
+   "layer_to_class": {
+    "0": "foreground",
+    "00_план": "foreground",
+    "01_Размеры маркировочного плана": "foreground",
+    "04_Кладочный план размеры": "foreground",
+    "0_Марки": "foreground",
+    "11_Развертки": "foreground",
+    "A-AREA-IDEN": "foreground",
+    "A-AREA-____-OTLN": "foreground",
+    "A-DETL": "foreground",
+    "A-DETL-GENF": "foreground",
+    "A-DETL-GENF-OTLN": "foreground",
+    "A-DETL-THIN": "foreground",
+    "A-DETL-____-OTLN": "foreground",
+    "A-DOOR-IDEN": "foreground",
+    "A-DOOR-____-OTLN": "foreground",
+    "A-FLOR-____-OTLN": "foreground",
+    "A-FLOR-____-PATT": "hatch",
+    "A-WALL-____-MCUT": "foreground",
+    "A-WALL-____-PATT": "hatch",
+    "A-____-NOTE-TEXT": "foreground",
+    "E-COMM-____-IDEN": "foreground",
+    "G-ANNO-TEXT": "foreground",
+    "G-XREF-____-OTLN": "underlay",
+    "G-____-TTLB-OTLN": "foreground",
+    "G-____-____-NPLT": "foreground",
+    "I-WALL-____-MCUT": "foreground",
+    "I-WALL-____-OTLN": "foreground",
+    "IZOLATOR": "hatch",
+    "S-COLS-____-MCUT": "foreground",
+    "S-COLS-____-OTLN": "foreground",
+    "S-GRID-____-IDEN": "foreground",
+    "S-GRID-____-OTLN": "foreground",
+    "S-STRS-____-MBND": "foreground",
+    "S-STRS-____-OTLN": "foreground",
+    "Аннотация": "foreground",
+    "Двери": "foreground",
+    "Линии": "foreground",
+    "Стены": "foreground",
+    "Стены разрез": "foreground"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 4810,
+     "positive_frac": 0.2022,
+     "features": {
+      "parent_path_segment_count_inv": {
+       "auc": 0.8479,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.825,
+       "threshold": 1984.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1984.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.7896,
+       "threshold": -0.0002,
+       "bg_dropped_frac": 0.4518,
+       "fg_kept_frac": 0.9909,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00049,
+        "bg_dropped_frac": 0.6356,
+        "fg_kept_frac": 0.9509
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.6198,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9996,
+       "at_fg_keep_0.95": {
+        "threshold": -6e-05,
+        "bg_dropped_frac": 0.0495,
+        "fg_kept_frac": 0.9601
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5339,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.5173,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.053,
+        "fg_kept_frac": 0.9816
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.4681,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.4635,
+       "threshold": 0.89135,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9978,
+       "at_fg_keep_0.95": {
+        "threshold": 0.51453,
+        "bg_dropped_frac": 0.115,
+        "fg_kept_frac": 0.9501
+       }
+      },
+      "is_colored": {
+       "auc": 0.4275,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.399,
+       "threshold": 1431.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1431.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.3947,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.3515,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.3188,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.2566,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.61437,
+        "bg_dropped_frac": 0.0328,
+        "fg_kept_frac": 0.9504
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.2063,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.85714,
+        "bg_dropped_frac": 0.0318,
+        "fg_kept_frac": 0.9517
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 6906,
+     "positive_frac": 0.2903,
+     "features": {
+      "parent_path_length_inv": {
+       "auc": 0.734,
+       "threshold": -0.0002,
+       "bg_dropped_frac": 0.3155,
+       "fg_kept_frac": 0.9901,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00048,
+        "bg_dropped_frac": 0.444,
+        "fg_kept_frac": 0.956
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.7021,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.6869,
+       "threshold": 1984.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1984.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.6301,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0012,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -6e-05,
+        "bg_dropped_frac": 0.0471,
+        "fg_kept_frac": 0.9603
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.6163,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_colored": {
+       "auc": 0.6162,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.6011,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.5961,
+       "threshold": 376.0,
+       "bg_dropped_frac": 0.2744,
+       "fg_kept_frac": 0.9999,
+       "at_fg_keep_0.95": {
+        "threshold": 317.0,
+        "bg_dropped_frac": 0.2744,
+        "fg_kept_frac": 0.9578
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.5958,
+       "threshold": 0.89135,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9975,
+       "at_fg_keep_0.95": {
+        "threshold": 0.81058,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9714
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.5169,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0494,
+        "fg_kept_frac": 0.9844
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.4818,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.4637,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.3787,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.88889,
+        "bg_dropped_frac": 0.0181,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.3405,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.246,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.50326,
+        "bg_dropped_frac": 0.0181,
+        "fg_kept_frac": 0.9502
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "block": "eom_em_k1",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/document.pdf",
+   "page_index": 35,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.85,
+    0.88
+   ],
+   "segments": 101064,
+   "primitives": 30738,
+   "texts": 642,
+   "class_counts": {
+    "underlay": 25332,
+    "hatch": 29941,
+    "foreground": 45791
+   },
+   "layer_to_class": {
+    "A-ANNO-NOTE": "foreground",
+    "A-DETL-GENF": "foreground",
+    "E-ELEC-EQPM": "foreground",
+    "XR-УГО Сила|EOM_Распред.сети": "foreground",
+    "XR-УГО Сила|_olp_isch_СПА_шкафы и приборы": "foreground",
+    "XR-УГО Сила|_olp_слж_обозначения извещателей": "foreground",
+    "XR-УГО Сила|ЭОМ_": "foreground",
+    "XR-УГО Сила|ЭОМ_Гиршин": "foreground",
+    "XR-УГО Сила|ЭОМ_Кабель аварийный": "foreground",
+    "XR-УГО Сила|ЭОМ_Текст": "foreground",
+    "XREF25|1!!": "underlay",
+    "XREF25|A-AREA-____-IDEN": "underlay",
+    "XREF25|A-AREA-____-OTLN": "underlay",
+    "XREF25|A-DETL-GENF-OTLN": "underlay",
+    "XREF25|A-DETL-____-OTLN": "underlay",
+    "XREF25|A-DOOR-FRAM-MCUT": "underlay",
+    "XREF25|A-DOOR-FRAM-OTLN": "underlay",
+    "XREF25|A-DOOR-____-IDEN": "underlay",
+    "XREF25|A-DOOR-____-MCUT": "underlay",
+    "XREF25|A-DOOR-____-OTLN": "underlay",
+    "XREF25|A-FLOR-____-OTLN": "underlay",
+    "XREF25|A-FLOR-____-PATT": "hatch",
+    "XREF25|A-GENM-____-MCUT": "underlay",
+    "XREF25|A-GENM-____-OTLN": "underlay",
+    "XREF25|A-GLAZ-CURT-MCUT": "underlay",
+    "XREF25|A-GLAZ-CURT-OTLN": "underlay",
+    "XREF25|A-GLAZ-CWMG-MCUT": "underlay",
+    "XREF25|A-GLAZ-CWMG-OTLN": "underlay",
+    "XREF25|A-WALL-____-MCUT": "underlay",
+    "XREF25|A-WALL-____-OTLN": "underlay",
+    "XREF25|A-WALL-____-PATT": "hatch",
+    "XREF25|A-____-NOTE-TEXT": "underlay",
+    "XREF25|A-____-____-DIMS": "underlay",
+    "XREF25|G-____-____-DIMS": "underlay",
+    "XREF25|G-____-____-TEXT": "underlay",
+    "XREF25|I-WALL-____-MCUT": "underlay",
+    "XREF25|I-WALL-____-OTLN": "underlay",
+    "XREF25|M-EQPM-____-OTLN": "underlay",
+    "XREF25|P-SANR-FIXT-OTLN": "underlay",
+    "XREF25|Q-SPCQ-____-OTLN": "underlay",
+    "XREF25|S-COLS-____-MCUT": "underlay",
+    "XREF25|S-COLS-____-OTLN": "underlay",
+    "XREF25|S-GRID-____-IDEN": "underlay",
+    "XREF25|S-GRID-____-OTLN": "underlay",
+    "XREF25|S-STRS-____-MBND": "underlay",
+    "XREF25|S-STRS-____-OTLN": "underlay",
+    "XREF25|Балясины": "underlay",
+    "XREF25|Верхние поручни": "underlay",
+    "XREF25|Поручни": "underlay",
+    "ФВ-2": "foreground",
+    "ЭОМ_": "foreground",
+    "ЭОМ_Выноски": "foreground",
+    "ЭОМ_Распред.сети": "foreground"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 29941,
+     "positive_frac": 0.2963,
+     "features": {
+      "parent_path_length_inv": {
+       "auc": 0.9577,
+       "threshold": -0.00021,
+       "bg_dropped_frac": 0.6156,
+       "fg_kept_frac": 0.993,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00078,
+        "bg_dropped_frac": 0.8314,
+        "fg_kept_frac": 0.9507
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.9311,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -2.0,
+        "bg_dropped_frac": 0.6554,
+        "fg_kept_frac": 0.9522
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.9182,
+       "threshold": 6514.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 144.0,
+        "bg_dropped_frac": 0.6823,
+        "fg_kept_frac": 0.9579
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.8349,
+       "threshold": 0.77778,
+       "bg_dropped_frac": 0.0016,
+       "fg_kept_frac": 0.9901,
+       "at_fg_keep_0.95": {
+        "threshold": 0.5,
+        "bg_dropped_frac": 0.0232,
+        "fg_kept_frac": 0.9527
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.8315,
+       "threshold": 0.596,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9961,
+       "at_fg_keep_0.95": {
+        "threshold": 0.596,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9961
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.7993,
+       "threshold": -0.7642,
+       "bg_dropped_frac": 0.0007,
+       "fg_kept_frac": 0.9902,
+       "at_fg_keep_0.95": {
+        "threshold": -1.80648,
+        "bg_dropped_frac": 0.1114,
+        "fg_kept_frac": 0.9508
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.6791,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.6479,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.5169,
+       "threshold": -2e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9997,
+       "at_fg_keep_0.95": {
+        "threshold": -2e-05,
+        "bg_dropped_frac": 0.0432,
+        "fg_kept_frac": 0.9821
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.4746,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.3731,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.99424,
+        "bg_dropped_frac": 0.0372,
+        "fg_kept_frac": 0.9577
+       }
+      },
+      "is_colored": {
+       "auc": 0.373,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.3436,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.3381,
+       "threshold": 1780.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1527.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.952
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.2117,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 55273,
+     "positive_frac": 0.5469,
+     "features": {
+      "parent_path_segment_count_inv": {
+       "auc": 0.9834,
+       "threshold": -4.0,
+       "bg_dropped_frac": 0.5481,
+       "fg_kept_frac": 0.9906,
+       "at_fg_keep_0.95": {
+        "threshold": -24.0,
+        "bg_dropped_frac": 0.9301,
+        "fg_kept_frac": 0.9516
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.9833,
+       "threshold": 0.2126,
+       "bg_dropped_frac": 0.9699,
+       "fg_kept_frac": 0.993,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0722,
+        "bg_dropped_frac": 0.9699,
+        "fg_kept_frac": 0.9789
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.9083,
+       "threshold": 40.0,
+       "bg_dropped_frac": 0.5467,
+       "fg_kept_frac": 0.9911,
+       "at_fg_keep_0.95": {
+        "threshold": 5.0,
+        "bg_dropped_frac": 0.7322,
+        "fg_kept_frac": 0.9633
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.8478,
+       "threshold": -0.00314,
+       "bg_dropped_frac": 0.6948,
+       "fg_kept_frac": 0.9907,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00643,
+        "bg_dropped_frac": 0.7594,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.8324,
+       "threshold": 0.41176,
+       "bg_dropped_frac": 0.3521,
+       "fg_kept_frac": 0.9902,
+       "at_fg_keep_0.95": {
+        "threshold": 0.3419,
+        "bg_dropped_frac": 0.7249,
+        "fg_kept_frac": 0.9558
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.8039,
+       "threshold": -2.34884,
+       "bg_dropped_frac": 0.4615,
+       "fg_kept_frac": 0.9903,
+       "at_fg_keep_0.95": {
+        "threshold": -2.60089,
+        "bg_dropped_frac": 0.7073,
+        "fg_kept_frac": 0.9503
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.7628,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.6389,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.476,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_colored": {
+       "auc": 0.3027,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.289,
+       "threshold": -2e-05,
+       "bg_dropped_frac": 0.0003,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -2e-05,
+        "bg_dropped_frac": 0.0319,
+        "fg_kept_frac": 0.9825
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.1654,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.99424,
+        "bg_dropped_frac": 0.0422,
+        "fg_kept_frac": 0.9609
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.1033,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.0895,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.0808,
+       "threshold": 1780.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1632.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9611
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "block": "ss_askuvt_k1",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ_(Книга_1)_V1/versions/v001/02_work/document.pdf",
+   "page_index": 21,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.85,
+    0.88
+   ],
+   "segments": 58743,
+   "primitives": 36327,
+   "texts": 368,
+   "class_counts": {
+    "foreground": 34719,
+    "underlay": 2673,
+    "hatch": 21351
+   },
+   "layer_to_class": {
+    "0": "foreground",
+    "1_АСКУВТ2": "foreground",
+    "A-AREA-____-IDEN": "foreground",
+    "A-AREA-____-OTLN": "foreground",
+    "A-DETL-GENF-OTLN": "foreground",
+    "A-DETL-____-OTLN": "foreground",
+    "A-DETL-____-THIN": "foreground",
+    "A-DOOR-FRAM-MCUT": "foreground",
+    "A-DOOR-FRAM-OTLN": "foreground",
+    "A-DOOR-____-MCUT": "foreground",
+    "A-DOOR-____-OTLN": "foreground",
+    "A-FLOR-____-OTLN": "foreground",
+    "A-GENM-____-OTLN": "foreground",
+    "A-GLAZ-CURT-MCUT": "foreground",
+    "A-GLAZ-CURT-OTLN": "foreground",
+    "A-GLAZ-CWMG-MCUT": "foreground",
+    "A-GLAZ-CWMG-OTLN": "foreground",
+    "A-GLAZ-____-HDLN": "foreground",
+    "A-GLAZ-____-MCUT": "foreground",
+    "A-GLAZ-____-OTLN": "foreground",
+    "A-WALL-____-MCUT": "foreground",
+    "A-WALL-____-OTLN": "foreground",
+    "A-WALL-____-PATT": "hatch",
+    "A-____-NOTE-TEXT": "foreground",
+    "A-____-NOTE-WIDE": "foreground",
+    "A-____-____-DIMS": "foreground",
+    "AK_Equipment": "foreground",
+    "B_Опуск": "foreground",
+    "E-COMM-____-OTLN": "foreground",
+    "G-XREF-____-OTLN": "underlay",
+    "I-WALL-____-MCUT": "foreground",
+    "I-WALL-____-OTLN": "foreground",
+    "M-EQPM-____-OTLN": "foreground",
+    "P-SANR-FIXT-OTLN": "foreground",
+    "Ramka": "foreground",
+    "S-BEAM-____-MCUT": "foreground",
+    "S-BEAM-____-OTLN": "foreground",
+    "S-GRID-____-IDEN": "foreground",
+    "S-GRID-____-OTLN": "foreground",
+    "S-STRS-____-MBND": "foreground",
+    "S-STRS-____-OTLN": "foreground",
+    "_Сверху_ - Верхние поручни": "foreground",
+    "_Сверху_ - Линия разреза ограждения": "foreground",
+    "Верхние поручни": "foreground",
+    "Поручни": "foreground",
+    "Силовой": "foreground",
+    "ФВ-2": "foreground",
+    "ЭОМ": "foreground",
+    "основная 0.6": "foreground",
+    "штамп": "foreground"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 21351,
+     "positive_frac": 0.3635,
+     "features": {
+      "parent_path_segment_count_inv": {
+       "auc": 0.8862,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.8653,
+       "threshold": 3624.0,
+       "bg_dropped_frac": 0.1696,
+       "fg_kept_frac": 0.9994,
+       "at_fg_keep_0.95": {
+        "threshold": 3624.0,
+        "bg_dropped_frac": 0.1696,
+        "fg_kept_frac": 0.9994
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.8521,
+       "threshold": -0.00012,
+       "bg_dropped_frac": 0.1655,
+       "fg_kept_frac": 0.9903,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00016,
+        "bg_dropped_frac": 0.4749,
+        "fg_kept_frac": 0.9522
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.6477,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.502,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9851
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.5952,
+       "threshold": -2e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9913,
+       "at_fg_keep_0.95": {
+        "threshold": -4e-05,
+        "bg_dropped_frac": 0.008,
+        "fg_kept_frac": 0.9507
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5906,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.5835,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.4707,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.59167,
+        "bg_dropped_frac": 0.0036,
+        "fg_kept_frac": 0.9509
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.4707,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.4636,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.4505,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_colored": {
+       "auc": 0.438,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.4251,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.86957,
+        "bg_dropped_frac": 0.0036,
+        "fg_kept_frac": 0.9505
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.411,
+       "threshold": 1269.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1085.0,
+        "bg_dropped_frac": 0.0002,
+        "fg_kept_frac": 0.9662
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.4096,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 24024,
+     "positive_frac": 0.409,
+     "features": {
+      "parent_path_segment_count_inv": {
+       "auc": 0.7961,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.7903,
+       "threshold": -0.00012,
+       "bg_dropped_frac": 0.148,
+       "fg_kept_frac": 0.9902,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00015,
+        "bg_dropped_frac": 0.402,
+        "fg_kept_frac": 0.9738
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.7691,
+       "threshold": 3624.0,
+       "bg_dropped_frac": 0.1508,
+       "fg_kept_frac": 0.9994,
+       "at_fg_keep_0.95": {
+        "threshold": 3624.0,
+        "bg_dropped_frac": 0.1508,
+        "fg_kept_frac": 0.9994
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.6529,
+       "threshold": -2e-05,
+       "bg_dropped_frac": 0.0021,
+       "fg_kept_frac": 0.9921,
+       "at_fg_keep_0.95": {
+        "threshold": -4e-05,
+        "bg_dropped_frac": 0.0315,
+        "fg_kept_frac": 0.9507
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.6113,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.5766,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.502,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.984
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.5729,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_colored": {
+       "auc": 0.5273,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.5256,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.4906,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.4888,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.46376,
+        "bg_dropped_frac": 0.0023,
+        "fg_kept_frac": 0.952
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.4791,
+       "threshold": 1269.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1085.0,
+        "bg_dropped_frac": 0.0002,
+        "fg_kept_frac": 0.9636
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.4685,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.4416,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.90476,
+        "bg_dropped_frac": 0.0023,
+        "fg_kept_frac": 0.9501
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.4052,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "block": "ss_soue_k3k6",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v001/02_work/document.pdf",
+   "page_index": 35,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.85,
+    0.88
+   ],
+   "segments": 43572,
+   "primitives": 28141,
+   "texts": 445,
+   "class_counts": {
+    "foreground": 22171,
+    "hatch": 20159,
+    "underlay": 1242
+   },
+   "layer_to_class": {
+    "0": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-AREA-____-IDEN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-AREA-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-DETL-GENF-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-DETL-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-DETL-____-THIN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-DOOR-FRAM-MCUT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-DOOR-FRAM-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-DOOR-____-MCUT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-DOOR-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-FLOR-____-IDEN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-FLOR-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-FLOR-____-PATT": "hatch",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-GLAZ-CURT-MCUT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-GLAZ-CWMG-MCUT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-GLAZ-CWMG-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-GLAZ-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-WALL-____-MCUT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-WALL-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-WALL-____-PATT": "hatch",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-____-NOTE-TEXT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-____-____-DIMS-100": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|A-____-____-SYMB": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|E-COMM-____-IDEN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|G-____-____-DIMS": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|I-WALL-____-MCUT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|I-WALL-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|M-EQPM-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|P-SANR-FIXT-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|Q-SPCQ-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|S-COLS-____-MCUT": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|S-COLS-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|S-GRID-____-IDEN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|S-GRID-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|S-STRS-____-MBND": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|S-STRS-____-OTLN": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|_Сверху_ - Верхние поручни": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|_Сверху_ - Линия разреза ограждения": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|Балясины": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|Верхние поручни": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|Ограждение": "foreground",
+    "13АВ-RD-K6-АР1_2-К6-13-Корпус 6_ Маркировочный план 26 этажа-с подписями|Поручни": "foreground",
+    "A-____-NOTE-TEXT": "foreground",
+    "G-XREF-____-OTLN": "underlay",
+    "RC-Оповещение_речевое": "foreground",
+    "RC-Оповещение_световое": "foreground",
+    "НО Оповещатели Свет+Звук": "foreground",
+    "СОУЭ": "foreground"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 20159,
+     "positive_frac": 0.4627,
+     "features": {
+      "parent_path_segment_count_inv": {
+       "auc": 0.9524,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.952,
+       "threshold": -0.00023,
+       "bg_dropped_frac": 0.7147,
+       "fg_kept_frac": 0.9909,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00047,
+        "bg_dropped_frac": 0.8293,
+        "fg_kept_frac": 0.9505
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.9404,
+       "threshold": 3804.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 131.0,
+        "bg_dropped_frac": 0.933,
+        "fg_kept_frac": 0.9523
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.8039,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.99,
+       "at_fg_keep_0.95": {
+        "threshold": -9e-05,
+        "bg_dropped_frac": 0.2083,
+        "fg_kept_frac": 0.9518
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.6833,
+       "threshold": 669.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 581.0,
+        "bg_dropped_frac": 0.0005,
+        "fg_kept_frac": 0.9719
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.6637,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.6354,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.4868,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0103,
+        "fg_kept_frac": 0.9632
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.47,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.77778,
+        "bg_dropped_frac": 0.0073,
+        "fg_kept_frac": 0.9511
+       }
+      },
+      "is_colored": {
+       "auc": 0.4577,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.4557,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.80235,
+        "bg_dropped_frac": 0.007,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.4538,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.4383,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.3966,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.2933,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 21401,
+     "positive_frac": 0.4912,
+     "features": {
+      "parent_path_length_inv": {
+       "auc": 0.9501,
+       "threshold": -0.00027,
+       "bg_dropped_frac": 0.7488,
+       "fg_kept_frac": 0.9902,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00071,
+        "bg_dropped_frac": 0.8174,
+        "fg_kept_frac": 0.95
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.9197,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.8948,
+       "threshold": 3804.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 471.5,
+        "bg_dropped_frac": 0.799,
+        "fg_kept_frac": 0.95
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.8262,
+       "threshold": -7e-05,
+       "bg_dropped_frac": 0.0116,
+       "fg_kept_frac": 0.9901,
+       "at_fg_keep_0.95": {
+        "threshold": -9e-05,
+        "bg_dropped_frac": 0.2504,
+        "fg_kept_frac": 0.9553
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.7146,
+       "threshold": 669.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 474.0,
+        "bg_dropped_frac": 0.041,
+        "fg_kept_frac": 0.9597
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.7098,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.6423,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_colored": {
+       "auc": 0.5123,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.058,
+        "fg_kept_frac": 0.9666
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.4903,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0147,
+        "fg_kept_frac": 0.9659
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.4524,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.427,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.83333,
+        "bg_dropped_frac": 0.0049,
+        "fg_kept_frac": 0.9512
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.4177,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.4104,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.65002,
+        "bg_dropped_frac": 0.0049,
+        "fg_kept_frac": 0.9512
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.39,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.3228,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "block": "tx_tx2_k4",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v002/02_work/document.pdf",
+   "page_index": 8,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.85,
+    0.88
+   ],
+   "segments": 24242,
+   "primitives": 11248,
+   "texts": 214,
+   "class_counts": {
+    "foreground": 17556,
+    "hatch": 6686
+   },
+   "layer_to_class": {
+    "0": "foreground",
+    "A-AREA-____-IDEN": "foreground",
+    "A-AREA-____-OTLN": "foreground",
+    "A-DETL-GENF-OTLN": "foreground",
+    "A-DETL-____-OTLN": "foreground",
+    "A-DETL-____-THIN": "foreground",
+    "A-DOOR-FRAM-MCUT": "foreground",
+    "A-DOOR-FRAM-OTLN": "foreground",
+    "A-DOOR-____-HDLN": "foreground",
+    "A-DOOR-____-IDEN": "foreground",
+    "A-DOOR-____-MCUT": "foreground",
+    "A-DOOR-____-OTLN": "foreground",
+    "A-FLOR-____-OTLN": "foreground",
+    "A-GENM-____-OTLN": "foreground",
+    "A-WALL-____-MCUT": "foreground",
+    "A-WALL-____-PATT": "hatch",
+    "A-____-NOTE-TEXT": "foreground",
+    "A-____-NOTE-WIDE": "foreground",
+    "A-____-____-DIMS-100": "foreground",
+    "A-____-____-IDEN": "foreground",
+    "C-PRKG-____-OTLN": "foreground",
+    "G-____-____-DIMS": "foreground",
+    "G-____-____-SYMB": "foreground",
+    "I-WALL-____-MCUT": "foreground",
+    "I-WALL-____-OTLN": "foreground",
+    "M-EQPM-____-OTLN": "foreground",
+    "Q-SPCQ-____-OTLN": "foreground",
+    "S-COLS-____-MCUT": "foreground",
+    "S-COLS-____-OTLN": "foreground",
+    "S-GRID-____-IDEN": "foreground",
+    "S-GRID-____-OTLN": "foreground",
+    "S-STRS-____-MBND": "foreground",
+    "S-STRS-____-OTLN": "foreground",
+    "_ТХ_ВТ": "foreground"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 6686,
+     "positive_frac": 0.2758,
+     "features": {
+      "parent_path_segment_count_inv": {
+       "auc": 0.8947,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.8877,
+       "threshold": -0.0001,
+       "bg_dropped_frac": 0.07,
+       "fg_kept_frac": 0.9929,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00196,
+        "bg_dropped_frac": 0.7037,
+        "fg_kept_frac": 0.9504
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.8681,
+       "threshold": 2970.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1376.0,
+        "bg_dropped_frac": 0.3833,
+        "fg_kept_frac": 0.9768
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.8402,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.6935,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.6488,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5756,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.5676,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0093,
+       "fg_kept_frac": 0.9942,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00017,
+        "bg_dropped_frac": 0.1214,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.5056,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.5034,
+       "threshold": 0.753,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9944,
+       "at_fg_keep_0.95": {
+        "threshold": 0.2848,
+        "bg_dropped_frac": 0.0721,
+        "fg_kept_frac": 0.9561
+       }
+      },
+      "is_colored": {
+       "auc": 0.4835,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.967
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.4813,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.3968,
+       "threshold": 286.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 245.0,
+        "bg_dropped_frac": 0.0049,
+        "fg_kept_frac": 0.9553
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.3426,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.2997,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 6686,
+     "positive_frac": 0.2758,
+     "features": {
+      "parent_path_segment_count_inv": {
+       "auc": 0.8947,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.8877,
+       "threshold": -0.0001,
+       "bg_dropped_frac": 0.07,
+       "fg_kept_frac": 0.9929,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00196,
+        "bg_dropped_frac": 0.7037,
+        "fg_kept_frac": 0.9504
+       }
+      },
+      "motif_repetition": {
+       "auc": 0.8681,
+       "threshold": 2970.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1376.0,
+        "bg_dropped_frac": 0.3833,
+        "fg_kept_frac": 0.9768
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.8402,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.6935,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.6488,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5756,
+       "threshold": 0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.5676,
+       "threshold": -6e-05,
+       "bg_dropped_frac": 0.0093,
+       "fg_kept_frac": 0.9942,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00017,
+        "bg_dropped_frac": 0.1214,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.5056,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.5034,
+       "threshold": 0.753,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9944,
+       "at_fg_keep_0.95": {
+        "threshold": 0.2848,
+        "bg_dropped_frac": 0.0721,
+        "fg_kept_frac": 0.9561
+       }
+      },
+      "is_colored": {
+       "auc": 0.4835,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.967
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.4813,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.3968,
+       "threshold": 286.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 245.0,
+        "bg_dropped_frac": 0.0049,
+        "fg_kept_frac": 0.9553
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.3426,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.2997,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "block": "km_nvf_facade",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К5/versions/v001/02_work/document.pdf",
+   "page_index": 29,
+   "bbox_norm": [
+    0.02,
+    0.01,
+    0.85,
+    0.88
+   ],
+   "segments": 59929,
+   "primitives": 46151,
+   "texts": 82,
+   "class_counts": {
+    "foreground": 24336,
+    "unlabelled": 10,
+    "hatch": 35583
+   },
+   "layer_to_class": {
+    "!Выноски": "foreground",
+    "!Размеры": "foreground",
+    "-CENTER": "foreground",
+    "-EPDM": "foreground",
+    "-FASTENERS": "foreground",
+    "-Р-Оцинковка": "foreground",
+    "0": "foreground",
+    "0S-Glass": "foreground",
+    "1": "foreground",
+    "ARMIERUNG": "foreground",
+    "DICHTUNG": "foreground",
+    "HAUPTPROFIL": "foreground",
+    "IZOLATOR": "hatch",
+    "UTEPLITEL": "foreground",
+    "ZUSATZPROFILE": "foreground",
+    "_ALT_кляммер": "foreground",
+    "_ALT_крепеж_металл": "foreground",
+    "_ALT_кронштейны_видимые": "foreground",
+    "_ALT_основание": "foreground",
+    "_ALT_оцинковка": "foreground",
+    "_ALT_профили": "foreground",
+    "_ALT_раздел2_вставки": "foreground",
+    "_ALT_раздел2_удлинители": "foreground",
+    "_ALT_утеплитель": "foreground",
+    "_заклепка": "foreground",
+    "крепеж": "foreground"
+   },
+   "targets": {
+    "hatch_only": {
+     "positive_segments": 35583,
+     "positive_frac": 0.5938,
+     "features": {
+      "motif_repetition": {
+       "auc": 0.9748,
+       "threshold": 1424.0,
+       "bg_dropped_frac": 0.7886,
+       "fg_kept_frac": 0.9972,
+       "at_fg_keep_0.95": {
+        "threshold": 1424.0,
+        "bg_dropped_frac": 0.7886,
+        "fg_kept_frac": 0.9972
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.8996,
+       "threshold": 0.5003,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9936,
+       "at_fg_keep_0.95": {
+        "threshold": 0.39173,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9877
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.8963,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.8805,
+       "threshold": -0.00011,
+       "bg_dropped_frac": 0.0081,
+       "fg_kept_frac": 0.9924,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00022,
+        "bg_dropped_frac": 0.0213,
+        "fg_kept_frac": 0.9551
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.8275,
+       "threshold": 664.0,
+       "bg_dropped_frac": 0.0898,
+       "fg_kept_frac": 0.9939,
+       "at_fg_keep_0.95": {
+        "threshold": 633.0,
+        "bg_dropped_frac": 0.194,
+        "fg_kept_frac": 0.9597
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.7487,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.5,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9521
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.7448,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.52193,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9517
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.7107,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.5472,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.42,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9734
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.5234,
+       "threshold": -2e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.993,
+       "at_fg_keep_0.95": {
+        "threshold": -4e-05,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5225,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.4947,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9894
+       }
+      },
+      "is_colored": {
+       "auc": 0.4932,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9865
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.4607,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.2675,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    },
+    "hatch_furniture_underlay": {
+     "positive_segments": 35583,
+     "positive_frac": 0.5938,
+     "features": {
+      "motif_repetition": {
+       "auc": 0.9748,
+       "threshold": 1424.0,
+       "bg_dropped_frac": 0.7886,
+       "fg_kept_frac": 0.9972,
+       "at_fg_keep_0.95": {
+        "threshold": 1424.0,
+        "bg_dropped_frac": 0.7886,
+        "fg_kept_frac": 0.9972
+       }
+      },
+      "stroke_luminance": {
+       "auc": 0.8996,
+       "threshold": 0.5003,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.9936,
+       "at_fg_keep_0.95": {
+        "threshold": 0.39173,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9877
+       }
+      },
+      "parent_path_segment_count_inv": {
+       "auc": 0.8963,
+       "threshold": -1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "parent_path_length_inv": {
+       "auc": 0.8805,
+       "threshold": -0.00011,
+       "bg_dropped_frac": 0.0081,
+       "fg_kept_frac": 0.9924,
+       "at_fg_keep_0.95": {
+        "threshold": -0.00022,
+        "bg_dropped_frac": 0.0213,
+        "fg_kept_frac": 0.9551
+       }
+      },
+      "cell_segment_density": {
+       "auc": 0.8275,
+       "threshold": 664.0,
+       "bg_dropped_frac": 0.0898,
+       "fg_kept_frac": 0.9939,
+       "at_fg_keep_0.95": {
+        "threshold": 633.0,
+        "bg_dropped_frac": 0.194,
+        "fg_kept_frac": 0.9597
+       }
+      },
+      "cell_dominant_angle_share": {
+       "auc": 0.7487,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.5,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9521
+       }
+      },
+      "cell_orientation_entropy_inv": {
+       "auc": 0.7448,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -1.52193,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9517
+       }
+      },
+      "cell_tiny_frac": {
+       "auc": 0.7107,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "stroke_width_inv": {
+       "auc": 0.5472,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.42,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9734
+       }
+      },
+      "seg_length_norm_inv": {
+       "auc": 0.5234,
+       "threshold": -2e-05,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 0.993,
+       "at_fg_keep_0.95": {
+        "threshold": -4e-05,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9502
+       }
+      },
+      "cell_text_spans_inv": {
+       "auc": 0.5225,
+       "threshold": -0.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": -0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "is_filled_path": {
+       "auc": 0.4947,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9894
+       }
+      },
+      "is_colored": {
+       "auc": 0.4932,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 0.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 0.9865
+       }
+      },
+      "angle_is_45deg": {
+       "auc": 0.4607,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      },
+      "enclosed_in_closed_contour": {
+       "auc": 0.2675,
+       "threshold": 1.0,
+       "bg_dropped_frac": 0.0,
+       "fg_kept_frac": 1.0,
+       "at_fg_keep_0.95": {
+        "threshold": 1.0,
+        "bg_dropped_frac": 0.0,
+        "fg_kept_frac": 1.0
+       }
+      }
+     }
+    }
+   }
+  }
+ ]
+}

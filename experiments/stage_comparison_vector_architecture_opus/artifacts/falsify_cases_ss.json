@@ -1,0 +1,76 @@
+{
+ "cases": [
+  {
+   "case_id": "A_door_swing_mirrored",
+   "note": "Real AR door with swing arc, left-hand vs right-hand (mirrored) on the SAME SS plan page. Identical v0.1 L3 structural descriptor; engineering meaning differs (сторона открывания).",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 7,
+    "bbox_norm": [
+     0.5846091647192204,
+     0.5089768279824048,
+     0.5969047328431619,
+     0.5228363539240369
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 7,
+    "bbox_norm": [
+     0.8062854402201665,
+     0.07768717325636364,
+     0.818581008344108,
+     0.09154669919799568
+    ]
+   }
+  },
+  {
+   "case_id": "B_door_rotated_180",
+   "note": "Same door leaf+arc component placed rotated 180 deg elsewhere on the same page. Engineer: same object, different placement.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 7,
+    "bbox_norm": [
+     0.5846091647192204,
+     0.5089768279824048,
+     0.5969047328431619,
+     0.5228363539240369
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 7,
+    "bbox_norm": [
+     0.1606256940052363,
+     0.5589113911813117,
+     0.1729212621291778,
+     0.5727709171229437
+    ]
+   }
+  },
+  {
+   "case_id": "A_l3collision_ss_25seg",
+   "note": "Two DIFFERENT 25-segment components on one SS plan page sharing the identical generic-topology descriptor (min pairwise shape similarity 0.0000).",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 7,
+    "bbox_norm": [
+     0.10294571226551053,
+     0.011946710012641667,
+     0.11082626944147306,
+     0.045538442379648145
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 7,
+    "bbox_norm": [
+     0.10294571226551053,
+     0.7182791604229837,
+     0.11082626944147306,
+     0.7519715673125688
+    ]
+   }
+  }
+ ]
+}

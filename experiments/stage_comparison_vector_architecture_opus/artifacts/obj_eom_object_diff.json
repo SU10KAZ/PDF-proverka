@@ -1,0 +1,1468 @@
+{
+ "probe": "obj",
+ "research_only": true,
+ "pair": "eom_singleline_changed",
+ "sides": {
+  "left": {
+   "version": "v001",
+   "page_index": 8,
+   "page_rotation": 270,
+   "segments": 1378,
+   "S_pt": 8.46,
+   "objects": 50,
+   "counts": {
+    "linear_object": 15,
+    "closed_area_object": 3,
+    "symbol_candidate": 47
+   }
+  },
+  "right": {
+   "version": "v002",
+   "page_index": 10,
+   "page_rotation": 0,
+   "segments": 1859,
+   "S_pt": 8.92,
+   "objects": 62,
+   "counts": {
+    "linear_object": 37,
+    "closed_area_object": 9,
+    "symbol_candidate": 53,
+    "stray": 37
+   }
+  }
+ },
+ "Q1_device_objects": {
+  "left_tags": [
+   "QD1",
+   "QDn",
+   "QF1",
+   "QFn",
+   "Wh1",
+   "Whn"
+  ],
+  "left_count": 6,
+  "left_distinct_objects": 6,
+  "right_tags": [
+   "QD1",
+   "QD2",
+   "QD3",
+   "QD4",
+   "QF1",
+   "QF2",
+   "QF3",
+   "QF4",
+   "Wh1",
+   "Wh2",
+   "Wh3",
+   "Wh4"
+  ],
+  "right_count": 12,
+  "right_distinct_objects": 12,
+  "ground_truth_left": 6,
+  "ground_truth_right": 12,
+  "ground_truth_source": "human count on diagnostics/eom_singleline_changed/{left,right}.png: v001 draws 2 outgoing rows x (QD,Wh,QF); v002 draws 4 rows x (QD,Wh,QF)"
+ },
+ "Q1_terminal_markers": {
+  "left_count": 14,
+  "right_count": 12,
+  "left_n_seg": [
+   [
+    30,
+    14
+   ]
+  ],
+  "right_n_seg": [
+   [
+    11,
+    12
+   ]
+  ],
+  "ground_truth_both_sides": 14,
+  "ground_truth_source": "human count on the diagnostics PNGs: 4 rows x 3 phase markers + 1 at Шина N + 1 at Шина PE"
+ },
+ "Q2_descriptor_transfer": {
+  "left_segments_per_marker": [
+   30
+  ],
+  "right_segments_per_marker": [
+   11
+  ],
+  "cross_version_distance_median": 0.0945,
+  "cross_version_distance_max": 0.1133,
+  "within_left_max": 0.0125,
+  "within_right_max": 0.0954,
+  "distance_to_other_right_objects_min": 1.8891,
+  "separation_ratio": 16.68
+ },
+ "Q3_object_matching_sweep": [
+  {
+   "eps": 0.05,
+   "matched": 7,
+   "unmatched_left_removed": 43,
+   "unmatched_right_added": 55
+  },
+  {
+   "eps": 0.1,
+   "matched": 16,
+   "unmatched_left_removed": 34,
+   "unmatched_right_added": 46
+  },
+  {
+   "eps": 0.15,
+   "matched": 19,
+   "unmatched_left_removed": 31,
+   "unmatched_right_added": 43
+  },
+  {
+   "eps": 0.25,
+   "matched": 19,
+   "unmatched_left_removed": 31,
+   "unmatched_right_added": 43
+  },
+  {
+   "eps": 0.4,
+   "matched": 21,
+   "unmatched_left_removed": 29,
+   "unmatched_right_added": 41
+  },
+  {
+   "eps": 0.8,
+   "matched": 23,
+   "unmatched_left_removed": 27,
+   "unmatched_right_added": 39
+  },
+  {
+   "eps": 1.5,
+   "matched": 28,
+   "unmatched_left_removed": 22,
+   "unmatched_right_added": 34
+  }
+ ],
+ "Q3_chosen_eps": 0.15,
+ "Q3_added_objects": [
+  {
+   "oid": "R001",
+   "label": "(",
+   "n_seg": 12,
+   "diag_over_S": 17.54
+  },
+  {
+   "oid": "R002",
+   "label": "(",
+   "n_seg": 13,
+   "diag_over_S": 17.51
+  },
+  {
+   "oid": "R003",
+   "label": "(",
+   "n_seg": 12,
+   "diag_over_S": 17.54
+  },
+  {
+   "oid": "R004",
+   "label": "(",
+   "n_seg": 12,
+   "diag_over_S": 17.54
+  },
+  {
+   "oid": "R005",
+   "label": "(",
+   "n_seg": 498,
+   "diag_over_S": 12.34
+  },
+  {
+   "oid": "R008",
+   "label": "(",
+   "n_seg": 384,
+   "diag_over_S": 10.56
+  },
+  {
+   "oid": "R009",
+   "label": "4",
+   "n_seg": 11,
+   "diag_over_S": 3.55
+  },
+  {
+   "oid": "R010",
+   "label": "1",
+   "n_seg": 11,
+   "diag_over_S": 3.56
+  },
+  {
+   "oid": "R011",
+   "label": "2",
+   "n_seg": 11,
+   "diag_over_S": 3.55
+  },
+  {
+   "oid": "R012",
+   "label": "3",
+   "n_seg": 11,
+   "diag_over_S": 3.55
+  },
+  {
+   "oid": "R013",
+   "label": "2",
+   "n_seg": 4,
+   "diag_over_S": 7.4
+  },
+  {
+   "oid": "R014",
+   "label": "²",
+   "n_seg": 2,
+   "diag_over_S": 8.0
+  },
+  {
+   "oid": "R015",
+   "label": "QD1",
+   "n_seg": 2,
+   "diag_over_S": 5.74
+  },
+  {
+   "oid": "R016",
+   "label": "(1",
+   "n_seg": 2,
+   "diag_over_S": 6.03
+  },
+  {
+   "oid": "R017",
+   "label": "²",
+   "n_seg": 2,
+   "diag_over_S": 7.99
+  },
+  {
+   "oid": "R018",
+   "label": "PE",
+   "n_seg": 70,
+   "diag_over_S": 7.82
+  },
+  {
+   "oid": "R019",
+   "label": null,
+   "n_seg": 6,
+   "diag_over_S": 3.55
+  },
+  {
+   "oid": "R020",
+   "label": "6)",
+   "n_seg": 16,
+   "diag_over_S": 7.88
+  },
+  {
+   "oid": "R021",
+   "label": "Wh3",
+   "n_seg": 24,
+   "diag_over_S": 7.99
+  },
+  {
+   "oid": "R022",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 0.55
+  },
+  {
+   "oid": "R023",
+   "label": null,
+   "n_seg": 3,
+   "diag_over_S": 2.04
+  },
+  {
+   "oid": "R024",
+   "label": null,
+   "n_seg": 7,
+   "diag_over_S": 6.52
+  },
+  {
+   "oid": "R025",
+   "label": null,
+   "n_seg": 9,
+   "diag_over_S": 7.81
+  },
+  {
+   "oid": "R026",
+   "label": "Шина",
+   "n_seg": 6,
+   "diag_over_S": 3.24
+  },
+  {
+   "oid": "R027",
+   "label": "N",
+   "n_seg": 58,
+   "diag_over_S": 6.85
+  },
+  {
+   "oid": "R028",
+   "label": null,
+   "n_seg": 5,
+   "diag_over_S": 4.58
+  },
+  {
+   "oid": "R029",
+   "label": "Wh4",
+   "n_seg": 20,
+   "diag_over_S": 6.88
+  },
+  {
+   "oid": "R030",
+   "label": "А",
+   "n_seg": 5,
+   "diag_over_S": 1.18
+  },
+  {
+   "oid": "R031",
+   "label": "Wh1",
+   "n_seg": 20,
+   "diag_over_S": 6.88
+  },
+  {
+   "oid": "R032",
+   "label": "А",
+   "n_seg": 5,
+   "diag_over_S": 1.19
+  },
+  {
+   "oid": "R033",
+   "label": "Wh2",
+   "n_seg": 21,
+   "diag_over_S": 7.84
+  },
+  {
+   "oid": "R034",
+   "label": "А",
+   "n_seg": 5,
+   "diag_over_S": 1.18
+  },
+  {
+   "oid": "R035",
+   "label": "А",
+   "n_seg": 5,
+   "diag_over_S": 1.18
+  },
+  {
+   "oid": "R040",
+   "label": null,
+   "n_seg": 19,
+   "diag_over_S": 4.46
+  },
+  {
+   "oid": "R049",
+   "label": "C25",
+   "n_seg": 11,
+   "diag_over_S": 7.92
+  },
+  {
+   "oid": "R050",
+   "label": "C25",
+   "n_seg": 11,
+   "diag_over_S": 7.92
+  },
+  {
+   "oid": "R051",
+   "label": "C25",
+   "n_seg": 11,
+   "diag_over_S": 7.93
+  },
+  {
+   "oid": "R056",
+   "label": "²",
+   "n_seg": 3,
+   "diag_over_S": 6.29
+  },
+  {
+   "oid": "R057",
+   "label": "C25",
+   "n_seg": 5,
+   "diag_over_S": 5.52
+  },
+  {
+   "oid": "R058",
+   "label": "40",
+   "n_seg": 15,
+   "diag_over_S": 2.93
+  },
+  {
+   "oid": "R059",
+   "label": "40",
+   "n_seg": 15,
+   "diag_over_S": 2.95
+  },
+  {
+   "oid": "R060",
+   "label": "40",
+   "n_seg": 15,
+   "diag_over_S": 2.93
+  },
+  {
+   "oid": "R061",
+   "label": "40",
+   "n_seg": 15,
+   "diag_over_S": 2.93
+  }
+ ],
+ "Q3_removed_objects": [
+  {
+   "oid": "L003",
+   "label": null,
+   "n_seg": 71,
+   "diag_over_S": 0.96
+  },
+  {
+   "oid": "L004",
+   "label": null,
+   "n_seg": 68,
+   "diag_over_S": 0.95
+  },
+  {
+   "oid": "L005",
+   "label": null,
+   "n_seg": 78,
+   "diag_over_S": 0.96
+  },
+  {
+   "oid": "L006",
+   "label": "QD1",
+   "n_seg": 2,
+   "diag_over_S": 5.94
+  },
+  {
+   "oid": "L007",
+   "label": "2",
+   "n_seg": 2,
+   "diag_over_S": 6.06
+  },
+  {
+   "oid": "L008",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 0.54
+  },
+  {
+   "oid": "L009",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 0.65
+  },
+  {
+   "oid": "L010",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 0.61
+  },
+  {
+   "oid": "L011",
+   "label": "1-ком., 2-ком., 3Е-ком. кв-ры:",
+   "n_seg": 2,
+   "diag_over_S": 0.6
+  },
+  {
+   "oid": "L012",
+   "label": "1-ком., 2-ком., 3Е-ком. кв-ры:",
+   "n_seg": 3,
+   "diag_over_S": 2.07
+  },
+  {
+   "oid": "L013",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 0.49
+  },
+  {
+   "oid": "L014",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 0.62
+  },
+  {
+   "oid": "L015",
+   "label": "2",
+   "n_seg": 3,
+   "diag_over_S": 2.05
+  },
+  {
+   "oid": "L016",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 1.07
+  },
+  {
+   "oid": "L017",
+   "label": "Шина N",
+   "n_seg": 4,
+   "diag_over_S": 2.26
+  },
+  {
+   "oid": "L018",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 1.0
+  },
+  {
+   "oid": "L019",
+   "label": null,
+   "n_seg": 2,
+   "diag_over_S": 1.19
+  },
+  {
+   "oid": "L021",
+   "label": "Шина PE",
+   "n_seg": 240,
+   "diag_over_S": 7.54
+  },
+  {
+   "oid": "L024",
+   "label": null,
+   "n_seg": 30,
+   "diag_over_S": 1.41
+  },
+  {
+   "oid": "L026",
+   "label": "Шина N",
+   "n_seg": 240,
+   "diag_over_S": 7.54
+  },
+  {
+   "oid": "L028",
+   "label": null,
+   "n_seg": 30,
+   "diag_over_S": 1.41
+  },
+  {
+   "oid": "L040",
+   "label": ")",
+   "n_seg": 2,
+   "diag_over_S": 3.99
+  },
+  {
+   "oid": "L041",
+   "label": ")",
+   "n_seg": 2,
+   "diag_over_S": 3.99
+  },
+  {
+   "oid": "L042",
+   "label": "ЩМквn",
+   "n_seg": 10,
+   "diag_over_S": 3.47
+  },
+  {
+   "oid": "L043",
+   "label": "QFn",
+   "n_seg": 8,
+   "diag_over_S": 2.59
+  },
+  {
+   "oid": "L044",
+   "label": "QF1",
+   "n_seg": 8,
+   "diag_over_S": 2.58
+  },
+  {
+   "oid": "L045",
+   "label": "ЩМкв1",
+   "n_seg": 12,
+   "diag_over_S": 3.44
+  },
+  {
+   "oid": "L046",
+   "label": "QDn",
+   "n_seg": 42,
+   "diag_over_S": 4.22
+  },
+  {
+   "oid": "L047",
+   "label": "QD1",
+   "n_seg": 42,
+   "diag_over_S": 4.21
+  },
+  {
+   "oid": "L048",
+   "label": "Whn",
+   "n_seg": 13,
+   "diag_over_S": 4.64
+  },
+  {
+   "oid": "L049",
+   "label": "Wh1",
+   "n_seg": 13,
+   "diag_over_S": 4.64
+  }
+ ],
+ "Q3_class_census": [
+  {
+   "class": "K17",
+   "left": 14,
+   "right": 12,
+   "delta": -2,
+   "diag_over_S": 1.42,
+   "n_seg_left": [
+    30
+   ],
+   "n_seg_right": [
+    11
+   ],
+   "labels_left": [
+    "Шина PE"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K58",
+   "left": 0,
+   "right": 4,
+   "delta": 4,
+   "diag_over_S": 2.93,
+   "n_seg_left": [],
+   "n_seg_right": [
+    15
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "40"
+   ]
+  },
+  {
+   "class": "K19",
+   "left": 4,
+   "right": 4,
+   "delta": 0,
+   "diag_over_S": 0.88,
+   "n_seg_left": [
+    3
+   ],
+   "n_seg_right": [
+    3
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K26",
+   "left": 0,
+   "right": 3,
+   "delta": 3,
+   "diag_over_S": 17.54,
+   "n_seg_left": [],
+   "n_seg_right": [
+    12
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "("
+   ]
+  },
+  {
+   "class": "K31",
+   "left": 0,
+   "right": 3,
+   "delta": 3,
+   "diag_over_S": 3.56,
+   "n_seg_left": [],
+   "n_seg_right": [
+    11
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "1",
+    "2",
+    "3"
+   ]
+  },
+  {
+   "class": "K55",
+   "left": 0,
+   "right": 3,
+   "delta": 3,
+   "diag_over_S": 7.92,
+   "n_seg_left": [],
+   "n_seg_right": [
+    11
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "C25"
+   ]
+  },
+  {
+   "class": "K06",
+   "left": 2,
+   "right": 0,
+   "delta": -2,
+   "diag_over_S": 6.06,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "2"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K11",
+   "left": 2,
+   "right": 0,
+   "delta": -2,
+   "diag_over_S": 2.07,
+   "n_seg_left": [
+    3
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "1-ком., 2-ком., 3Е-ком. кв-ры:",
+    "2"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K18",
+   "left": 2,
+   "right": 0,
+   "delta": -2,
+   "diag_over_S": 7.54,
+   "n_seg_left": [
+    240
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "Шина N",
+    "Шина PE"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K20",
+   "left": 2,
+   "right": 0,
+   "delta": -2,
+   "diag_over_S": 3.99,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    ")"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K22",
+   "left": 2,
+   "right": 0,
+   "delta": -2,
+   "diag_over_S": 2.59,
+   "n_seg_left": [
+    8
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "QF1",
+    "QFn"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K24",
+   "left": 2,
+   "right": 0,
+   "delta": -2,
+   "diag_over_S": 4.22,
+   "n_seg_left": [
+    42
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "QD1",
+    "QDn"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K25",
+   "left": 2,
+   "right": 0,
+   "delta": -2,
+   "diag_over_S": 4.64,
+   "n_seg_left": [
+    13
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "Wh1",
+    "Whn"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K49",
+   "left": 0,
+   "right": 2,
+   "delta": 2,
+   "diag_over_S": 1.18,
+   "n_seg_left": [],
+   "n_seg_right": [
+    5
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "А"
+   ]
+  },
+  {
+   "class": "K01",
+   "left": 2,
+   "right": 2,
+   "delta": 0,
+   "diag_over_S": 8.46,
+   "n_seg_left": [
+    4
+   ],
+   "n_seg_right": [
+    4
+   ],
+   "labels_left": [
+    "Шина N",
+    "Шина PE"
+   ],
+   "labels_right": [
+    "N",
+    "PE"
+   ]
+  },
+  {
+   "class": "K02",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.96,
+   "n_seg_left": [
+    71
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K03",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.95,
+   "n_seg_left": [
+    68
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K04",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.96,
+   "n_seg_left": [
+    78
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K05",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 5.94,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "QD1"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K07",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.54,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K08",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.65,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K09",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.61,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K10",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.6,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "1-ком., 2-ком., 3Е-ком. кв-ры:"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K12",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 0.62,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K13",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 1.07,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K14",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 2.26,
+   "n_seg_left": [
+    4
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "Шина N"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K15",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 1.0,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K16",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 1.19,
+   "n_seg_left": [
+    2
+   ],
+   "n_seg_right": [],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K21",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 3.47,
+   "n_seg_left": [
+    10
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "ЩМквn"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K23",
+   "left": 1,
+   "right": 0,
+   "delta": -1,
+   "diag_over_S": 3.44,
+   "n_seg_left": [
+    12
+   ],
+   "n_seg_right": [],
+   "labels_left": [
+    "ЩМкв1"
+   ],
+   "labels_right": []
+  },
+  {
+   "class": "K27",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 17.51,
+   "n_seg_left": [],
+   "n_seg_right": [
+    13
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "("
+   ]
+  },
+  {
+   "class": "K28",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 12.34,
+   "n_seg_left": [],
+   "n_seg_right": [
+    498
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "("
+   ]
+  },
+  {
+   "class": "K29",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 10.56,
+   "n_seg_left": [],
+   "n_seg_right": [
+    384
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "("
+   ]
+  },
+  {
+   "class": "K30",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 3.55,
+   "n_seg_left": [],
+   "n_seg_right": [
+    11
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "4"
+   ]
+  },
+  {
+   "class": "K32",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 7.4,
+   "n_seg_left": [],
+   "n_seg_right": [
+    4
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "2"
+   ]
+  },
+  {
+   "class": "K33",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 8.0,
+   "n_seg_left": [],
+   "n_seg_right": [
+    2
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "²"
+   ]
+  },
+  {
+   "class": "K34",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 5.74,
+   "n_seg_left": [],
+   "n_seg_right": [
+    2
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "QD1"
+   ]
+  },
+  {
+   "class": "K35",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 6.03,
+   "n_seg_left": [],
+   "n_seg_right": [
+    2
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "(1"
+   ]
+  },
+  {
+   "class": "K36",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 7.99,
+   "n_seg_left": [],
+   "n_seg_right": [
+    2
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "²"
+   ]
+  },
+  {
+   "class": "K37",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 7.82,
+   "n_seg_left": [],
+   "n_seg_right": [
+    70
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "PE"
+   ]
+  },
+  {
+   "class": "K38",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 3.55,
+   "n_seg_left": [],
+   "n_seg_right": [
+    6
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K39",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 7.88,
+   "n_seg_left": [],
+   "n_seg_right": [
+    16
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "6)"
+   ]
+  },
+  {
+   "class": "K40",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 7.99,
+   "n_seg_left": [],
+   "n_seg_right": [
+    24
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "Wh3"
+   ]
+  },
+  {
+   "class": "K41",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 0.55,
+   "n_seg_left": [],
+   "n_seg_right": [
+    2
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K42",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 2.04,
+   "n_seg_left": [],
+   "n_seg_right": [
+    3
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K43",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 6.52,
+   "n_seg_left": [],
+   "n_seg_right": [
+    7
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K44",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 7.81,
+   "n_seg_left": [],
+   "n_seg_right": [
+    9
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K45",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 3.24,
+   "n_seg_left": [],
+   "n_seg_right": [
+    6
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "Шина"
+   ]
+  },
+  {
+   "class": "K46",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 6.85,
+   "n_seg_left": [],
+   "n_seg_right": [
+    58
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "N"
+   ]
+  },
+  {
+   "class": "K47",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 4.58,
+   "n_seg_left": [],
+   "n_seg_right": [
+    5
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K48",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 6.88,
+   "n_seg_left": [],
+   "n_seg_right": [
+    20
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "Wh4"
+   ]
+  },
+  {
+   "class": "K50",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 6.88,
+   "n_seg_left": [],
+   "n_seg_right": [
+    20
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "Wh1"
+   ]
+  },
+  {
+   "class": "K51",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 7.84,
+   "n_seg_left": [],
+   "n_seg_right": [
+    21
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "Wh2"
+   ]
+  },
+  {
+   "class": "K52",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 1.18,
+   "n_seg_left": [],
+   "n_seg_right": [
+    5
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "А"
+   ]
+  },
+  {
+   "class": "K53",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 1.18,
+   "n_seg_left": [],
+   "n_seg_right": [
+    5
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "А"
+   ]
+  },
+  {
+   "class": "K54",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 4.46,
+   "n_seg_left": [],
+   "n_seg_right": [
+    19
+   ],
+   "labels_left": [],
+   "labels_right": []
+  },
+  {
+   "class": "K56",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 6.29,
+   "n_seg_left": [],
+   "n_seg_right": [
+    3
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "²"
+   ]
+  },
+  {
+   "class": "K57",
+   "left": 0,
+   "right": 1,
+   "delta": 1,
+   "diag_over_S": 5.52,
+   "n_seg_left": [],
+   "n_seg_right": [
+    5
+   ],
+   "labels_left": [],
+   "labels_right": [
+    "C25"
+   ]
+  },
+  {
+   "class": "K00",
+   "left": 1,
+   "right": 1,
+   "delta": 0,
+   "diag_over_S": 36.77,
+   "n_seg_left": [
+    4
+   ],
+   "n_seg_right": [
+    4
+   ],
+   "labels_left": [
+    "100мА,"
+   ],
+   "labels_right": [
+    ","
+   ]
+  }
+ ],
+ "sentences_ru": [
+  "Отходящих линий: 2 → 4.",
+  "Аппаратов (QD/Wh/QF) на схеме: 6 → 12.",
+  "Клеммных маркеров (повторяющийся символ): 14 → 12.",
+  "Объектов-кандидатов всего: 50 → 62; сопоставлено по форме 19, добавлено 43, удалено 31."
+ ]
+}

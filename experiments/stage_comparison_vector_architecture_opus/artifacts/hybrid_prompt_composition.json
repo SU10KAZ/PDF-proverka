@@ -1,0 +1,224 @@
+{
+  "prompt_rebuild_matches_artifact": false,
+  "prompt_characters": 138885,
+  "prompt_bytes_utf8": 145658,
+  "prompt_tokens_o200k": 53417,
+  "reported_total_tokens_vector_arm": 70631,
+  "reported_total_tokens_vision_arm": 38069,
+  "instructions_tokens": 118,
+  "per_pair": {
+    "ss_scheme_text_changed": {
+      "tokens_total": 3953,
+      "chars": 10604,
+      "buckets": {
+        "L3.texts (positioned text list, capped 100)": 1450,
+        "L3.signatures (sha256 hashes + degree hist)": 611,
+        "L3.topology": 120,
+        "L3.summary": 122,
+        "L3.patterns (repeated-element fingerprints)": 156,
+        "L3.hatch_candidates": 50,
+        "L3.quality": 2,
+        "diff.text.added/removed (unmatched id lists)": 91,
+        "diff.text.value_changes": 202,
+        "diff.text.* scalars + layer_quality": 68,
+        "diff.geometry.tolerance_experiment (table)": 197,
+        "diff.geometry.* scalars": 15,
+        "diff.topology": 121,
+        "diff.repeated_patterns (pattern-id diagnostics)": 225,
+        "diff.differences (human-readable lines)": 276,
+        "diff.caveats (boilerplate, repeated 5x)": 93,
+        "diff.status": 6
+      },
+      "accounted": 3805,
+      "text_items_left": 100,
+      "text_items_right": 97,
+      "added_items": 7,
+      "removed_items": 10
+    },
+    "ss_table_graphic": {
+      "tokens_total": 2961,
+      "chars": 8345,
+      "buckets": {
+        "L3.texts (positioned text list, capped 100)": 706,
+        "L3.signatures (sha256 hashes + degree hist)": 670,
+        "L3.topology": 356,
+        "L3.summary": 114,
+        "L3.patterns (repeated-element fingerprints)": 2,
+        "L3.hatch_candidates": 82,
+        "L3.quality": 2,
+        "diff.text.added/removed (unmatched id lists)": 54,
+        "diff.text.value_changes": 144,
+        "diff.text.* scalars + layer_quality": 68,
+        "diff.geometry.tolerance_experiment (table)": 202,
+        "diff.geometry.* scalars": 15,
+        "diff.topology": 123,
+        "diff.repeated_patterns (pattern-id diagnostics)": 16,
+        "diff.differences (human-readable lines)": 162,
+        "diff.caveats (boilerplate, repeated 5x)": 93,
+        "diff.status": 4
+      },
+      "accounted": 2813,
+      "text_items_left": 54,
+      "text_items_right": 58,
+      "added_items": 10,
+      "removed_items": 6
+    },
+    "ar_plan": {
+      "tokens_total": 15035,
+      "chars": 42068,
+      "buckets": {
+        "L3.texts (positioned text list, capped 100)": 9958,
+        "L3.signatures (sha256 hashes + degree hist)": 1091,
+        "L3.topology": 582,
+        "L3.summary": 132,
+        "L3.patterns (repeated-element fingerprints)": 1642,
+        "L3.hatch_candidates": 88,
+        "L3.quality": 8,
+        "diff.text.added/removed (unmatched id lists)": 2,
+        "diff.text.value_changes": 1,
+        "diff.text.* scalars + layer_quality": 68,
+        "diff.geometry.tolerance_experiment (table)": 200,
+        "diff.geometry.* scalars": 16,
+        "diff.topology": 128,
+        "diff.repeated_patterns (pattern-id diagnostics)": 848,
+        "diff.differences (human-readable lines)": 27,
+        "diff.caveats (boilerplate, repeated 5x)": 93,
+        "diff.status": 4
+      },
+      "accounted": 14888,
+      "text_items_left": 836,
+      "text_items_right": 836,
+      "added_items": 0,
+      "removed_items": 0
+    },
+    "vk_nodes": {
+      "tokens_total": 23199,
+      "chars": 55490,
+      "buckets": {
+        "L3.texts (positioned text list, capped 100)": 11802,
+        "L3.signatures (sha256 hashes + degree hist)": 931,
+        "L3.topology": 434,
+        "L3.summary": 116,
+        "L3.patterns (repeated-element fingerprints)": 111,
+        "L3.hatch_candidates": 82,
+        "L3.quality": 8,
+        "diff.text.added/removed (unmatched id lists)": 4146,
+        "diff.text.value_changes": 3579,
+        "diff.text.* scalars + layer_quality": 78,
+        "diff.geometry.tolerance_experiment (table)": 203,
+        "diff.geometry.* scalars": 16,
+        "diff.topology": 128,
+        "diff.repeated_patterns (pattern-id diagnostics)": 127,
+        "diff.differences (human-readable lines)": 1196,
+        "diff.caveats (boilerplate, repeated 5x)": 93,
+        "diff.status": 4
+      },
+      "accounted": 23054,
+      "text_items_left": 421,
+      "text_items_right": 360,
+      "added_items": 200,
+      "removed_items": 200
+    },
+    "eom_singleline_changed": {
+      "tokens_total": 8151,
+      "chars": 21856,
+      "buckets": {
+        "L3.texts (positioned text list, capped 100)": 2555,
+        "L3.signatures (sha256 hashes + degree hist)": 735,
+        "L3.topology": 212,
+        "L3.summary": 144,
+        "L3.patterns (repeated-element fingerprints)": 624,
+        "L3.hatch_candidates": 82,
+        "L3.quality": 2,
+        "diff.text.added/removed (unmatched id lists)": 971,
+        "diff.text.value_changes": 582,
+        "diff.text.* scalars + layer_quality": 69,
+        "diff.geometry.tolerance_experiment (table)": 199,
+        "diff.geometry.* scalars": 15,
+        "diff.topology": 122,
+        "diff.repeated_patterns (pattern-id diagnostics)": 1039,
+        "diff.differences (human-readable lines)": 555,
+        "diff.caveats (boilerplate, repeated 5x)": 93,
+        "diff.status": 3
+      },
+      "accounted": 8002,
+      "text_items_left": 73,
+      "text_items_right": 299,
+      "added_items": 200,
+      "removed_items": 51
+    }
+  },
+  "buckets": {
+    "L3.texts (positioned text list, capped 100)": {
+      "tokens": 26471,
+      "pct_of_pair_payload": 49.67
+    },
+    "diff.text.added/removed (unmatched id lists)": {
+      "tokens": 5264,
+      "pct_of_pair_payload": 9.88
+    },
+    "diff.text.value_changes": {
+      "tokens": 4508,
+      "pct_of_pair_payload": 8.46
+    },
+    "L3.signatures (sha256 hashes + degree hist)": {
+      "tokens": 4038,
+      "pct_of_pair_payload": 7.58
+    },
+    "L3.patterns (repeated-element fingerprints)": {
+      "tokens": 2535,
+      "pct_of_pair_payload": 4.76
+    },
+    "diff.repeated_patterns (pattern-id diagnostics)": {
+      "tokens": 2255,
+      "pct_of_pair_payload": 4.23
+    },
+    "diff.differences (human-readable lines)": {
+      "tokens": 2216,
+      "pct_of_pair_payload": 4.16
+    },
+    "L3.topology": {
+      "tokens": 1704,
+      "pct_of_pair_payload": 3.2
+    },
+    "diff.geometry.tolerance_experiment (table)": {
+      "tokens": 1001,
+      "pct_of_pair_payload": 1.88
+    },
+    "L3.summary": {
+      "tokens": 628,
+      "pct_of_pair_payload": 1.18
+    },
+    "diff.topology": {
+      "tokens": 622,
+      "pct_of_pair_payload": 1.17
+    },
+    "diff.caveats (boilerplate, repeated 5x)": {
+      "tokens": 465,
+      "pct_of_pair_payload": 0.87
+    },
+    "L3.hatch_candidates": {
+      "tokens": 384,
+      "pct_of_pair_payload": 0.72
+    },
+    "diff.text.* scalars + layer_quality": {
+      "tokens": 351,
+      "pct_of_pair_payload": 0.66
+    },
+    "diff.geometry.* scalars": {
+      "tokens": 77,
+      "pct_of_pair_payload": 0.14
+    },
+    "L3.quality": {
+      "tokens": 22,
+      "pct_of_pair_payload": 0.04
+    },
+    "diff.status": {
+      "tokens": 21,
+      "pct_of_pair_payload": 0.04
+    }
+  },
+  "pairs_tokens_total": 53299,
+  "buckets_accounted_tokens": 52562,
+  "buckets_unaccounted_tokens": 737
+}

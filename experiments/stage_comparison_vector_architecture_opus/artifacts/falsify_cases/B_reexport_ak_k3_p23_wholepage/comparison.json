@@ -1,0 +1,4416 @@
+{
+ "schema_version": "vector-block-comparison-research-v0.1",
+ "research_only": true,
+ "left_block_id": "B_reexport_ak_k3_p23_wholepage_L",
+ "right_block_id": "B_reexport_ak_k3_p23_wholepage_R",
+ "status": "NEAR_IDENTICAL",
+ "exact_vector_signature_equal": false,
+ "normalized_signature_equal": false,
+ "structural_signature_equal": false,
+ "geometry": {
+  "tolerance_experiment": [
+   {
+    "tolerance": 0.001,
+    "similarity": 0.969762,
+    "left_coverage": 0.967603,
+    "right_coverage": 0.971922,
+    "left_used": 2315,
+    "right_used": 2315,
+    "left_total": 2315,
+    "right_total": 2315,
+    "capped": false,
+    "left_unmatched_primitive_ids": [
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-89",
+     "primitive-103",
+     "primitive-135",
+     "primitive-140",
+     "primitive-141",
+     "primitive-159",
+     "primitive-159",
+     "primitive-186",
+     "primitive-209",
+     "primitive-216",
+     "primitive-221",
+     "primitive-222",
+     "primitive-239",
+     "primitive-274",
+     "primitive-274",
+     "primitive-280",
+     "primitive-280",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-291",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-295",
+     "primitive-295",
+     "primitive-296",
+     "primitive-296"
+    ],
+    "right_unmatched_primitive_ids": [
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-65",
+     "primitive-68",
+     "primitive-86",
+     "primitive-138",
+     "primitive-171",
+     "primitive-171",
+     "primitive-179",
+     "primitive-192",
+     "primitive-222",
+     "primitive-274",
+     "primitive-274",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-285",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-288",
+     "primitive-291",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-295",
+     "primitive-295",
+     "primitive-295",
+     "primitive-295",
+     "primitive-296",
+     "primitive-296"
+    ]
+   },
+   {
+    "tolerance": 0.0025,
+    "similarity": 0.990065,
+    "left_coverage": 0.990065,
+    "right_coverage": 0.990065,
+    "left_used": 2315,
+    "right_used": 2315,
+    "left_total": 2315,
+    "right_total": 2315,
+    "capped": false,
+    "left_unmatched_primitive_ids": [
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-103",
+     "primitive-159",
+     "primitive-159",
+     "primitive-222",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-283",
+     "primitive-285",
+     "primitive-288",
+     "primitive-288",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-292",
+     "primitive-295"
+    ],
+    "right_unmatched_primitive_ids": [
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-57",
+     "primitive-171",
+     "primitive-274",
+     "primitive-274",
+     "primitive-283",
+     "primitive-283",
+     "primitive-285",
+     "primitive-285",
+     "primitive-288",
+     "primitive-288",
+     "primitive-291",
+     "primitive-292",
+     "primitive-295",
+     "primitive-296",
+     "primitive-296"
+    ]
+   },
+   {
+    "tolerance": 0.005,
+    "similarity": 0.999136,
+    "left_coverage": 0.998704,
+    "right_coverage": 0.999568,
+    "left_used": 2315,
+    "right_used": 2315,
+    "left_total": 2315,
+    "right_total": 2315,
+    "capped": false,
+    "left_unmatched_primitive_ids": [
+     "primitive-222",
+     "primitive-292",
+     "primitive-292"
+    ],
+    "right_unmatched_primitive_ids": [
+     "primitive-57"
+    ]
+   },
+   {
+    "tolerance": 0.01,
+    "similarity": 1.0,
+    "left_coverage": 1.0,
+    "right_coverage": 1.0,
+    "left_used": 2315,
+    "right_used": 2315,
+    "left_total": 2315,
+    "right_total": 2315,
+    "capped": false,
+    "left_unmatched_primitive_ids": [],
+    "right_unmatched_primitive_ids": []
+   }
+  ],
+  "primitive_matching_experiment": [
+   {
+    "tolerance": 0.001,
+    "matched": 342,
+    "left_total": 343,
+    "right_total": 343,
+    "left_used": 343,
+    "right_used": 343,
+    "capped": false,
+    "similarity": 0.997085,
+    "matches_sample": [
+     {
+      "left_id": "primitive-14",
+      "right_id": "primitive-14",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-17",
+      "right_id": "primitive-17",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-18",
+      "right_id": "primitive-18",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-19",
+      "right_id": "primitive-19",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-20",
+      "right_id": "primitive-20",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-21",
+      "right_id": "primitive-21",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-22",
+      "right_id": "primitive-22",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-23",
+      "right_id": "primitive-23",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-24",
+      "right_id": "primitive-24",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-25",
+      "right_id": "primitive-25",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-26",
+      "right_id": "primitive-26",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-27",
+      "right_id": "primitive-27",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-28",
+      "right_id": "primitive-28",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-29",
+      "right_id": "primitive-29",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-30",
+      "right_id": "primitive-30",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-31",
+      "right_id": "primitive-31",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-32",
+      "right_id": "primitive-32",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-33",
+      "right_id": "primitive-33",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-34",
+      "right_id": "primitive-34",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-35",
+      "right_id": "primitive-35",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-36",
+      "right_id": "primitive-36",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-37",
+      "right_id": "primitive-37",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-38",
+      "right_id": "primitive-38",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-39",
+      "right_id": "primitive-39",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-40",
+      "right_id": "primitive-40",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-41",
+      "right_id": "primitive-41",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-42",
+      "right_id": "primitive-42",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-43",
+      "right_id": "primitive-43",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-44",
+      "right_id": "primitive-44",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-45",
+      "right_id": "primitive-45",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-46",
+      "right_id": "primitive-46",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-47",
+      "right_id": "primitive-47",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-48",
+      "right_id": "primitive-48",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-49",
+      "right_id": "primitive-49",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-50",
+      "right_id": "primitive-50",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-51",
+      "right_id": "primitive-51",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-52",
+      "right_id": "primitive-52",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-53",
+      "right_id": "primitive-53",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-54",
+      "right_id": "primitive-54",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-55",
+      "right_id": "primitive-55",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-56",
+      "right_id": "primitive-56",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-74",
+      "right_id": "primitive-74",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-154",
+      "right_id": "primitive-154",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-181",
+      "right_id": "primitive-181",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-223",
+      "right_id": "primitive-223",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-261",
+      "right_id": "primitive-261",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-272",
+      "right_id": "primitive-272",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-298",
+      "right_id": "primitive-298",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-322",
+      "right_id": "primitive-322",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-324",
+      "right_id": "primitive-324",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-326",
+      "right_id": "primitive-326",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-327",
+      "right_id": "primitive-327",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-328",
+      "right_id": "primitive-328",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-329",
+      "right_id": "primitive-329",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-330",
+      "right_id": "primitive-330",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-331",
+      "right_id": "primitive-331",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-333",
+      "right_id": "primitive-333",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-334",
+      "right_id": "primitive-334",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-335",
+      "right_id": "primitive-335",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-336",
+      "right_id": "primitive-336",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-337",
+      "right_id": "primitive-337",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-338",
+      "right_id": "primitive-338",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-339",
+      "right_id": "primitive-339",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-341",
+      "right_id": "primitive-341",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-342",
+      "right_id": "primitive-342",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-343",
+      "right_id": "primitive-343",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-1",
+      "right_id": "primitive-1",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-2",
+      "right_id": "primitive-2",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-4",
+      "right_id": "primitive-4",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-5",
+      "right_id": "primitive-5",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-62",
+      "right_id": "primitive-62",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-76",
+      "right_id": "primitive-76",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-81",
+      "right_id": "primitive-81",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-82",
+      "right_id": "primitive-82",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-87",
+      "right_id": "primitive-87",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-96",
+      "right_id": "primitive-96",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-103",
+      "right_id": "primitive-103",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-105",
+      "right_id": "primitive-105",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-121",
+      "right_id": "primitive-121",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-140",
+      "right_id": "primitive-140",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-148",
+      "right_id": "primitive-148",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-153",
+      "right_id": "primitive-153",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-155",
+      "right_id": "primitive-155",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-158",
+      "right_id": "primitive-158",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-161",
+      "right_id": "primitive-161",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-162",
+      "right_id": "primitive-162",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-167",
+      "right_id": "primitive-167",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-172",
+      "right_id": "primitive-172",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-173",
+      "right_id": "primitive-173",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-175",
+      "right_id": "primitive-175",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-183",
+      "right_id": "primitive-183",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-189",
+      "right_id": "primitive-189",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-195",
+      "right_id": "primitive-195",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-199",
+      "right_id": "primitive-199",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-200",
+      "right_id": "primitive-200",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-205",
+      "right_id": "primitive-205",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-227",
+      "right_id": "primitive-227",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-237",
+      "right_id": "primitive-237",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-241",
+      "right_id": "primitive-241",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-251",
+      "right_id": "primitive-251",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-252",
+      "right_id": "primitive-252",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-263",
+      "right_id": "primitive-263",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-321",
+      "right_id": "primitive-321",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-323",
+      "right_id": "primitive-323",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-325",
+      "right_id": "primitive-325",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-332",
+      "right_id": "primitive-332",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-340",
+      "right_id": "primitive-340",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-8",
+      "right_id": "primitive-8",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-9",
+      "right_id": "primitive-9",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-10",
+      "right_id": "primitive-10",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-255",
+      "right_id": "primitive-255",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-256",
+      "right_id": "primitive-256",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-257",
+      "right_id": "primitive-257",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-266",
+      "right_id": "primitive-266",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-267",
+      "right_id": "primitive-267",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-268",
+      "right_id": "primitive-268",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-281",
+      "right_id": "primitive-281",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-13",
+      "right_id": "primitive-13",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-68",
+      "right_id": "primitive-68",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-72",
+      "right_id": "primitive-72",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-80",
+      "right_id": "primitive-80",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-131",
+      "right_id": "primitive-131",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-166",
+      "right_id": "primitive-166",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-179",
+      "right_id": "primitive-179",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-193",
+      "right_id": "primitive-193",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-206",
+      "right_id": "primitive-206",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-212",
+      "right_id": "primitive-212",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-221",
+      "right_id": "primitive-221",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-225",
+      "right_id": "primitive-225",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-233",
+      "right_id": "primitive-233",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-236",
+      "right_id": "primitive-236",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-247",
+      "right_id": "primitive-247",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-260",
+      "right_id": "primitive-260",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-271",
+      "right_id": "primitive-271",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-279",
+      "right_id": "primitive-279",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-286",
+      "right_id": "primitive-286",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-287",
+      "right_id": "primitive-287",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-289",
+      "right_id": "primitive-289",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-290",
+      "right_id": "primitive-290",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-3",
+      "right_id": "primitive-3",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-12",
+      "right_id": "primitive-12",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-15",
+      "right_id": "primitive-15",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-63",
+      "right_id": "primitive-63",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-66",
+      "right_id": "primitive-66",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-67",
+      "right_id": "primitive-67",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-69",
+      "right_id": "primitive-69",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-71",
+      "right_id": "primitive-71",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-73",
+      "right_id": "primitive-73",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-77",
+      "right_id": "primitive-77",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-78",
+      "right_id": "primitive-78",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-85",
+      "right_id": "primitive-85",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-90",
+      "right_id": "primitive-90",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-92",
+      "right_id": "primitive-92",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-99",
+      "right_id": "primitive-99",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-101",
+      "right_id": "primitive-101",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-113",
+      "right_id": "primitive-113",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-125",
+      "right_id": "primitive-125",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-126",
+      "right_id": "primitive-126",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-127",
+      "right_id": "primitive-127",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-128",
+      "right_id": "primitive-128",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-130",
+      "right_id": "primitive-130",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-132",
+      "right_id": "primitive-132",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-133",
+      "right_id": "primitive-133",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-138",
+      "right_id": "primitive-138",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-141",
+      "right_id": "primitive-141",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-142",
+      "right_id": "primitive-142",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-146",
+      "right_id": "primitive-146",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-150",
+      "right_id": "primitive-150",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-156",
+      "right_id": "primitive-156",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-164",
+      "right_id": "primitive-164",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-165",
+      "right_id": "primitive-165",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-170",
+      "right_id": "primitive-170",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-182",
+      "right_id": "primitive-182",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-185",
+      "right_id": "primitive-185",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-191",
+      "right_id": "primitive-191",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-196",
+      "right_id": "primitive-196",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-202",
+      "right_id": "primitive-202",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-207",
+      "right_id": "primitive-207",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-208",
+      "right_id": "primitive-208",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-211",
+      "right_id": "primitive-211",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-213",
+      "right_id": "primitive-213",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-216",
+      "right_id": "primitive-216",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-226",
+      "right_id": "primitive-226",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-229",
+      "right_id": "primitive-229",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-232",
+      "right_id": "primitive-232",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-234",
+      "right_id": "primitive-234",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-238",
+      "right_id": "primitive-238",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-239",
+      "right_id": "primitive-239",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-243",
+      "right_id": "primitive-243",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-244",
+      "right_id": "primitive-244",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-245",
+      "right_id": "primitive-245",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-248",
+      "right_id": "primitive-248",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-259",
+      "right_id": "primitive-259",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-262",
+      "right_id": "primitive-262",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-270",
+      "right_id": "primitive-270",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-273",
+      "right_id": "primitive-273",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-276",
+      "right_id": "primitive-276",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-278",
+      "right_id": "primitive-278",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-282",
+      "right_id": "primitive-282",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-319",
+      "right_id": "primitive-319",
+      "cost": 5e-05
+     }
+    ],
+    "matches_truncated": true,
+    "left_unmatched": [
+     "primitive-163"
+    ],
+    "right_unmatched": [
+     "primitive-163"
+    ]
+   },
+   {
+    "tolerance": 0.0025,
+    "matched": 342,
+    "left_total": 343,
+    "right_total": 343,
+    "left_used": 343,
+    "right_used": 343,
+    "capped": false,
+    "similarity": 0.997085,
+    "matches_sample": [
+     {
+      "left_id": "primitive-14",
+      "right_id": "primitive-14",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-17",
+      "right_id": "primitive-17",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-18",
+      "right_id": "primitive-18",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-19",
+      "right_id": "primitive-19",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-20",
+      "right_id": "primitive-20",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-21",
+      "right_id": "primitive-21",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-22",
+      "right_id": "primitive-22",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-23",
+      "right_id": "primitive-23",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-24",
+      "right_id": "primitive-24",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-25",
+      "right_id": "primitive-25",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-26",
+      "right_id": "primitive-26",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-27",
+      "right_id": "primitive-27",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-28",
+      "right_id": "primitive-28",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-29",
+      "right_id": "primitive-29",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-30",
+      "right_id": "primitive-30",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-31",
+      "right_id": "primitive-31",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-32",
+      "right_id": "primitive-32",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-33",
+      "right_id": "primitive-33",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-34",
+      "right_id": "primitive-34",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-35",
+      "right_id": "primitive-35",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-36",
+      "right_id": "primitive-36",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-37",
+      "right_id": "primitive-37",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-38",
+      "right_id": "primitive-38",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-39",
+      "right_id": "primitive-39",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-40",
+      "right_id": "primitive-40",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-41",
+      "right_id": "primitive-41",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-42",
+      "right_id": "primitive-42",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-43",
+      "right_id": "primitive-43",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-44",
+      "right_id": "primitive-44",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-45",
+      "right_id": "primitive-45",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-46",
+      "right_id": "primitive-46",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-47",
+      "right_id": "primitive-47",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-48",
+      "right_id": "primitive-48",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-49",
+      "right_id": "primitive-49",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-50",
+      "right_id": "primitive-50",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-51",
+      "right_id": "primitive-51",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-52",
+      "right_id": "primitive-52",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-53",
+      "right_id": "primitive-53",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-54",
+      "right_id": "primitive-54",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-55",
+      "right_id": "primitive-55",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-56",
+      "right_id": "primitive-56",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-74",
+      "right_id": "primitive-74",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-154",
+      "right_id": "primitive-154",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-181",
+      "right_id": "primitive-181",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-223",
+      "right_id": "primitive-223",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-261",
+      "right_id": "primitive-261",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-272",
+      "right_id": "primitive-272",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-298",
+      "right_id": "primitive-298",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-322",
+      "right_id": "primitive-322",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-324",
+      "right_id": "primitive-324",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-326",
+      "right_id": "primitive-326",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-327",
+      "right_id": "primitive-327",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-328",
+      "right_id": "primitive-328",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-329",
+      "right_id": "primitive-329",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-330",
+      "right_id": "primitive-330",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-331",
+      "right_id": "primitive-331",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-333",
+      "right_id": "primitive-333",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-334",
+      "right_id": "primitive-334",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-335",
+      "right_id": "primitive-335",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-336",
+      "right_id": "primitive-336",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-337",
+      "right_id": "primitive-337",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-338",
+      "right_id": "primitive-338",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-339",
+      "right_id": "primitive-339",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-341",
+      "right_id": "primitive-341",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-342",
+      "right_id": "primitive-342",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-343",
+      "right_id": "primitive-343",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-1",
+      "right_id": "primitive-1",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-2",
+      "right_id": "primitive-2",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-4",
+      "right_id": "primitive-4",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-5",
+      "right_id": "primitive-5",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-62",
+      "right_id": "primitive-62",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-76",
+      "right_id": "primitive-76",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-81",
+      "right_id": "primitive-81",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-82",
+      "right_id": "primitive-82",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-87",
+      "right_id": "primitive-87",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-96",
+      "right_id": "primitive-96",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-103",
+      "right_id": "primitive-103",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-105",
+      "right_id": "primitive-105",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-121",
+      "right_id": "primitive-121",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-140",
+      "right_id": "primitive-140",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-148",
+      "right_id": "primitive-148",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-153",
+      "right_id": "primitive-153",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-155",
+      "right_id": "primitive-155",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-158",
+      "right_id": "primitive-158",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-161",
+      "right_id": "primitive-161",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-162",
+      "right_id": "primitive-162",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-167",
+      "right_id": "primitive-167",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-172",
+      "right_id": "primitive-172",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-173",
+      "right_id": "primitive-173",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-175",
+      "right_id": "primitive-175",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-183",
+      "right_id": "primitive-183",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-189",
+      "right_id": "primitive-189",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-195",
+      "right_id": "primitive-195",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-199",
+      "right_id": "primitive-199",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-200",
+      "right_id": "primitive-200",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-205",
+      "right_id": "primitive-205",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-227",
+      "right_id": "primitive-227",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-237",
+      "right_id": "primitive-237",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-241",
+      "right_id": "primitive-241",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-251",
+      "right_id": "primitive-251",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-252",
+      "right_id": "primitive-252",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-263",
+      "right_id": "primitive-263",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-321",
+      "right_id": "primitive-321",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-323",
+      "right_id": "primitive-323",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-325",
+      "right_id": "primitive-325",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-332",
+      "right_id": "primitive-332",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-340",
+      "right_id": "primitive-340",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-8",
+      "right_id": "primitive-8",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-9",
+      "right_id": "primitive-9",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-10",
+      "right_id": "primitive-10",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-255",
+      "right_id": "primitive-255",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-256",
+      "right_id": "primitive-256",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-257",
+      "right_id": "primitive-257",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-266",
+      "right_id": "primitive-266",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-267",
+      "right_id": "primitive-267",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-268",
+      "right_id": "primitive-268",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-281",
+      "right_id": "primitive-281",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-13",
+      "right_id": "primitive-13",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-68",
+      "right_id": "primitive-68",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-72",
+      "right_id": "primitive-72",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-80",
+      "right_id": "primitive-80",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-131",
+      "right_id": "primitive-131",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-166",
+      "right_id": "primitive-166",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-179",
+      "right_id": "primitive-179",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-193",
+      "right_id": "primitive-193",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-206",
+      "right_id": "primitive-206",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-212",
+      "right_id": "primitive-212",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-221",
+      "right_id": "primitive-221",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-225",
+      "right_id": "primitive-225",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-233",
+      "right_id": "primitive-233",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-236",
+      "right_id": "primitive-236",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-247",
+      "right_id": "primitive-247",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-260",
+      "right_id": "primitive-260",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-271",
+      "right_id": "primitive-271",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-279",
+      "right_id": "primitive-279",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-286",
+      "right_id": "primitive-286",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-287",
+      "right_id": "primitive-287",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-289",
+      "right_id": "primitive-289",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-290",
+      "right_id": "primitive-290",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-3",
+      "right_id": "primitive-3",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-12",
+      "right_id": "primitive-12",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-15",
+      "right_id": "primitive-15",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-63",
+      "right_id": "primitive-63",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-66",
+      "right_id": "primitive-66",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-67",
+      "right_id": "primitive-67",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-69",
+      "right_id": "primitive-69",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-71",
+      "right_id": "primitive-71",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-73",
+      "right_id": "primitive-73",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-77",
+      "right_id": "primitive-77",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-78",
+      "right_id": "primitive-78",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-85",
+      "right_id": "primitive-85",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-90",
+      "right_id": "primitive-90",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-92",
+      "right_id": "primitive-92",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-99",
+      "right_id": "primitive-99",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-101",
+      "right_id": "primitive-101",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-113",
+      "right_id": "primitive-113",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-125",
+      "right_id": "primitive-125",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-126",
+      "right_id": "primitive-126",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-127",
+      "right_id": "primitive-127",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-128",
+      "right_id": "primitive-128",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-130",
+      "right_id": "primitive-130",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-132",
+      "right_id": "primitive-132",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-133",
+      "right_id": "primitive-133",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-138",
+      "right_id": "primitive-138",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-141",
+      "right_id": "primitive-141",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-142",
+      "right_id": "primitive-142",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-146",
+      "right_id": "primitive-146",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-150",
+      "right_id": "primitive-150",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-156",
+      "right_id": "primitive-156",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-164",
+      "right_id": "primitive-164",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-165",
+      "right_id": "primitive-165",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-170",
+      "right_id": "primitive-170",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-182",
+      "right_id": "primitive-182",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-185",
+      "right_id": "primitive-185",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-191",
+      "right_id": "primitive-191",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-196",
+      "right_id": "primitive-196",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-202",
+      "right_id": "primitive-202",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-207",
+      "right_id": "primitive-207",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-208",
+      "right_id": "primitive-208",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-211",
+      "right_id": "primitive-211",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-213",
+      "right_id": "primitive-213",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-216",
+      "right_id": "primitive-216",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-226",
+      "right_id": "primitive-226",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-229",
+      "right_id": "primitive-229",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-232",
+      "right_id": "primitive-232",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-234",
+      "right_id": "primitive-234",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-238",
+      "right_id": "primitive-238",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-239",
+      "right_id": "primitive-239",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-243",
+      "right_id": "primitive-243",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-244",
+      "right_id": "primitive-244",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-245",
+      "right_id": "primitive-245",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-248",
+      "right_id": "primitive-248",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-259",
+      "right_id": "primitive-259",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-262",
+      "right_id": "primitive-262",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-270",
+      "right_id": "primitive-270",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-273",
+      "right_id": "primitive-273",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-276",
+      "right_id": "primitive-276",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-278",
+      "right_id": "primitive-278",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-282",
+      "right_id": "primitive-282",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-319",
+      "right_id": "primitive-319",
+      "cost": 5e-05
+     }
+    ],
+    "matches_truncated": true,
+    "left_unmatched": [
+     "primitive-163"
+    ],
+    "right_unmatched": [
+     "primitive-163"
+    ]
+   },
+   {
+    "tolerance": 0.005,
+    "matched": 343,
+    "left_total": 343,
+    "right_total": 343,
+    "left_used": 343,
+    "right_used": 343,
+    "capped": false,
+    "similarity": 1.0,
+    "matches_sample": [
+     {
+      "left_id": "primitive-14",
+      "right_id": "primitive-14",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-17",
+      "right_id": "primitive-17",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-18",
+      "right_id": "primitive-18",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-19",
+      "right_id": "primitive-19",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-20",
+      "right_id": "primitive-20",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-21",
+      "right_id": "primitive-21",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-22",
+      "right_id": "primitive-22",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-23",
+      "right_id": "primitive-23",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-24",
+      "right_id": "primitive-24",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-25",
+      "right_id": "primitive-25",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-26",
+      "right_id": "primitive-26",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-27",
+      "right_id": "primitive-27",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-28",
+      "right_id": "primitive-28",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-29",
+      "right_id": "primitive-29",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-30",
+      "right_id": "primitive-30",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-31",
+      "right_id": "primitive-31",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-32",
+      "right_id": "primitive-32",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-33",
+      "right_id": "primitive-33",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-34",
+      "right_id": "primitive-34",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-35",
+      "right_id": "primitive-35",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-36",
+      "right_id": "primitive-36",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-37",
+      "right_id": "primitive-37",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-38",
+      "right_id": "primitive-38",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-39",
+      "right_id": "primitive-39",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-40",
+      "right_id": "primitive-40",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-41",
+      "right_id": "primitive-41",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-42",
+      "right_id": "primitive-42",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-43",
+      "right_id": "primitive-43",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-44",
+      "right_id": "primitive-44",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-45",
+      "right_id": "primitive-45",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-46",
+      "right_id": "primitive-46",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-47",
+      "right_id": "primitive-47",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-48",
+      "right_id": "primitive-48",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-49",
+      "right_id": "primitive-49",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-50",
+      "right_id": "primitive-50",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-51",
+      "right_id": "primitive-51",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-52",
+      "right_id": "primitive-52",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-53",
+      "right_id": "primitive-53",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-54",
+      "right_id": "primitive-54",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-55",
+      "right_id": "primitive-55",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-56",
+      "right_id": "primitive-56",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-74",
+      "right_id": "primitive-74",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-154",
+      "right_id": "primitive-154",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-181",
+      "right_id": "primitive-181",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-223",
+      "right_id": "primitive-223",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-261",
+      "right_id": "primitive-261",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-272",
+      "right_id": "primitive-272",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-298",
+      "right_id": "primitive-298",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-322",
+      "right_id": "primitive-322",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-324",
+      "right_id": "primitive-324",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-326",
+      "right_id": "primitive-326",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-327",
+      "right_id": "primitive-327",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-328",
+      "right_id": "primitive-328",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-329",
+      "right_id": "primitive-329",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-330",
+      "right_id": "primitive-330",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-331",
+      "right_id": "primitive-331",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-333",
+      "right_id": "primitive-333",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-334",
+      "right_id": "primitive-334",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-335",
+      "right_id": "primitive-335",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-336",
+      "right_id": "primitive-336",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-337",
+      "right_id": "primitive-337",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-338",
+      "right_id": "primitive-338",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-339",
+      "right_id": "primitive-339",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-341",
+      "right_id": "primitive-341",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-342",
+      "right_id": "primitive-342",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-343",
+      "right_id": "primitive-343",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-1",
+      "right_id": "primitive-1",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-2",
+      "right_id": "primitive-2",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-4",
+      "right_id": "primitive-4",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-5",
+      "right_id": "primitive-5",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-62",
+      "right_id": "primitive-62",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-76",
+      "right_id": "primitive-76",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-81",
+      "right_id": "primitive-81",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-82",
+      "right_id": "primitive-82",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-87",
+      "right_id": "primitive-87",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-96",
+      "right_id": "primitive-96",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-103",
+      "right_id": "primitive-103",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-105",
+      "right_id": "primitive-105",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-121",
+      "right_id": "primitive-121",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-140",
+      "right_id": "primitive-140",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-148",
+      "right_id": "primitive-148",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-153",
+      "right_id": "primitive-153",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-155",
+      "right_id": "primitive-155",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-158",
+      "right_id": "primitive-158",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-161",
+      "right_id": "primitive-161",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-162",
+      "right_id": "primitive-162",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-167",
+      "right_id": "primitive-167",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-172",
+      "right_id": "primitive-172",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-173",
+      "right_id": "primitive-173",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-175",
+      "right_id": "primitive-175",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-183",
+      "right_id": "primitive-183",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-189",
+      "right_id": "primitive-189",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-195",
+      "right_id": "primitive-195",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-199",
+      "right_id": "primitive-199",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-200",
+      "right_id": "primitive-200",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-205",
+      "right_id": "primitive-205",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-227",
+      "right_id": "primitive-227",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-237",
+      "right_id": "primitive-237",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-241",
+      "right_id": "primitive-241",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-251",
+      "right_id": "primitive-251",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-252",
+      "right_id": "primitive-252",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-263",
+      "right_id": "primitive-263",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-321",
+      "right_id": "primitive-321",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-323",
+      "right_id": "primitive-323",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-325",
+      "right_id": "primitive-325",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-332",
+      "right_id": "primitive-332",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-340",
+      "right_id": "primitive-340",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-8",
+      "right_id": "primitive-8",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-9",
+      "right_id": "primitive-9",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-10",
+      "right_id": "primitive-10",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-255",
+      "right_id": "primitive-255",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-256",
+      "right_id": "primitive-256",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-257",
+      "right_id": "primitive-257",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-266",
+      "right_id": "primitive-266",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-267",
+      "right_id": "primitive-267",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-268",
+      "right_id": "primitive-268",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-281",
+      "right_id": "primitive-281",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-13",
+      "right_id": "primitive-13",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-68",
+      "right_id": "primitive-68",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-72",
+      "right_id": "primitive-72",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-80",
+      "right_id": "primitive-80",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-131",
+      "right_id": "primitive-131",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-166",
+      "right_id": "primitive-166",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-179",
+      "right_id": "primitive-179",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-193",
+      "right_id": "primitive-193",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-206",
+      "right_id": "primitive-206",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-212",
+      "right_id": "primitive-212",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-221",
+      "right_id": "primitive-221",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-225",
+      "right_id": "primitive-225",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-233",
+      "right_id": "primitive-233",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-236",
+      "right_id": "primitive-236",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-247",
+      "right_id": "primitive-247",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-260",
+      "right_id": "primitive-260",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-271",
+      "right_id": "primitive-271",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-279",
+      "right_id": "primitive-279",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-286",
+      "right_id": "primitive-286",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-287",
+      "right_id": "primitive-287",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-289",
+      "right_id": "primitive-289",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-290",
+      "right_id": "primitive-290",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-3",
+      "right_id": "primitive-3",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-12",
+      "right_id": "primitive-12",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-15",
+      "right_id": "primitive-15",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-63",
+      "right_id": "primitive-63",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-66",
+      "right_id": "primitive-66",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-67",
+      "right_id": "primitive-67",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-69",
+      "right_id": "primitive-69",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-71",
+      "right_id": "primitive-71",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-73",
+      "right_id": "primitive-73",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-77",
+      "right_id": "primitive-77",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-78",
+      "right_id": "primitive-78",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-85",
+      "right_id": "primitive-85",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-90",
+      "right_id": "primitive-90",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-92",
+      "right_id": "primitive-92",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-99",
+      "right_id": "primitive-99",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-101",
+      "right_id": "primitive-101",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-113",
+      "right_id": "primitive-113",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-125",
+      "right_id": "primitive-125",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-126",
+      "right_id": "primitive-126",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-127",
+      "right_id": "primitive-127",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-128",
+      "right_id": "primitive-128",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-130",
+      "right_id": "primitive-130",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-132",
+      "right_id": "primitive-132",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-133",
+      "right_id": "primitive-133",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-138",
+      "right_id": "primitive-138",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-141",
+      "right_id": "primitive-141",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-142",
+      "right_id": "primitive-142",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-146",
+      "right_id": "primitive-146",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-150",
+      "right_id": "primitive-150",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-156",
+      "right_id": "primitive-156",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-164",
+      "right_id": "primitive-164",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-165",
+      "right_id": "primitive-165",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-170",
+      "right_id": "primitive-170",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-182",
+      "right_id": "primitive-182",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-185",
+      "right_id": "primitive-185",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-191",
+      "right_id": "primitive-191",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-196",
+      "right_id": "primitive-196",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-202",
+      "right_id": "primitive-202",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-207",
+      "right_id": "primitive-207",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-208",
+      "right_id": "primitive-208",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-211",
+      "right_id": "primitive-211",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-213",
+      "right_id": "primitive-213",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-216",
+      "right_id": "primitive-216",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-226",
+      "right_id": "primitive-226",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-229",
+      "right_id": "primitive-229",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-232",
+      "right_id": "primitive-232",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-234",
+      "right_id": "primitive-234",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-238",
+      "right_id": "primitive-238",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-239",
+      "right_id": "primitive-239",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-243",
+      "right_id": "primitive-243",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-244",
+      "right_id": "primitive-244",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-245",
+      "right_id": "primitive-245",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-248",
+      "right_id": "primitive-248",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-259",
+      "right_id": "primitive-259",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-262",
+      "right_id": "primitive-262",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-270",
+      "right_id": "primitive-270",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-273",
+      "right_id": "primitive-273",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-276",
+      "right_id": "primitive-276",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-278",
+      "right_id": "primitive-278",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-282",
+      "right_id": "primitive-282",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-319",
+      "right_id": "primitive-319",
+      "cost": 5e-05
+     }
+    ],
+    "matches_truncated": true,
+    "left_unmatched": [],
+    "right_unmatched": []
+   },
+   {
+    "tolerance": 0.01,
+    "matched": 343,
+    "left_total": 343,
+    "right_total": 343,
+    "left_used": 343,
+    "right_used": 343,
+    "capped": false,
+    "similarity": 1.0,
+    "matches_sample": [
+     {
+      "left_id": "primitive-14",
+      "right_id": "primitive-14",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-17",
+      "right_id": "primitive-17",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-18",
+      "right_id": "primitive-18",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-19",
+      "right_id": "primitive-19",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-20",
+      "right_id": "primitive-20",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-21",
+      "right_id": "primitive-21",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-22",
+      "right_id": "primitive-22",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-23",
+      "right_id": "primitive-23",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-24",
+      "right_id": "primitive-24",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-25",
+      "right_id": "primitive-25",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-26",
+      "right_id": "primitive-26",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-27",
+      "right_id": "primitive-27",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-28",
+      "right_id": "primitive-28",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-29",
+      "right_id": "primitive-29",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-30",
+      "right_id": "primitive-30",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-31",
+      "right_id": "primitive-31",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-32",
+      "right_id": "primitive-32",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-33",
+      "right_id": "primitive-33",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-34",
+      "right_id": "primitive-34",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-35",
+      "right_id": "primitive-35",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-36",
+      "right_id": "primitive-36",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-37",
+      "right_id": "primitive-37",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-38",
+      "right_id": "primitive-38",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-39",
+      "right_id": "primitive-39",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-40",
+      "right_id": "primitive-40",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-41",
+      "right_id": "primitive-41",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-42",
+      "right_id": "primitive-42",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-43",
+      "right_id": "primitive-43",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-44",
+      "right_id": "primitive-44",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-45",
+      "right_id": "primitive-45",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-46",
+      "right_id": "primitive-46",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-47",
+      "right_id": "primitive-47",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-48",
+      "right_id": "primitive-48",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-49",
+      "right_id": "primitive-49",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-50",
+      "right_id": "primitive-50",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-51",
+      "right_id": "primitive-51",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-52",
+      "right_id": "primitive-52",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-53",
+      "right_id": "primitive-53",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-54",
+      "right_id": "primitive-54",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-55",
+      "right_id": "primitive-55",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-56",
+      "right_id": "primitive-56",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-74",
+      "right_id": "primitive-74",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-154",
+      "right_id": "primitive-154",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-181",
+      "right_id": "primitive-181",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-223",
+      "right_id": "primitive-223",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-261",
+      "right_id": "primitive-261",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-272",
+      "right_id": "primitive-272",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-298",
+      "right_id": "primitive-298",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-322",
+      "right_id": "primitive-322",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-324",
+      "right_id": "primitive-324",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-326",
+      "right_id": "primitive-326",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-327",
+      "right_id": "primitive-327",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-328",
+      "right_id": "primitive-328",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-329",
+      "right_id": "primitive-329",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-330",
+      "right_id": "primitive-330",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-331",
+      "right_id": "primitive-331",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-333",
+      "right_id": "primitive-333",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-334",
+      "right_id": "primitive-334",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-335",
+      "right_id": "primitive-335",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-336",
+      "right_id": "primitive-336",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-337",
+      "right_id": "primitive-337",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-338",
+      "right_id": "primitive-338",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-339",
+      "right_id": "primitive-339",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-341",
+      "right_id": "primitive-341",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-342",
+      "right_id": "primitive-342",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-343",
+      "right_id": "primitive-343",
+      "cost": 0.0
+     },
+     {
+      "left_id": "primitive-1",
+      "right_id": "primitive-1",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-2",
+      "right_id": "primitive-2",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-4",
+      "right_id": "primitive-4",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-5",
+      "right_id": "primitive-5",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-62",
+      "right_id": "primitive-62",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-76",
+      "right_id": "primitive-76",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-81",
+      "right_id": "primitive-81",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-82",
+      "right_id": "primitive-82",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-87",
+      "right_id": "primitive-87",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-96",
+      "right_id": "primitive-96",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-103",
+      "right_id": "primitive-103",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-105",
+      "right_id": "primitive-105",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-121",
+      "right_id": "primitive-121",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-140",
+      "right_id": "primitive-140",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-148",
+      "right_id": "primitive-148",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-153",
+      "right_id": "primitive-153",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-155",
+      "right_id": "primitive-155",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-158",
+      "right_id": "primitive-158",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-161",
+      "right_id": "primitive-161",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-162",
+      "right_id": "primitive-162",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-167",
+      "right_id": "primitive-167",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-172",
+      "right_id": "primitive-172",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-173",
+      "right_id": "primitive-173",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-175",
+      "right_id": "primitive-175",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-183",
+      "right_id": "primitive-183",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-189",
+      "right_id": "primitive-189",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-195",
+      "right_id": "primitive-195",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-199",
+      "right_id": "primitive-199",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-200",
+      "right_id": "primitive-200",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-205",
+      "right_id": "primitive-205",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-227",
+      "right_id": "primitive-227",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-237",
+      "right_id": "primitive-237",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-241",
+      "right_id": "primitive-241",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-251",
+      "right_id": "primitive-251",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-252",
+      "right_id": "primitive-252",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-263",
+      "right_id": "primitive-263",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-321",
+      "right_id": "primitive-321",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-323",
+      "right_id": "primitive-323",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-325",
+      "right_id": "primitive-325",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-332",
+      "right_id": "primitive-332",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-340",
+      "right_id": "primitive-340",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-8",
+      "right_id": "primitive-8",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-9",
+      "right_id": "primitive-9",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-10",
+      "right_id": "primitive-10",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-255",
+      "right_id": "primitive-255",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-256",
+      "right_id": "primitive-256",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-257",
+      "right_id": "primitive-257",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-266",
+      "right_id": "primitive-266",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-267",
+      "right_id": "primitive-267",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-268",
+      "right_id": "primitive-268",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-281",
+      "right_id": "primitive-281",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-13",
+      "right_id": "primitive-13",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-68",
+      "right_id": "primitive-68",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-72",
+      "right_id": "primitive-72",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-80",
+      "right_id": "primitive-80",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-131",
+      "right_id": "primitive-131",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-166",
+      "right_id": "primitive-166",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-179",
+      "right_id": "primitive-179",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-193",
+      "right_id": "primitive-193",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-206",
+      "right_id": "primitive-206",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-212",
+      "right_id": "primitive-212",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-221",
+      "right_id": "primitive-221",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-225",
+      "right_id": "primitive-225",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-233",
+      "right_id": "primitive-233",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-236",
+      "right_id": "primitive-236",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-247",
+      "right_id": "primitive-247",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-260",
+      "right_id": "primitive-260",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-271",
+      "right_id": "primitive-271",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-279",
+      "right_id": "primitive-279",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-286",
+      "right_id": "primitive-286",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-287",
+      "right_id": "primitive-287",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-289",
+      "right_id": "primitive-289",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-290",
+      "right_id": "primitive-290",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-3",
+      "right_id": "primitive-3",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-12",
+      "right_id": "primitive-12",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-15",
+      "right_id": "primitive-15",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-63",
+      "right_id": "primitive-63",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-66",
+      "right_id": "primitive-66",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-67",
+      "right_id": "primitive-67",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-69",
+      "right_id": "primitive-69",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-71",
+      "right_id": "primitive-71",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-73",
+      "right_id": "primitive-73",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-77",
+      "right_id": "primitive-77",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-78",
+      "right_id": "primitive-78",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-85",
+      "right_id": "primitive-85",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-90",
+      "right_id": "primitive-90",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-92",
+      "right_id": "primitive-92",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-99",
+      "right_id": "primitive-99",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-101",
+      "right_id": "primitive-101",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-113",
+      "right_id": "primitive-113",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-125",
+      "right_id": "primitive-125",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-126",
+      "right_id": "primitive-126",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-127",
+      "right_id": "primitive-127",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-128",
+      "right_id": "primitive-128",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-130",
+      "right_id": "primitive-130",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-132",
+      "right_id": "primitive-132",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-133",
+      "right_id": "primitive-133",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-138",
+      "right_id": "primitive-138",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-141",
+      "right_id": "primitive-141",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-142",
+      "right_id": "primitive-142",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-146",
+      "right_id": "primitive-146",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-150",
+      "right_id": "primitive-150",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-156",
+      "right_id": "primitive-156",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-164",
+      "right_id": "primitive-164",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-165",
+      "right_id": "primitive-165",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-170",
+      "right_id": "primitive-170",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-182",
+      "right_id": "primitive-182",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-185",
+      "right_id": "primitive-185",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-191",
+      "right_id": "primitive-191",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-196",
+      "right_id": "primitive-196",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-202",
+      "right_id": "primitive-202",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-207",
+      "right_id": "primitive-207",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-208",
+      "right_id": "primitive-208",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-211",
+      "right_id": "primitive-211",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-213",
+      "right_id": "primitive-213",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-216",
+      "right_id": "primitive-216",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-226",
+      "right_id": "primitive-226",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-229",
+      "right_id": "primitive-229",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-232",
+      "right_id": "primitive-232",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-234",
+      "right_id": "primitive-234",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-238",
+      "right_id": "primitive-238",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-239",
+      "right_id": "primitive-239",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-243",
+      "right_id": "primitive-243",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-244",
+      "right_id": "primitive-244",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-245",
+      "right_id": "primitive-245",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-248",
+      "right_id": "primitive-248",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-259",
+      "right_id": "primitive-259",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-262",
+      "right_id": "primitive-262",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-270",
+      "right_id": "primitive-270",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-273",
+      "right_id": "primitive-273",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-276",
+      "right_id": "primitive-276",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-278",
+      "right_id": "primitive-278",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-282",
+      "right_id": "primitive-282",
+      "cost": 5e-05
+     },
+     {
+      "left_id": "primitive-319",
+      "right_id": "primitive-319",
+      "cost": 5e-05
+     }
+    ],
+    "matches_truncated": true,
+    "left_unmatched": [],
+    "right_unmatched": []
+   }
+  ],
+  "selected_tolerance": 0.0025,
+  "similarity": 0.990065,
+  "left_coverage": 0.990065,
+  "right_coverage": 0.990065,
+  "encoding_rewrite_suspected": false
+ },
+ "text": {
+  "similarity": 1.0,
+  "character_stream_similarity": 1.0,
+  "effective_similarity": 1.0,
+  "reliable": true,
+  "left_layer_quality": {
+   "status": "GOOD",
+   "characters": 1660,
+   "suspicious_control_characters": 0,
+   "suspicious_ratio": 0.0
+  },
+  "right_layer_quality": {
+   "status": "GOOD",
+   "characters": 1660,
+   "suspicious_control_characters": 0,
+   "suspicious_ratio": 0.0
+  },
+  "unchanged_occurrences": 172,
+  "left_total": 172,
+  "right_total": 172,
+  "removed": [],
+  "added": [],
+  "value_changes": [],
+  "truncated": false
+ },
+ "topology": {
+  "similarity": 0.996944,
+  "counts": {
+   "node_count": {
+    "left": 324,
+    "right": 324
+   },
+   "edge_count": {
+    "left": 436,
+    "right": 436
+   },
+   "connected_components": {
+    "left": 5,
+    "right": 5
+   },
+   "endpoints": {
+    "left": 7,
+    "right": 7
+   },
+   "branch_points": {
+    "left": 270,
+    "right": 271
+   },
+   "t_junctions": {
+    "left": 465,
+    "right": 465
+   },
+   "x_crossings_unconnected": {
+    "left": 210,
+    "right": 205
+   },
+   "closed_contours": {
+    "left": 2,
+    "right": 2
+   },
+   "nested_contours": {
+    "left": 0,
+    "right": 0
+   }
+  }
+ },
+ "repeated_patterns": {
+  "similarity": 1.0,
+  "changes": [],
+  "truncated": false
+ },
+ "differences": [],
+ "caveats": [
+  "Segment coverage is order- and PDF-path-packaging-independent and uses block-normalized geometry; it does not use affine warping.",
+  "Dense blocks are compared on the longest deterministic segment sample when the explicit cap is reached.",
+  "A geometric X-crossing is not promoted to a connection without junction evidence.",
+  "Undecodable embedded-font text is reported and excluded from status selection; OCR is not used.",
+  "Status thresholds are research thresholds evaluated on this benchmark, not production policy."
+ ]
+}

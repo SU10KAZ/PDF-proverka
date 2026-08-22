@@ -1,0 +1,124 @@
+{
+ "cases": [
+  {
+   "case_id": "A_real_wall_removed_tight",
+   "note": "Real v001->v002 revision on SS plan sheet 13AB-RD-SOT-K7 page 9 (index 8): a hatched wall segment between two rooms is gone in v002. Block = change bbox grown x1.0.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v001/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.18765959235661997,
+     0.19280929695823926,
+     0.2521670522661555,
+     0.2923199413194866
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.18765959235661997,
+     0.19280929695823926,
+     0.2521670522661555,
+     0.2923199413194866
+    ]
+   }
+  },
+  {
+   "case_id": "A_real_wall_removed_x3",
+   "note": "Real v001->v002 revision on SS plan sheet 13AB-RD-SOT-K7 page 9 (index 8): a hatched wall segment between two rooms is gone in v002. Block = change bbox grown x3.0.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v001/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.12315213244708453,
+     0.0932986525969919,
+     0.3166745121756909,
+     0.391830585680734
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.12315213244708453,
+     0.0932986525969919,
+     0.3166745121756909,
+     0.391830585680734
+    ]
+   }
+  },
+  {
+   "case_id": "A_real_wall_removed_x8",
+   "note": "Real v001->v002 revision on SS plan sheet 13AB-RD-SOT-K7 page 9 (index 8): a hatched wall segment between two rooms is gone in v002. Block = change bbox grown x8.0.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v001/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.0,
+     0.0,
+     0.47794316194952957,
+     0.6406071965838523
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.0,
+     0.0,
+     0.47794316194952957,
+     0.6406071965838523
+    ]
+   }
+  },
+  {
+   "case_id": "A_real_wall_removed_x20",
+   "note": "Real v001->v002 revision on SS plan sheet 13AB-RD-SOT-K7 page 9 (index 8): a hatched wall segment between two rooms is gone in v002. Block = change bbox grown x20.0.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v001/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.0,
+     0.0,
+     0.8649879214067424,
+     1.0
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.0,
+     0.0,
+     0.8649879214067424,
+     1.0
+    ]
+   }
+  },
+  {
+   "case_id": "A_real_wall_removed_wholepage",
+   "note": "Same real revision, whole page as one block.",
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v001/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.001,
+     0.001,
+     0.999,
+     0.999
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "page_index": 8,
+    "bbox_norm": [
+     0.001,
+     0.001,
+     0.999,
+     0.999
+    ]
+   }
+  }
+ ]
+}

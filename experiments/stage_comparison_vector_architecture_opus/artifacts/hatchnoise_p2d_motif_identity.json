@@ -1,0 +1,353 @@
+{
+ "probe": "hatchnoise_p2d_motif_identity",
+ "blocks": [
+  {
+   "block": "ov_nodes_hatch",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К4 V1/versions/v001/02_work/document.pdf",
+   "page_index": 13,
+   "vector_text_spans_in_block": 1,
+   "primitives_total": 126843,
+   "primitives_dropped_by_P2": 74170,
+   "distinct_motifs_dropped": 733,
+   "top_motif_counts": [
+    [
+     "6974c97ac5ac",
+     7488
+    ],
+    [
+     "70d40d626ad9",
+     7444
+    ],
+    [
+     "1b3ba0e70bb3",
+     1313
+    ],
+    [
+     "82a46dc6f808",
+     943
+    ],
+    [
+     "edf4d1519590",
+     728
+    ],
+    [
+     "542a88a8b03d",
+     727
+    ],
+    [
+     "68621c88900d",
+     727
+    ],
+    [
+     "261c70837e1e",
+     706
+    ],
+    [
+     "7f28fbd22c41",
+     677
+    ],
+    [
+     "341811cd4645",
+     641
+    ],
+    [
+     "a8567bdf8477",
+     609
+    ],
+    [
+     "a5a1fa0d94e2",
+     572
+    ],
+    [
+     "cc98b815bde3",
+     551
+    ],
+    [
+     "10343fa1b633",
+     543
+    ],
+    [
+     "acfd489d0942",
+     541
+    ]
+   ],
+   "median_bbox_height_pt": 0.33,
+   "bbox_height_top_values": [
+    [
+     0.0,
+     27046
+    ],
+    [
+     0.3,
+     10543
+    ],
+    [
+     0.4,
+     8311
+    ],
+    [
+     0.5,
+     7744
+    ],
+    [
+     0.2,
+     5045
+    ],
+    [
+     1.0,
+     2731
+    ],
+    [
+     0.8,
+     2151
+    ],
+    [
+     1.3,
+     1871
+    ],
+    [
+     0.1,
+     1525
+    ],
+    [
+     0.7,
+     1446
+    ]
+   ],
+   "share_of_dropped_in_top_3_heights": 0.6188,
+   "share_of_dropped_in_top_60_motifs": 0.5477
+  },
+  {
+   "block": "ar_layered_plan",
+   "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v001/02_work/document.pdf",
+   "page_index": 24,
+   "vector_text_spans_in_block": 655,
+   "primitives_total": 85945,
+   "primitives_dropped_by_P2": 33905,
+   "distinct_motifs_dropped": 179,
+   "top_motif_counts": [
+    [
+     "70d40d626ad9",
+     14017
+    ],
+    [
+     "6974c97ac5ac",
+     3265
+    ],
+    [
+     "a84247b8aa15",
+     1950
+    ],
+    [
+     "22967039d2cc",
+     1452
+    ],
+    [
+     "8daa9bfc5148",
+     1140
+    ],
+    [
+     "3c73be9b0333",
+     1107
+    ],
+    [
+     "b950fa363c45",
+     877
+    ],
+    [
+     "03ace5ac3f29",
+     722
+    ],
+    [
+     "f6127df11c6c",
+     685
+    ],
+    [
+     "1e93381e8a81",
+     645
+    ],
+    [
+     "68621c88900d",
+     623
+    ],
+    [
+     "e567ff7d3ef4",
+     467
+    ],
+    [
+     "e7018ee99f05",
+     408
+    ],
+    [
+     "c189808bf950",
+     337
+    ],
+    [
+     "001e4329f8ec",
+     313
+    ]
+   ],
+   "median_bbox_height_pt": 0.0,
+   "bbox_height_top_values": [
+    [
+     0.0,
+     23387
+    ],
+    [
+     0.1,
+     7192
+    ],
+    [
+     0.4,
+     1128
+    ],
+    [
+     0.2,
+     478
+    ],
+    [
+     0.5,
+     230
+    ],
+    [
+     0.8,
+     203
+    ],
+    [
+     0.7,
+     92
+    ],
+    [
+     1.7,
+     68
+    ],
+    [
+     1.6,
+     67
+    ],
+    [
+     1.3,
+     60
+    ]
+   ],
+   "share_of_dropped_in_top_3_heights": 0.9352,
+   "share_of_dropped_in_top_60_motifs": 0.9337
+  },
+  {
+   "block": "ar_wall_sections",
+   "pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+   "page_index": 13,
+   "vector_text_spans_in_block": 119,
+   "primitives_total": 33103,
+   "primitives_dropped_by_P2": 20232,
+   "distinct_motifs_dropped": 46,
+   "top_motif_counts": [
+    [
+     "f6127df11c6c",
+     3960
+    ],
+    [
+     "b950fa363c45",
+     3132
+    ],
+    [
+     "063c8441d67e",
+     2907
+    ],
+    [
+     "14d48795fe5d",
+     1206
+    ],
+    [
+     "43285bd52161",
+     1203
+    ],
+    [
+     "d347e4017186",
+     1141
+    ],
+    [
+     "fd0534f5eed2",
+     1056
+    ],
+    [
+     "1f39236fef0c",
+     787
+    ],
+    [
+     "f9cd8955a11a",
+     703
+    ],
+    [
+     "6ef665c2b846",
+     581
+    ],
+    [
+     "cd6089875410",
+     480
+    ],
+    [
+     "5245fac0d7ff",
+     413
+    ],
+    [
+     "6974c97ac5ac",
+     293
+    ],
+    [
+     "c52986a2655d",
+     230
+    ],
+    [
+     "d8ad1826acfb",
+     225
+    ]
+   ],
+   "median_bbox_height_pt": 0.06,
+   "bbox_height_top_values": [
+    [
+     0.1,
+     7936
+    ],
+    [
+     0.0,
+     5826
+    ],
+    [
+     0.8,
+     4439
+    ],
+    [
+     0.2,
+     979
+    ],
+    [
+     0.7,
+     528
+    ],
+    [
+     0.4,
+     192
+    ],
+    [
+     0.5,
+     125
+    ],
+    [
+     0.3,
+     61
+    ],
+    [
+     1.9,
+     58
+    ],
+    [
+     1.8,
+     34
+    ]
+   ],
+   "share_of_dropped_in_top_3_heights": 0.8996,
+   "share_of_dropped_in_top_60_motifs": 1.0
+  }
+ ]
+}

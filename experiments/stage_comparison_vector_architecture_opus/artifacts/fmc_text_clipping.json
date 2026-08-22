@@ -1,0 +1,685 @@
+{
+ "blocks": 42,
+ "spans_total": 6650,
+ "spans_truncated": 130,
+ "truncated_share": 0.0195,
+ "blocks_with_truncation": 24,
+ "rows": [
+  {
+   "pair_id": "fmc_eom_text_as_paths",
+   "side": "left",
+   "spans_in_block": 0,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_eom_text_as_paths",
+   "side": "right",
+   "spans_in_block": 678,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_kj_spec_table_reflow",
+   "side": "left",
+   "spans_in_block": 63,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_kj_spec_table_reflow",
+   "side": "right",
+   "spans_in_block": 63,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_kj_steel_table_shift",
+   "side": "left",
+   "spans_in_block": 33,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_kj_steel_table_shift",
+   "side": "right",
+   "spans_in_block": 33,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_eom_room_schedule_values",
+   "side": "left",
+   "spans_in_block": 226,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_eom_room_schedule_values",
+   "side": "right",
+   "spans_in_block": 226,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_eom_tray_plan_geometry",
+   "side": "left",
+   "spans_in_block": 92,
+   "truncated_spans": 1,
+   "truncated_frac": 0.0109,
+   "examples": [
+    {
+     "clipped": "Лоток ПЭ",
+     "full": "Лоток ПЭСПЗ"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_tray_plan_geometry",
+   "side": "right",
+   "spans_in_block": 94,
+   "truncated_spans": 1,
+   "truncated_frac": 0.0106,
+   "examples": [
+    {
+     "clipped": "Лоток ПЭ",
+     "full": "Лоток ПЭСПЗ"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_notes_reflow",
+   "side": "left",
+   "spans_in_block": 586,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_eom_notes_reflow",
+   "side": "right",
+   "spans_in_block": 586,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_eom_qr_stamp_only",
+   "side": "left",
+   "spans_in_block": 7,
+   "truncated_spans": 7,
+   "truncated_frac": 1.0,
+   "examples": [
+    {
+     "clipped": "ваниям Постановления",
+     "full": "Счетчики электрической энергии соответствуют требованиям Постановления"
+    },
+    {
+     "clipped": "тдельным заказом.",
+     "full": "Счетчики поставляются заводом-изготовителем по запросу, отдельным заказом."
+    },
+    {
+     "clipped": "в.",
+     "full": "Дверь 016 поставляется с УЭРВ под указанные марки счетчиков."
+    },
+    {
+     "clipped": "АЧ за пластроном без",
+     "full": "Вводные аппараты: ВН 2Р, установлены в нижней части АЧ за пластроном без"
+    },
+    {
+     "clipped": "бировкой для защиты от",
+     "full": "АВДТ установлены в верхней части АЧ за пластроном с опломбировкой для защиты от"
+    },
+    {
+     "clipped": "артиру. Ширина модуля -",
+     "full": "Ширина АВДТ и УЗДП суммарно не более 4-х модулей на одну квартиру. Ширина модуля -"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_qr_stamp_only",
+   "side": "right",
+   "spans_in_block": 7,
+   "truncated_spans": 7,
+   "truncated_frac": 1.0,
+   "examples": [
+    {
+     "clipped": "ваниям Постановления",
+     "full": "Счетчики электрической энергии соответствуют требованиям Постановления"
+    },
+    {
+     "clipped": "тдельным заказом.",
+     "full": "Счетчики поставляются заводом-изготовителем по запросу, отдельным заказом."
+    },
+    {
+     "clipped": "в.",
+     "full": "Дверь 016 поставляется с УЭРВ под указанные марки счетчиков."
+    },
+    {
+     "clipped": "АЧ за пластроном без",
+     "full": "Вводные аппараты: ВН 2Р, установлены в нижней части АЧ за пластроном без"
+    },
+    {
+     "clipped": "бировкой для защиты от",
+     "full": "АВДТ установлены в верхней части АЧ за пластроном с опломбировкой для защиты от"
+    },
+    {
+     "clipped": "артиру. Ширина модуля -",
+     "full": "Ширина АВДТ и УЗДП суммарно не более 4-х модулей на одну квартиру. Ширина модуля -"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_ov_raster_retile",
+   "side": "left",
+   "spans_in_block": 7,
+   "truncated_spans": 1,
+   "truncated_frac": 0.1429,
+   "examples": [
+    {
+     "clipped": "Жилые дома, Блоки 13 А и 13 В по адресу",
+     "full": "Жилые дома, Блоки 13 А и 13 В по адресу : г."
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_ov_raster_retile",
+   "side": "right",
+   "spans_in_block": 7,
+   "truncated_spans": 1,
+   "truncated_frac": 0.1429,
+   "examples": [
+    {
+     "clipped": "Жилые дома, Блоки 13 А и 13 В по адресу",
+     "full": "Жилые дома, Блоки 13 А и 13 В по адресу : г."
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_tx_raster_scan",
+   "side": "left",
+   "spans_in_block": 0,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_tx_raster_scan",
+   "side": "right",
+   "spans_in_block": 0,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_ss_a4_to_a3_reissue",
+   "side": "left",
+   "spans_in_block": 217,
+   "truncated_spans": 1,
+   "truncated_frac": 0.0046,
+   "examples": [
+    {
+     "clipped": "в.N подл.",
+     "full": "Инв.N подл."
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_ss_a4_to_a3_reissue",
+   "side": "right",
+   "spans_in_block": 100,
+   "truncated_spans": 1,
+   "truncated_frac": 0.01,
+   "examples": [
+    {
+     "clipped": "л.",
+     "full": "Инв.N подл."
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_ov_block_split_widened",
+   "side": "left",
+   "spans_in_block": 129,
+   "truncated_spans": 2,
+   "truncated_frac": 0.0155,
+   "examples": [
+    {
+     "clipped": "шлюз с зон",
+     "full": "шлюз с зоной ПБЗ"
+    },
+    {
+     "clipped": "Помещение ревизии ин",
+     "full": "Помещение ревизии инженерных"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_ov_block_split_widened",
+   "side": "right",
+   "spans_in_block": 247,
+   "truncated_spans": 10,
+   "truncated_frac": 0.0405,
+   "examples": [
+    {
+     "clipped": "6",
+     "full": "1.16"
+    },
+    {
+     "clipped": "1.1",
+     "full": "1.10"
+    },
+    {
+     "clipped": "ая комната",
+     "full": "Жилая комната"
+    },
+    {
+     "clipped": "ая комната",
+     "full": "Жилая комната"
+    },
+    {
+     "clipped": ".4482.7",
+     "full": "1.4482.7"
+    },
+    {
+     "clipped": "ая комната",
+     "full": "Жилая комната"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_drawing_list_rows",
+   "side": "left",
+   "spans_in_block": 229,
+   "truncated_spans": 2,
+   "truncated_frac": 0.0087,
+   "examples": [
+    {
+     "clipped": ", вн.тер.г. муниципальный",
+     "full": ", вн.тер.г. муниципальный округ"
+    },
+    {
+     "clipped": "Л",
+     "full": "Листов"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_drawing_list_rows",
+   "side": "right",
+   "spans_in_block": 238,
+   "truncated_spans": 1,
+   "truncated_frac": 0.0042,
+   "examples": [
+    {
+     "clipped": ", вн.тер .г. муниц",
+     "full": ", вн.тер .г. муниципальный"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_layout_reorg_mismatch",
+   "side": "left",
+   "spans_in_block": 50,
+   "truncated_spans": 5,
+   "truncated_frac": 0.1,
+   "examples": [
+    {
+     "clipped": "ий режим",
+     "full": "Ввод 2 (НП6.РП2+НП6.РП3) - рабочий режим"
+    },
+    {
+     "clipped": "НП6.РП",
+     "full": "НП6.РП3-3 : 0.128кВт - 1 - 0.95 - 0.128кВт- 0.62А"
+    },
+    {
+     "clipped": "20м -",
+     "full": "20м - 0.08% - ППГнг(A)-HF 3х1.5 - Iкз(1)=0.361кА"
+    },
+    {
+     "clipped": "Лоток-",
+     "full": "Лоток-20м;"
+    },
+    {
+     "clipped": "Расшиф",
+     "full": "Расшифровка легенды обозначения линии"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_layout_reorg_mismatch",
+   "side": "right",
+   "spans_in_block": 77,
+   "truncated_spans": 10,
+   "truncated_frac": 0.1299,
+   "examples": [
+    {
+     "clipped": "ий режим",
+     "full": "Ввод 2 (НП6.РП2+НП6.РП3) - рабочий режим"
+    },
+    {
+     "clipped": "НП6.РП",
+     "full": "НП6.РП3-3 : 0.128кВт - 1 - 0.95 - 0.128кВт- 0.62А"
+    },
+    {
+     "clipped": "20м -",
+     "full": "20м - 0.08% - ППГнг(A)-HF 3х1.5 - Iкз(1)=0.362кА"
+    },
+    {
+     "clipped": "Лоток-",
+     "full": "Лоток-20м;"
+    },
+    {
+     "clipped": "Расшиф",
+     "full": "Расшифровка легенды обозначения линии"
+    },
+    {
+     "clipped": "Кол",
+     "full": "Количество"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_cable_table_values",
+   "side": "left",
+   "spans_in_block": 43,
+   "truncated_spans": 12,
+   "truncated_frac": 0.2791,
+   "examples": [
+    {
+     "clipped": "чество",
+     "full": "Количество"
+    },
+    {
+     "clipped": "ие жил,",
+     "full": "сечение жил,"
+    },
+    {
+     "clipped": "яжение",
+     "full": "напряжение"
+    },
+    {
+     "clipped": "х1,5",
+     "full": "3х1,5"
+    },
+    {
+     "clipped": "х2,5",
+     "full": "3х2,5"
+    },
+    {
+     "clipped": "х16",
+     "full": "5х16"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_cable_table_values",
+   "side": "right",
+   "spans_in_block": 60,
+   "truncated_spans": 3,
+   "truncated_frac": 0.05,
+   "examples": [
+    {
+     "clipped": "Многоквартирные жилые дома со встроенными нежилыми помещениями и п",
+     "full": "Многоквартирные жилые дома со встроенными нежилыми помещениями и подземной"
+    },
+    {
+     "clipped": "автостоянкой, Блоки 13А и 13В г. Москва, вн.тер.г. муниципальный округ Покров",
+     "full": "автостоянкой, Блоки 13А и 13В г. Москва, вн.тер.г. муниципальный округ Покровское-Стрешнево,"
+    },
+    {
+     "clipped": "13АВ-РД-ЭМ",
+     "full": "13АВ-РД-ЭМ-К7"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_gp_section_hatch_dims",
+   "side": "left",
+   "spans_in_block": 37,
+   "truncated_spans": 28,
+   "truncated_frac": 0.7568,
+   "examples": [
+    {
+     "clipped": "ного комплекса",
+     "full": "границы объектов природного комплекса"
+    },
+    {
+     "clipped": "лезных дорог",
+     "full": "границы полос отвода железных дорог"
+    },
+    {
+     "clipped": "ъектов",
+     "full": "границы охранных зон объектов"
+    },
+    {
+     "clipped": "и подтопления",
+     "full": "границы зон затопления и подтопления"
+    },
+    {
+     "clipped": "объекта",
+     "full": "границы зон охраняемого объекта"
+    },
+    {
+     "clipped": "тарной охраны",
+     "full": "границы зон II пояса санитарной охраны"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_gp_section_hatch_dims",
+   "side": "right",
+   "spans_in_block": 38,
+   "truncated_spans": 1,
+   "truncated_frac": 0.0263,
+   "examples": [
+    {
+     "clipped": "ния",
+     "full": "Условные обозначения линий градостроительного регулирования"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_ov_page_shift_geometry",
+   "side": "left",
+   "spans_in_block": 0,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_ov_page_shift_geometry",
+   "side": "right",
+   "spans_in_block": 0,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_ar_hatch_sections",
+   "side": "left",
+   "spans_in_block": 313,
+   "truncated_spans": 1,
+   "truncated_frac": 0.0032,
+   "examples": [
+    {
+     "clipped": "Обо",
+     "full": "Обозначение"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_ar_hatch_sections",
+   "side": "right",
+   "spans_in_block": 421,
+   "truncated_spans": 19,
+   "truncated_frac": 0.0451,
+   "examples": [
+    {
+     "clipped": "+4",
+     "full": "+4,450"
+    },
+    {
+     "clipped": "Парои",
+     "full": "Пароизоляция ТЕХНОНИКОЛЬ"
+    },
+    {
+     "clipped": "Техно",
+     "full": "Технобарьер"
+    },
+    {
+     "clipped": "б п",
+     "full": "б плита"
+    },
+    {
+     "clipped": "ра",
+     "full": "раздел КЖ"
+    },
+    {
+     "clipped": "+4",
+     "full": "+4,200"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_vk_spec_positions",
+   "side": "left",
+   "spans_in_block": 20,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_vk_spec_positions",
+   "side": "right",
+   "spans_in_block": 26,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_km_broken_text_swap",
+   "side": "left",
+   "spans_in_block": 447,
+   "truncated_spans": 6,
+   "truncated_frac": 0.0134,
+   "examples": [
+    {
+     "clipped": "а расположения металлических конструкций",
+     "full": "Схема расположения металлических конструкций"
+    },
+    {
+     "clipped": "ий Лдж-5 на отм. +55.850",
+     "full": "лоджий Лдж-5 на отм. +55.850"
+    },
+    {
+     "clipped": "14",
+     "full": "140"
+    },
+    {
+     "clipped": "2",
+     "full": "205"
+    },
+    {
+     "clipped": "1",
+     "full": "140"
+    },
+    {
+     "clipped": "00",
+     "full": "+56,400"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_km_broken_text_swap",
+   "side": "right",
+   "spans_in_block": 417,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_eom_rotated_labels",
+   "side": "left",
+   "spans_in_block": 89,
+   "truncated_spans": 4,
+   "truncated_frac": 0.0449,
+   "examples": [
+    {
+     "clipped": "Пу",
+     "full": "ПуГПнг(А)-HF 3x(1х16мм"
+    },
+    {
+     "clipped": "Пу",
+     "full": "ПуГПнг(А)-HF 3x(1х16мм"
+    },
+    {
+     "clipped": "электрического счетчика",
+     "full": "электрического счетчика - Нартис."
+    },
+    {
+     "clipped": "Нартис",
+     "full": "электрического счетчика - Нартис."
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_eom_rotated_labels",
+   "side": "right",
+   "spans_in_block": 656,
+   "truncated_spans": 5,
+   "truncated_frac": 0.0076,
+   "examples": [
+    {
+     "clipped": "1",
+     "full": "100"
+    },
+    {
+     "clipped": "защ",
+     "full": "защитное"
+    },
+    {
+     "clipped": "долж",
+     "full": "должны"
+    },
+    {
+     "clipped": "не",
+     "full": "неприрывность"
+    },
+    {
+     "clipped": "пи",
+     "full": "питания"
+    }
+   ]
+  },
+  {
+   "pair_id": "fmc_crop_mismatch_same_sheet",
+   "side": "left",
+   "spans_in_block": 78,
+   "truncated_spans": 0,
+   "truncated_frac": 0.0,
+   "examples": []
+  },
+  {
+   "pair_id": "fmc_crop_mismatch_same_sheet",
+   "side": "right",
+   "spans_in_block": 10,
+   "truncated_spans": 1,
+   "truncated_frac": 0.1,
+   "examples": [
+    {
+     "clipped": "Лоток ПЭ",
+     "full": "Лоток ПЭСПЗ"
+    }
+   ]
+  }
+ ]
+}

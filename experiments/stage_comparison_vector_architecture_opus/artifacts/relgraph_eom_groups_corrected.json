@@ -1,0 +1,67 @@
+{
+ "research_only": true,
+ "groups_by_class_left": {
+  "poly_s|s-6|a1": [
+   14,
+   2
+  ],
+  "round|s-7|a1": [
+   8
+  ],
+  "rect|s-1|a1": [
+   3
+  ],
+  "poly_l|s-5|a1": [
+   2
+  ],
+  "round|s-1|a4": [
+   2
+  ],
+  "poly_m|s-4|a0": [
+   2
+  ],
+  "poly_s|s-6|a2": [
+   2
+  ],
+  "poly_s|s-4|a4": [
+   2
+  ],
+  "poly_s|s-6|a0": [
+   2
+  ]
+ },
+ "groups_by_class_right": {
+  "poly_s|s-6|a0": [
+   13,
+   4
+  ],
+  "poly_m|s-4|a1": [
+   4
+  ],
+  "poly_m|s-2|a4": [
+   4
+  ],
+  "poly_m|s-4|a0": [
+   4
+  ],
+  "poly_s|s-6|a2": [
+   4
+  ],
+  "poly_s|s-8|a0": [
+   4,
+   3
+  ],
+  "poly_s|s-6|a1": [
+   4,
+   4
+  ],
+  "rect|s-1|a1": [
+   3
+  ],
+  "poly_m|s-5|a0": [
+   2,
+   2
+  ]
+ },
+ "classes_with_2_to_4": 4
+}

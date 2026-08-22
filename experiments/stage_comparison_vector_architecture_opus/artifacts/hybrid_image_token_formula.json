@@ -1,0 +1,164 @@
+{
+  "formula": "image_tokens = min(1.2014 * ceil(w/32)*ceil(h/32) + 48.67, 3051)",
+  "slope": 1.2014,
+  "intercept": 48.67,
+  "saturation_tokens": 3051,
+  "implied_patch_budget": 2499,
+  "max_abs_residual_linear_regime": 4.3,
+  "fit_points": [
+    [
+      100,
+      169
+    ],
+    [
+      400,
+      529
+    ],
+    [
+      1024,
+      1279
+    ],
+    [
+      1600,
+      1971
+    ]
+  ],
+  "validation_rows": [
+    {
+      "label": "synthetic_320x320",
+      "w": 320,
+      "h": 320,
+      "patches": 100,
+      "predicted": 169,
+      "measured": 169
+    },
+    {
+      "label": "synthetic_640x640",
+      "w": 640,
+      "h": 640,
+      "patches": 400,
+      "predicted": 529,
+      "measured": 529
+    },
+    {
+      "label": "synthetic_1024x1024",
+      "w": 1024,
+      "h": 1024,
+      "patches": 1024,
+      "predicted": 1279,
+      "measured": 1279
+    },
+    {
+      "label": "synthetic_1280x1280",
+      "w": 1280,
+      "h": 1280,
+      "patches": 1600,
+      "predicted": 1971,
+      "measured": 1971
+    },
+    {
+      "label": "synthetic_2048x2048",
+      "w": 2048,
+      "h": 2048,
+      "patches": 4096,
+      "predicted": 3051,
+      "measured": 3051
+    },
+    {
+      "label": "synthetic_2560x2560",
+      "w": 2560,
+      "h": 2560,
+      "patches": 6400,
+      "predicted": 3051,
+      "measured": 3051
+    },
+    {
+      "label": "benchmark:ss_simple_node/left.png",
+      "w": 709,
+      "h": 304,
+      "patches": 230,
+      "predicted": 325,
+      "measured": 321
+    },
+    {
+      "label": "benchmark:ss_table_graphic/left.png",
+      "w": 1297,
+      "h": 668,
+      "patches": 861,
+      "predicted": 1083,
+      "measured": 1079
+    },
+    {
+      "label": "benchmark:eom_singleline_changed/left.png",
+      "w": 661,
+      "h": 1041,
+      "patches": 693,
+      "predicted": 881,
+      "measured": 877
+    },
+    {
+      "label": "benchmark:ar_plan/left.png",
+      "w": 1928,
+      "h": 2237,
+      "patches": 4270,
+      "predicted": 3051,
+      "measured": 2968
+    },
+    {
+      "label": "benchmark:ss_plan_dense/left.png",
+      "w": 4506,
+      "h": 2498,
+      "patches": 11139,
+      "predicted": 3051,
+      "measured": 2809
+    },
+    {
+      "label": "tight:vk_nodes_notes_block_z2",
+      "w": 966,
+      "h": 1276,
+      "patches": 1240,
+      "predicted": 1538,
+      "measured": 1538
+    },
+    {
+      "label": "tight:vk_nodes_notes_block_z4",
+      "w": 1931,
+      "h": 2552,
+      "patches": 4880,
+      "predicted": 3051,
+      "measured": 2991
+    },
+    {
+      "label": "tight:ss_table_extra_contour_z2",
+      "w": 1885,
+      "h": 472,
+      "patches": 885,
+      "predicted": 1112,
+      "measured": 1113
+    },
+    {
+      "label": "tight:ss_table_extra_contour_z4",
+      "w": 3770,
+      "h": 943,
+      "patches": 3540,
+      "predicted": 3051,
+      "measured": 1279
+    },
+    {
+      "label": "tight:eom_branch_group_z2",
+      "w": 619,
+      "h": 703,
+      "patches": 440,
+      "predicted": 577,
+      "measured": 577
+    },
+    {
+      "label": "tight:eom_branch_group_z4",
+      "w": 1238,
+      "h": 1405,
+      "patches": 1716,
+      "predicted": 2110,
+      "measured": 2108
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+units (left sides only) = 2316
+relation                     hits  hit_rate  unique  uniq|hit
+repeated_label                436     0.188     436       1.0
+grid_cell                    1921     0.829    1921       1.0
+symbol_cluster                495     0.214     458     0.925
+dimension_line_only           770     0.332     437     0.568
+contour_caption               572     0.247     313     0.547
+along_line                   1285     0.555     613     0.477
+dimension_interval            698     0.301     173     0.248
+enclosure_tight               586     0.253     143     0.244
+leader                       1164     0.503     141     0.121
+band_association             1559     0.673      95     0.061
+between_extension_lines      1372     0.592      61     0.044
+
+leader: {"hits": 1164, "tip_referent_resolved": 1159, "resolved_share": 0.996, "single_leader_chain": 436, "single_leader_share": 0.375}
+coverage: {"any_relation_primary_not_unbound": 2286, "any_share": 0.987, "safely_bound": 1048, "safely_bound_share": 0.453, "honest_unbound_share": 0.547}
+
+  ar_plan                  units=  718 safely_bound=  532 (0.741)
+  ar_wall_sections         units=  109 safely_bound=   85 (0.78)
+  eom_singleline_changed   units=   64 safely_bound=   10 (0.156)
+  fresh_ar_legend          units=   46 safely_bound=    3 (0.065)
+  fresh_ar_lintels         units=   69 safely_bound=   40 (0.58)
+  fresh_kj_plan_part       units=   47 safely_bound=   36 (0.766)
+  fresh_kj_sections        units=   20 safely_bound=    9 (0.45)
+  fresh_ov_spec_table      units=  228 safely_bound=    0 (0.0)
+  ss_plan_dense            units=  239 safely_bound=  216 (0.904)
+  ss_scheme_text_changed   units=   51 safely_bound=   24 (0.471)
+  ss_simple_node           units=    9 safely_bound=    4 (0.444)
+  ss_table_graphic         units=   26 safely_bound=    2 (0.077)
+  vk_node_plan             units=  193 safely_bound=   19 (0.098)
+  vk_nodes                 units=  315 safely_bound=   61 (0.194)
+  vk_plan                  units=  182 safely_bound=    7 (0.038)

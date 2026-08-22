@@ -1,0 +1,16 @@
+block                     gridHit  share  colsRepeat>=3  rowsRepeat>=3
+ar_plan                       644   0.90           0.77           0.78
+ar_wall_sections               90   0.83           0.20           0.71
+eom_singleline_changed         32   0.50           0.34           0.81
+fresh_ar_legend                 3   0.07           0.00           0.00
+fresh_ar_lintels               60   0.87           0.28           0.25
+fresh_kj_plan_part             42   0.89           0.00           0.07
+fresh_kj_sections               7   0.35           0.00           0.00
+fresh_ov_spec_table           192   0.84           0.89           0.99
+ss_plan_dense                 233   0.97           0.41           0.43
+ss_scheme_text_changed         48   0.94           0.69           0.77
+ss_simple_node                  4   0.44           0.00           0.00
+ss_table_graphic                6   0.23           1.00           0.00
+vk_node_plan                  155   0.80           0.29           0.97
+vk_nodes                      235   0.75           0.25           0.82
+vk_plan                       170   0.93           0.88           0.96
