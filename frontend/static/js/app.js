@@ -11849,6 +11849,9 @@ const app = createApp({
         const scTextFinalComparison = ref(null);
         const scTextAiReviewLoading = ref(false);
         const scTextAiReviewError = ref('');
+        const scProjectChangeSummary = ref(null);
+        const scProjectChangeSummaryLoading = ref(false);
+        const scProjectChangeSummaryError = ref('');
         const scTextDifferenceFilter = ref('all');
         const scTextDifferenceSearch = ref('');
         const scTextExpandedBuckets = reactive({});
@@ -12260,6 +12263,29 @@ const app = createApp({
             && !scTextDifferencesLoading.value
             && !scTextAiReviewLoading.value
         ));
+        const scProjectChangeSummaryAvailable = computed(() => Boolean(
+            scProjectChangeSummary.value
+            && !scProjectChangeSummary.value.stale
+            && Array.isArray(scProjectChangeSummary.value.sheet_groups)
+        ));
+        const scCanRunProjectChangeSummary = computed(() => Boolean(
+            scActivePair.value
+            && scTextAiReviewCompleted.value
+            && !scProjectChangeSummaryLoading.value
+            && !scTextComparisonLoading.value
+            && !scTextDifferencesLoading.value
+        ));
+        const scProjectChangeGroups = computed(() => (
+            scProjectChangeSummaryAvailable.value
+                ? scProjectChangeSummary.value.sheet_groups
+                : []
+        ));
+        const scProjectChangeSummaryTotals = computed(() => ({
+            project_changes: Number(
+                scProjectChangeSummary.value?.summary?.project_changes || 0
+            ),
+            review: Number(scProjectChangeSummary.value?.summary?.review || 0),
+        }));
         const scTextResultSummary = computed(() => {
             const finalResult = scTextFinalComparison.value;
             if (finalResult && !finalResult.stale) {
@@ -12330,6 +12356,10 @@ const app = createApp({
 
         function scTextUncertainReasonLabel(item) {
             return window.StageComparisonDifferences.uncertainReasonLabel(item);
+        }
+
+        function scSummaryEvidenceCount(items) {
+            return (items || []).reduce((total, item) => total + Number(item.count || 0), 0);
         }
 
         function scStageInfo(stageName) {
@@ -13119,6 +13149,8 @@ const app = createApp({
             scTextAiReview.value = data.text_ai_review || null;
             scTextFinalComparison.value = data.text_final_comparison || null;
             scTextAiReviewError.value = '';
+            scProjectChangeSummary.value = data.project_change_summary || null;
+            scProjectChangeSummaryError.value = '';
             scTextDifferenceFilter.value = 'all';
             scTextDifferenceSearch.value = '';
             Object.keys(scTextExpandedBuckets).forEach(key => delete scTextExpandedBuckets[key]);
@@ -13300,6 +13332,9 @@ const app = createApp({
             if (scTextFinalComparison.value) {
                 scTextFinalComparison.value = {...scTextFinalComparison.value, stale: true};
             }
+            if (scProjectChangeSummary.value) {
+                scProjectChangeSummary.value = {...scProjectChangeSummary.value, stale: true};
+            }
             try {
                 const response = await fetch(
                     scPairUrl(scActivePair.value.id, '/text-comparison'),
@@ -13323,6 +13358,9 @@ const app = createApp({
             if (scTextFinalComparison.value) {
                 scTextFinalComparison.value = {...scTextFinalComparison.value, stale: true};
             }
+            if (scProjectChangeSummary.value) {
+                scProjectChangeSummary.value = {...scProjectChangeSummary.value, stale: true};
+            }
             try {
                 const response = await fetch(
                     scPairUrl(scActivePair.value.id, '/text-differences'),
@@ -13343,6 +13381,9 @@ const app = createApp({
             if (!scActivePair.value || scTextAiReviewLoading.value) return;
             scTextAiReviewLoading.value = true;
             scTextAiReviewError.value = '';
+            if (scProjectChangeSummary.value) {
+                scProjectChangeSummary.value = {...scProjectChangeSummary.value, stale: true};
+            }
             try {
                 const response = await fetch(
                     scPairUrl(scActivePair.value.id, '/text-ai-review'),
@@ -13352,10 +13393,34 @@ const app = createApp({
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
                 scTextAiReview.value = data.text_ai_review || null;
                 scTextFinalComparison.value = data.text_final_comparison || null;
+                await scRunProjectChangeSummary();
             } catch (error) {
                 scTextAiReviewError.value = scTextOperationErrorMessage(error);
             } finally {
                 scTextAiReviewLoading.value = false;
+            }
+        }
+
+        async function scRunProjectChangeSummary() {
+            if (!scActivePair.value || scProjectChangeSummaryLoading.value) return;
+            if (!scTextAiReviewCompleted.value) {
+                scProjectChangeSummaryError.value = 'Сначала завершите ИИ-проверку текста.';
+                return;
+            }
+            scProjectChangeSummaryLoading.value = true;
+            scProjectChangeSummaryError.value = '';
+            try {
+                const response = await fetch(
+                    scPairUrl(scActivePair.value.id, '/text-change-summary'),
+                    {method: 'POST'},
+                );
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                scProjectChangeSummary.value = data;
+            } catch (error) {
+                scProjectChangeSummaryError.value = scTextOperationErrorMessage(error);
+            } finally {
+                scProjectChangeSummaryLoading.value = false;
             }
         }
 
@@ -15968,6 +16033,9 @@ const app = createApp({
             scOpenTextHint, scApplyTextHint,
             scTextDifferences, scTextDifferencesLoading, scTextDifferencesError,
             scTextAiReview, scTextFinalComparison, scTextAiReviewLoading, scTextAiReviewError,
+            scProjectChangeSummary, scProjectChangeSummaryLoading, scProjectChangeSummaryError,
+            scProjectChangeSummaryAvailable, scCanRunProjectChangeSummary,
+            scProjectChangeGroups, scProjectChangeSummaryTotals, scSummaryEvidenceCount,
             scTextAllDifferenceGroups, scTextDifferenceGroups, scTextResultAvailable,
             scTextAiReviewCompleted, scCanRunTextAiReview,
             scTextResultSummary, scTextHasUncertain, scTextAiTransitions,
@@ -15975,7 +16043,8 @@ const app = createApp({
             scTextBucketExpanded, scToggleTextBucket,
             scTextVisibleBucketItems, scTextBucketRemaining, scTextBucketLabel,
             scTextGroupAiDiagnostic, scTextUncertainReasonLabel,
-            scRunTextDifferences, scRunTextAiReview, scOpenDifferenceSource,
+            scRunTextDifferences, scRunTextAiReview, scRunProjectChangeSummary,
+            scOpenDifferenceSource,
             scSheetLinks, scAcceptedSheetLinksReady, scSheetMapRows, scPendingSuggestedLinkRows,
             scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,

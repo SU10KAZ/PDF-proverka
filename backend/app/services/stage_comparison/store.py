@@ -21,6 +21,7 @@ from . import sheet_matching
 from . import text_comparison
 from . import text_differences
 from . import text_ai_reviewer
+from . import project_change_summary
 from backend.app.services.llm.codex_runner import run_codex_json_messages
 
 
@@ -371,6 +372,7 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "text_differences": get_text_differences_state(session_id, pair_id),
         "text_ai_review": get_text_ai_review_state(session_id, pair_id),
         "text_final_comparison": get_text_final_comparison_state(session_id, pair_id),
+        "project_change_summary": get_project_change_summary_state(session_id, pair_id),
     }
 
 
@@ -763,6 +765,149 @@ def get_text_final_comparison_state(session_id: str, pair_id: str) -> dict | Non
         if isinstance(payload, dict) else True
     )
     return text_ai_reviewer.public_final_view(payload, stale=stale)
+
+
+def _current_project_change_signature(
+    session_id: str, pair_id: str,
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]], str | None]:
+    final_comparison = _read_json(paths_mod.text_final_comparison_path(session_id, pair_id))
+    _comparison, _differences, current_stage4_signature = _current_text_ai_signature(
+        session_id, pair_id
+    )
+    if (
+        not isinstance(final_comparison, dict)
+        or final_comparison.get("version") != text_ai_reviewer.VERSION
+        or final_comparison.get("kind") != text_ai_reviewer.FINAL_KIND
+        or current_stage4_signature is None
+        or final_comparison.get("source_signature") != current_stage4_signature
+    ):
+        return final_comparison, [], None
+    source_groups = project_change_summary.build_source_groups(final_comparison)
+    return final_comparison, source_groups, project_change_summary.source_signature(
+        final_comparison, source_groups
+    )
+
+
+def get_project_change_summary_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.project_change_summary_path(session_id, pair_id))
+    _final, _groups, expected = _current_project_change_signature(session_id, pair_id)
+    stale = (
+        expected is None or payload.get("source_signature") != expected
+        if isinstance(payload, dict) else True
+    )
+    return project_change_summary.public_view(payload, stale=stale)
+
+
+async def run_project_change_summary(session_id: str, pair_id: str) -> dict:
+    """Classify and aggregate immutable Stage 4 evidence into engineering facts."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        final_comparison, source_groups, signature = _current_project_change_signature(
+            session_id, pair_id
+        )
+        if not isinstance(final_comparison, dict) or signature is None:
+            raise ValueError("text_final_comparison_required")
+        existing = _read_json(paths_mod.project_change_summary_path(session_id, pair_id))
+        if (
+            isinstance(existing, dict)
+            and existing.get("version") == project_change_summary.VERSION
+            and existing.get("source_signature") == signature
+            and existing.get("status") == "completed"
+            and (existing.get("constraints") or {}).get("fallback_policy") == "review_only_v1"
+        ):
+            return project_change_summary.public_view(existing, stale=False) or {}
+        reusable = {
+            str(group.get("group_id") or ""): group
+            for group in (existing.get("sheet_groups") or [])
+            if (
+                isinstance(existing, dict)
+                and existing.get("source_signature") == signature
+                and isinstance(group, dict)
+                and group.get("aggregation_status") in {
+                    "ai_aggregated", "pair_review_required",
+                }
+            )
+        } if isinstance(existing, dict) else {}
+
+    results: list[dict[str, Any]] = []
+    fresh_model_calls = 0
+    provider_unavailable = ""
+    for source_group in source_groups:
+        cached = reusable.get(source_group["group_id"])
+        if cached and cached.get("source_group_sha256") == source_group["source_group_sha256"]:
+            results.append(cached)
+            continue
+        if source_group["pair_precheck"]["status"] == project_change_summary.PAIR_REVIEW_REQUIRED:
+            results.append(project_change_summary.build_wrong_pair_summary(source_group))
+            continue
+        error = provider_unavailable
+        usage = {"input_tokens": 0, "output_tokens": 0, "cached_tokens": 0, "duration_ms": 0}
+        normalized: list[dict[str, Any]] = []
+        if not error:
+            result = None
+            try:
+                result = await run_codex_json_messages(
+                    [{"role": "user", "content": project_change_summary.prompt_for_groups([source_group])}],
+                    timeout=240,
+                    stage="stage_comparison_project_change_summary",
+                    project_id=f"{session_id}:{pair_id}:{source_group['group_id']}",
+                    model=project_change_summary.PRODUCTION_MODEL,
+                    reasoning_effort=project_change_summary.PRODUCTION_REASONING_EFFORT,
+                    output_schema=project_change_summary.RESPONSE_SCHEMA,
+                    allowed_tools="",
+                )
+            except Exception as exc:  # noqa: BLE001 - persisted conservative fallback
+                error = f"provider_exception:{type(exc).__name__}:{exc}"
+            fresh_model_calls += 1
+            if result is None and not error:
+                error = "ai_provider_failure:no_result"
+            if result is not None:
+                usage = {
+                    "input_tokens": result.input_tokens,
+                    "output_tokens": result.output_tokens,
+                    "cached_tokens": result.cached_tokens,
+                    "duration_ms": result.duration_ms,
+                }
+                if result.is_error or result.json_data is None:
+                    error = result.error_message or "ai_provider_failure"
+                else:
+                    try:
+                        normalized = project_change_summary.validate_response(
+                            result.json_data, [source_group], recover_single_group_id=True,
+                        )[0]
+                    except project_change_summary.SummaryValidationError as exc:
+                        error = f"validation_failed:{exc}"
+            failure_text = f"{error}\n{getattr(result, 'text', '') if result else ''}".lower()
+            if error and any(marker in failure_text for marker in (
+                "cli_not_found", "not authenticated", "usage limit", "quota",
+                "unauthorized", "invalid api key",
+            )):
+                provider_unavailable = error
+        if error:
+            normalized = project_change_summary.deterministic_fallback_items(source_group)
+        results.append(project_change_summary.build_group_summary(
+            source_group, normalized,
+            aggregation_status="deterministic_fallback" if error else "ai_aggregated",
+            error=error or None, usage=usage,
+        ))
+
+    artifact = project_change_summary.build_artifact(
+        pair_id=pair_id, generated_at=_utc_now(), source_signature_value=signature,
+        sheet_groups=results, fresh_model_calls=fresh_model_calls,
+    )
+    with _lock:
+        _latest_final, _latest_groups, latest_signature = _current_project_change_signature(
+            session_id, pair_id
+        )
+        if latest_signature != signature:
+            raise ValueError("text_final_comparison_changed_during_summary")
+        _atomic_write_json(paths_mod.project_change_summary_path(session_id, pair_id), artifact)
+    return project_change_summary.public_view(artifact, stale=False) or {}
 
 
 async def run_text_ai_review(session_id: str, pair_id: str) -> dict:
@@ -1746,6 +1891,8 @@ __all__ = [
     "run_text_differences",
     "get_text_ai_review_state",
     "get_text_final_comparison_state",
+    "get_project_change_summary_state",
+    "run_project_change_summary",
     "run_text_ai_review",
     "render_pdf_page_svg",
     "page_svg_payload",

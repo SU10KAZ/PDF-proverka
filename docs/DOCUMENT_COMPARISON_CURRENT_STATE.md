@@ -1,4 +1,4 @@
-# «Сравнение документации»: текущий контракт этапов 1–4
+# «Сравнение документации»: текущий контракт этапов 1–5
 
 Раздел реализует сопоставление PDF-листов стадии П и стадии РД, после
 подтверждения связей — детерминированное исключение доказанно одинакового
@@ -316,6 +316,50 @@ Claude моделей, режимы с deterministic hint и без него. Pr
 Текущий победитель и единственный production reviewer — `gpt-5.6-luna` с
 `medium` effort и deterministic hint.
 
+## Этап 5: основные изменения проекта
+
+Этап 5 работает только поверх неизменяемого `text_final_comparison.json` и
+создаёт отдельный `project_change_summary.json`. Полные MD, PDF, изображения,
+растр и графика в модель не передаются. Stage 3/4 artifacts и `sheet_links.json`
+слой не изменяет.
+
+Перед ИИ для каждой принятой sheet group выполняется консервативный purpose
+precheck по сохранённым названиям листов. Результат `PAIR_OK` допускает
+классификацию, `PAIR_REVIEW_REQUIRED` создаёт заметный REVIEW и принудительно
+оставляет `project_changes` пустым; связь автоматически не исправляется.
+
+Каждый атомарный CHANGED/REMOVED/ADDED/UNCERTAIN получает устойчивый
+`evidence_id`. `gpt-5.6-luna` с `medium` effort возвращает только класс
+`PROJECT_CHANGE / SERVICE_STRUCTURE / REVIEW`, категорию, краткий factual title
+и группы существующих evidence IDs. Backend сам восстанавливает before/after,
+страницы, bbox, считает `count` и формирует заголовки агрегатов. Prompt и JSON
+Schema отдельны от Stage 4.
+
+Validator требует точное однократное покрытие всех evidence, запрещает чужие
+IDs, неподтверждённые числа/обозначения, инженерные оценки и PROJECT_CHANGE из
+заведомо служебного либо UNCERTAIN evidence. Записи из «Справки об изменениях»
+без подтверждения фактическим проектным листом остаются REVIEW. При невалидном
+ответе вся группа показывается как REVIEW; частичные технические догадки из неё
+не публикуются. Успешные группы переиспользуются при retry.
+
+Контракт `project_change_summary.json` хранит source signature, версии prompt и
+validator, model/effort, usage, purpose status, три массива агрегатов, полные
+atomic details и явные ограничения `stage4_immutable`, `sheet_links_mutated:
+false`, `images_sent: false`, `counts_computed_by_backend: true`.
+
+На вкладке «Расхождения» основным слоем являются карточки «Основные изменения
+проекта». Детали каждого агрегата раскрывают все atomic evidence и переходы к
+листу П/РД. `REVIEW` заметен сразу. «Служебные и структурные изменения» — один
+общий блок, закрытый по умолчанию; прежняя таблица доступна в также закрытом
+блоке «Показать исходные текстовые различия».
+
+API:
+
+- `POST .../pairs/{pair_id}/text-change-summary` — выполнить агрегацию либо
+  переиспользовать актуальные успешные группы;
+- `GET .../pairs/{pair_id}/text-change-summary` — получить артефакт и признак
+  актуальности.
+
 Инженерные решения, которые нельзя ломать:
 
 - состояние вида НЕ реактивно, `transform` пишется прямо в DOM внутри
@@ -340,14 +384,16 @@ Claude моделей, режимы с deterministic hint и без него. Pr
 
 Здесь нет PreparedDocument, старого sheet matcher/page alignment, affine/ORB,
 image fingerprint, block/entities matching, change regions/groups,
-старого semantic diff, Pipeline V2, Vision или embeddings. Единственный
-внешний model-call — текстовый reviewer Этапа 4; раздел не создаёт findings.
+старого semantic diff, Pipeline V2, Vision или embeddings. Внешние model calls
+ограничены текстовыми Stage 4 reviewer и Stage 5 classifier/aggregator; раздел
+не создаёт findings.
 
 Основные точки входа:
 
 - `backend/app/services/stage_comparison/sheet_matching.py`;
 - `backend/app/services/stage_comparison/text_differences.py`;
 - `backend/app/services/stage_comparison/text_ai_reviewer.py`;
+- `backend/app/services/stage_comparison/project_change_summary.py`;
 - `backend/app/services/stage_comparison/store.py`;
 - `backend/app/api/routers/stage_comparison.py`;
 - `frontend/index.html`;

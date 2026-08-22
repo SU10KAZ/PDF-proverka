@@ -5931,6 +5931,12 @@
                                 ? 'ИИ проверяет…'
                                 : (scTextFinalComparison ? 'Повторить ИИ-проверку' : 'Запустить ИИ-проверку') }}
                         </button>
+                        <button v-else-if="!scProjectChangeSummaryAvailable"
+                                type="button" class="btn btn-primary"
+                                :disabled="!scCanRunProjectChangeSummary"
+                                @click="scRunProjectChangeSummary()">
+                            {{ scProjectChangeSummaryLoading ? 'Агрегация…' : 'Сформировать основные изменения' }}
+                        </button>
                     </div>
                     <button v-else-if="scActivePair && !scAcceptedSheetLinksReady"
                             type="button" class="btn btn-primary" @click="scTab = 'links'">
@@ -5943,14 +5949,128 @@
                     </button>
                 </section>
 
-                <div v-if="scTextComparisonError || scTextDifferencesError || scTextAiReviewError" class="sc-shell-error">
-                    {{ scTextComparisonError || scTextDifferencesError || scTextAiReviewError }}
+                <div v-if="scTextComparisonError || scTextDifferencesError || scTextAiReviewError || scProjectChangeSummaryError" class="sc-shell-error">
+                    {{ scTextComparisonError || scTextDifferencesError || scTextAiReviewError || scProjectChangeSummaryError }}
                 </div>
                 <div v-if="scTextDifferences && scTextDifferences.stale" class="sc-shell-error sc-differences__stale">
                     Связи или исходные документы изменились. Пересчитайте расхождения.
                 </div>
 
-                <section v-if="scTextResultAvailable" class="sc-differences__summary">
+                <section v-if="scProjectChangeSummaryAvailable" class="sc-project-summary">
+                    <header class="sc-project-summary__head">
+                        <div>
+                            <strong>Основные изменения проекта</strong>
+                            <small>Сгруппированы по инженерному смыслу; исходные факты сохранены в деталях.</small>
+                        </div>
+                        <div class="sc-project-summary__stats">
+                            <span>Изменений проекта: <b>{{ scProjectChangeSummaryTotals.project_changes }}</b></span>
+                            <span>Требует проверки: <b>{{ scProjectChangeSummaryTotals.review }}</b></span>
+                        </div>
+                    </header>
+
+                    <article v-for="group in scProjectChangeGroups" :key="group.group_id"
+                             class="sc-project-group"
+                             :class="{'is-pair-review': group.pair_precheck.status === 'PAIR_REVIEW_REQUIRED'}">
+                        <header class="sc-project-group__sheets">
+                            <div>
+                                <small>Лист П</small>
+                                <button v-for="(label, index) in group.left_labels"
+                                        :key="group.group_id + '-summary-left-' + index" type="button"
+                                        @click="scOpenDifferenceSource(group, {left_pages: [group.left_pages[index]]}, 'left')">
+                                    {{ label }}
+                                </button>
+                            </div>
+                            <span aria-hidden="true">↔</span>
+                            <div>
+                                <small>Лист РД</small>
+                                <button v-for="(label, index) in group.right_labels"
+                                        :key="group.group_id + '-summary-right-' + index" type="button"
+                                        @click="scOpenDifferenceSource(group, {right_pages: [group.right_pages[index]]}, 'right')">
+                                    {{ label }}
+                                </button>
+                            </div>
+                        </header>
+
+                        <div v-if="group.pair_precheck.status === 'PAIR_REVIEW_REQUIRED'"
+                             class="sc-project-group__pair-warning" role="alert">
+                            <strong>⚠ Возможно неверно сопоставлены листы</strong>
+                            <span>Технические выводы для этой пары не сформированы. Исправьте связь листов вручную.</span>
+                        </div>
+
+                        <section v-else class="sc-project-group__changes">
+                            <h3>Основные изменения проекта</h3>
+                            <p v-if="!group.project_changes.length" class="sc-project-group__none">
+                                Изменений самого проекта в этой группе не подтверждено.
+                            </p>
+                            <details v-for="change in group.project_changes" :key="change.id"
+                                     class="sc-project-change">
+                                <summary>
+                                    <span>{{ change.title }}</span>
+                                    <small>Показать детали ({{ change.count }})</small>
+                                </summary>
+                                <div class="sc-project-change__details">
+                                    <article v-for="item in change.details" :key="item.evidence_id">
+                                        <strong>{{ item.summary }}</strong>
+                                        <div v-if="item.before"><small>Было в П</small><pre>{{ item.before }}</pre></div>
+                                        <div v-if="item.after"><small>Стало в РД</small><pre>{{ item.after }}</pre></div>
+                                        <div class="sc-project-change__source-actions">
+                                            <button v-if="item.left_pages.length" type="button" class="btn btn-sm"
+                                                    @click="scOpenDifferenceSource(group, item, 'left')">Открыть лист П</button>
+                                            <button v-if="item.right_pages.length" type="button" class="btn btn-sm"
+                                                    @click="scOpenDifferenceSource(group, item, 'right')">Открыть лист РД</button>
+                                        </div>
+                                    </article>
+                                </div>
+                            </details>
+                        </section>
+
+                        <section v-if="group.review.length" class="sc-project-group__review">
+                            <h3>⚠ Требует проверки ({{ scSummaryEvidenceCount(group.review) }})</h3>
+                            <details v-for="item in group.review" :key="item.id" open>
+                                <summary>{{ item.title }}</summary>
+                                <div class="sc-project-change__details">
+                                    <article v-for="evidence in item.details" :key="evidence.evidence_id">
+                                        <strong>{{ evidence.summary }}</strong>
+                                        <p v-if="evidence.reason">{{ evidence.reason }}</p>
+                                    </article>
+                                </div>
+                            </details>
+                        </section>
+
+                        <details v-if="group.service_structure.length" class="sc-project-group__service">
+                            <summary>
+                                Служебные и структурные изменения
+                                ({{ scSummaryEvidenceCount(group.service_structure) }})
+                            </summary>
+                            <div>
+                                <details v-for="item in group.service_structure" :key="item.id">
+                                    <summary>{{ item.title }}</summary>
+                                    <div class="sc-project-change__details">
+                                        <article v-for="evidence in item.details" :key="evidence.evidence_id">
+                                            <strong>{{ evidence.summary }}</strong>
+                                            <div v-if="evidence.before"><small>Было в П</small><pre>{{ evidence.before }}</pre></div>
+                                            <div v-if="evidence.after"><small>Стало в РД</small><pre>{{ evidence.after }}</pre></div>
+                                        </article>
+                                    </div>
+                                </details>
+                            </div>
+                        </details>
+                    </article>
+                </section>
+
+                <section v-else-if="scTextAiReviewCompleted" class="sc-shell-card sc-project-summary__pending">
+                    <strong>Основные изменения ещё не сформированы</strong>
+                    <button type="button" class="btn btn-primary"
+                            :disabled="!scCanRunProjectChangeSummary"
+                            @click="scRunProjectChangeSummary()">
+                        {{ scProjectChangeSummaryLoading ? 'Агрегация…' : 'Сформировать основные изменения' }}
+                    </button>
+                </section>
+
+                <details v-if="scTextResultAvailable" class="sc-raw-differences">
+                    <summary>Показать исходные текстовые различия</summary>
+                    <div class="sc-raw-differences__body">
+                <section class="sc-differences__summary">
                     <strong class="sc-differences__summary-title">Текстовая проверка</strong>
                     <span>Совпало: <b>{{ scTextResultSummary.same || 0 }}</b></span>
                     <span>Перенесено: <b>{{ scTextResultSummary.moved || 0 }}</b></span>
@@ -6131,6 +6251,8 @@
                         </tbody>
                     </table>
                 </div>
+                    </div>
+                </details>
             </div>
 
             <div v-if="scTab==='report'" class="sc-empty-state sc-empty-state--large">

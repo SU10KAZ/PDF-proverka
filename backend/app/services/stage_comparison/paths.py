@@ -77,6 +77,10 @@ def text_final_comparison_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "text_final_comparison.json"
 
 
+def project_change_summary_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "project_change_summary.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -97,5 +101,6 @@ __all__ = [
     "text_differences_path",
     "text_ai_review_path",
     "text_final_comparison_path",
+    "project_change_summary_path",
     "index_json_path",
 ]
