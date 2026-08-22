@@ -1,0 +1,255 @@
+{
+  "architecture": "one fused call; no mandatory verifier and no old L3",
+  "human_evaluation": {
+    "accuracy": 1.0,
+    "correct": 9,
+    "ground_truth_policy": "manual graphic-only labels; UNSURE excluded",
+    "rows": [
+      {
+        "actual": "NO_GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "NO_GRAPHIC_CHANGE",
+        "pair_id": "ss_scheme_text_changed",
+        "scored": true
+      },
+      {
+        "actual": "NO_GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "NO_GRAPHIC_CHANGE",
+        "pair_id": "ss_plan_dense",
+        "scored": true
+      },
+      {
+        "actual": "NO_GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "NO_GRAPHIC_CHANGE",
+        "pair_id": "ss_simple_node",
+        "scored": true
+      },
+      {
+        "actual": "GRAPHIC_CHANGE",
+        "correct": false,
+        "expected": "UNSURE",
+        "pair_id": "ss_crop_mismatch_page07",
+        "scored": false
+      },
+      {
+        "actual": "NO_GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "NO_GRAPHIC_CHANGE",
+        "pair_id": "ar_plan",
+        "scored": true
+      },
+      {
+        "actual": "NO_GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "NO_GRAPHIC_CHANGE",
+        "pair_id": "ar_plan_page08",
+        "scored": true
+      },
+      {
+        "actual": "GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "GRAPHIC_CHANGE",
+        "pair_id": "vk_plan",
+        "scored": true
+      },
+      {
+        "actual": "GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "GRAPHIC_CHANGE",
+        "pair_id": "vk_nodes",
+        "scored": true
+      },
+      {
+        "actual": "NO_GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "NO_GRAPHIC_CHANGE",
+        "pair_id": "vk_axono_page17",
+        "scored": true
+      },
+      {
+        "actual": "GRAPHIC_CHANGE",
+        "correct": true,
+        "expected": "GRAPHIC_CHANGE",
+        "pair_id": "ov_plan_floor07",
+        "scored": true
+      }
+    ],
+    "scored": 9
+  },
+  "metadata": {
+    "estimated_prompt_tokens_chars_over_4": 1692,
+    "image_count": 20,
+    "latency_seconds": 224.151334,
+    "prompt_chars": 6766,
+    "stderr_tail": "Reading prompt from stdin...\n2026-08-22T22:55:41.334546Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T22:55:41.339535Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-08-22T22:55:41.390472Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n2026-08-22T22:55:41.409619Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: Platform secure storage failure: zbus error: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.secrets was not provided by any .service files\n2026-08-22T22:55:41.416184Z  WARN codex_rmcp_client::oauth::resolved_store: failed to read OAuth tokens from keyring: failed to reread OAuth tokens from resolved keyring storage; refusing file fallback\n",
+    "usage": {
+      "cached_input_tokens": 1342720,
+      "input_tokens": 1450510,
+      "output_tokens": 14267,
+      "total_tokens": 1464777
+    }
+  },
+  "model": "gpt-5.6-sol",
+  "output": {
+    "pairs": [
+      {
+        "classification": "NO_GRAPHIC_CHANGE",
+        "evidence": [
+          "Контуры блоков, символы оборудования, кабельные трассы и все соединения совпадают после учета небольшого смещения изображения.",
+          "Обнаруженные различия находятся внутри текстовых обозначений."
+        ],
+        "graphic_events": [],
+        "ignored_text_or_table": [
+          "Измененные номера устройств, адреса помещений и прочие подписи."
+        ],
+        "pair_id": "ss_scheme_text_changed",
+        "uncertainties": []
+      },
+      {
+        "classification": "NO_GRAPHIC_CHANGE",
+        "evidence": [
+          "Графика общей области совпадает пиксельно: стены, парковочные места, оси, выноски и цветные элементы не изменены.",
+          "Разница высоты изображений вызвана границей crop."
+        ],
+        "graphic_events": [],
+        "ignored_text_or_table": [
+          "Числа и мелкие CAD-подписи."
+        ],
+        "pair_id": "ss_plan_dense",
+        "uncertainties": []
+      },
+      {
+        "classification": "NO_GRAPHIC_CHANGE",
+        "evidence": [
+          "LEFT и RIGHT полностью идентичны на уровне растровых данных.",
+          "Контуры узлов, стрелки, линии и соединения совпадают."
+        ],
+        "graphic_events": [],
+        "ignored_text_or_table": [],
+        "pair_id": "ss_simple_node",
+        "uncertainties": []
+      },
+      {
+        "classification": "GRAPHIC_CHANGE",
+        "evidence": [
+          "После совмещения по неизменной строительной геометрии контур символа и его указатель присутствуют в разных, взаимно исключающих позициях.",
+          "Остальная проверяемая общая геометрия плана совпадает с учетом масштаба и crop."
+        ],
+        "graphic_events": [
+          "Круглый двухсекционный выносной символ с линией-указателем перемещен из правой части парковочного поля в верхнюю левую часть общей области плана."
+        ],
+        "ignored_text_or_table": [
+          "Текст внутри перемещенного символа, номера осей и прочие подписи."
+        ],
+        "pair_id": "ss_crop_mismatch_page07",
+        "uncertainties": [
+          "Из-за существенно разных границ crop сравнивалась только общая область.",
+          "Внутренний текст символа не учитывался; изменением признано перемещение его графического контура и указателя."
+        ]
+      },
+      {
+        "classification": "NO_GRAPHIC_CHANGE",
+        "evidence": [
+          "После почти единичного совмещения стены, проемы, размерные линии, красная разметка и облако ревизии совпадают.",
+          "Остаточные различия соответствуют сглаживанию и упаковке тонких CAD-примитивов."
+        ],
+        "graphic_events": [],
+        "ignored_text_or_table": [
+          "Размерные числа, марки и подписи."
+        ],
+        "pair_id": "ar_plan",
+        "uncertainties": []
+      },
+      {
+        "classification": "NO_GRAPHIC_CHANGE",
+        "evidence": [
+          "Планировочные контуры, проемы, секущие обозначения и цветные элементы совпадают после учета смещения crop.",
+          "Различаются преимущественно толщина и дискретизация отдельных однопиксельных линий."
+        ],
+        "graphic_events": [],
+        "ignored_text_or_table": [
+          "Размеры, марки и прочие текстовые обозначения."
+        ],
+        "pair_id": "ar_plan_page08",
+        "uncertainties": []
+      },
+      {
+        "classification": "GRAPHIC_CHANGE",
+        "evidence": [
+          "Основные красные, синие и пурпурные трассы сохраняют прежнюю геометрию.",
+          "Кольцевые маркеры систематически присутствуют только на RIGHT в нескольких санузлах и ответвлениях."
+        ],
+        "graphic_events": [
+          "На RIGHT добавлено множество небольших красных кольцевых маркеров узлов возле сантехнических приборов и мест подключения труб по всему плану."
+        ],
+        "ignored_text_or_table": [
+          "Названия фрагментов, номера помещений, размеры и остальные подписи."
+        ],
+        "pair_id": "vk_plan",
+        "uncertainties": []
+      },
+      {
+        "classification": "GRAPHIC_CHANGE",
+        "evidence": [
+          "Локальное ответвление и его соединение со стояком видны только на RIGHT.",
+          "Верхний водопроводный фрагмент и остальные участки оранжевой канализации совпадают."
+        ],
+        "graphic_events": [
+          "В нижнем фрагменте от левого оранжевого стояка добавлено короткое горизонтальное ответвление с фитингом в сторону ванны, ниже существующей верхней ветви.",
+          "Рядом с новой ветвью добавлена вертикальная размерная линия."
+        ],
+        "ignored_text_or_table": [
+          "Числовое значение новой размерной выноски, остальные подписи и примечания в расширенной правой части crop."
+        ],
+        "pair_id": "vk_nodes",
+        "uncertainties": []
+      },
+      {
+        "classification": "NO_GRAPHIC_CHANGE",
+        "evidence": [
+          "Изометрические ветви водоснабжения и канализации, фитинги, стояки и два узловых фрагмента совпадают.",
+          "Различия обусловлены горизонтальным crop, полями листа и блоком примечаний."
+        ],
+        "graphic_events": [],
+        "ignored_text_or_table": [
+          "Добавленный блок примечаний, подписи, числа, легенда и содержимое штампа."
+        ],
+        "pair_id": "vk_axono_page17",
+        "uncertainties": [
+          "Сравнение графики ограничено общей областью из-за разных границ листа."
+        ]
+      },
+      {
+        "classification": "GRAPHIC_CHANGE",
+        "evidence": [
+          "На RIGHT соответствующие штрихованные площадки сохраняются, но внутренние контуры оборудования отсутствуют.",
+          "Строительный контур, сантехнические приборы, решетка с крестом и голубые дуги остаются на прежних местах."
+        ],
+        "graphic_events": [
+          "Удалены семь графических символов оборудования из пяти розовых штрихованных зон установки: один в верхней зоне, два в верхней левой, один в центральной, два в правой и один в нижнем санузле."
+        ],
+        "ignored_text_or_table": [
+          "Подписи мест установки, номера помещений и осей, а также содержимое основной надписи."
+        ],
+        "pair_id": "ov_plan_floor07",
+        "uncertainties": []
+      }
+    ]
+  },
+  "pair_ids": [
+    "ss_scheme_text_changed",
+    "ss_plan_dense",
+    "ss_simple_node",
+    "ss_crop_mismatch_page07",
+    "ar_plan",
+    "ar_plan_page08",
+    "vk_plan",
+    "vk_nodes",
+    "vk_axono_page17",
+    "ov_plan_floor07"
+  ],
+  "research_only": true,
+  "schema_version": "graphic-hybrid-results-v0.3-codex"
+}

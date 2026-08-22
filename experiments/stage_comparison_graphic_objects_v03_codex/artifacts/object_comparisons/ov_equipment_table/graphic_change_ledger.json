@@ -1,0 +1,43 @@
+{
+  "alignment": null,
+  "applicability": "GRAPHIC_NOT_APPLICABLE",
+  "artifact_retention": {
+    "full_counts": {
+      "changes": 0,
+      "object_matches": 0,
+      "object_statuses": 0
+    },
+    "full_lossless_artifact": "graphic_change_ledger.full.json.gz",
+    "full_uncompressed_bytes": 750,
+    "full_uncompressed_sha256": "b80e70ed86e886ec0b22d71ae399ba1e0356e7b0d183529c6422195ecc2d88e2",
+    "index_is_sampled": true
+  },
+  "block_pair": "ov_equipment_table",
+  "changes": [],
+  "decision": {
+    "correspondence_reliable": true,
+    "graphic_verdict": "NO_GRAPHIC_CHANGE",
+    "route": "GRAPHIC_VECTOR_OK",
+    "route_reasons": [
+      "prepared block type is text/table/stamp; SKIP_GRAPHIC_COMPARISON"
+    ]
+  },
+  "object_matches": [],
+  "object_statuses": [],
+  "research_only": true,
+  "schema_version": "graphic-change-ledger-v0.3-codex",
+  "scope": {
+    "block_group_id": "ov_equipment_table",
+    "left_blocks": [
+      "blk_21446c486e0f453890207c46506b5945"
+    ],
+    "pairing_source": "explicit benchmark pair; no 1-to-N matcher",
+    "right_blocks": [
+      "blk_a56f604b46114e28841e0af4a8425d86"
+    ]
+  },
+  "validator": {
+    "rule": "text-only and table-only changes cannot enter graphic ledger",
+    "text_only_changes_removed": 0
+  }
+}

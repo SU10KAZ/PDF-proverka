@@ -1,0 +1,43 @@
+{
+  "alignment": null,
+  "applicability": "GRAPHIC_NOT_APPLICABLE",
+  "artifact_retention": {
+    "full_counts": {
+      "changes": 0,
+      "object_matches": 0,
+      "object_statuses": 0
+    },
+    "full_lossless_artifact": "graphic_change_ledger.full.json.gz",
+    "full_uncompressed_bytes": 744,
+    "full_uncompressed_sha256": "4d62f753655ee0176c30f49e230a608f4c61c411ff7e71f57bab665b5fc4519a",
+    "index_is_sampled": true
+  },
+  "block_pair": "ss_table_page19",
+  "changes": [],
+  "decision": {
+    "correspondence_reliable": true,
+    "graphic_verdict": "NO_GRAPHIC_CHANGE",
+    "route": "GRAPHIC_VECTOR_OK",
+    "route_reasons": [
+      "prepared block type is text/table/stamp; SKIP_GRAPHIC_COMPARISON"
+    ]
+  },
+  "object_matches": [],
+  "object_statuses": [],
+  "research_only": true,
+  "schema_version": "graphic-change-ledger-v0.3-codex",
+  "scope": {
+    "block_group_id": "ss_table_page19",
+    "left_blocks": [
+      "blk_1e6b496d718740deb5bbc73ec0ca3306"
+    ],
+    "pairing_source": "explicit benchmark pair; no 1-to-N matcher",
+    "right_blocks": [
+      "blk_26e345ae1c614eecad4b894e4d5193ba"
+    ]
+  },
+  "validator": {
+    "rule": "text-only and table-only changes cannot enter graphic ledger",
+    "text_only_changes_removed": 0
+  }
+}

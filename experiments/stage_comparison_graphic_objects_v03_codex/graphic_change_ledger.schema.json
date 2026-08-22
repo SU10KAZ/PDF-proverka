@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graphic-change-ledger-v0.3-codex",
+  "type": "object",
+  "required": ["schema_version", "research_only", "block_pair", "scope", "applicability", "alignment", "object_matches", "object_statuses", "changes", "validator", "decision"],
+  "properties": {
+    "schema_version": {"const": "graphic-change-ledger-v0.3-codex"},
+    "research_only": {"const": true},
+    "block_pair": {"type": "string"},
+    "scope": {"type": "object", "required": ["left_blocks", "right_blocks", "pairing_source"]},
+    "applicability": {"enum": ["GRAPHIC_APPLICABLE", "GRAPHIC_NOT_APPLICABLE"]},
+    "alignment": {"type": ["object", "null"]},
+    "object_matches": {"type": "array", "items": {"type": "object"}},
+    "object_statuses": {
+      "type": "array",
+      "items": {"type": "object", "required": ["event_id", "status", "left_object", "right_object", "confidence", "evidence", "basis"], "properties": {"status": {"enum": ["UNCHANGED", "ADDED", "REMOVED", "GEOMETRY_CHANGED", "STYLE_CHANGED", "CONNECTION_CHANGED", "POSITION_CHANGED", "UNCERTAIN"]}}}
+    },
+    "changes": {
+      "type": "array",
+      "items": {"type": "object", "required": ["event_id", "type", "left_object", "right_object", "confidence", "evidence", "basis"], "properties": {"type": {"enum": ["ADDED", "REMOVED", "GEOMETRY_CHANGED", "STYLE_CHANGED", "CONNECTION_CHANGED", "POSITION_CHANGED", "UNCERTAIN"]}, "basis": {"not": {"const": "text_only"}}}}
+    },
+    "validator": {"type": "object", "required": ["text_only_changes_removed", "rule"]},
+    "decision": {"type": "object", "required": ["graphic_verdict", "route", "route_reasons", "correspondence_reliable"], "properties": {"graphic_verdict": {"enum": ["GRAPHIC_CHANGE", "NO_GRAPHIC_CHANGE"]}, "route": {"enum": ["GRAPHIC_VECTOR_OK", "GRAPHIC_HYBRID", "GRAPHIC_VISION_ONLY"]}}},
+    "artifact_retention": {"type": "object"}
+  }
+}

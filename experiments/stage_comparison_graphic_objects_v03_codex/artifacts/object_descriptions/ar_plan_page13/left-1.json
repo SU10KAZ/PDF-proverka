@@ -1,0 +1,2100 @@
+{
+  "artifact_retention": {
+    "full_counts": {
+      "object_families": 84,
+      "objects": 2809,
+      "relations": 8000
+    },
+    "full_lossless_artifact": "left-1.full.json.gz",
+    "full_uncompressed_bytes": 5123219,
+    "full_uncompressed_sha256": "374c2ab7f7737185510b39105be35a358780e3c7887f53c26ede8d63136a9ffe",
+    "index_is_sampled": true
+  },
+  "input": {
+    "block_group_id": "ar_plan_page13",
+    "block_id": "blk_080fac3e518047229caf432e7178a4f8",
+    "block_type": "image",
+    "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json",
+    "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+    "coords_norm": [
+      0.013976616046230345,
+      0.00855188141391106,
+      0.24136540787528557,
+      0.999429874572406
+    ],
+    "crop_url": "https://vibe.cloud-ip.cc/api/crops/DGb5_TApTkF5PTrIQ-rO",
+    "document_id": "doc_c6e2e2563ddb41bca06a6ba1c194469c",
+    "document_name": "01-14-АР0-АС-1-РД_V1.pdf",
+    "document_path": "[АР] Архитектурные решения / СТ26/01-14-АР0-АС-1-РД / 01-14-АР0-АС-1-РД_V1.pdf",
+    "export_status": "recognized",
+    "graphic_applicability": "GRAPHIC_APPLICABLE",
+    "page_artifact": {
+      "height_px": 6867,
+      "rotation": 0,
+      "width_px": 14565
+    },
+    "page_index": 12,
+    "page_label": 13,
+    "polygon_points_norm": null,
+    "prepared_text_metadata": [
+      {
+        "anchor_id": "text-1",
+        "bbox_norm": [
+          0.247946,
+          0.965134,
+          0.264969,
+          0.971358
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.1"
+      },
+      {
+        "anchor_id": "text-2",
+        "bbox_norm": [
+          0.464342,
+          0.965134,
+          0.481366,
+          0.971358
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.2"
+      },
+      {
+        "anchor_id": "text-3",
+        "bbox_norm": [
+          0.049648,
+          0.173614,
+          0.06726,
+          0.179838
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.У"
+      },
+      {
+        "anchor_id": "text-4",
+        "bbox_norm": [
+          0.049718,
+          0.483637,
+          0.067129,
+          0.489865
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.Р"
+      },
+      {
+        "anchor_id": "text-5",
+        "bbox_norm": [
+          0.049279,
+          0.568613,
+          0.067625,
+          0.574845
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.П"
+      },
+      {
+        "anchor_id": "text-6",
+        "bbox_norm": [
+          0.049206,
+          0.65356,
+          0.067677,
+          0.659787
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.Н"
+      },
+      {
+        "anchor_id": "text-7",
+        "bbox_norm": [
+          0.048682,
+          0.791148,
+          0.068146,
+          0.797374
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.М"
+      },
+      {
+        "anchor_id": "text-8",
+        "bbox_norm": [
+          0.633667,
+          0.965134,
+          0.650701,
+          0.971358
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.3"
+      },
+      {
+        "anchor_id": "text-9",
+        "bbox_norm": [
+          0.86151,
+          0.965134,
+          0.878545,
+          0.971358
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.4"
+      },
+      {
+        "anchor_id": "text-10",
+        "bbox_norm": [
+          0.049348,
+          0.26111,
+          0.067433,
+          0.267333
+        ],
+        "source": "existing_block_vector_graph.semantic_ledger",
+        "text": "П.Т"
+      }
+    ],
+    "prepared_text_metadata_count": 696,
+    "prepared_text_metadata_source": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/03_analysis/runs/fb6add3f-ac42-4e4f-857b-98a9b53b5014/block_vector_graphs/blk_080fac3e518047229caf432e7178a4f8.json",
+    "provenance": [
+      "02_work/blocks.json:blocks[]",
+      "02_work/blocks.json:pages[]",
+      "02_work/document.pdf"
+    ],
+    "schema_version": "already-prepared-graphic-block-v1",
+    "shape_type": "rectangle",
+    "source_pdf": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+    "status": "recognized"
+  },
+  "object_families": [
+    {
+      "count": 9,
+      "family_id": "family_0001",
+      "family_signature": "004b231fb9486f38",
+      "object_ids": [
+        "obj_02667",
+        "obj_02670",
+        "obj_02672",
+        "obj_02675",
+        "obj_02677",
+        "obj_02680",
+        "obj_02700",
+        "obj_02776",
+        "obj_02778"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 2,
+      "family_id": "family_0002",
+      "family_signature": "01f162349d5f181d",
+      "object_ids": [
+        "obj_01712",
+        "obj_02476"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 3,
+      "family_id": "family_0003",
+      "family_signature": "038cd7f92d28b771",
+      "object_ids": [
+        "obj_02701",
+        "obj_02702",
+        "obj_02710"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 432,
+      "family_id": "family_0004",
+      "family_signature": "074ee2491cb2e8ff",
+      "object_ids": [
+        "obj_01443",
+        "obj_01450",
+        "obj_01451",
+        "obj_01452",
+        "obj_01453",
+        "obj_01454",
+        "obj_01455",
+        "obj_01456",
+        "obj_01457",
+        "obj_01458",
+        "obj_01459",
+        "obj_01460",
+        "obj_01473",
+        "obj_01475",
+        "obj_01477",
+        "obj_01478",
+        "obj_01479",
+        "obj_01480",
+        "obj_01481",
+        "obj_01482",
+        "obj_01483",
+        "obj_01484",
+        "obj_01507",
+        "obj_01508",
+        "obj_01510",
+        "obj_01511",
+        "obj_01513",
+        "obj_01516",
+        "obj_01524",
+        "obj_01536",
+        "obj_01537",
+        "obj_01637",
+        "obj_01638",
+        "obj_01639",
+        "obj_01713",
+        "obj_01714",
+        "obj_01715",
+        "obj_01716",
+        "obj_01717",
+        "obj_01718",
+        "obj_01719",
+        "obj_01720",
+        "obj_01721",
+        "obj_01722",
+        "obj_01723",
+        "obj_01724",
+        "obj_01725",
+        "obj_01726",
+        "obj_01727",
+        "obj_01728",
+        "obj_01729",
+        "obj_01730",
+        "obj_01731",
+        "obj_01732",
+        "obj_01734",
+        "obj_01735",
+        "obj_01736",
+        "obj_01737",
+        "obj_01738",
+        "obj_01739",
+        "obj_01741",
+        "obj_01742",
+        "obj_01743",
+        "obj_01744",
+        "obj_01745",
+        "obj_01746",
+        "obj_01747",
+        "obj_01748",
+        "obj_01749",
+        "obj_01750",
+        "obj_01751",
+        "obj_01752",
+        "obj_01753",
+        "obj_01755",
+        "obj_01756",
+        "obj_01757",
+        "obj_01758",
+        "obj_01759",
+        "obj_01760",
+        "obj_01761",
+        "obj_01762",
+        "obj_01763",
+        "obj_01764",
+        "obj_01765",
+        "obj_01767",
+        "obj_01769",
+        "obj_01770",
+        "obj_01771",
+        "obj_01772",
+        "obj_01774",
+        "obj_01775",
+        "obj_01776",
+        "obj_01777",
+        "obj_01779",
+        "obj_01780",
+        "obj_01781",
+        "obj_01783",
+        "obj_01786",
+        "obj_01787",
+        "obj_01788",
+        "obj_01789",
+        "obj_01790",
+        "obj_01791",
+        "obj_01792",
+        "obj_01793",
+        "obj_01794",
+        "obj_01796",
+        "obj_01798",
+        "obj_01799",
+        "obj_01801",
+        "obj_01877",
+        "obj_01878",
+        "obj_01879",
+        "obj_01880",
+        "obj_01881",
+        "obj_01882",
+        "obj_01883",
+        "obj_01884",
+        "obj_01885",
+        "obj_01886",
+        "obj_01887",
+        "obj_01888",
+        "obj_01889",
+        "obj_01890",
+        "obj_01891",
+        "obj_01892",
+        "obj_01893",
+        "obj_01894",
+        "obj_01895",
+        "obj_01896",
+        "obj_01897",
+        "obj_01898",
+        "obj_01899",
+        "obj_01900",
+        "obj_01901",
+        "obj_01902",
+        "obj_01903",
+        "obj_01904",
+        "obj_01905",
+        "obj_01906",
+        "obj_01907",
+        "obj_01908",
+        "obj_01910",
+        "obj_01911",
+        "obj_01912",
+        "obj_01914",
+        "obj_01916",
+        "obj_01917",
+        "obj_01919",
+        "obj_01920",
+        "obj_01921",
+        "obj_01922",
+        "obj_01923",
+        "obj_01924",
+        "obj_01925",
+        "obj_01927",
+        "obj_01929",
+        "obj_01930",
+        "obj_01931",
+        "obj_01932",
+        "obj_01933",
+        "obj_01934",
+        "obj_01935",
+        "obj_01936",
+        "obj_01937",
+        "obj_01939",
+        "obj_01940",
+        "obj_01941",
+        "obj_01942",
+        "obj_01943",
+        "obj_01944",
+        "obj_01945",
+        "obj_01946",
+        "obj_01947",
+        "obj_01948",
+        "obj_01949",
+        "obj_01950",
+        "obj_01951",
+        "obj_01953",
+        "obj_01955",
+        "obj_01956",
+        "obj_01957",
+        "obj_01958",
+        "obj_01959",
+        "obj_01960",
+        "obj_01961",
+        "obj_01962",
+        "obj_01963",
+        "obj_01964",
+        "obj_01965",
+        "obj_01966",
+        "obj_01968",
+        "obj_01970",
+        "obj_01971",
+        "obj_01972",
+        "obj_01973",
+        "obj_01974",
+        "obj_01975",
+        "obj_01976",
+        "obj_01977",
+        "obj_01979",
+        "obj_01980",
+        "obj_01982",
+        "obj_01984",
+        "obj_01985",
+        "obj_01986",
+        "obj_01987",
+        "obj_01988",
+        "obj_01989",
+        "obj_01990",
+        "obj_01992",
+        "obj_01993",
+        "obj_01994",
+        "obj_01996",
+        "obj_01997",
+        "obj_01999",
+        "obj_02000",
+        "obj_02001",
+        "obj_02002",
+        "obj_02003",
+        "obj_02004",
+        "obj_02005",
+        "obj_02006",
+        "obj_02007",
+        "obj_02008",
+        "obj_02009",
+        "obj_02010",
+        "obj_02012",
+        "obj_02013",
+        "obj_02014",
+        "obj_02015",
+        "obj_02016",
+        "obj_02017",
+        "obj_02018",
+        "obj_02019",
+        "obj_02020",
+        "obj_02021",
+        "obj_02022",
+        "obj_02023",
+        "obj_02024",
+        "obj_02025",
+        "obj_02026",
+        "obj_02027",
+        "obj_02028",
+        "obj_02029",
+        "obj_02030",
+        "obj_02032",
+        "obj_02033",
+        "obj_02034",
+        "obj_02035",
+        "obj_02036",
+        "obj_02037",
+        "obj_02038",
+        "obj_02039",
+        "obj_02040",
+        "obj_02041",
+        "obj_02042",
+        "obj_02044",
+        "obj_02045",
+        "obj_02046",
+        "obj_02047",
+        "obj_02048",
+        "obj_02049",
+        "obj_02050",
+        "obj_02051",
+        "obj_02053",
+        "obj_02054",
+        "obj_02055",
+        "obj_02056",
+        "obj_02057",
+        "obj_02058",
+        "obj_02059",
+        "obj_02060",
+        "obj_02061",
+        "obj_02062",
+        "obj_02063",
+        "obj_02064",
+        "obj_02065",
+        "obj_02066",
+        "obj_02067",
+        "obj_02068",
+        "obj_02069",
+        "obj_02070",
+        "obj_02071",
+        "obj_02073",
+        "obj_02074",
+        "obj_02075",
+        "obj_02076",
+        "obj_02077",
+        "obj_02078",
+        "obj_02079",
+        "obj_02080",
+        "obj_02081",
+        "obj_02082",
+        "obj_02083",
+        "obj_02085",
+        "obj_02086",
+        "obj_02088",
+        "obj_02089",
+        "obj_02090",
+        "obj_02091",
+        "obj_02092",
+        "obj_02093",
+        "obj_02095",
+        "obj_02096",
+        "obj_02097",
+        "obj_02098",
+        "obj_02099",
+        "obj_02100",
+        "obj_02103",
+        "obj_02104",
+        "obj_02105",
+        "obj_02106",
+        "obj_02107",
+        "obj_02108",
+        "obj_02109",
+        "obj_02110",
+        "obj_02111",
+        "obj_02112",
+        "obj_02113",
+        "obj_02114",
+        "obj_02115",
+        "obj_02116",
+        "obj_02117",
+        "obj_02118",
+        "obj_02119",
+        "obj_02120",
+        "obj_02121",
+        "obj_02122",
+        "obj_02123",
+        "obj_02124",
+        "obj_02125",
+        "obj_02127",
+        "obj_02128",
+        "obj_02129",
+        "obj_02130",
+        "obj_02131",
+        "obj_02132",
+        "obj_02133",
+        "obj_02134",
+        "obj_02135",
+        "obj_02136",
+        "obj_02137",
+        "obj_02138",
+        "obj_02139",
+        "obj_02141",
+        "obj_02142",
+        "obj_02143",
+        "obj_02144",
+        "obj_02145",
+        "obj_02146",
+        "obj_02147",
+        "obj_02149",
+        "obj_02151",
+        "obj_02152",
+        "obj_02153",
+        "obj_02154",
+        "obj_02155",
+        "obj_02156",
+        "obj_02390",
+        "obj_02391",
+        "obj_02392",
+        "obj_02393",
+        "obj_02394",
+        "obj_02395",
+        "obj_02396",
+        "obj_02397",
+        "obj_02398",
+        "obj_02399",
+        "obj_02400",
+        "obj_02401",
+        "obj_02402",
+        "obj_02403",
+        "obj_02404",
+        "obj_02405",
+        "obj_02406",
+        "obj_02477",
+        "obj_02478",
+        "obj_02479",
+        "obj_02480",
+        "obj_02481",
+        "obj_02482",
+        "obj_02483",
+        "obj_02484",
+        "obj_02485",
+        "obj_02486",
+        "obj_02487",
+        "obj_02488",
+        "obj_02489",
+        "obj_02490",
+        "obj_02491",
+        "obj_02492",
+        "obj_02493",
+        "obj_02507",
+        "obj_02543",
+        "obj_02604",
+        "obj_02665",
+        "obj_02683",
+        "obj_02686",
+        "obj_02697",
+        "obj_02704",
+        "obj_02717",
+        "obj_02719",
+        "obj_02723",
+        "obj_02726",
+        "obj_02727",
+        "obj_02732",
+        "obj_02733",
+        "obj_02734",
+        "obj_02755",
+        "obj_02756",
+        "obj_02757",
+        "obj_02758",
+        "obj_02759",
+        "obj_02761",
+        "obj_02762",
+        "obj_02764",
+        "obj_02766",
+        "obj_02767",
+        "obj_02768",
+        "obj_02769",
+        "obj_02771",
+        "obj_02772",
+        "obj_02777",
+        "obj_02786",
+        "obj_02800",
+        "obj_02801",
+        "obj_02802",
+        "obj_02803",
+        "obj_02804",
+        "obj_02805",
+        "obj_02806"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 2,
+      "family_id": "family_0005",
+      "family_signature": "09b30e742308fc62",
+      "object_ids": [
+        "obj_01800",
+        "obj_01802"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 2,
+      "family_id": "family_0006",
+      "family_signature": "14ea990257710a1b",
+      "object_ids": [
+        "obj_00905",
+        "obj_00913"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 2,
+      "family_id": "family_0007",
+      "family_signature": "181889c276e1a674",
+      "object_ids": [
+        "obj_02545",
+        "obj_02563"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 2,
+      "family_id": "family_0008",
+      "family_signature": "1ce99e284a7bd100",
+      "object_ids": [
+        "obj_01766",
+        "obj_01768"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 2,
+      "family_id": "family_0009",
+      "family_signature": "21bbfe1e4da69d8a",
+      "object_ids": [
+        "obj_00071",
+        "obj_00852"
+      ],
+      "provenance": "generic shape/topology signature"
+    },
+    {
+      "count": 2,
+      "family_id": "family_0010",
+      "family_signature": "2bf910c0f52e4a41",
+      "object_ids": [
+        "obj_02218",
+        "obj_02524"
+      ],
+      "provenance": "generic shape/topology signature"
+    }
+  ],
+  "objects": [
+    {
+      "bbox_norm": [
+        0.223998,
+        0.076024,
+        0.942458,
+        0.974251
+      ],
+      "center_isotropic": [
+        0.255267,
+        0.472168
+      ],
+      "family_signature": "5fc0853abd5d976c",
+      "formation": {
+        "atom_count": 4042,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 1332,
+          "1": 31,
+          "10": 32,
+          "11": 31,
+          "2": 85,
+          "3": 177,
+          "4": 32,
+          "5": 21,
+          "6": 1491,
+          "7": 34,
+          "8": 496,
+          "9": 673
+        },
+        "branch_points": 1016,
+        "degree_histogram": {
+          "1": 1708,
+          "10": 57,
+          "11": 11,
+          "12": 22,
+          "13": 2,
+          "14": 2,
+          "15": 2,
+          "16": 6,
+          "18": 1,
+          "19": 1,
+          "2": 513,
+          "20": 2,
+          "3": 168,
+          "4": 279,
+          "5": 31,
+          "6": 121,
+          "7": 133,
+          "8": 110,
+          "9": 68
+        },
+        "endpoints": 1708,
+        "length_isotropic": 44.11871,
+        "nodes": 3237,
+        "segment_count": 4435
+      },
+      "geometry_signature": "ec9ad3911c8d632903de",
+      "label_anchor_ids": [
+        "text-379"
+      ],
+      "object_id": "obj_00001",
+      "provenance": [
+        {
+          "drawing_index": 0,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 2,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 5,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 6,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_000001",
+        "rel_000002",
+        "rel_000003",
+        "rel_000004",
+        "rel_000005",
+        "rel_000006",
+        "rel_000007",
+        "rel_000008",
+        "rel_000009",
+        "rel_000010",
+        "rel_000011",
+        "rel_000012",
+        "rel_000013",
+        "rel_000014",
+        "rel_000015",
+        "rel_000016",
+        "rel_000017",
+        "rel_000018",
+        "rel_000019",
+        "rel_000020"
+      ],
+      "size_isotropic": [
+        0.314455,
+        0.807624
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.978971,
+        "fill": null,
+        "fill_coverage": 0.978971,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.978971,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.978971,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.978971,
+        "stroke": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stroke_coverage": 0.468827,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.978971,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.893864
+      },
+      "type": "CLOSED_REGION"
+    },
+    {
+      "bbox_norm": [
+        0.424723,
+        0.085087,
+        0.487002,
+        0.094437
+      ],
+      "center_isotropic": [
+        0.199522,
+        0.080708
+      ],
+      "family_signature": "be281647f8064e14",
+      "formation": {
+        "atom_count": 6,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 5,
+          "6": 4
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "1": 2,
+          "4": 4
+        },
+        "endpoints": 2,
+        "length_isotropic": 0.096228,
+        "nodes": 6,
+        "segment_count": 9
+      },
+      "geometry_signature": "d8f43da39c7dc7e5270d",
+      "label_anchor_ids": [],
+      "object_id": "obj_00002",
+      "provenance": [
+        {
+          "drawing_index": 1,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3515,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3516,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3517,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3518,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002249",
+        "rel_006729",
+        "rel_007896"
+      ],
+      "size_isotropic": [
+        0.027258,
+        0.008407
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.833333,
+        "fill": null,
+        "fill_coverage": 0.833333,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.833333,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.833333,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.833333,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.666667,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.833333,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.833333
+      },
+      "type": "CLOSED_REGION"
+    },
+    {
+      "bbox_norm": [
+        0.697332,
+        0.085087,
+        0.749711,
+        0.094437
+      ],
+      "center_isotropic": [
+        0.31667,
+        0.080708
+      ],
+      "family_signature": "be281647f8064e14",
+      "formation": {
+        "atom_count": 6,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 5,
+          "6": 4
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "1": 2,
+          "4": 4
+        },
+        "endpoints": 2,
+        "length_isotropic": 0.09626,
+        "nodes": 6,
+        "segment_count": 9
+      },
+      "geometry_signature": "abb80e9191c524a885dd",
+      "label_anchor_ids": [],
+      "object_id": "obj_00003",
+      "provenance": [
+        {
+          "drawing_index": 4,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3524,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3525,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3526,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3527,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002250",
+        "rel_006729",
+        "rel_007941"
+      ],
+      "size_isotropic": [
+        0.022925,
+        0.008407
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.833333,
+        "fill": null,
+        "fill_coverage": 0.833333,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.833333,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.833333,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.833333,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.666667,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.833333,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.833333
+      },
+      "type": "CLOSED_REGION"
+    },
+    {
+      "bbox_norm": [
+        0.84228,
+        0.804222,
+        0.870206,
+        0.862876
+      ],
+      "center_isotropic": [
+        0.374759,
+        0.74947
+      ],
+      "family_signature": "bf16283c8520121f",
+      "formation": {
+        "atom_count": 8,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 4,
+          "6": 7
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "1": 4,
+          "4": 2,
+          "5": 2
+        },
+        "endpoints": 4,
+        "length_isotropic": 0.113753,
+        "nodes": 8,
+        "segment_count": 11
+      },
+      "geometry_signature": "748ef515d458af0503f4",
+      "label_anchor_ids": [],
+      "object_id": "obj_00004",
+      "provenance": [
+        {
+          "drawing_index": 8,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3538,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3539,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3540,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3541,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002251",
+        "rel_005489",
+        "rel_005514",
+        "rel_006055",
+        "rel_006057",
+        "rel_006059",
+        "rel_006730",
+        "rel_006731",
+        "rel_006733",
+        "rel_006736"
+      ],
+      "size_isotropic": [
+        0.012223,
+        0.052738
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.875,
+        "fill": null,
+        "fill_coverage": 0.875,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.875,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.875,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.875,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.5,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.875,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.875
+      },
+      "type": "CLOSED_REGION"
+    },
+    {
+      "bbox_norm": [
+        0.84228,
+        0.722192,
+        0.870206,
+        0.727299
+      ],
+      "center_isotropic": [
+        0.374759,
+        0.651642
+      ],
+      "family_signature": "f3e097701ede3c77",
+      "formation": {
+        "atom_count": 5,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 4,
+          "6": 4
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "4": 4
+        },
+        "endpoints": 0,
+        "length_isotropic": 0.067256,
+        "nodes": 4,
+        "segment_count": 8
+      },
+      "geometry_signature": "9909818c570fb657d117",
+      "label_anchor_ids": [],
+      "object_id": "obj_00005",
+      "provenance": [
+        {
+          "drawing_index": 9,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3542,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3543,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3544,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3545,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002252",
+        "rel_006730",
+        "rel_006732",
+        "rel_006734",
+        "rel_006737"
+      ],
+      "size_isotropic": [
+        0.012223,
+        0.004592
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.8,
+        "fill": null,
+        "fill_coverage": 0.8,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.8,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.8,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.8,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.8,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.8,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.8
+      },
+      "type": "SYMBOL_OBJECT"
+    },
+    {
+      "bbox_norm": [
+        0.84228,
+        0.605171,
+        0.870206,
+        0.630633
+      ],
+      "center_isotropic": [
+        0.374759,
+        0.555575
+      ],
+      "family_signature": "b1ce80d59816af45",
+      "formation": {
+        "atom_count": 6,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 4,
+          "6": 5
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "1": 2,
+          "4": 4
+        },
+        "endpoints": 2,
+        "length_isotropic": 0.090149,
+        "nodes": 6,
+        "segment_count": 9
+      },
+      "geometry_signature": "7b423e304f2ec4679ac9",
+      "label_anchor_ids": [],
+      "object_id": "obj_00006",
+      "provenance": [
+        {
+          "drawing_index": 10,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3546,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3547,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3548,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3549,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002253",
+        "rel_006731",
+        "rel_006732",
+        "rel_006735",
+        "rel_006738",
+        "rel_007193"
+      ],
+      "size_isotropic": [
+        0.012223,
+        0.022893
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.833333,
+        "fill": null,
+        "fill_coverage": 0.833333,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.833333,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.833333,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.833333,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.666667,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.833333,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.833333
+      },
+      "type": "CLOSED_REGION"
+    },
+    {
+      "bbox_norm": [
+        0.914532,
+        0.301687,
+        0.930268,
+        0.308484
+      ],
+      "center_isotropic": [
+        0.403715,
+        0.274312
+      ],
+      "family_signature": "43210a92ac8b4f91",
+      "formation": {
+        "atom_count": 4,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 4,
+          "6": 3
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "3": 2,
+          "4": 2
+        },
+        "endpoints": 0,
+        "length_isotropic": 0.045883,
+        "nodes": 4,
+        "segment_count": 7
+      },
+      "geometry_signature": "51297945c476ca88539d",
+      "label_anchor_ids": [],
+      "object_id": "obj_00007",
+      "provenance": [
+        {
+          "drawing_index": 12,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3553,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3554,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3555,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002254",
+        "rel_006745"
+      ],
+      "size_isotropic": [
+        0.006887,
+        0.006111
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.75,
+        "fill": null,
+        "fill_coverage": 0.75,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.75,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.75,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.75,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.75,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.75,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.75
+      },
+      "type": "SYMBOL_OBJECT"
+    },
+    {
+      "bbox_norm": [
+        0.833636,
+        0.372892,
+        0.886016,
+        0.398389
+      ],
+      "center_isotropic": [
+        0.376328,
+        0.346741
+      ],
+      "family_signature": "ffd8e8316ae7a741",
+      "formation": {
+        "atom_count": 7,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 5,
+          "6": 5
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "1": 4,
+          "4": 4
+        },
+        "endpoints": 4,
+        "length_isotropic": 0.119186,
+        "nodes": 8,
+        "segment_count": 10
+      },
+      "geometry_signature": "02ffc6386d94fbf9336e",
+      "label_anchor_ids": [],
+      "object_id": "obj_00008",
+      "provenance": [
+        {
+          "drawing_index": 13,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3556,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3557,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3558,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3559,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002255",
+        "rel_006733",
+        "rel_006734",
+        "rel_006735",
+        "rel_006739",
+        "rel_006741",
+        "rel_007318"
+      ],
+      "size_isotropic": [
+        0.022925,
+        0.022925
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.857143,
+        "fill": null,
+        "fill_coverage": 0.857143,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.857143,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.857143,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.857143,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.571429,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.857143,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.857143
+      },
+      "type": "CLOSED_REGION"
+    },
+    {
+      "bbox_norm": [
+        0.84228,
+        0.501313,
+        0.870206,
+        0.531089
+      ],
+      "center_isotropic": [
+        0.374759,
+        0.464133
+      ],
+      "family_signature": "02f0dcb9dce47d5c",
+      "formation": {
+        "atom_count": 7,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 4,
+          "6": 6
+        },
+        "branch_points": 4,
+        "degree_histogram": {
+          "1": 2,
+          "4": 2,
+          "5": 2
+        },
+        "endpoints": 2,
+        "length_isotropic": 0.090958,
+        "nodes": 6,
+        "segment_count": 10
+      },
+      "geometry_signature": "ca30711b543ba30bacd7",
+      "label_anchor_ids": [],
+      "object_id": "obj_00009",
+      "provenance": [
+        {
+          "drawing_index": 68,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3814,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3815,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3816,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3817,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_002256",
+        "rel_006736",
+        "rel_006737",
+        "rel_006738",
+        "rel_006739"
+      ],
+      "size_isotropic": [
+        0.012223,
+        0.026773
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.857143,
+        "fill": null,
+        "fill_coverage": 0.857143,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.857143,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.857143,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.857143,
+        "stroke": [
+          0.502,
+          0.502,
+          0.502
+        ],
+        "stroke_coverage": 0.571429,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.857143,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.857143
+      },
+      "type": "CLOSED_REGION"
+    },
+    {
+      "bbox_norm": [
+        0.570706,
+        0.771065,
+        0.802829,
+        0.867443
+      ],
+      "center_isotropic": [
+        0.300584,
+        0.736617
+      ],
+      "family_signature": "ae29b589b6b3a02a",
+      "formation": {
+        "atom_count": 100,
+        "cap_sampled": false,
+        "rules": [
+          "bounded_symbol_group",
+          "source_path_items",
+          "spatial_connectivity_split"
+        ]
+      },
+      "geometry": {
+        "angle_histogram_15deg": {
+          "0": 33,
+          "2": 3,
+          "3": 9,
+          "6": 28,
+          "8": 12,
+          "9": 18
+        },
+        "branch_points": 26,
+        "degree_histogram": {
+          "1": 59,
+          "10": 1,
+          "2": 10,
+          "3": 6,
+          "4": 7,
+          "5": 5,
+          "6": 4,
+          "7": 2,
+          "8": 1
+        },
+        "endpoints": 59,
+        "length_isotropic": 0.738942,
+        "nodes": 95,
+        "segment_count": 103
+      },
+      "geometry_signature": "7582c9dc3b7e6f5bc537",
+      "label_anchor_ids": [],
+      "object_id": "obj_00010",
+      "provenance": [
+        {
+          "drawing_index": 73,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 2487,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 2490,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3335,
+          "source": "page.get_drawings"
+        },
+        {
+          "drawing_index": 3349,
+          "source": "page.get_drawings"
+        }
+      ],
+      "relation_ids": [
+        "rel_000497",
+        "rel_000498",
+        "rel_000499",
+        "rel_000500",
+        "rel_000501",
+        "rel_000502",
+        "rel_000503",
+        "rel_000504",
+        "rel_000505",
+        "rel_000506",
+        "rel_000507",
+        "rel_000508",
+        "rel_000509",
+        "rel_000510",
+        "rel_000511",
+        "rel_000512",
+        "rel_000513",
+        "rel_000514",
+        "rel_000515",
+        "rel_000516"
+      ],
+      "size_isotropic": [
+        0.101596,
+        0.086657
+      ],
+      "style": {
+        "dashes": "[] 0",
+        "dashes_coverage": 0.99,
+        "fill": null,
+        "fill_coverage": 0.99,
+        "fill_opacity": null,
+        "fill_opacity_coverage": 0.99,
+        "line_cap": [
+          1,
+          1,
+          1
+        ],
+        "line_cap_coverage": 0.99,
+        "line_join": 0.05999999865889549,
+        "line_join_coverage": 0.99,
+        "stroke": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stroke_coverage": 0.88,
+        "stroke_opacity": 1.0,
+        "stroke_opacity_coverage": 0.99,
+        "stroke_width": 0.24,
+        "stroke_width_coverage": 0.79
+      },
+      "type": "CLOSED_REGION"
+    }
+  ],
+  "quality": {
+    "bbox_reliable": true,
+    "dangerous_cap": true,
+    "extraction_reliable": true,
+    "object_formation_complete": false,
+    "status": "OBJECT_FORMATION_PARTIAL"
+  },
+  "relations": [
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000001",
+      "source_object": "obj_00001",
+      "target_object": "obj_00013",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000002",
+      "source_object": "obj_00001",
+      "target_object": "obj_00019",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000003",
+      "source_object": "obj_00001",
+      "target_object": "obj_00020",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000004",
+      "source_object": "obj_00001",
+      "target_object": "obj_00021",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000005",
+      "source_object": "obj_00001",
+      "target_object": "obj_00022",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000006",
+      "source_object": "obj_00001",
+      "target_object": "obj_00025",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000007",
+      "source_object": "obj_00001",
+      "target_object": "obj_00026",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000008",
+      "source_object": "obj_00001",
+      "target_object": "obj_00027",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000009",
+      "source_object": "obj_00001",
+      "target_object": "obj_00028",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000010",
+      "source_object": "obj_00001",
+      "target_object": "obj_00029",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000011",
+      "source_object": "obj_00001",
+      "target_object": "obj_00035",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000012",
+      "source_object": "obj_00001",
+      "target_object": "obj_00036",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000013",
+      "source_object": "obj_00001",
+      "target_object": "obj_00040",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000014",
+      "source_object": "obj_00001",
+      "target_object": "obj_00041",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000015",
+      "source_object": "obj_00001",
+      "target_object": "obj_00042",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000016",
+      "source_object": "obj_00001",
+      "target_object": "obj_00043",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000017",
+      "source_object": "obj_00001",
+      "target_object": "obj_00048",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000018",
+      "source_object": "obj_00001",
+      "target_object": "obj_00049",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000019",
+      "source_object": "obj_00001",
+      "target_object": "obj_00050",
+      "type": "CONNECTED_TO"
+    },
+    {
+      "confidence": 0.98,
+      "provenance": [
+        {
+          "evidence": "shared endpoint within isotropic tolerance",
+          "source": "vector_geometry"
+        }
+      ],
+      "relation_id": "rel_000020",
+      "source_object": "obj_00001",
+      "target_object": "obj_00051",
+      "type": "CONNECTED_TO"
+    }
+  ],
+  "research_only": true,
+  "schema_version": "graphic-block-description-v0.3-codex",
+  "uncertainties": [
+    "symbol_group_candidate_cap",
+    "relations_cap"
+  ],
+  "visible_geometry_summary": {
+    "extraction": {
+      "block_cropbox_space_rect": [
+        49.919579,
+        14.399487,
+        862.072754,
+        1682.820068
+      ],
+      "block_unrotated_rect": [
+        49.919579,
+        14.399487,
+        862.072754,
+        1682.820068
+      ],
+      "block_visual_rect": [
+        49.919579,
+        14.399487,
+        862.072735,
+        1682.820063
+      ],
+      "coordinate_method": "upstream visual coords + page.rotation_matrix; inverse audit via derotation_matrix + cropbox_position, matching production pdf_crop",
+      "drawings_intersecting_block": 10852,
+      "invisible_white_fill_only_filtered": 105,
+      "occupied_cells_after": null,
+      "occupied_cells_before": null,
+      "page_drawings_total": 40336,
+      "segments_after": 13064,
+      "segments_before": 13064,
+      "segments_capped": false,
+      "source_paths": 10852
+    },
+    "grouping": {
+      "candidate_limit_per_neighbor_cell": 64,
+      "selection": "32x32 spatial round-robin when over 2000 eligible atoms",
+      "symbol_candidate_cap": true,
+      "symbol_candidate_lists_truncated": 8407,
+      "symbol_candidates_after": 2000,
+      "symbol_candidates_before": 10407
+    },
+    "normalization": "positions use bbox axes; angles/lengths/object shape use one isotropic block-diagonal scale",
+    "object_types": {
+      "CLOSED_REGION": 56,
+      "COMPOSITE_GRAPHIC": 1,
+      "CONNECTED_NETWORK": 53,
+      "LINEAR_OBJECT": 1004,
+      "SYMBOL_OBJECT": 361,
+      "UNKNOWN_OBJECT": 1334
+    },
+    "objects": 2809,
+    "relations_capped": true,
+    "segments": 13064
+  }
+}

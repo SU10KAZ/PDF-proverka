@@ -1,0 +1,1292 @@
+{
+  "baseline_commits": [
+    "1619fc3f",
+    "5e334546"
+  ],
+  "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+  "corpus_limit": "Three manually confirmed graphical-change positives exist among eligible prepared pairs after independent raster adjudication; controlled falsifiers supplement mechanism coverage but are reported separately.",
+  "excluded": {
+    "eom_singleline_changed": "No upstream 02_work/blocks.json exists for either selected EOM version; its v0.2 manual bbox is forbidden by the v0.3 input contract."
+  },
+  "pairs": [
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "Text differences are handled by the separate text pipeline and are not graphic GT.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_scheme_text_changed",
+      "scope": {
+        "block_group_id": "ss_scheme_text_changed",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_scheme_text_changed",
+            "block_id": "blk_13624dcbe2024b148a2027e1b68e2a0d",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_scheme_text_changed",
+            "block_id": "blk_11f1168f77f84b9283dec8a7bc14e9bb",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "low-current scheme; text-heavy; repeated symbols",
+      "test_focus": [
+        "TEXT_ONLY_CHANGE"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_plan_dense",
+      "scope": {
+        "block_group_id": "ss_plan_dense",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_plan_dense",
+            "block_id": "blk_d90a5202d19446f98ac56faa29fa1866",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_plan_dense",
+            "block_id": "blk_1aa5b443eecf469baf0b5eb1ad7f1d90",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "dense plan; complex block; repeated symbols",
+      "test_focus": [
+        "DENSE_BLOCK"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_simple_node",
+      "scope": {
+        "block_group_id": "ss_simple_node",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_simple_node",
+            "block_id": "blk_b211a2e9337f4919a1778e0cff077036",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_simple_node",
+            "block_id": "blk_73badd6d4cb245f0a6938b14d5fd3f8b",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "simple engineering node",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_table_graphic",
+      "scope": {
+        "block_group_id": "ss_table_graphic",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_table_graphic",
+            "block_id": "blk_17e54c2231764e31a50c9d0562062595",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_table_graphic",
+            "block_id": "blk_d3ec638f07c74c30a7c1e377d31c3cb2",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "table plus engineering graphic; text-heavy",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan",
+      "scope": {
+        "block_group_id": "ar_plan",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan",
+            "block_id": "blk_36924229bfbd4815a97d05574630c024",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan",
+            "block_id": "blk_82b6b709d49f4212a51406e6718d4cc4",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "architectural plan; repeated elements",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_wall_sections",
+      "scope": {
+        "block_group_id": "ar_wall_sections",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_wall_sections",
+            "block_id": "blk_3f8c724069da4c16ab2ad2b4937b30ea",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_wall_sections",
+            "block_id": "blk_b848efce2b7945d99d79a0e62f91b3d1",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "architectural sections; repeated details",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": [
+          {
+            "fact": "RIGHT adds numerous small red ring markers at plumbing nodes.",
+            "region": "plumbing connection points across plan",
+            "type": "ADDED_OBJECT"
+          }
+        ]
+      },
+      "pair_id": "vk_plan",
+      "scope": {
+        "block_group_id": "vk_plan",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_plan",
+            "block_id": "blk_12e23ade2e3941858eaad46999854805",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_plan",
+            "block_id": "blk_e17fec33dede49a1afd852a3722772e3",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "plumbing plan; labels and repeated symbols",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": [
+          {
+            "fact": "RIGHT adds a short horizontal branch/fitting and its graphical dimension line.",
+            "region": "lower orange drainage fragment",
+            "type": "ADDED_OBJECT"
+          }
+        ]
+      },
+      "pair_id": "vk_nodes",
+      "scope": {
+        "block_group_id": "vk_nodes",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_nodes",
+            "block_id": "blk_7c569840edbd4ba799ae8d2caa95a21f",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_nodes",
+            "block_id": "blk_3cf60019068e48acabf0a44cdfcf1213",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "plumbing engineering nodes; tall complex block",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_node_plan",
+      "scope": {
+        "block_group_id": "vk_node_plan",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_node_plan",
+            "block_id": "blk_d2335c3dbca34b82b596cf3ee382a4db",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_node_plan",
+            "block_id": "blk_c2dfc4b446614255bc825df6b6288587",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "plumbing node and plan; mixed geometry",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "UNSURE",
+        "graphic_scope_note": "Prepared blocks cover different semantic extents; a block matcher or remapping would be needed, and is out of scope.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_crop_mismatch_page07",
+      "scope": {
+        "block_group_id": "ss_crop_mismatch_page07",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_crop_mismatch_page07",
+            "block_id": "blk_fbcc7cf80170404892bedddc7f5cc68e",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_crop_mismatch_page07",
+            "block_id": "blk_634dd5b79f9346b5b9e4d01a5e59726f",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "real dense plan; semantic crop mismatch",
+      "test_focus": [
+        "DENSE_BLOCK",
+        "CROP_EDGE_CASE"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_plan_page09",
+      "scope": {
+        "block_group_id": "ss_plan_page09",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_plan_page09",
+            "block_id": "blk_3b3aec40658045fbb98ddb801e115b41",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_plan_page09",
+            "block_id": "blk_552c36eb68f949eeb46ca7b578f3283f",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "dense plan; same crop",
+      "test_focus": [
+        "DENSE_BLOCK",
+        "CROP_EDGE_CASE"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_plan_page11",
+      "scope": {
+        "block_group_id": "ss_plan_page11",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_plan_page11",
+            "block_id": "blk_e1d399f4675849219328e15935bad316",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_plan_page11",
+            "block_id": "blk_bca79355a8d940258f6e13e33b450608",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "curved plan; repeated labels",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_plan_page12",
+      "scope": {
+        "block_group_id": "ss_plan_page12",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_plan_page12",
+            "block_id": "blk_adc391730ffc4d2586f0006020d048ec",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_plan_page12",
+            "block_id": "blk_790d85eb4d304084abc9de2165787783",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "tall plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_plan_page13",
+      "scope": {
+        "block_group_id": "ss_plan_page13",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_plan_page13",
+            "block_id": "blk_f99e8e966cea44aea69979480dabcba6",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_plan_page13",
+            "block_id": "blk_7680e3e8f14f457ba5f99af006a21af4",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "long dense plan",
+      "test_focus": [
+        "DENSE_BLOCK"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_plan_page14",
+      "scope": {
+        "block_group_id": "ss_plan_page14",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_plan_page14",
+            "block_id": "blk_7f0f3c77addf44fc8656d6d8397ef376",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_plan_page14",
+            "block_id": "blk_5cf2e6a664ca4027b705c14f73735ead",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "angled plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_detail_page17",
+      "scope": {
+        "block_group_id": "ss_detail_page17",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_detail_page17",
+            "block_id": "blk_546083b72a744614ac9dd0090cfb213a",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_detail_page17",
+            "block_id": "blk_14d0b1e2de3e48b38cd2e708d2d84b43",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "simple details; hatches",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "SS",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ss_table_page19",
+      "scope": {
+        "block_group_id": "ss_table_page19",
+        "left_blocks": [
+          {
+            "block_group_id": "ss_table_page19",
+            "block_id": "blk_1e6b496d718740deb5bbc73ec0ca3306",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ss_table_page19",
+            "block_id": "blk_26e345ae1c614eecad4b894e4d5193ba",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "equipment table; text-heavy",
+      "test_focus": [
+        "TABLE_ONLY_OR_TABLE_BLOCK"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_plan_page07",
+      "scope": {
+        "block_group_id": "vk_plan_page07",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_plan_page07",
+            "block_id": "blk_4bf7cb4b5c8745e4b84c1765a798ba13",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_plan_page07",
+            "block_id": "blk_38634c774ac341408511ce0d252846e3",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "plumbing plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_plan_page08",
+      "scope": {
+        "block_group_id": "vk_plan_page08",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_plan_page08",
+            "block_id": "blk_67633b17aa9d46dea652c99bad9743a6",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_plan_page08",
+            "block_id": "blk_e566e7f21b2140c98e7652f3eab75900",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "plumbing plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_plan_page10",
+      "scope": {
+        "block_group_id": "vk_plan_page10",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_plan_page10",
+            "block_id": "blk_6a5de03a4afa40c7a7747adbf9c62109",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_plan_page10",
+            "block_id": "blk_63a6c0ccfcf94fb79c40ddf7e83ca94b",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "two riser diagrams",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_nodes_page11",
+      "scope": {
+        "block_group_id": "vk_nodes_page11",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_nodes_page11",
+            "block_id": "blk_994c950db379410b86c701fd60e36e56",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_nodes_page11",
+            "block_id": "blk_2cb30408c82044caa1fdce62b5c96a96",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "multiple engineering nodes",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_diagrams_page16",
+      "scope": {
+        "block_group_id": "vk_diagrams_page16",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_diagrams_page16",
+            "block_id": "blk_ac23f3fc7f7f42e7a61b4efe7bd2d4fc",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_diagrams_page16",
+            "block_id": "blk_d344edef80a8489fad5677986ef975fc",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "riser diagrams",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "Text differences are handled by the separate text pipeline and are not graphic GT.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_axono_page17",
+      "scope": {
+        "block_group_id": "vk_axono_page17",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_axono_page17",
+            "block_id": "blk_ea2bc6b4de4b406d9fef6ea5ff9eebee",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_axono_page17",
+            "block_id": "blk_972098b0570344e49e54c396ea55d3c3",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "axonometric diagram",
+      "test_focus": [
+        "TEXT_ONLY_CHANGE"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_diagrams_page18",
+      "scope": {
+        "block_group_id": "vk_diagrams_page18",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_diagrams_page18",
+            "block_id": "blk_e6921c281fb040439a5ffacdfb818d55",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_diagrams_page18",
+            "block_id": "blk_6a452addf6134686831a50ee2dd17379",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "multiple diagrams",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "VK",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "vk_axono_page20",
+      "scope": {
+        "block_group_id": "vk_axono_page20",
+        "left_blocks": [
+          {
+            "block_group_id": "vk_axono_page20",
+            "block_id": "blk_f3952b21781b408dbda489fc25845e05",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "vk_axono_page20",
+            "block_id": "blk_9d7bfa92dbd3476aaf0f2d7a194c1297",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "axonometric diagram; crop padding",
+      "test_focus": [
+        "CROP_EDGE_CASE"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page05",
+      "scope": {
+        "block_group_id": "ar_plan_page05",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page05",
+            "block_id": "blk_5ef204dbfe96487da0692e278679a81f",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page05",
+            "block_id": "blk_268725917f604096be71a1ee6d4f0ccf",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "large dense architecture plan",
+      "test_focus": [
+        "DENSE_BLOCK"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page07",
+      "scope": {
+        "block_group_id": "ar_plan_page07",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page07",
+            "block_id": "blk_f808177d1ca141a684ce53a4a5c94580",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page07",
+            "block_id": "blk_528240b7b24c4460a032144842731cab",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "dense apartment plan",
+      "test_focus": [
+        "DENSE_BLOCK"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page08",
+      "scope": {
+        "block_group_id": "ar_plan_page08",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page08",
+            "block_id": "blk_0ce1019e612345b48fe5db00037023fa",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page08",
+            "block_id": "blk_46ce98f3f24b4cc0a0075926b417cf6d",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "dense apartment plan; crop padding",
+      "test_focus": [
+        "DENSE_BLOCK",
+        "CROP_EDGE_CASE"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page10",
+      "scope": {
+        "block_group_id": "ar_plan_page10",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page10",
+            "block_id": "blk_2e4fcac867994d36988bf5efad0d15b0",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page10",
+            "block_id": "blk_0b196bf490e04861893a35859f883ad4",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "tall apartment plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page11",
+      "scope": {
+        "block_group_id": "ar_plan_page11",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page11",
+            "block_id": "blk_c1072b23eb2f4d408aec5696d1c5af68",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page11",
+            "block_id": "blk_52c37a67088c4779924d4210ba9b8f80",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "wide apartment plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page12",
+      "scope": {
+        "block_group_id": "ar_plan_page12",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page12",
+            "block_id": "blk_dce28beee72d40028cb5bf61c856a661",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page12",
+            "block_id": "blk_303ff7cecbbd4bdd91e949dea1f13648",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "wide apartment plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page13",
+      "scope": {
+        "block_group_id": "ar_plan_page13",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page13",
+            "block_id": "blk_080fac3e518047229caf432e7178a4f8",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page13",
+            "block_id": "blk_5154285adb8d43e5911c5a83cd1bc85b",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "narrow tall plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "AR",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ar_plan_page16",
+      "scope": {
+        "block_group_id": "ar_plan_page16",
+        "left_blocks": [
+          {
+            "block_group_id": "ar_plan_page16",
+            "block_id": "blk_55c46b96b32c42bcb1f65a385201c02c",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ar_plan_page16",
+            "block_id": "blk_4e1a412900e64600b2f01fa87dfd5fec",
+            "blocks_json": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "large courtyard plan",
+      "test_focus": [
+        "DENSE_BLOCK"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ov_plan_floor04",
+      "scope": {
+        "block_group_id": "ov_plan_floor04",
+        "left_blocks": [
+          {
+            "block_group_id": "ov_plan_floor04",
+            "block_id": "blk_75fa57b1daea4023915bf824f2eac458",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ov_plan_floor04",
+            "block_id": "blk_2cbc90bfff2e4cf3ac01b1573cfbd5c7",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "ventilation floor plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ov_plan_floor05",
+      "scope": {
+        "block_group_id": "ov_plan_floor05",
+        "left_blocks": [
+          {
+            "block_group_id": "ov_plan_floor05",
+            "block_id": "blk_7a93d50b432641eda7fe5aa726452100",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ov_plan_floor05",
+            "block_id": "blk_70eca0411db047eb86e0f374d45be47f",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "ventilation floor plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ov_plan_floor06",
+      "scope": {
+        "block_group_id": "ov_plan_floor06",
+        "left_blocks": [
+          {
+            "block_group_id": "ov_plan_floor06",
+            "block_id": "blk_2212f35196ec4143ad0db68029a2ccb3",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ov_plan_floor06",
+            "block_id": "blk_515c6ef44da248c4bd0928ac1a5c194a",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "ventilation floor plan",
+      "test_focus": [
+        "REAL_UNCHANGED_CONTROL"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_graphic_verdict": "GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": [
+          {
+            "fact": "Internal graphical equipment contours/symbols present on the left are absent on the right.",
+            "region": "several pink equipment zones",
+            "type": "REMOVED_OBJECT"
+          }
+        ]
+      },
+      "pair_id": "ov_plan_floor07",
+      "scope": {
+        "block_group_id": "ov_plan_floor07",
+        "left_blocks": [
+          {
+            "block_group_id": "ov_plan_floor07",
+            "block_id": "blk_28ef636509184e52b6709241f6189393",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ov_plan_floor07",
+            "block_id": "blk_447b14f9866c41c7b4ecd5078bfd8066",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "curved ventilation plan",
+      "test_focus": [
+        "LOCAL_REMOVAL",
+        "GRAPHIC_CHANGE"
+      ]
+    },
+    {
+      "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+      "discipline": "OV",
+      "ground_truth": {
+        "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+        "graphic_scope_note": "No manually confirmed graphical-object change.",
+        "important_graphic_events": []
+      },
+      "pair_id": "ov_equipment_table",
+      "scope": {
+        "block_group_id": "ov_equipment_table",
+        "left_blocks": [
+          {
+            "block_group_id": "ov_equipment_table",
+            "block_id": "blk_21446c486e0f453890207c46506b5945",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v001/02_work/blocks.json"
+          }
+        ],
+        "pairing_source": "fixed benchmark pair; automatic block and 1-to-N matching are out of scope",
+        "right_blocks": [
+          {
+            "block_group_id": "ov_equipment_table",
+            "block_id": "blk_a56f604b46114e28841e0af4a8425d86",
+            "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/blocks.json"
+          }
+        ]
+      },
+      "selection": "Existing manually paired block IDs from baseline commits 1619fc3f/5e334546; coordinates are not copied and are resolved from blocks.json.",
+      "source_kind": "equipment table; text-heavy",
+      "test_focus": [
+        "TABLE_ONLY_OR_TABLE_BLOCK"
+      ]
+    }
+  ],
+  "research_only": true,
+  "schema_version": "prepared-graphic-block-benchmark-v0.3-codex",
+  "selection_method": "38 real pairs whose block IDs resolve in existing blocks.json. No bbox is present in this manifest and no block matcher runs."
+}

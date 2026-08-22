@@ -1,0 +1,98 @@
+{
+  "cases": [
+    {
+      "case_id": "local_removal_among_50000_lines",
+      "change_count": 1,
+      "detected_statuses": [
+        "REMOVED"
+      ],
+      "expected_statuses": [
+        "REMOVED"
+      ],
+      "passed": true,
+      "route": "GRAPHIC_HYBRID"
+    },
+    {
+      "case_id": "same_rectangle_repacked",
+      "change_count": 0,
+      "detected_statuses": [],
+      "expected_statuses": [],
+      "passed": true,
+      "route": "GRAPHIC_HYBRID"
+    },
+    {
+      "case_id": "similar_objects_swapped",
+      "change_count": 0,
+      "detected_statuses": [],
+      "expected_statuses": [
+        "POSITION_CHANGED"
+      ],
+      "passed": false,
+      "route": "GRAPHIC_VECTOR_OK"
+    },
+    {
+      "case_id": "unlabelled_object_removed",
+      "change_count": 1,
+      "detected_statuses": [
+        "REMOVED"
+      ],
+      "expected_statuses": [
+        "REMOVED"
+      ],
+      "passed": true,
+      "route": "GRAPHIC_HYBRID"
+    },
+    {
+      "case_id": "good_label_anchor_repacked",
+      "change_count": 0,
+      "detected_statuses": [],
+      "expected_statuses": [],
+      "passed": true,
+      "route": "GRAPHIC_HYBRID"
+    },
+    {
+      "case_id": "text_changed_graphics_same",
+      "change_count": 0,
+      "detected_statuses": [],
+      "expected_statuses": [],
+      "passed": true,
+      "route": "GRAPHIC_HYBRID"
+    },
+    {
+      "case_id": "table_content_changed",
+      "change_count": 0,
+      "detected_statuses": [],
+      "expected_statuses": [],
+      "passed": true,
+      "route": "GRAPHIC_VECTOR_OK"
+    },
+    {
+      "case_id": "matched_object_style_changed",
+      "change_count": 1,
+      "detected_statuses": [
+        "STYLE_CHANGED"
+      ],
+      "expected_statuses": [
+        "STYLE_CHANGED"
+      ],
+      "passed": true,
+      "route": "GRAPHIC_HYBRID"
+    },
+    {
+      "case_id": "connection_removed",
+      "change_count": 2,
+      "detected_statuses": [
+        "CONNECTION_CHANGED"
+      ],
+      "expected_statuses": [
+        "CONNECTION_CHANGED"
+      ],
+      "passed": true,
+      "route": "GRAPHIC_HYBRID"
+    }
+  ],
+  "not_real_benchmark": true,
+  "passed": 8,
+  "schema_version": "controlled-graphic-falsifiers-v0.3-codex",
+  "total": 9
+}

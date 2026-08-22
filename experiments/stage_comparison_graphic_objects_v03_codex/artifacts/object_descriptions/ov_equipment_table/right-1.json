@@ -1,0 +1,64 @@
+{
+  "artifact_retention": {
+    "full_counts": {
+      "object_families": 0,
+      "objects": 0,
+      "relations": 0
+    },
+    "full_lossless_artifact": "right-1.full.json.gz",
+    "full_uncompressed_bytes": 1608,
+    "full_uncompressed_sha256": "5d2b150f0823a97839f96556c9c750211f2b1d110854d34b399ca104e23d288b",
+    "index_is_sampled": true
+  },
+  "input": {
+    "block_group_id": "ov_equipment_table",
+    "block_id": "blk_a56f604b46114e28841e0af4a8425d86",
+    "block_type": "text",
+    "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/blocks.json",
+    "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+    "coords_norm": [
+      0.04524680972099304,
+      0.01217050850391388,
+      0.9942729771137238,
+      0.5083749145269394
+    ],
+    "crop_url": "https://vibe.cloud-ip.cc/api/crops/afyvAFt_W2tAaCGtriDo",
+    "document_id": "doc_9c1e1e956b9d4e0ba2e81671e20d1c7d",
+    "document_name": "13АВ-РД-ОВ2-К7_V2.pdf",
+    "document_path": "Рабочая документация / [ОВ] Отопление и вентиляция / 13АВ-РД-ОВ2-К7 / 13АВ-РД-ОВ2-К7_V2.pdf",
+    "export_status": "recognized",
+    "graphic_applicability": "GRAPHIC_NOT_APPLICABLE",
+    "page_artifact": {
+      "height_px": 3508,
+      "rotation": 0,
+      "width_px": 4961
+    },
+    "page_index": 13,
+    "page_label": 14,
+    "polygon_points_norm": null,
+    "prepared_text_metadata": [],
+    "prepared_text_metadata_source": "not_available",
+    "provenance": [
+      "02_work/blocks.json:blocks[]",
+      "02_work/blocks.json:pages[]",
+      "02_work/document.pdf"
+    ],
+    "schema_version": "already-prepared-graphic-block-v1",
+    "shape_type": "rectangle",
+    "source_pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К7_V1/versions/v002/02_work/document.pdf",
+    "status": "recognized"
+  },
+  "object_families": [],
+  "objects": [],
+  "quality": {
+    "reasons": [
+      "upstream block_type=text"
+    ],
+    "status": "GRAPHIC_NOT_APPLICABLE"
+  },
+  "relations": [],
+  "research_only": true,
+  "schema_version": "graphic-block-description-v0.3-codex",
+  "uncertainties": [],
+  "visible_geometry_summary": {}
+}

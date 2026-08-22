@@ -1,0 +1,31 @@
+{
+  "schema_version": "already-prepared-graphic-block-contract-v1",
+  "research_only": true,
+  "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+  "benchmark_reference": {
+    "required": ["blocks_json", "block_id"],
+    "optional": ["block_group_id"],
+    "forbidden": ["bbox", "bbox_norm", "coords_norm", "polygon_points"],
+    "reason": "Coordinates must be resolved from the authoritative existing artifact, not duplicated in the benchmark."
+  },
+  "authoritative_artifacts": {
+    "blocks": "<version>/02_work/blocks.json",
+    "source_pdf": "<version>/02_work/document.pdf",
+    "optional_prepared_text_metadata": "<version>/03_analysis/latest|runs/<run>/block_vector_graphs/<block_id>.json#graph.semantic_ledger"
+  },
+  "blocks_json_contract": {
+    "schema_version": "1.0",
+    "coordinate_space": "normalized_page_top_left",
+    "page_fields": ["page_index", "width_px", "height_px", "rotation"],
+    "block_fields": ["block_id", "page_index", "page_label", "block_type", "shape_type", "coords_norm", "polygon_points", "crop_url", "status", "export_status"],
+    "access_link": "crop_url is the real stored block access URL when populated; the research falls back to the colocated source PDF and does not invent a second cloud-link contract."
+  },
+  "coordinate_oracle": "backend/app/services/common/pdf_crop.py::extract_block_crop",
+  "coordinate_mapping": "coords_norm visual page -> derotation_matrix -> visible CropBox intersection + cropbox position",
+  "scope_contract": {
+    "left_blocks": "non-empty array of explicit prepared-block references",
+    "right_blocks": "non-empty array of explicit prepared-block references",
+    "block_group_id": "forward-compatible scope identity",
+    "matcher": "No block, sheet or 1-to-N matcher is implemented in this experiment."
+  }
+}

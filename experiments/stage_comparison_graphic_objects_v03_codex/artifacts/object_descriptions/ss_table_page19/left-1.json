@@ -1,0 +1,64 @@
+{
+  "artifact_retention": {
+    "full_counts": {
+      "object_families": 0,
+      "objects": 0,
+      "relations": 0
+    },
+    "full_lossless_artifact": "left-1.full.json.gz",
+    "full_uncompressed_bytes": 1594,
+    "full_uncompressed_sha256": "2d395d8e6d35d4276897ae1bffbcd6551555716a9ab87addce1ac28dbe063c11",
+    "index_is_sampled": true
+  },
+  "input": {
+    "block_group_id": "ss_table_page19",
+    "block_id": "blk_1e6b496d718740deb5bbc73ec0ca3306",
+    "block_type": "text",
+    "blocks_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/blocks.json",
+    "comparison_unit": "ALREADY_PREPARED_GRAPHIC_BLOCK",
+    "coords_norm": [
+      0.0455574095249176,
+      0.014387667179107666,
+      0.9946089684963226,
+      0.7871251702308655
+    ],
+    "crop_url": "https://vibe.cloud-ip.cc/api/crops/wPthZnvhJ4l9KDo1H3ke",
+    "document_id": "doc_d11cadc4016c4caeb2ac4857ea654845",
+    "document_name": "13AB-РД-СОТ-К7_V2.pdf",
+    "document_path": "Рабочая документация / [ЭОМ] Электроснабжение / 13АВ-РД-СОТ-К7 / 13AB-РД-СОТ-К7_V2.pdf",
+    "export_status": "recognized",
+    "graphic_applicability": "GRAPHIC_NOT_APPLICABLE",
+    "page_artifact": {
+      "height_px": 3508,
+      "rotation": 0,
+      "width_px": 4961
+    },
+    "page_index": 18,
+    "page_label": 19,
+    "polygon_points_norm": null,
+    "prepared_text_metadata": [],
+    "prepared_text_metadata_source": "not_available",
+    "provenance": [
+      "02_work/blocks.json:blocks[]",
+      "02_work/blocks.json:pages[]",
+      "02_work/document.pdf"
+    ],
+    "schema_version": "already-prepared-graphic-block-v1",
+    "shape_type": "rectangle",
+    "source_pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+    "status": "recognized"
+  },
+  "object_families": [],
+  "objects": [],
+  "quality": {
+    "reasons": [
+      "upstream block_type=text"
+    ],
+    "status": "GRAPHIC_NOT_APPLICABLE"
+  },
+  "relations": [],
+  "research_only": true,
+  "schema_version": "graphic-block-description-v0.3-codex",
+  "uncertainties": [],
+  "visible_geometry_summary": {}
+}

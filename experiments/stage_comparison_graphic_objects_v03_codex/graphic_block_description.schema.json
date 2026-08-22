@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graphic-block-description-v0.3-codex",
+  "type": "object",
+  "required": ["schema_version", "research_only", "input", "quality", "objects", "object_families", "relations", "visible_geometry_summary", "uncertainties"],
+  "properties": {
+    "schema_version": {"const": "graphic-block-description-v0.3-codex"},
+    "research_only": {"const": true},
+    "input": {"type": "object", "required": ["comparison_unit", "block_id", "blocks_json", "source_pdf", "page_index", "coords_norm", "block_type", "graphic_applicability"]},
+    "quality": {"type": "object", "required": ["status"]},
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["object_id", "type", "bbox_norm", "center_isotropic", "size_isotropic", "geometry_signature", "family_signature", "geometry", "style", "label_anchor_ids", "relation_ids", "formation", "provenance"],
+        "properties": {
+          "object_id": {"type": "string"},
+          "type": {"enum": ["SYMBOL_OBJECT", "LINEAR_OBJECT", "CLOSED_REGION", "CONNECTED_NETWORK", "COMPOSITE_GRAPHIC", "ANNOTATION_GRAPHIC", "UNKNOWN_OBJECT"]},
+          "bbox_norm": {"type": "array", "prefixItems": [{"type": "number"}, {"type": "number"}, {"type": "number"}, {"type": "number"}], "minItems": 4, "maxItems": 4},
+          "center_isotropic": {"type": "array", "minItems": 2, "maxItems": 2},
+          "size_isotropic": {"type": "array", "minItems": 2, "maxItems": 2},
+          "geometry_signature": {"type": "string"},
+          "family_signature": {"type": "string"},
+          "geometry": {"type": "object"},
+          "style": {"type": "object"},
+          "label_anchor_ids": {"type": "array", "items": {"type": "string"}},
+          "relation_ids": {"type": "array", "items": {"type": "string"}},
+          "formation": {"type": "object"},
+          "provenance": {"type": "array", "items": {"type": "object"}}
+        }
+      }
+    },
+    "object_families": {"type": "array", "items": {"type": "object"}},
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relation_id", "type", "source_object", "target_object", "confidence", "provenance"],
+        "properties": {
+          "type": {"enum": ["CONNECTED_TO", "CONTAINS", "INSIDE", "ADJACENT_TO", "ALIGNED_WITH", "PART_OF", "LABEL_ANCHOR", "LEADER_TO", "REPEATS_WITH", "INTERSECTS", "PARALLEL_TO"]}
+        }
+      }
+    },
+    "visible_geometry_summary": {"type": "object"},
+    "uncertainties": {"type": "array", "items": {"type": "string"}},
+    "artifact_retention": {"type": "object"}
+  }
+}

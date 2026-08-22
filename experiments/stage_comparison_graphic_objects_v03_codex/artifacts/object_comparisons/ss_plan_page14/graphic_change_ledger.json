@@ -1,0 +1,1211 @@
+{
+  "alignment": {
+    "anchor_count": 95,
+    "evidence": [
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00056",
+        "right_object": "b1:obj_00050"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00481",
+        "right_object": "b1:obj_00522"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00453",
+        "right_object": "b1:obj_00496"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00208",
+        "right_object": "b1:obj_00196"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00536",
+        "right_object": "b1:obj_00580"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00406",
+        "right_object": "b1:obj_00443"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00239",
+        "right_object": "b1:obj_00067"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00465",
+        "right_object": "b1:obj_00505"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00808",
+        "right_object": "b1:obj_00834"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00485",
+        "right_object": "b1:obj_00525"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00993",
+        "right_object": "b1:obj_01006"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00430",
+        "right_object": "b1:obj_00470"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00404",
+        "right_object": "b1:obj_00441"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00585",
+        "right_object": "b1:obj_00626"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00432",
+        "right_object": "b1:obj_00475"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00463",
+        "right_object": "b1:obj_00504"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00068",
+        "right_object": "b1:obj_00058"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00477",
+        "right_object": "b1:obj_00516"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00458",
+        "right_object": "b1:obj_00501"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00442",
+        "right_object": "b1:obj_00487"
+      }
+    ],
+    "median_residual_isotropic": 4e-06,
+    "model": "translation_plus_uniform_scale",
+    "provenance": "unique generic object signatures; no affine warp",
+    "reliable": true,
+    "translation_isotropic": [
+      0.00233,
+      -0.001229
+    ],
+    "uniform_scale": 0.99882
+  },
+  "applicability": "GRAPHIC_APPLICABLE",
+  "artifact_retention": {
+    "full_counts": {
+      "changes": 1092,
+      "object_matches": 951,
+      "object_statuses": 1463
+    },
+    "full_lossless_artifact": "graphic_change_ledger.full.json.gz",
+    "full_uncompressed_bytes": 1258236,
+    "full_uncompressed_sha256": "abeccbe56d178e6e3bc24cb80fe7582184f3b5dcb56f23b8cba312f4295b452a",
+    "index_is_sampled": true
+  },
+  "block_pair": "ss_plan_page14",
+  "changes": [
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.672783,
+      "event_id": "event_00001",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.00011",
+        "uniform size log-ratio=0.00008",
+        {
+          "after_signature": "ea4bfa355535330e9bc9",
+          "before_signature": "9335e576a9071c1917fc",
+          "length_log_ratio": 0.021993,
+          "segment_log_ratio": 0.034588,
+          "topology_changed": true
+        }
+      ],
+      "left_object": "b1:obj_00001",
+      "right_object": "b1:obj_00001",
+      "status": "GEOMETRY_CHANGED",
+      "type": "GEOMETRY_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.672783,
+      "event_id": "event_00002",
+      "evidence": {
+        "preview": "[\"same generic type and similar topology size\",\"aligned position residual=0.00011\",\"uniform size log-ratio=0.00008\",{\"after_mapped_to_left\":[[\"CONNECTED_TO\",\"b1:obj_00002\"],[\"CONNECTED_TO\",\"b1:obj_00003\"],[\"CONNECTED_TO\",\"b1:obj_00010\"],[\"CONNECTED_TO\",\"b1:obj_00011\"],[\"CONNECTED_TO\",\"b1:obj_00012\"],[\"CONNECTED_TO\",\"b1:obj_00013\"],[\"CONNECTED_TO\",\"b1:obj_00016\"],[\"CONNECTED_TO\",\"b1:obj_00020\"],[\"CONNECTED_TO\",\"b1:obj_00021\"],[\"CONNECTED_TO\",\"b1:obj_00022\"],[\"CONNECTED_TO\",\"b1:obj_00024\"],[\"CONNE",
+        "sample_truncated": true,
+        "uncompressed_json_chars": 32522
+      },
+      "left_object": "b1:obj_00001",
+      "right_object": "b1:obj_00001",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.806298,
+      "event_id": "event_00003",
+      "evidence": [
+        "same generic object family",
+        "aligned position residual=0.02534",
+        "uniform size log-ratio=0.00118",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00003"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00002",
+      "right_object": "b1:obj_00002",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.806298,
+      "event_id": "event_00004",
+      "evidence": [
+        "same generic object family",
+        "aligned position residual=0.02534",
+        "uniform size log-ratio=0.00118",
+        {
+          "aligned_residual_isotropic": 0.025339
+        }
+      ],
+      "left_object": "b1:obj_00002",
+      "right_object": "b1:obj_00002",
+      "status": "POSITION_CHANGED",
+      "type": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.444038,
+      "event_id": "event_00005",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.06858",
+        "uniform size log-ratio=0.21502",
+        {
+          "after_signature": "d3676031891d679c38bf",
+          "before_signature": "92a4ea6b24c3f9bd4b97",
+          "length_log_ratio": 0.32866,
+          "segment_log_ratio": 0.0,
+          "topology_changed": true
+        }
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": "b1:obj_00416",
+      "status": "GEOMETRY_CHANGED",
+      "type": "GEOMETRY_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.444038,
+      "event_id": "event_00006",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.06858",
+        "uniform size log-ratio=0.21502",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "unmatched:b1:obj_00417"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00002"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": "b1:obj_00416",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.444038,
+      "event_id": "event_00007",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.06858",
+        "uniform size log-ratio=0.21502",
+        {
+          "aligned_residual_isotropic": 0.068583
+        }
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": "b1:obj_00416",
+      "status": "POSITION_CHANGED",
+      "type": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00008",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00004",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.546177,
+      "event_id": "event_00009",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05350",
+        "uniform size log-ratio=0.00025",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00312"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00005",
+      "right_object": "b1:obj_00311",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.546177,
+      "event_id": "event_00010",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05350",
+        "uniform size log-ratio=0.00025",
+        {
+          "aligned_residual_isotropic": 0.053499
+        }
+      ],
+      "left_object": "b1:obj_00005",
+      "right_object": "b1:obj_00311",
+      "status": "POSITION_CHANGED",
+      "type": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00012",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.03334",
+        "uniform size log-ratio=0.04649",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00229"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00915"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00007",
+      "right_object": "b1:obj_00240",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00013",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.03334",
+        "uniform size log-ratio=0.04649",
+        {
+          "aligned_residual_isotropic": 0.033337
+        }
+      ],
+      "left_object": "b1:obj_00007",
+      "right_object": "b1:obj_00240",
+      "status": "POSITION_CHANGED",
+      "type": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00014",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.06043",
+        "uniform size log-ratio=0.00119",
+        {
+          "aligned_residual_isotropic": 0.060429
+        }
+      ],
+      "left_object": "b1:obj_00008",
+      "right_object": "b1:obj_00024",
+      "status": "POSITION_CHANGED",
+      "type": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00015",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00019",
+        {
+          "after_mapped_to_left": [],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00666"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00009",
+      "right_object": "b1:obj_00008",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00016",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00025",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00666"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00010",
+      "right_object": "b1:obj_00009",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00017",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00016",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00981"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00981"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00011",
+      "right_object": "b1:obj_00010",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00018",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00041",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ],
+          "before": []
+        }
+      ],
+      "left_object": "b1:obj_00012",
+      "right_object": "b1:obj_00011",
+      "status": "CONNECTION_CHANGED",
+      "type": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.454402,
+      "event_id": "event_00019",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05577",
+        "uniform size log-ratio=0.16570",
+        {
+          "after_signature": "3366f51e0a2591b6f3b5",
+          "before_signature": "2d9cda6022bbbfe758be",
+          "length_log_ratio": 0.249434,
+          "segment_log_ratio": 0.182322,
+          "topology_changed": true
+        }
+      ],
+      "left_object": "b1:obj_00013",
+      "right_object": "b1:obj_00436",
+      "status": "GEOMETRY_CHANGED",
+      "type": "GEOMETRY_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.454402,
+      "event_id": "event_00020",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05577",
+        "uniform size log-ratio=0.16570",
+        {
+          "line_cap": {
+            "after": [
+              1,
+              1,
+              1
+            ],
+            "before": [
+              0,
+              0,
+              0
+            ]
+          },
+          "line_join": {
+            "after": 1.0,
+            "before": 0.0
+          },
+          "stroke_width": {
+            "after": 0.48,
+            "alignment_scale": 0.99882,
+            "before": 0.24
+          }
+        }
+      ],
+      "left_object": "b1:obj_00013",
+      "right_object": "b1:obj_00436",
+      "status": "STYLE_CHANGED",
+      "type": "STYLE_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.454402,
+      "event_id": "event_00021",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05577",
+        "uniform size log-ratio=0.16570",
+        {
+          "aligned_residual_isotropic": 0.05577
+        }
+      ],
+      "left_object": "b1:obj_00013",
+      "right_object": "b1:obj_00436",
+      "status": "POSITION_CHANGED",
+      "type": "POSITION_CHANGED"
+    }
+  ],
+  "decision": {
+    "correspondence_reliable": false,
+    "graphic_verdict": "GRAPHIC_CHANGE",
+    "left_object_count": 1039,
+    "matched_fraction": 0.898866,
+    "right_object_count": 1058,
+    "route": "GRAPHIC_HYBRID",
+    "route_reasons": [
+      "dangerous spatial/relation cap",
+      "object-level change requires fused raster interpretation"
+    ]
+  },
+  "object_matches": [
+    {
+      "confidence": 0.979996,
+      "cost": 0.020004,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00000"
+      ],
+      "left_index": 958,
+      "left_object": "b1:obj_00959",
+      "right_index": 967,
+      "right_object": "b1:obj_00968"
+    },
+    {
+      "confidence": 0.979996,
+      "cost": 0.020004,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00001"
+      ],
+      "left_index": 961,
+      "left_object": "b1:obj_00962",
+      "right_index": 971,
+      "right_object": "b1:obj_00972"
+    },
+    {
+      "confidence": 0.979996,
+      "cost": 0.020004,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00001"
+      ],
+      "left_index": 953,
+      "left_object": "b1:obj_00954",
+      "right_index": 961,
+      "right_object": "b1:obj_00962"
+    },
+    {
+      "confidence": 0.979995,
+      "cost": 0.020005,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00001"
+      ],
+      "left_index": 903,
+      "left_object": "b1:obj_00904",
+      "right_index": 912,
+      "right_object": "b1:obj_00913"
+    },
+    {
+      "confidence": 0.979995,
+      "cost": 0.020005,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00001"
+      ],
+      "left_index": 489,
+      "left_object": "b1:obj_00490",
+      "right_index": 530,
+      "right_object": "b1:obj_00531"
+    },
+    {
+      "confidence": 0.979995,
+      "cost": 0.020005,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00001"
+      ],
+      "left_index": 959,
+      "left_object": "b1:obj_00960",
+      "right_index": 968,
+      "right_object": "b1:obj_00969"
+    },
+    {
+      "confidence": 0.979995,
+      "cost": 0.020005,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00001"
+      ],
+      "left_index": 949,
+      "left_object": "b1:obj_00950",
+      "right_index": 957,
+      "right_object": "b1:obj_00958"
+    },
+    {
+      "confidence": 0.979995,
+      "cost": 0.020005,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00001"
+      ],
+      "left_index": 1008,
+      "left_object": "b1:obj_01009",
+      "right_index": 1023,
+      "right_object": "b1:obj_01024"
+    },
+    {
+      "confidence": 0.979994,
+      "cost": 0.020006,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00000"
+      ],
+      "left_index": 292,
+      "left_object": "b1:obj_00293",
+      "right_index": 288,
+      "right_object": "b1:obj_00289"
+    },
+    {
+      "confidence": 0.979994,
+      "cost": 0.020006,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00000"
+      ],
+      "left_index": 296,
+      "left_object": "b1:obj_00297",
+      "right_index": 292,
+      "right_object": "b1:obj_00293"
+    }
+  ],
+  "object_statuses": [
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.672783,
+      "event_id": "event_00001",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.00011",
+        "uniform size log-ratio=0.00008",
+        {
+          "after_signature": "ea4bfa355535330e9bc9",
+          "before_signature": "9335e576a9071c1917fc",
+          "length_log_ratio": 0.021993,
+          "segment_log_ratio": 0.034588,
+          "topology_changed": true
+        }
+      ],
+      "left_object": "b1:obj_00001",
+      "right_object": "b1:obj_00001",
+      "status": "GEOMETRY_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.672783,
+      "event_id": "event_00002",
+      "evidence": {
+        "preview": "[\"same generic type and similar topology size\",\"aligned position residual=0.00011\",\"uniform size log-ratio=0.00008\",{\"after_mapped_to_left\":[[\"CONNECTED_TO\",\"b1:obj_00002\"],[\"CONNECTED_TO\",\"b1:obj_00003\"],[\"CONNECTED_TO\",\"b1:obj_00010\"],[\"CONNECTED_TO\",\"b1:obj_00011\"],[\"CONNECTED_TO\",\"b1:obj_00012\"],[\"CONNECTED_TO\",\"b1:obj_00013\"],[\"CONNECTED_TO\",\"b1:obj_00016\"],[\"CONNECTED_TO\",\"b1:obj_00020\"],[\"CONNECTED_TO\",\"b1:obj_00021\"],[\"CONNECTED_TO\",\"b1:obj_00022\"],[\"CONNECTED_TO\",\"b1:obj_00024\"],[\"CONNE",
+        "sample_truncated": true,
+        "uncompressed_json_chars": 32522
+      },
+      "left_object": "b1:obj_00001",
+      "right_object": "b1:obj_00001",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.806298,
+      "event_id": "event_00003",
+      "evidence": [
+        "same generic object family",
+        "aligned position residual=0.02534",
+        "uniform size log-ratio=0.00118",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00003"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00002",
+      "right_object": "b1:obj_00002",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.806298,
+      "event_id": "event_00004",
+      "evidence": [
+        "same generic object family",
+        "aligned position residual=0.02534",
+        "uniform size log-ratio=0.00118",
+        {
+          "aligned_residual_isotropic": 0.025339
+        }
+      ],
+      "left_object": "b1:obj_00002",
+      "right_object": "b1:obj_00002",
+      "status": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.444038,
+      "event_id": "event_00005",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.06858",
+        "uniform size log-ratio=0.21502",
+        {
+          "after_signature": "d3676031891d679c38bf",
+          "before_signature": "92a4ea6b24c3f9bd4b97",
+          "length_log_ratio": 0.32866,
+          "segment_log_ratio": 0.0,
+          "topology_changed": true
+        }
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": "b1:obj_00416",
+      "status": "GEOMETRY_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.444038,
+      "event_id": "event_00006",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.06858",
+        "uniform size log-ratio=0.21502",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "unmatched:b1:obj_00417"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00002"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": "b1:obj_00416",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.444038,
+      "event_id": "event_00007",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.06858",
+        "uniform size log-ratio=0.21502",
+        {
+          "aligned_residual_isotropic": 0.068583
+        }
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": "b1:obj_00416",
+      "status": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00008",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00004",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.546177,
+      "event_id": "event_00009",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05350",
+        "uniform size log-ratio=0.00025",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00312"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00005",
+      "right_object": "b1:obj_00311",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.546177,
+      "event_id": "event_00010",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05350",
+        "uniform size log-ratio=0.00025",
+        {
+          "aligned_residual_isotropic": 0.053499
+        }
+      ],
+      "left_object": "b1:obj_00005",
+      "right_object": "b1:obj_00311",
+      "status": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.979923,
+      "event_id": "event_00011",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00025"
+      ],
+      "left_object": "b1:obj_00006",
+      "right_object": "b1:obj_00004",
+      "status": "UNCHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00012",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.03334",
+        "uniform size log-ratio=0.04649",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00229"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00915"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00007",
+      "right_object": "b1:obj_00240",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00013",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.03334",
+        "uniform size log-ratio=0.04649",
+        {
+          "aligned_residual_isotropic": 0.033337
+        }
+      ],
+      "left_object": "b1:obj_00007",
+      "right_object": "b1:obj_00240",
+      "status": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00014",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.06043",
+        "uniform size log-ratio=0.00119",
+        {
+          "aligned_residual_isotropic": 0.060429
+        }
+      ],
+      "left_object": "b1:obj_00008",
+      "right_object": "b1:obj_00024",
+      "status": "POSITION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00015",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00019",
+        {
+          "after_mapped_to_left": [],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00666"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00009",
+      "right_object": "b1:obj_00008",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00016",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00025",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00666"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00010",
+      "right_object": "b1:obj_00009",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00017",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00016",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ],
+            [
+              "CONNECTED_TO",
+              "b1:obj_00981"
+            ]
+          ],
+          "before": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00981"
+            ]
+          ]
+        }
+      ],
+      "left_object": "b1:obj_00011",
+      "right_object": "b1:obj_00010",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.82,
+      "event_id": "event_00018",
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00000",
+        "uniform size log-ratio=0.00041",
+        {
+          "after_mapped_to_left": [
+            [
+              "CONNECTED_TO",
+              "b1:obj_00001"
+            ]
+          ],
+          "before": []
+        }
+      ],
+      "left_object": "b1:obj_00012",
+      "right_object": "b1:obj_00011",
+      "status": "CONNECTION_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.454402,
+      "event_id": "event_00019",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05577",
+        "uniform size log-ratio=0.16570",
+        {
+          "after_signature": "3366f51e0a2591b6f3b5",
+          "before_signature": "2d9cda6022bbbfe758be",
+          "length_log_ratio": 0.249434,
+          "segment_log_ratio": 0.182322,
+          "topology_changed": true
+        }
+      ],
+      "left_object": "b1:obj_00013",
+      "right_object": "b1:obj_00436",
+      "status": "GEOMETRY_CHANGED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.454402,
+      "event_id": "event_00020",
+      "evidence": [
+        "same generic type and similar topology size",
+        "aligned position residual=0.05577",
+        "uniform size log-ratio=0.16570",
+        {
+          "line_cap": {
+            "after": [
+              1,
+              1,
+              1
+            ],
+            "before": [
+              0,
+              0,
+              0
+            ]
+          },
+          "line_join": {
+            "after": 1.0,
+            "before": 0.0
+          },
+          "stroke_width": {
+            "after": 0.48,
+            "alignment_scale": 0.99882,
+            "before": 0.24
+          }
+        }
+      ],
+      "left_object": "b1:obj_00013",
+      "right_object": "b1:obj_00436",
+      "status": "STYLE_CHANGED"
+    }
+  ],
+  "research_only": true,
+  "schema_version": "graphic-change-ledger-v0.3-codex",
+  "scope": {
+    "block_group_id": "ss_plan_page14",
+    "left_blocks": [
+      "blk_7f0f3c77addf44fc8656d6d8397ef376"
+    ],
+    "pairing_source": "explicit benchmark pair; no 1-to-N matcher",
+    "right_blocks": [
+      "blk_5cf2e6a664ca4027b705c14f73735ead"
+    ]
+  },
+  "validator": {
+    "rule": "text-only and table-only changes cannot enter graphic ledger",
+    "table_only_changes_removed": 0,
+    "text_only_changes_removed": 0
+  }
+}

@@ -1,0 +1,755 @@
+{
+  "alignment": {
+    "anchor_count": 79,
+    "evidence": [
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_05988",
+        "right_object": "b1:obj_05591"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_02065",
+        "right_object": "b1:obj_02020"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_03526",
+        "right_object": "b1:obj_03049"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_03554",
+        "right_object": "b1:obj_03767"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_04941",
+        "right_object": "b1:obj_04341"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_05530",
+        "right_object": "b1:obj_05013"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_02664",
+        "right_object": "b1:obj_02234"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_06131",
+        "right_object": "b1:obj_05718"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_00204",
+        "right_object": "b1:obj_00685"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_03391",
+        "right_object": "b1:obj_02684"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_03528",
+        "right_object": "b1:obj_03765"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_03707",
+        "right_object": "b1:obj_00749"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_03196",
+        "right_object": "b1:obj_00125"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_05080",
+        "right_object": "b1:obj_04469"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_06154",
+        "right_object": "b1:obj_05774"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_04345",
+        "right_object": "b1:obj_04195"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_04074",
+        "right_object": "b1:obj_02985"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_02959",
+        "right_object": "b1:obj_00863"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_05526",
+        "right_object": "b1:obj_05008"
+      },
+      {
+        "basis": "geometry_signature",
+        "left_object": "b1:obj_03534",
+        "right_object": "b1:obj_03799"
+      }
+    ],
+    "median_residual_isotropic": 0.155922,
+    "model": "translation_plus_uniform_scale",
+    "provenance": "unique generic object signatures; no affine warp",
+    "reliable": false,
+    "translation_isotropic": [
+      0.05606,
+      -0.164237
+    ],
+    "uniform_scale": 1.04859
+  },
+  "applicability": "GRAPHIC_APPLICABLE",
+  "artifact_retention": {
+    "full_counts": {
+      "changes": 8475,
+      "object_matches": 4652,
+      "object_statuses": 8796
+    },
+    "full_lossless_artifact": "graphic_change_ledger.full.json.gz",
+    "full_uncompressed_bytes": 7909982,
+    "full_uncompressed_sha256": "ef655c2ed6cfcfe789f3ec3fa5d9d3ca16ceaaf7fcfa2b8506f0b7fffe05b1fe",
+    "index_is_sampled": true
+  },
+  "block_pair": "ss_crop_mismatch_page07",
+  "changes": [
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00001",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00001",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00002",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00002",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00003",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00004",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00004",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00005",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00005",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00006",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00006",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00007",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00007",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00008",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00008",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00009",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00009",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00010",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00010",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00011",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00011",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00012",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00012",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00013",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00013",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00014",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00014",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00015",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00015",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00016",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00016",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00017",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00017",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00018",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00018",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00019",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00019",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00020",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00020",
+      "right_object": null,
+      "status": "REMOVED",
+      "type": "REMOVED"
+    }
+  ],
+  "decision": {
+    "correspondence_reliable": false,
+    "graphic_verdict": "GRAPHIC_CHANGE",
+    "left_object_count": 6187,
+    "matched_fraction": 0.751899,
+    "right_object_count": 5819,
+    "route": "GRAPHIC_HYBRID",
+    "route_reasons": [
+      "dangerous spatial/relation cap",
+      "translation+uniform-scale alignment not reliable",
+      "object-level change requires fused raster interpretation"
+    ]
+  },
+  "object_matches": [
+    {
+      "confidence": 0.979893,
+      "cost": 0.020107,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00004",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 6071,
+      "left_object": "b1:obj_06072",
+      "right_index": 5626,
+      "right_object": "b1:obj_05627"
+    },
+    {
+      "confidence": 0.979886,
+      "cost": 0.020114,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00004",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 6067,
+      "left_object": "b1:obj_06068",
+      "right_index": 5622,
+      "right_object": "b1:obj_05623"
+    },
+    {
+      "confidence": 0.979879,
+      "cost": 0.020121,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00004",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 6063,
+      "left_object": "b1:obj_06064",
+      "right_index": 5619,
+      "right_object": "b1:obj_05620"
+    },
+    {
+      "confidence": 0.979863,
+      "cost": 0.020137,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00005",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 5787,
+      "left_object": "b1:obj_05788",
+      "right_index": 5298,
+      "right_object": "b1:obj_05299"
+    },
+    {
+      "confidence": 0.979863,
+      "cost": 0.020137,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00005",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 6056,
+      "left_object": "b1:obj_06057",
+      "right_index": 5613,
+      "right_object": "b1:obj_05614"
+    },
+    {
+      "confidence": 0.979856,
+      "cost": 0.020144,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00005",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 6053,
+      "left_object": "b1:obj_06054",
+      "right_index": 5610,
+      "right_object": "b1:obj_05611"
+    },
+    {
+      "confidence": 0.979842,
+      "cost": 0.020158,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00006",
+        "uniform size log-ratio=0.00004"
+      ],
+      "left_index": 6051,
+      "left_object": "b1:obj_06052",
+      "right_index": 5609,
+      "right_object": "b1:obj_05610"
+    },
+    {
+      "confidence": 0.979835,
+      "cost": 0.020165,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00006",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 5810,
+      "left_object": "b1:obj_05811",
+      "right_index": 5327,
+      "right_object": "b1:obj_05328"
+    },
+    {
+      "confidence": 0.979817,
+      "cost": 0.020183,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00007",
+        "uniform size log-ratio=0.00006"
+      ],
+      "left_index": 5802,
+      "left_object": "b1:obj_05803",
+      "right_index": 5314,
+      "right_object": "b1:obj_05315"
+    },
+    {
+      "confidence": 0.979814,
+      "cost": 0.020186,
+      "evidence": [
+        "same normalized geometry signature",
+        "aligned position residual=0.00006",
+        "uniform size log-ratio=0.00012"
+      ],
+      "left_index": 6050,
+      "left_object": "b1:obj_06051",
+      "right_index": 5608,
+      "right_object": "b1:obj_05609"
+    }
+  ],
+  "object_statuses": [
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00001",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00001",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00002",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00002",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00003",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00003",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00004",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00004",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00005",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00005",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00006",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00006",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00007",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00007",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00008",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00008",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00009",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00009",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00010",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00010",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00011",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00011",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00012",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00012",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00013",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00013",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00014",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00014",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00015",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00015",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00016",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00016",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00017",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00017",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00018",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00018",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00019",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00019",
+      "right_object": null,
+      "status": "REMOVED"
+    },
+    {
+      "basis": "graphical_object_geometry",
+      "confidence": 0.65,
+      "event_id": "event_00020",
+      "evidence": [
+        "no compatible right graphical object after deterministic alignment"
+      ],
+      "left_object": "b1:obj_00020",
+      "right_object": null,
+      "status": "REMOVED"
+    }
+  ],
+  "research_only": true,
+  "schema_version": "graphic-change-ledger-v0.3-codex",
+  "scope": {
+    "block_group_id": "ss_crop_mismatch_page07",
+    "left_blocks": [
+      "blk_fbcc7cf80170404892bedddc7f5cc68e"
+    ],
+    "pairing_source": "explicit benchmark pair; no 1-to-N matcher",
+    "right_blocks": [
+      "blk_634dd5b79f9346b5b9e4d01a5e59726f"
+    ]
+  },
+  "validator": {
+    "rule": "text-only and table-only changes cannot enter graphic ledger",
+    "table_only_changes_removed": 0,
+    "text_only_changes_removed": 0
+  }
+}

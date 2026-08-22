@@ -1,0 +1,258 @@
+{
+  "judge": "Manual side-by-side raster review retained from the baseline research and reclassified to graphic-only scope. VK plan/nodes were independently raster-adjudicated again after a conflict and visible graphical additions were confirmed; model statements are not ground truth.",
+  "label_policy": {
+    "GRAPHIC_CHANGE": "manually confirmed graphical-object event",
+    "NO_GRAPHIC_CHANGE": "no confirmed graphical event; text/table facts excluded",
+    "PARTIAL": "some but not all graphic facts observable",
+    "UNSURE": "prepared scope prevents a defensible graphic judgment"
+  },
+  "pairs": [
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "Text differences are handled by the separate text pipeline and are not graphic GT.",
+      "important_graphic_events": [],
+      "pair_id": "ss_scheme_text_changed"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_plan_dense"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_simple_node"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_table_graphic"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_wall_sections"
+    },
+    {
+      "expected_graphic_verdict": "GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [
+        {
+          "fact": "RIGHT adds numerous small red ring markers at plumbing nodes.",
+          "region": "plumbing connection points across plan",
+          "type": "ADDED_OBJECT"
+        }
+      ],
+      "pair_id": "vk_plan"
+    },
+    {
+      "expected_graphic_verdict": "GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [
+        {
+          "fact": "RIGHT adds a short horizontal branch/fitting and its graphical dimension line.",
+          "region": "lower orange drainage fragment",
+          "type": "ADDED_OBJECT"
+        }
+      ],
+      "pair_id": "vk_nodes"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_node_plan"
+    },
+    {
+      "expected_graphic_verdict": "UNSURE",
+      "graphic_scope_note": "Prepared blocks cover different semantic extents; a block matcher or remapping would be needed, and is out of scope.",
+      "important_graphic_events": [],
+      "pair_id": "ss_crop_mismatch_page07"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_plan_page09"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_plan_page11"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_plan_page12"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_plan_page13"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_plan_page14"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_detail_page17"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ss_table_page19"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_plan_page07"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_plan_page08"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_plan_page10"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_nodes_page11"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_diagrams_page16"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "Text differences are handled by the separate text pipeline and are not graphic GT.",
+      "important_graphic_events": [],
+      "pair_id": "vk_axono_page17"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_diagrams_page18"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "vk_axono_page20"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page05"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page07"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page08"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page10"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page11"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page12"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page13"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ar_plan_page16"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ov_plan_floor04"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ov_plan_floor05"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ov_plan_floor06"
+    },
+    {
+      "expected_graphic_verdict": "GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [
+        {
+          "fact": "Internal graphical equipment contours/symbols present on the left are absent on the right.",
+          "region": "several pink equipment zones",
+          "type": "REMOVED_OBJECT"
+        }
+      ],
+      "pair_id": "ov_plan_floor07"
+    },
+    {
+      "expected_graphic_verdict": "NO_GRAPHIC_CHANGE",
+      "graphic_scope_note": "No manually confirmed graphical-object change.",
+      "important_graphic_events": [],
+      "pair_id": "ov_equipment_table"
+    }
+  ],
+  "schema_version": "graphic-object-ground-truth-v0.3-codex"
+}
