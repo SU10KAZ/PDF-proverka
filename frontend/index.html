@@ -5522,7 +5522,7 @@
                                             @click="scOpenPairRow(row)">Открыть</button>
                                     <button class="btn btn-sm btn-primary"
                                             :disabled="!row.left || !row.right || scPairRowBusy(row)"
-                                            @click="scProcessPairRow(row)">Запустить сравнение</button>
+                                            @click="scProcessPairRow(row)">Сопоставить листы</button>
                                 </div>
                                 <small v-if="scPairRowError(row)" class="sc-pair-row-error" :title="scPairRowError(row)">
                                     {{ scPairRowError(row) }}
@@ -5543,6 +5543,11 @@
                             <strong>Карта листов</strong>
                             <div>
                                 <span>{{ scSheetMapRows.length }} связей и несопоставленных листов</span>
+                                <button v-if="scPendingSuggestedLinkRows.length" type="button"
+                                        class="btn btn-sm btn-primary" :disabled="scLinkSaving"
+                                        @click="scAcceptAllSuggestedLinks()">
+                                    {{ scLinkSaving ? 'Сохраняем…' : 'Принять предложенные (' + scPendingSuggestedLinkRows.length + ')' }}
+                                </button>
                                 <button type="button" class="sc-sheet-map__toggle"
                                         :aria-expanded="String(!scSheetMapCollapsed)"
                                         @click="scToggleSheetMap()">
@@ -5903,6 +5908,10 @@
                                 : (scTextFinalComparison ? 'Повторить ИИ-проверку' : 'Запустить ИИ-проверку') }}
                         </button>
                     </div>
+                    <button v-else-if="scActivePair && !scAcceptedSheetLinksReady"
+                            type="button" class="btn btn-primary" @click="scTab = 'links'">
+                        Принять связи листов
+                    </button>
                     <button v-else type="button" class="btn btn-primary"
                             :disabled="!scActivePair || scTextComparisonLoading || scTextDifferencesLoading || scTextAiReviewLoading"
                             @click="scTextComparison && !scTextComparison.stale ? scRunTextDifferences() : scRunTextComparison()">
@@ -5954,6 +5963,9 @@
 
                 <div v-if="!scActivePair" class="sc-empty-state sc-empty-state--large">
                     <strong>Пара документов не выбрана</strong>
+                </div>
+                <div v-else-if="!scAcceptedSheetLinksReady" class="sc-empty-state sc-empty-state--large">
+                    <strong>Сначала подтвердите связи листов</strong>
                 </div>
                 <div v-else-if="!scTextResultAvailable" class="sc-empty-state sc-empty-state--large">
                     <strong>Сравнение ещё не выполнено</strong>

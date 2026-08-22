@@ -12004,6 +12004,7 @@ const app = createApp({
         const scSheetLinks = computed(() =>
             (scMatchState.value && scMatchState.value.links && scMatchState.value.links.links) || []
         );
+        const scAcceptedSheetLinksReady = computed(() => scSheetLinks.value.length > 0);
         const scUnlinkedLeftPages = computed(() =>
             (scMatchState.value && scMatchState.value.links
                 && scMatchState.value.links.unlinked_left_pages) || []
@@ -12127,6 +12128,12 @@ const app = createApp({
                 || left.sequence - right.sequence
             ));
         });
+        const scPendingSuggestedLinkRows = computed(() => scSheetMapRows.value.filter(row => (
+            row.explicitLinkIndex === null
+            && row.source === 'auto'
+            && row.leftPages.length
+            && row.rightPages.length
+        )));
         // Непрерывный просмотр строится по ОБЩИМ строкам карты, а не по двум
         // независимым спискам PDF-страниц. Если лист существует только в одной
         // стадии, в другой остаётся слот-заглушка — последующие пары больше не
@@ -12742,10 +12749,10 @@ const app = createApp({
             if (!row.left || !row.right) return {tone: 'incomplete', label: 'Нужен документ с обеих сторон'};
             const state = scPairRowStates[scPairRowKey(row)];
             if (state && state.status === 'opening') return {tone: 'running', label: 'Открытие…'};
-            if (state && state.status === 'processing') return {tone: 'running', label: 'Идёт сравнение…'};
+            if (state && state.status === 'processing') return {tone: 'running', label: 'Строим карту листов…'};
             if (state && state.status === 'error') return {tone: 'error', label: 'Ошибка'};
             if ((state && state.status === 'done') || (row.pair && row.pair.sheet_matching_ready)) {
-                return {tone: 'done', label: 'Сравнение готово'};
+                return {tone: 'done', label: 'Карта листов построена'};
             }
             if (state && state.status === 'opened') return {tone: 'opened', label: 'Пара открыта'};
             if (scIsPairRowConfirmed(row)) return {tone: 'confirmed', label: 'Пара сопоставлена'};
@@ -13272,8 +13279,22 @@ const app = createApp({
             }
         }
 
+        function scTextOperationErrorMessage(error) {
+            const message = String(error && (error.message || error) || '');
+            if (message.includes('accepted_sheet_links_required')) {
+                return 'Сначала подтвердите связи листов на вкладке «Связь блоков».';
+            }
+            return message;
+        }
+
         async function scRunTextComparison() {
             if (!scActivePair.value || scTextComparisonLoading.value) return;
+            if (!scAcceptedSheetLinksReady.value) {
+                scTextComparisonError.value = scTextOperationErrorMessage(
+                    new Error('accepted_sheet_links_required')
+                );
+                return;
+            }
             scTextComparisonLoading.value = true;
             scTextComparisonError.value = '';
             if (scTextFinalComparison.value) {
@@ -13289,7 +13310,7 @@ const app = createApp({
                 scTextComparison.value = data;
                 await scRunTextDifferences();
             } catch (error) {
-                scTextComparisonError.value = String(error.message || error);
+                scTextComparisonError.value = scTextOperationErrorMessage(error);
             } finally {
                 scTextComparisonLoading.value = false;
             }
@@ -13312,7 +13333,7 @@ const app = createApp({
                 scTextDifferences.value = data;
                 await scRunTextAiReview();
             } catch (error) {
-                scTextDifferencesError.value = String(error.message || error);
+                scTextDifferencesError.value = scTextOperationErrorMessage(error);
             } finally {
                 scTextDifferencesLoading.value = false;
             }
@@ -13332,7 +13353,7 @@ const app = createApp({
                 scTextAiReview.value = data.text_ai_review || null;
                 scTextFinalComparison.value = data.text_final_comparison || null;
             } catch (error) {
-                scTextAiReviewError.value = String(error.message || error);
+                scTextAiReviewError.value = scTextOperationErrorMessage(error);
             } finally {
                 scTextAiReviewLoading.value = false;
             }
@@ -13822,6 +13843,35 @@ const app = createApp({
             await scPersistLinks(
                 links,
                 scUnlinkedLeftPages.value.filter(page => !leftPages.includes(Number(page)))
+            );
+        }
+
+        async function scAcceptAllSuggestedLinks() {
+            if (scLinkSaving.value || !scPendingSuggestedLinkRows.value.length) return;
+            let links = scSheetLinks.value.map(link => ({
+                ...link,
+                left_pages: [...(link.left_pages || [])].map(Number),
+                right_pages: [...(link.right_pages || [])].map(Number),
+            }));
+            const acceptedLeftPages = new Set();
+            for (const row of scPendingSuggestedLinkRows.value) {
+                const leftPages = [...row.leftPages].map(Number);
+                const rightPages = [...row.rightPages].map(Number);
+                for (const leftPage of leftPages) {
+                    links = scWithoutLeft(links, leftPage);
+                    acceptedLeftPages.add(leftPage);
+                }
+                links.push({
+                    left_pages: leftPages,
+                    right_pages: rightPages,
+                    source: 'auto',
+                    confidence: row.confidence === 'high' ? 'high' : 'medium',
+                    reason: [...new Set([...(row.reason || []), 'user_accepted'])],
+                });
+            }
+            await scPersistLinks(
+                links,
+                scUnlinkedLeftPages.value.filter(page => !acceptedLeftPages.has(Number(page))),
             );
         }
 
@@ -15896,7 +15946,8 @@ const app = createApp({
             scTextVisibleBucketItems, scTextBucketRemaining, scTextBucketLabel,
             scTextGroupAiDiagnostic, scTextUncertainReasonLabel,
             scRunTextDifferences, scRunTextAiReview, scOpenDifferenceSource,
-            scSheetLinks, scSheetMapRows, scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
+            scSheetLinks, scAcceptedSheetLinksReady, scSheetMapRows, scPendingSuggestedLinkRows,
+            scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,
             scSheetMapCollapsed, scToggleSheetMap,
             scLinkEditorOpen, scLinkEditorMode, scLinkEditorRightPage,
@@ -15922,7 +15973,8 @@ const app = createApp({
             scSheetMapOptions, scSheetMapSelectionValue, scApplySheetMapSelection,
             scOpenSheetMapRow, scOpenSheetMapEditor, scCloseSheetMapEditor,
             scFocusLeftPage, scSwitchRightPage, scOpenLinkEditor, scChooseUnmatchedRight,
-            scAcceptSuggestion, scApplyLinkEditor, scDeleteSheetMapRow, scDeleteCurrentLink,
+            scAcceptSuggestion, scAcceptAllSuggestedLinks,
+            scApplyLinkEditor, scDeleteSheetMapRow, scDeleteCurrentLink,
             scCurrentPage, scViewerEmpty, scPageCount, scChangePage,
             scTextSearchQuery, scTextSearchLoading, scTextSearchError,
             scResetTextSearch, scSearchText, scTextSearchStatus, scTextSearchTitle,

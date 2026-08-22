@@ -89,7 +89,7 @@ describe('documentation comparison shell', () => {
 
   it('runs only the new Markdown sheet matcher', () => {
     expect(html).toContain('@click="scProcessPairRow(row)"');
-    expect(html).toContain('Запустить сравнение');
+    expect(html).toContain('Сопоставить листы');
     expect(app).toContain("'/sheet-match-suggestions'");
     expect(app).toContain("'/sheet-links'");
     expect(app).toContain("method: 'PUT'");
@@ -97,7 +97,17 @@ describe('documentation comparison shell', () => {
 
   it('restores the durable completed status after a page reload', () => {
     expect(app).toContain('(row.pair && row.pair.sheet_matching_ready)');
-    expect(app).toContain("return {tone: 'done', label: 'Сравнение готово'};");
+    expect(app).toContain("return {tone: 'done', label: 'Карта листов построена'};");
+  });
+
+  it('requires explicit sheet-link acceptance before text comparison', () => {
+    expect(html).toContain('@click="scAcceptAllSuggestedLinks()"');
+    expect(html).toContain('Принять предложенные (');
+    expect(html).toContain('v-else-if="scActivePair && !scAcceptedSheetLinksReady"');
+    expect(html).toContain('Сначала подтвердите связи листов');
+    expect(app).toContain("message.includes('accepted_sheet_links_required')");
+    expect(app).toContain('if (!scAcceptedSheetLinksReady.value)');
+    expect(app).toContain("'user_accepted'");
   });
 
   it('drops pair rows that are empty on both sides, keeping one-sided holes', () => {
