@@ -1,0 +1,573 @@
+{
+ "per_example": [
+  {
+   "case": "plan_dense",
+   "block_id": "77KM-NELG-9CE",
+   "n_seg": 21985,
+   "n_obj": 742,
+   "page_index_conflict": true,
+   "ablate_page_index": {
+    "n_seg_correct": 21985,
+    "n_seg_by_field": 14939,
+    "seg_ratio": 0.6795
+   },
+   "frame": {
+    "size_pt": [
+     799.041,
+     1334.767
+    ],
+    "diag_pt": 1555.66,
+    "one_permille_of_diag_pt": 1.5557
+   },
+   "ablate_scale": {
+    "S": 14.256,
+    "S_source": "text",
+    "s_text": 14.256,
+    "s_geom": 1.32,
+    "n_obj_with_S": 742,
+    "n_obj_with_s_geom": 4053,
+    "ratio": 5.462
+   },
+   "ablate_border": {
+    "objects_touching_border": 21,
+    "share_objects": 0.0283,
+    "share_ink": 0.0255
+   },
+   "ablate_polygon": {
+    "area_share": 0.9794,
+    "ink_outside_polygon_share": 0.0199,
+    "objects_outside_polygon": 30,
+    "share_objects_outside": 0.0404
+   },
+   "ablate_descriptor_vs_position": {
+    "sampled": 742,
+    "median_nearest_desc_distance": 0.0005,
+    "share_objects_with_desc_twin_lt_0.05": 0.593
+   },
+   "ablate_desc_gate": {
+    "cls_symbol": 253,
+    "dir_conc_lt_0.7": 173,
+    "occupied_cells_ge_8": 133,
+    "n_obj": 742
+   },
+   "ablate_family": {
+    "n_families": 355,
+    "repeated_ge2": 82,
+    "repeated_ge3": 52,
+    "objects_in_repeated": 455,
+    "share_objects_in_repeated": 0.6132
+   },
+   "ablate_label": {
+    "objects_with_label": 589,
+    "share": 0.7938,
+    "objects_with_unique_label": 15
+   },
+   "ablate_ink": {
+    "median_object_ink_pt": 140.262,
+    "objects_ge_60pt": 492,
+    "share_ge_60pt": 0.6631
+   },
+   "derivable": {
+    "max_abs_err_diag_from_bbox": 0.00096,
+    "max_abs_err_arc_share_from_desc24": 4.9e-05
+   },
+   "payload_variants": {
+    "full": {
+     "bytes": 228509,
+     "tokens": 56967
+    },
+    "no_desc": {
+     "bytes": 114326,
+     "tokens": 28422
+    },
+    "no_label": {
+     "bytes": 215510,
+     "tokens": 53874
+    },
+    "no_family": {
+     "bytes": 217060,
+     "tokens": 54105
+    },
+    "head_only": {
+     "bytes": 1621,
+     "tokens": 401
+    },
+    "plus_primitive_raw_and_style": {
+     "bytes": 3776888,
+     "tokens": 944061
+    }
+   }
+  },
+  {
+   "case": "scheme",
+   "block_id": "blk_1df07c64ccef41d7af899109c178b062",
+   "n_seg": 14128,
+   "n_obj": 1736,
+   "page_index_conflict": false,
+   "frame": {
+    "size_pt": [
+     4056.764,
+     1661.562
+    ],
+    "diag_pt": 4383.85,
+    "one_permille_of_diag_pt": 4.3838
+   },
+   "ablate_scale": {
+    "S": 9.486,
+    "S_source": "text",
+    "s_text": 9.486,
+    "s_geom": 2.204,
+    "n_obj_with_S": 1736,
+    "n_obj_with_s_geom": 3190,
+    "ratio": 1.838
+   },
+   "ablate_border": {
+    "objects_touching_border": 9,
+    "share_objects": 0.0052,
+    "share_ink": 0.0258
+   },
+   "ablate_polygon": {
+    "area_share": 0.7364,
+    "ink_outside_polygon_share": 0.5624,
+    "objects_outside_polygon": 398,
+    "share_objects_outside": 0.2293
+   },
+   "ablate_descriptor_vs_position": {
+    "sampled": 1736,
+    "median_nearest_desc_distance": 0.0,
+    "share_objects_with_desc_twin_lt_0.05": 0.9366
+   },
+   "ablate_desc_gate": {
+    "cls_symbol": 487,
+    "dir_conc_lt_0.7": 434,
+    "occupied_cells_ge_8": 233,
+    "n_obj": 1736
+   },
+   "ablate_family": {
+    "n_families": 240,
+    "repeated_ge2": 128,
+    "repeated_ge3": 75,
+    "objects_in_repeated": 1623,
+    "share_objects_in_repeated": 0.9349
+   },
+   "ablate_label": {
+    "objects_with_label": 955,
+    "share": 0.5501,
+    "objects_with_unique_label": 85
+   },
+   "ablate_ink": {
+    "median_object_ink_pt": 70.864,
+    "objects_ge_60pt": 1139,
+    "share_ge_60pt": 0.6561
+   },
+   "derivable": {
+    "max_abs_err_diag_from_bbox": 0.001709,
+    "max_abs_err_arc_share_from_desc24": 5e-05
+   },
+   "payload_variants": {
+    "full": {
+     "bytes": 539199,
+     "tokens": 133412
+    },
+    "no_desc": {
+     "bytes": 280542,
+     "tokens": 68747
+    },
+    "no_label": {
+     "bytes": 497351,
+     "tokens": 124334
+    },
+    "no_family": {
+     "bytes": 515750,
+     "tokens": 127549
+    },
+    "head_only": {
+     "bytes": 1662,
+     "tokens": 412
+    },
+    "plus_primitive_raw_and_style": {
+     "bytes": 2740483,
+     "tokens": 683733
+    }
+   }
+  },
+  {
+   "case": "node",
+   "block_id": "blk_bb3c904463b44c6eadbf5ab8f3d8d395",
+   "n_seg": 699,
+   "n_obj": 106,
+   "page_index_conflict": false,
+   "frame": {
+    "size_pt": [
+     654.24,
+     305.04
+    ],
+    "diag_pt": 721.86,
+    "one_permille_of_diag_pt": 0.7219
+   },
+   "ablate_scale": {
+    "S": 12.56,
+    "S_source": "text",
+    "s_text": 12.56,
+    "s_geom": 4.32,
+    "n_obj_with_S": 106,
+    "n_obj_with_s_geom": 193,
+    "ratio": 1.821
+   },
+   "ablate_border": {
+    "objects_touching_border": 0,
+    "share_objects": 0.0,
+    "share_ink": 0.0
+   },
+   "ablate_descriptor_vs_position": {
+    "sampled": 106,
+    "median_nearest_desc_distance": 0.0,
+    "share_objects_with_desc_twin_lt_0.05": 0.783
+   },
+   "ablate_desc_gate": {
+    "cls_symbol": 47,
+    "dir_conc_lt_0.7": 46,
+    "occupied_cells_ge_8": 31,
+    "n_obj": 106
+   },
+   "ablate_family": {
+    "n_families": 42,
+    "repeated_ge2": 20,
+    "repeated_ge3": 11,
+    "objects_in_repeated": 84,
+    "share_objects_in_repeated": 0.7925
+   },
+   "ablate_label": {
+    "objects_with_label": 89,
+    "share": 0.8396,
+    "objects_with_unique_label": 0
+   },
+   "ablate_ink": {
+    "median_object_ink_pt": 113.76,
+    "objects_ge_60pt": 85,
+    "share_ge_60pt": 0.8019
+   },
+   "derivable": {
+    "max_abs_err_diag_from_bbox": 0.001312,
+    "max_abs_err_arc_share_from_desc24": 5e-05
+   },
+   "payload_variants": {
+    "full": {
+     "bytes": 37974,
+     "tokens": 9159
+    },
+    "no_desc": {
+     "bytes": 20590,
+     "tokens": 4813
+    },
+    "no_label": {
+     "bytes": 33755,
+     "tokens": 8435
+    },
+    "no_family": {
+     "bytes": 36095,
+     "tokens": 8690
+    },
+    "head_only": {
+     "bytes": 1498,
+     "tokens": 371
+    },
+    "plus_primitive_raw_and_style": {
+     "bytes": 148070,
+     "tokens": 36683
+    }
+   }
+  },
+  {
+   "case": "no_labels",
+   "block_id": "blk_6e6a00d3ddd34500a624a47814bbf961",
+   "n_seg": 3867,
+   "n_obj": 364,
+   "page_index_conflict": false,
+   "frame": {
+    "size_pt": [
+     301.417,
+     281.99
+    ],
+    "diag_pt": 412.76,
+    "one_permille_of_diag_pt": 0.4128
+   },
+   "ablate_scale": {
+    "S": 0.6,
+    "S_source": "geom",
+    "s_text": 0.0,
+    "s_geom": 0.6,
+    "n_obj_with_S": 364,
+    "n_obj_with_s_geom": 364,
+    "ratio": 1.0
+   },
+   "ablate_border": {
+    "objects_touching_border": 1,
+    "share_objects": 0.0027,
+    "share_ink": 0.0005
+   },
+   "ablate_descriptor_vs_position": {
+    "sampled": 364,
+    "median_nearest_desc_distance": 0.0011,
+    "share_objects_with_desc_twin_lt_0.05": 0.6566
+   },
+   "ablate_desc_gate": {
+    "cls_symbol": 23,
+    "dir_conc_lt_0.7": 181,
+    "occupied_cells_ge_8": 88,
+    "n_obj": 364
+   },
+   "ablate_family": {
+    "n_families": 160,
+    "repeated_ge2": 39,
+    "repeated_ge3": 29,
+    "objects_in_repeated": 239,
+    "share_objects_in_repeated": 0.6566
+   },
+   "ablate_label": {
+    "objects_with_label": 0,
+    "share": 0.0,
+    "objects_with_unique_label": 0
+   },
+   "ablate_ink": {
+    "median_object_ink_pt": 7.336,
+    "objects_ge_60pt": 11,
+    "share_ge_60pt": 0.0302
+   },
+   "derivable": {
+    "max_abs_err_diag_from_bbox": 0.001145,
+    "max_abs_err_arc_share_from_desc24": 4.8e-05
+   },
+   "payload_variants": {
+    "full": {
+     "bytes": 112789,
+     "tokens": 28193
+    },
+    "no_desc": {
+     "bytes": 55139,
+     "tokens": 13781
+    },
+    "no_label": {
+     "bytes": 107329,
+     "tokens": 26828
+    },
+    "no_family": {
+     "bytes": 107372,
+     "tokens": 26839
+    },
+    "head_only": {
+     "bytes": 1510,
+     "tokens": 374
+    },
+    "plus_primitive_raw_and_style": {
+     "bytes": 726842,
+     "tokens": 181706
+    }
+   }
+  },
+  {
+   "case": "rotated_270",
+   "block_id": "7UFM-U4YY-N3L",
+   "n_seg": 548,
+   "n_obj": 49,
+   "page_index_conflict": true,
+   "ablate_page_index": {
+    "n_seg_correct": 548,
+    "n_seg_by_field": 9,
+    "seg_ratio": 0.0164
+   },
+   "ablate_rotation": {
+    "n_seg_correct": 272,
+    "n_seg_naive": 115,
+    "jaccard": 0.0,
+    "text_lines_correct": 69,
+    "text_lines_naive": 53
+   },
+   "frame": {
+    "size_pt": [
+     316.83,
+     320.672
+    ],
+    "diag_pt": 450.79,
+    "one_permille_of_diag_pt": 0.4508
+   },
+   "ablate_scale": {
+    "S": 8.853,
+    "S_source": "text",
+    "s_text": 8.853,
+    "s_geom": 28.32,
+    "n_obj_with_S": 49,
+    "n_obj_with_s_geom": 46,
+    "ratio": 0.939
+   },
+   "ablate_border": {
+    "objects_touching_border": 0,
+    "share_objects": 0.0,
+    "share_ink": 0.0
+   },
+   "ablate_descriptor_vs_position": {
+    "sampled": 49,
+    "median_nearest_desc_distance": 0.0,
+    "share_objects_with_desc_twin_lt_0.05": 0.9184
+   },
+   "ablate_desc_gate": {
+    "cls_symbol": 36,
+    "dir_conc_lt_0.7": 36,
+    "occupied_cells_ge_8": 7,
+    "n_obj": 49
+   },
+   "ablate_family": {
+    "n_families": 6,
+    "repeated_ge2": 3,
+    "repeated_ge3": 3,
+    "objects_in_repeated": 46,
+    "share_objects_in_repeated": 0.9388
+   },
+   "ablate_label": {
+    "objects_with_label": 49,
+    "share": 1.0,
+    "objects_with_unique_label": 4
+   },
+   "ablate_ink": {
+    "median_object_ink_pt": 254.88,
+    "objects_ge_60pt": 42,
+    "share_ge_60pt": 0.8571
+   },
+   "derivable": {
+    "max_abs_err_diag_from_bbox": 0.000411,
+    "max_abs_err_arc_share_from_desc24": 1.3e-05
+   },
+   "payload_variants": {
+    "full": {
+     "bytes": 16926,
+     "tokens": 4178
+    },
+    "no_desc": {
+     "bytes": 9153,
+     "tokens": 2235
+    },
+    "no_label": {
+     "bytes": 15793,
+     "tokens": 3942
+    },
+    "no_family": {
+     "bytes": 16306,
+     "tokens": 4023
+    },
+    "head_only": {
+     "bytes": 1481,
+     "tokens": 364
+    },
+    "plus_primitive_raw_and_style": {
+     "bytes": 103407,
+     "tokens": 25798
+    }
+   }
+  },
+  {
+   "case": "polygon_block",
+   "block_id": "64JM-6L9F-DVJ",
+   "n_seg": 10980,
+   "n_obj": 544,
+   "page_index_conflict": true,
+   "ablate_page_index": {
+    "n_seg_correct": 10980,
+    "n_seg_by_field": 4991,
+    "seg_ratio": 0.4546
+   },
+   "ablate_rotation": {
+    "n_seg_correct": 8367,
+    "n_seg_naive": 1483,
+    "jaccard": 0.0,
+    "text_lines_correct": 301,
+    "text_lines_naive": 31
+   },
+   "frame": {
+    "size_pt": [
+     1303.084,
+     1081.956
+    ],
+    "diag_pt": 1693.71,
+    "one_permille_of_diag_pt": 1.6937
+   },
+   "ablate_scale": {
+    "S": 8.283,
+    "S_source": "text",
+    "s_text": 8.283,
+    "s_geom": 1.32,
+    "n_obj_with_S": 544,
+    "n_obj_with_s_geom": 928,
+    "ratio": 1.706
+   },
+   "ablate_border": {
+    "objects_touching_border": 12,
+    "share_objects": 0.0221,
+    "share_ink": 0.0078
+   },
+   "ablate_polygon": {
+    "area_share": 0.8102,
+    "ink_outside_polygon_share": 0.012,
+    "objects_outside_polygon": 26,
+    "share_objects_outside": 0.0478
+   },
+   "ablate_descriptor_vs_position": {
+    "sampled": 544,
+    "median_nearest_desc_distance": 0.0612,
+    "share_objects_with_desc_twin_lt_0.05": 0.4963
+   },
+   "ablate_desc_gate": {
+    "cls_symbol": 207,
+    "dir_conc_lt_0.7": 131,
+    "occupied_cells_ge_8": 118,
+    "n_obj": 544
+   },
+   "ablate_family": {
+    "n_families": 311,
+    "repeated_ge2": 73,
+    "repeated_ge3": 31,
+    "objects_in_repeated": 281,
+    "share_objects_in_repeated": 0.5165
+   },
+   "ablate_label": {
+    "objects_with_label": 346,
+    "share": 0.636,
+    "objects_with_unique_label": 21
+   },
+   "ablate_ink": {
+    "median_object_ink_pt": 21.383,
+    "objects_ge_60pt": 167,
+    "share_ge_60pt": 0.307
+   },
+   "derivable": {
+    "max_abs_err_diag_from_bbox": 0.001433,
+    "max_abs_err_arc_share_from_desc24": 4.6e-05
+   },
+   "payload_variants": {
+    "full": {
+     "bytes": 171251,
+     "tokens": 42498
+    },
+    "no_desc": {
+     "bytes": 86972,
+     "tokens": 21428
+    },
+    "no_label": {
+     "bytes": 160170,
+     "tokens": 40039
+    },
+    "no_family": {
+     "bytes": 162356,
+     "tokens": 40274
+    },
+    "head_only": {
+     "bytes": 1644,
+     "tokens": 407
+    },
+    "plus_primitive_raw_and_style": {
+     "bytes": 1964239,
+     "tokens": 490745
+    }
+   }
+  }
+ ]
+}

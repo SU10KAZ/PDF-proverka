@@ -1,0 +1,184 @@
+{
+ "packaging_noise:chords5": {
+  "n_rows": 32,
+  "n_carriers": 10,
+  "n_disciplines": 2,
+  "negatives": {
+   "n": 10,
+   "median_records": 3.0,
+   "max_records": 15,
+   "share_zero_records": 0.2,
+   "median_ink_similarity": 0.941471,
+   "median_seg_ratio": 0.963243,
+   "median_obj_delta": 0.0,
+   "share_counts_say_changed": 0.8,
+   "share_scalar_says_changed": 0.8
+  },
+  "positives": {
+   "C1_remove_object@small": {
+    "n": 8,
+    "L2": 1.0,
+    "L4": 0.875,
+    "median_false_records": 2.0
+   },
+   "C1_remove_object@tiny": {
+    "n": 7,
+    "L2": 1.0,
+    "L4": 0.5714,
+    "median_false_records": 2
+   },
+   "C3_move_object@small@0.01": {
+    "n": 7,
+    "L2": 1.0,
+    "L4": 0.8571,
+    "median_false_records": 2
+   }
+  }
+ },
+ "packaging_noise:repack": {
+  "n_rows": 32,
+  "n_carriers": 10,
+  "n_disciplines": 2,
+  "negatives": {
+   "n": 10,
+   "median_records": 0.0,
+   "max_records": 0,
+   "share_zero_records": 1.0,
+   "median_ink_similarity": 1.0,
+   "median_seg_ratio": 1.0,
+   "median_obj_delta": 0.0,
+   "share_counts_say_changed": 0.0,
+   "share_scalar_says_changed": 0.0
+  },
+  "positives": {
+   "C1_remove_object@small": {
+    "n": 8,
+    "L2": 1.0,
+    "L4": 1.0,
+    "median_false_records": 0.0
+   },
+   "C1_remove_object@tiny": {
+    "n": 7,
+    "L2": 1.0,
+    "L4": 0.8571,
+    "median_false_records": 0
+   },
+   "C3_move_object@small@0.01": {
+    "n": 7,
+    "L2": 1.0,
+    "L4": 1.0,
+    "median_false_records": 0
+   }
+  }
+ },
+ "packaging_noise:resample": {
+  "n_rows": 61,
+  "n_carriers": 17,
+  "n_disciplines": 5,
+  "negatives": {
+   "n": 17,
+   "median_records": 0,
+   "max_records": 24,
+   "share_zero_records": 0.5294,
+   "median_ink_similarity": 1.0,
+   "median_seg_ratio": 0.965343,
+   "median_obj_delta": 0,
+   "share_counts_say_changed": 0.6471,
+   "share_scalar_says_changed": 0.4118
+  },
+  "positives": {
+   "C1_remove_object@small": {
+    "n": 15,
+    "L2": 1.0,
+    "L4": 1.0,
+    "median_false_records": 2
+   },
+   "C1_remove_object@tiny": {
+    "n": 14,
+    "L2": 0.8571,
+    "L4": 0.7857,
+    "median_false_records": 1.0
+   },
+   "C3_move_object@small@0.01": {
+    "n": 15,
+    "L2": 1.0,
+    "L4": 1.0,
+    "median_false_records": 2
+   }
+  }
+ },
+ "object_to_object_falsification": {
+  "n_rows": 204,
+  "n_carriers": 36,
+  "C1_remove_object@small|none": {
+   "n": 33,
+   "ink_median_records": 1,
+   "obj_median_records": 1,
+   "obj_max_records": 11,
+   "ink_L2": 1.0,
+   "obj_L2": 1.0,
+   "obj_median_churn_share": 0.00565,
+   "median_t_ink": 0.33,
+   "median_t_obj": 0.0
+  },
+  "C1_remove_object@small|round025": {
+   "n": 33,
+   "ink_median_records": 1,
+   "obj_median_records": 49,
+   "obj_max_records": 2449,
+   "ink_L2": 1.0,
+   "obj_L2": 1.0,
+   "obj_median_churn_share": 0.223881,
+   "median_t_ink": 0.43,
+   "median_t_obj": 0.0
+  },
+  "C3_move_object@small@0.01|none": {
+   "n": 33,
+   "ink_median_records": 1,
+   "obj_median_records": 2,
+   "obj_max_records": 8,
+   "ink_L2": 1.0,
+   "obj_L2": 0.6061,
+   "obj_median_churn_share": 0.001793,
+   "median_t_ink": 0.33,
+   "median_t_obj": 0.0
+  },
+  "C3_move_object@small@0.01|round025": {
+   "n": 33,
+   "ink_median_records": 1,
+   "obj_median_records": 51,
+   "obj_max_records": 2494,
+   "ink_L2": 1.0,
+   "obj_L2": 0.7879,
+   "obj_median_churn_share": 0.225806,
+   "median_t_ink": 0.29,
+   "median_t_obj": 0.0
+  },
+  "NEG|none": {
+   "n": 36,
+   "ink_median_records": 0.0,
+   "obj_median_records": 0.0,
+   "obj_max_records": 0,
+   "ink_L2": 0.0,
+   "obj_L2": 0.0,
+   "obj_median_churn_share": 0.0,
+   "median_t_ink": 0.385,
+   "median_t_obj": 0.0,
+   "share_obj_reports_change": 0.0,
+   "share_ink_reports_change": 0.0
+  },
+  "NEG|round025": {
+   "n": 36,
+   "ink_median_records": 0.0,
+   "obj_median_records": 62.0,
+   "obj_max_records": 2441,
+   "ink_L2": 0.0,
+   "obj_L2": 0.0,
+   "obj_median_churn_share": 0.23055,
+   "median_t_ink": 0.395,
+   "median_t_obj": 0.0,
+   "share_obj_reports_change": 0.9722,
+   "share_ink_reports_change": 0.3611
+  }
+ }
+}

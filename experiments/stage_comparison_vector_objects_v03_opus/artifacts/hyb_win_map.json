@@ -1,0 +1,111 @@
+{
+ "seed": 5150077,
+ "n_windows": 15,
+ "windows": [
+  {
+   "win_id": "w01",
+   "base": "VK-148ffe6c__r4",
+   "case_id": "VK-148ffe6c",
+   "ix": 4,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w02",
+   "base": "VK_blk_f35e_C6_reshape_object__r0",
+   "case_id": "VK_blk_f35e_C6_reshape_object",
+   "ix": 0,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w03",
+   "base": "EOM-c50e2170__r3",
+   "case_id": "EOM-c50e2170",
+   "ix": 3,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w04",
+   "base": "AR-5acaab0e__r1",
+   "case_id": "AR-5acaab0e",
+   "ix": 1,
+   "tokens": 503.4
+  },
+  {
+   "win_id": "w05",
+   "base": "VK-148ffe6c__r6",
+   "case_id": "VK-148ffe6c",
+   "ix": 6,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w06",
+   "base": "AR_7WT4-934_D7_dim_geometry__r0",
+   "case_id": "AR_7WT4-934_D7_dim_geometry",
+   "ix": 0,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w07",
+   "base": "AR_6WNV-DWD_D7_dim_geometry__r1",
+   "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+   "ix": 1,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w08",
+   "base": "EOM-0c86dfde__r3",
+   "case_id": "EOM-0c86dfde",
+   "ix": 3,
+   "tokens": 1058.5
+  },
+  {
+   "win_id": "w09",
+   "base": "AR_6WNV-DWD_D7_dim_geometry__r0",
+   "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+   "ix": 0,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w10",
+   "base": "AR_7WT4-934_D7_dim_geometry__r1",
+   "case_id": "AR_7WT4-934_D7_dim_geometry",
+   "ix": 1,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w11",
+   "base": "SS_4YRN-VTF_C9_add_branch__r0",
+   "case_id": "SS_4YRN-VTF_C9_add_branch",
+   "ix": 0,
+   "tokens": 1058.5
+  },
+  {
+   "win_id": "w12",
+   "base": "VK_blk_f35e_C3_move_object__r0",
+   "case_id": "VK_blk_f35e_C3_move_object",
+   "ix": 0,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w13",
+   "base": "VK-148ffe6c__r2",
+   "case_id": "VK-148ffe6c",
+   "ix": 2,
+   "tokens": 215.1
+  },
+  {
+   "win_id": "w14",
+   "base": "EOM-0c86dfde__r0",
+   "case_id": "EOM-0c86dfde",
+   "ix": 0,
+   "tokens": 1260.3
+  },
+  {
+   "win_id": "w15",
+   "base": "VK-148ffe6c__r3",
+   "case_id": "VK-148ffe6c",
+   "ix": 3,
+   "tokens": 251.1
+  }
+ ]
+}

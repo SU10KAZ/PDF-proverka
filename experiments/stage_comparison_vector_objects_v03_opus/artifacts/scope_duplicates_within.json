@@ -1,0 +1,34 @@
+{
+ "schema_version": "scope_dup_within_version/1",
+ "summary": {
+  "n": 10431,
+  "twin_in_version": 806,
+  "twin_same_page": 0,
+  "twin_other_page": 806,
+  "max_twins": 31,
+  "share_twin": 0.0773,
+  "share_twin_same_page": 0.0
+ },
+ "group_size_hist": {
+  "1": 9625,
+  "2": 154,
+  "3": 72,
+  "4": 49,
+  "5": 47,
+  "6": 66,
+  "7": 65,
+  "8": 32,
+  "9": 62,
+  "10": 32,
+  "11": 13,
+  "12": 9,
+  "14": 32,
+  "15": 23,
+  "18": 37,
+  "19": 8,
+  "20": 35,
+  "22": 35,
+  "26": 26,
+  "31": 9
+ }
+}

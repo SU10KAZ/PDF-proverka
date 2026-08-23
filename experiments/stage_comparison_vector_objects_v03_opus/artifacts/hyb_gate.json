@@ -1,0 +1,2557 @@
+{
+ "eps": 0.001,
+ "T_pt": 60.0,
+ "n_cases": 56,
+ "cases": [
+  {
+   "case_id": "AR-b38a7dbc",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "TX-95031dbd",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "VK-b71afe81",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS-6fc75e05",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 16.294,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1365.01,
+      745.41,
+      1398.61,
+      797.61
+     ],
+     "window_pt": [
+      1346.31,
+      736.01,
+      1417.31,
+      807.01
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       569,
+       569
+      ],
+      [
+       569,
+       569
+      ]
+     ],
+     "labels": [],
+     "decision": "prefilter_SAME"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ-b5c82f7c",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR-46f62636",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS-392b7bd3",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 0.06,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      171.64,
+      176.25,
+      171.7,
+      176.25
+     ],
+     "window_pt": [
+      158.67,
+      163.25,
+      184.67,
+      189.25
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       209,
+       208
+      ],
+      [
+       209,
+       208
+      ]
+     ],
+     "labels": [],
+     "decision": "prefilter_SAME"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM-36de2ce2",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ-548814a7",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM-3306e907",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS-982f7f30",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 0.24,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1135.14,
+      799.22,
+      1140.96,
+      799.76
+     ],
+     "window_pt": [
+      1125.05,
+      786.49,
+      1151.05,
+      812.49
+     ],
+     "structural": 5.8e-05,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [
+      "е"
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 1,
+     "change_len": 0.06,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1070.34,
+      799.22,
+      1070.34,
+      799.28
+     ],
+     "window_pt": [
+      1057.34,
+      786.25,
+      1083.34,
+      812.25
+     ],
+     "structural": 5.4e-05,
+     "px": [
+      [
+       209,
+       208
+      ],
+      [
+       209,
+       208
+      ]
+     ],
+     "labels": [
+      "Архитетуа."
+     ],
+     "decision": "prefilter_SAME"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ-25717577",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS-76640e11",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM-0c86dfde",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 41.115,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      608.22,
+      935.38,
+      675.12,
+      952.96
+     ],
+     "window_pt": [
+      596.18,
+      898.68,
+      687.16,
+      989.66
+     ],
+     "structural": 0.370457,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "К1.2.3п-12"
+     ],
+     "decision": "vision_window"
+    },
+    {
+     "ix": 1,
+     "change_len": 17.017,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      735.78,
+      686.92,
+      736.26,
+      687.4
+     ],
+     "window_pt": [
+      723.02,
+      674.16,
+      749.02,
+      700.16
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [
+      "+123,230",
+      "+123,230",
+      "+123,230"
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 2,
+     "change_len": 3.512,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      998.1,
+      793.66,
+      1000.26,
+      864.64
+     ],
+     "window_pt": [
+      950.91,
+      780.88,
+      1047.45,
+      877.42
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "см. прим. п. 19"
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 3,
+     "change_len": 2.727,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      998.1,
+      480.04,
+      1000.26,
+      538.12
+     ],
+     "window_pt": [
+      959.69,
+      469.59,
+      1038.67,
+      548.57
+     ],
+     "structural": 0.020886,
+     "px": [
+      [
+       633,
+       633
+      ],
+      [
+       633,
+       633
+      ]
+     ],
+     "labels": [
+      "1.1051.10"
+     ],
+     "decision": "vision_window"
+    },
+    {
+     "ix": 4,
+     "change_len": 1.639,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      643.8,
+      291.4,
+      675.12,
+      318.46
+     ],
+     "window_pt": [
+      637.8,
+      283.27,
+      681.12,
+      326.59
+     ],
+     "structural": 4.6e-05,
+     "px": [
+      [
+       347,
+       347
+      ],
+      [
+       347,
+       347
+      ]
+     ],
+     "labels": [
+      null,
+      null
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 5,
+     "change_len": 1.625,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      997.98,
+      1067.26,
+      998.46,
+      1077.22
+     ],
+     "window_pt": [
+      985.22,
+      1059.24,
+      1011.22,
+      1085.24
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [
+      null,
+      null
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 6,
+     "change_len": 1.569,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1051.14,
+      531.58,
+      1069.08,
+      547.9
+     ],
+     "window_pt": [
+      1045.14,
+      524.77,
+      1075.08,
+      554.71
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       240,
+       240
+      ],
+      [
+       240,
+       240
+      ]
+     ],
+     "labels": [
+      "5,7",
+      null
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 7,
+     "change_len": 1.533,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      497.7,
+      291.4,
+      514.2,
+      318.46
+     ],
+     "window_pt": [
+      486.42,
+      285.4,
+      525.48,
+      324.46
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       313,
+       313
+      ],
+      [
+       313,
+       313
+      ]
+     ],
+     "labels": [
+      null,
+      null
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 8,
+     "change_len": 1.357,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1100.82,
+      1027.72,
+      1108.44,
+      1049.74
+     ],
+     "window_pt": [
+      1087.62,
+      1021.72,
+      1121.64,
+      1055.74
+     ],
+     "structural": 0.000366,
+     "px": [
+      [
+       274,
+       273
+      ],
+      [
+       274,
+       273
+      ]
+     ],
+     "labels": [
+      null
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 9,
+     "change_len": 1.357,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      550.74,
+      1027.72,
+      556.86,
+      1045.42
+     ],
+     "window_pt": [
+      538.95,
+      1021.72,
+      568.65,
+      1051.42
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       239,
+       239
+      ],
+      [
+       239,
+       239
+      ]
+     ],
+     "labels": [
+      null
+     ],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 10,
+     "change_len": 1.328,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1139.82,
+      297.34,
+      1157.22,
+      318.46
+     ],
+     "window_pt": [
+      1131.96,
+      291.34,
+      1165.08,
+      324.46
+     ],
+     "structural": 0.000876,
+     "px": [
+      [
+       266,
+       266
+      ],
+      [
+       266,
+       266
+      ]
+     ],
+     "labels": [
+      null,
+      null
+     ],
+     "decision": "prefilter_SAME"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM-c50e2170",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 151.564,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      660.72,
+      356.4,
+      694.807,
+      387.6
+     ],
+     "window_pt": [
+      654.58,
+      348.82,
+      700.94,
+      395.18
+     ],
+     "structural": 0.201511,
+     "px": [
+      [
+       372,
+       372
+      ],
+      [
+       372,
+       372
+      ]
+     ],
+     "labels": [
+      "П.АА"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 1,
+     "change_len": 113.15,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      570.48,
+      179.01,
+      630.967,
+      242.64
+     ],
+     "window_pt": [
+      557.46,
+      167.56,
+      643.99,
+      254.09
+     ],
+     "structural": 0.077599,
+     "px": [
+      [
+       693,
+       693
+      ],
+      [
+       693,
+       693
+      ]
+     ],
+     "labels": [
+      "СПА ИВЭПР"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 2,
+     "change_len": 89.337,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      666.247,
+      259.17,
+      694.807,
+      287.73
+     ],
+     "window_pt": [
+      660.25,
+      253.17,
+      700.81,
+      293.73
+     ],
+     "structural": 0.215793,
+     "px": [
+      [
+       326,
+       325
+      ],
+      [
+       326,
+       325
+      ]
+     ],
+     "labels": [],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 3,
+     "change_len": 11.2,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      639.36,
+      512.4,
+      644.88,
+      520.8
+     ],
+     "window_pt": [
+      629.12,
+      503.6,
+      655.12,
+      529.6
+     ],
+     "structural": 0.05897,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [
+      "ШАУВ-1-К6ПЧ"
+     ],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR-dbfd82b8",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 4477.318,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1422.96,
+      665.56,
+      1478.88,
+      882.28
+     ],
+     "window_pt": [
+      1303.55,
+      626.55,
+      1598.29,
+      921.29
+     ],
+     "structural": 0.957643,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "300",
+      "250",
+      "250"
+     ],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "VK-56115717",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 30721.213,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1762.08,
+      128.4,
+      2170.08,
+      1313.28
+     ],
+     "window_pt": [
+      1160.36,
+      -84.88,
+      2771.8,
+      1526.56
+     ],
+     "structural": 0.018307,
+     "px": [
+      [
+       612,
+       764
+      ],
+      [
+       612,
+       764
+      ]
+     ],
+     "labels": [
+      "+49.350",
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 1,
+     "change_len": 611.255,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1392.67,
+      404.45,
+      1607.52,
+      445.92
+     ],
+     "window_pt": [
+      1354.0,
+      279.09,
+      1646.19,
+      571.28
+     ],
+     "structural": 0.088147,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ",
+      "Этаж 14"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 2,
+     "change_len": 600.518,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1392.67,
+      987.65,
+      1606.8,
+      1029.84
+     ],
+     "window_pt": [
+      1354.13,
+      863.14,
+      1645.34,
+      1154.35
+     ],
+     "structural": 0.112592,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ",
+      "Этаж 6"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 3,
+     "change_len": 565.648,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1392.67,
+      623.09,
+      1607.04,
+      665.28
+     ],
+     "window_pt": [
+      1354.08,
+      498.41,
+      1645.63,
+      789.96
+     ],
+     "structural": 0.101406,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "Этаж 11",
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 4,
+     "change_len": 347.408,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1510.27,
+      1402.61,
+      1604.88,
+      1440.72
+     ],
+     "window_pt": [
+      1493.24,
+      1357.33,
+      1621.91,
+      1486.0
+     ],
+     "structural": 0.12051,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "ШПК-320-21 НЗ",
+      null,
+      null
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 5,
+     "change_len": 343.793,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1512.91,
+      846.24,
+      1609.92,
+      881.76
+     ],
+     "window_pt": [
+      1495.45,
+      798.03,
+      1627.38,
+      929.97
+     ],
+     "structural": 0.142498,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ",
+      null
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 6,
+     "change_len": 339.763,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1512.91,
+      480.05,
+      1602.24,
+      517.2
+     ],
+     "window_pt": [
+      1496.83,
+      437.88,
+      1618.32,
+      559.37
+     ],
+     "structural": 0.135934,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ",
+      null
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 7,
+     "change_len": 334.622,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1512.96,
+      1060.61,
+      1606.8,
+      1100.4
+     ],
+     "window_pt": [
+      1496.07,
+      1016.69,
+      1623.69,
+      1144.32
+     ],
+     "structural": 0.181982,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ",
+      null
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 8,
+     "change_len": 316.575,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1512.91,
+      914.69,
+      1606.8,
+      954.72
+     ],
+     "window_pt": [
+      1496.01,
+      870.86,
+      1623.7,
+      998.55
+     ],
+     "structural": 0.125895,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ",
+      "ШПК-320-21 НЗ"
+     ],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR-441907a2",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 15582.105,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      747.6,
+      82.8,
+      1137.36,
+      398.16
+     ],
+     "window_pt": [
+      677.44,
+      -24.56,
+      1207.52,
+      505.52
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       679,
+       668
+      ],
+      [
+       679,
+       668
+      ]
+     ],
+     "labels": [
+      "200",
+      "100",
+      null
+     ],
+     "decision": "prefilter_SAME"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS-c7aa8d26",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR-a32b30a6",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [
+    {
+     "kind": "whole_block"
+    }
+   ],
+   "vector_says": null,
+   "reason": "V-C: вектор-ответа нет (no vector geometry on one side)"
+  },
+  {
+   "case_id": "EOM-7fef43a3",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM-46355862",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 1158956.724,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      398.324,
+      435.775,
+      2454.24,
+      3075.599
+     ],
+     "window_pt": [
+      -368.8,
+      -39.39,
+      3221.36,
+      3550.77
+     ],
+     "structural": 1.0,
+     "px": [
+      [
+       1611,
+       1686
+      ],
+      [
+       1611,
+       1687
+      ]
+     ],
+     "labels": [
+      "4.Т.6",
+      "П.35",
+      "4.Т.6"
+     ],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS-a369f492",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "VK-148ffe6c",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 28508.182,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1132.2,
+      1210.51,
+      1450.97,
+      1633.32
+     ],
+     "window_pt": [
+      1004.07,
+      1134.4,
+      1579.1,
+      1709.43
+     ],
+     "structural": 0.641804,
+     "px": [
+      [
+       701,
+       671
+      ],
+      [
+       701,
+       671
+      ]
+     ],
+     "labels": [
+      "%&. '#",
+      "$ \u0018/\u0018(",
+      "6\u0013\u0011+(0\u0017/%&."
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 1,
+     "change_len": 1451.589,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1189.85,
+      835.51,
+      1465.25,
+      1014.91
+     ],
+     "window_pt": [
+      1140.28,
+      737.94,
+      1514.82,
+      1112.48
+     ],
+     "structural": 0.075145,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "2%",
+      null,
+      null
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 2,
+     "change_len": 5.154,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1340.21,
+      1053.91,
+      1345.61,
+      1057.03
+     ],
+     "window_pt": [
+      1329.91,
+      1042.47,
+      1355.91,
+      1068.47
+     ],
+     "structural": 0.024052,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    },
+    {
+     "ix": 3,
+     "change_len": 0.628,
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1528.56,
+      894.24,
+      1544.64,
+      901.2
+     ],
+     "window_pt": [
+      1522.56,
+      883.68,
+      1550.64,
+      911.76
+     ],
+     "structural": 0.014269,
+     "px": [
+      [
+       226,
+       226
+      ],
+      [
+       226,
+       226
+      ]
+     ],
+     "labels": [
+      "\u0015\u0016\u0017\u0018"
+     ],
+     "decision": "vision_window"
+    },
+    {
+     "ix": 4,
+     "change_len": 0.36,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1167.0,
+      967.08,
+      1172.45,
+      981.67
+     ],
+     "window_pt": [
+      1156.43,
+      961.08,
+      1183.02,
+      987.67
+     ],
+     "structural": 0.183305,
+     "px": [
+      [
+       214,
+       214
+      ],
+      [
+       214,
+       214
+      ]
+     ],
+     "labels": [
+      "\u0015\u0016\u0017\u0018"
+     ],
+     "decision": "vision_window"
+    },
+    {
+     "ix": 5,
+     "change_len": 0.12,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1790.21,
+      1347.07,
+      1790.33,
+      1347.07
+     ],
+     "window_pt": [
+      1777.27,
+      1334.07,
+      1803.27,
+      1360.07
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 6,
+     "change_len": 0.12,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1576.13,
+      917.59,
+      1576.25,
+      917.59
+     ],
+     "window_pt": [
+      1563.19,
+      904.59,
+      1589.19,
+      930.59
+     ],
+     "structural": 0.047445,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "OV-93cc012f",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR-55eda7fb",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 1165.939,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      392.83,
+      1428.67,
+      569.52,
+      1497.31
+     ],
+     "window_pt": [
+      361.03,
+      1342.84,
+      601.32,
+      1583.14
+     ],
+     "structural": 0.077381,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      ".550.",
+      ".550.",
+      ".550."
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 1,
+     "change_len": 350.461,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      264.43,
+      1474.03,
+      353.47,
+      1505.47
+     ],
+     "window_pt": [
+      248.4,
+      1429.2,
+      369.5,
+      1550.3
+     ],
+     "structural": 0.088788,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR-577a293f",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 16488.296,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      246.72,
+      1510.96,
+      473.91,
+      1659.63
+     ],
+     "window_pt": [
+      205.83,
+      1430.81,
+      514.8,
+      1739.78
+     ],
+     "structural": 0.280157,
+     "px": [
+      [
+       701,
+       575
+      ],
+      [
+       701,
+       575
+      ]
+     ],
+     "labels": [
+      "290-300 мм",
+      null,
+      "290-300 мм"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 1,
+     "change_len": 12944.234,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      255.48,
+      1193.43,
+      472.71,
+      1292.2
+     ],
+     "window_pt": [
+      216.38,
+      1095.1,
+      511.81,
+      1390.53
+     ],
+     "structural": 0.28213,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "60",
+      "60",
+      "60"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 2,
+     "change_len": 11990.778,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      255.27,
+      1354.71,
+      469.08,
+      1461.271
+     ],
+     "window_pt": [
+      216.78,
+      1262.6,
+      507.57,
+      1553.38
+     ],
+     "structural": 0.358425,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "100",
+      null,
+      "12"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 3,
+     "change_len": 11576.604,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      257.31,
+      1024.72,
+      467.43,
+      1119.99
+     ],
+     "window_pt": [
+      219.49,
+      929.47,
+      505.25,
+      1215.24
+     ],
+     "structural": 0.226512,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      "100",
+      null,
+      null
+     ],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM-14558cda",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 9222.909,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      1353.33,
+      129.06,
+      1663.92,
+      660.24
+     ],
+     "window_pt": [
+      1147.42,
+      33.45,
+      1869.83,
+      755.85
+     ],
+     "structural": 0.308712,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [
+      null,
+      null,
+      null
+     ],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR-5acaab0e",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 1816294.418,
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      166.99,
+      219.528,
+      2246.4,
+      2782.25
+     ],
+     "window_pt": [
+      -535.96,
+      -241.76,
+      2949.35,
+      3243.54
+     ],
+     "structural": 0.478309,
+     "px": [
+      [
+       1192,
+       1622
+      ],
+      [
+       1192,
+       1622
+      ]
+     ],
+     "labels": [
+      "7,6%",
+      "7,6%",
+      "7,6%"
+     ],
+     "decision": "vector_answers"
+    },
+    {
+     "ix": 1,
+     "change_len": 50.141,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1484.954,
+      2774.569,
+      1521.79,
+      2782.25
+     ],
+     "window_pt": [
+      1478.32,
+      2753.36,
+      1528.42,
+      2803.46
+     ],
+     "structural": 1.0,
+     "px": [
+      [
+       402,
+       402
+      ],
+      [
+       402,
+       402
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "GP_7EHD-V69_C2_add_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 788.04,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1867.42,
+      1022.81,
+      2260.3,
+      1025.09
+     ],
+     "window_pt": [
+      1796.7,
+      756.79,
+      2331.02,
+      1291.11
+     ],
+     "structural": 0.036536,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "GP_7EHD-V69_C6_reshape_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 215.4,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2222.48,
+      1312.87,
+      2240.54,
+      1361.05
+     ],
+     "window_pt": [
+      2198.75,
+      1304.2,
+      2264.27,
+      1369.72
+     ],
+     "structural": 0.068838,
+     "px": [
+      [
+       526,
+       525
+      ],
+      [
+       526,
+       525
+      ]
+     ],
+     "labels": [],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "GP_7EHD-V69_C9_add_branch",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 70.8,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2127.67,
+      1236.76,
+      2127.67,
+      1307.56
+     ],
+     "window_pt": [
+      2079.53,
+      1224.02,
+      2175.81,
+      1320.3
+     ],
+     "structural": 0.033518,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ_blk_a5f5_C2_add_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 166.3,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      299.51,
+      811.27,
+      410.36,
+      811.97
+     ],
+     "window_pt": [
+      279.56,
+      736.24,
+      430.31,
+      887.0
+     ],
+     "structural": 0.061925,
+     "px": [
+      [
+       701,
+       493
+      ],
+      [
+       701,
+       493
+      ]
+     ],
+     "labels": [],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ_blk_a5f5_D1_text_edit",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ_blk_a5f5_D3_label_rename",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 10.96,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      922.55,
+      1225.39,
+      933.51,
+      1225.39
+     ],
+     "window_pt": [
+      915.03,
+      1212.39,
+      941.03,
+      1238.39
+     ],
+     "structural": 0.126496,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    },
+    {
+     "ix": 1,
+     "change_len": 10.96,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      922.55,
+      1202.98,
+      933.51,
+      1202.98
+     ],
+     "window_pt": [
+      915.03,
+      1189.98,
+      941.03,
+      1215.98
+     ],
+     "structural": 0.040937,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D1_text_edit",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D2_text_move",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS_4YRN-VTF_C9_add_branch",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 56.36,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1398.78,
+      317.57,
+      1455.14,
+      317.57
+     ],
+     "window_pt": [
+      1388.64,
+      279.25,
+      1465.28,
+      355.89
+     ],
+     "structural": 0.053617,
+     "px": [
+      [
+       614,
+       615
+      ],
+      [
+       614,
+       615
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS_4YRN-VTF_D3_label_rename",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "SS_4YRN-VTF_D4_table_values",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ_7J9G-4UT_D9_text_to_curves",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 2705.3,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2031.35,
+      462.17,
+      2260.75,
+      501.37
+     ],
+     "window_pt": [
+      1990.06,
+      325.78,
+      2302.04,
+      637.76
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 1,
+     "change_len": 511.66,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2258.95,
+      619.84,
+      2331.05,
+      686.81
+     ],
+     "window_pt": [
+      2245.97,
+      604.3,
+      2344.03,
+      702.35
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 2,
+     "change_len": 392.58,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2276.25,
+      552.44,
+      2342.02,
+      561.71
+     ],
+     "window_pt": [
+      2264.41,
+      512.35,
+      2353.86,
+      601.8
+     ],
+     "structural": 0.00081,
+     "px": [
+      [
+       701,
+       701
+      ],
+      [
+       701,
+       701
+      ]
+     ],
+     "labels": [],
+     "decision": "prefilter_SAME"
+    },
+    {
+     "ix": 3,
+     "change_len": 96.98,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1989.45,
+      619.83,
+      1993.75,
+      671.19
+     ],
+     "window_pt": [
+      1956.68,
+      610.59,
+      2026.52,
+      680.43
+     ],
+     "structural": 0.0,
+     "px": [
+      [
+       560,
+       560
+      ],
+      [
+       560,
+       560
+      ]
+     ],
+     "labels": [],
+     "decision": "prefilter_SAME"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ_7J9G-4UT_A7_reexport_cairo",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "KJ_7J9G-4UT_B3_crop_jitter",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "VK_blk_f35e_C1_remove_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "VK_blk_f35e_C3_move_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 25.59,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      789.37,
+      788.16,
+      796.81,
+      796.56
+     ],
+     "window_pt": [
+      780.09,
+      779.36,
+      806.09,
+      805.36
+     ],
+     "structural": 0.140309,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "VK_blk_f35e_C6_reshape_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 7.23,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      775.43,
+      788.72,
+      788.07,
+      793.87
+     ],
+     "window_pt": [
+      768.75,
+      778.3,
+      794.75,
+      804.3
+     ],
+     "structural": 0.102426,
+     "px": [
+      [
+       208,
+       209
+      ],
+      [
+       208,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR_7WT4-934_D7_dim_geometry",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 10.63,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2341.1,
+      1593.32,
+      2341.1,
+      1603.96
+     ],
+     "window_pt": [
+      2328.1,
+      1585.64,
+      2354.1,
+      1611.64
+     ],
+     "structural": 0.050377,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    },
+    {
+     "ix": 1,
+     "change_len": 10.63,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2246.65,
+      1593.32,
+      2246.65,
+      1603.96
+     ],
+     "window_pt": [
+      2233.65,
+      1585.64,
+      2259.65,
+      1611.64
+     ],
+     "structural": 0.039499,
+     "px": [
+      [
+       209,
+       209
+      ],
+      [
+       209,
+       209
+      ]
+     ],
+     "labels": [],
+     "decision": "vision_window"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR_7WT4-934_D5_table_row_text",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "AR_7WT4-934_D6_dim_value_only",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM_blk_9dee_A6_round_0.5_14",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM_blk_9dee_A1_path_split_20",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM_blk_9dee_A2_path_merge_20",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM_blk_2ab0_C1_remove_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "EOM_blk_2ab0_A6_round_0.5_5",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "records": [],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  },
+  {
+   "case_id": "OV_blk_1924_C3_move_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "records": [
+    {
+     "ix": 0,
+     "change_len": 78.38,
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      898.39,
+      994.0,
+      947.17,
+      1009.12
+     ],
+     "window_pt": [
+      889.61,
+      968.39,
+      955.95,
+      1034.73
+     ],
+     "structural": 0.099666,
+     "px": [
+      [
+       532,
+       531
+      ],
+      [
+       532,
+       531
+      ]
+     ],
+     "labels": [],
+     "decision": "vector_answers"
+    }
+   ],
+   "vision_calls": [],
+   "vector_says": null,
+   "reason": null
+  }
+ ]
+}

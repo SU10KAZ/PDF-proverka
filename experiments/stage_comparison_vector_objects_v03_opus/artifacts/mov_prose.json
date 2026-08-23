@@ -1,0 +1,52 @@
+{
+ "c3_above_floor": 988,
+ "n_silent": 82,
+ "silent_tiny": 70,
+ "silent_dense": 60,
+ "silent_with_signal": 58,
+ "silent_below_pub_threshold": 50,
+ "n_localised_not_move": 106,
+ "localised_as_add_remove": 82,
+ "align_sigma": {
+  "n": 566,
+  "median": 0.0,
+  "p90": 0.0001,
+  "max": 2.1292,
+  "mean": 0.00881
+ },
+ "align_sigma_n": 566,
+ "time_by_band": {
+  "<500": {
+   "n": 521,
+   "median": 0.07,
+   "p90": 1.31,
+   "max": 121.4
+  },
+  "500-5k": {
+   "n": 1029,
+   "median": 0.91,
+   "p90": 5.3,
+   "max": 122.7
+  },
+  "5k-20k": {
+   "n": 408,
+   "median": 9.38,
+   "p90": 24.3,
+   "max": 170.2
+  },
+  ">20k": {
+   "n": 928,
+   "median": 66.04,
+   "p90": 151.583,
+   "max": 304.2
+  }
+ },
+ "time_exponent": 1.192,
+ "time_fit_n": 2743,
+ "oi_aligned": 92,
+ "oi_quiet": 61,
+ "oi_bad": 23,
+ "oi_share": 0.377,
+ "oi_p90": 38.0,
+ "oi_max": 294
+}

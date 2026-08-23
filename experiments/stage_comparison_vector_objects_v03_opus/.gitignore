@@ -1,0 +1,42 @@
+# Тяжёлые промежуточные данные и растры не коммитятся: каталог целиком весит 473 МБ.
+# Всё перечисленное ниже пересоздаётся зондами из probes/ по командам в разделе
+# «Reproduction» соответствующего artifacts/<префикс>_FINDINGS.md.
+#
+# В репозиторий попадают: код зондов, отчёты (*_FINDINGS.md, *_VERIFY.md), схемы контракта
+# и сводные JSON — то есть всё, на что ссылаются утверждения отчёта.
+
+# растровые выгрузки (кропы, оверлеи, контактные листы, триптихи контрфактов)
+*.png
+*.jpg
+
+# построчные дампы полного корпуса (десятки МБ, пересоздаются за минуты)
+*.jsonl
+
+# крупные прогоны и манифесты
+artifacts/cf_manifest.json
+artifacts/cf_runs.json
+artifacts/pd_stage_census.json
+
+# каталоги прогонов и визуальных выгрузок
+artifacts/hyb_cf/
+artifacts/hyb_view/
+artifacts/hyb_win/
+artifacts/loc_runs/
+artifacts/neg_runs/
+artifacts/mov_runs/
+artifacts/scope_runs/
+artifacts/vvb_runs/
+artifacts/*_crops/
+artifacts/*_overlays/
+artifacts/*_renders/
+artifacts/*_sheets/
+artifacts/*_visual/
+artifacts/*_eye/
+artifacts/vis_cases/
+artifacts/vis_cand/
+artifacts/cf_visual/
+artifacts/grp_overlays/
+
+# логи
+*.log
+__pycache__/

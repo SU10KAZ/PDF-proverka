@@ -1,0 +1,168 @@
+{
+ "method": "рендер блока со штампом (v03_foundation.render_block, для 213 — облачный вектор-кроп) и чтение графы «Стадия» глазами",
+ "summary": {
+  "n_audited": 19,
+  "n_claimed_P": 15,
+  "n_claimed_P_visually_P": 2,
+  "n_claimed_P_visually_R": 9,
+  "n_claimed_P_no_stage_cell": 4,
+  "n_claimed_P_visually_P_but_foreign_object": 2,
+  "precision_of_stage_P_field": 0.133,
+  "precision_of_stage_P_field_for_THIS_object": 0.0,
+  "documents_with_P_claim_covered": 11
+ },
+ "records": [
+  {
+   "png": "pd_crops/stamps/itpTM_p5_blk_d4c9.png",
+   "doc": "314/ITP/ПД-00542664-ИТП.ТМ_V2",
+   "page": 5,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «Стадия: Р» читается прямо"
+  },
+  {
+   "png": "pd_crops/stamps/itpATM_p7_blk_8961.png",
+   "doc": "314/ITP/ПД-00542664-ИТП.АТМ_V1",
+   "page": 7,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «Стадия: Р»"
+  },
+  {
+   "png": "pd_crops/stamps/enahp_p7_blk_726d.png",
+   "doc": "314/EOM/ПД-00542664-ЭН_(АХП)_2-3_V1",
+   "page": 7,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «Стадия: Р»"
+  },
+  {
+   "png": "pd_crops/stamps/ssdl_p3_blk_e34f.png",
+   "doc": "314/SS/ПД-00542664-ДЛ_V1",
+   "page": 3,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «СТАДИЯ: Р»"
+  },
+  {
+   "png": "pd_crops/stamps/aitgsv_p5_blk_7748.png",
+   "doc": "314/ITP/ПД-00542664-АИТ.ГСВ_V1",
+   "page": 5,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «Стадия: Р»"
+  },
+  {
+   "png": "pd_crops/stamps/aitgsv_p9_.png",
+   "doc": "314/ITP/ПД-00542664-АИТ.ГСВ_V1",
+   "page": 9,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «Стадия: Р» (stage_audit)"
+  },
+  {
+   "png": "pd_crops/stage_audit/claimП_ПД-00542664-ЭН_(АХ_p26.png",
+   "doc": "314/EOM/ПД-00542664-ЭН_(АХП)_2-3_V1",
+   "page": 26,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «Стадия: Р»"
+  },
+  {
+   "png": "pd_crops/stamps/ar152_p5_blk_97e6.png",
+   "doc": "314/AR/ПД-00542664-АР1.5-2_V1",
+   "page": 5,
+   "claimed_stage_field": "П",
+   "visual_stage": "(пусто)",
+   "note": "ячейка «Стадия» в штампе ПУСТА"
+  },
+  {
+   "png": "pd_crops/stamps/apt0_p5_blk_5cf9.png",
+   "doc": "314/PT/ПД-ОО542664-АПТ0_V1",
+   "page": 5,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «СТАДИЯ: Р»"
+  },
+  {
+   "png": "pd_crops/stage_audit/claimП_ПД-ОО542664-АПТ0_V_p6.png",
+   "doc": "314/PT/ПД-ОО542664-АПТ0_V1",
+   "page": 6,
+   "claimed_stage_field": "П",
+   "visual_stage": "Р",
+   "note": "штамп «СТАДИЯ: Р»"
+  },
+  {
+   "png": "pd_crops/stamps/kj531_p5_blk_46e6.png",
+   "doc": "214/KJ/13АВ-РД-КЖ5.3-5.1-К3_V1",
+   "page": 5,
+   "claimed_stage_field": "П",
+   "visual_stage": "(нет поля)",
+   "note": "в штампе ОЛИМПРОЕКТ вообще нет графы «Стадия»"
+  },
+  {
+   "png": "pd_crops/stage_audit/claimП_ПД-00542664-ДЛ_V1_p4.png",
+   "doc": "314/SS/ПД-00542664-ДЛ_V1",
+   "page": 4,
+   "claimed_stage_field": "П",
+   "visual_stage": "(нет поля)",
+   "note": "малый штамп продолжения: только «Лист»"
+  },
+  {
+   "png": "pd_crops/stage_audit/claimП_ПД-00542664-ИТП.АТ_p56.png",
+   "doc": "314/ITP/ПД-00542664-ИТП.АТМ_V1",
+   "page": 56,
+   "claimed_stage_field": "П",
+   "visual_stage": "(нет поля)",
+   "note": "малый штамп продолжения: только «Лист»"
+  },
+  {
+   "png": "pd_crops/stamps/ovk1_p85_6QUE-YD7.png",
+   "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1",
+   "page": 85,
+   "claimed_stage_field": "П",
+   "visual_stage": "П",
+   "note": "НАСТОЯЩАЯ П, но это лист поставщика (ООО «Ридан Трейд», «Расчет БТП») ЧУЖОГО объекта — ул. Летная, Покровское-Стрешнево"
+  },
+  {
+   "png": "pd_crops/stamps/ovk2_p75_ACTA-99V.png",
+   "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 (v002)",
+   "page": 75,
+   "claimed_stage_field": "П",
+   "visual_stage": "П",
+   "note": "то же приложение поставщика Ридан, чужой объект"
+  },
+  {
+   "png": "pd_crops/stamps/aitTM_p4_blk_0410.png",
+   "doc": "314/ITP/ПД-00542664-АИТ.ТМ_V1",
+   "page": 4,
+   "claimed_stage_field": "Р",
+   "visual_stage": "Р",
+   "note": "контроль: совпало"
+  },
+  {
+   "png": "pd_crops/stamps/ov260568_p5_blk_e917.png",
+   "doc": "314/OV/ПД-00260568-ОВ1-1.1_V1",
+   "page": 5,
+   "claimed_stage_field": "Р",
+   "visual_stage": "Р",
+   "note": "контроль: совпало"
+  },
+  {
+   "png": "pd_crops/stage_audit/claimР_13АВ-РД-ЭМ-К1_p22.png",
+   "doc": "214/EOM/13АВ-РД-ЭМ-К1",
+   "page": 22,
+   "claimed_stage_field": "Р",
+   "visual_stage": "(не штамп)",
+   "note": "stamp_data навешен на РАЗРЕЗ, штампа в блоке нет"
+  },
+  {
+   "png": "pd_crops/stage_audit/claimР_СТ26_01-14-ОВ2-3-Р_p61.png",
+   "doc": "256/OV/СТ26_01-14-ОВ2-3-РД",
+   "page": 61,
+   "claimed_stage_field": "Р",
+   "visual_stage": "(нет поля)",
+   "note": "малый штамп продолжения, графы «Стадия» нет"
+  }
+ ]
+}

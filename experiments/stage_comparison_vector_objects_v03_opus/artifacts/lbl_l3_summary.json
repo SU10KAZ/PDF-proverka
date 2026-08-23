@@ -1,0 +1,337 @@
+{
+ "n_carriers": 59,
+ "n_used": 58,
+ "population_sizes": {
+  "some": 25,
+  "none": 17,
+  "low": 16
+ },
+ "errors": [
+  [
+   "blk_64bd6ac9504b43138e250d559c6eeff3",
+   "objects=4600"
+  ]
+ ],
+ "by_population": {
+  "some": {
+   "geom_pos": {
+    "n_instances": 161,
+    "hit_rate": 0.9565,
+    "median_spurious": 0,
+    "mean_spurious": 0.143,
+    "share_zero_spurious": 0.9317,
+    "precision_entries": 0.9324,
+    "median_entries": 1
+   },
+   "geom_pos_label": {
+    "n_instances": 161,
+    "hit_rate": 0.9565,
+    "median_spurious": 0,
+    "mean_spurious": 0.137,
+    "share_zero_spurious": 0.9317,
+    "precision_entries": 0.9349,
+    "median_entries": 1
+   }
+  },
+  "none": {
+   "geom_pos": {
+    "n_instances": 116,
+    "hit_rate": 0.9655,
+    "median_spurious": 0.0,
+    "mean_spurious": 0.095,
+    "share_zero_spurious": 0.9569,
+    "precision_entries": 0.9668,
+    "median_entries": 1.0
+   },
+   "geom_pos_label": {
+    "n_instances": 116,
+    "hit_rate": 0.9655,
+    "median_spurious": 0.0,
+    "mean_spurious": 0.095,
+    "share_zero_spurious": 0.9569,
+    "precision_entries": 0.9668,
+    "median_entries": 1.0
+   }
+  },
+  "low": {
+   "geom_pos": {
+    "n_instances": 111,
+    "hit_rate": 0.973,
+    "median_spurious": 0,
+    "mean_spurious": 0.306,
+    "share_zero_spurious": 0.8919,
+    "precision_entries": 0.8803,
+    "median_entries": 1
+   },
+   "geom_pos_label": {
+    "n_instances": 111,
+    "hit_rate": 0.973,
+    "median_spurious": 0,
+    "mean_spurious": 0.279,
+    "share_zero_spurious": 0.8919,
+    "precision_entries": 0.8897,
+    "median_entries": 1
+   }
+  }
+ },
+ "by_population_and_cf": {
+  "some": {
+   "C1_remove_object@small": {
+    "geom_pos": {
+     "n": 23,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 23,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C1_remove_object@large": {
+    "geom_pos": {
+     "n": 25,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 25,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C2_add_object@small": {
+    "geom_pos": {
+     "n": 21,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 21,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C3_move_object@small@0.005": {
+    "geom_pos": {
+     "n": 23,
+     "hit_rate": 0.9565,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 23,
+     "hit_rate": 0.9565,
+     "median_spurious": 0
+    }
+   },
+   "C3_move_object@small@0.02": {
+    "geom_pos": {
+     "n": 22,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 22,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    }
+   },
+   "C6_reshape_object@small": {
+    "geom_pos": {
+     "n": 23,
+     "hit_rate": 0.7391,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 23,
+     "hit_rate": 0.7391,
+     "median_spurious": 0
+    }
+   },
+   "C1_remove_object@tiny": {
+    "geom_pos": {
+     "n": 24,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 24,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    }
+   }
+  },
+  "none": {
+   "C1_remove_object@tiny": {
+    "geom_pos": {
+     "n": 15,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 15,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C1_remove_object@small": {
+    "geom_pos": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C1_remove_object@large": {
+    "geom_pos": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C2_add_object@small": {
+    "geom_pos": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C3_move_object@small@0.005": {
+    "geom_pos": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C3_move_object@small@0.02": {
+    "geom_pos": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 17,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C6_reshape_object@small": {
+    "geom_pos": {
+     "n": 16,
+     "hit_rate": 0.75,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 16,
+     "hit_rate": 0.75,
+     "median_spurious": 0.0
+    }
+   }
+  },
+  "low": {
+   "C1_remove_object@tiny": {
+    "geom_pos": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    }
+   },
+   "C1_remove_object@small": {
+    "geom_pos": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    }
+   },
+   "C1_remove_object@large": {
+    "geom_pos": {
+     "n": 15,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    },
+    "geom_pos_label": {
+     "n": 15,
+     "hit_rate": 1.0,
+     "median_spurious": 0
+    }
+   },
+   "C2_add_object@small": {
+    "geom_pos": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    }
+   },
+   "C3_move_object@small@0.005": {
+    "geom_pos": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    }
+   },
+   "C3_move_object@small@0.02": {
+    "geom_pos": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 16,
+     "hit_rate": 1.0,
+     "median_spurious": 0.0
+    }
+   },
+   "C6_reshape_object@small": {
+    "geom_pos": {
+     "n": 16,
+     "hit_rate": 0.8125,
+     "median_spurious": 0.0
+    },
+    "geom_pos_label": {
+     "n": 16,
+     "hit_rate": 0.8125,
+     "median_spurious": 0.0
+    }
+   }
+  }
+ }
+}

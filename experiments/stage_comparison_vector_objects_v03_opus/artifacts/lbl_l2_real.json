@@ -1,0 +1,2202 @@
+{
+ "threshold_1to1": 0.95,
+ "modes": [
+  "geom",
+  "geom_pos",
+  "geom_pos_label"
+ ],
+ "pairs": [
+  {
+   "pair_id": "TX-95031dbd",
+   "discipline": "TX",
+   "classes": [
+    "unchanged_control",
+    "no_labels",
+    "rotated_page"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 120,
+   "n_obj_b": 120,
+   "n_seg_a": 814,
+   "n_seg_b": 814,
+   "S": 0.48,
+   "reg_offset": [
+    -0.09,
+    -0.01
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 120,
+   "n_ref_absent": 0,
+   "ref_cover": 1.0,
+   "unique_label_share_a": 0.0,
+   "labelled_share_a": 0.0,
+   "registered/geom": {
+    "n_matched": 120,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 120,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 120,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 120,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 120,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 120,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "KJ-b5c82f7c",
+   "discipline": "KJ",
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 578,
+   "n_obj_b": 579,
+   "n_seg_a": 7253,
+   "n_seg_b": 7254,
+   "S": 8.876,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 578,
+   "n_ref_absent": 0,
+   "ref_cover": 1.0,
+   "unique_label_share_a": 0.026,
+   "labelled_share_a": 0.1522,
+   "registered/geom": {
+    "n_matched": 578,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 578,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 578,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 578,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 578,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 578,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "SS-392b7bd3",
+   "discipline": "SS",
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 18,
+   "n_obj_b": 19,
+   "n_seg_a": 860,
+   "n_seg_b": 862,
+   "S": 10.988,
+   "reg_offset": [
+    -0.08,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 15,
+   "n_ref_absent": 0,
+   "ref_cover": 0.8333,
+   "unique_label_share_a": 0.6111,
+   "labelled_share_a": 0.6111,
+   "registered/geom": {
+    "n_matched": 17,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 17,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 17,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 17,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 17,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 17,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "KJ-548814a7",
+   "discipline": "KJ",
+   "classes": [
+    "block_moved",
+    "few_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 15,
+   "n_obj_b": 15,
+   "n_seg_a": 63,
+   "n_seg_b": 63,
+   "S": 0.387,
+   "reg_offset": [
+    137.45,
+    46.833
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 13,
+   "n_ref_absent": 0,
+   "ref_cover": 0.8667,
+   "unique_label_share_a": 0.0,
+   "labelled_share_a": 0.0,
+   "registered/geom": {
+    "n_matched": 12,
+    "acc_on_ref": 0.61538,
+    "wrong_on_ref": 3,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.15385,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 12,
+    "acc_on_ref": 0.84615,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.15385,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 12,
+    "acc_on_ref": 0.84615,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.15385,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 12,
+    "acc_on_ref": 0.61538,
+    "wrong_on_ref": 3,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.15385,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 0,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 13,
+    "false_removed_share": 1.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 0,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 13,
+    "false_removed_share": 1.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "AR-46f62636",
+   "discipline": "AR",
+   "classes": [
+    "bbox_boundary_artifact",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 1936,
+   "n_obj_b": 1937,
+   "n_seg_a": 30876,
+   "n_seg_b": 30877,
+   "S": 6.429,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 1936,
+   "n_ref_absent": 0,
+   "ref_cover": 1.0,
+   "unique_label_share_a": 0.062,
+   "labelled_share_a": 0.2774,
+   "registered/geom": {
+    "n_matched": 1936,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 1936,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 1936,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 1936,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 1936,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 1936,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "AR-b38a7dbc",
+   "discipline": "AR",
+   "classes": [
+    "unchanged_control",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 2019,
+   "n_obj_b": 2019,
+   "n_seg_a": 32312,
+   "n_seg_b": 32312,
+   "S": 6.429,
+   "reg_offset": [
+    -0.092,
+    -0.006
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 2019,
+   "n_ref_absent": 0,
+   "ref_cover": 1.0,
+   "unique_label_share_a": 0.1119,
+   "labelled_share_a": 0.37,
+   "registered/geom": {
+    "n_matched": 2019,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 2019,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 2019,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 2019,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 2019,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 2019,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "EOM-36de2ce2",
+   "discipline": "EOM",
+   "classes": [
+    "block_moved",
+    "rotated_page",
+    "few_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 388,
+   "n_obj_b": 388,
+   "n_seg_a": 2207,
+   "n_seg_b": 2207,
+   "S": 1.92,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 388,
+   "n_ref_absent": 0,
+   "ref_cover": 1.0,
+   "unique_label_share_a": 0.0,
+   "labelled_share_a": 0.0,
+   "registered/geom": {
+    "n_matched": 388,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 388,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 388,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 388,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 388,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 388,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "SS-76640e11",
+   "discipline": "SS",
+   "classes": [
+    "text_only_change",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 313,
+   "n_obj_b": 311,
+   "n_seg_a": 6726,
+   "n_seg_b": 6155,
+   "S": 12.401,
+   "reg_offset": [
+    -0.053,
+    -0.057
+   ],
+   "reg_score": 0.9974,
+   "n_ref_1to1": 309,
+   "n_ref_absent": 2,
+   "ref_cover": 0.9872,
+   "unique_label_share_a": 0.1534,
+   "labelled_share_a": 0.2077,
+   "registered/geom": {
+    "n_matched": 309,
+    "acc_on_ref": 0.99029,
+    "wrong_on_ref": 2,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00324,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 0.5
+   },
+   "registered/geom_pos": {
+    "n_matched": 307,
+    "acc_on_ref": 0.99353,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.00647,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 307,
+    "acc_on_ref": 0.99353,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.00647,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom": {
+    "n_matched": 309,
+    "acc_on_ref": 0.99029,
+    "wrong_on_ref": 2,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00324,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 0.5
+   },
+   "raw/geom_pos": {
+    "n_matched": 307,
+    "acc_on_ref": 0.99353,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.00647,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 307,
+    "acc_on_ref": 0.99353,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.00647,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "EOM-3306e907",
+   "discipline": "EOM",
+   "classes": [
+    "block_moved",
+    "rotated_page"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 468,
+   "n_obj_b": 468,
+   "n_seg_a": 2784,
+   "n_seg_b": 2784,
+   "S": 0.84,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 468,
+   "n_ref_absent": 0,
+   "ref_cover": 1.0,
+   "unique_label_share_a": 0.0,
+   "labelled_share_a": 0.0,
+   "registered/geom": {
+    "n_matched": 468,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 468,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 468,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 468,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 468,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 468,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "EOM-c50e2170",
+   "discipline": "EOM",
+   "classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 743,
+   "n_obj_b": 685,
+   "n_seg_a": 8027,
+   "n_seg_b": 4502,
+   "S": 12.537,
+   "reg_offset": [
+    0.007,
+    -0.03
+   ],
+   "reg_score": 0.988,
+   "n_ref_1to1": 645,
+   "n_ref_absent": 25,
+   "ref_cover": 0.8681,
+   "unique_label_share_a": 0.144,
+   "labelled_share_a": 0.3499,
+   "registered/geom": {
+    "n_matched": 219,
+    "acc_on_ref": 0.24961,
+    "wrong_on_ref": 29,
+    "missed_on_ref": 455,
+    "false_removed_share": 0.70543,
+    "paired_though_ink_absent": 21,
+    "paired_though_ink_absent_share": 0.84
+   },
+   "registered/geom_pos": {
+    "n_matched": 230,
+    "acc_on_ref": 0.34729,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 421,
+    "false_removed_share": 0.65271,
+    "paired_though_ink_absent": 3,
+    "paired_though_ink_absent_share": 0.12
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 237,
+    "acc_on_ref": 0.35814,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 414,
+    "false_removed_share": 0.64186,
+    "paired_though_ink_absent": 3,
+    "paired_though_ink_absent_share": 0.12
+   },
+   "raw/geom": {
+    "n_matched": 219,
+    "acc_on_ref": 0.24961,
+    "wrong_on_ref": 29,
+    "missed_on_ref": 455,
+    "false_removed_share": 0.70543,
+    "paired_though_ink_absent": 21,
+    "paired_though_ink_absent_share": 0.84
+   },
+   "raw/geom_pos": {
+    "n_matched": 230,
+    "acc_on_ref": 0.34729,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 421,
+    "false_removed_share": 0.65271,
+    "paired_though_ink_absent": 3,
+    "paired_though_ink_absent_share": 0.12
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 237,
+    "acc_on_ref": 0.35814,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 414,
+    "false_removed_share": 0.64186,
+    "paired_though_ink_absent": 3,
+    "paired_though_ink_absent_share": 0.12
+   }
+  },
+  {
+   "pair_id": "KJ-25717577",
+   "discipline": "KJ",
+   "classes": [
+    "text_only_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 33,
+   "n_obj_b": 32,
+   "n_seg_a": 1958,
+   "n_seg_b": 1952,
+   "S": 8.874,
+   "reg_offset": [
+    0.41,
+    -29.351
+   ],
+   "reg_score": 0.142,
+   "n_ref_1to1": 0,
+   "n_ref_absent": 18,
+   "ref_cover": 0.0,
+   "unique_label_share_a": 0.0606,
+   "labelled_share_a": 0.0606,
+   "registered/geom": {
+    "n_matched": 31,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 16,
+    "paired_though_ink_absent_share": 0.88889
+   },
+   "registered/geom_pos": {
+    "n_matched": 8,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 8,
+    "paired_though_ink_absent_share": 0.44444
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 8,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 8,
+    "paired_though_ink_absent_share": 0.44444
+   },
+   "raw/geom": {
+    "n_matched": 31,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 16,
+    "paired_though_ink_absent_share": 0.88889
+   },
+   "raw/geom_pos": {
+    "n_matched": 31,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 16,
+    "paired_though_ink_absent_share": 0.88889
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 31,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 16,
+    "paired_though_ink_absent_share": 0.88889
+   }
+  },
+  {
+   "pair_id": "VK-56115717",
+   "discipline": "VK",
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 1001,
+   "n_obj_b": 552,
+   "n_seg_a": 27227,
+   "n_seg_b": 12395,
+   "S": 9.424,
+   "reg_offset": [
+    -0.05,
+    0.05
+   ],
+   "reg_score": 0.48,
+   "n_ref_1to1": 319,
+   "n_ref_absent": 492,
+   "ref_cover": 0.3187,
+   "unique_label_share_a": 0.004,
+   "labelled_share_a": 0.4386,
+   "registered/geom": {
+    "n_matched": 523,
+    "acc_on_ref": 0.73354,
+    "wrong_on_ref": 57,
+    "missed_on_ref": 28,
+    "false_removed_share": 0.08777,
+    "paired_though_ink_absent": 97,
+    "paired_though_ink_absent_share": 0.19715
+   },
+   "registered/geom_pos": {
+    "n_matched": 419,
+    "acc_on_ref": 0.94984,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.05016,
+    "paired_though_ink_absent": 41,
+    "paired_though_ink_absent_share": 0.08333
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 419,
+    "acc_on_ref": 0.94984,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.05016,
+    "paired_though_ink_absent": 41,
+    "paired_though_ink_absent_share": 0.08333
+   },
+   "raw/geom": {
+    "n_matched": 523,
+    "acc_on_ref": 0.73354,
+    "wrong_on_ref": 57,
+    "missed_on_ref": 28,
+    "false_removed_share": 0.08777,
+    "paired_though_ink_absent": 97,
+    "paired_though_ink_absent_share": 0.19715
+   },
+   "raw/geom_pos": {
+    "n_matched": 419,
+    "acc_on_ref": 0.94984,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.05016,
+    "paired_though_ink_absent": 41,
+    "paired_though_ink_absent_share": 0.08333
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 419,
+    "acc_on_ref": 0.94984,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.05016,
+    "paired_though_ink_absent": 41,
+    "paired_though_ink_absent_share": 0.08333
+   }
+  },
+  {
+   "pair_id": "AR-dbfd82b8",
+   "discipline": "AR",
+   "classes": [
+    "object_removed",
+    "with_labels",
+    "table_like"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 215,
+   "n_obj_b": 179,
+   "n_seg_a": 8895,
+   "n_seg_b": 7829,
+   "S": 9.393,
+   "reg_offset": [
+    -0.07,
+    -0.05
+   ],
+   "reg_score": 0.8407,
+   "n_ref_1to1": 161,
+   "n_ref_absent": 36,
+   "ref_cover": 0.7488,
+   "unique_label_share_a": 0.0558,
+   "labelled_share_a": 0.0791,
+   "registered/geom": {
+    "n_matched": 179,
+    "acc_on_ref": 0.99379,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00621,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 0.02778
+   },
+   "registered/geom_pos": {
+    "n_matched": 178,
+    "acc_on_ref": 0.99379,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00621,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 178,
+    "acc_on_ref": 0.99379,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00621,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom": {
+    "n_matched": 179,
+    "acc_on_ref": 0.99379,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00621,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 0.02778
+   },
+   "raw/geom_pos": {
+    "n_matched": 178,
+    "acc_on_ref": 0.99379,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00621,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 178,
+    "acc_on_ref": 0.99379,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00621,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "SS-c7aa8d26",
+   "discipline": "SS",
+   "classes": [
+    "object_added",
+    "with_labels",
+    "sparse_block"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 16,
+   "n_obj_b": 29,
+   "n_seg_a": 540,
+   "n_seg_b": 726,
+   "S": 10.995,
+   "reg_offset": [
+    -0.02,
+    -0.03
+   ],
+   "reg_score": 0.9352,
+   "n_ref_1to1": 7,
+   "n_ref_absent": 5,
+   "ref_cover": 0.4375,
+   "unique_label_share_a": 0.0,
+   "labelled_share_a": 0.375,
+   "registered/geom": {
+    "n_matched": 8,
+    "acc_on_ref": 0.42857,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos": {
+    "n_matched": 7,
+    "acc_on_ref": 0.71429,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.28571,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 7,
+    "acc_on_ref": 0.71429,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.28571,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom": {
+    "n_matched": 8,
+    "acc_on_ref": 0.42857,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos": {
+    "n_matched": 7,
+    "acc_on_ref": 0.71429,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.28571,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 7,
+    "acc_on_ref": 0.71429,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 2,
+    "false_removed_share": 0.28571,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "EOM-0c86dfde",
+   "discipline": "EOM",
+   "classes": [
+    "text_only_change",
+    "object_moved_label",
+    "dense_block"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 1985,
+   "n_obj_b": 1922,
+   "n_seg_a": 53517,
+   "n_seg_b": 50063,
+   "S": 8.859,
+   "reg_offset": [
+    0.0,
+    0.05
+   ],
+   "reg_score": 0.999,
+   "n_ref_1to1": 1765,
+   "n_ref_absent": 132,
+   "ref_cover": 0.8892,
+   "unique_label_share_a": 0.131,
+   "labelled_share_a": 0.1668,
+   "registered/geom": {
+    "n_matched": 1766,
+    "acc_on_ref": 0.92295,
+    "wrong_on_ref": 116,
+    "missed_on_ref": 20,
+    "false_removed_share": 0.01133,
+    "paired_though_ink_absent": 4,
+    "paired_though_ink_absent_share": 0.0303
+   },
+   "registered/geom_pos": {
+    "n_matched": 1762,
+    "acc_on_ref": 0.99037,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 17,
+    "false_removed_share": 0.00963,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 1763,
+    "acc_on_ref": 0.99037,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 17,
+    "false_removed_share": 0.00963,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom": {
+    "n_matched": 1766,
+    "acc_on_ref": 0.92295,
+    "wrong_on_ref": 116,
+    "missed_on_ref": 20,
+    "false_removed_share": 0.01133,
+    "paired_though_ink_absent": 4,
+    "paired_though_ink_absent_share": 0.0303
+   },
+   "raw/geom_pos": {
+    "n_matched": 1762,
+    "acc_on_ref": 0.99037,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 17,
+    "false_removed_share": 0.00963,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 1763,
+    "acc_on_ref": 0.99037,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 17,
+    "false_removed_share": 0.00963,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "AR-a32b30a6",
+   "discipline": "AR",
+   "classes": [
+    "object_added",
+    "raster_graphics",
+    "no_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "no vector geometry"
+  },
+  {
+   "pair_id": "AR-441907a2",
+   "discipline": "AR",
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 282,
+   "n_obj_b": 191,
+   "n_seg_a": 16388,
+   "n_seg_b": 10793,
+   "S": 9.159,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.5579,
+   "n_ref_1to1": 180,
+   "n_ref_absent": 91,
+   "ref_cover": 0.6383,
+   "unique_label_share_a": 0.0355,
+   "labelled_share_a": 0.0851,
+   "registered/geom": {
+    "n_matched": 189,
+    "acc_on_ref": 0.95556,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.02222,
+    "paired_though_ink_absent": 7,
+    "paired_though_ink_absent_share": 0.07692
+   },
+   "registered/geom_pos": {
+    "n_matched": 179,
+    "acc_on_ref": 0.99444,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00556,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 179,
+    "acc_on_ref": 0.99444,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00556,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom": {
+    "n_matched": 189,
+    "acc_on_ref": 0.95556,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.02222,
+    "paired_though_ink_absent": 7,
+    "paired_though_ink_absent_share": 0.07692
+   },
+   "raw/geom_pos": {
+    "n_matched": 179,
+    "acc_on_ref": 0.99444,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00556,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 179,
+    "acc_on_ref": 0.99444,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.00556,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "SS-982f7f30",
+   "discipline": "SS",
+   "classes": [
+    "block_moved",
+    "with_labels",
+    "table_like"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 54,
+   "n_obj_b": 52,
+   "n_seg_a": 5848,
+   "n_seg_b": 4700,
+   "S": 10.988,
+   "reg_offset": [
+    0.0,
+    -0.05
+   ],
+   "reg_score": 0.9928,
+   "n_ref_1to1": 37,
+   "n_ref_absent": 1,
+   "ref_cover": 0.6852,
+   "unique_label_share_a": 0.1667,
+   "labelled_share_a": 0.1667,
+   "registered/geom": {
+    "n_matched": 39,
+    "acc_on_ref": 0.97297,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.02703,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 1.0
+   },
+   "registered/geom_pos": {
+    "n_matched": 37,
+    "acc_on_ref": 0.97297,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.02703,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 37,
+    "acc_on_ref": 0.97297,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.02703,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom": {
+    "n_matched": 39,
+    "acc_on_ref": 0.97297,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.02703,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 1.0
+   },
+   "raw/geom_pos": {
+    "n_matched": 37,
+    "acc_on_ref": 0.97297,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.02703,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 37,
+    "acc_on_ref": 0.97297,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.02703,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "EOM-46355862",
+   "discipline": "EOM",
+   "classes": [
+    "object_added",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "too heavy (27845/60524)"
+  },
+  {
+   "pair_id": "VK-b71afe81",
+   "discipline": "VK",
+   "classes": [
+    "different_packaging",
+    "rotated_page",
+    "dense_block",
+    "garbled_text_layer"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 242,
+   "n_obj_b": 242,
+   "n_seg_a": 16205,
+   "n_seg_b": 16205,
+   "S": 9.426,
+   "reg_offset": [
+    -0.054,
+    -0.08
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 241,
+   "n_ref_absent": 0,
+   "ref_cover": 0.9959,
+   "unique_label_share_a": 0.0165,
+   "labelled_share_a": 0.0165,
+   "registered/geom": {
+    "n_matched": 242,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 242,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 242,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 242,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 242,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 242,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "AR-55eda7fb",
+   "discipline": "AR",
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 128,
+   "n_obj_b": 141,
+   "n_seg_a": 4315,
+   "n_seg_b": 4412,
+   "S": 9.13,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9763,
+   "n_ref_1to1": 122,
+   "n_ref_absent": 0,
+   "ref_cover": 0.9531,
+   "unique_label_share_a": 0.1094,
+   "labelled_share_a": 0.4219,
+   "registered/geom": {
+    "n_matched": 122,
+    "acc_on_ref": 0.96721,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 122,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 122,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 122,
+    "acc_on_ref": 0.96721,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 122,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 122,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "EOM-7fef43a3",
+   "discipline": "EOM",
+   "classes": [
+    "object_added",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 200,
+   "n_obj_b": 200,
+   "n_seg_a": 10972,
+   "n_seg_b": 10972,
+   "S": 13.964,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 200,
+   "n_ref_absent": 0,
+   "ref_cover": 1.0,
+   "unique_label_share_a": 0.0,
+   "labelled_share_a": 0.0,
+   "registered/geom": {
+    "n_matched": 200,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 200,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 200,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 200,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 200,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 200,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "VK-148ffe6c",
+   "discipline": "VK",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "rotated_page",
+    "dense_block"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "too heavy (106552/115081)"
+  },
+  {
+   "pair_id": "OV-93cc012f",
+   "discipline": "OV",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 185,
+   "n_obj_b": 167,
+   "n_seg_a": 9880,
+   "n_seg_b": 9620,
+   "S": 9.767,
+   "reg_offset": [
+    -4.825,
+    -1.735
+   ],
+   "reg_score": 0.2831,
+   "n_ref_1to1": 6,
+   "n_ref_absent": 58,
+   "ref_cover": 0.0324,
+   "unique_label_share_a": 0.1568,
+   "labelled_share_a": 0.3081,
+   "registered/geom": {
+    "n_matched": 96,
+    "acc_on_ref": 0.5,
+    "wrong_on_ref": 3,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 31,
+    "paired_though_ink_absent_share": 0.53448
+   },
+   "registered/geom_pos": {
+    "n_matched": 78,
+    "acc_on_ref": 0.66667,
+    "wrong_on_ref": 1,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.16667,
+    "paired_though_ink_absent": 25,
+    "paired_though_ink_absent_share": 0.43103
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 78,
+    "acc_on_ref": 0.66667,
+    "wrong_on_ref": 1,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.16667,
+    "paired_though_ink_absent": 25,
+    "paired_though_ink_absent_share": 0.43103
+   },
+   "raw/geom": {
+    "n_matched": 96,
+    "acc_on_ref": 0.5,
+    "wrong_on_ref": 3,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 31,
+    "paired_though_ink_absent_share": 0.53448
+   },
+   "raw/geom_pos": {
+    "n_matched": 78,
+    "acc_on_ref": 0.33333,
+    "wrong_on_ref": 3,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.16667,
+    "paired_though_ink_absent": 25,
+    "paired_though_ink_absent_share": 0.43103
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 78,
+    "acc_on_ref": 0.33333,
+    "wrong_on_ref": 3,
+    "missed_on_ref": 1,
+    "false_removed_share": 0.16667,
+    "paired_though_ink_absent": 25,
+    "paired_though_ink_absent_share": 0.43103
+   }
+  },
+  {
+   "pair_id": "SS-6fc75e05",
+   "discipline": "SS",
+   "classes": [
+    "different_packaging",
+    "with_labels",
+    "table_like"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 57,
+   "n_obj_b": 57,
+   "n_seg_a": 5845,
+   "n_seg_b": 12921,
+   "S": 10.995,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9977,
+   "n_ref_1to1": 37,
+   "n_ref_absent": 0,
+   "ref_cover": 0.6491,
+   "unique_label_share_a": 0.1754,
+   "labelled_share_a": 0.1754,
+   "registered/geom": {
+    "n_matched": 40,
+    "acc_on_ref": 0.89189,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.10811,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 38,
+    "acc_on_ref": 0.89189,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.10811,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 38,
+    "acc_on_ref": 0.89189,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.10811,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 40,
+    "acc_on_ref": 0.89189,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.10811,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 38,
+    "acc_on_ref": 0.89189,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.10811,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 38,
+    "acc_on_ref": 0.89189,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 4,
+    "false_removed_share": 0.10811,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "OV-2cc2a382",
+   "discipline": "OV",
+   "classes": [
+    "block_scope_change",
+    "raster_graphics",
+    "no_labels"
+   ],
+   "expected": "NOT_COMPARABLE",
+   "skip": "no vector geometry"
+  },
+  {
+   "pair_id": "EOM-1db297d2",
+   "discipline": "EOM",
+   "classes": [
+    "uncertain",
+    "block_match_failure"
+   ],
+   "expected": "UNCERTAIN",
+   "n_obj_a": 46,
+   "n_obj_b": 54,
+   "n_seg_a": 713,
+   "n_seg_b": 894,
+   "S": 10.517,
+   "reg_offset": [
+    -848.635,
+    -202.946
+   ],
+   "reg_score": 0.0181,
+   "n_ref_1to1": 0,
+   "n_ref_absent": 41,
+   "ref_cover": 0.0,
+   "unique_label_share_a": 0.0435,
+   "labelled_share_a": 0.1739,
+   "registered/geom": {
+    "n_matched": 3,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 3,
+    "paired_though_ink_absent_share": 0.07317
+   },
+   "registered/geom_pos": {
+    "n_matched": 1,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 0.02439
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 1,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 1,
+    "paired_though_ink_absent_share": 0.02439
+   },
+   "raw/geom": {
+    "n_matched": 3,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 3,
+    "paired_though_ink_absent_share": 0.07317
+   },
+   "raw/geom_pos": {
+    "n_matched": 0,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 0,
+    "acc_on_ref": 0.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "AR-490254e9",
+   "discipline": "AR",
+   "classes": [
+    "block_scope_change",
+    "with_labels"
+   ],
+   "expected": "NOT_COMPARABLE",
+   "n_obj_a": 28,
+   "n_obj_b": 242,
+   "n_seg_a": 466,
+   "n_seg_b": 4398,
+   "S": 9.13,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9968,
+   "n_ref_1to1": 20,
+   "n_ref_absent": 0,
+   "ref_cover": 0.7143,
+   "unique_label_share_a": 0.1071,
+   "labelled_share_a": 0.1071,
+   "registered/geom": {
+    "n_matched": 22,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 21,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 21,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 22,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 21,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 21,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "AR-5acaab0e",
+   "discipline": "AR",
+   "classes": [
+    "object_added",
+    "dense_block",
+    "hatch_noise",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "too heavy (111161/111000)"
+  },
+  {
+   "pair_id": "SS-a369f492",
+   "discipline": "SS",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "raster_graphics",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 151,
+   "n_obj_b": 202,
+   "n_seg_a": 4876,
+   "n_seg_b": 6678,
+   "S": 15.244,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "n_ref_1to1": 66,
+   "n_ref_absent": 0,
+   "ref_cover": 0.4371,
+   "unique_label_share_a": 0.0,
+   "labelled_share_a": 0.0,
+   "registered/geom": {
+    "n_matched": 151,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos": {
+    "n_matched": 151,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 151,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom": {
+    "n_matched": 151,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos": {
+    "n_matched": 151,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 151,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": null
+   }
+  },
+  {
+   "pair_id": "EOM-14558cda",
+   "discipline": "EOM",
+   "classes": [
+    "object_added",
+    "occluding_fill",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 240,
+   "n_obj_b": 226,
+   "n_seg_a": 7932,
+   "n_seg_b": 7767,
+   "S": 12.977,
+   "reg_offset": [
+    -0.03,
+    -0.06
+   ],
+   "reg_score": 0.89,
+   "n_ref_1to1": 212,
+   "n_ref_absent": 1,
+   "ref_cover": 0.8833,
+   "unique_label_share_a": 0.0042,
+   "labelled_share_a": 0.0833,
+   "registered/geom": {
+    "n_matched": 191,
+    "acc_on_ref": 0.87264,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 23,
+    "false_removed_share": 0.10849,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos": {
+    "n_matched": 198,
+    "acc_on_ref": 0.92453,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.07547,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 198,
+    "acc_on_ref": 0.92453,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.07547,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom": {
+    "n_matched": 191,
+    "acc_on_ref": 0.87264,
+    "wrong_on_ref": 4,
+    "missed_on_ref": 23,
+    "false_removed_share": 0.10849,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos": {
+    "n_matched": 198,
+    "acc_on_ref": 0.92453,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.07547,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 198,
+    "acc_on_ref": 0.92453,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 16,
+    "false_removed_share": 0.07547,
+    "paired_though_ink_absent": 0,
+    "paired_though_ink_absent_share": 0.0
+   }
+  },
+  {
+   "pair_id": "AR-577a293f",
+   "discipline": "AR",
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 244,
+   "n_obj_b": 199,
+   "n_seg_a": 11378,
+   "n_seg_b": 10642,
+   "S": 9.393,
+   "reg_offset": [
+    -0.09,
+    -0.01
+   ],
+   "reg_score": 0.5534,
+   "n_ref_1to1": 6,
+   "n_ref_absent": 100,
+   "ref_cover": 0.0246,
+   "unique_label_share_a": 0.0287,
+   "labelled_share_a": 0.0287,
+   "registered/geom": {
+    "n_matched": 129,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 40,
+    "paired_though_ink_absent_share": 0.4
+   },
+   "registered/geom_pos": {
+    "n_matched": 78,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 24,
+    "paired_though_ink_absent_share": 0.24
+   },
+   "registered/geom_pos_label": {
+    "n_matched": 78,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 24,
+    "paired_though_ink_absent_share": 0.24
+   },
+   "raw/geom": {
+    "n_matched": 129,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 40,
+    "paired_though_ink_absent_share": 0.4
+   },
+   "raw/geom_pos": {
+    "n_matched": 78,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 24,
+    "paired_though_ink_absent_share": 0.24
+   },
+   "raw/geom_pos_label": {
+    "n_matched": 78,
+    "acc_on_ref": 1.0,
+    "wrong_on_ref": 0,
+    "missed_on_ref": 0,
+    "false_removed_share": 0.0,
+    "paired_though_ink_absent": 24,
+    "paired_though_ink_absent_share": 0.24
+   }
+  },
+  {
+   "pair_id": "GP-6bc1c029",
+   "discipline": "GP",
+   "classes": [
+    "uncertain",
+    "dense_block"
+   ],
+   "expected": "UNCERTAIN",
+   "skip": "too heavy (378441/314651)"
+  }
+ ]
+}

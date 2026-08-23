@@ -1,0 +1,220 @@
+{
+ "cases": [
+  {
+   "case": "plan_dense",
+   "n_obj": 742,
+   "rep_families_full": 82,
+   "variants": {
+    "round4": {
+     "ari_vs_full": 1.0,
+     "rep_families": 82,
+     "bytes": 228509,
+     "tokens": 56967
+    },
+    "round3": {
+     "ari_vs_full": 0.9743,
+     "rep_families": 82,
+     "bytes": 223714,
+     "tokens": 55769
+    },
+    "round2": {
+     "ari_vs_full": 0.9728,
+     "rep_families": 83,
+     "bytes": 218828,
+     "tokens": 54547
+    },
+    "uint8": {
+     "ari_vs_full": 0.9929,
+     "rep_families": 82,
+     "bytes": 228897,
+     "tokens": 57064
+    }
+   },
+   "desc_only_above_20pt": {
+    "objects_with_desc": 597,
+    "bytes": 207784,
+    "tokens": 51786
+   }
+  },
+  {
+   "case": "scheme",
+   "n_obj": 1736,
+   "rep_families_full": 128,
+   "variants": {
+    "round4": {
+     "ari_vs_full": 0.9998,
+     "rep_families": 128,
+     "bytes": 539199,
+     "tokens": 133412
+    },
+    "round3": {
+     "ari_vs_full": 0.9998,
+     "rep_families": 128,
+     "bytes": 531783,
+     "tokens": 131558
+    },
+    "round2": {
+     "ari_vs_full": 0.9997,
+     "rep_families": 123,
+     "bytes": 523304,
+     "tokens": 129438
+    },
+    "uint8": {
+     "ari_vs_full": 0.9998,
+     "rep_families": 128,
+     "bytes": 541580,
+     "tokens": 134007
+    }
+   },
+   "desc_only_above_20pt": {
+    "objects_with_desc": 1351,
+    "bytes": 478091,
+    "tokens": 118135
+   }
+  },
+  {
+   "case": "node",
+   "n_obj": 106,
+   "rep_families_full": 20,
+   "variants": {
+    "round4": {
+     "ari_vs_full": 1.0,
+     "rep_families": 20,
+     "bytes": 37974,
+     "tokens": 9159
+    },
+    "round3": {
+     "ari_vs_full": 1.0,
+     "rep_families": 20,
+     "bytes": 36925,
+     "tokens": 8897
+    },
+    "round2": {
+     "ari_vs_full": 1.0,
+     "rep_families": 20,
+     "bytes": 35902,
+     "tokens": 8641
+    },
+    "uint8": {
+     "ari_vs_full": 1.0,
+     "rep_families": 20,
+     "bytes": 38061,
+     "tokens": 9181
+    }
+   },
+   "desc_only_above_20pt": {
+    "objects_with_desc": 96,
+    "bytes": 36200,
+    "tokens": 8716
+   }
+  },
+  {
+   "case": "no_labels",
+   "n_obj": 364,
+   "rep_families_full": 39,
+   "variants": {
+    "round4": {
+     "ari_vs_full": 1.0,
+     "rep_families": 39,
+     "bytes": 112789,
+     "tokens": 28193
+    },
+    "round3": {
+     "ari_vs_full": 1.0,
+     "rep_families": 39,
+     "bytes": 109983,
+     "tokens": 27492
+    },
+    "round2": {
+     "ari_vs_full": 0.9985,
+     "rep_families": 40,
+     "bytes": 107075,
+     "tokens": 26765
+    },
+    "uint8": {
+     "ari_vs_full": 1.0,
+     "rep_families": 39,
+     "bytes": 113094,
+     "tokens": 28270
+    }
+   },
+   "desc_only_above_20pt": {
+    "objects_with_desc": 34,
+    "bytes": 61081,
+    "tokens": 15266
+   }
+  },
+  {
+   "case": "rotated_270",
+   "n_obj": 49,
+   "rep_families_full": 3,
+   "variants": {
+    "round4": {
+     "ari_vs_full": 1.0,
+     "rep_families": 3,
+     "bytes": 16926,
+     "tokens": 4178
+    },
+    "round3": {
+     "ari_vs_full": 1.0,
+     "rep_families": 3,
+     "bytes": 16544,
+     "tokens": 4083
+    },
+    "round2": {
+     "ari_vs_full": 1.0,
+     "rep_families": 3,
+     "bytes": 16148,
+     "tokens": 3984
+    },
+    "uint8": {
+     "ari_vs_full": 1.0,
+     "rep_families": 3,
+     "bytes": 16928,
+     "tokens": 4179
+    }
+   },
+   "desc_only_above_20pt": {
+    "objects_with_desc": 49,
+    "bytes": 16926,
+    "tokens": 4178
+   }
+  },
+  {
+   "case": "polygon_block",
+   "n_obj": 544,
+   "rep_families_full": 73,
+   "variants": {
+    "round4": {
+     "ari_vs_full": 1.0,
+     "rep_families": 73,
+     "bytes": 171251,
+     "tokens": 42498
+    },
+    "round3": {
+     "ari_vs_full": 1.0,
+     "rep_families": 73,
+     "bytes": 167612,
+     "tokens": 41588
+    },
+    "round2": {
+     "ari_vs_full": 0.9998,
+     "rep_families": 74,
+     "bytes": 163880,
+     "tokens": 40655
+    },
+    "uint8": {
+     "ari_vs_full": 0.9987,
+     "rep_families": 72,
+     "bytes": 171624,
+     "tokens": 42591
+    }
+   },
+   "desc_only_above_20pt": {
+    "objects_with_desc": 286,
+    "bytes": 133865,
+    "tokens": 33151
+   }
+  }
+ ]
+}

@@ -1,0 +1,104 @@
+{
+ "schema": "advB-blind-relabel-1",
+ "method": "13 пар бенчмарка mine пересмотрены оппонентом по триптихам mine_crops/*.png (A | B | наложение); в двух случаях с дополнительным зумом фрагмента.",
+ "contamination_warning": "Оппонент ДО просмотра картинок вывел таблицу mine_pairs.json с колонкой expected_verdict (одна команда в начале сессии). Поэтому доля согласия — ВЕРХНЯЯ оценка, а найденные расхождения — НИЖНЯЯ.",
+ "second_contamination": "Третья панель триптиха несёт вычисленную разницу (red=only A, blue=only B) и подпись diff=…; глаз пользуется тем же измерением, что и разметчик. Независим только разбор ЧТО именно отличается (геометрия / текст / рамка).",
+ "rows": [
+  {
+   "pair_id": "AR-b38a7dbc",
+   "label": "NO_GRAPHIC_CHANGE",
+   "mine_verdict": "NO_GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "наложение пустое"
+  },
+  {
+   "pair_id": "VK-b71afe81",
+   "label": "NO_GRAPHIC_CHANGE",
+   "mine_verdict": "NO_GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "два узла, различий нет"
+  },
+  {
+   "pair_id": "SS-6fc75e05",
+   "label": "NO_GRAPHIC_CHANGE",
+   "mine_verdict": "NO_GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "штамп, различие только у левой рамки"
+  },
+  {
+   "pair_id": "KJ-b5c82f7c",
+   "label": "NO_GRAPHIC_CHANGE",
+   "mine_verdict": "NO_GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "лишняя вертикальная линия рамки слева"
+  },
+  {
+   "pair_id": "SS-982f7f30",
+   "label": "NO_GRAPHIC_CHANGE",
+   "mine_verdict": "NO_GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "штамп, сдвиг рамки"
+  },
+  {
+   "pair_id": "EOM-0c86dfde",
+   "label": "NO_GRAPHIC_CHANGE",
+   "mine_verdict": "NO_GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "перенос колонки марок кабелей (текст) + линия рамки сверху"
+  },
+  {
+   "pair_id": "EOM-3306e907",
+   "label": "NO_GRAPHIC_CHANGE",
+   "mine_verdict": "UNCERTAIN",
+   "agree": false,
+   "note": "B нарисован крупнее; наложение НЕ приведено к общему масштабу, поэтому равенство геометрии глазом не проверяется. Вердикт 'изменений нет' по такой картинке не обоснован."
+  },
+  {
+   "pair_id": "EOM-c50e2170",
+   "label": "GRAPHIC_CHANGE",
+   "mine_verdict": "GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "снят весь слой осей с марками"
+  },
+  {
+   "pair_id": "SS-c7aa8d26",
+   "label": "GRAPHIC_CHANGE",
+   "mine_verdict": "GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "добавлены два целых узла крепления"
+  },
+  {
+   "pair_id": "EOM-46355862",
+   "label": "GRAPHIC_CHANGE",
+   "mine_verdict": "GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "добавлены штриховки стен/помещений"
+  },
+  {
+   "pair_id": "AR-577a293f",
+   "label": "GRAPHIC_CHANGE",
+   "mine_verdict": "GRAPHIC_CHANGE",
+   "agree": true,
+   "note": "в колонке 'Эскиз' изменились сами эскизы пирога пола, не только числа"
+  },
+  {
+   "pair_id": "AR-5acaab0e",
+   "label": "GRAPHIC_CHANGE",
+   "mine_verdict": "GRAPHIC_CHANGE",
+   "agree": true,
+   "confidence": "low",
+   "note": "фазовый шум штриховки закрывает всё; различие плана видно только в правом крыле"
+  },
+  {
+   "pair_id": "EOM-7fef43a3",
+   "label": "GRAPHIC_CHANGE",
+   "mine_verdict": "NO_GRAPHIC_CHANGE",
+   "agree": false,
+   "note": "ЗУМ наложения: полка и выноска ЧЁРНЫЕ (есть с обеих сторон), синим только текст 'Закладная гильза для кабеля обогрева' и примечание. По §1 брифа это НЕ graphic change. Совпадает с neg N-25 и loc L7 и с прямым замером: 10 972 = 10 972 сегмента, несопоставленной краски 0.000."
+  }
+ ],
+ "n": 13,
+ "n_agree": 11,
+ "agreement": 0.8462,
+ "cohen_kappa_upper_bound": 0.7111
+}

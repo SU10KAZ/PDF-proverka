@@ -1,0 +1,831 @@
+{
+ "note": "GraphicChangeLedger v0.3 (probe ldg). [REAL] = cross-revision pair of prepared graphic blocks; the corpus has no P->RD pairs (probe pd). [CF] = controlled counterfactual on a real prepared block.",
+ "contract": {
+  "record": [
+   "type",
+   "welded",
+   "object_before",
+   "object_after",
+   "evidence[]"
+  ],
+  "evidence_kinds": [
+   "attachment",
+   "contact",
+   "frame",
+   "ink_lost",
+   "ink_new",
+   "translation"
+  ],
+  "forbidden_as_evidence": [
+   "text",
+   "label",
+   "ocr",
+   "table cell value"
+  ]
+ },
+ "cases": [
+  {
+   "case": "AR-55eda7fb",
+   "source": "REAL",
+   "discipline": "AR",
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "human_label_ru": "В таблице «Перемычки 39 этаж» изменён эскиз строки ПР-14: было L=850 (поз. 10) с размерами 150/550/150, стало L=1000 (поз. 8) со штриховкой стены справа. Остальные строки не изменились.",
+   "geometry": {
+    "registration_offset_pt": [
+     -0.05,
+     -0.05
+    ],
+    "registration_score": 0.9763,
+    "n_seg_a": 4315,
+    "n_seg_b": 4412,
+    "S_pt": 9.1304,
+    "L_min_pt": 18.261,
+    "ink_similarity": 0.971427
+   },
+   "ledger": {
+    "changes": [
+     {
+      "type": "CHANGED_OBJECT",
+      "welded": false,
+      "object_before": {
+       "object_id": "1f652a481da3",
+       "cls": "symbol",
+       "bbox_pt": [
+        486.48,
+        1429.92,
+        551.28,
+        1463.54
+       ],
+       "label": ".550.",
+       "share": 0.336
+      },
+      "object_after": {
+       "object_id": "1d45f4c7f074",
+       "cls": "composite",
+       "bbox_pt": [
+        451.68,
+        1429.92,
+        579.36,
+        1483.68
+       ],
+       "label": ".1000.",
+       "share": 0.312
+      },
+      "evidence": [
+       {
+        "kind": "ink_lost",
+        "len_pt": 506.98,
+        "n_seg": 141
+       },
+       {
+        "kind": "ink_new",
+        "len_pt": 658.96,
+        "n_seg": 92
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 184,
+        "n_touching": 173,
+        "share_touching": 0.9402,
+        "radius_pt": 5.478
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         392.83,
+         1428.67,
+         569.52,
+         1497.31
+        ]
+       }
+      ]
+     },
+     {
+      "type": "ADDED_OBJECT",
+      "welded": false,
+      "object_before": null,
+      "object_after": {
+       "object_id": "e2b2af2541af",
+       "cls": "linear",
+       "bbox_pt": [
+        276.73,
+        1474.08,
+        337.68,
+        1515.84
+       ],
+       "label": ".80.",
+       "share": 0.642
+      },
+      "evidence": [
+       {
+        "kind": "ink_new",
+        "len_pt": 350.46,
+        "n_seg": 105
+       },
+       {
+        "kind": "attachment",
+        "attached_ends": 0,
+        "ends": [
+         null,
+         null
+        ],
+        "run_len_pt": 89.04,
+        "run_over_S": 9.75
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 210,
+        "n_touching": 16,
+        "share_touching": 0.0762,
+        "radius_pt": 5.478
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         264.43,
+         1474.03,
+         353.47,
+         1505.47
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "phrases_ru": [
+    "Добавлен графический объект.",
+    "Изменена конфигурация элемента."
+   ],
+   "validator_violations": [],
+   "t_sec": 3.54
+  },
+  {
+   "case": "EOM-c50e2170",
+   "source": "REAL",
+   "discipline": "EOM",
+   "classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "human_label_ru": "В версии B исчезли координационные оси: штрихпунктирные линии и кружки с марками осей по всему периметру плана. Сегментов 8 027 → 4 502.",
+   "geometry": {
+    "registration_offset_pt": [
+     0.007,
+     -0.03
+    ],
+    "registration_score": 0.988,
+    "n_seg_a": 8027,
+    "n_seg_b": 4502,
+    "S_pt": 12.5374,
+    "L_min_pt": 25.075,
+    "ink_similarity": 0.980281
+   },
+   "ledger": {
+    "changes": [
+     {
+      "type": "CHANGED_OBJECT",
+      "welded": false,
+      "object_before": {
+       "object_id": "3c136e3b9afc",
+       "cls": "composite",
+       "bbox_pt": [
+        600.96,
+        202.8,
+        702.24,
+        400.29
+       ],
+       "label": "П.АА",
+       "share": 0.045
+      },
+      "object_after": {
+       "object_id": "8333db491b4e",
+       "cls": "symbol",
+       "bbox_pt": [
+        666.24,
+        343.92,
+        694.8,
+        372.48
+       ],
+       "label": "К6.2.4п-К6.2.5п",
+       "share": 0.981
+      },
+      "evidence": [
+       {
+        "kind": "ink_lost",
+        "len_pt": 62.4,
+        "n_seg": 2
+       },
+       {
+        "kind": "ink_new",
+        "len_pt": 89.16,
+        "n_seg": 11
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 22,
+        "n_touching": 19,
+        "share_touching": 0.8636,
+        "radius_pt": 7.522
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         660.72,
+         356.4,
+         694.807,
+         387.6
+        ]
+       }
+      ]
+     },
+     {
+      "type": "CHANGED_OBJECT",
+      "welded": false,
+      "object_before": {
+       "object_id": "219fa2742c38",
+       "cls": "symbol",
+       "bbox_pt": [
+        557.21,
+        218.16,
+        613.03,
+        284.4
+       ],
+       "label": "СПА ИВЭПР",
+       "share": 0.092
+      },
+      "object_after": {
+       "object_id": "48a532c0cc93",
+       "cls": "symbol",
+       "bbox_pt": [
+        588.6,
+        162.96,
+        630.96,
+        216.24
+       ],
+       "label": "1910",
+       "share": 0.606
+      },
+      "evidence": [
+       {
+        "kind": "ink_lost",
+        "len_pt": 19.12,
+        "n_seg": 8
+       },
+       {
+        "kind": "ink_new",
+        "len_pt": 94.03,
+        "n_seg": 17
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 34,
+        "n_touching": 28,
+        "share_touching": 0.8235,
+        "radius_pt": 7.522
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         570.48,
+         179.01,
+         630.967,
+         242.64
+        ]
+       }
+      ]
+     },
+     {
+      "type": "ADDED_OBJECT",
+      "welded": true,
+      "object_before": null,
+      "object_after": {
+       "object_id": "6faae188a3bf",
+       "cls": "symbol",
+       "bbox_pt": [
+        666.24,
+        245.52,
+        694.8,
+        274.08
+       ],
+       "label": "1910",
+       "share": 0.981
+      },
+      "evidence": [
+       {
+        "kind": "ink_new",
+        "len_pt": 89.34,
+        "n_seg": 11
+       },
+       {
+        "kind": "attachment",
+        "attached_ends": 2,
+        "ends": [
+         {
+          "dist_pt": 5.73,
+          "host_seg": 464,
+          "cos": 1.0,
+          "angle_deg": 0.0
+         },
+         {
+          "dist_pt": 0.007,
+          "host_seg": 476,
+          "cos": 0.0,
+          "angle_deg": 90.0
+         }
+        ],
+        "run_len_pt": 40.39,
+        "run_over_S": 3.22
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 22,
+        "n_touching": 11,
+        "share_touching": 0.5,
+        "radius_pt": 7.522
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         666.247,
+         259.17,
+         694.807,
+         287.73
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "phrases_ru": [
+    "Изменена конфигурация элементов: 3."
+   ],
+   "validator_violations": [],
+   "t_sec": 2.45
+  },
+  {
+   "case": "AR-b38a7dbc",
+   "source": "REAL",
+   "discipline": "AR",
+   "classes": [
+    "unchanged_control",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "human_label_ru": "Изменений нет: наложение даёт 0 пикселей несовпадения (diff=0.0), число сегментов и текстовых строк совпадает точно.",
+   "geometry": {
+    "registration_offset_pt": [
+     -0.092,
+     -0.006
+    ],
+    "registration_score": 1.0,
+    "n_seg_a": 32312,
+    "n_seg_b": 32312,
+    "S_pt": 6.4294,
+    "L_min_pt": 12.859,
+    "ink_similarity": 1.0
+   },
+   "ledger": {
+    "changes": []
+   },
+   "phrases_ru": [],
+   "validator_violations": [],
+   "t_sec": 10.4
+  },
+  {
+   "case": "SS-392b7bd3",
+   "source": "REAL",
+   "discipline": "SS",
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "human_label_ru": "Схема (EZ1, У1.1, «Входные двери помещения», ПУ-У1) идентична; в версии B сверху добавилась линия рамки листа.",
+   "geometry": {
+    "registration_offset_pt": [
+     -0.08,
+     -0.05
+    ],
+    "registration_score": 1.0,
+    "n_seg_a": 860,
+    "n_seg_b": 862,
+    "S_pt": 10.9877,
+    "L_min_pt": 21.975,
+    "ink_similarity": 0.905577
+   },
+   "ledger": {
+    "changes": []
+   },
+   "phrases_ru": [],
+   "validator_violations": [],
+   "t_sec": 3.03
+  },
+  {
+   "case": "6WNV-DWDA-4CQ|C9_add_branch",
+   "source": "CF",
+   "discipline": "AR",
+   "cf_id": "C9_add_branch",
+   "cf_class": "C",
+   "export_noise_on_B": "A6_round_0.25",
+   "ground_truth": {
+    "change_bbox_pt": [
+     951.36,
+     1178.976,
+     1006.143,
+     1178.976
+    ],
+    "change_bboxes_pt": null,
+    "expected_ledger": [
+     {
+      "type": "ADDED_BRANCH",
+      "object_id": "f6f4662e05a0",
+      "bbox_pt": [
+       951.36,
+       1178.976,
+       1006.143,
+       1178.976
+      ]
+     }
+    ],
+    "params": {
+     "branch_len_pt": 54.782,
+     "branch_over_S": 6.0
+    }
+   },
+   "geometry": {
+    "n_seg_a": 1034,
+    "n_seg_b": 1032,
+    "S_pt": 9.1304,
+    "L_min_pt": 18.261,
+    "ink_similarity": 0.998174
+   },
+   "ledger": {
+    "changes": [
+     {
+      "type": "ADDED_OBJECT",
+      "welded": true,
+      "object_before": null,
+      "object_after": {
+       "object_id": "e1f5b16cea6c",
+       "cls": "stray",
+       "bbox_pt": [
+        951.25,
+        1179.0,
+        1006.25,
+        1179.0
+       ],
+       "label": "400",
+       "share": 1.0
+      },
+      "evidence": [
+       {
+        "kind": "ink_new",
+        "len_pt": 55.0,
+        "n_seg": 1
+       },
+       {
+        "kind": "attachment",
+        "attached_ends": 1,
+        "ends": [
+         {
+          "dist_pt": 0.11,
+          "host_seg": 841,
+          "cos": 0.0,
+          "angle_deg": 90.0
+         },
+         null
+        ],
+        "run_len_pt": 55.0,
+        "run_over_S": 6.02
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 2,
+        "n_touching": 1,
+        "share_touching": 0.5,
+        "radius_pt": 5.478
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         951.25,
+         1179.0,
+         1006.25,
+         1179.0
+        ]
+       }
+      ],
+      "shape": "BRANCH_ADDED"
+     }
+    ]
+   },
+   "phrases_ru": [
+    "Добавлено одно ответвление."
+   ],
+   "validator_violations": [],
+   "t_sec": 0.39
+  },
+  {
+   "case": "blk_fafeb59601b84a839e0616f5fcda4f18|C10_remove_opening",
+   "source": "CF",
+   "discipline": "KJ",
+   "cf_id": "C10_remove_opening",
+   "cf_class": "C",
+   "export_noise_on_B": "A6_round_0.25",
+   "ground_truth": {
+    "change_bbox_pt": [
+     2524.8,
+     1776.959,
+     2542.32,
+     1776.959
+    ],
+    "change_bboxes_pt": null,
+    "expected_ledger": [
+     {
+      "type": "REMOVED_OPENING",
+      "object_ids": [
+       "f1a938cf682c",
+       "eb5d42d8e8b0"
+      ],
+      "bbox_pt": [
+       2524.8,
+       1776.959,
+       2542.32,
+       1776.959
+      ]
+     }
+    ],
+    "params": {
+     "opening_pt": 17.52,
+     "opening_over_S": 2.06,
+     "same_object": false
+    }
+   },
+   "geometry": {
+    "n_seg_a": 723,
+    "n_seg_b": 724,
+    "S_pt": 8.4999,
+    "L_min_pt": 17.0,
+    "ink_similarity": 0.998497
+   },
+   "ledger": {
+    "changes": [
+     {
+      "type": "ADDED_OBJECT",
+      "welded": true,
+      "object_before": null,
+      "object_after": {
+       "object_id": "f0dca893064f",
+       "cls": "linear",
+       "bbox_pt": [
+        2493.5,
+        1777.0,
+        2573.5,
+        1791.0
+       ],
+       "label": "+146,630",
+       "share": 0.162
+      },
+      "evidence": [
+       {
+        "kind": "ink_new",
+        "len_pt": 17.5,
+        "n_seg": 1
+       },
+       {
+        "kind": "attachment",
+        "attached_ends": 2,
+        "ends": [
+         {
+          "dist_pt": 0.041,
+          "host_seg": 584,
+          "cos": 1.0,
+          "angle_deg": 0.0
+         },
+         {
+          "dist_pt": 0.081,
+          "host_seg": 654,
+          "cos": 1.0,
+          "angle_deg": 0.0
+         }
+        ],
+        "run_len_pt": 17.5,
+        "run_over_S": 2.06
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 2,
+        "n_touching": 2,
+        "share_touching": 1.0,
+        "radius_pt": 5.1
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         2524.75,
+         1777.0,
+         2542.25,
+         1777.0
+        ]
+       }
+      ],
+      "shape": "GAP_CLOSED"
+     }
+    ]
+   },
+   "phrases_ru": [
+    "Удалён проём."
+   ],
+   "validator_violations": [],
+   "t_sec": 0.21
+  },
+  {
+   "case": "7PJD-33QQ-W44|C2x2_same_object",
+   "source": "CF",
+   "discipline": "AR",
+   "cf_id": "C2x2_same_object",
+   "cf_class": "C",
+   "export_noise_on_B": "A6_round_0.25",
+   "ground_truth": {
+    "change_bbox_pt": [
+     713.349,
+     1585.736,
+     815.172,
+     1600.716
+    ],
+    "change_bboxes_pt": [
+     [
+      713.349,
+      1585.736,
+      720.669,
+      1592.216
+     ],
+     [
+      807.852,
+      1594.236,
+      815.172,
+      1600.716
+     ]
+    ],
+    "expected_ledger": [
+     {
+      "type": "ADDED_OBJECT",
+      "copy_of": "e22a41a5e94c",
+      "bbox_pt": [
+       713.349,
+       1585.736,
+       720.669,
+       1592.216
+      ]
+     },
+     {
+      "type": "ADDED_OBJECT",
+      "copy_of": "e22a41a5e94c",
+      "bbox_pt": [
+       807.852,
+       1594.236,
+       815.172,
+       1600.716
+      ]
+     }
+    ],
+    "params": null
+   },
+   "geometry": {
+    "n_seg_a": 250,
+    "n_seg_b": 252,
+    "S_pt": 0.559,
+    "L_min_pt": 3.0,
+    "ink_similarity": 0.97685
+   },
+   "ledger": {
+    "changes": [
+     {
+      "type": "ADDED_OBJECT",
+      "welded": false,
+      "object_before": null,
+      "object_after": {
+       "object_id": "6a2b30126699",
+       "cls": "linear",
+       "bbox_pt": [
+        713.25,
+        1585.75,
+        720.75,
+        1592.25
+       ],
+       "label": null,
+       "share": 1.0
+      },
+      "evidence": [
+       {
+        "kind": "ink_new",
+        "len_pt": 9.93,
+        "n_seg": 3
+       },
+       {
+        "kind": "attachment",
+        "attached_ends": 0,
+        "ends": [
+         null,
+         null
+        ],
+        "run_len_pt": 9.925,
+        "run_over_S": 17.75
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 6,
+        "n_touching": 0,
+        "share_touching": 0.0,
+        "radius_pt": 1.0
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         713.25,
+         1585.75,
+         720.75,
+         1592.25
+        ]
+       }
+      ],
+      "family": 0
+     },
+     {
+      "type": "ADDED_OBJECT",
+      "welded": false,
+      "object_before": null,
+      "object_after": {
+       "object_id": "58d9f846c838",
+       "cls": "linear",
+       "bbox_pt": [
+        807.75,
+        1594.25,
+        815.25,
+        1600.75
+       ],
+       "label": null,
+       "share": 1.0
+      },
+      "evidence": [
+       {
+        "kind": "ink_new",
+        "len_pt": 9.93,
+        "n_seg": 3
+       },
+       {
+        "kind": "attachment",
+        "attached_ends": 0,
+        "ends": [
+         null,
+         null
+        ],
+        "run_len_pt": 9.925,
+        "run_over_S": 17.75
+       },
+       {
+        "kind": "contact",
+        "n_endpoints": 6,
+        "n_touching": 0,
+        "share_touching": 0.0,
+        "radius_pt": 1.0
+       },
+       {
+        "kind": "frame",
+        "at_boundary": false,
+        "bbox_pt": [
+         807.75,
+         1594.25,
+         815.25,
+         1600.75
+        ]
+       }
+      ],
+      "family": 0
+     }
+    ]
+   },
+   "phrases_ru": [
+    "Добавлено 2 однотипных графических объекта."
+   ],
+   "validator_violations": [],
+   "t_sec": 0.35
+  }
+ ]
+}

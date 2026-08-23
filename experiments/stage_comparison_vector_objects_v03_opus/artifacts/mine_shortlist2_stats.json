@@ -1,0 +1,258 @@
+{
+ "schema_version": "mine_shortlist2/1",
+ "research_only": true,
+ "n_pairs_pool": 3940,
+ "n_with_extract": 849,
+ "n_shortlisted": 148,
+ "per_class": {
+  "obj_added_interior": {
+   "n_candidates": 138,
+   "n_picked": 12,
+   "picked": [
+    "EOM-46355862",
+    "SS-c44f0087",
+    "SS-e931a5ba",
+    "AR-1e54331a",
+    "EOM-58219aaa",
+    "EOM-cd0c898a",
+    "EOM-58934ecf",
+    "EOM-4b6c8427",
+    "EOM-0ddcc54d",
+    "EOM-1c3177a7",
+    "EOM-7fef43a3",
+    "EOM-b125ff8d"
+   ]
+  },
+  "obj_removed_interior": {
+   "n_candidates": 255,
+   "n_picked": 12,
+   "picked": [
+    "KJ-f0cc4f6f",
+    "AR-28c07fc4",
+    "EOM-f9c08475",
+    "AR-beac1d44",
+    "AR-441907a2",
+    "AR-cd526189",
+    "VK-921692fb",
+    "VK-56115717",
+    "KM-a0466e2d",
+    "OV-22b0dd3b",
+    "KJ-00baf980",
+    "AR-626f9cd9"
+   ]
+  },
+  "small_local_interior": {
+   "n_candidates": 406,
+   "n_picked": 14,
+   "picked": [
+    "SS-d55eb193",
+    "SS-e6d51231",
+    "SS-c7aa8d26",
+    "SS-76640e11",
+    "SS-eca64cfc",
+    "EOM-c4ee4fb1",
+    "AR-52f19721",
+    "SS-09c730e4",
+    "AR-21480afa",
+    "KJ-939087b7",
+    "AR-6c872d39",
+    "KJ-2e2a6b98",
+    "AR-dc2de282",
+    "KJ-906e4255"
+   ]
+  },
+  "obj_moved_interior": {
+   "n_candidates": 851,
+   "n_picked": 12,
+   "picked": [
+    "AR-577a293f",
+    "EOM-1db297d2",
+    "VK-ec06f01f",
+    "EOM-851b4d0b",
+    "AR-72d54128",
+    "AR-306965e9",
+    "AR-83605dae",
+    "KJ-548814a7",
+    "SS-1cc4378b",
+    "AR-73929909",
+    "SS-2fe0c291",
+    "AR-33e66aa4"
+   ]
+  },
+  "quiet_true": {
+   "n_candidates": 331,
+   "n_picked": 12,
+   "picked": [
+    "VK-824af74b",
+    "VK-48d7909d",
+    "SS-bc10a9c3",
+    "SS-c1054bd1",
+    "EOM-a4acf0af",
+    "SS-6e5ffcf6",
+    "SS-b33967d6",
+    "SS-32a2ae6c",
+    "EOM-2353e3dc",
+    "AR-b38a7dbc",
+    "AR-48aadccf",
+    "EOM-c67364ae"
+   ]
+  },
+  "packaging": {
+   "n_candidates": 45,
+   "n_picked": 10,
+   "picked": [
+    "EOM-b3390cc8",
+    "SS-8f0ec2df",
+    "SS-9988e6ef",
+    "OV-299daef2",
+    "OV-edcdb87b",
+    "EOM-6a447e38",
+    "SS-641f8741",
+    "SS-c26351f4",
+    "SS-6fc75e05",
+    "SS-a0e88369"
+   ]
+  },
+  "dense_block": {
+   "n_candidates": 87,
+   "n_picked": 12,
+   "picked": [
+    "GP-6bc1c029",
+    "GP-b8367821",
+    "VK-661b89e0",
+    "SS-a0176979",
+    "VK-eda6c8e1",
+    "AR-333cf555",
+    "VK-148ffe6c",
+    "AR-5acaab0e",
+    "AR-eebc64bd",
+    "SS-fa130e8f",
+    "VK-ce14eee2",
+    "OV-3e73e4d0"
+   ]
+  },
+  "no_labels": {
+   "n_candidates": 20,
+   "n_picked": 9,
+   "picked": [
+    "AR-a32b30a6",
+    "EOM-b3390cc8",
+    "OV-d8a2290e",
+    "OV-4619e316",
+    "SS-8f0ec2df",
+    "SS-9988e6ef",
+    "EOM-6a447e38",
+    "SS-641f8741",
+    "TX-95031dbd"
+   ]
+  },
+  "few_labels": {
+   "n_candidates": 18,
+   "n_picked": 8,
+   "picked": [
+    "EOM-274e74c0",
+    "EOM-36de2ce2",
+    "EOM-8fdd7c14",
+    "EOM-d48fc5cd",
+    "KJ-6e8d0619",
+    "KJ-78b9fdc1",
+    "KJ-30148cf0",
+    "SS-e7311059"
+   ]
+  },
+  "raster_graphics": {
+   "n_candidates": 130,
+   "n_picked": 10,
+   "picked": [
+    "OV-2cc2a382",
+    "OV-a230726c",
+    "EOM-27848006",
+    "SS-74364322",
+    "EOM-274e74c0",
+    "EOM-7e07dc84",
+    "SS-a369f492",
+    "EOM-8d181d99",
+    "SS-38b12607",
+    "TX-e93622b0"
+   ]
+  },
+  "rotated_interior": {
+   "n_candidates": 65,
+   "n_picked": 10,
+   "picked": [
+    "EOM-3306e907",
+    "TX-86bb2b5a",
+    "VK-921692fb",
+    "AR-aa034131",
+    "AR-18410ebd",
+    "AR-0261b122",
+    "TX-192f1bbd",
+    "VK-6070be23",
+    "EOM-c547197c",
+    "EOM-faf7c326"
+   ]
+  },
+  "rotated_quiet": {
+   "n_candidates": 38,
+   "n_picked": 8,
+   "picked": [
+    "VK-824af74b",
+    "VK-48d7909d",
+    "TX-ca815c1d",
+    "SS-509d9b51",
+    "GP-fe047abd",
+    "SS-c9c2499e",
+    "SS-eba378f8",
+    "TX-370d6fbf"
+   ]
+  },
+  "block_shifted": {
+   "n_candidates": 288,
+   "n_picked": 10,
+   "picked": [
+    "GP-b8367821",
+    "AR-1ffd93f9",
+    "EOM-3e86c318",
+    "EOM-0c86dfde",
+    "KJ-26ff02b8",
+    "TX-48b03208",
+    "KJ-44eb4d74",
+    "OV-382c72b0",
+    "KJ-e9cb07fd",
+    "TX-ca815c1d"
+   ]
+  },
+  "stamp_text_only": {
+   "n_candidates": 412,
+   "n_picked": 10,
+   "picked": [
+    "VK-9072d13d",
+    "VK-cf3c91d1",
+    "KJ-25717577",
+    "SS-982f7f30",
+    "VK-6a9207b6",
+    "OV-5845a88e",
+    "SS-57b88c8b",
+    "EOM-005f226a",
+    "OV-d6547799",
+    "KM-f7d9d469"
+   ]
+  },
+  "many_interior": {
+   "n_candidates": 793,
+   "n_picked": 10,
+   "picked": [
+    "SS-9ec34042",
+    "OV-93cc012f",
+    "VK-3805a780",
+    "GP-d3a9a137",
+    "AR-55eda7fb",
+    "KJ-f51ed85b",
+    "SS-fd1b7ff0",
+    "SS-f6269a8b",
+    "OV-1bf8a5f1",
+    "SS-75c68cb6"
+   ]
+  }
+ }
+}

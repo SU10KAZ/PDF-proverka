@@ -1,0 +1,121 @@
+{
+ "summary": {
+  "n_graphic_blocks": 52057,
+  "index_coverage": {
+   "not_in_index": 42596,
+   "in_index": 9461
+  },
+  "index_match": 9461,
+  "index_mismatch": 0,
+  "index_mismatch_share_of_covered": 0.0,
+  "index_mismatch_max_abs_delta_px_median": null,
+  "index_mismatch_max_abs_delta_px_p90": null,
+  "inside_page_px": 52057,
+  "outside_page_px": 0,
+  "share_outside_page_px": 0.0,
+  "no_page_px": 0,
+  "degenerate_bbox": 0,
+  "shape": {
+   "rectangle": 45512,
+   "polygon": 6545,
+   "other": 0
+  },
+  "share_polygon": 0.12572756785830916,
+  "polygon_with_points": 6545,
+  "polygon_without_points": 0,
+  "polygon_area_over_bbox": {
+   "n": 6545,
+   "median": 0.8633002014501084,
+   "mean": 0.8596036895083503,
+   "p10": 0.6862593674581761,
+   "p25": 0.7778283337236075,
+   "p90": 0.9574929200415574,
+   "share_below_0.9": 0.6429335370511841,
+   "share_below_0.7": 0.11489686783804431,
+   "share_below_0.5": 0.01650114591291062
+  },
+  "polygon_share_by_discipline": {
+   "AI": {
+    "blocks": 1726,
+    "polygon": 221,
+    "share": 0.12804171494785632,
+    "median_area_ratio": 0.8627426687418086
+   },
+   "AR": {
+    "blocks": 11249,
+    "polygon": 1620,
+    "share": 0.14401280113787893,
+    "median_area_ratio": 0.8692143797238803
+   },
+   "EOM": {
+    "blocks": 5610,
+    "polygon": 710,
+    "share": 0.1265597147950089,
+    "median_area_ratio": 0.8709009118136087
+   },
+   "GP": {
+    "blocks": 672,
+    "polygon": 88,
+    "share": 0.13095238095238096,
+    "median_area_ratio": 0.8109165205416216
+   },
+   "ITP": {
+    "blocks": 839,
+    "polygon": 74,
+    "share": 0.08820023837902265,
+    "median_area_ratio": 0.8525355791715248
+   },
+   "KJ": {
+    "blocks": 7788,
+    "polygon": 880,
+    "share": 0.11299435028248588,
+    "median_area_ratio": 0.8787823731266613
+   },
+   "KM": {
+    "blocks": 1114,
+    "polygon": 191,
+    "share": 0.17145421903052063,
+    "median_area_ratio": 0.8489681164442904
+   },
+   "OV": {
+    "blocks": 8520,
+    "polygon": 931,
+    "share": 0.10927230046948357,
+    "median_area_ratio": 0.8264173172124905
+   },
+   "POS": {
+    "blocks": 184,
+    "polygon": 10,
+    "share": 0.05434782608695652,
+    "median_area_ratio": 0.9121884923337051
+   },
+   "PT": {
+    "blocks": 517,
+    "polygon": 56,
+    "share": 0.10831721470019343,
+    "median_area_ratio": 0.7866429620621285
+   },
+   "SS": {
+    "blocks": 8239,
+    "polygon": 1043,
+    "share": 0.1265930331350892,
+    "median_area_ratio": 0.8739850676059132
+   },
+   "TX": {
+    "blocks": 613,
+    "polygon": 94,
+    "share": 0.1533442088091354,
+    "median_area_ratio": 0.8575272081488526
+   },
+   "VK": {
+    "blocks": 4986,
+    "polygon": 627,
+    "share": 0.12575210589651023,
+    "median_area_ratio": 0.8540719549149264
+   }
+  },
+  "elapsed_s": 7.6
+ },
+ "index_mismatch_examples": [],
+ "outside_page_examples": []
+}

@@ -1,0 +1,359 @@
+{
+ "summary": {
+  "n": 30,
+  "localization_all": {
+   "HIT": 27,
+   "MISS": 1,
+   "PARTIAL": 2
+  },
+  "localization_DIFFERENT": {
+   "HIT": 15
+  },
+  "localization_SAME": {
+   "HIT": 12,
+   "MISS": 1,
+   "PARTIAL": 2
+  },
+  "naming_DIFFERENT": {
+   "exact": 13,
+   "other": 2
+  },
+  "hit_share_DIFFERENT": 1.0,
+  "unverified_extra_claims": [
+   "vis08"
+  ],
+  "adjudicator": "один наблюдатель (тот же, что ставил истину); второго разметчика нет"
+ },
+ "rows": [
+  {
+   "case_id": "vis01",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "верно свёл разницу к тексту подписи",
+   "why": "Стена со штриховкой и осевая линия совпадают; отличается только положение синих текстовых подписей."
+  },
+  {
+   "case_id": "vis02",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "заливка и оранжевая полоса — ровно предмет записи",
+   "why": "Слева вдоль левой грани шкафа есть оранжевая вертикальная полоса и сплошная серая заливка стен, справа этой полосы нет, а стены показаны только штриховкой"
+  },
+  {
+   "case_id": "vis03",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "назван и механизм: иная оцифровка кружка",
+   "why": "Клеммник, синие линии и оба кружка-соединителя совпадают; в правом верхний кружок лишь чуть иначе оцифрован"
+  },
+  {
+   "case_id": "vis04",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Символ диода/стабилитрона со стрелками излучения совпадает полностью по форме и положению."
+  },
+  {
+   "case_id": "vis05",
+   "truth": "SAME",
+   "pred": "DIFFERENT",
+   "correct": false,
+   "localization": "MISS",
+   "naming": "n/a",
+   "unverified_extra_claim": "",
+   "note_ru": "выдуман переход «залитый клин → тонкая линия»; на деле округление 0.5 pt",
+   "why": "В центре слева массивный залитый клин над диагональю, справа на его месте тонкая узкая линия — форма элемента иная."
+  },
+  {
+   "case_id": "vis06",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Справа над шифром появились две толстые горизонтальные черты (подчёркивание/зачёркивание), слева их нет."
+  },
+  {
+   "case_id": "vis07",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "оба чертежа названы своими заголовками",
+   "why": "Слева таблица «Условные обозначения» со светильниками, справа узел «Проход кабелей через перегородки и перекрытия»"
+  },
+  {
+   "case_id": "vis08",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "стрелка уклона переехала к тройнику",
+   "note_ru": "добавленный фитинг назван верно; про стрелку в истине ничего нет",
+   "why": "У правого узла ø50 появился дополнительный фитинг/отвод с отметкой, стрелка уклона переехала к тройнику"
+  },
+  {
+   "case_id": "vis09",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Оба — узел В прохода кабеля в гильзе, те же элементы и подписи, справа кроп смещён и обрезан слева."
+  },
+  {
+   "case_id": "vis10",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Справа появились дверное полотно и штриховая дуга открывания, слева на этом месте пусто."
+  },
+  {
+   "case_id": "vis11",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Слева опалубка фундаментов Фпк-3/Фпк-4, справа армирование Фпк-2 — разная геометрия и содержание."
+  },
+  {
+   "case_id": "vis12",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "PARTIAL",
+   "naming": "other",
+   "unverified_extra_claim": "",
+   "note_ru": "объект назван «кружок с выноской» вместо знака дерева; механизм — «число сегментов» вместо округления координат, но категория («иная оцифровка») верна",
+   "why": "Тот же кружок с выноской вправо, отличается только число сегментов аппроксимации окружности"
+  },
+  {
+   "case_id": "vis13",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "разное разложение на примитивы (×8.3) не создало видимой разницы — агент это и сказал",
+   "why": "Клетки штампа и подпись совпадают полностью"
+  },
+  {
+   "case_id": "vis14",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Слева пусто, справа появился параллелограмм с цифрой 1."
+  },
+  {
+   "case_id": "vis15",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "прочитал заголовок и оси на растровом кропе",
+   "why": "Оба кропа — «Фундамент под оборудование Фпк-3, Фпк-4. Опалубка» с теми же осями 3.5-3.7 и теми же двумя штрихованными прямоугольниками."
+  },
+  {
+   "case_id": "vis16",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Слева между кружками есть средний круг (дерево) с выноской, справа он отсутствует."
+  },
+  {
+   "case_id": "vis17",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Стойка, две горизонтальные полосы и верхний синий фрагмент совпадают попиксельно"
+  },
+  {
+   "case_id": "vis18",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Справа добавлены горизонтальный двойной серый элемент и штриховая дуга, слева вместо них вертикальная линия"
+  },
+  {
+   "case_id": "vis19",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Пунктирные линии, зигзаг и штриховые контакты идентичны по форме и положению."
+  },
+  {
+   "case_id": "vis20",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Справа в средних строках таблицы появился вертикальный отрезок-разделитель, слева его нет."
+  },
+  {
+   "case_id": "vis21",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "PARTIAL",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "вердикт верен, но механизм назван неверно: «заливка/контур» вместо ступенчатого хвоста от округления",
+   "why": "Обе подписи в штампе одинаковы по форме, различается лишь их векторная отрисовка (заливка/контур)."
+  },
+  {
+   "case_id": "vis22",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "other",
+   "unverified_extra_claim": "",
+   "note_ru": "«знак обрыва с двумя полками» = символ арматурного стыка",
+   "why": "Слева есть знак обрыва (зигзаг) с двумя полками и продолжение штриховой линии вправо, справа их нет"
+  },
+  {
+   "case_id": "vis23",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "План санузла, лестница и синий прибор идентичны"
+  },
+  {
+   "case_id": "vis24",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Справа под профилем появился прямоугольный блок с двумя анкерами и размерными засечками, слева его нет."
+  },
+  {
+   "case_id": "vis25",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "other",
+   "unverified_extra_claim": "",
+   "note_ru": "«символ разрыва» = тот же символ арматурного стыка",
+   "why": "Справа под штриховой линией добавлен символ разрыва (зигзаг с двумя поперечными полочками), слева область пустая."
+  },
+  {
+   "case_id": "vis26",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "разницу отнёс к растрированию краёв — это и есть антиалиасинг",
+   "why": "Фрагмент логотипа «РОЕ» идентичен по форме и положению, отличается только растрирование краёв."
+  },
+  {
+   "case_id": "vis27",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Справа отсутствует нижний кружок-соединение и уходящая от него вправо синяя линия"
+  },
+  {
+   "case_id": "vis28",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "запись реестра 15 582 pt — фантом; агент сказал «совпадают»",
+   "why": "Разрез а-а, штриховки, размерные цепочки и выноски совпадают"
+  },
+  {
+   "case_id": "vis29",
+   "truth": "DIFFERENT",
+   "pred": "DIFFERENT",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Справа присутствует синяя дуга, слева этот участок пустой."
+  },
+  {
+   "case_id": "vis30",
+   "truth": "SAME",
+   "pred": "SAME",
+   "correct": true,
+   "localization": "HIT",
+   "naming": "exact",
+   "unverified_extra_claim": "",
+   "note_ru": "",
+   "why": "Стенка со штриховкой, зигзагами разрыва и штриховой линией совпадает попиксельно по положению и форме."
+  }
+ ]
+}

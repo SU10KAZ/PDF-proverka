@@ -1,0 +1,106 @@
+{
+ "schema_version": "scope_m14_eyes/1",
+ "note": "10 пар M14 зонда mine; 2 просмотрены mine, 8 просмотрены здесь по картинке ЛИСТОВ (artifacts/scope_crops/<pair>_pages.png), а не только по кропу блока",
+ "classes": {
+  "merge_N_to_1": 2,
+  "nesting_A_in_B": 1,
+  "merge_N_to_1_extreme": 1,
+  "merge_plus_relayout": 1,
+  "nesting_A_in_B_plus_real_revision": 1,
+  "relayout_positional_match_wrong": 2,
+  "merge_plus_real_change": 1,
+  "same_slot_content_replaced": 1
+ },
+ "pairs": [
+  {
+   "pair_id": "AR-490254e9",
+   "viewed_by": "mine (2 of 10)",
+   "component": "T0000",
+   "kind_geometric": "N:M",
+   "eye_class": "merge_N_to_1",
+   "ru": "сторона A: «Вид 1» отдельным блоком; сторона B: один блок на «Вид 1…Вид 4». Остальные виды на листе A лежат в СОСЕДНИХ блоках — содержимое листа то же",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "OV-2cc2a382",
+   "viewed_by": "mine (2 of 10)",
+   "component": "T0001",
+   "kind_geometric": "1:1_nested",
+   "eye_class": "nesting_A_in_B",
+   "ru": "A — узкая полоска с эскизом установки, B — весь опросный лист поставщика; полоска физически лежит внутри листа B",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "AR-49c7c898",
+   "viewed_by": "scope (new)",
+   "component": "T0002",
+   "kind_geometric": "N:M",
+   "eye_class": "merge_N_to_1",
+   "ru": "A: «Ведомость полов» разрезана на 10 блоков (одна строка = блок) + отдельные «Вид 1…4»; B: один блок на всю ведомость и виды. Лист тот же",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "AR-899c6321",
+   "viewed_by": "scope (new)",
+   "component": "T0003",
+   "kind_geometric": "N:1",
+   "eye_class": "merge_N_to_1_extreme",
+   "ru": "A: 59 подготовленных блоков на листе, каждая схема двери — свой блок; B: 6 блоков, вся группа «Схемы ревизионных люков» одним блоком",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "AR-aab8d4f9",
+   "viewed_by": "scope (new)",
+   "component": "T0004",
+   "kind_geometric": "N:M",
+   "eye_class": "merge_plus_relayout",
+   "ru": "A: «Вид 1…Вид 6» шестью блоками в ряд; B: три блока, «Вид 3/4/5/6» столбцом справа. Содержимое то же, но перекомпоновано по листу",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "OV-a230726c",
+   "viewed_by": "scope (new)",
+   "component": "T0005",
+   "kind_geometric": "1:1_nested",
+   "eye_class": "nesting_A_in_B_plus_real_revision",
+   "ru": "как OV-2cc2a382: A — полоска, B — весь лист. Сам лист при этом реально другой ревизии (PA26-005271-03→05, 220→280 м³/ч, VRK-PatAIR-KS-160→K-160) — но это ТЕКСТ, вектор совпал",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "EOM-81ca2c16",
+   "viewed_by": "scope (new)",
+   "component": "T0006",
+   "kind_geometric": "N:M",
+   "eye_class": "relayout_positional_match_wrong",
+   "ru": "сопоставлены РАЗНЫЕ чертежи: A — узел «Проход кабелей через перегородки», B — план 3.МОП.5. Оба чертежа есть на обоих листах, но переставлены местами",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "EOM-27848006",
+   "viewed_by": "scope (new)",
+   "component": "T0007",
+   "kind_geometric": "N:M",
+   "eye_class": "relayout_positional_match_wrong",
+   "ru": "то же: A — «Внешний вид ЩЭРМ» (растр), B — «Типовой план помещения ревизии». Оба есть на обоих листах в разных местах",
+   "content_present_on_both_sheets": true
+  },
+  {
+   "pair_id": "SS-5f190ee6",
+   "viewed_by": "scope (new)",
+   "component": "T0008",
+   "kind_geometric": "N:1",
+   "eye_class": "merge_plus_real_change",
+   "ru": "A: блок «Узел 5» (6 рядов МДУ-1С) + отдельный блок «Узел 6»; B: один блок «Узел 5 (1 ряд) + Узел 15 + Узел 6». И границы разъехались, и содержимое реально изменилось",
+   "content_present_on_both_sheets": false
+  },
+  {
+   "pair_id": "SS-cc32de7d",
+   "viewed_by": "scope (new)",
+   "component": "T0009",
+   "kind_geometric": "1:1_nested",
+   "eye_class": "same_slot_content_replaced",
+   "ru": "в том же месте листа A стояли узлы крепления кабельных трасс, в B — «Опора под лотковые трассы» с таблицей. Это НАСТОЯЩАЯ замена, а не расхождение границ",
+   "content_present_on_both_sheets": false
+  }
+ ]
+}

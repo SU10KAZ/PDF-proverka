@@ -1,0 +1,371 @@
+[
+ {
+  "doc_id": "13АВ-РД-ТХ2-К1 V1",
+  "disc": "TX",
+  "kind": "1:0_orphan_a",
+  "page_a": 6,
+  "page_b": 6,
+  "block": "4QJQ-W6DE-HPP",
+  "side": "a",
+  "rect_pt": [
+   1218.8,
+   696.6,
+   1670.6,
+   905.9
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 1115,
+   "n_seg_b": 1115,
+   "ink_len_a": 8341.86,
+   "ink_len_b": 8341.86,
+   "n_obj_a": 89,
+   "n_obj_b": 89,
+   "S": 8.858,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    1218.8,
+    696.6,
+    1670.6,
+    905.9
+   ],
+   "clip_b": [
+    1218.8,
+    696.6,
+    1670.6,
+    905.9
+   ],
+   "t_sec": 1.7
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-ЭМ-К5",
+  "disc": "EOM",
+  "kind": "0:1_orphan_b",
+  "page_a": 18,
+  "page_b": 19,
+  "block": "9YQA-MD3E-9AH",
+  "side": "b",
+  "rect_pt": [
+   1142.3,
+   1018.3,
+   1669.4,
+   1174.8
+  ],
+  "page_frame": {
+   "n_records": 1,
+   "n_records_interior": 1,
+   "n_records_big": 1,
+   "by_type": {
+    "ADDED_OBJECT": 1
+   },
+   "by_type_big": {
+    "ADDED_OBJECT": 1
+   },
+   "changed_len_total": 178.559,
+   "changed_len_big": 178.56,
+   "added_removed_len": 178.56,
+   "added_removed_big": 1,
+   "similarity": 0.985495,
+   "n_seg_a": 1244,
+   "n_seg_b": 1280,
+   "ink_len_a": 6081.69,
+   "ink_len_b": 6228.57,
+   "n_obj_a": 33,
+   "n_obj_b": 42,
+   "S": 8.5907,
+   "rec_top": [
+    [
+     "ADDED_OBJECT",
+     [
+      1570.5,
+      1147.6,
+      1657.4,
+      1158.0
+     ],
+     178.6,
+     0
+    ]
+   ],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    1142.3,
+    1018.3,
+    1669.4,
+    1174.8
+   ],
+   "clip_b": [
+    1142.3,
+    1018.3,
+    1669.4,
+    1174.8
+   ],
+   "t_sec": 23.9
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-ЭМ-К4",
+  "disc": "EOM",
+  "kind": "1:0_orphan_a",
+  "page_a": 11,
+  "page_b": 13,
+  "block": "4GGY-7VWX-L7H",
+  "side": "a",
+  "rect_pt": [
+   2068.3,
+   26.2,
+   2407.2,
+   302.2
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 109,
+   "n_seg_b": 109,
+   "ink_len_a": 825.05,
+   "ink_len_b": 825.05,
+   "n_obj_a": 12,
+   "n_obj_b": 12,
+   "S": 9.8766,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    2068.3,
+    26.2,
+    2407.2,
+    302.2
+   ],
+   "clip_b": [
+    2068.3,
+    26.2,
+    2407.2,
+    302.2
+   ],
+   "t_sec": 0.6
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-ОВ1.1-К2 V1",
+  "disc": "OV",
+  "kind": "0:1_orphan_b",
+  "page_a": 26,
+  "page_b": 27,
+  "block": "449U-VC6U-3HY",
+  "side": "b",
+  "rect_pt": [
+   1866.9,
+   1081.8,
+   2368.6,
+   1396.8
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 1115,
+   "n_seg_b": 1115,
+   "ink_len_a": 7263.23,
+   "ink_len_b": 7263.23,
+   "n_obj_a": 89,
+   "n_obj_b": 89,
+   "S": 9.2156,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    1866.9,
+    1081.8,
+    2368.6,
+    1396.8
+   ],
+   "clip_b": [
+    1866.9,
+    1081.8,
+    2368.6,
+    1396.8
+   ],
+   "t_sec": 2.9
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-АР0.4-ПА",
+  "disc": "AR",
+  "kind": "1:0_orphan_a",
+  "page_a": 6,
+  "page_b": 7,
+  "block": "4DEV-GA46-99V",
+  "side": "a",
+  "rect_pt": [
+   1579.4,
+   2707.9,
+   1925.0,
+   3330.0
+  ],
+  "page_frame": {
+   "n_records": 4,
+   "n_records_interior": 2,
+   "n_records_big": 4,
+   "by_type": {
+    "CHANGED_OBJECT": 2,
+    "MOVED_OBJECT": 1,
+    "ADDED_OBJECT": 1
+   },
+   "by_type_big": {
+    "MOVED_OBJECT": 1,
+    "CHANGED_OBJECT": 2,
+    "ADDED_OBJECT": 1
+   },
+   "changed_len_total": 5493.707,
+   "changed_len_big": 5493.71,
+   "added_removed_len": 510.84,
+   "added_removed_big": 1,
+   "similarity": 0.47176,
+   "n_seg_a": 364,
+   "n_seg_b": 484,
+   "ink_len_a": 5139.92,
+   "ink_len_b": 5260.1,
+   "n_obj_a": 37,
+   "n_obj_b": 50,
+   "S": 9.4293,
+   "rec_top": [
+    [
+     "CHANGED_OBJECT",
+     [
+      1604.7,
+      2767.4,
+      1674.2,
+      3066.7
+     ],
+     2813.1,
+     0
+    ],
+    [
+     "MOVED_OBJECT",
+     [
+      1845.1,
+      3200.2,
+      1950.3,
+      3330.0
+     ],
+     1193.5,
+     1
+    ],
+    [
+     "CHANGED_OBJECT",
+     [
+      1614.6,
+      3132.2,
+      1674.2,
+      3211.0
+     ],
+     976.3,
+     0
+    ],
+    [
+     "ADDED_OBJECT",
+     [
+      1922.3,
+      2707.9,
+      1950.3,
+      2868.2
+     ],
+     510.8,
+     1
+    ]
+   ],
+   "n_records_outside_roi": 2,
+   "len_outside_roi": 1704.29,
+   "n_big_outside_roi": 2,
+   "reg_offset": [
+    25.35,
+    0.0
+   ],
+   "reg_score": 0.6091,
+   "clip_a": [
+    1579.4,
+    2707.9,
+    1925.0,
+    3330.0
+   ],
+   "clip_b": [
+    1579.4,
+    2707.9,
+    1925.0,
+    3330.0
+   ],
+   "t_sec": 1.1
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-АР1.2-К4",
+  "disc": "AR",
+  "kind": "0:1_orphan_b",
+  "page_a": 13,
+  "page_b": 14,
+  "block": "4EHC-HD9L-GRU",
+  "side": "b",
+  "rect_pt": [
+   671.4,
+   1979.7,
+   951.7,
+   2349.8
+  ],
+  "page_frame": {
+   "error": "no vector geometry on one side",
+   "n_seg_a": 0,
+   "n_seg_b": 1256
+  }
+ }
+]

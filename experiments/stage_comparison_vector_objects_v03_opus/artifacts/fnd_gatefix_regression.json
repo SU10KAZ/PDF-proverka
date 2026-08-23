@@ -1,0 +1,8 @@
+{
+  "n": 79,
+  "seg_recovered_median": 0.06083168316831683,
+  "len_recovered_median": 0.337025768739665,
+  "len_recovered_p90": 0.8187077610245486,
+  "blocks_gt50pct_len": 18,
+  "falsely_empty_before": 1
+}

@@ -1,0 +1,171 @@
+[
+ {
+  "pair_id": "VK-56115717",
+  "expected": "GRAPHIC_CHANGE",
+  "shapes": [
+   "polygon",
+   "polygon"
+  ],
+  "rect_clip": {
+   "n_seg": [
+    27227,
+    12395
+   ],
+   "ink": [
+    78109.6,
+    44391.2
+   ],
+   "n_raw": 32,
+   "n_pub": 28,
+   "phrases": [
+    "Удалён графический объект.",
+    "Изменена конфигурация элементов: 27."
+   ]
+  },
+  "error": "IndexError: list index out of range"
+ },
+ {
+  "pair_id": "AR-441907a2",
+  "expected": "GRAPHIC_CHANGE",
+  "shapes": [
+   "polygon",
+   "polygon"
+  ],
+  "rect_clip": {
+   "n_seg": [
+    16388,
+    10793
+   ],
+   "ink": [
+    66675.0,
+    44752.9
+   ],
+   "n_raw": 2,
+   "n_pub": 1,
+   "phrases": [
+    "Удалён графический объект."
+   ]
+  },
+  "poly_clip": {
+   "n_seg": [
+    13313,
+    10776
+   ],
+   "ink": [
+    59449.4,
+    43422.1
+   ],
+   "n_raw": 2,
+   "n_pub": 1,
+   "phrases": [
+    "Удалён графический объект."
+   ]
+  }
+ },
+ {
+  "pair_id": "SS-c7aa8d26",
+  "expected": "GRAPHIC_CHANGE",
+  "shapes": [
+   "polygon",
+   "rectangle"
+  ],
+  "rect_clip": {
+   "n_seg": [
+    540,
+    726
+   ],
+   "ink": [
+    2671.2,
+    5179.7
+   ],
+   "n_raw": 3,
+   "n_pub": 0,
+   "phrases": []
+  },
+  "error": "IndexError: list index out of range"
+ },
+ {
+  "pair_id": "VK-148ffe6c",
+  "expected": "GRAPHIC_CHANGE",
+  "shapes": [
+   "polygon",
+   "polygon"
+  ],
+  "rect_clip": {
+   "n_seg": [
+    106552,
+    115081
+   ],
+   "ink": [
+    93450.5,
+    134412.2
+   ],
+   "n_raw": 12,
+   "n_pub": 2,
+   "phrases": [
+    "Изменена конфигурация элементов: 2."
+   ]
+  },
+  "error": "IndexError: list index out of range"
+ },
+ {
+  "pair_id": "AR-490254e9",
+  "expected": "NOT_COMPARABLE",
+  "shapes": [
+   "polygon",
+   "rectangle"
+  ],
+  "rect_clip": {
+   "n_seg": [
+    466,
+    4398
+   ],
+   "ink": [
+    4160.5,
+    35716.9
+   ],
+   "n_raw": 5,
+   "n_pub": 1,
+   "phrases": [
+    "Изменена конфигурация элемента."
+   ]
+  },
+  "poly_clip": {
+   "n_seg": [
+    466,
+    4398
+   ],
+   "ink": [
+    4160.5,
+    35716.9
+   ],
+   "n_raw": 5,
+   "n_pub": 1,
+   "phrases": [
+    "Изменена конфигурация элемента."
+   ]
+  }
+ },
+ {
+  "pair_id": "EOM-1db297d2",
+  "expected": "UNCERTAIN",
+  "shapes": [
+   "polygon",
+   "rectangle"
+  ],
+  "rect_clip": {
+   "n_seg": [
+    713,
+    894
+   ],
+   "ink": [
+    4284.7,
+    6637.5
+   ],
+   "n_raw": 2,
+   "n_pub": 0,
+   "phrases": []
+  },
+  "error": "IndexError: list index out of range"
+ }
+]

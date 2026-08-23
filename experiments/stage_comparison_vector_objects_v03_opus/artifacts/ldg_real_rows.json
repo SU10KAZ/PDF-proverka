@@ -1,0 +1,5599 @@
+[
+ {
+  "pair_id": "AR-441907a2",
+  "discipline": "AR",
+  "classes": [
+   "object_removed",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 2,
+  "label_confidence": "high",
+  "human": "В версии B удалены разрез «Сеч. а–а» в правом верхнем углу и всё содержимое штампа (остались только линии таблицы).",
+  "n_seg_a": 16388,
+  "n_seg_b": 10793,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 0.5579,
+  "S": 9.1591,
+  "L_min_pt": 18.318,
+  "scalar": 0.801679,
+  "lost_share": 0.331436,
+  "n_records_raw": 2,
+  "n_changes": 1,
+  "n_changes_low": 1,
+  "types": [
+   "REMOVED_OBJECT"
+  ],
+  "shapes": [
+   null
+  ],
+  "changes": [
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     747.6,
+     82.8,
+     1137.36,
+     398.16
+    ],
+    "len": 15582.1,
+    "obj_b": "ea367f85f297",
+    "obj_a": null,
+    "cls_b": "linear",
+    "cls_a": null,
+    "label_b": "200",
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 5074,
+     "n_touching": 0,
+     "share_touching": 0.0,
+     "radius_pt": 5.495
+    },
+    "ev": [
+     "ink_lost",
+     "attachment",
+     "contact",
+     "frame"
+    ],
+    "att": {
+     "kind": "attachment",
+     "attached_ends": 0,
+     "ends": [
+      null,
+      null
+     ],
+     "run_len_pt": 334.285,
+     "run_over_S": 36.5
+    }
+   }
+  ],
+  "phrases": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалён графический объект.",
+    "n": 1,
+    "ink_pt": 15582.1
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалён графический объект.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "ea367f85f297",
+      "cls": "linear",
+      "bbox_pt": [
+       979.68,
+       107.41,
+       1107.36,
+       326.16
+      ],
+      "label": "200",
+      "share": 1.0
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 15582.1,
+       "n_seg": 2537
+      },
+      {
+       "kind": "attachment",
+       "attached_ends": 0,
+       "ends": [
+        null,
+        null
+       ],
+       "run_len_pt": 334.285,
+       "run_over_S": 36.5
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 5074,
+       "n_touching": 0,
+       "share_touching": 0.0,
+       "radius_pt": 5.495
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        747.6,
+        82.8,
+        1137.36,
+        398.16
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 9.37
+ },
+ {
+  "pair_id": "AR-55eda7fb",
+  "discipline": "AR",
+  "classes": [
+   "small_local_change",
+   "table_only_change",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 1,
+  "label_confidence": "high",
+  "human": "В таблице «Перемычки 39 этаж» изменён эскиз строки ПР-14: было L=850 (поз. 10) с размерами 150/550/150, стало L=1000 (поз. 8) со штриховкой стены справа. Остальные строки не изменились.",
+  "n_seg_a": 4315,
+  "n_seg_b": 4412,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 0.9763,
+  "S": 9.1304,
+  "L_min_pt": 18.261,
+  "scalar": 0.971427,
+  "lost_share": 0.01936,
+  "n_records_raw": 2,
+  "n_changes": 2,
+  "n_changes_low": 2,
+  "types": [
+   "CHANGED_OBJECT",
+   "ADDED_OBJECT"
+  ],
+  "shapes": [
+   null,
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     392.83,
+     1428.67,
+     569.52,
+     1497.31
+    ],
+    "len": 1165.94,
+    "obj_b": "1f652a481da3",
+    "obj_a": "1d45f4c7f074",
+    "cls_b": "symbol",
+    "cls_a": "composite",
+    "label_b": ".550.",
+    "label_a": ".1000.",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 184,
+     "n_touching": 173,
+     "share_touching": 0.9402,
+     "radius_pt": 5.478
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "ADDED_OBJECT",
+    "shape": null,
+    "bbox": [
+     264.43,
+     1474.03,
+     353.47,
+     1505.47
+    ],
+    "len": 350.46,
+    "obj_b": null,
+    "obj_a": "e2b2af2541af",
+    "cls_b": null,
+    "cls_a": "linear",
+    "label_b": null,
+    "label_a": ".80.",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 210,
+     "n_touching": 16,
+     "share_touching": 0.0762,
+     "radius_pt": 5.478
+    },
+    "ev": [
+     "ink_new",
+     "attachment",
+     "contact",
+     "frame"
+    ],
+    "att": {
+     "kind": "attachment",
+     "attached_ends": 0,
+     "ends": [
+      null,
+      null
+     ],
+     "run_len_pt": 89.04,
+     "run_over_S": 9.75
+    }
+   }
+  ],
+  "phrases": [
+   {
+    "id": "OBJECT_ADDED",
+    "text": "Добавлен графический объект.",
+    "n": 1,
+    "ink_pt": 350.46
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1,
+    "ink_pt": 1165.94
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "OBJECT_ADDED",
+    "text": "Добавлен графический объект.",
+    "n": 1
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "1f652a481da3",
+      "cls": "symbol",
+      "bbox_pt": [
+       486.48,
+       1429.92,
+       551.28,
+       1463.54
+      ],
+      "label": ".550.",
+      "share": 0.336
+     },
+     "object_after": {
+      "object_id": "1d45f4c7f074",
+      "cls": "composite",
+      "bbox_pt": [
+       451.68,
+       1429.92,
+       579.36,
+       1483.68
+      ],
+      "label": ".1000.",
+      "share": 0.312
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 506.98,
+       "n_seg": 141
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 658.96,
+       "n_seg": 92
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 184,
+       "n_touching": 173,
+       "share_touching": 0.9402,
+       "radius_pt": 5.478
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        392.83,
+        1428.67,
+        569.52,
+        1497.31
+       ]
+      }
+     ]
+    },
+    {
+     "type": "ADDED_OBJECT",
+     "welded": false,
+     "object_before": null,
+     "object_after": {
+      "object_id": "e2b2af2541af",
+      "cls": "linear",
+      "bbox_pt": [
+       276.73,
+       1474.08,
+       337.68,
+       1515.84
+      ],
+      "label": ".80.",
+      "share": 0.642
+     },
+     "evidence": [
+      {
+       "kind": "ink_new",
+       "len_pt": 350.46,
+       "n_seg": 105
+      },
+      {
+       "kind": "attachment",
+       "attached_ends": 0,
+       "ends": [
+        null,
+        null
+       ],
+       "run_len_pt": 89.04,
+       "run_over_S": 9.75
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 210,
+       "n_touching": 16,
+       "share_touching": 0.0762,
+       "radius_pt": 5.478
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        264.43,
+        1474.03,
+        353.47,
+        1505.47
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 4.56
+ },
+ {
+  "pair_id": "AR-577a293f",
+  "discipline": "AR",
+  "classes": [
+   "small_local_change",
+   "table_only_change",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 3,
+  "label_confidence": "medium",
+  "human": "В «Ведомости полов 17-го этажа» изменены эскизы и составы строк 2.1, 2.4 и 2.7 (число слоёв и толщины). Сетка таблицы и остальные строки не изменились.",
+  "n_seg_a": 11378,
+  "n_seg_b": 10642,
+  "reg_offset": [
+   -0.09,
+   -0.01
+  ],
+  "reg_score": 0.5534,
+  "S": 9.3935,
+  "L_min_pt": 18.787,
+  "scalar": 0.534441,
+  "lost_share": 0.508432,
+  "n_records_raw": 6,
+  "n_changes": 4,
+  "n_changes_low": 4,
+  "types": [
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT"
+  ],
+  "shapes": [
+   null,
+   null,
+   null,
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     246.72,
+     1510.96,
+     473.91,
+     1659.63
+    ],
+    "len": 16488.3,
+    "obj_b": "0f4e384cb6bc",
+    "obj_a": "603d943aa1a1",
+    "cls_b": "linear",
+    "cls_a": "linear",
+    "label_b": "290-300 мм",
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 3606,
+     "n_touching": 3485,
+     "share_touching": 0.9664,
+     "radius_pt": 5.636
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     255.48,
+     1193.43,
+     472.71,
+     1292.2
+    ],
+    "len": 12944.23,
+    "obj_b": "a63b2d82d0dd",
+    "obj_a": "cfadbfdd27a0",
+    "cls_b": "linear",
+    "cls_a": "linear",
+    "label_b": "60",
+    "label_a": "100",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 3502,
+     "n_touching": 3038,
+     "share_touching": 0.8675,
+     "radius_pt": 5.636
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     255.27,
+     1354.71,
+     469.08,
+     1461.27
+    ],
+    "len": 11990.78,
+    "obj_b": "950ccfd62fe2",
+    "obj_a": "c5c6773b802f",
+    "cls_b": "linear",
+    "cls_a": "linear",
+    "label_b": "100",
+    "label_a": "100",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 1978,
+     "n_touching": 1848,
+     "share_touching": 0.9343,
+     "radius_pt": 5.636
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     257.31,
+     1024.72,
+     467.43,
+     1119.99
+    ],
+    "len": 11576.6,
+    "obj_b": "5f8fd671950d",
+    "obj_a": "4bd85134e21d",
+    "cls_b": "linear",
+    "cls_a": "linear",
+    "label_b": "100",
+    "label_a": "100",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 2574,
+     "n_touching": 2496,
+     "share_touching": 0.9697,
+     "radius_pt": 5.636
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 4.",
+    "n": 4,
+    "ink_pt": 52999.91
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 4.",
+    "n": 4
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "0f4e384cb6bc",
+      "cls": "linear",
+      "bbox_pt": [
+       294.0,
+       1552.12,
+       445.44,
+       1569.16
+      ],
+      "label": "290-300 мм",
+      "share": 0.737
+     },
+     "object_after": {
+      "object_id": "603d943aa1a1",
+      "cls": "linear",
+      "bbox_pt": [
+       294.6,
+       1623.76,
+       445.92,
+       1641.4
+      ],
+      "label": null,
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 9010.93,
+       "n_seg": 1778
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 7477.37,
+       "n_seg": 1803
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 3606,
+       "n_touching": 3485,
+       "share_touching": 0.9664,
+       "radius_pt": 5.636
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        246.72,
+        1510.96,
+        473.91,
+        1659.63
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "a63b2d82d0dd",
+      "cls": "linear",
+      "bbox_pt": [
+       264.24,
+       1249.0,
+       430.44,
+       1265.8
+      ],
+      "label": "60",
+      "share": 0.565
+     },
+     "object_after": {
+      "object_id": "cfadbfdd27a0",
+      "cls": "linear",
+      "bbox_pt": [
+       288.36,
+       1243.72,
+       454.44,
+       1260.52
+      ],
+      "label": "100",
+      "share": 0.484
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 7209.58,
+       "n_seg": 1904
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 5734.66,
+       "n_seg": 1751
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 3502,
+       "n_touching": 3038,
+       "share_touching": 0.8675,
+       "radius_pt": 5.636
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        255.48,
+        1193.43,
+        472.71,
+        1292.2
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "950ccfd62fe2",
+      "cls": "linear",
+      "bbox_pt": [
+       285.0,
+       1408.72,
+       449.64,
+       1447.72
+      ],
+      "label": "100",
+      "share": 0.706
+     },
+     "object_after": {
+      "object_id": "c5c6773b802f",
+      "cls": "linear",
+      "bbox_pt": [
+       283.2,
+       1402.12,
+       447.96,
+       1439.8
+      ],
+      "label": "100",
+      "share": 0.634
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 6824.31,
+       "n_seg": 1337
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 5166.47,
+       "n_seg": 989
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 1978,
+       "n_touching": 1848,
+       "share_touching": 0.9343,
+       "radius_pt": 5.636
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        255.27,
+        1354.71,
+        469.08,
+        1461.271
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "5f8fd671950d",
+      "cls": "linear",
+      "bbox_pt": [
+       284.88,
+       1065.4,
+       449.52,
+       1089.52
+      ],
+      "label": "100",
+      "share": 0.775
+     },
+     "object_after": {
+      "object_id": "4bd85134e21d",
+      "cls": "linear",
+      "bbox_pt": [
+       286.32,
+       1071.76,
+       451.08,
+       1093.0
+      ],
+      "label": "100",
+      "share": 0.605
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 5588.11,
+       "n_seg": 1406
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 5988.49,
+       "n_seg": 1287
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 2574,
+       "n_touching": 2496,
+       "share_touching": 0.9697,
+       "radius_pt": 5.636
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        257.31,
+        1024.72,
+        467.43,
+        1119.99
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 24.15
+ },
+ {
+  "pair_id": "AR-5acaab0e",
+  "discipline": "AR",
+  "classes": [
+   "object_added",
+   "dense_block",
+   "hatch_noise",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 3,
+  "label_confidence": "medium",
+  "human": "В версии B достроен объём стен в правой верхней части (штриховка расширена вправо) и добавлен заголовок сверху; остальная штриховка совпадает по смыслу, но сдвинута по фазе.",
+  "n_seg_a": 111161,
+  "n_seg_b": 111000,
+  "reg_offset": [
+   -0.05,
+   13.85
+  ],
+  "reg_score": 0.1769,
+  "S": 9.1304,
+  "L_min_pt": 18.261,
+  "scalar": 0.22983,
+  "lost_share": 0.772063,
+  "n_records_raw": 3,
+  "n_changes": 2,
+  "n_changes_low": 2,
+  "types": [
+   "CHANGED_OBJECT",
+   "ADDED_OBJECT"
+  ],
+  "shapes": [
+   null,
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     166.99,
+     219.53,
+     2246.4,
+     2782.25
+    ],
+    "len": 1816294.42,
+    "obj_b": "9d0c284bf760",
+    "obj_a": "a4e44d8fb93d",
+    "cls_b": "composite",
+    "cls_a": "composite",
+    "label_b": "7,6%",
+    "label_a": "7,6%",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 199500,
+     "n_touching": 52378,
+     "share_touching": 0.2625,
+     "radius_pt": 5.478
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "ADDED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1484.95,
+     2774.57,
+     1521.79,
+     2782.25
+    ],
+    "len": 50.14,
+    "obj_b": null,
+    "obj_a": "8e1fd63295a8",
+    "cls_b": null,
+    "cls_a": "symbol",
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 6,
+     "n_touching": 0,
+     "share_touching": 0.0,
+     "radius_pt": 5.478
+    },
+    "ev": [
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "OBJECT_ADDED",
+    "text": "Добавлен графический объект.",
+    "n": 1,
+    "ink_pt": 50.14
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1,
+    "ink_pt": 1816294.42
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "OBJECT_ADDED",
+    "text": "Добавлен графический объект.",
+    "n": 1
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "9d0c284bf760",
+      "cls": "composite",
+      "bbox_pt": [
+       213.84,
+       518.16,
+       1839.84,
+       2656.8
+      ],
+      "label": "7,6%",
+      "share": 0.805
+     },
+     "object_after": {
+      "object_id": "a4e44d8fb93d",
+      "cls": "composite",
+      "bbox_pt": [
+       213.84,
+       482.64,
+       1839.84,
+       2621.28
+      ],
+      "label": "7,6%",
+      "share": 0.779
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 918680.5,
+       "n_seg": 99013
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 897613.92,
+       "n_seg": 99750
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 199500,
+       "n_touching": 52378,
+       "share_touching": 0.2625,
+       "radius_pt": 5.478
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        166.99,
+        219.528,
+        2246.4,
+        2782.25
+       ]
+      }
+     ]
+    },
+    {
+     "type": "ADDED_OBJECT",
+     "welded": false,
+     "object_before": null,
+     "object_after": {
+      "object_id": "8e1fd63295a8",
+      "cls": "symbol",
+      "bbox_pt": [
+       1485.0,
+       2760.72,
+       1521.84,
+       2768.4
+      ],
+      "label": null,
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_new",
+       "len_pt": 50.14,
+       "n_seg": 3
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 6,
+       "n_touching": 0,
+       "share_touching": 0.0,
+       "radius_pt": 5.478
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1484.954,
+        2774.569,
+        1521.79,
+        2782.25
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 30.65
+ },
+ {
+  "pair_id": "AR-a32b30a6",
+  "discipline": "AR",
+  "classes": [
+   "object_added",
+   "raster_graphics",
+   "no_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 1,
+  "label_confidence": "high",
+  "human": "В версии B рядом с «Фундамент под оборудование Фпк-3, Фпк-4. Опалубка» добавлен второй чертёж «Фундамент под оборудование Фпк-2. Армирование».",
+  "error": "RuntimeError('no vector geometry on one side')",
+  "tb": "Traceback (most recent call last):\n  File \"/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/probes/ldg_real.py\", line 48, in main\n    raise RuntimeError(\"no vector geometry on one side\")\nRuntimeError: no vector geometry on one side\n"
+ },
+ {
+  "pair_id": "AR-dbfd82b8",
+  "discipline": "AR",
+  "classes": [
+   "object_removed",
+   "with_labels",
+   "table_like"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 1,
+  "label_confidence": "high",
+  "human": "В версии B удалён блок «Условные обозначения» целиком (около 25 строк с образцами штриховок и подписями). Таблица «Ведомость полов 2-го этажа» не изменилась.",
+  "n_seg_a": 8895,
+  "n_seg_b": 7829,
+  "reg_offset": [
+   -0.07,
+   -0.05
+  ],
+  "reg_score": 0.8407,
+  "S": 9.3935,
+  "L_min_pt": 18.787,
+  "scalar": 0.879674,
+  "lost_share": 0.214755,
+  "n_records_raw": 4,
+  "n_changes": 1,
+  "n_changes_low": 1,
+  "types": [
+   "REMOVED_OBJECT"
+  ],
+  "shapes": [
+   null
+  ],
+  "changes": [
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1422.96,
+     665.56,
+     1478.88,
+     882.28
+    ],
+    "len": 4477.32,
+    "obj_b": "7e763200868b",
+    "obj_a": null,
+    "cls_b": "symbol",
+    "cls_a": null,
+    "label_b": "300",
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 676,
+     "n_touching": 0,
+     "share_touching": 0.0,
+     "radius_pt": 5.636
+    },
+    "ev": [
+     "ink_lost",
+     "attachment",
+     "contact",
+     "frame"
+    ],
+    "att": {
+     "kind": "attachment",
+     "attached_ends": 0,
+     "ends": [
+      null,
+      null
+     ],
+     "run_len_pt": 209.0,
+     "run_over_S": 22.25
+    }
+   }
+  ],
+  "phrases": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалён графический объект.",
+    "n": 1,
+    "ink_pt": 4477.32
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалён графический объект.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "7e763200868b",
+      "cls": "symbol",
+      "bbox_pt": [
+       1422.96,
+       680.32,
+       1478.88,
+       696.76
+      ],
+      "label": "300",
+      "share": 1.0
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 4477.32,
+       "n_seg": 338
+      },
+      {
+       "kind": "attachment",
+       "attached_ends": 0,
+       "ends": [
+        null,
+        null
+       ],
+       "run_len_pt": 209.0,
+       "run_over_S": 22.25
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 676,
+       "n_touching": 0,
+       "share_touching": 0.0,
+       "radius_pt": 5.636
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1422.96,
+        665.56,
+        1478.88,
+        882.28
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 18.8
+ },
+ {
+  "pair_id": "EOM-14558cda",
+  "discipline": "EOM",
+  "classes": [
+   "object_added",
+   "occluding_fill",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 1,
+  "label_confidence": "medium",
+  "human": "В версии A вид «Внешний вид УЭРМ» полностью закрыт сплошной чёрной заливкой; в версии B тот же вид виден нормально. Подписи и отметки вокруг совпадают.",
+  "n_seg_a": 7932,
+  "n_seg_b": 7767,
+  "reg_offset": [
+   -0.03,
+   -0.06
+  ],
+  "reg_score": 0.89,
+  "S": 12.977,
+  "L_min_pt": 25.954,
+  "scalar": 0.959829,
+  "lost_share": 0.068093,
+  "n_records_raw": 3,
+  "n_changes": 1,
+  "n_changes_low": 1,
+  "types": [
+   "CHANGED_OBJECT"
+  ],
+  "shapes": [
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1353.33,
+     129.06,
+     1663.92,
+     660.24
+    ],
+    "len": 9222.91,
+    "obj_b": "bce7b0c7655c",
+    "obj_a": "98d2aa0bcd58",
+    "cls_b": "linear",
+    "cls_a": "linear",
+    "label_b": null,
+    "label_a": "Лоток 200х100",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 22,
+     "n_touching": 16,
+     "share_touching": 0.7273,
+     "radius_pt": 7.786
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1,
+    "ink_pt": 9222.91
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "bce7b0c7655c",
+      "cls": "linear",
+      "bbox_pt": [
+       1352.4,
+       227.76,
+       1681.44,
+       660.24
+      ],
+      "label": null,
+      "share": 0.499
+     },
+     "object_after": {
+      "object_id": "98d2aa0bcd58",
+      "cls": "linear",
+      "bbox_pt": [
+       1418.64,
+       129.12,
+       1566.0,
+       264.72
+      ],
+      "label": "Лоток 200х100",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 8577.16,
+       "n_seg": 41
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 645.75,
+       "n_seg": 11
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 22,
+       "n_touching": 16,
+       "share_touching": 0.7273,
+       "radius_pt": 7.786
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1353.33,
+        129.06,
+        1663.92,
+        660.24
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 11.43
+ },
+ {
+  "pair_id": "EOM-46355862",
+  "discipline": "EOM",
+  "classes": [
+   "object_added",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 15,
+  "label_confidence": "medium",
+  "human": "В версии B появилась штриховка (заливка) примерно в 15 помещениях плюс новые выноски с марками; контуры стен и осей те же.",
+  "n_seg_a": 27845,
+  "n_seg_b": 60524,
+  "reg_offset": [
+   -0.076,
+   76.497
+  ],
+  "reg_score": 0.4109,
+  "S": 9.4446,
+  "L_min_pt": 18.889,
+  "scalar": 0.318054,
+  "lost_share": 0.623818,
+  "n_records_raw": 1,
+  "n_changes": 1,
+  "n_changes_low": 1,
+  "types": [
+   "CHANGED_OBJECT"
+  ],
+  "shapes": [
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     398.32,
+     435.77,
+     2454.24,
+     3075.6
+    ],
+    "len": 1158956.72,
+    "obj_b": "4dc2cb7c7450",
+    "obj_a": "17fefe37bb1e",
+    "cls_b": "composite",
+    "cls_a": "composite",
+    "label_b": "4.Т.6",
+    "label_a": "МДУ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 108198,
+     "n_touching": 15649,
+     "share_touching": 0.1446,
+     "radius_pt": 5.667
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1,
+    "ink_pt": 1158956.72
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "4dc2cb7c7450",
+      "cls": "composite",
+      "bbox_pt": [
+       521.52,
+       675.36,
+       2387.28,
+       2850.24
+      ],
+      "label": "4.Т.6",
+      "share": 0.723
+     },
+     "object_after": {
+      "object_id": "17fefe37bb1e",
+      "cls": "composite",
+      "bbox_pt": [
+       660.24,
+       479.04,
+       2387.28,
+       2739.84
+      ],
+      "label": "МДУ",
+      "share": 0.728
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 445112.6,
+       "n_seg": 22109
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 713844.12,
+       "n_seg": 54099
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 108198,
+       "n_touching": 15649,
+       "share_touching": 0.1446,
+       "radius_pt": 5.667
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        398.324,
+        435.775,
+        2454.24,
+        3075.599
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 14.75
+ },
+ {
+  "pair_id": "EOM-7fef43a3",
+  "discipline": "EOM",
+  "classes": [
+   "object_added",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 2,
+  "label_confidence": "high",
+  "human": "В версии B добавлены выноска с подписью «Закладная гильза для кабеля обогрева» и сноска «* Зазор между трубой и гильзой необходимо заделать мягким водонепроницаемым материалом».",
+  "n_seg_a": 10972,
+  "n_seg_b": 10972,
+  "reg_offset": [
+   -0.1,
+   0.0
+  ],
+  "reg_score": 1.0,
+  "S": 13.9636,
+  "L_min_pt": 27.927,
+  "scalar": 1.0,
+  "lost_share": 0.0,
+  "n_records_raw": 0,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 21.12
+ },
+ {
+  "pair_id": "EOM-c50e2170",
+  "discipline": "EOM",
+  "classes": [
+   "object_removed",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 30,
+  "label_confidence": "high",
+  "human": "В версии B исчезли координационные оси: штрихпунктирные линии и кружки с марками осей по всему периметру плана. Сегментов 8 027 → 4 502.",
+  "n_seg_a": 8027,
+  "n_seg_b": 4502,
+  "reg_offset": [
+   0.007,
+   -0.03
+  ],
+  "reg_score": 0.988,
+  "S": 12.5374,
+  "L_min_pt": 25.075,
+  "scalar": 0.980281,
+  "lost_share": 0.03114,
+  "n_records_raw": 5,
+  "n_changes": 3,
+  "n_changes_low": 3,
+  "types": [
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "ADDED_OBJECT"
+  ],
+  "shapes": [
+   null,
+   null,
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     660.72,
+     356.4,
+     694.81,
+     387.6
+    ],
+    "len": 151.56,
+    "obj_b": "3c136e3b9afc",
+    "obj_a": "8333db491b4e",
+    "cls_b": "composite",
+    "cls_a": "symbol",
+    "label_b": "П.АА",
+    "label_a": "К6.2.4п-К6.2.5п",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 22,
+     "n_touching": 19,
+     "share_touching": 0.8636,
+     "radius_pt": 7.522
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     570.48,
+     179.01,
+     630.97,
+     242.64
+    ],
+    "len": 113.15,
+    "obj_b": "219fa2742c38",
+    "obj_a": "48a532c0cc93",
+    "cls_b": "symbol",
+    "cls_a": "symbol",
+    "label_b": "СПА ИВЭПР",
+    "label_a": "1910",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 34,
+     "n_touching": 28,
+     "share_touching": 0.8235,
+     "radius_pt": 7.522
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "ADDED_OBJECT",
+    "shape": null,
+    "bbox": [
+     666.25,
+     259.17,
+     694.81,
+     287.73
+    ],
+    "len": 89.34,
+    "obj_b": null,
+    "obj_a": "6faae188a3bf",
+    "cls_b": null,
+    "cls_a": "symbol",
+    "label_b": null,
+    "label_a": "1910",
+    "welded": true,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 22,
+     "n_touching": 11,
+     "share_touching": 0.5,
+     "radius_pt": 7.522
+    },
+    "ev": [
+     "ink_new",
+     "attachment",
+     "contact",
+     "frame"
+    ],
+    "att": {
+     "kind": "attachment",
+     "attached_ends": 2,
+     "ends": [
+      {
+       "dist_pt": 5.73,
+       "host_seg": 464,
+       "cos": 1.0,
+       "angle_deg": 0.0
+      },
+      {
+       "dist_pt": 0.007,
+       "host_seg": 476,
+       "cos": 0.0,
+       "angle_deg": 90.0
+      }
+     ],
+     "run_len_pt": 40.39,
+     "run_over_S": 3.22
+    }
+   }
+  ],
+  "phrases": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 3.",
+    "n": 3,
+    "ink_pt": 354.05
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 3.",
+    "n": 3
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "3c136e3b9afc",
+      "cls": "composite",
+      "bbox_pt": [
+       600.96,
+       202.8,
+       702.24,
+       400.29
+      ],
+      "label": "П.АА",
+      "share": 0.045
+     },
+     "object_after": {
+      "object_id": "8333db491b4e",
+      "cls": "symbol",
+      "bbox_pt": [
+       666.24,
+       343.92,
+       694.8,
+       372.48
+      ],
+      "label": "К6.2.4п-К6.2.5п",
+      "share": 0.981
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 62.4,
+       "n_seg": 2
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 89.16,
+       "n_seg": 11
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 22,
+       "n_touching": 19,
+       "share_touching": 0.8636,
+       "radius_pt": 7.522
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        660.72,
+        356.4,
+        694.807,
+        387.6
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "219fa2742c38",
+      "cls": "symbol",
+      "bbox_pt": [
+       557.21,
+       218.16,
+       613.03,
+       284.4
+      ],
+      "label": "СПА ИВЭПР",
+      "share": 0.092
+     },
+     "object_after": {
+      "object_id": "48a532c0cc93",
+      "cls": "symbol",
+      "bbox_pt": [
+       588.6,
+       162.96,
+       630.96,
+       216.24
+      ],
+      "label": "1910",
+      "share": 0.606
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 19.12,
+       "n_seg": 8
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 94.03,
+       "n_seg": 17
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 34,
+       "n_touching": 28,
+       "share_touching": 0.8235,
+       "radius_pt": 7.522
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        570.48,
+        179.01,
+        630.967,
+        242.64
+       ]
+      }
+     ]
+    },
+    {
+     "type": "ADDED_OBJECT",
+     "welded": true,
+     "object_before": null,
+     "object_after": {
+      "object_id": "6faae188a3bf",
+      "cls": "symbol",
+      "bbox_pt": [
+       666.24,
+       245.52,
+       694.8,
+       274.08
+      ],
+      "label": "1910",
+      "share": 0.981
+     },
+     "evidence": [
+      {
+       "kind": "ink_new",
+       "len_pt": 89.34,
+       "n_seg": 11
+      },
+      {
+       "kind": "attachment",
+       "attached_ends": 2,
+       "ends": [
+        {
+         "dist_pt": 5.73,
+         "host_seg": 464,
+         "cos": 1.0,
+         "angle_deg": 0.0
+        },
+        {
+         "dist_pt": 0.007,
+         "host_seg": 476,
+         "cos": 0.0,
+         "angle_deg": 90.0
+        }
+       ],
+       "run_len_pt": 40.39,
+       "run_over_S": 3.22
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 22,
+       "n_touching": 11,
+       "share_touching": 0.5,
+       "radius_pt": 7.522
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        666.247,
+        259.17,
+        694.807,
+        287.73
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 2.27
+ },
+ {
+  "pair_id": "OV-93cc012f",
+  "discipline": "OV",
+  "classes": [
+   "object_added",
+   "object_moved",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 4,
+  "label_confidence": "medium",
+  "human": "В версии B добавлены выноски-«шарики» 5 (33) и 1 (33) (три штуки), а верхняя часть трассы теплоснабжения сдвинута относительно нижней.",
+  "n_seg_a": 9880,
+  "n_seg_b": 9620,
+  "reg_offset": [
+   -4.825,
+   -1.735
+  ],
+  "reg_score": 0.2831,
+  "S": 9.7666,
+  "L_min_pt": 19.533,
+  "scalar": 0.481487,
+  "lost_share": 0.513068,
+  "n_records_raw": 1,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 17.98
+ },
+ {
+  "pair_id": "SS-a369f492",
+  "discipline": "SS",
+  "classes": [
+   "object_added",
+   "object_moved",
+   "raster_graphics",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 2,
+  "label_confidence": "high",
+  "human": "В версии B добавлен «Узел А прохода группы кабелей в лотке через строительные конструкции», а существующий «Узел В прохода кабеля в гильзе…» сдвинут вниз.",
+  "n_seg_a": 4876,
+  "n_seg_b": 6678,
+  "reg_offset": [
+   -0.1,
+   0.0
+  ],
+  "reg_score": 1.0,
+  "S": 15.2443,
+  "L_min_pt": 30.489,
+  "scalar": 0.840549,
+  "lost_share": 0.0,
+  "n_records_raw": 2,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 23.54
+ },
+ {
+  "pair_id": "SS-c7aa8d26",
+  "discipline": "SS",
+  "classes": [
+   "object_added",
+   "with_labels",
+   "sparse_block"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 2,
+  "label_confidence": "high",
+  "human": "В версии B добавлены два узла: «Крепление горизонтальных кабельных трасс…» и «Крепление кабельных трасс в месте изгиба…». Первый узел («вертикальных трасс») не изменился.",
+  "n_seg_a": 540,
+  "n_seg_b": 726,
+  "reg_offset": [
+   -0.02,
+   -0.03
+  ],
+  "reg_score": 0.9352,
+  "S": 10.9946,
+  "L_min_pt": 21.989,
+  "scalar": 0.634515,
+  "lost_share": 0.064789,
+  "n_records_raw": 3,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 2.01
+ },
+ {
+  "pair_id": "VK-148ffe6c",
+  "discipline": "VK",
+  "classes": [
+   "object_added",
+   "object_moved",
+   "rotated_page",
+   "dense_block"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 3,
+  "label_confidence": "medium",
+  "human": "В версии B добавлены спецификация оборудования справа и узел «Узел кранов с эл. приводом»; узел «Узел гиг. душа» сдвинут вправо. Сегментов 106 552 → 115 081.",
+  "n_seg_a": 106552,
+  "n_seg_b": 115081,
+  "reg_offset": [
+   0.05,
+   -0.05
+  ],
+  "reg_score": 0.6335,
+  "S": 9.4276,
+  "L_min_pt": 18.855,
+  "scalar": 0.667217,
+  "lost_share": 0.187584,
+  "n_records_raw": 12,
+  "n_changes": 2,
+  "n_changes_low": 2,
+  "types": [
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT"
+  ],
+  "shapes": [
+   null,
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1132.2,
+     1210.51,
+     1450.97,
+     1633.32
+    ],
+    "len": 28508.18,
+    "obj_b": "5dc694d6924d",
+    "obj_a": "2448d11997bd",
+    "cls_b": "composite",
+    "cls_a": "composite",
+    "label_b": "%&. '#",
+    "label_a": "45. 63",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 18450,
+     "n_touching": 8313,
+     "share_touching": 0.4506,
+     "radius_pt": 5.657
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1189.85,
+     835.51,
+     1465.25,
+     1014.91
+    ],
+    "len": 1451.59,
+    "obj_b": "4b6eac7aa37c",
+    "obj_a": "2e57ef6c77f4",
+    "cls_b": "symbol",
+    "cls_a": "linear",
+    "label_b": "2%",
+    "label_a": "ø50,1,8",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 3532,
+     "n_touching": 2047,
+     "share_touching": 0.5796,
+     "radius_pt": 5.657
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 2.",
+    "n": 2,
+    "ink_pt": 29959.77
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 2.",
+    "n": 2
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "5dc694d6924d",
+      "cls": "composite",
+      "bbox_pt": [
+       1200.6,
+       1338.6,
+       1416.0,
+       1544.52
+      ],
+      "label": "%&. '#",
+      "share": 0.962
+     },
+     "object_after": {
+      "object_id": "2448d11997bd",
+      "cls": "composite",
+      "bbox_pt": [
+       1200.6,
+       1260.72,
+       1416.0,
+       1466.52
+      ],
+      "label": "45. 63",
+      "share": 0.934
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 14255.01,
+       "n_seg": 9271
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 14253.17,
+       "n_seg": 9225
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 18450,
+       "n_touching": 8313,
+       "share_touching": 0.4506,
+       "radius_pt": 5.657
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1132.2,
+        1210.51,
+        1450.97,
+        1633.32
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "4b6eac7aa37c",
+      "cls": "symbol",
+      "bbox_pt": [
+       1285.02,
+       884.28,
+       1333.8,
+       915.11
+      ],
+      "label": "2%",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "2e57ef6c77f4",
+      "cls": "linear",
+      "bbox_pt": [
+       1251.72,
+       881.64,
+       1359.12,
+       946.08
+      ],
+      "label": "ø50,1,8",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 216.34,
+       "n_seg": 18
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 1235.25,
+       "n_seg": 1766
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 3532,
+       "n_touching": 2047,
+       "share_touching": 0.5796,
+       "radius_pt": 5.657
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1189.85,
+        835.51,
+        1465.25,
+        1014.91
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 342.99
+ },
+ {
+  "pair_id": "VK-56115717",
+  "discipline": "VK",
+  "classes": [
+   "object_removed",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "expected_changed_objects": 1,
+  "label_confidence": "high",
+  "human": "В версии B удалена правая схема «Схема системы В2.3 (2 зона)» целиком; левая схема В2.2 осталась. Заодно исчез текст в штампе.",
+  "n_seg_a": 27227,
+  "n_seg_b": 12395,
+  "reg_offset": [
+   -0.05,
+   0.05
+  ],
+  "reg_score": 0.48,
+  "S": 9.4243,
+  "L_min_pt": 18.849,
+  "scalar": 0.657857,
+  "lost_share": 0.482991,
+  "n_records_raw": 32,
+  "n_changes": 28,
+  "n_changes_low": 28,
+  "types": [
+   "REMOVED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "MOVED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "CHANGED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT",
+   "CHANGED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT",
+   "CHANGED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT",
+   "MOVED_OBJECT"
+  ],
+  "shapes": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "changes": [
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1762.08,
+     128.4,
+     2170.08,
+     1313.28
+    ],
+    "len": 30721.21,
+    "obj_b": "a02f37f93064",
+    "obj_a": "8078fcfcfc8f",
+    "cls_b": "symbol",
+    "cls_a": "stray",
+    "label_b": "+49.350",
+    "label_a": "Ст. В2.3-1(3)ø89х3,5",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 4,
+     "n_touching": 0,
+     "share_touching": 0.0,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     404.45,
+     1607.52,
+     445.92
+    ],
+    "len": 611.25,
+    "obj_b": "f6f206a0b121",
+    "obj_a": "e2c4008563fb",
+    "cls_b": "stray",
+    "cls_a": "symbol",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "Этаж 14",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 204,
+     "n_touching": 198,
+     "share_touching": 0.9706,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     987.65,
+     1606.8,
+     1029.84
+    ],
+    "len": 600.52,
+    "obj_b": "cb910671d00f",
+    "obj_a": "01b6510c83a9",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 212,
+     "n_touching": 206,
+     "share_touching": 0.9717,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     623.09,
+     1607.04,
+     665.28
+    ],
+    "len": 565.65,
+    "obj_b": "ab9e98228c8a",
+    "obj_a": "fc722dcacbe9",
+    "cls_b": "symbol",
+    "cls_a": "stray",
+    "label_b": "Этаж 11",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 196,
+     "n_touching": 190,
+     "share_touching": 0.9694,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1510.27,
+     1402.61,
+     1604.88,
+     1440.72
+    ],
+    "len": 347.41,
+    "obj_b": "8be288beb4d9",
+    "obj_a": "a31d926cb735",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 144,
+     "n_touching": 141,
+     "share_touching": 0.9792,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     846.24,
+     1609.92,
+     881.76
+    ],
+    "len": 343.79,
+    "obj_b": "797925100b2c",
+    "obj_a": "336c6d9a7568",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 144,
+     "n_touching": 141,
+     "share_touching": 0.9792,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     480.05,
+     1602.24,
+     517.2
+    ],
+    "len": 339.76,
+    "obj_b": "535f85fe80ca",
+    "obj_a": "b42cd828a67e",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 144,
+     "n_touching": 143,
+     "share_touching": 0.9931,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.96,
+     1060.61,
+     1606.8,
+     1100.4
+    ],
+    "len": 334.62,
+    "obj_b": "3729c2140698",
+    "obj_a": "9bb531ed07a9",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 114,
+     "n_touching": 111,
+     "share_touching": 0.9737,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     914.69,
+     1606.8,
+     954.72
+    ],
+    "len": 316.57,
+    "obj_b": "e58ae953f4aa",
+    "obj_a": "2c10fa4d701e",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 118,
+     "n_touching": 115,
+     "share_touching": 0.9746,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     1063.25,
+     1494.48,
+     1102.8
+    ],
+    "len": 315.81,
+    "obj_b": "89215fc0e40b",
+    "obj_a": "f7765d3b8ce6",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 96,
+     "n_touching": 93,
+     "share_touching": 0.9688,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1510.27,
+     550.13,
+     1604.16,
+     590.16
+    ],
+    "len": 315.45,
+    "obj_b": "2666829ea673",
+    "obj_a": "2e9051437a48",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 136,
+     "n_touching": 134,
+     "share_touching": 0.9853,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     331.49,
+     1607.52,
+     369.65
+    ],
+    "len": 312.11,
+    "obj_b": "5bbadeec66a8",
+    "obj_a": "0eb71c983298",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 92,
+     "n_touching": 89,
+     "share_touching": 0.9674,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     696.05,
+     1609.44,
+     735.84
+    ],
+    "len": 306.56,
+    "obj_b": "4c4a0e1a60b6",
+    "obj_a": "48e9b496f48c",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 100,
+     "n_touching": 97,
+     "share_touching": 0.97,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     769.01,
+     1605.6,
+     808.8
+    ],
+    "len": 299.03,
+    "obj_b": "72028f0eeb38",
+    "obj_a": "9783dce84f83",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 130,
+     "n_touching": 129,
+     "share_touching": 0.9923,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     1279.25,
+     1604.88,
+     1319.28
+    ],
+    "len": 293.04,
+    "obj_b": "b46715e9aa83",
+    "obj_a": "f57e562cc120",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 126,
+     "n_touching": 123,
+     "share_touching": 0.9762,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     334.13,
+     1489.44,
+     372.96
+    ],
+    "len": 269.26,
+    "obj_b": "ee038c56fb79",
+    "obj_a": "cbe6a0be45b7",
+    "cls_b": "stray",
+    "cls_a": "symbol",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 84,
+     "n_touching": 81,
+     "share_touching": 0.9643,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     698.69,
+     1482.24,
+     737.52
+    ],
+    "len": 261.7,
+    "obj_b": "a421531e4e0a",
+    "obj_a": "605a910303af",
+    "cls_b": "stray",
+    "cls_a": "symbol",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "Этаж 10",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 88,
+     "n_touching": 86,
+     "share_touching": 0.9773,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     1136.21,
+     1480.32,
+     1175.52
+    ],
+    "len": 259.26,
+    "obj_b": "0119d7365922",
+    "obj_a": "b54cce479224",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 96,
+     "n_touching": 95,
+     "share_touching": 0.9896,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     917.33,
+     1483.68,
+     956.88
+    ],
+    "len": 256.12,
+    "obj_b": "762d4b60a338",
+    "obj_a": "60133a8463bb",
+    "cls_b": "stray",
+    "cls_a": "symbol",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "Этаж 7",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 84,
+     "n_touching": 81,
+     "share_touching": 0.9643,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     261.17,
+     1489.44,
+     301.2
+    ],
+    "len": 245.04,
+    "obj_b": "103fa368c358",
+    "obj_a": "794250a4bd8f",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 68,
+     "n_touching": 65,
+     "share_touching": 0.9559,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     847.25,
+     1483.68,
+     883.92
+    ],
+    "len": 239.42,
+    "obj_b": "be4a0d686d41",
+    "obj_a": "b791aad52807",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 84,
+     "n_touching": 81,
+     "share_touching": 0.9643,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     1206.29,
+     1540.56,
+     1246.32
+    ],
+    "len": 238.92,
+    "obj_b": "c71328b0d5ef",
+    "obj_a": "513114a89ac8",
+    "cls_b": "linear",
+    "cls_a": "linear",
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 140,
+     "n_touching": 140,
+     "share_touching": 1.0,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     552.77,
+     1483.44,
+     592.32
+    ],
+    "len": 197.53,
+    "obj_b": "c5d52e1140df",
+    "obj_a": "594f815b9986",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 80,
+     "n_touching": 77,
+     "share_touching": 0.9625,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     1213.73,
+     1480.32,
+     1248.48
+    ],
+    "len": 188.66,
+    "obj_b": "82a467689dcb",
+    "obj_a": "8642c9152231",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 108,
+     "n_touching": 107,
+     "share_touching": 0.9907,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1512.91,
+     1133.57,
+     1540.56,
+     1173.36
+    ],
+    "len": 187.65,
+    "obj_b": "d67fe86d0500",
+    "obj_a": "970e70ab330a",
+    "cls_b": "linear",
+    "cls_a": "linear",
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 126,
+     "n_touching": 126,
+     "share_touching": 1.0,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1392.67,
+     771.65,
+     1429.44,
+     810.48
+    ],
+    "len": 142.54,
+    "obj_b": "e6067c4d8219",
+    "obj_a": "ed29d1059b1d",
+    "cls_b": "symbol",
+    "cls_a": "symbol",
+    "label_b": "Этаж 9",
+    "label_a": "Этаж 9",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 90,
+     "n_touching": 90,
+     "share_touching": 1.0,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1401.31,
+     1377.89,
+     1487.28,
+     1383.12
+    ],
+    "len": 124.09,
+    "obj_b": "d38b3b4695d4",
+    "obj_a": "5aa203b98d71",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "Ст. В2.2-2(3)ø76х3,5",
+    "label_a": "Ст. В2.2-2(3)ø76х3,5",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 4,
+     "n_touching": 1,
+     "share_touching": 0.25,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "MOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1574.35,
+     1179.17,
+     1631.04,
+     1180.08
+    ],
+    "len": 113.28,
+    "obj_b": "99b10061bfd3",
+    "obj_a": "86298b80e2f3",
+    "cls_b": "stray",
+    "cls_a": "stray",
+    "label_b": "ШПК-320-21 НЗ",
+    "label_a": "ШПК-320-21 НЗ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 2,
+     "n_touching": 1,
+     "share_touching": 0.5,
+     "radius_pt": 5.655
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "translation",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалён графический объект.",
+    "n": 1,
+    "ink_pt": 30721.21
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 27.",
+    "n": 27,
+    "ink_pt": 8025.05
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалён графический объект.",
+    "n": 1
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 27.",
+    "n": 27
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "a02f37f93064",
+      "cls": "symbol",
+      "bbox_pt": [
+       2064.72,
+       1219.44,
+       2094.96,
+       1288.32
+      ],
+      "label": "+49.350",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "8078fcfcfc8f",
+      "cls": "stray",
+      "bbox_pt": [
+       1855.44,
+       1121.76,
+       1912.08,
+       1121.76
+      ],
+      "label": "Ст. В2.3-1(3)ø89х3,5",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 30607.93,
+       "n_seg": 14288
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 113.28,
+       "n_seg": 2
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 4,
+       "n_touching": 0,
+       "share_touching": 0.0,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1762.08,
+        128.4,
+        2170.08,
+        1313.28
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "f6f206a0b121",
+      "cls": "stray",
+      "bbox_pt": [
+       1550.88,
+       435.12,
+       1607.52,
+       435.12
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "e2c4008563fb",
+      "cls": "symbol",
+      "bbox_pt": [
+       1406.4,
+       402.24,
+       1427.28,
+       471.6
+      ],
+      "label": "Этаж 14",
+      "share": 0.243
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 292.1,
+       "n_seg": 101
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 319.15,
+       "n_seg": 102
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 204,
+       "n_touching": 198,
+       "share_touching": 0.9706,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1392.67,
+        404.45,
+        1607.52,
+        445.92
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "cb910671d00f",
+      "cls": "stray",
+      "bbox_pt": [
+       1549.92,
+       1017.6,
+       1606.8,
+       1017.6
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "01b6510c83a9",
+      "cls": "stray",
+      "bbox_pt": [
+       1549.92,
+       1016.64,
+       1606.8,
+       1016.64
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 289.51,
+       "n_seg": 113
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 311.01,
+       "n_seg": 106
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 212,
+       "n_touching": 206,
+       "share_touching": 0.9717,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1392.67,
+        987.65,
+        1606.8,
+        1029.84
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "ab9e98228c8a",
+      "cls": "symbol",
+      "bbox_pt": [
+       1406.4,
+       620.88,
+       1427.28,
+       690.48
+      ],
+      "label": "Этаж 11",
+      "share": 0.236
+     },
+     "object_after": {
+      "object_id": "fc722dcacbe9",
+      "cls": "stray",
+      "bbox_pt": [
+       1550.16,
+       641.76,
+       1607.04,
+       641.76
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 255.27,
+       "n_seg": 96
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 310.38,
+       "n_seg": 98
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 196,
+       "n_touching": 190,
+       "share_touching": 0.9694,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1392.67,
+        623.09,
+        1607.04,
+        665.28
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "8be288beb4d9",
+      "cls": "stray",
+      "bbox_pt": [
+       1548.24,
+       1403.52,
+       1604.88,
+       1403.52
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "a31d926cb735",
+      "cls": "stray",
+      "bbox_pt": [
+       1548.24,
+       1402.56,
+       1604.88,
+       1402.56
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 158.34,
+       "n_seg": 64
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 189.07,
+       "n_seg": 72
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 144,
+       "n_touching": 141,
+       "share_touching": 0.9792,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1510.27,
+        1402.61,
+        1604.88,
+        1440.72
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "797925100b2c",
+      "cls": "stray",
+      "bbox_pt": [
+       1553.04,
+       869.76,
+       1609.92,
+       869.76
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "336c6d9a7568",
+      "cls": "stray",
+      "bbox_pt": [
+       1553.04,
+       868.8,
+       1609.92,
+       868.8
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 162.97,
+       "n_seg": 62
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 180.82,
+       "n_seg": 72
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 144,
+       "n_touching": 141,
+       "share_touching": 0.9792,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1512.91,
+        846.24,
+        1609.92,
+        881.76
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "535f85fe80ca",
+      "cls": "stray",
+      "bbox_pt": [
+       1545.6,
+       504.48,
+       1602.24,
+       504.48
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "b42cd828a67e",
+      "cls": "stray",
+      "bbox_pt": [
+       1545.6,
+       503.52,
+       1602.24,
+       503.52
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 155.69,
+       "n_seg": 65
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 184.08,
+       "n_seg": 72
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 144,
+       "n_touching": 143,
+       "share_touching": 0.9931,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1512.91,
+        480.05,
+        1602.24,
+        517.2
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "3729c2140698",
+      "cls": "stray",
+      "bbox_pt": [
+       1549.92,
+       1089.12,
+       1606.8,
+       1089.12
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "9bb531ed07a9",
+      "cls": "stray",
+      "bbox_pt": [
+       1549.92,
+       1088.16,
+       1606.8,
+       1088.16
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 153.64,
+       "n_seg": 68
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 180.98,
+       "n_seg": 57
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 114,
+       "n_touching": 111,
+       "share_touching": 0.9737,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1512.96,
+        1060.61,
+        1606.8,
+        1100.4
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "e58ae953f4aa",
+      "cls": "stray",
+      "bbox_pt": [
+       1549.92,
+       942.48,
+       1606.8,
+       942.48
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "2c10fa4d701e",
+      "cls": "stray",
+      "bbox_pt": [
+       1549.92,
+       941.52,
+       1606.8,
+       941.52
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 173.92,
+       "n_seg": 64
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 142.65,
+       "n_seg": 59
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 118,
+       "n_touching": 115,
+       "share_touching": 0.9746,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1512.91,
+        914.69,
+        1606.8,
+        954.72
+       ]
+      }
+     ]
+    },
+    {
+     "type": "MOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "89215fc0e40b",
+      "cls": "stray",
+      "bbox_pt": [
+       1437.6,
+       1089.12,
+       1494.48,
+       1089.12
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "f7765d3b8ce6",
+      "cls": "stray",
+      "bbox_pt": [
+       1437.6,
+       1088.16,
+       1494.48,
+       1088.16
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 156.82,
+       "n_seg": 44
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 158.99,
+       "n_seg": 48
+      },
+      {
+       "kind": "translation",
+       "dx_pt": 0.241,
+       "dy_pt": -1.288,
+       "share": 0.976,
+       "dist_pt": 1.31
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 96,
+       "n_touching": 93,
+       "share_touching": 0.9688,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1392.67,
+        1063.25,
+        1494.48,
+        1102.8
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "2666829ea673",
+      "cls": "stray",
+      "bbox_pt": [
+       1547.52,
+       577.68,
+       1604.16,
+       577.68
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "2e9051437a48",
+      "cls": "stray",
+      "bbox_pt": [
+       1547.52,
+       576.72,
+       1604.16,
+       576.72
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 181.57,
+       "n_seg": 69
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 133.88,
+       "n_seg": 68
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 136,
+       "n_touching": 134,
+       "share_touching": 0.9853,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1510.27,
+        550.13,
+        1604.16,
+        590.16
+       ]
+      }
+     ]
+    },
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "5bbadeec66a8",
+      "cls": "stray",
+      "bbox_pt": [
+       1550.88,
+       360.72,
+       1607.52,
+       360.72
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "object_after": {
+      "object_id": "0eb71c983298",
+      "cls": "stray",
+      "bbox_pt": [
+       1550.88,
+       359.76,
+       1607.52,
+       359.76
+      ],
+      "label": "ШПК-320-21 НЗ",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 155.9,
+       "n_seg": 61
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 156.21,
+       "n_seg": 46
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 92,
+       "n_touching": 89,
+       "share_touching": 0.9674,
+       "radius_pt": 5.655
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1512.91,
+        331.49,
+        1607.52,
+        369.65
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 10.59
+ },
+ {
+  "pair_id": "AR-490254e9",
+  "discipline": "AR",
+  "classes": [
+   "block_scope_change",
+   "with_labels"
+  ],
+  "expected": "NOT_COMPARABLE",
+  "expected_changed_objects": null,
+  "label_confidence": "high",
+  "human": "Содержимое стороны A целиком присутствует в стороне B («Вид 1»), но блок B охватывает ещё три вида. Это разница нарезки блоков, а не доказанная правка листа.",
+  "n_seg_a": 466,
+  "n_seg_b": 4398,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 0.9968,
+  "S": 9.1304,
+  "L_min_pt": 18.261,
+  "scalar": 0.211393,
+  "lost_share": 0.004596,
+  "n_records_raw": 5,
+  "n_changes": 1,
+  "n_changes_low": 1,
+  "types": [
+   "CHANGED_OBJECT"
+  ],
+  "shapes": [
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     994.75,
+     1316.35,
+     1011.79,
+     1350.19
+    ],
+    "len": 44.95,
+    "obj_b": "059732f86f66",
+    "obj_a": "3f6763fead06",
+    "cls_b": "symbol",
+    "cls_a": "stray",
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 10,
+     "n_touching": 10,
+     "share_touching": 1.0,
+     "radius_pt": 5.478
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1,
+    "ink_pt": 44.95
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элемента.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "059732f86f66",
+      "cls": "symbol",
+      "bbox_pt": [
+       986.58,
+       1316.4,
+       1019.82,
+       1350.24
+      ],
+      "label": null,
+      "share": 0.151
+     },
+     "object_after": {
+      "object_id": "3f6763fead06",
+      "cls": "stray",
+      "bbox_pt": [
+       1003.2,
+       1316.4,
+       1003.2,
+       1316.88
+      ],
+      "label": null,
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 19.12,
+       "n_seg": 2
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 25.83,
+       "n_seg": 5
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 10,
+       "n_touching": 10,
+       "share_touching": 1.0,
+       "radius_pt": 5.478
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        994.75,
+        1316.35,
+        1011.79,
+        1350.19
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 3.56
+ },
+ {
+  "pair_id": "OV-2cc2a382",
+  "discipline": "OV",
+  "classes": [
+   "block_scope_change",
+   "raster_graphics",
+   "no_labels"
+  ],
+  "expected": "NOT_COMPARABLE",
+  "expected_changed_objects": null,
+  "label_confidence": "high",
+  "human": "Эскиз установки из A присутствует в B; сторона B дополнительно содержит весь бланк «ТЕХНИЧЕСКИЕ ДАННЫЕ № РА26-005271-05» с таблицами. Разница нарезки блоков, а не правка.",
+  "error": "RuntimeError('no vector geometry on one side')",
+  "tb": "Traceback (most recent call last):\n  File \"/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/probes/ldg_real.py\", line 48, in main\n    raise RuntimeError(\"no vector geometry on one side\")\nRuntimeError: no vector geometry on one side\n"
+ },
+ {
+  "pair_id": "AR-46f62636",
+  "discipline": "AR",
+  "classes": [
+   "bbox_boundary_artifact",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "План этажа не изменился; в A в кроп попала горизонтальная линия рамки сверху, в B — вертикальная слева.",
+  "n_seg_a": 30876,
+  "n_seg_b": 30877,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 1.0,
+  "S": 6.4294,
+  "L_min_pt": 12.859,
+  "scalar": 0.995621,
+  "lost_share": 0.0,
+  "n_records_raw": 1,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 11.0
+ },
+ {
+  "pair_id": "AR-b38a7dbc",
+  "discipline": "AR",
+  "classes": [
+   "unchanged_control",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Изменений нет: наложение даёт 0 пикселей несовпадения (diff=0.0), число сегментов и текстовых строк совпадает точно.",
+  "n_seg_a": 32312,
+  "n_seg_b": 32312,
+  "reg_offset": [
+   -0.092,
+   -0.006
+  ],
+  "reg_score": 1.0,
+  "S": 6.4294,
+  "L_min_pt": 12.859,
+  "scalar": 1.0,
+  "lost_share": 0.0,
+  "n_records_raw": 0,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 10.96
+ },
+ {
+  "pair_id": "EOM-0c86dfde",
+  "discipline": "EOM",
+  "classes": [
+   "text_only_change",
+   "object_moved_label",
+   "dense_block"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Столбец марок кабелей (K1.2.3n-12, K1.2.15, K1.2.21, K1.2.3n-6, K1.2.24, K1.2.20, …) сдвинут влево относительно плана; сам план тот же.",
+  "n_seg_a": 53517,
+  "n_seg_b": 50063,
+  "reg_offset": [
+   0.0,
+   0.05
+  ],
+  "reg_score": 0.999,
+  "S": 8.8586,
+  "L_min_pt": 17.717,
+  "scalar": 0.993063,
+  "lost_share": 0.013587,
+  "n_records_raw": 208,
+  "n_changes": 1,
+  "n_changes_low": 1,
+  "types": [
+   "ADDED_OBJECT"
+  ],
+  "shapes": [
+   null
+  ],
+  "changes": [
+   {
+    "type": "ADDED_OBJECT",
+    "shape": null,
+    "bbox": [
+     608.22,
+     935.38,
+     675.12,
+     952.96
+    ],
+    "len": 41.12,
+    "obj_b": "554f1f6d07d9",
+    "obj_a": "62453c2d81ff",
+    "cls_b": "symbol",
+    "cls_a": "linear",
+    "label_b": "К1.2.3п-12",
+    "label_a": "ВК/ОВ/ЭОМ",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 2,
+     "n_touching": 0,
+     "share_touching": 0.0,
+     "radius_pt": 5.315
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "OBJECT_ADDED",
+    "text": "Добавлен графический объект.",
+    "n": 1,
+    "ink_pt": 41.12
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "OBJECT_ADDED",
+    "text": "Добавлен графический объект.",
+    "n": 1
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "ADDED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "554f1f6d07d9",
+      "cls": "symbol",
+      "bbox_pt": [
+       662.22,
+       935.38,
+       662.34,
+       935.5
+      ],
+      "label": "К1.2.3п-12",
+      "share": 0.999
+     },
+     "object_after": {
+      "object_id": "62453c2d81ff",
+      "cls": "linear",
+      "bbox_pt": [
+       608.22,
+       785.62,
+       832.5,
+       944.8
+      ],
+      "label": "ВК/ОВ/ЭОМ",
+      "share": 0.125
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 0.73,
+       "n_seg": 11
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 40.38,
+       "n_seg": 1
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 2,
+       "n_touching": 0,
+       "share_touching": 0.0,
+       "radius_pt": 5.315
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        608.22,
+        935.38,
+        675.12,
+        952.96
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 22.77
+ },
+ {
+  "pair_id": "EOM-3306e907",
+  "discipline": "EOM",
+  "classes": [
+   "block_moved",
+   "rotated_page"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "medium",
+  "human": "«Схема размещения фрагмента»: то же изображение, в версии B крупнее; после корректной дерotation обе стороны стоят вертикально.",
+  "n_seg_a": 2784,
+  "n_seg_b": 2784,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 1.0,
+  "S": 0.84,
+  "L_min_pt": 3.0,
+  "scalar": 1.0,
+  "lost_share": 0.0,
+  "n_records_raw": 0,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 11.44
+ },
+ {
+  "pair_id": "EOM-36de2ce2",
+  "discipline": "EOM",
+  "classes": [
+   "block_moved",
+   "rotated_page",
+   "few_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "«Схема размещения фрагмента» та же самая, в версии B крупнее (масштаб блока другой). Сегментов 2 207 и 2 207, текст совпадает.",
+  "n_seg_a": 2207,
+  "n_seg_b": 2207,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 1.0,
+  "S": 1.92,
+  "L_min_pt": 3.84,
+  "scalar": 1.0,
+  "lost_share": 0.0,
+  "n_records_raw": 0,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 9.23
+ },
+ {
+  "pair_id": "KJ-25717577",
+  "discipline": "KJ",
+  "classes": [
+   "text_only_change",
+   "table_only_change",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Изменились только даты во всех строках штампа: 25.03.26 → 22.05.26. Линии таблицы, подписи и логотип те же.",
+  "n_seg_a": 1958,
+  "n_seg_b": 1952,
+  "reg_offset": [
+   0.41,
+   -29.351
+  ],
+  "reg_score": 0.142,
+  "S": 8.8739,
+  "L_min_pt": 17.748,
+  "scalar": 0.124937,
+  "lost_share": 0.881016,
+  "n_records_raw": 1,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 9.55
+ },
+ {
+  "pair_id": "KJ-548814a7",
+  "discipline": "KJ",
+  "classes": [
+   "block_moved",
+   "few_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "«Схема отгиба стержня» одна и та же, в версии B вычерчена примерно в 1.25 раза крупнее.",
+  "n_seg_a": 63,
+  "n_seg_b": 63,
+  "reg_offset": [
+   137.45,
+   46.833
+  ],
+  "reg_score": 1.0,
+  "S": 0.3865,
+  "L_min_pt": 3.0,
+  "scalar": 1.0,
+  "lost_share": 0.0,
+  "n_records_raw": 0,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 0.37
+ },
+ {
+  "pair_id": "KJ-b5c82f7c",
+  "discipline": "KJ",
+  "classes": [
+   "bbox_boundary_artifact",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Узлы армирования совпадают полностью; в версии B в кроп дополнительно попала линия рамки листа слева.",
+  "n_seg_a": 7253,
+  "n_seg_b": 7254,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 1.0,
+  "S": 8.8759,
+  "L_min_pt": 17.752,
+  "scalar": 0.993063,
+  "lost_share": 0.0,
+  "n_records_raw": 1,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 6.27
+ },
+ {
+  "pair_id": "SS-392b7bd3",
+  "discipline": "SS",
+  "classes": [
+   "bbox_boundary_artifact",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Схема (EZ1, У1.1, «Входные двери помещения», ПУ-У1) идентична; в версии B сверху добавилась линия рамки листа.",
+  "n_seg_a": 860,
+  "n_seg_b": 862,
+  "reg_offset": [
+   -0.08,
+   -0.05
+  ],
+  "reg_score": 1.0,
+  "S": 10.9877,
+  "L_min_pt": 21.975,
+  "scalar": 0.905577,
+  "lost_share": 0.0,
+  "n_records_raw": 2,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 3.17
+ },
+ {
+  "pair_id": "SS-6fc75e05",
+  "discipline": "SS",
+  "classes": [
+   "different_packaging",
+   "with_labels",
+   "table_like"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Штамп тот же самый; видимое отличие — только полоска рамки на границе кропа (0.08 % площади). Число сегментов различается вдвое из-за другой упаковки путей.",
+  "n_seg_a": 5845,
+  "n_seg_b": 12921,
+  "reg_offset": [
+   -0.05,
+   -0.05
+  ],
+  "reg_score": 0.9977,
+  "S": 10.9946,
+  "L_min_pt": 21.989,
+  "scalar": 0.954197,
+  "lost_share": 0.0121,
+  "n_records_raw": 2,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 67.35
+ },
+ {
+  "pair_id": "SS-76640e11",
+  "discipline": "SS",
+  "classes": [
+   "text_only_change",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "С плана удалён текстовый блок «Примечание:» из трёх пунктов внизу листа. Сам план (стены, оси, оборудование) не изменился.",
+  "n_seg_a": 6726,
+  "n_seg_b": 6155,
+  "reg_offset": [
+   -0.053,
+   -0.057
+  ],
+  "reg_score": 0.9974,
+  "S": 12.4014,
+  "L_min_pt": 24.803,
+  "scalar": 0.999117,
+  "lost_share": 0.001762,
+  "n_records_raw": 9,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 3.67
+ },
+ {
+  "pair_id": "SS-982f7f30",
+  "discipline": "SS",
+  "classes": [
+   "block_moved",
+   "with_labels",
+   "table_like"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "medium",
+  "human": "Штамп («Книга 2. Автоматизация и диспетчеризация… Корпус 5») тот же; отличается только масштаб/положение блока.",
+  "n_seg_a": 5848,
+  "n_seg_b": 4700,
+  "reg_offset": [
+   0.0,
+   -0.05
+  ],
+  "reg_score": 0.9928,
+  "S": 10.9877,
+  "L_min_pt": 21.975,
+  "scalar": 0.946128,
+  "lost_share": 0.002869,
+  "n_records_raw": 3,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 35.17
+ },
+ {
+  "pair_id": "TX-95031dbd",
+  "discipline": "TX",
+  "classes": [
+   "unchanged_control",
+   "no_labels",
+   "rotated_page"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Изменений нет: две схемы («Цепь освещения 220 В» и «Силовая цепь 380 В») совпадают попиксельно (diff=0.0).",
+  "n_seg_a": 814,
+  "n_seg_b": 814,
+  "reg_offset": [
+   -0.09,
+   -0.01
+  ],
+  "reg_score": 1.0,
+  "S": 0.48,
+  "L_min_pt": 3.0,
+  "scalar": 1.0,
+  "lost_share": 0.0,
+  "n_records_raw": 0,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 6.38
+ },
+ {
+  "pair_id": "VK-b71afe81",
+  "discipline": "VK",
+  "classes": [
+   "different_packaging",
+   "rotated_page",
+   "dense_block",
+   "garbled_text_layer"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "expected_changed_objects": 0,
+  "label_confidence": "high",
+  "human": "Графика идентична: узлы «Узел гиг. душа» и «Узел кранов с эл. приводом» совпадают попиксельно (diff=0.0, 16 205 сегментов с обеих сторон). Отличается только извлекаемый текст: «Ø161/2\"» против «Ø16*1/2\"» — дефект кодировки шрифта, не чертежа.",
+  "n_seg_a": 16205,
+  "n_seg_b": 16205,
+  "reg_offset": [
+   -0.054,
+   -0.08
+  ],
+  "reg_score": 1.0,
+  "S": 9.4256,
+  "L_min_pt": 18.851,
+  "scalar": 1.0,
+  "lost_share": 0.0,
+  "n_records_raw": 0,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 58.31
+ },
+ {
+  "pair_id": "EOM-1db297d2",
+  "discipline": "EOM",
+  "classes": [
+   "uncertain",
+   "block_match_failure"
+  ],
+  "expected": "UNCERTAIN",
+  "expected_changed_objects": null,
+  "label_confidence": "high",
+  "human": "Содержимое сторон не соответствует друг другу — сравнивать нечего; как эталон не использовать.",
+  "n_seg_a": 713,
+  "n_seg_b": 894,
+  "reg_offset": [
+   -848.635,
+   -202.946
+  ],
+  "reg_score": 0.0181,
+  "S": 10.517,
+  "L_min_pt": 21.034,
+  "scalar": 0.020016,
+  "lost_share": 0.976315,
+  "n_records_raw": 2,
+  "n_changes": 0,
+  "n_changes_low": 0,
+  "types": [],
+  "shapes": [],
+  "changes": [],
+  "phrases": [],
+  "phrases_low": [],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": []
+  },
+  "t_sec": 2.83
+ },
+ {
+  "pair_id": "GP-6bc1c029",
+  "discipline": "GP",
+  "classes": [
+   "uncertain",
+   "dense_block"
+  ],
+  "expected": "UNCERTAIN",
+  "expected_changed_objects": null,
+  "label_confidence": "medium",
+  "human": "Что именно изменилось — по картинке блока определить не удалось; нужна поэлементная сверка. Как эталон не использовать.",
+  "n_seg_a": 378441,
+  "n_seg_b": 314651,
+  "reg_offset": [
+   -0.05,
+   0.05
+  ],
+  "reg_score": 0.9902,
+  "S": 11.8806,
+  "L_min_pt": 23.761,
+  "scalar": 0.994487,
+  "lost_share": 0.007723,
+  "n_records_raw": 27,
+  "n_changes": 9,
+  "n_changes_low": 9,
+  "types": [
+   "CHANGED_OBJECT",
+   "REMOVED_OBJECT",
+   "REMOVED_OBJECT",
+   "REMOVED_OBJECT",
+   "REMOVED_OBJECT",
+   "REMOVED_OBJECT",
+   "REMOVED_OBJECT",
+   "REMOVED_OBJECT",
+   "REMOVED_OBJECT"
+  ],
+  "shapes": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "changes": [
+   {
+    "type": "CHANGED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1143.6,
+     563.85,
+     1422.72,
+     678.28
+    ],
+    "len": 5735.75,
+    "obj_b": "28d573129ad7",
+    "obj_a": "d7243603a387",
+    "cls_b": "symbol",
+    "cls_a": "linear",
+    "label_b": null,
+    "label_a": "R15.00",
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 7714,
+     "n_touching": 7714,
+     "share_touching": 1.0,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "ink_new",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1106.4,
+     393.28,
+     1133.76,
+     458.44
+    ],
+    "len": 854.8,
+    "obj_b": "e103386e132d",
+    "obj_a": null,
+    "cls_b": "symbol",
+    "cls_a": null,
+    "label_b": "3.А",
+    "label_a": null,
+    "welded": true,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 10074,
+     "n_touching": 10074,
+     "share_touching": 1.0,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "attachment",
+     "contact",
+     "frame"
+    ],
+    "att": {
+     "kind": "attachment",
+     "attached_ends": 2,
+     "ends": [
+      {
+       "dist_pt": 0.246,
+       "host_seg": 349068,
+       "cos": 0.9064,
+       "angle_deg": 25.0
+      },
+      {
+       "dist_pt": 0.157,
+       "host_seg": 341811,
+       "cos": 0.9035,
+       "angle_deg": 25.4
+      }
+     ],
+     "run_len_pt": 69.379,
+     "run_over_S": 5.84
+    }
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1287.12,
+     524.08,
+     1294.8,
+     541.12
+    ],
+    "len": 315.65,
+    "obj_b": "8b59d2d01d05",
+    "obj_a": null,
+    "cls_b": "symbol",
+    "cls_a": null,
+    "label_b": null,
+    "label_a": null,
+    "welded": true,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 3720,
+     "n_touching": 3720,
+     "share_touching": 1.0,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "attachment",
+     "contact",
+     "frame"
+    ],
+    "att": {
+     "kind": "attachment",
+     "attached_ends": 2,
+     "ends": [
+      {
+       "dist_pt": 0.0,
+       "host_seg": 283822,
+       "cos": 0.0005,
+       "angle_deg": 90.0
+      },
+      {
+       "dist_pt": 0.123,
+       "host_seg": 284423,
+       "cos": 0.4224,
+       "angle_deg": 65.0
+      }
+     ],
+     "run_len_pt": 13.808,
+     "run_over_S": 1.16
+    }
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     448.56,
+     410.32,
+     459.84,
+     419.92
+    ],
+    "len": 66.89,
+    "obj_b": "aa466ca28d02",
+    "obj_a": null,
+    "cls_b": "symbol",
+    "cls_a": null,
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 12,
+     "n_touching": 4,
+     "share_touching": 0.3333,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1444.92,
+     676.24,
+     1921.68,
+     678.28
+    ],
+    "len": 63.81,
+    "obj_b": "4b454f913e09",
+    "obj_a": null,
+    "cls_b": "symbol",
+    "cls_a": null,
+    "label_b": "▐",
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 752,
+     "n_touching": 752,
+     "share_touching": 1.0,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     448.56,
+     369.28,
+     459.84,
+     378.88
+    ],
+    "len": 51.85,
+    "obj_b": "aa945f53a95b",
+    "obj_a": null,
+    "cls_b": "symbol",
+    "cls_a": null,
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 12,
+     "n_touching": 12,
+     "share_touching": 1.0,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     448.56,
+     450.52,
+     459.84,
+     460.0
+    ],
+    "len": 29.48,
+    "obj_b": "aa466ca28d02",
+    "obj_a": null,
+    "cls_b": "symbol",
+    "cls_a": null,
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 6,
+     "n_touching": 4,
+     "share_touching": 0.6667,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     1421.04,
+     828.64,
+     1551.6,
+     829.12
+    ],
+    "len": 29.19,
+    "obj_b": "dc2427d4a2fd",
+    "obj_a": null,
+    "cls_b": "linear",
+    "cls_a": null,
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 344,
+     "n_touching": 344,
+     "share_touching": 1.0,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   },
+   {
+    "type": "REMOVED_OBJECT",
+    "shape": null,
+    "bbox": [
+     928.32,
+     828.64,
+     1087.56,
+     829.12
+    ],
+    "len": 23.93,
+    "obj_b": "57e9b4c325f0",
+    "obj_a": null,
+    "cls_b": "linear",
+    "cls_a": null,
+    "label_b": null,
+    "label_a": null,
+    "welded": false,
+    "contact": {
+     "kind": "contact",
+     "n_endpoints": 282,
+     "n_touching": 282,
+     "share_touching": 1.0,
+     "radius_pt": 7.128
+    },
+    "ev": [
+     "ink_lost",
+     "contact",
+     "frame"
+    ],
+    "att": null
+   }
+  ],
+  "phrases": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалено графических объектов: 6.",
+    "n": 6,
+    "ink_pt": 265.16
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 3.",
+    "n": 3,
+    "ink_pt": 6906.21
+   }
+  ],
+  "phrases_low": [
+   {
+    "id": "OBJECT_REMOVED",
+    "text": "Удалено графических объектов: 6.",
+    "n": 6
+   },
+   {
+    "id": "CONFIG_CHANGED",
+    "text": "Изменена конфигурация элементов: 3.",
+    "n": 3
+   }
+  ],
+  "validate_violations": [],
+  "ledger_json": {
+   "changes": [
+    {
+     "type": "CHANGED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "28d573129ad7",
+      "cls": "symbol",
+      "bbox_pt": [
+       1282.44,
+       611.2,
+       1287.0,
+       615.16
+      ],
+      "label": null,
+      "share": 0.454
+     },
+     "object_after": {
+      "object_id": "d7243603a387",
+      "cls": "linear",
+      "bbox_pt": [
+       1320.12,
+       563.8,
+       1353.6,
+       655.6
+      ],
+      "label": "R15.00",
+      "share": 1.0
+     },
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 3203.24,
+       "n_seg": 7178
+      },
+      {
+       "kind": "ink_new",
+       "len_pt": 2532.52,
+       "n_seg": 3857
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 7714,
+       "n_touching": 7714,
+       "share_touching": 1.0,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1143.6,
+        563.85,
+        1422.72,
+        678.28
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": true,
+     "object_before": {
+      "object_id": "e103386e132d",
+      "cls": "symbol",
+      "bbox_pt": [
+       1113.6,
+       360.41,
+       1173.96,
+       433.6
+      ],
+      "label": "3.А",
+      "share": 0.275
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 854.8,
+       "n_seg": 5037
+      },
+      {
+       "kind": "attachment",
+       "attached_ends": 2,
+       "ends": [
+        {
+         "dist_pt": 0.246,
+         "host_seg": 349068,
+         "cos": 0.9064,
+         "angle_deg": 25.0
+        },
+        {
+         "dist_pt": 0.157,
+         "host_seg": 341811,
+         "cos": 0.9035,
+         "angle_deg": 25.4
+        }
+       ],
+       "run_len_pt": 69.379,
+       "run_over_S": 5.84
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 10074,
+       "n_touching": 10074,
+       "share_touching": 1.0,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1106.4,
+        393.28,
+        1133.76,
+        458.44
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": true,
+     "object_before": {
+      "object_id": "8b59d2d01d05",
+      "cls": "symbol",
+      "bbox_pt": [
+       1256.64,
+       496.72,
+       1328.64,
+       556.24
+      ],
+      "label": null,
+      "share": 0.188
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 315.65,
+       "n_seg": 1860
+      },
+      {
+       "kind": "attachment",
+       "attached_ends": 2,
+       "ends": [
+        {
+         "dist_pt": 0.0,
+         "host_seg": 283822,
+         "cos": 0.0005,
+         "angle_deg": 90.0
+        },
+        {
+         "dist_pt": 0.123,
+         "host_seg": 284423,
+         "cos": 0.4224,
+         "angle_deg": 65.0
+        }
+       ],
+       "run_len_pt": 13.808,
+       "run_over_S": 1.16
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 3720,
+       "n_touching": 3720,
+       "share_touching": 1.0,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1287.12,
+        524.08,
+        1294.8,
+        541.12
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "aa466ca28d02",
+      "cls": "symbol",
+      "bbox_pt": [
+       424.69,
+       410.32,
+       479.64,
+       485.8
+      ],
+      "label": null,
+      "share": 0.117
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 66.89,
+       "n_seg": 6
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 12,
+       "n_touching": 4,
+       "share_touching": 0.3333,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        448.56,
+        410.32,
+        459.84,
+        419.92
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "4b454f913e09",
+      "cls": "symbol",
+      "bbox_pt": [
+       1626.36,
+       655.12,
+       1714.2,
+       689.8
+      ],
+      "label": "▐",
+      "share": 0.011
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 63.81,
+       "n_seg": 376
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 752,
+       "n_touching": 752,
+       "share_touching": 1.0,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1444.92,
+        676.24,
+        1921.68,
+        678.28
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "aa945f53a95b",
+      "cls": "symbol",
+      "bbox_pt": [
+       440.16,
+       369.28,
+       459.84,
+       384.28
+      ],
+      "label": null,
+      "share": 0.662
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 51.85,
+       "n_seg": 6
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 12,
+       "n_touching": 12,
+       "share_touching": 1.0,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        448.56,
+        369.28,
+        459.84,
+        378.88
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "aa466ca28d02",
+      "cls": "symbol",
+      "bbox_pt": [
+       424.69,
+       410.32,
+       479.64,
+       485.8
+      ],
+      "label": null,
+      "share": 0.058
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 29.48,
+       "n_seg": 3
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 6,
+       "n_touching": 4,
+       "share_touching": 0.6667,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        448.56,
+        450.52,
+        459.84,
+        460.0
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "dc2427d4a2fd",
+      "cls": "linear",
+      "bbox_pt": [
+       1420.8,
+       828.64,
+       1421.28,
+       829.12
+      ],
+      "label": null,
+      "share": 0.5
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 29.19,
+       "n_seg": 172
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 344,
+       "n_touching": 344,
+       "share_touching": 1.0,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        1421.04,
+        828.64,
+        1551.6,
+        829.12
+       ]
+      }
+     ]
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "welded": false,
+     "object_before": {
+      "object_id": "57e9b4c325f0",
+      "cls": "linear",
+      "bbox_pt": [
+       1024.8,
+       828.64,
+       1025.28,
+       829.12
+      ],
+      "label": null,
+      "share": 1.0
+     },
+     "object_after": null,
+     "evidence": [
+      {
+       "kind": "ink_lost",
+       "len_pt": 23.93,
+       "n_seg": 141
+      },
+      {
+       "kind": "contact",
+       "n_endpoints": 282,
+       "n_touching": 282,
+       "share_touching": 1.0,
+       "radius_pt": 7.128
+      },
+      {
+       "kind": "frame",
+       "at_boundary": false,
+       "bbox_pt": [
+        928.32,
+        828.64,
+        1087.56,
+        829.12
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "t_sec": 185.39
+ }
+]

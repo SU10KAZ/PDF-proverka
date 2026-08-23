@@ -1,0 +1,282 @@
+[
+ {
+  "doc_id": "13АВ-РД-АК-К4 (Книга 2)",
+  "disc": "SS",
+  "kind": "1:0_orphan_a",
+  "page_a": 6,
+  "page_b": 6,
+  "block": "H7WD-XKN7-VX9",
+  "side": "a",
+  "rect_pt": [
+   1416.6,
+   172.6,
+   1596.2,
+   433.7
+  ],
+  "page_frame": {
+   "error": "no vector geometry on one side",
+   "n_seg_a": 1479,
+   "n_seg_b": 0
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-ЭМ-К5",
+  "disc": "EOM",
+  "kind": "0:1_orphan_b",
+  "page_a": 13,
+  "page_b": 14,
+  "block": "6MTJ-CCJJ-DG3",
+  "side": "b",
+  "rect_pt": [
+   1846.7,
+   1511.5,
+   2372.9,
+   1669.9
+  ],
+  "page_frame": {
+   "n_records": 1,
+   "n_records_interior": 1,
+   "n_records_big": 1,
+   "by_type": {
+    "ADDED_OBJECT": 1
+   },
+   "by_type_big": {
+    "ADDED_OBJECT": 1
+   },
+   "changed_len_total": 183.189,
+   "changed_len_big": 183.19,
+   "added_removed_len": 183.19,
+   "added_removed_big": 1,
+   "similarity": 0.9866,
+   "n_seg_a": 1562,
+   "n_seg_b": 1777,
+   "ink_len_a": 6743.61,
+   "ink_len_b": 6926.8,
+   "n_obj_a": 41,
+   "n_obj_b": 43,
+   "S": 8.8827,
+   "rec_top": [
+    [
+     "ADDED_OBJECT",
+     [
+      1957.6,
+      1557.1,
+      2004.9,
+      1567.6
+     ],
+     183.2,
+     0
+    ]
+   ],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    1846.7,
+    1511.5,
+    2372.9,
+    1669.9
+   ],
+   "clip_b": [
+    1846.7,
+    1511.5,
+    2372.9,
+    1669.9
+   ],
+   "t_sec": 29.5
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-КЖ5.33-38.1-К2",
+  "disc": "KJ",
+  "kind": "1:0_orphan_a",
+  "page_a": 12,
+  "page_b": 13,
+  "block": "7MHJ-AL9C-QW7",
+  "side": "a",
+  "rect_pt": [
+   2147.3,
+   691.5,
+   2379.1,
+   1127.4
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 72,
+   "n_seg_b": 72,
+   "ink_len_a": 2648.03,
+   "ink_len_b": 2648.03,
+   "n_obj_a": 29,
+   "n_obj_b": 29,
+   "S": 8.882,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    2147.3,
+    691.5,
+    2379.1,
+    1127.4
+   ],
+   "clip_b": [
+    2147.3,
+    691.5,
+    2379.1,
+    1127.4
+   ],
+   "t_sec": 0.2
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-АК-К6 (Книга 2)",
+  "disc": "SS",
+  "kind": "0:1_orphan_b",
+  "page_a": 10,
+  "page_b": 9,
+  "block": "7QLU-4NNE-RJN",
+  "side": "b",
+  "rect_pt": [
+   2147.9,
+   247.0,
+   2646.1,
+   1427.8
+  ],
+  "page_frame": {
+   "error": "no vector geometry on one side",
+   "n_seg_a": 0,
+   "n_seg_b": 11447
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-АК-К5 (Книга 2)",
+  "disc": "SS",
+  "kind": "1:0_orphan_a",
+  "page_a": 10,
+  "page_b": 11,
+  "block": "XTU6-LQRQ-C99",
+  "side": "a",
+  "rect_pt": [
+   1261.2,
+   1435.8,
+   1757.1,
+   1661.0
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 7790,
+   "n_seg_b": 7790,
+   "ink_len_a": 6515.25,
+   "ink_len_b": 6515.18,
+   "n_obj_a": 80,
+   "n_obj_b": 75,
+   "S": 8.5702,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.0,
+    0.0
+   ],
+   "reg_score": 0.9986,
+   "clip_a": [
+    1261.2,
+    1435.8,
+    1757.1,
+    1661.0
+   ],
+   "clip_b": [
+    1261.2,
+    1435.8,
+    1757.1,
+    1661.0
+   ],
+   "t_sec": 7.6
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-КЖ5.17-23.1-К2",
+  "disc": "KJ",
+  "kind": "1:0_orphan_a",
+  "page_a": 6,
+  "page_b": 7,
+  "block": "A9M4-EJ7R-MKH",
+  "side": "a",
+  "rect_pt": [
+   1870.3,
+   1002.6,
+   2380.6,
+   1266.7
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 1063,
+   "n_seg_b": 1063,
+   "ink_len_a": 7345.74,
+   "ink_len_b": 7345.74,
+   "n_obj_a": 83,
+   "n_obj_b": 83,
+   "S": 8.8967,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    1870.3,
+    1002.6,
+    2380.6,
+    1266.7
+   ],
+   "clip_b": [
+    1870.3,
+    1002.6,
+    2380.6,
+    1266.7
+   ],
+   "t_sec": 1.4
+  }
+ }
+]

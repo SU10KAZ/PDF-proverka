@@ -1,0 +1,194 @@
+[
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "43CL-VVJR-QPF",
+  "doc_id": "13АВ-РД-ГП1 V1",
+  "discipline": "GP",
+  "cls": "drawing",
+  "n_seg": 1357,
+  "bbox": [
+   4690.709,
+   1966.066,
+   4728.66,
+   2004.017
+  ],
+  "params": {
+   "branch_len_pt": 53.671,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "38b508850a09"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ },
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "4UXN-R3AK-UKH",
+  "doc_id": "13АВ-РД-ОВ1.1-К2 V1",
+  "discipline": "OV",
+  "cls": "drawing",
+  "n_seg": 1117,
+  "bbox": [
+   2229.696,
+   1301.04,
+   2229.696,
+   1356.333
+  ],
+  "params": {
+   "branch_len_pt": 55.294,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "0f4853d3f89b"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ },
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "6WNV-DWDA-4CQ",
+  "doc_id": "13АВ-РД-АР1.2-К3",
+  "discipline": "AR",
+  "cls": "drawing",
+  "n_seg": 1034,
+  "bbox": [
+   951.36,
+   1178.976,
+   1006.143,
+   1178.976
+  ],
+  "params": {
+   "branch_len_pt": 54.782,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "f6f4662e05a0"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ },
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "7393-HGCY-DVN",
+  "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+  "discipline": "SS",
+  "cls": "drawing",
+  "n_seg": 240,
+  "bbox": [
+   1611.216,
+   981.039,
+   1611.216,
+   1034.16
+  ],
+  "params": {
+   "branch_len_pt": 53.121,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "fec9c75b7396"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ },
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "7FP3-FT7J-UCN",
+  "doc_id": "13АВ-РД-ЭМ-К6",
+  "discipline": "EOM",
+  "cls": "drawing",
+  "n_seg": 21909,
+  "bbox": [
+   2329.833,
+   652.2,
+   2329.833,
+   708.589
+  ],
+  "params": {
+   "branch_len_pt": 56.389,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "9d2770043dd9"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ },
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "7MC4-EMVG-6DF",
+  "doc_id": "13АВ-РД-ТХ2-К2 V1",
+  "discipline": "TX",
+  "cls": "drawing",
+  "n_seg": 235,
+  "bbox": [
+   146.336,
+   450.28,
+   146.336,
+   491.303
+  ],
+  "params": {
+   "branch_len_pt": 41.023,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "f5cf955efdba"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ },
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "7WHK-V9XQ-LGL",
+  "doc_id": "13АВ-РД-ОВ2-К4 V1",
+  "discipline": "OV",
+  "cls": "drawing",
+  "n_seg": 13633,
+  "bbox": [
+   1460.016,
+   672.24,
+   1460.016,
+   728.806
+  ],
+  "params": {
+   "branch_len_pt": 56.566,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "0a0b6dbb371b"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ },
+ {
+  "phrase": "BRANCH_ADDED",
+  "block_id": "7YVM-HUM4-FWF",
+  "doc_id": "13АВ-РД-ТХ2-К5",
+  "discipline": "TX",
+  "cls": "drawing",
+  "n_seg": 743,
+  "bbox": [
+   966.48,
+   359.6,
+   966.48,
+   418.615
+  ],
+  "params": {
+   "branch_len_pt": 59.015,
+   "branch_over_S": 6.0
+  },
+  "objects": [
+   "3263feeda101"
+  ],
+  "obj_cls": [
+   "linear"
+  ]
+ }
+]

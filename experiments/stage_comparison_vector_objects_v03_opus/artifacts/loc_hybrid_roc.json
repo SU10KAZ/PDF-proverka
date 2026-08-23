@@ -1,0 +1,392 @@
+{
+ "provenance": {
+  "n_rows": 5984,
+  "n_rows_from_replay": 1315,
+  "n_C_rows_still_scored_by_the_defective_scorer": 424
+ },
+ "n_quiet_real_pairs": 14,
+ "small_cf_changes|none": {
+  "n_cf_positives": 821,
+  "curve": [
+   {
+    "T_pt": 0.0,
+    "recall_cf": 0.8039,
+    "false_records_per_real_quiet_pair_mean": 15.071,
+    "false_records_per_real_quiet_pair_max": 207,
+    "share_real_quiet_pairs_with_any_record": 0.2857
+   },
+   {
+    "T_pt": 0.5,
+    "recall_cf": 0.7674,
+    "false_records_per_real_quiet_pair_mean": 3.929,
+    "false_records_per_real_quiet_pair_max": 54,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 1,
+    "recall_cf": 0.7369,
+    "false_records_per_real_quiet_pair_mean": 1.929,
+    "false_records_per_real_quiet_pair_max": 26,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 2,
+    "recall_cf": 0.715,
+    "false_records_per_real_quiet_pair_mean": 0.357,
+    "false_records_per_real_quiet_pair_max": 4,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 3,
+    "recall_cf": 0.7113,
+    "false_records_per_real_quiet_pair_mean": 0.286,
+    "false_records_per_real_quiet_pair_max": 3,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 5,
+    "recall_cf": 0.6955,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 8,
+    "recall_cf": 0.6821,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 12,
+    "recall_cf": 0.6577,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 20,
+    "recall_cf": 0.5993,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 35,
+    "recall_cf": 0.5177,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 60,
+    "recall_cf": 0.4166,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 100,
+    "recall_cf": 0.3057,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 200,
+    "recall_cf": 0.1559,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   }
+  ]
+ },
+ "small_cf_changes|round025": {
+  "n_cf_positives": 821,
+  "curve": [
+   {
+    "T_pt": 0.0,
+    "recall_cf": 0.7808,
+    "false_records_per_real_quiet_pair_mean": 15.071,
+    "false_records_per_real_quiet_pair_max": 207,
+    "share_real_quiet_pairs_with_any_record": 0.2857
+   },
+   {
+    "T_pt": 0.5,
+    "recall_cf": 0.7637,
+    "false_records_per_real_quiet_pair_mean": 3.929,
+    "false_records_per_real_quiet_pair_max": 54,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 1,
+    "recall_cf": 0.7308,
+    "false_records_per_real_quiet_pair_mean": 1.929,
+    "false_records_per_real_quiet_pair_max": 26,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 2,
+    "recall_cf": 0.7089,
+    "false_records_per_real_quiet_pair_mean": 0.357,
+    "false_records_per_real_quiet_pair_max": 4,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 3,
+    "recall_cf": 0.7028,
+    "false_records_per_real_quiet_pair_mean": 0.286,
+    "false_records_per_real_quiet_pair_max": 3,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 5,
+    "recall_cf": 0.6931,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 8,
+    "recall_cf": 0.6797,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 12,
+    "recall_cf": 0.6541,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 20,
+    "recall_cf": 0.5956,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 35,
+    "recall_cf": 0.5104,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 60,
+    "recall_cf": 0.4129,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 100,
+    "recall_cf": 0.3021,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 200,
+    "recall_cf": 0.1547,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   }
+  ]
+ },
+ "all_cf_changes|none": {
+  "n_cf_positives": 1437,
+  "curve": [
+   {
+    "T_pt": 0.0,
+    "recall_cf": 0.8031,
+    "false_records_per_real_quiet_pair_mean": 15.071,
+    "false_records_per_real_quiet_pair_max": 207,
+    "share_real_quiet_pairs_with_any_record": 0.2857
+   },
+   {
+    "T_pt": 0.5,
+    "recall_cf": 0.7794,
+    "false_records_per_real_quiet_pair_mean": 3.929,
+    "false_records_per_real_quiet_pair_max": 54,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 1,
+    "recall_cf": 0.7585,
+    "false_records_per_real_quiet_pair_mean": 1.929,
+    "false_records_per_real_quiet_pair_max": 26,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 2,
+    "recall_cf": 0.7432,
+    "false_records_per_real_quiet_pair_mean": 0.357,
+    "false_records_per_real_quiet_pair_max": 4,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 3,
+    "recall_cf": 0.7404,
+    "false_records_per_real_quiet_pair_mean": 0.286,
+    "false_records_per_real_quiet_pair_max": 3,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 5,
+    "recall_cf": 0.7286,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 8,
+    "recall_cf": 0.7203,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 12,
+    "recall_cf": 0.7015,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 20,
+    "recall_cf": 0.6521,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 35,
+    "recall_cf": 0.5859,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 60,
+    "recall_cf": 0.4802,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 100,
+    "recall_cf": 0.3814,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 200,
+    "recall_cf": 0.2519,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   }
+  ]
+ },
+ "all_cf_changes|round025": {
+  "n_cf_positives": 1437,
+  "curve": [
+   {
+    "T_pt": 0.0,
+    "recall_cf": 0.785,
+    "false_records_per_real_quiet_pair_mean": 15.071,
+    "false_records_per_real_quiet_pair_max": 207,
+    "share_real_quiet_pairs_with_any_record": 0.2857
+   },
+   {
+    "T_pt": 0.5,
+    "recall_cf": 0.7676,
+    "false_records_per_real_quiet_pair_mean": 3.929,
+    "false_records_per_real_quiet_pair_max": 54,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 1,
+    "recall_cf": 0.7453,
+    "false_records_per_real_quiet_pair_mean": 1.929,
+    "false_records_per_real_quiet_pair_max": 26,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 2,
+    "recall_cf": 0.7314,
+    "false_records_per_real_quiet_pair_mean": 0.357,
+    "false_records_per_real_quiet_pair_max": 4,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 3,
+    "recall_cf": 0.7251,
+    "false_records_per_real_quiet_pair_mean": 0.286,
+    "false_records_per_real_quiet_pair_max": 3,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 5,
+    "recall_cf": 0.7168,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 8,
+    "recall_cf": 0.7084,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 12,
+    "recall_cf": 0.6882,
+    "false_records_per_real_quiet_pair_mean": 0.214,
+    "false_records_per_real_quiet_pair_max": 2,
+    "share_real_quiet_pairs_with_any_record": 0.1429
+   },
+   {
+    "T_pt": 20,
+    "recall_cf": 0.6409,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 35,
+    "recall_cf": 0.5748,
+    "false_records_per_real_quiet_pair_mean": 0.071,
+    "false_records_per_real_quiet_pair_max": 1,
+    "share_real_quiet_pairs_with_any_record": 0.0714
+   },
+   {
+    "T_pt": 60,
+    "recall_cf": 0.4753,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 100,
+    "recall_cf": 0.38,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   },
+   {
+    "T_pt": 200,
+    "recall_cf": 0.2512,
+    "false_records_per_real_quiet_pair_mean": 0.0,
+    "false_records_per_real_quiet_pair_max": 0,
+    "share_real_quiet_pairs_with_any_record": 0.0
+   }
+  ]
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "n_instances": 675,
+ "rows_without_addr": 79,
+ "coverage_all_9_types": 0.8711,
+ "coverage_keep_4": 0.8607,
+ "leave_one_out_of_keep_4": {
+  "ADJACENT": 0.7733,
+  "CONNECTED_TO": 0.8341,
+  "ALIGNED": 0.8326,
+  "LABEL_ANCHOR": 0.8148
+ },
+ "solo": {
+  "ADJACENT": 0.7156,
+  "CONNECTED_TO": 0.4904,
+  "ALIGNED": 0.4252,
+  "LABEL_ANCHOR": 0.4119,
+  "LEADER_TO": 0.1067,
+  "PART_OF": 0.0074,
+  "INSIDE": 0.1407,
+  "CONTAINS": 0.1407,
+  "REPEATED_WITH": 0.0
+ },
+ "label_ablation": {
+  "with_label_anchor": 0.8607,
+  "without_label_anchor": 0.8148,
+  "instances_losing_their_only_address": 31
+ }
+}

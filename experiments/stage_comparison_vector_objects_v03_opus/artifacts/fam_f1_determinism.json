@@ -1,0 +1,4177 @@
+{
+ "n_blocks": 149,
+ "rows": [
+  {
+   "block_id": "blk_00af65c831614f2cab29c9c77fc7ffd0",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 37994,
+   "n_obj": 1323,
+   "twopass": {
+    "n_fam": 426,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 426
+   },
+   "greedy": {
+    "n_fam": 428,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 428
+   },
+   "greedy_input": {
+    "n_fam": 426,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.996445,
+    "n_fam_permuted": 425
+   }
+  },
+  {
+   "block_id": "AARJ-YWTV-4YY",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 43620,
+   "n_obj": 1009,
+   "twopass": {
+    "n_fam": 250,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 250
+   },
+   "greedy": {
+    "n_fam": 251,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 251
+   },
+   "greedy_input": {
+    "n_fam": 249,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.998226,
+    "n_fam_permuted": 250
+   }
+  },
+  {
+   "block_id": "blk_bc6959c9f3624aed945fc4be4268f752",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 4022,
+   "n_obj": 963,
+   "twopass": {
+    "n_fam": 274,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 274
+   },
+   "greedy": {
+    "n_fam": 277,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 277
+   },
+   "greedy_input": {
+    "n_fam": 274,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.996854,
+    "n_fam_permuted": 274
+   }
+  },
+  {
+   "block_id": "blk_ede531d29f3d48bc98ae16f81ef82652",
+   "discipline": "AR",
+   "cls": "table",
+   "n_seg": 1010,
+   "n_obj": 80,
+   "twopass": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   },
+   "greedy": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   },
+   "greedy_input": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   }
+  },
+  {
+   "block_id": "blk_3de92014ef524e29927044c59d6e7e37",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 69,
+   "n_obj": 19,
+   "twopass": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   },
+   "greedy": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   },
+   "greedy_input": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   }
+  },
+  {
+   "block_id": "77Q4-3XRE-XLE",
+   "discipline": "AR",
+   "cls": "legend_notes",
+   "n_seg": 186,
+   "n_obj": 19,
+   "twopass": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy": {
+    "n_fam": 16,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 16
+   },
+   "greedy_input": {
+    "n_fam": 16,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 16
+   }
+  },
+  {
+   "block_id": "3MQ9-NVKW-D7H",
+   "discipline": "AR",
+   "cls": "table",
+   "n_seg": 409,
+   "n_obj": 235,
+   "twopass": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   },
+   "greedy": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   },
+   "greedy_input": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   }
+  },
+  {
+   "block_id": "QNHM-4G74-WWU",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 33857,
+   "n_obj": 100,
+   "twopass": {
+    "n_fam": 79,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 79
+   },
+   "greedy": {
+    "n_fam": 79,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 79
+   },
+   "greedy_input": {
+    "n_fam": 79,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 79
+   }
+  },
+  {
+   "block_id": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 8657,
+   "n_obj": 139,
+   "twopass": {
+    "n_fam": 94,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 94
+   },
+   "greedy": {
+    "n_fam": 94,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 94
+   },
+   "greedy_input": {
+    "n_fam": 95,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.988077,
+    "n_fam_permuted": 95
+   }
+  },
+  {
+   "block_id": "blk_4f3fadc77c584364a5ee052c44eb0016",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 922,
+   "n_obj": 161,
+   "twopass": {
+    "n_fam": 105,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 105
+   },
+   "greedy": {
+    "n_fam": 106,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 106
+   },
+   "greedy_input": {
+    "n_fam": 104,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.972699,
+    "n_fam_permuted": 105
+   }
+  },
+  {
+   "block_id": "73T9-WFKK-DMU",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 762,
+   "n_obj": 115,
+   "twopass": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   },
+   "greedy": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   },
+   "greedy_input": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   }
+  },
+  {
+   "block_id": "RXRH-TXGC-7N9",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 99,
+   "n_obj": 15,
+   "twopass": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   },
+   "greedy": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   },
+   "greedy_input": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   }
+  },
+  {
+   "block_id": "blk_3446f154f6bc4874b01e99e29358f318",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 233,
+   "n_obj": 11,
+   "twopass": {
+    "n_fam": 7,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 7
+   },
+   "greedy": {
+    "n_fam": 7,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 7
+   },
+   "greedy_input": {
+    "n_fam": 7,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 7
+   }
+  },
+  {
+   "block_id": "77EM-7LQU-DCN",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 23,
+   "n_obj": 12,
+   "twopass": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy_input": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   }
+  },
+  {
+   "block_id": "9LLL-F43F-KRF",
+   "discipline": "GP",
+   "cls": "stamp",
+   "n_seg": 37852,
+   "n_obj": 96,
+   "twopass": {
+    "n_fam": 73,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 73
+   },
+   "greedy": {
+    "n_fam": 73,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 73
+   },
+   "greedy_input": {
+    "n_fam": 73,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 73
+   }
+  },
+  {
+   "block_id": "7EHD-V699-FTC",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 2227,
+   "n_obj": 141,
+   "twopass": {
+    "n_fam": 74,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 74
+   },
+   "greedy": {
+    "n_fam": 76,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 76
+   },
+   "greedy_input": {
+    "n_fam": 76,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.991153,
+    "n_fam_permuted": 76
+   }
+  },
+  {
+   "block_id": "blk_fbe22186597d415f87713df53768eae4",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 5274,
+   "n_obj": 26,
+   "twopass": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy_input": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   }
+  },
+  {
+   "block_id": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 1955,
+   "n_obj": 278,
+   "twopass": {
+    "n_fam": 76,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 76
+   },
+   "greedy": {
+    "n_fam": 76,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 76
+   },
+   "greedy_input": {
+    "n_fam": 76,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 76
+   }
+  },
+  {
+   "block_id": "blk_cb88dd54939f46c18933e448f87ab36c",
+   "discipline": "ITP",
+   "cls": "vector_raster_mix",
+   "n_seg": 608,
+   "n_obj": 44,
+   "twopass": {
+    "n_fam": 29,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 29
+   },
+   "greedy": {
+    "n_fam": 29,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 29
+   },
+   "greedy_input": {
+    "n_fam": 29,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 29
+   }
+  },
+  {
+   "block_id": "blk_0180ed4e581c4440b62816badba3bfab",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 285,
+   "n_obj": 54,
+   "twopass": {
+    "n_fam": 24,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 24
+   },
+   "greedy": {
+    "n_fam": 26,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 26
+   },
+   "greedy_input": {
+    "n_fam": 25,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.946338,
+    "n_fam_permuted": 26
+   }
+  },
+  {
+   "block_id": "AAQ4-4V47-9M7",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 7727,
+   "n_obj": 657,
+   "twopass": {
+    "n_fam": 204,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 204
+   },
+   "greedy": {
+    "n_fam": 209,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 209
+   },
+   "greedy_input": {
+    "n_fam": 205,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.99756,
+    "n_fam_permuted": 205
+   }
+  },
+  {
+   "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 723,
+   "n_obj": 115,
+   "twopass": {
+    "n_fam": 75,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 75
+   },
+   "greedy": {
+    "n_fam": 76,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 76
+   },
+   "greedy_input": {
+    "n_fam": 76,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.991648,
+    "n_fam_permuted": 75
+   }
+  },
+  {
+   "block_id": "7J9G-4UTQ-HVL",
+   "discipline": "KJ",
+   "cls": "table",
+   "n_seg": 827,
+   "n_obj": 68,
+   "twopass": {
+    "n_fam": 27,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 27
+   },
+   "greedy": {
+    "n_fam": 27,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 27
+   },
+   "greedy_input": {
+    "n_fam": 27,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 27
+   }
+  },
+  {
+   "block_id": "4N3Y-VC3H-7F7",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 151,
+   "n_obj": 26,
+   "twopass": {
+    "n_fam": 14,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 14
+   },
+   "greedy": {
+    "n_fam": 14,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 14
+   },
+   "greedy_input": {
+    "n_fam": 14,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 14
+   }
+  },
+  {
+   "block_id": "MD36-6R6J-DYY",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg": 232,
+   "n_obj": 16,
+   "twopass": {
+    "n_fam": 16,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 16
+   },
+   "greedy": {
+    "n_fam": 16,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 16
+   },
+   "greedy_input": {
+    "n_fam": 16,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 16
+   }
+  },
+  {
+   "block_id": "blk_7da424978fd44439b3adcf880a2e3af7",
+   "discipline": "KJ",
+   "cls": "vector_raster_mix",
+   "n_seg": 277,
+   "n_obj": 15,
+   "twopass": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy_input": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   }
+  },
+  {
+   "block_id": "4U34-MVRJ-KMM",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 9531,
+   "n_obj": 690,
+   "twopass": {
+    "n_fam": 214,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 214
+   },
+   "greedy": {
+    "n_fam": 215,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 215
+   },
+   "greedy_input": {
+    "n_fam": 214,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.999201,
+    "n_fam_permuted": 215
+   }
+  },
+  {
+   "block_id": "9HMU-EWA3-FVV",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 959,
+   "n_obj": 86,
+   "twopass": {
+    "n_fam": 69,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 69
+   },
+   "greedy": {
+    "n_fam": 69,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 69
+   },
+   "greedy_input": {
+    "n_fam": 68,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.855242,
+    "n_fam_permuted": 69
+   }
+  },
+  {
+   "block_id": "4M67-VM6C-L47",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 2000,
+   "n_obj": 40,
+   "twopass": {
+    "n_fam": 27,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 27
+   },
+   "greedy": {
+    "n_fam": 27,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 27
+   },
+   "greedy_input": {
+    "n_fam": 27,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 27
+   }
+  },
+  {
+   "block_id": "6PNJ-DDFU-KXC",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 201,
+   "n_obj": 25,
+   "twopass": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy_input": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   }
+  },
+  {
+   "block_id": "4XAP-3L7F-UKH",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 55320,
+   "n_obj": 1799,
+   "twopass": {
+    "n_fam": 556,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 556
+   },
+   "greedy": {
+    "n_fam": 558,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 558
+   },
+   "greedy_input": {
+    "n_fam": 557,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.999715,
+    "n_fam_permuted": 558
+   }
+  },
+  {
+   "block_id": "77UG-YGE3-6RH",
+   "discipline": "OV",
+   "cls": "stamp",
+   "n_seg": 40358,
+   "n_obj": 924,
+   "twopass": {
+    "n_fam": 219,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 219
+   },
+   "greedy": {
+    "n_fam": 220,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 220
+   },
+   "greedy_input": {
+    "n_fam": 219,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.999341,
+    "n_fam_permuted": 219
+   }
+  },
+  {
+   "block_id": "blk_f509612202904a39a659843b6c8f87b9",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 4178,
+   "n_obj": 153,
+   "twopass": {
+    "n_fam": 129,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 129
+   },
+   "greedy": {
+    "n_fam": 129,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 129
+   },
+   "greedy_input": {
+    "n_fam": 129,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 129
+   }
+  },
+  {
+   "block_id": "blk_ae7486551c914e00b1b88fbbc4b569d0",
+   "discipline": "OV",
+   "cls": "stamp",
+   "n_seg": 1291,
+   "n_obj": 31,
+   "twopass": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   },
+   "greedy": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   },
+   "greedy_input": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   }
+  },
+  {
+   "block_id": "blk_23b7088792294ac7b2048d025d58c3e1",
+   "discipline": "OV",
+   "cls": "vector_raster_mix",
+   "n_seg": 1181,
+   "n_obj": 189,
+   "twopass": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   },
+   "greedy": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   },
+   "greedy_input": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   }
+  },
+  {
+   "block_id": "blk_38ae1aeffe9a42e485545c202b0ca627",
+   "discipline": "OV",
+   "cls": "legend_notes",
+   "n_seg": 73,
+   "n_obj": 5,
+   "twopass": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy_input": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   }
+  },
+  {
+   "block_id": "blk_fc686f67d4bb4747a9d4b5f7477d022d",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 22109,
+   "n_obj": 1741,
+   "twopass": {
+    "n_fam": 572,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 572
+   },
+   "greedy": {
+    "n_fam": 579,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 579
+   },
+   "greedy_input": {
+    "n_fam": 577,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.964045,
+    "n_fam_permuted": 575
+   }
+  },
+  {
+   "block_id": "blk_010c2b7d7b754eedaec81e3810ec0115",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 5473,
+   "n_obj": 163,
+   "twopass": {
+    "n_fam": 109,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 109
+   },
+   "greedy": {
+    "n_fam": 111,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 111
+   },
+   "greedy_input": {
+    "n_fam": 110,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.923041,
+    "n_fam_permuted": 111
+   }
+  },
+  {
+   "block_id": "6TQ4-DCQW-PUM",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 1227,
+   "n_obj": 241,
+   "twopass": {
+    "n_fam": 117,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 117
+   },
+   "greedy": {
+    "n_fam": 118,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 118
+   },
+   "greedy_input": {
+    "n_fam": 118,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.997202,
+    "n_fam_permuted": 118
+   }
+  },
+  {
+   "block_id": "7DYA-U9V7-J4A",
+   "discipline": "AR",
+   "cls": "table",
+   "n_seg": 506,
+   "n_obj": 160,
+   "twopass": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy_input": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   }
+  },
+  {
+   "block_id": "7G77-QJ6Y-X3Q",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 94,
+   "n_obj": 11,
+   "twopass": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   },
+   "greedy": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   },
+   "greedy_input": {
+    "n_fam": 11,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 11
+   }
+  },
+  {
+   "block_id": "blk_76cc470192774adcb495f77958dbeba5",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 27,
+   "n_obj": 24,
+   "twopass": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   },
+   "greedy": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   },
+   "greedy_input": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   }
+  },
+  {
+   "block_id": "blk_fde52a21aa754fb7b675b9809312fc54",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 345,
+   "n_obj": 153,
+   "twopass": {
+    "n_fam": 78,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 78
+   },
+   "greedy": {
+    "n_fam": 78,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 78
+   },
+   "greedy_input": {
+    "n_fam": 79,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.994626,
+    "n_fam_permuted": 79
+   }
+  },
+  {
+   "block_id": "blk_15c2bebea33e4856bcf9659c9df4a7ee",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 7549,
+   "n_obj": 236,
+   "twopass": {
+    "n_fam": 142,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 142
+   },
+   "greedy": {
+    "n_fam": 142,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 142
+   },
+   "greedy_input": {
+    "n_fam": 142,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.984947,
+    "n_fam_permuted": 142
+   }
+  },
+  {
+   "block_id": "blk_a4a3ff36fe9b471ba802b57c55c36776",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 33913,
+   "n_obj": 110,
+   "twopass": {
+    "n_fam": 87,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 87
+   },
+   "greedy": {
+    "n_fam": 87,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 87
+   },
+   "greedy_input": {
+    "n_fam": 87,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 87
+   }
+  },
+  {
+   "block_id": "blk_7ce8e6b09aab4e2b9af1b2c23bfdefde",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 6100,
+   "n_obj": 122,
+   "twopass": {
+    "n_fam": 91,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 91
+   },
+   "greedy": {
+    "n_fam": 91,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 91
+   },
+   "greedy_input": {
+    "n_fam": 90,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 90
+   }
+  },
+  {
+   "block_id": "blk_9deea62d8729406ba862660702617d19",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 1226,
+   "n_obj": 42,
+   "twopass": {
+    "n_fam": 20,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 20
+   },
+   "greedy": {
+    "n_fam": 21,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 21
+   },
+   "greedy_input": {
+    "n_fam": 21,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.907063,
+    "n_fam_permuted": 21
+   }
+  },
+  {
+   "block_id": "blk_629d36b5df9b4722bae8f3d4330bf147",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 2220,
+   "n_obj": 277,
+   "twopass": {
+    "n_fam": 91,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 91
+   },
+   "greedy": {
+    "n_fam": 92,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 92
+   },
+   "greedy_input": {
+    "n_fam": 92,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.998906,
+    "n_fam_permuted": 91
+   }
+  },
+  {
+   "block_id": "blk_d5732e53e774483b907434246f8a9a55",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 360,
+   "n_obj": 72,
+   "twopass": {
+    "n_fam": 44,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 44
+   },
+   "greedy": {
+    "n_fam": 44,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 44
+   },
+   "greedy_input": {
+    "n_fam": 44,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.933593,
+    "n_fam_permuted": 43
+   }
+  },
+  {
+   "block_id": "blk_48a6f7785578461c90388fdb50bd0676",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 209,
+   "n_obj": 57,
+   "twopass": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy_input": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   }
+  },
+  {
+   "block_id": "4WAT-ULFM-96Q",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 23,
+   "n_obj": 12,
+   "twopass": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy_input": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   }
+  },
+  {
+   "block_id": "A7VL-W7KW-6Y7",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 8108,
+   "n_obj": 962,
+   "twopass": {
+    "n_fam": 434,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 434
+   },
+   "greedy": {
+    "n_fam": 440,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 440
+   },
+   "greedy_input": {
+    "n_fam": 436,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.995709,
+    "n_fam_permuted": 438
+   }
+  },
+  {
+   "block_id": "49XX-FC44-QW4",
+   "discipline": "GP",
+   "cls": "stamp",
+   "n_seg": 40303,
+   "n_obj": 105,
+   "twopass": {
+    "n_fam": 80,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 80
+   },
+   "greedy": {
+    "n_fam": 80,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 80
+   },
+   "greedy_input": {
+    "n_fam": 80,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 80
+   }
+  },
+  {
+   "block_id": "43CL-VVJR-QPF",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 1357,
+   "n_obj": 177,
+   "twopass": {
+    "n_fam": 97,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 97
+   },
+   "greedy": {
+    "n_fam": 99,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 99
+   },
+   "greedy_input": {
+    "n_fam": 99,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.960707,
+    "n_fam_permuted": 98
+   }
+  },
+  {
+   "block_id": "blk_7bb4fad7511c467894373f9d1b26c3d5",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 26787,
+   "n_obj": 809,
+   "twopass": {
+    "n_fam": 356,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 356
+   },
+   "greedy": {
+    "n_fam": 362,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 362
+   },
+   "greedy_input": {
+    "n_fam": 360,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.987527,
+    "n_fam_permuted": 359
+   }
+  },
+  {
+   "block_id": "blk_25038f83c3c140f383c5959c1f9cedfc",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 25488,
+   "n_obj": 1267,
+   "twopass": {
+    "n_fam": 336,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 336
+   },
+   "greedy": {
+    "n_fam": 337,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 337
+   },
+   "greedy_input": {
+    "n_fam": 334,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.858909,
+    "n_fam_permuted": 336
+   }
+  },
+  {
+   "block_id": "blk_2d0c258f773043e8b7f6481feec6fc4b",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 1724,
+   "n_obj": 33,
+   "twopass": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   },
+   "greedy": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   },
+   "greedy_input": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   }
+  },
+  {
+   "block_id": "blk_84655520f60a412094b8f4535d995093",
+   "discipline": "ITP",
+   "cls": "vector_raster_mix",
+   "n_seg": 1341,
+   "n_obj": 40,
+   "twopass": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy_input": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.98557,
+    "n_fam_permuted": 12
+   }
+  },
+  {
+   "block_id": "blk_e4d353bc34de420282798c062f84babc",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 261,
+   "n_obj": 10,
+   "twopass": {
+    "n_fam": 6,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 6
+   },
+   "greedy": {
+    "n_fam": 6,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 6
+   },
+   "greedy_input": {
+    "n_fam": 6,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 6
+   }
+  },
+  {
+   "block_id": "9KVY-JMHY-WRK",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 6684,
+   "n_obj": 1333,
+   "twopass": {
+    "n_fam": 557,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 557
+   },
+   "greedy": {
+    "n_fam": 564,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 564
+   },
+   "greedy_input": {
+    "n_fam": 560,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.992701,
+    "n_fam_permuted": 561
+   }
+  },
+  {
+   "block_id": "AD4H-APGD-H7H",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg": 2702,
+   "n_obj": 35,
+   "twopass": {
+    "n_fam": 21,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 21
+   },
+   "greedy": {
+    "n_fam": 21,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 21
+   },
+   "greedy_input": {
+    "n_fam": 21,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 21
+   }
+  },
+  {
+   "block_id": "blk_af10554836174a48b2a4b7e3441e40ea",
+   "discipline": "KJ",
+   "cls": "vector_raster_mix",
+   "n_seg": 1655,
+   "n_obj": 157,
+   "twopass": {
+    "n_fam": 95,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 95
+   },
+   "greedy": {
+    "n_fam": 95,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 95
+   },
+   "greedy_input": {
+    "n_fam": 95,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 95
+   }
+  },
+  {
+   "block_id": "794X-LEHV-FAD",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 494,
+   "n_obj": 27,
+   "twopass": {
+    "n_fam": 26,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 26
+   },
+   "greedy": {
+    "n_fam": 26,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 26
+   },
+   "greedy_input": {
+    "n_fam": 26,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 26
+   }
+  },
+  {
+   "block_id": "blk_a5f5d979bba34d029b25e1ac7d0b5f70",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg": 223,
+   "n_obj": 18,
+   "twopass": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   },
+   "greedy": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   },
+   "greedy_input": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   }
+  },
+  {
+   "block_id": "6KJ9-EHKV-DYU",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 5323,
+   "n_obj": 29,
+   "twopass": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   },
+   "greedy": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   },
+   "greedy_input": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   }
+  },
+  {
+   "block_id": "PVGW-ALT6-FXV",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 1367,
+   "n_obj": 157,
+   "twopass": {
+    "n_fam": 108,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 108
+   },
+   "greedy": {
+    "n_fam": 109,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 109
+   },
+   "greedy_input": {
+    "n_fam": 109,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.902611,
+    "n_fam_permuted": 109
+   }
+  },
+  {
+   "block_id": "NQK6-4MMJ-LDU",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 335,
+   "n_obj": 64,
+   "twopass": {
+    "n_fam": 31,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 31
+   },
+   "greedy": {
+    "n_fam": 31,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 31
+   },
+   "greedy_input": {
+    "n_fam": 31,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 31
+   }
+  },
+  {
+   "block_id": "7P9X-A7CV-C63",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 207,
+   "n_obj": 27,
+   "twopass": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy_input": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   }
+  },
+  {
+   "block_id": "7WHK-V9XQ-LGL",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 13633,
+   "n_obj": 824,
+   "twopass": {
+    "n_fam": 392,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 392
+   },
+   "greedy": {
+    "n_fam": 399,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 399
+   },
+   "greedy_input": {
+    "n_fam": 395,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.986215,
+    "n_fam_permuted": 397
+   }
+  },
+  {
+   "block_id": "7NJU-AWMT-HDF",
+   "discipline": "OV",
+   "cls": "stamp",
+   "n_seg": 41853,
+   "n_obj": 954,
+   "twopass": {
+    "n_fam": 214,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 214
+   },
+   "greedy": {
+    "n_fam": 214,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 214
+   },
+   "greedy_input": {
+    "n_fam": 213,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.998997,
+    "n_fam_permuted": 214
+   }
+  },
+  {
+   "block_id": "4UXN-R3AK-UKH",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 1117,
+   "n_obj": 91,
+   "twopass": {
+    "n_fam": 50,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 50
+   },
+   "greedy": {
+    "n_fam": 51,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 51
+   },
+   "greedy_input": {
+    "n_fam": 51,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 51
+   }
+  },
+  {
+   "block_id": "blk_eeb669a5928f4c7ca97ad7b1c212988e",
+   "discipline": "OV",
+   "cls": "table",
+   "n_seg": 1096,
+   "n_obj": 142,
+   "twopass": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   },
+   "greedy": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   },
+   "greedy_input": {
+    "n_fam": 18,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 18
+   }
+  },
+  {
+   "block_id": "blk_192442361ada46c182f2d08378901ec1",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 399,
+   "n_obj": 76,
+   "twopass": {
+    "n_fam": 63,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 63
+   },
+   "greedy": {
+    "n_fam": 64,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 64
+   },
+   "greedy_input": {
+    "n_fam": 64,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.874297,
+    "n_fam_permuted": 64
+   }
+  },
+  {
+   "block_id": "blk_ad676ce1c77a46bcb02fdd7070b7d367",
+   "discipline": "OV",
+   "cls": "legend_notes",
+   "n_seg": 53,
+   "n_obj": 38,
+   "twopass": {
+    "n_fam": 9,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 9
+   },
+   "greedy": {
+    "n_fam": 9,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 9
+   },
+   "greedy_input": {
+    "n_fam": 9,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 9
+   }
+  },
+  {
+   "block_id": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 15504,
+   "n_obj": 363,
+   "twopass": {
+    "n_fam": 229,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 229
+   },
+   "greedy": {
+    "n_fam": 234,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 234
+   },
+   "greedy_input": {
+    "n_fam": 233,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.901888,
+    "n_fam_permuted": 231
+   }
+  },
+  {
+   "block_id": "9KUG-M73M-7LX",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 5109,
+   "n_obj": 175,
+   "twopass": {
+    "n_fam": 32,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 32
+   },
+   "greedy": {
+    "n_fam": 32,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 32
+   },
+   "greedy_input": {
+    "n_fam": 32,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 32
+   }
+  },
+  {
+   "block_id": "97PF-LCQC-YHK",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 2686,
+   "n_obj": 42,
+   "twopass": {
+    "n_fam": 24,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 24
+   },
+   "greedy": {
+    "n_fam": 24,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 24
+   },
+   "greedy_input": {
+    "n_fam": 24,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 24
+   }
+  },
+  {
+   "block_id": "TLE3-9YGQ-U9L",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 2257,
+   "n_obj": 32,
+   "twopass": {
+    "n_fam": 20,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 20
+   },
+   "greedy": {
+    "n_fam": 20,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 20
+   },
+   "greedy_input": {
+    "n_fam": 20,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 20
+   }
+  },
+  {
+   "block_id": "7PJD-33QQ-W44",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 250,
+   "n_obj": 31,
+   "twopass": {
+    "n_fam": 28,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 28
+   },
+   "greedy": {
+    "n_fam": 28,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 28
+   },
+   "greedy_input": {
+    "n_fam": 28,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 28
+   }
+  },
+  {
+   "block_id": "9XPP-6KUQ-J6X",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 307,
+   "n_obj": 8,
+   "twopass": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   },
+   "greedy": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   },
+   "greedy_input": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   }
+  },
+  {
+   "block_id": "7YKX-6FY6-YYW",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 248,
+   "n_obj": 42,
+   "twopass": {
+    "n_fam": 33,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 33
+   },
+   "greedy": {
+    "n_fam": 33,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 33
+   },
+   "greedy_input": {
+    "n_fam": 33,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 33
+   }
+  },
+  {
+   "block_id": "FT93-N344-YXL",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 11009,
+   "n_obj": 214,
+   "twopass": {
+    "n_fam": 127,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 127
+   },
+   "greedy": {
+    "n_fam": 128,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 128
+   },
+   "greedy_input": {
+    "n_fam": 128,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.989344,
+    "n_fam_permuted": 127
+   }
+  },
+  {
+   "block_id": "7RUW-YAX6-QY4",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 5723,
+   "n_obj": 205,
+   "twopass": {
+    "n_fam": 65,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 65
+   },
+   "greedy": {
+    "n_fam": 65,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 65
+   },
+   "greedy_input": {
+    "n_fam": 65,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 65
+   }
+  },
+  {
+   "block_id": "blk_e026206a3e7c410a93ba3a4e7f5bd6ec",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 3817,
+   "n_obj": 89,
+   "twopass": {
+    "n_fam": 61,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 61
+   },
+   "greedy": {
+    "n_fam": 61,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 61
+   },
+   "greedy_input": {
+    "n_fam": 61,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 61
+   }
+  },
+  {
+   "block_id": "TGM7-X43L-FMM",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 850,
+   "n_obj": 26,
+   "twopass": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy_input": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   }
+  },
+  {
+   "block_id": "blk_251da81bb0c04497ac671b8c226f5d36",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 2498,
+   "n_obj": 173,
+   "twopass": {
+    "n_fam": 80,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 80
+   },
+   "greedy": {
+    "n_fam": 81,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 81
+   },
+   "greedy_input": {
+    "n_fam": 81,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.996847,
+    "n_fam_permuted": 80
+   }
+  },
+  {
+   "block_id": "6LGR-WDH7-H3C",
+   "discipline": "EOM",
+   "cls": "legend_notes",
+   "n_seg": 26,
+   "n_obj": 14,
+   "twopass": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy_input": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   }
+  },
+  {
+   "block_id": "blk_1333a71c9b6441c0880d48c26a7203eb",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 259,
+   "n_obj": 132,
+   "twopass": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy_input": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   }
+  },
+  {
+   "block_id": "A3QG-4DHP-P7P",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 10806,
+   "n_obj": 116,
+   "twopass": {
+    "n_fam": 81,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 81
+   },
+   "greedy": {
+    "n_fam": 81,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 81
+   },
+   "greedy_input": {
+    "n_fam": 81,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 81
+   }
+  },
+  {
+   "block_id": "9XCV-RJ3P-3RM",
+   "discipline": "GP",
+   "cls": "vector_raster_mix",
+   "n_seg": 32390,
+   "n_obj": 478,
+   "twopass": {
+    "n_fam": 322,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 322
+   },
+   "greedy": {
+    "n_fam": 326,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 326
+   },
+   "greedy_input": {
+    "n_fam": 323,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.94682,
+    "n_fam_permuted": 325
+   }
+  },
+  {
+   "block_id": "43CL-VVJR-QPF",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 1357,
+   "n_obj": 177,
+   "twopass": {
+    "n_fam": 97,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 97
+   },
+   "greedy": {
+    "n_fam": 99,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 99
+   },
+   "greedy_input": {
+    "n_fam": 99,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.960707,
+    "n_fam_permuted": 98
+   }
+  },
+  {
+   "block_id": "blk_0377a70c494242e6b17ea05289a2e4aa",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 32553,
+   "n_obj": 639,
+   "twopass": {
+    "n_fam": 245,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 245
+   },
+   "greedy": {
+    "n_fam": 245,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 245
+   },
+   "greedy_input": {
+    "n_fam": 246,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.990528,
+    "n_fam_permuted": 246
+   }
+  },
+  {
+   "block_id": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 1250,
+   "n_obj": 163,
+   "twopass": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   },
+   "greedy": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   },
+   "greedy_input": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   }
+  },
+  {
+   "block_id": "blk_4a55caa733ed4d649409b40598a37ccc",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 4986,
+   "n_obj": 26,
+   "twopass": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy_input": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   }
+  },
+  {
+   "block_id": "blk_25757de0ca0445ea9234217679795df3",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 231,
+   "n_obj": 43,
+   "twopass": {
+    "n_fam": 32,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 32
+   },
+   "greedy": {
+    "n_fam": 32,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 32
+   },
+   "greedy_input": {
+    "n_fam": 32,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 32
+   }
+  },
+  {
+   "block_id": "blk_e4d419b684024474b2ca190c4821e390",
+   "discipline": "ITP",
+   "cls": "table",
+   "n_seg": 295,
+   "n_obj": 61,
+   "twopass": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   },
+   "greedy": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   },
+   "greedy_input": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   }
+  },
+  {
+   "block_id": "blk_f3d7c94dc2674824aabd7f52598636b9",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 50896,
+   "n_obj": 89,
+   "twopass": {
+    "n_fam": 66,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 66
+   },
+   "greedy": {
+    "n_fam": 66,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 66
+   },
+   "greedy_input": {
+    "n_fam": 66,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 66
+   }
+  },
+  {
+   "block_id": "blk_b8275c8ec6734d5fb630364c81b55eea",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 3971,
+   "n_obj": 323,
+   "twopass": {
+    "n_fam": 176,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 176
+   },
+   "greedy": {
+    "n_fam": 177,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 177
+   },
+   "greedy_input": {
+    "n_fam": 175,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.996733,
+    "n_fam_permuted": 176
+   }
+  },
+  {
+   "block_id": "blk_c1bac2a327b241ac87e14c4607f54387",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg": 1426,
+   "n_obj": 34,
+   "twopass": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy_input": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   }
+  },
+  {
+   "block_id": "blk_ec585c570aba481aa36f374faf13005d",
+   "discipline": "KJ",
+   "cls": "vector_raster_mix",
+   "n_seg": 1936,
+   "n_obj": 106,
+   "twopass": {
+    "n_fam": 73,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 73
+   },
+   "greedy": {
+    "n_fam": 73,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 73
+   },
+   "greedy_input": {
+    "n_fam": 73,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 73
+   }
+  },
+  {
+   "block_id": "9Y9F-MPRX-KC9",
+   "discipline": "KJ",
+   "cls": "legend_notes",
+   "n_seg": 28,
+   "n_obj": 6,
+   "twopass": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy_input": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   }
+  },
+  {
+   "block_id": "blk_3b8259c97c6f4560938bb30062332abb",
+   "discipline": "KJ",
+   "cls": "table",
+   "n_seg": 27,
+   "n_obj": 5,
+   "twopass": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy_input": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   }
+  },
+  {
+   "block_id": "blk_64bd6ac9504b43138e250d559c6eeff3",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 58621,
+   "n_obj": 4600,
+   "twopass": {
+    "n_fam": 878,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 878
+   },
+   "greedy": {
+    "n_fam": 902,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 902
+   },
+   "greedy_input": {
+    "n_fam": 895,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.992944,
+    "n_fam_permuted": 891
+   }
+  },
+  {
+   "block_id": "49RP-M9LN-JMF",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 20379,
+   "n_obj": 74,
+   "twopass": {
+    "n_fam": 45,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 45
+   },
+   "greedy": {
+    "n_fam": 45,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 45
+   },
+   "greedy_input": {
+    "n_fam": 45,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 45
+   }
+  },
+  {
+   "block_id": "9M6H-X63U-4V6",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 3365,
+   "n_obj": 348,
+   "twopass": {
+    "n_fam": 128,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 128
+   },
+   "greedy": {
+    "n_fam": 129,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 129
+   },
+   "greedy_input": {
+    "n_fam": 128,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 128
+   }
+  },
+  {
+   "block_id": "669G-L37Y-E47",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 317,
+   "n_obj": 38,
+   "twopass": {
+    "n_fam": 31,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 31
+   },
+   "greedy": {
+    "n_fam": 31,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 31
+   },
+   "greedy_input": {
+    "n_fam": 31,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 31
+   }
+  },
+  {
+   "block_id": "blk_e935194cde32407684b99d4639787ea6",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 34462,
+   "n_obj": 1661,
+   "twopass": {
+    "n_fam": 628,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 628
+   },
+   "greedy": {
+    "n_fam": 638,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 638
+   },
+   "greedy_input": {
+    "n_fam": 634,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.991028,
+    "n_fam_permuted": 633
+   }
+  },
+  {
+   "block_id": "733U-TVLN-QFD",
+   "discipline": "OV",
+   "cls": "vector_raster_mix",
+   "n_seg": 20227,
+   "n_obj": 136,
+   "twopass": {
+    "n_fam": 109,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 109
+   },
+   "greedy": {
+    "n_fam": 109,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 109
+   },
+   "greedy_input": {
+    "n_fam": 110,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 110
+   }
+  },
+  {
+   "block_id": "blk_7c110f138cf540088776acd3474919f7",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 2636,
+   "n_obj": 85,
+   "twopass": {
+    "n_fam": 77,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 77
+   },
+   "greedy": {
+    "n_fam": 77,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 77
+   },
+   "greedy_input": {
+    "n_fam": 77,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 77
+   }
+  },
+  {
+   "block_id": "blk_a3f6aeb5f8974441bc086424531393ce",
+   "discipline": "OV",
+   "cls": "table",
+   "n_seg": 1134,
+   "n_obj": 121,
+   "twopass": {
+    "n_fam": 28,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 28
+   },
+   "greedy": {
+    "n_fam": 28,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 28
+   },
+   "greedy_input": {
+    "n_fam": 28,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 28
+   }
+  },
+  {
+   "block_id": "blk_037474ccfd83428bbb7a14430aac6b7f",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 54,
+   "n_obj": 39,
+   "twopass": {
+    "n_fam": 9,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 9
+   },
+   "greedy": {
+    "n_fam": 9,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 9
+   },
+   "greedy_input": {
+    "n_fam": 9,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 9
+   }
+  },
+  {
+   "block_id": "blk_baef0978158140a6bc34122a65b143b4",
+   "discipline": "OV",
+   "cls": "stamp",
+   "n_seg": 28,
+   "n_obj": 23,
+   "twopass": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   },
+   "greedy_input": {
+    "n_fam": 12,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 12
+   }
+  },
+  {
+   "block_id": "4LHJ-3CTA-PVX",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 42841,
+   "n_obj": 997,
+   "twopass": {
+    "n_fam": 244,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 244
+   },
+   "greedy": {
+    "n_fam": 244,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 244
+   },
+   "greedy_input": {
+    "n_fam": 243,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.999511,
+    "n_fam_permuted": 244
+   }
+  },
+  {
+   "block_id": "6WNV-DWDA-4CQ",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 1034,
+   "n_obj": 75,
+   "twopass": {
+    "n_fam": 60,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 60
+   },
+   "greedy": {
+    "n_fam": 60,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 60
+   },
+   "greedy_input": {
+    "n_fam": 60,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 60
+   }
+  },
+  {
+   "block_id": "7WT4-9343-3GC",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 1723,
+   "n_obj": 32,
+   "twopass": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy_input": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   }
+  },
+  {
+   "block_id": "9Q9X-K9MU-YLT",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 2216,
+   "n_obj": 177,
+   "twopass": {
+    "n_fam": 101,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 101
+   },
+   "greedy": {
+    "n_fam": 101,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 101
+   },
+   "greedy_input": {
+    "n_fam": 101,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.996556,
+    "n_fam_permuted": 100
+   }
+  },
+  {
+   "block_id": "A9HA-G3YV-9DF",
+   "discipline": "AR",
+   "cls": "legend_notes",
+   "n_seg": 188,
+   "n_obj": 21,
+   "twopass": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy": {
+    "n_fam": 16,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 16
+   },
+   "greedy_input": {
+    "n_fam": 16,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 16
+   }
+  },
+  {
+   "block_id": "blk_43416a9d14e04b7b8027f0278b705182",
+   "discipline": "AR",
+   "cls": "table",
+   "n_seg": 111,
+   "n_obj": 33,
+   "twopass": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   },
+   "greedy": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   },
+   "greedy_input": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   }
+  },
+  {
+   "block_id": "7FP3-FT7J-UCN",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 21909,
+   "n_obj": 303,
+   "twopass": {
+    "n_fam": 93,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 93
+   },
+   "greedy": {
+    "n_fam": 93,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 93
+   },
+   "greedy_input": {
+    "n_fam": 93,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 93
+   }
+  },
+  {
+   "block_id": "9P4U-7WFD-DUM",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 9530,
+   "n_obj": 260,
+   "twopass": {
+    "n_fam": 81,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 81
+   },
+   "greedy": {
+    "n_fam": 82,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 82
+   },
+   "greedy_input": {
+    "n_fam": 81,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.994584,
+    "n_fam_permuted": 82
+   }
+  },
+  {
+   "block_id": "blk_fe29198fce9b450bb70eb46fbcf84f76",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 3085,
+   "n_obj": 610,
+   "twopass": {
+    "n_fam": 189,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 189
+   },
+   "greedy": {
+    "n_fam": 190,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 190
+   },
+   "greedy_input": {
+    "n_fam": 189,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.958494,
+    "n_fam_permuted": 190
+   }
+  },
+  {
+   "block_id": "blk_241bfaeef1d54b4d8bf69337c3903760",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 748,
+   "n_obj": 112,
+   "twopass": {
+    "n_fam": 41,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 41
+   },
+   "greedy": {
+    "n_fam": 41,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 41
+   },
+   "greedy_input": {
+    "n_fam": 41,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 41
+   }
+  },
+  {
+   "block_id": "TVWH-NLRM-GNJ",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 397,
+   "n_obj": 8,
+   "twopass": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   },
+   "greedy": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   },
+   "greedy_input": {
+    "n_fam": 8,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 8
+   }
+  },
+  {
+   "block_id": "blk_2ab07b7510a44c7688a59ee145873f93",
+   "discipline": "EOM",
+   "cls": "legend_notes",
+   "n_seg": 379,
+   "n_obj": 15,
+   "twopass": {
+    "n_fam": 14,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 14
+   },
+   "greedy": {
+    "n_fam": 14,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 14
+   },
+   "greedy_input": {
+    "n_fam": 14,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 14
+   }
+  },
+  {
+   "block_id": "7Q4D-FXR7-CJN",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 21,
+   "n_obj": 5,
+   "twopass": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   },
+   "greedy_input": {
+    "n_fam": 4,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 4
+   }
+  },
+  {
+   "block_id": "blk_b8155b8989aa4985aa861fd909ce587b",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 30347,
+   "n_obj": 312,
+   "twopass": {
+    "n_fam": 187,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 187
+   },
+   "greedy": {
+    "n_fam": 187,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 187
+   },
+   "greedy_input": {
+    "n_fam": 187,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 187
+   }
+  },
+  {
+   "block_id": "7MFK-GCJM-AVT",
+   "discipline": "GP",
+   "cls": "vector_raster_mix",
+   "n_seg": 19811,
+   "n_obj": 910,
+   "twopass": {
+    "n_fam": 580,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 580
+   },
+   "greedy": {
+    "n_fam": 582,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 582
+   },
+   "greedy_input": {
+    "n_fam": 581,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.96049,
+    "n_fam_permuted": 579
+   }
+  },
+  {
+   "block_id": "7DTQ-7FJA-Y6G",
+   "discipline": "GP",
+   "cls": "stamp",
+   "n_seg": 274,
+   "n_obj": 32,
+   "twopass": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   },
+   "greedy": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   },
+   "greedy_input": {
+    "n_fam": 17,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 17
+   }
+  },
+  {
+   "block_id": "blk_76fb87a234a0475d92b37f6745e36e04",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 36437,
+   "n_obj": 691,
+   "twopass": {
+    "n_fam": 341,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 341
+   },
+   "greedy": {
+    "n_fam": 341,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 341
+   },
+   "greedy_input": {
+    "n_fam": 341,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.980068,
+    "n_fam_permuted": 339
+   }
+  },
+  {
+   "block_id": "blk_690adf3da7424d9fa528d1ea3a9d801c",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 1654,
+   "n_obj": 152,
+   "twopass": {
+    "n_fam": 30,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 30
+   },
+   "greedy": {
+    "n_fam": 30,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 30
+   },
+   "greedy_input": {
+    "n_fam": 30,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 30
+   }
+  },
+  {
+   "block_id": "blk_0b6e13a113da435999fa7a077b945321",
+   "discipline": "ITP",
+   "cls": "table",
+   "n_seg": 608,
+   "n_obj": 44,
+   "twopass": {
+    "n_fam": 29,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 29
+   },
+   "greedy": {
+    "n_fam": 29,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 29
+   },
+   "greedy_input": {
+    "n_fam": 29,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 29
+   }
+  },
+  {
+   "block_id": "blk_5020c8fff9094db6a672cd49950c4b3a",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 452,
+   "n_obj": 80,
+   "twopass": {
+    "n_fam": 33,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 33
+   },
+   "greedy": {
+    "n_fam": 33,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 33
+   },
+   "greedy_input": {
+    "n_fam": 33,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 33
+   }
+  },
+  {
+   "block_id": "blk_1e8596d7ce4a4fa39aa466c3cf6a246d",
+   "discipline": "ITP",
+   "cls": "table",
+   "n_seg": 224,
+   "n_obj": 20,
+   "twopass": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   },
+   "greedy_input": {
+    "n_fam": 13,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 13
+   }
+  },
+  {
+   "block_id": "blk_77c2d0171dd8491ca629efed80858d30",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 23897,
+   "n_obj": 1952,
+   "twopass": {
+    "n_fam": 560,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 560
+   },
+   "greedy": {
+    "n_fam": 566,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 566
+   },
+   "greedy_input": {
+    "n_fam": 564,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.999407,
+    "n_fam_permuted": 564
+   }
+  },
+  {
+   "block_id": "blk_19c1eb4374fe4eacb2e25431f89e3148",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 896,
+   "n_obj": 73,
+   "twopass": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   },
+   "greedy": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   },
+   "greedy_input": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   }
+  },
+  {
+   "block_id": "blk_2424c6d144a24a0b88871c4e628077ab",
+   "discipline": "KJ",
+   "cls": "table",
+   "n_seg": 1125,
+   "n_obj": 284,
+   "twopass": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   },
+   "greedy_input": {
+    "n_fam": 19,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 19
+   }
+  },
+  {
+   "block_id": "6GNF-QWEX-CVE",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 121,
+   "n_obj": 58,
+   "twopass": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy_input": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.555127,
+    "n_fam_permuted": 15
+   }
+  },
+  {
+   "block_id": "9MHD-EMUE-HNX",
+   "discipline": "KJ",
+   "cls": "legend_notes",
+   "n_seg": 39,
+   "n_obj": 8,
+   "twopass": {
+    "n_fam": 7,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 7
+   },
+   "greedy": {
+    "n_fam": 7,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 7
+   },
+   "greedy_input": {
+    "n_fam": 7,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 7
+   }
+  },
+  {
+   "block_id": "blk_3b8f2c88b37d472095a22a205baa4b2d",
+   "discipline": "KJ",
+   "cls": "table",
+   "n_seg": 135,
+   "n_obj": 22,
+   "twopass": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy_input": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   }
+  },
+  {
+   "block_id": "9QAA-FAAH-GDU",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 27522,
+   "n_obj": 428,
+   "twopass": {
+    "n_fam": 187,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 187
+   },
+   "greedy": {
+    "n_fam": 189,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 189
+   },
+   "greedy_input": {
+    "n_fam": 188,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.993097,
+    "n_fam_permuted": 187
+   }
+  },
+  {
+   "block_id": "7YMA-E7V4-9E3",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 22657,
+   "n_obj": 90,
+   "twopass": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   },
+   "greedy": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   },
+   "greedy_input": {
+    "n_fam": 57,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 57
+   }
+  },
+  {
+   "block_id": "9R9P-HVPN-CVQ",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 620,
+   "n_obj": 33,
+   "twopass": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   },
+   "greedy": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   },
+   "greedy_input": {
+    "n_fam": 22,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 22
+   }
+  },
+  {
+   "block_id": "6U3V-A4YD-ALE",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 217,
+   "n_obj": 12,
+   "twopass": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   },
+   "greedy": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   },
+   "greedy_input": {
+    "n_fam": 10,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 10
+   }
+  },
+  {
+   "block_id": "7VDR-DU6J-M7K",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 29164,
+   "n_obj": 267,
+   "twopass": {
+    "n_fam": 165,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 165
+   },
+   "greedy": {
+    "n_fam": 165,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 165
+   },
+   "greedy_input": {
+    "n_fam": 165,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.987692,
+    "n_fam_permuted": 165
+   }
+  },
+  {
+   "block_id": "A4K3-FXX7-4KW",
+   "discipline": "OV",
+   "cls": "vector_raster_mix",
+   "n_seg": 20064,
+   "n_obj": 136,
+   "twopass": {
+    "n_fam": 112,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 112
+   },
+   "greedy": {
+    "n_fam": 112,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 112
+   },
+   "greedy_input": {
+    "n_fam": 112,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 112
+   }
+  },
+  {
+   "block_id": "blk_056405fb9e344c5d939a36d4be7792aa",
+   "discipline": "OV",
+   "cls": "stamp",
+   "n_seg": 1245,
+   "n_obj": 26,
+   "twopass": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   },
+   "greedy_input": {
+    "n_fam": 15,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 15
+   }
+  },
+  {
+   "block_id": "blk_4a8a36198cfa401dabe42195e4f9bd3f",
+   "discipline": "OV",
+   "cls": "vector_raster_mix",
+   "n_seg": 1181,
+   "n_obj": 189,
+   "twopass": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   },
+   "greedy": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   },
+   "greedy_input": {
+    "n_fam": 46,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 46
+   }
+  },
+  {
+   "block_id": "blk_40b62e9a14a848a3a508be58ef4c5ba7",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 144,
+   "n_obj": 20,
+   "twopass": {
+    "n_fam": 6,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 6
+   },
+   "greedy": {
+    "n_fam": 6,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 6
+   },
+   "greedy_input": {
+    "n_fam": 6,
+    "repeat_identical": true,
+    "permuted_identical": false,
+    "ari_permuted": 0.877419,
+    "n_fam_permuted": 5
+   }
+  },
+  {
+   "block_id": "blk_704d88d3cc1b42b6828539db1169bbc4",
+   "discipline": "OV",
+   "cls": "stamp",
+   "n_seg": 294,
+   "n_obj": 6,
+   "twopass": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   },
+   "greedy_input": {
+    "n_fam": 5,
+    "repeat_identical": true,
+    "permuted_identical": true,
+    "ari_permuted": 1.0,
+    "n_fam_permuted": 5
+   }
+  }
+ ]
+}

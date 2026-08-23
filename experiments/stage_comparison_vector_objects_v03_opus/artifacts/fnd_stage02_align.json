@@ -1,0 +1,219 @@
+{
+ "summary": {
+  "n": 9,
+  "median_ink_iou_raw": 0.6426855251824652,
+  "median_ink_iou_best_shift": 0.7033241807493796,
+  "median_ink_iou_dilated": 0.8371898880493183,
+  "n_dilated_ge_090": 2,
+  "n_dilated_lt_050": 1
+ },
+ "rows": [
+  {
+   "block_id": "blk_35251a95b0d1483e97328a42fc1ae3b4",
+   "rotation": 0,
+   "discipline": "AR",
+   "size_stored": [
+    814,
+    2128
+   ],
+   "size_mine_native": [
+    815,
+    2128
+   ],
+   "ink_iou_raw": 0.5789708467816002,
+   "ink_iou_best_shift": 0.7033241807493796,
+   "best_shift": [
+    0,
+    -1
+   ],
+   "ink_iou_dilated": 0.8466006395132992,
+   "ink_share_stored": 0.04719800114536957,
+   "ink_share_mine": 0.05701677412203728,
+   "png": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР2-7-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_35251a95b0d1483e97328a42fc1ae3b4.png"
+  },
+  {
+   "block_id": "blk_2a9e6b7f1dba46a8b0ba695453b3639d",
+   "rotation": 0,
+   "discipline": "VK",
+   "size_stored": [
+    575,
+    800
+   ],
+   "size_mine_native": [
+    575,
+    801
+   ],
+   "ink_iou_raw": 0.8856674775356204,
+   "ink_iou_best_shift": 0.8856674775356204,
+   "best_shift": [
+    0,
+    0
+   ],
+   "ink_iou_dilated": 0.9128153450552505,
+   "ink_share_stored": 0.03943478260869565,
+   "ink_share_mine": 0.04313695652173913,
+   "png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_2a9e6b7f1dba46a8b0ba695453b3639d.png"
+  },
+  {
+   "block_id": "blk_fc3814593b6e4b28a983cf25ece4a553",
+   "rotation": 0,
+   "discipline": "OV",
+   "size_stored": [
+    817,
+    650
+   ],
+   "size_mine_native": [
+    817,
+    651
+   ],
+   "ink_iou_raw": 0.7165653260903114,
+   "ink_iou_best_shift": 0.7783213429256595,
+   "best_shift": [
+    0,
+    -1
+   ],
+   "ink_iou_dilated": 0.8371898880493183,
+   "ink_share_stored": 0.04948874870539497,
+   "ink_share_mine": 0.05524150268336315,
+   "png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00260568-ОВ1-1.2-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_fc3814593b6e4b28a983cf25ece4a553.png"
+  },
+  {
+   "block_id": "blk_37ca5b84a2924456b787a00e8fe951db",
+   "rotation": 0,
+   "discipline": "VK",
+   "size_stored": [
+    800,
+    430
+   ],
+   "size_mine_native": [
+    801,
+    431
+   ],
+   "ink_iou_raw": 0.6426855251824652,
+   "ink_iou_best_shift": 0.647764994770588,
+   "best_shift": [
+    -1,
+    0
+   ],
+   "ink_iou_dilated": 0.8044912923923007,
+   "ink_share_stored": 0.10434883720930233,
+   "ink_share_mine": 0.10632558139534884,
+   "png": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-6-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_37ca5b84a2924456b787a00e8fe951db.png"
+  },
+  {
+   "block_id": "7VRL-37WN-VPF",
+   "rotation": 0,
+   "discipline": "SS",
+   "size_stored": [
+    646,
+    800
+   ],
+   "size_mine_native": [
+    645,
+    801
+   ],
+   "ink_iou_raw": 0.4163761225567882,
+   "ink_iou_best_shift": 0.42536343801328724,
+   "best_shift": [
+    0,
+    -1
+   ],
+   "ink_iou_dilated": 0.7066584282225556,
+   "ink_share_stored": 0.14657120743034055,
+   "ink_share_mine": 0.19094040247678018,
+   "png": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_7VRL-37WN-VPF.png"
+  },
+  {
+   "block_id": "blk_097b59dcf7ab4760beef7db1a82606d7",
+   "rotation": 90,
+   "discipline": "AR",
+   "size_stored": [
+    1351,
+    2280
+   ],
+   "size_mine_native": [
+    1351,
+    2281
+   ],
+   "ink_iou_raw": 0.8348917063892646,
+   "ink_iou_best_shift": 0.8349189892856168,
+   "best_shift": [
+    0,
+    0
+   ],
+   "ink_iou_dilated": 0.9235652085349086,
+   "ink_share_stored": 0.07946939888581557,
+   "ink_share_mine": 0.07336962873505005,
+   "png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_097b59dcf7ab4760beef7db1a82606d7.png"
+  },
+  {
+   "block_id": "blk_18bda713d99d499a9de2636866006a16",
+   "rotation": 90,
+   "discipline": "AR",
+   "size_stored": [
+    1365,
+    2318
+   ],
+   "size_mine_native": [
+    1365,
+    2318
+   ],
+   "ink_iou_raw": 0.7487655120884695,
+   "ink_iou_best_shift": 0.7487655120884695,
+   "best_shift": [
+    0,
+    0
+   ],
+   "ink_iou_dilated": 0.888491289645871,
+   "ink_share_stored": 0.11451674583684937,
+   "ink_share_mine": 0.0859462654113215,
+   "png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_18bda713d99d499a9de2636866006a16.png"
+  },
+  {
+   "block_id": "6DAV-94TV-A7W",
+   "rotation": 270,
+   "discipline": "SS",
+   "size_stored": [
+    1112,
+    1957
+   ],
+   "size_mine_native": [
+    1107,
+    1952
+   ],
+   "ink_iou_raw": 0.10426790072679179,
+   "ink_iou_best_shift": 0.10967103391109627,
+   "best_shift": [
+    1,
+    -1
+   ],
+   "ink_iou_dilated": 0.17856400496268246,
+   "ink_share_stored": 0.07842765133830595,
+   "ink_share_mine": 0.12765234924987962,
+   "png": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/03_analysis/latest/blocks_stage02_100/block_6DAV-94TV-A7W.png"
+  },
+  {
+   "block_id": "blk_d222a920606f4cd3a1fec702329d1747",
+   "rotation": 270,
+   "discipline": "SS",
+   "size_stored": [
+    2249,
+    2724
+   ],
+   "size_mine_native": [
+    2250,
+    2724
+   ],
+   "ink_iou_raw": 0.5923437448788962,
+   "ink_iou_best_shift": 0.5921986202879558,
+   "best_shift": [
+    0,
+    0
+   ],
+   "ink_iou_dilated": 0.7001580959256,
+   "ink_share_stored": 0.03234934240638195,
+   "ink_share_mine": 0.03904296835467419,
+   "png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d222a920606f4cd3a1fec702329d1747.png"
+  }
+ ]
+}

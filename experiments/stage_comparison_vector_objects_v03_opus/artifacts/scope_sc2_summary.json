@@ -1,0 +1,4340 @@
+{
+ "schema_version": "scope_sc2/1",
+ "n_tasks": 90,
+ "groups": {
+  "m14": {
+   "n": 10,
+   "n_usable": 8,
+   "n_usable_page": 8,
+   "arm1_forced_1to1": {
+    "records_median": 3.0,
+    "records_big_median": 3.0,
+    "added_removed_big_median": 2.0,
+    "added_removed_big_total": 21,
+    "similarity_median": 0.058,
+    "changed_len_median": 39531.77,
+    "big_outside_roi_total": 28,
+    "len_outside_roi_share_median": 1.0,
+    "t_sec_median": 2.1
+   },
+   "arm2_scope_union": {
+    "records_median": 6.0,
+    "records_big_median": 3.0,
+    "added_removed_big_median": 0.5,
+    "added_removed_big_total": 6,
+    "similarity_median": 0.102,
+    "changed_len_median": 42499.287,
+    "t_sec_median": 2.5,
+    "n_seg_median": 20459.5
+   },
+   "arm3_page": {
+    "records_median": 7.0,
+    "records_big_median": 7.0,
+    "similarity_median": 0.571,
+    "changed_len_median": 149949.841,
+    "big_outside_component_median": 4.5,
+    "share_records_outside_component_median": 0.796,
+    "t_sec_median": 13.7,
+    "n_seg_median": 69066.0
+   },
+   "delta_big_records_arm1_minus_arm2": 0.0,
+   "pairs_where_arm1_has_more_big": 2,
+   "pairs_where_arm2_has_more_big": 3,
+   "dropped_ink_len_median": 79720.25,
+   "dropped_ink_share_median": 0.538,
+   "page_rect_equal": 7
+  },
+  "m14|same_page_size": {
+   "n": 7,
+   "n_usable": 5,
+   "n_usable_page": 5,
+   "arm1_forced_1to1": {
+    "records_median": 4,
+    "records_big_median": 4,
+    "added_removed_big_median": 3,
+    "added_removed_big_total": 14,
+    "similarity_median": 0.075,
+    "changed_len_median": 31447.627,
+    "big_outside_roi_total": 17,
+    "len_outside_roi_share_median": 1.0,
+    "t_sec_median": 3.2
+   },
+   "arm2_scope_union": {
+    "records_median": 5,
+    "records_big_median": 2,
+    "added_removed_big_median": 1,
+    "added_removed_big_total": 5,
+    "similarity_median": 0.146,
+    "changed_len_median": 13112.13,
+    "t_sec_median": 6.7,
+    "n_seg_median": 28625
+   },
+   "arm3_page": {
+    "records_median": 8,
+    "records_big_median": 8,
+    "similarity_median": 0.896,
+    "changed_len_median": 44887.118,
+    "big_outside_component_median": 5,
+    "share_records_outside_component_median": 0.792,
+    "t_sec_median": 18.3,
+    "n_seg_median": 105847
+   },
+   "delta_big_records_arm1_minus_arm2": 0,
+   "pairs_where_arm1_has_more_big": 1,
+   "pairs_where_arm2_has_more_big": 2,
+   "dropped_ink_len_median": 119896.9,
+   "dropped_ink_share_median": 0.562,
+   "page_rect_equal": 7
+  },
+  "m14|page_size_changed": {
+   "n": 3,
+   "n_usable": 3,
+   "n_usable_page": 3,
+   "arm1_forced_1to1": {
+    "records_median": 2,
+    "records_big_median": 2,
+    "added_removed_big_median": 0,
+    "added_removed_big_total": 7,
+    "similarity_median": 0.01,
+    "changed_len_median": 47615.914,
+    "big_outside_roi_total": 11,
+    "len_outside_roi_share_median": 1.0,
+    "t_sec_median": 0.7
+   },
+   "arm2_scope_union": {
+    "records_median": 7,
+    "records_big_median": 4,
+    "added_removed_big_median": 0,
+    "added_removed_big_total": 1,
+    "similarity_median": 0.049,
+    "changed_len_median": 129036.844,
+    "t_sec_median": 1.3,
+    "n_seg_median": 12294
+   },
+   "arm3_page": {
+    "records_median": 5,
+    "records_big_median": 5,
+    "similarity_median": 0.059,
+    "changed_len_median": 259256.057,
+    "big_outside_component_median": 2,
+    "share_records_outside_component_median": 1.0,
+    "t_sec_median": 3.9,
+    "n_seg_median": 36754
+   },
+   "delta_big_records_arm1_minus_arm2": 0,
+   "pairs_where_arm1_has_more_big": 1,
+   "pairs_where_arm2_has_more_big": 1,
+   "dropped_ink_len_median": 54231.6,
+   "dropped_ink_share_median": 0.531,
+   "page_rect_equal": 0
+  },
+  "multi": {
+   "n": 40,
+   "n_usable": 38,
+   "n_usable_page": 36,
+   "arm1_forced_1to1": {
+    "records_median": 3.5,
+    "records_big_median": 3.0,
+    "added_removed_big_median": 2.5,
+    "added_removed_big_total": 111,
+    "similarity_median": 0.623,
+    "changed_len_median": 10289.093,
+    "big_outside_roi_total": 105,
+    "len_outside_roi_share_median": 1.0,
+    "t_sec_median": 5.4
+   },
+   "arm2_scope_union": {
+    "records_median": 1.5,
+    "records_big_median": 1.0,
+    "added_removed_big_median": 0.0,
+    "added_removed_big_total": 38,
+    "similarity_median": 0.999,
+    "changed_len_median": 118.556,
+    "t_sec_median": 5.65,
+    "n_seg_median": 10044.5
+   },
+   "arm3_page": {
+    "records_median": 5.5,
+    "records_big_median": 4.0,
+    "similarity_median": 0.972,
+    "changed_len_median": 7928.396,
+    "big_outside_component_median": 2.0,
+    "share_records_outside_component_median": 0.333,
+    "t_sec_median": 13.5,
+    "n_seg_median": 53726.0
+   },
+   "delta_big_records_arm1_minus_arm2": 1.5,
+   "pairs_where_arm1_has_more_big": 22,
+   "pairs_where_arm2_has_more_big": 13,
+   "dropped_ink_len_median": 15741.8,
+   "dropped_ink_share_median": 0.277,
+   "page_rect_equal": 37
+  },
+  "multi|same_page_size": {
+   "n": 37,
+   "n_usable": 35,
+   "n_usable_page": 33,
+   "arm1_forced_1to1": {
+    "records_median": 3,
+    "records_big_median": 3,
+    "added_removed_big_median": 3,
+    "added_removed_big_total": 106,
+    "similarity_median": 0.609,
+    "changed_len_median": 10107.834,
+    "big_outside_roi_total": 103,
+    "len_outside_roi_share_median": 1.0,
+    "t_sec_median": 4.5
+   },
+   "arm2_scope_union": {
+    "records_median": 0,
+    "records_big_median": 0,
+    "added_removed_big_median": 0,
+    "added_removed_big_total": 33,
+    "similarity_median": 1.0,
+    "changed_len_median": 0,
+    "t_sec_median": 5.5,
+    "n_seg_median": 9188
+   },
+   "arm3_page": {
+    "records_median": 5,
+    "records_big_median": 4,
+    "similarity_median": 0.976,
+    "changed_len_median": 7706.258,
+    "big_outside_component_median": 2,
+    "share_records_outside_component_median": 0.333,
+    "t_sec_median": 12.7,
+    "n_seg_median": 50362
+   },
+   "delta_big_records_arm1_minus_arm2": 2,
+   "pairs_where_arm1_has_more_big": 22,
+   "pairs_where_arm2_has_more_big": 11,
+   "dropped_ink_len_median": 14867.4,
+   "dropped_ink_share_median": 0.272,
+   "page_rect_equal": 37
+  },
+  "multi|page_size_changed": {
+   "n": 3,
+   "n_usable": 3,
+   "n_usable_page": 3,
+   "arm1_forced_1to1": {
+    "records_median": 11,
+    "records_big_median": 2,
+    "added_removed_big_median": 1,
+    "added_removed_big_total": 5,
+    "similarity_median": 0.921,
+    "changed_len_median": 23396.676,
+    "big_outside_roi_total": 2,
+    "len_outside_roi_share_median": 0.0,
+    "t_sec_median": 11.6
+   },
+   "arm2_scope_union": {
+    "records_median": 9,
+    "records_big_median": 4,
+    "added_removed_big_median": 1,
+    "added_removed_big_total": 5,
+    "similarity_median": 0.696,
+    "changed_len_median": 132474.812,
+    "t_sec_median": 18.7,
+    "n_seg_median": 63913
+   },
+   "arm3_page": {
+    "records_median": 9,
+    "records_big_median": 4,
+    "similarity_median": 0.696,
+    "changed_len_median": 143998.499,
+    "big_outside_component_median": 1,
+    "share_records_outside_component_median": 0.111,
+    "t_sec_median": 19.1,
+    "n_seg_median": 65602
+   },
+   "delta_big_records_arm1_minus_arm2": -2,
+   "pairs_where_arm1_has_more_big": 0,
+   "pairs_where_arm2_has_more_big": 2,
+   "dropped_ink_len_median": 133207.4,
+   "dropped_ink_share_median": 0.3,
+   "page_rect_equal": 0
+  },
+  "nested": {
+   "n": 20,
+   "n_usable": 15,
+   "n_usable_page": 15,
+   "arm1_forced_1to1": {
+    "records_median": 1,
+    "records_big_median": 1,
+    "added_removed_big_median": 1,
+    "added_removed_big_total": 24,
+    "similarity_median": 0.989,
+    "changed_len_median": 1360.08,
+    "big_outside_roi_total": 19,
+    "len_outside_roi_share_median": 0.875,
+    "t_sec_median": 14.0
+   },
+   "arm2_scope_union": {
+    "records_median": 1,
+    "records_big_median": 1,
+    "added_removed_big_median": 0,
+    "added_removed_big_total": 14,
+    "similarity_median": 0.532,
+    "changed_len_median": 16358.53,
+    "t_sec_median": 0.6,
+    "n_seg_median": 2541
+   },
+   "arm3_page": {
+    "records_median": 8,
+    "records_big_median": 7,
+    "similarity_median": 0.741,
+    "changed_len_median": 114687.243,
+    "big_outside_component_median": 7,
+    "share_records_outside_component_median": 1.0,
+    "t_sec_median": 14.0,
+    "n_seg_median": 65602
+   },
+   "delta_big_records_arm1_minus_arm2": 0,
+   "pairs_where_arm1_has_more_big": 6,
+   "pairs_where_arm2_has_more_big": 6,
+   "dropped_ink_len_median": 0.0,
+   "dropped_ink_share_median": 0.0,
+   "page_rect_equal": 13
+  },
+  "nested|same_page_size": {
+   "n": 13,
+   "n_usable": 8,
+   "n_usable_page": 8,
+   "arm1_forced_1to1": {
+    "records_median": 3.5,
+    "records_big_median": 3.0,
+    "added_removed_big_median": 2.0,
+    "added_removed_big_total": 22,
+    "similarity_median": 0.722,
+    "changed_len_median": 3669.327,
+    "big_outside_roi_total": 16,
+    "len_outside_roi_share_median": 0.938,
+    "t_sec_median": 3.25
+   },
+   "arm2_scope_union": {
+    "records_median": 0.0,
+    "records_big_median": 0.0,
+    "added_removed_big_median": 0.0,
+    "added_removed_big_total": 6,
+    "similarity_median": 1.0,
+    "changed_len_median": 0.0,
+    "t_sec_median": 2.75,
+    "n_seg_median": 2252.5
+   },
+   "arm3_page": {
+    "records_median": 7.5,
+    "records_big_median": 3.0,
+    "similarity_median": 0.99,
+    "changed_len_median": 5106.895,
+    "big_outside_component_median": 2.0,
+    "share_records_outside_component_median": 0.984,
+    "t_sec_median": 19.3,
+    "n_seg_median": 85432.5
+   },
+   "delta_big_records_arm1_minus_arm2": 1.0,
+   "pairs_where_arm1_has_more_big": 6,
+   "pairs_where_arm2_has_more_big": 0,
+   "dropped_ink_len_median": 0.0,
+   "dropped_ink_share_median": 0.0,
+   "page_rect_equal": 13
+  },
+  "nested|page_size_changed": {
+   "n": 7,
+   "n_usable": 7,
+   "n_usable_page": 7,
+   "arm1_forced_1to1": {
+    "records_median": 0,
+    "records_big_median": 0,
+    "added_removed_big_median": 0,
+    "added_removed_big_total": 2,
+    "similarity_median": 1.0,
+    "changed_len_median": 0,
+    "big_outside_roi_total": 3,
+    "len_outside_roi_share_median": 0,
+    "t_sec_median": 14.3
+   },
+   "arm2_scope_union": {
+    "records_median": 1,
+    "records_big_median": 1,
+    "added_removed_big_median": 0,
+    "added_removed_big_total": 8,
+    "similarity_median": 0.001,
+    "changed_len_median": 16359.01,
+    "t_sec_median": 0.4,
+    "n_seg_median": 2541
+   },
+   "arm3_page": {
+    "records_median": 10,
+    "records_big_median": 7,
+    "similarity_median": 0.655,
+    "changed_len_median": 134438.935,
+    "big_outside_component_median": 7,
+    "share_records_outside_component_median": 1.0,
+    "t_sec_median": 11.3,
+    "n_seg_median": 61365
+   },
+   "delta_big_records_arm1_minus_arm2": -1,
+   "pairs_where_arm1_has_more_big": 0,
+   "pairs_where_arm2_has_more_big": 6,
+   "dropped_ink_len_median": 0.0,
+   "dropped_ink_share_median": 0.0,
+   "page_rect_equal": 0
+  },
+  "control_aligned": {
+   "n": 20,
+   "n_usable": 20,
+   "n_usable_page": 20,
+   "arm1_forced_1to1": {
+    "records_median": 1.5,
+    "records_big_median": 1.0,
+    "added_removed_big_median": 1.0,
+    "added_removed_big_total": 30,
+    "similarity_median": 0.977,
+    "changed_len_median": 708.029,
+    "big_outside_roi_total": 16,
+    "len_outside_roi_share_median": 0.413,
+    "t_sec_median": 14.3
+   },
+   "arm2_scope_union": {
+    "records_median": 0.0,
+    "records_big_median": 0.0,
+    "added_removed_big_median": 0.0,
+    "added_removed_big_total": 13,
+    "similarity_median": 1.0,
+    "changed_len_median": 0.0,
+    "t_sec_median": 14.0,
+    "n_seg_median": 4369.0
+   },
+   "arm3_page": {
+    "records_median": 7.5,
+    "records_big_median": 6.0,
+    "similarity_median": 0.967,
+    "changed_len_median": 15974.905,
+    "big_outside_component_median": 4.5,
+    "share_records_outside_component_median": 0.938,
+    "t_sec_median": 19.15,
+    "n_seg_median": 48602.0
+   },
+   "delta_big_records_arm1_minus_arm2": 1.0,
+   "pairs_where_arm1_has_more_big": 14,
+   "pairs_where_arm2_has_more_big": 0,
+   "dropped_ink_len_median": 0.0,
+   "dropped_ink_share_median": 0.0,
+   "page_rect_equal": 20
+  },
+  "control_aligned|same_page_size": {
+   "n": 20,
+   "n_usable": 20,
+   "n_usable_page": 20,
+   "arm1_forced_1to1": {
+    "records_median": 1.5,
+    "records_big_median": 1.0,
+    "added_removed_big_median": 1.0,
+    "added_removed_big_total": 30,
+    "similarity_median": 0.977,
+    "changed_len_median": 708.029,
+    "big_outside_roi_total": 16,
+    "len_outside_roi_share_median": 0.413,
+    "t_sec_median": 14.3
+   },
+   "arm2_scope_union": {
+    "records_median": 0.0,
+    "records_big_median": 0.0,
+    "added_removed_big_median": 0.0,
+    "added_removed_big_total": 13,
+    "similarity_median": 1.0,
+    "changed_len_median": 0.0,
+    "t_sec_median": 14.0,
+    "n_seg_median": 4369.0
+   },
+   "arm3_page": {
+    "records_median": 7.5,
+    "records_big_median": 6.0,
+    "similarity_median": 0.967,
+    "changed_len_median": 15974.905,
+    "big_outside_component_median": 4.5,
+    "share_records_outside_component_median": 0.938,
+    "t_sec_median": 19.15,
+    "n_seg_median": 48602.0
+   },
+   "delta_big_records_arm1_minus_arm2": 1.0,
+   "pairs_where_arm1_has_more_big": 14,
+   "pairs_where_arm2_has_more_big": 0,
+   "dropped_ink_len_median": 0.0,
+   "dropped_ink_share_median": 0.0,
+   "page_rect_equal": 20
+  }
+ },
+ "per_task": [
+  {
+   "task_id": "T0000",
+   "kind": "N:M",
+   "tags": [
+    "m14:AR-490254e9"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К4",
+   "page_a": 9,
+   "page_b": 9,
+   "n_a": 2,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 5,
+    "n_records_big": 5,
+    "added_removed_big": 4,
+    "similarity": 0.211393,
+    "changed_len_total": 31447.627,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 31402.68,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 5,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.999573,
+    "changed_len_total": 68.226,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 12,
+    "n_records_big": 8,
+    "similarity": 0.990738,
+    "changed_len_total": 6580.233,
+    "n_records_outside_roi": 7,
+    "n_big_outside_roi": 7,
+    "error": null
+   },
+   "dropped_ink": 119896.9,
+   "dropped_seg": 23920,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0001",
+   "kind": "1:1_nested",
+   "tags": [
+    "m14:OV-2cc2a382"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 145,
+   "page_b": 112,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0002",
+   "kind": "N:M",
+   "tags": [
+    "m14:AR-49c7c898"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К4",
+   "page_a": 9,
+   "page_b": 10,
+   "n_a": 10,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 7,
+    "n_records_big": 7,
+    "added_removed_big": 6,
+    "similarity": 0.129911,
+    "changed_len_total": 86961.925,
+    "n_big_outside_roi": 6,
+    "len_outside_roi": 86492.51,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 10,
+    "n_records_big": 10,
+    "added_removed_big": 2,
+    "similarity": 0.957489,
+    "changed_len_total": 7813.1,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 48,
+    "n_records_big": 44,
+    "similarity": 0.950312,
+    "changed_len_total": 36021.162,
+    "n_records_outside_roi": 38,
+    "n_big_outside_roi": 34,
+    "error": null
+   },
+   "dropped_ink": 128363.7,
+   "dropped_seg": 19239,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0003",
+   "kind": "N:1",
+   "tags": [
+    "m14:AR-899c6321"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К5",
+   "page_a": 10,
+   "page_b": 12,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 8,
+    "n_records_big": 8,
+    "added_removed_big": 7,
+    "similarity": 0.00951,
+    "changed_len_total": 31338.708,
+    "n_big_outside_roi": 8,
+    "len_outside_roi": 31338.71,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 7,
+    "n_records_big": 4,
+    "added_removed_big": 0,
+    "similarity": 0.023176,
+    "changed_len_total": 56631.069,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 11,
+    "n_records_big": 11,
+    "similarity": 0.064636,
+    "changed_len_total": 446971.8,
+    "n_records_outside_roi": 11,
+    "n_big_outside_roi": 11,
+    "error": null
+   },
+   "dropped_ink": 2725.3,
+   "dropped_seg": 73,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0004",
+   "kind": "N:M",
+   "tags": [
+    "m14:AR-aab8d4f9"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К3",
+   "page_a": 6,
+   "page_b": 7,
+   "n_a": 6,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 3,
+    "similarity": 0.007364,
+    "changed_len_total": 85092.754,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 85092.75,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 8,
+    "n_records_big": 8,
+    "added_removed_big": 2,
+    "similarity": 0.146081,
+    "changed_len_total": 447339.52,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 8,
+    "n_records_big": 8,
+    "similarity": 0.306711,
+    "changed_len_total": 448248.401,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 3,
+    "error": null
+   },
+   "dropped_ink": 411707.9,
+   "dropped_seg": 45406,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0005",
+   "kind": "1:1_nested",
+   "tags": [
+    "m14:OV-a230726c"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 140,
+   "page_b": 104,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0006",
+   "kind": "N:M",
+   "tags": [
+    "m14:EOM-81ca2c16"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭМ-К3",
+   "page_a": 11,
+   "page_b": 12,
+   "n_a": 4,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.005473,
+    "changed_len_total": 47615.914,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 47615.91,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.048512,
+    "changed_len_total": 129036.844,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "similarity": 0.022672,
+    "changed_len_total": 259256.057,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 54231.6,
+   "dropped_seg": 4775,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0007",
+   "kind": "N:M",
+   "tags": [
+    "m14:EOM-27848006"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭМ-К4",
+   "page_a": 9,
+   "page_b": 11,
+   "n_a": 3,
+   "n_b": 4,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 0,
+    "similarity": 0.0711,
+    "changed_len_total": 81896.988,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 81896.99,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 14,
+    "n_records_big": 6,
+    "added_removed_big": 1,
+    "similarity": 0.136012,
+    "changed_len_total": 183056.391,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 5,
+    "n_records_big": 5,
+    "similarity": 0.059079,
+    "changed_len_total": 226852.122,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 105208.9,
+   "dropped_seg": 12957,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0008",
+   "kind": "N:1",
+   "tags": [
+    "m14:SS-5f190ee6"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АПЗ.АПС-К5",
+   "page_a": 14,
+   "page_b": 14,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.075451,
+    "changed_len_total": 23873.204,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 23873.2,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.068755,
+    "changed_len_total": 28367.504,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 6,
+    "n_records_big": 6,
+    "similarity": 0.895702,
+    "changed_len_total": 44887.118,
+    "n_records_outside_roi": 5,
+    "n_big_outside_roi": 5,
+    "error": null
+   },
+   "dropped_ink": 3854.4,
+   "dropped_seg": 907,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0009",
+   "kind": "1:1_nested",
+   "tags": [
+    "m14:SS-cc32de7d"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К6 (Книга 1)",
+   "page_a": 38,
+   "page_b": 20,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 1,
+    "similarity": 0.044462,
+    "changed_len_total": 13112.13,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 13112.13,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 1,
+    "similarity": 0.044462,
+    "changed_len_total": 13112.13,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 5,
+    "n_records_big": 5,
+    "similarity": 0.834814,
+    "changed_len_total": 73047.56,
+    "n_records_outside_roi": 4,
+    "n_big_outside_roi": 4,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0010",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.33-38.1-К2",
+   "page_a": 16,
+   "page_b": 17,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.65271,
+    "changed_len_total": 7022.983,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 7022.98,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "similarity": 0.975929,
+    "changed_len_total": 5487.264,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 6992.5,
+   "dropped_seg": 1114,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0011",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР0.4-ПА",
+   "page_a": 13,
+   "page_b": 14,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 6,
+    "n_records_big": 6,
+    "added_removed_big": 5,
+    "similarity": 0.599616,
+    "changed_len_total": 24524.437,
+    "n_big_outside_roi": 5,
+    "len_outside_roi": 23900.34,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 7,
+    "n_records_big": 3,
+    "added_removed_big": 1,
+    "similarity": 0.904862,
+    "changed_len_total": 7714.311,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 48,
+    "n_records_big": 27,
+    "similarity": 0.889629,
+    "changed_len_total": 78281.634,
+    "n_records_outside_roi": 42,
+    "n_big_outside_roi": 25,
+    "error": null
+   },
+   "dropped_ink": 18819.8,
+   "dropped_seg": 1705,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0012",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АПЗ.АПС-К4",
+   "page_a": 69,
+   "page_b": 69,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0013",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭМ-К3",
+   "page_a": 19,
+   "page_b": 20,
+   "n_a": 1,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 1,
+    "similarity": 0.047279,
+    "changed_len_total": 388848.431,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 388848.43,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 1,
+    "similarity": 0.056956,
+    "changed_len_total": 670039.159,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "similarity": 0.029744,
+    "changed_len_total": 764054.187,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 262257.9,
+   "dropped_seg": 19872,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0014",
+   "kind": "N:M",
+   "tags": [
+    "multi"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 28,
+   "page_b": 31,
+   "n_a": 2,
+   "n_b": 4,
+   "arm1": {
+    "n_records": 11,
+    "n_records_big": 2,
+    "added_removed_big": 1,
+    "similarity": 0.921042,
+    "changed_len_total": 22523.93,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 8.64,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 9,
+    "n_records_big": 4,
+    "added_removed_big": 1,
+    "similarity": 0.695925,
+    "changed_len_total": 126854.377,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 9,
+    "n_records_big": 4,
+    "similarity": 0.695508,
+    "changed_len_total": 132010.423,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 115354.9,
+   "dropped_seg": 20251,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0015",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "VK",
+   "doc": "13АВ-РД-ВК2.2-ПА V1",
+   "page_a": 12,
+   "page_b": 14,
+   "n_a": 1,
+   "n_b": 2,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "too dense"
+   },
+   "arm2": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "error": "too dense"
+   },
+   "arm3": {
+    "n_records": null,
+    "n_records_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_records_outside_roi": null,
+    "n_big_outside_roi": null,
+    "error": "too dense"
+   },
+   "dropped_ink": 113583.0,
+   "dropped_seg": 29871,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0016",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KM",
+   "doc": "13АВ-РД-КМ-К4",
+   "page_a": 6,
+   "page_b": 8,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.795581,
+    "changed_len_total": 14867.424,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 14867.42,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 10,
+    "n_records_big": 10,
+    "similarity": 0.994203,
+    "changed_len_total": 2887.352,
+    "n_records_outside_roi": 10,
+    "n_big_outside_roi": 10,
+    "error": null
+   },
+   "dropped_ink": 14867.4,
+   "dropped_seg": 1088,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0017",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "TX",
+   "doc": "13АВ-РД-ТХ2-К1 V1",
+   "page_a": 23,
+   "page_b": 23,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.644312,
+    "changed_len_total": 5159.475,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 5159.48,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 5159.5,
+   "dropped_seg": 2890,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0018",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "GP",
+   "doc": "13АВ-РД-ГП2",
+   "page_a": 9,
+   "page_b": 9,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 5,
+    "n_records_big": 5,
+    "added_removed_big": 5,
+    "similarity": 0.984756,
+    "changed_len_total": 4691.465,
+    "n_big_outside_roi": 5,
+    "len_outside_roi": 4691.47,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 2303.1,
+   "dropped_seg": 83,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0019",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.24.2-К2",
+   "page_a": 10,
+   "page_b": 11,
+   "n_a": 4,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 2,
+    "similarity": 0.111775,
+    "changed_len_total": 10345.833,
+    "n_big_outside_roi": 3,
+    "len_outside_roi": 10345.83,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 2,
+    "similarity": 0.389209,
+    "changed_len_total": 9873.337,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 27,
+    "n_records_big": 26,
+    "similarity": 0.714421,
+    "changed_len_total": 161105.354,
+    "n_records_outside_roi": 24,
+    "n_big_outside_roi": 23,
+    "error": null
+   },
+   "dropped_ink": 4517.1,
+   "dropped_seg": 776,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0020",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К4",
+   "page_a": 11,
+   "page_b": 12,
+   "n_a": 7,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.240442,
+    "changed_len_total": 45513.388,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 45513.39,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 9,
+    "n_records_big": 3,
+    "added_removed_big": 0,
+    "similarity": 0.987529,
+    "changed_len_total": 1296.248,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 11,
+    "n_records_big": 5,
+    "similarity": 0.936146,
+    "changed_len_total": 9532.332,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 40363.8,
+   "dropped_seg": 10423,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0021",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К3 (Книга 1)",
+   "page_a": 21,
+   "page_b": 21,
+   "n_a": 1,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.4248,
+    "changed_len_total": 56381.109,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 56380.99,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.39992,
+    "changed_len_total": 63751.83,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 5,
+    "n_records_big": 3,
+    "similarity": 0.828259,
+    "changed_len_total": 70053.644,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 5257.7,
+   "dropped_seg": 2930,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0022",
+   "kind": "N:M",
+   "tags": [
+    "multi"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭОМ-НС V1",
+   "page_a": 11,
+   "page_b": 12,
+   "n_a": 2,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 7,
+    "n_records_big": 5,
+    "added_removed_big": 3,
+    "similarity": 0.916085,
+    "changed_len_total": 12231.035,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 799.03,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 9,
+    "n_records_big": 8,
+    "added_removed_big": 3,
+    "similarity": 0.707954,
+    "changed_len_total": 59546.414,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 11,
+    "n_records_big": 10,
+    "similarity": 0.767105,
+    "changed_len_total": 59947.263,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 3,
+    "error": null
+   },
+   "dropped_ink": 54468.0,
+   "dropped_seg": 12157,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0023",
+   "kind": "N:M",
+   "tags": [
+    "multi"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 32,
+   "page_b": 33,
+   "n_a": 4,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 20,
+    "n_records_big": 17,
+    "added_removed_big": 3,
+    "similarity": 0.936269,
+    "changed_len_total": 3681.62,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 2035.8,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 95,
+    "n_records_big": 86,
+    "added_removed_big": 3,
+    "similarity": 0.98296,
+    "changed_len_total": 7355.549,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 92,
+    "n_records_big": 87,
+    "similarity": 0.98225,
+    "changed_len_total": 7961.469,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 372315.2,
+   "dropped_seg": 210486,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0024",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "VK",
+   "doc": "13АВ-РД-ВК2-К5 V1",
+   "page_a": 14,
+   "page_b": 15,
+   "n_a": 1,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 2,
+    "similarity": 0.273094,
+    "changed_len_total": 7636.136,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 7636.14,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 11,
+    "n_records_big": 11,
+    "added_removed_big": 7,
+    "similarity": 0.034412,
+    "changed_len_total": 69726.404,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 13,
+    "n_records_big": 13,
+    "similarity": 0.338432,
+    "changed_len_total": 63129.839,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 39280.0,
+   "dropped_seg": 3050,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0025",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KM",
+   "doc": "13АВ-РД-КМ-К2",
+   "page_a": 6,
+   "page_b": 6,
+   "n_a": 1,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.185492,
+    "changed_len_total": 39993.893,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 39993.89,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 6,
+    "n_records_big": 6,
+    "added_removed_big": 3,
+    "similarity": 0.229073,
+    "changed_len_total": 61885.004,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "similarity": 0.629249,
+    "changed_len_total": 60488.33,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 21612.9,
+   "dropped_seg": 1608,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0026",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "TX",
+   "doc": "13АВ-РД-ТХ2-К4",
+   "page_a": 13,
+   "page_b": 15,
+   "n_a": 4,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.55868,
+    "changed_len_total": 10232.354,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 10232.35,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 16475.1,
+   "dropped_seg": 7450,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0027",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.29.1-К1",
+   "page_a": 9,
+   "page_b": 9,
+   "n_a": 6,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 9,
+    "n_records_big": 9,
+    "added_removed_big": 7,
+    "similarity": 0.662026,
+    "changed_len_total": 34890.109,
+    "n_big_outside_roi": 7,
+    "len_outside_roi": 34774.38,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 4,
+    "n_records_big": 3,
+    "added_removed_big": 0,
+    "similarity": 0.9986,
+    "changed_len_total": 193.232,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 13,
+    "n_records_big": 11,
+    "similarity": 0.998681,
+    "changed_len_total": 761.513,
+    "n_records_outside_roi": 9,
+    "n_big_outside_roi": 8,
+    "error": null
+   },
+   "dropped_ink": 30208.9,
+   "dropped_seg": 4187,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0028",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К4",
+   "page_a": 12,
+   "page_b": 13,
+   "n_a": 5,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 12,
+    "n_records_big": 9,
+    "added_removed_big": 7,
+    "similarity": 0.327844,
+    "changed_len_total": 114273.846,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 110955.88,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 29,
+    "n_records_big": 20,
+    "added_removed_big": 9,
+    "similarity": 0.97045,
+    "changed_len_total": 8324.388,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 42,
+    "n_records_big": 32,
+    "similarity": 0.863864,
+    "changed_len_total": 93160.711,
+    "n_records_outside_roi": 14,
+    "n_big_outside_roi": 12,
+    "error": null
+   },
+   "dropped_ink": 110908.1,
+   "dropped_seg": 8964,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0029",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-СОУЭ-К3-К6",
+   "page_a": 26,
+   "page_b": 22,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.690394,
+    "changed_len_total": 1672.082,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 1672.08,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 1,
+    "similarity": 0.920016,
+    "changed_len_total": 611.841,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "similarity": 0.97279,
+    "changed_len_total": 10600.198,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 2614.0,
+   "dropped_seg": 86,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0030",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭМ-К4",
+   "page_a": 17,
+   "page_b": 19,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 10,
+    "n_records_big": 8,
+    "added_removed_big": 5,
+    "similarity": 0.442665,
+    "changed_len_total": 19315.547,
+    "n_big_outside_roi": 5,
+    "len_outside_roi": 9367.51,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 0,
+    "similarity": 0.650051,
+    "changed_len_total": 15416.491,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "similarity": 0.542443,
+    "changed_len_total": 201564.261,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 3065.6,
+   "dropped_seg": 426,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0031",
+   "kind": "N:M",
+   "tags": [
+    "multi"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 40,
+   "page_b": 41,
+   "n_a": 2,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 5,
+    "n_records_big": 4,
+    "added_removed_big": 1,
+    "similarity": 0.878595,
+    "changed_len_total": 7222.691,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 2102.36,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 10,
+    "n_records_big": 8,
+    "added_removed_big": 0,
+    "similarity": 0.945686,
+    "changed_len_total": 5668.904,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 13,
+    "n_records_big": 11,
+    "similarity": 0.926841,
+    "changed_len_total": 10374.746,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 3,
+    "error": null
+   },
+   "dropped_ink": 16165.7,
+   "dropped_seg": 15473,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0032",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "VK",
+   "doc": "13АВ-РД-ВК2.2-ПА V1",
+   "page_a": 49,
+   "page_b": 51,
+   "n_a": 1,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 4,
+    "similarity": 0.845165,
+    "changed_len_total": 10107.834,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 10107.83,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "similarity": 0.996866,
+    "changed_len_total": 1004.1,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 8637.5,
+   "dropped_seg": 663,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0033",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KM",
+   "doc": "13АВ-РД-КМ-К3",
+   "page_a": 9,
+   "page_b": 9,
+   "n_a": 4,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 4,
+    "similarity": 0.526199,
+    "changed_len_total": 40788.917,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 40788.92,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 40276.5,
+   "dropped_seg": 2346,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0034",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "TX",
+   "doc": "13АВ-РД-ТХ2-К4",
+   "page_a": 9,
+   "page_b": 11,
+   "n_a": 6,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 6,
+    "n_records_big": 6,
+    "added_removed_big": 6,
+    "similarity": 0.446056,
+    "changed_len_total": 13965.412,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 13921.53,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.998882,
+    "changed_len_total": 43.88,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 15,
+    "n_records_big": 6,
+    "similarity": 0.992006,
+    "changed_len_total": 1947.741,
+    "n_records_outside_roi": 13,
+    "n_big_outside_roi": 4,
+    "error": null
+   },
+   "dropped_ink": 27545.3,
+   "dropped_seg": 3082,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0035",
+   "kind": "N:M",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.33-38.1-К2",
+   "page_a": 13,
+   "page_b": 14,
+   "n_a": 5,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 2,
+    "similarity": 0.022877,
+    "changed_len_total": 9723.915,
+    "n_big_outside_roi": 3,
+    "len_outside_roi": 9723.92,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 5,
+    "n_records_big": 5,
+    "added_removed_big": 2,
+    "similarity": 0.05478,
+    "changed_len_total": 33584.498,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 24,
+    "n_records_big": 17,
+    "similarity": 0.302762,
+    "changed_len_total": 206628.04,
+    "n_records_outside_roi": 20,
+    "n_big_outside_roi": 13,
+    "error": null
+   },
+   "dropped_ink": 22335.6,
+   "dropped_seg": 1488,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0036",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К4",
+   "page_a": 14,
+   "page_b": 14,
+   "n_a": 1,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 7,
+    "n_records_big": 7,
+    "added_removed_big": 7,
+    "similarity": 0.637534,
+    "changed_len_total": 7559.224,
+    "n_big_outside_roi": 7,
+    "len_outside_roi": 7559.22,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 5156.6,
+   "dropped_seg": 1202,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0037",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К4 (Книга 1)",
+   "page_a": 15,
+   "page_b": 15,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 3,
+    "similarity": 0.608636,
+    "changed_len_total": 14077.062,
+    "n_big_outside_roi": 3,
+    "len_outside_roi": 14077.06,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 6,
+    "n_records_big": 1,
+    "similarity": 0.984291,
+    "changed_len_total": 3344.7,
+    "n_records_outside_roi": 6,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 13672.5,
+   "dropped_seg": 2297,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0038",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭМ-К3",
+   "page_a": 47,
+   "page_b": 54,
+   "n_a": 4,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 3,
+    "similarity": 0.510557,
+    "changed_len_total": 39537.226,
+    "n_big_outside_roi": 3,
+    "len_outside_roi": 39537.23,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": null,
+    "n_records_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_records_outside_roi": null,
+    "n_big_outside_roi": null,
+    "error": "too dense"
+   },
+   "dropped_ink": 39537.2,
+   "dropped_seg": 21907,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0039",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К2 V1",
+   "page_a": 153,
+   "page_b": 134,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.748592,
+    "changed_len_total": 5578.75,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 5578.75,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 3725.2,
+   "dropped_seg": 8,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0040",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "VK",
+   "doc": "13АВ-РД-ВК2-К2 V1",
+   "page_a": 15,
+   "page_b": 16,
+   "n_a": 1,
+   "n_b": 3,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 2,
+    "similarity": 0.023445,
+    "changed_len_total": 70745.043,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 34480.56,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 7,
+    "n_records_big": 7,
+    "added_removed_big": 0,
+    "similarity": 0.927646,
+    "changed_len_total": 7738.511,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 15,
+    "n_records_big": 15,
+    "similarity": 0.921451,
+    "changed_len_total": 12628.16,
+    "n_records_outside_roi": 8,
+    "n_big_outside_roi": 8,
+    "error": null
+   },
+   "dropped_ink": 34509.5,
+   "dropped_seg": 29679,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0041",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KM",
+   "doc": "13АВ-РД-КМ-К4",
+   "page_a": 8,
+   "page_b": 10,
+   "n_a": 5,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 5,
+    "n_records_big": 5,
+    "added_removed_big": 5,
+    "similarity": 0.470624,
+    "changed_len_total": 7406.427,
+    "n_big_outside_roi": 5,
+    "len_outside_roi": 7406.43,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 7421.6,
+   "dropped_seg": 805,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0042",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "TX",
+   "doc": "13АВ-РД-ТХ2-К4",
+   "page_a": 13,
+   "page_b": 15,
+   "n_a": 4,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 6,
+    "n_records_big": 6,
+    "added_removed_big": 6,
+    "similarity": 0.579777,
+    "changed_len_total": 8018.483,
+    "n_big_outside_roi": 6,
+    "len_outside_roi": 8018.48,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 15317.9,
+   "dropped_seg": 9928,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0043",
+   "kind": "1:N",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+   "page_a": 19,
+   "page_b": 20,
+   "n_a": 1,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 3,
+    "similarity": 0.867352,
+    "changed_len_total": 8675.824,
+    "n_big_outside_roi": 3,
+    "len_outside_roi": 8207.06,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.993632,
+    "changed_len_total": 468.761,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 14,
+    "n_records_big": 12,
+    "similarity": 0.983496,
+    "changed_len_total": 7706.258,
+    "n_records_outside_roi": 13,
+    "n_big_outside_roi": 11,
+    "error": null
+   },
+   "dropped_ink": 7777.9,
+   "dropped_seg": 1614,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0044",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР0.3-ПА",
+   "page_a": 11,
+   "page_b": 11,
+   "n_a": 4,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 4,
+    "similarity": 0.666693,
+    "changed_len_total": 14380.83,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 14380.83,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "similarity": 0.96647,
+    "changed_len_total": 7895.324,
+    "n_records_outside_roi": 4,
+    "n_big_outside_roi": 4,
+    "error": null
+   },
+   "dropped_ink": 12977.5,
+   "dropped_seg": 2033,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0045",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К5 (Книга 1)",
+   "page_a": 12,
+   "page_b": 12,
+   "n_a": 3,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.714174,
+    "changed_len_total": 5167.239,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 5167.24,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "similarity": 0.971792,
+    "changed_len_total": 4058.078,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 3,
+    "error": null
+   },
+   "dropped_ink": 5167.2,
+   "dropped_seg": 950,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0046",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭМ-К6",
+   "page_a": 24,
+   "page_b": 25,
+   "n_a": 2,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 3,
+    "similarity": 0.757731,
+    "changed_len_total": 8033.067,
+    "n_big_outside_roi": 3,
+    "len_outside_roi": 8033.07,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 10,
+    "n_records_big": 9,
+    "similarity": 0.840419,
+    "changed_len_total": 84693.827,
+    "n_records_outside_roi": 10,
+    "n_big_outside_roi": 9,
+    "error": null
+   },
+   "dropped_ink": 3429.0,
+   "dropped_seg": 449,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0047",
+   "kind": "N:M",
+   "tags": [
+    "multi"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 27,
+   "page_b": 30,
+   "n_a": 2,
+   "n_b": 4,
+   "arm1": {
+    "n_records": 16,
+    "n_records_big": 6,
+    "added_removed_big": 3,
+    "similarity": 0.92479,
+    "changed_len_total": 23396.676,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 9.2,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 15,
+    "n_records_big": 9,
+    "added_removed_big": 3,
+    "similarity": 0.708914,
+    "changed_len_total": 132474.812,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 15,
+    "n_records_big": 9,
+    "similarity": 0.698711,
+    "changed_len_total": 143998.499,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 133207.4,
+   "dropped_seg": 26238,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0048",
+   "kind": "N:M",
+   "tags": [
+    "multi"
+   ],
+   "disc": "VK",
+   "doc": "13АВ-РД-ВК.КВ-К4_V1",
+   "page_a": 16,
+   "page_b": 16,
+   "n_a": 2,
+   "n_b": 2,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 0.999941,
+    "changed_len_total": 13.276,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 13.28,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": null,
+    "n_records_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_records_outside_roi": null,
+    "n_big_outside_roi": null,
+    "error": "too dense"
+   },
+   "dropped_ink": 69905.7,
+   "dropped_seg": 39823,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0049",
+   "kind": "N:1",
+   "tags": [
+    "multi"
+   ],
+   "disc": "KM",
+   "doc": "13АВ-РД-КМ-К3",
+   "page_a": 7,
+   "page_b": 7,
+   "n_a": 3,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.527335,
+    "changed_len_total": 7888.883,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 7888.88,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 7888.9,
+   "dropped_seg": 703,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0050",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР4.2-К6",
+   "page_a": 63,
+   "page_b": 64,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 7,
+    "n_records_big": 7,
+    "added_removed_big": 6,
+    "similarity": 0.742773,
+    "changed_len_total": 23072.399,
+    "n_big_outside_roi": 5,
+    "len_outside_roi": 7895.11,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 0,
+    "similarity": 0.678518,
+    "changed_len_total": 31612.993,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 63,
+    "n_records_big": 34,
+    "similarity": 0.75815,
+    "changed_len_total": 202931.541,
+    "n_records_outside_roi": 61,
+    "n_big_outside_roi": 32,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0051",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 22,
+   "page_b": 25,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.000689,
+    "changed_len_total": 16359.01,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 10,
+    "n_records_big": 7,
+    "similarity": 0.741347,
+    "changed_len_total": 114687.243,
+    "n_records_outside_roi": 10,
+    "n_big_outside_roi": 7,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0052",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭМ-К3",
+   "page_a": 11,
+   "page_b": 12,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.626585,
+    "changed_len_total": 4964.051,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 4964.05,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.0,
+    "changed_len_total": 14389.155,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "similarity": 0.022672,
+    "changed_len_total": 259256.057,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0053",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 160,
+   "page_b": 101,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "added_removed_big": 0,
+    "similarity": 0.688109,
+    "changed_len_total": 5885.584,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 3,
+    "n_records_big": 3,
+    "similarity": 0.688109,
+    "changed_len_total": 5885.584,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0054",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.39.2-К2",
+   "page_a": 9,
+   "page_b": 10,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.748404,
+    "changed_len_total": 1360.08,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 1360.08,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 55,
+    "n_records_big": 38,
+    "similarity": 0.984174,
+    "changed_len_total": 8175.735,
+    "n_records_outside_roi": 55,
+    "n_big_outside_roi": 38,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0055",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.29.1-К1",
+   "page_a": 15,
+   "page_b": 15,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "added_removed_big": 4,
+    "similarity": 0.647839,
+    "changed_len_total": 2400.597,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 2400.6,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0056",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 19,
+   "page_b": 22,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.000689,
+    "changed_len_total": 16358.53,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 12,
+    "n_records_big": 7,
+    "similarity": 0.697192,
+    "changed_len_total": 119061.302,
+    "n_records_outside_roi": 12,
+    "n_big_outside_roi": 7,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0057",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К3 (Книга 1)",
+   "page_a": 8,
+   "page_b": 8,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.98863,
+    "changed_len_total": 314.406,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 314.41,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 7,
+    "n_records_big": 7,
+    "added_removed_big": 6,
+    "similarity": 0.006317,
+    "changed_len_total": 160787.928,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 6,
+    "n_records_big": 6,
+    "similarity": 0.012079,
+    "changed_len_total": 640346.23,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 3,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0058",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 27,
+   "page_b": 30,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.000689,
+    "changed_len_total": 16359.49,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 15,
+    "n_records_big": 9,
+    "similarity": 0.698711,
+    "changed_len_total": 143998.499,
+    "n_records_outside_roi": 15,
+    "n_big_outside_roi": 9,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0059",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-СОУЭ-К3-К6",
+   "page_a": 5,
+   "page_b": 5,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.995858,
+    "changed_len_total": 157.217,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 157.22,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.009828,
+    "changed_len_total": 47325.343,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 7,
+    "n_records_big": 7,
+    "similarity": 0.519289,
+    "changed_len_total": 68845.42,
+    "n_records_outside_roi": 7,
+    "n_big_outside_roi": 7,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0060",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 32,
+   "page_b": 35,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.000689,
+    "changed_len_total": 16358.53,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 24,
+    "n_records_big": 12,
+    "similarity": 0.655449,
+    "changed_len_total": 134438.935,
+    "n_records_outside_roi": 24,
+    "n_big_outside_roi": 12,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": false
+  },
+  {
+   "task_id": "T0061",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 148,
+   "page_b": 115,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0062",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АПЗ.АПС-К4",
+   "page_a": 36,
+   "page_b": 36,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0063",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АПЗ.АПС-К4",
+   "page_a": 14,
+   "page_b": 14,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "similarity": 0.996643,
+    "changed_len_total": 1271.719,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0064",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "VK",
+   "doc": "13АВ-РД-ВК2-К5 V1",
+   "page_a": 10,
+   "page_b": 11,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 8,
+    "n_records_big": 4,
+    "added_removed_big": 2,
+    "similarity": 0.991432,
+    "changed_len_total": 2842.365,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 2487.91,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 7,
+    "n_records_big": 3,
+    "added_removed_big": 1,
+    "similarity": 0.998948,
+    "changed_len_total": 354.456,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 7,
+    "n_records_big": 4,
+    "similarity": 0.995627,
+    "changed_len_total": 2038.056,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0065",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.1-К5-К6",
+   "page_a": 6,
+   "page_b": 6,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 20,
+    "n_records_big": 12,
+    "added_removed_big": 6,
+    "similarity": 0.531503,
+    "changed_len_total": 44859.893,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 39216.71,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 20,
+    "n_records_big": 12,
+    "added_removed_big": 5,
+    "similarity": 0.532073,
+    "changed_len_total": 52555.674,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 74,
+    "n_records_big": 60,
+    "similarity": 0.702954,
+    "changed_len_total": 199951.676,
+    "n_records_outside_roi": 54,
+    "n_big_outside_roi": 48,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0066",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 157,
+   "page_b": 101,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 0,
+    "similarity": 0.897225,
+    "changed_len_total": 1939.426,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "similarity": 0.897225,
+    "changed_len_total": 1939.426,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0067",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К6 (Книга 1)",
+   "page_a": 20,
+   "page_b": 20,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.595362,
+    "changed_len_total": 4908.78,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 4908.78,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 8,
+    "n_records_big": 2,
+    "similarity": 0.996524,
+    "changed_len_total": 1742.811,
+    "n_records_outside_roi": 8,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0068",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АПЗ.АПС-К5",
+   "page_a": 77,
+   "page_b": 82,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": null,
+    "n_records_big": null,
+    "added_removed_big": null,
+    "similarity": null,
+    "changed_len_total": null,
+    "n_big_outside_roi": null,
+    "len_outside_roi": null,
+    "error": "no vector geometry on one side"
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0069",
+   "kind": "1:1_nested",
+   "tags": [
+    "nested"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К3 (Книга 2)",
+   "page_a": 13,
+   "page_b": 13,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.700416,
+    "changed_len_total": 4496.289,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 4496.29,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 4,
+    "n_records_big": 2,
+    "similarity": 0.971691,
+    "changed_len_total": 13302.373,
+    "n_records_outside_roi": 4,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0070",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР0.3-ПА",
+   "page_a": 6,
+   "page_b": 6,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.975873,
+    "changed_len_total": 549.655,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 549.65,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "similarity": 0.991033,
+    "changed_len_total": 1991.76,
+    "n_records_outside_roi": 1,
+    "n_big_outside_roi": 1,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0071",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К5 (Книга 2)",
+   "page_a": 11,
+   "page_b": 13,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 37,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.995564,
+    "changed_len_total": 1029.713,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 1024.25,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 36,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 0.999977,
+    "changed_len_total": 5.462,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 38,
+    "n_records_big": 3,
+    "similarity": 0.990838,
+    "changed_len_total": 3274.838,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 3,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0072",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 11,
+   "page_b": 13,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 5,
+    "n_records_big": 5,
+    "similarity": 0.641588,
+    "changed_len_total": 261613.447,
+    "n_records_outside_roi": 5,
+    "n_big_outside_roi": 5,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0073",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К1 V1",
+   "page_a": 19,
+   "page_b": 20,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.962219,
+    "changed_len_total": 560.08,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 35.68,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 57,
+    "n_records_big": 35,
+    "similarity": 0.982844,
+    "changed_len_total": 10560.678,
+    "n_records_outside_roi": 57,
+    "n_big_outside_roi": 35,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0074",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К2 V1",
+   "page_a": 19,
+   "page_b": 19,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 0,
+    "similarity": 0.87888,
+    "changed_len_total": 11512.311,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 0,
+    "similarity": 0.87888,
+    "changed_len_total": 11512.311,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 13,
+    "n_records_big": 13,
+    "similarity": 0.872396,
+    "changed_len_total": 80803.455,
+    "n_records_outside_roi": 11,
+    "n_big_outside_roi": 11,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0075",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К6 (Книга 1)",
+   "page_a": 12,
+   "page_b": 12,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.980558,
+    "changed_len_total": 1673.43,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 1673.43,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 6,
+    "n_records_big": 0,
+    "similarity": 0.999759,
+    "changed_len_total": 35.397,
+    "n_records_outside_roi": 6,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0076",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-АК-К6 (Книга 1)",
+   "page_a": 14,
+   "page_b": 14,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.937915,
+    "changed_len_total": 1589.917,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 1051.57,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 3,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 0.999377,
+    "changed_len_total": 16.94,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 6,
+    "n_records_big": 0,
+    "similarity": 0.999679,
+    "changed_len_total": 33.702,
+    "n_records_outside_roi": 3,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0077",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР4.2-К6",
+   "page_a": 27,
+   "page_b": 27,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 3,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.972039,
+    "changed_len_total": 710.458,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 524.4,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 2,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.992799,
+    "changed_len_total": 187.018,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 7,
+    "n_records_big": 7,
+    "similarity": 0.828912,
+    "changed_len_total": 134615.984,
+    "n_records_outside_roi": 7,
+    "n_big_outside_roi": 7,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0078",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ2-К2 V1",
+   "page_a": 19,
+   "page_b": 19,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.914413,
+    "changed_len_total": 1203.971,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 1203.97,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 13,
+    "n_records_big": 13,
+    "similarity": 0.872396,
+    "changed_len_total": 80803.455,
+    "n_records_outside_roi": 13,
+    "n_big_outside_roi": 13,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0079",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.33-38.1-К2",
+   "page_a": 17,
+   "page_b": 19,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 1,
+    "similarity": 0.968707,
+    "changed_len_total": 384.022,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.995604,
+    "changed_len_total": 55.44,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 8,
+    "n_records_big": 8,
+    "similarity": 0.777652,
+    "changed_len_total": 53747.683,
+    "n_records_outside_roi": 7,
+    "n_big_outside_roi": 7,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0080",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР4.2-К4",
+   "page_a": 38,
+   "page_b": 38,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.972915,
+    "changed_len_total": 680.28,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 680.28,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 115,
+    "n_records_big": 23,
+    "similarity": 0.956683,
+    "changed_len_total": 45080.997,
+    "n_records_outside_roi": 115,
+    "n_big_outside_roi": 23,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0081",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "EOM",
+   "doc": "13АВ-РД-ЭО-К5",
+   "page_a": 10,
+   "page_b": 11,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 12,
+    "n_records_big": 5,
+    "added_removed_big": 4,
+    "similarity": 0.931021,
+    "changed_len_total": 46523.004,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 11,
+    "n_records_big": 5,
+    "added_removed_big": 4,
+    "similarity": 0.931047,
+    "changed_len_total": 46507.172,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 24,
+    "n_records_big": 17,
+    "similarity": 0.846608,
+    "changed_len_total": 207580.811,
+    "n_records_outside_roi": 12,
+    "n_big_outside_roi": 11,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0082",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР0.2-ПА",
+   "page_a": 9,
+   "page_b": 9,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 25,
+    "n_records_big": 13,
+    "added_removed_big": 5,
+    "similarity": 0.977778,
+    "changed_len_total": 5335.792,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 25,
+    "n_records_big": 13,
+    "added_removed_big": 5,
+    "similarity": 0.978026,
+    "changed_len_total": 5276.199,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 56,
+    "n_records_big": 40,
+    "similarity": 0.960883,
+    "changed_len_total": 21389.131,
+    "n_records_outside_roi": 31,
+    "n_big_outside_roi": 27,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0083",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.1-К4",
+   "page_a": 9,
+   "page_b": 9,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0084",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "VK",
+   "doc": "13АВ-РД-ВК2.1-ПА V1",
+   "page_a": 40,
+   "page_b": 41,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.988382,
+    "changed_len_total": 158.64,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 158.64,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "similarity": 0.973855,
+    "changed_len_total": 1004.1,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0085",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "SS",
+   "doc": "13АВ-РД-СОУЭ-К3-К6",
+   "page_a": 39,
+   "page_b": 33,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 1,
+    "similarity": 0.985559,
+    "changed_len_total": 522.773,
+    "n_big_outside_roi": 1,
+    "len_outside_roi": 522.77,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 4,
+    "n_records_big": 4,
+    "similarity": 0.573619,
+    "changed_len_total": 44305.291,
+    "n_records_outside_roi": 4,
+    "n_big_outside_roi": 4,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0086",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "OV",
+   "doc": "13АВ-РД-ОВ1.2-К1_V1",
+   "page_a": 41,
+   "page_b": 48,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 8,
+    "n_records_big": 8,
+    "similarity": 0.404424,
+    "changed_len_total": 49657.192,
+    "n_records_outside_roi": 8,
+    "n_big_outside_roi": 8,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0087",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "KJ",
+   "doc": "13АВ-РД-КЖ5.1-К1К2",
+   "page_a": 11,
+   "page_b": 11,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 1,
+    "n_records_big": 1,
+    "added_removed_big": 0,
+    "similarity": 0.916075,
+    "changed_len_total": 1053.709,
+    "n_big_outside_roi": 0,
+    "len_outside_roi": 0,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0088",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "AR",
+   "doc": "13АВ-РД-АР1.2-К4",
+   "page_a": 8,
+   "page_b": 8,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 12,
+    "n_records_big": 10,
+    "added_removed_big": 6,
+    "similarity": 0.983638,
+    "changed_len_total": 7020.425,
+    "n_big_outside_roi": 4,
+    "len_outside_roi": 1159.38,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 6,
+    "n_records_big": 6,
+    "added_removed_big": 2,
+    "similarity": 0.986378,
+    "changed_len_total": 5861.046,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 8,
+    "n_records_big": 8,
+    "similarity": 0.990684,
+    "changed_len_total": 6350.42,
+    "n_records_outside_roi": 2,
+    "n_big_outside_roi": 2,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  },
+  {
+   "task_id": "T0089",
+   "kind": "1:1_aligned",
+   "tags": [
+    "control_aligned"
+   ],
+   "disc": "SS",
+   "doc": "13AB-РД-СОТ-К7 V1",
+   "page_a": 16,
+   "page_b": 16,
+   "n_a": 1,
+   "n_b": 1,
+   "arm1": {
+    "n_records": 2,
+    "n_records_big": 2,
+    "added_removed_big": 2,
+    "similarity": 0.985434,
+    "changed_len_total": 705.6,
+    "n_big_outside_roi": 2,
+    "len_outside_roi": 705.6,
+    "error": null
+   },
+   "arm2": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "added_removed_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "error": null
+   },
+   "arm3": {
+    "n_records": 0,
+    "n_records_big": 0,
+    "similarity": 1.0,
+    "changed_len_total": 0,
+    "n_records_outside_roi": 0,
+    "n_big_outside_roi": 0,
+    "error": null
+   },
+   "dropped_ink": 0.0,
+   "dropped_seg": 0,
+   "page_rect_equal": true
+  }
+ ]
+}

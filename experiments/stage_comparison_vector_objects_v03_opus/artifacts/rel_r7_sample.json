@@ -1,0 +1,1012 @@
+{
+ "seed": 20260823,
+ "guard": {
+  "arc_min_pts": 6
+ },
+ "n": {
+  "INSIDE": 18,
+  "CONTAINS": 18,
+  "PART_OF": 18,
+  "ADJACENT": 18
+ },
+ "items": {
+  "INSIDE": [
+   {
+    "id": "INSIDE_00",
+    "type": "INSIDE",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_01",
+    "type": "INSIDE",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_02",
+    "type": "INSIDE",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_03",
+    "type": "INSIDE",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_04",
+    "type": "INSIDE",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_05",
+    "type": "INSIDE",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_06",
+    "type": "INSIDE",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_07",
+    "type": "INSIDE",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_08",
+    "type": "INSIDE",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_09",
+    "type": "INSIDE",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_10",
+    "type": "INSIDE",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_11",
+    "type": "INSIDE",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_12",
+    "type": "INSIDE",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_13",
+    "type": "INSIDE",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "a_cls": "linear",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_14",
+    "type": "INSIDE",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_15",
+    "type": "INSIDE",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "area",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_16",
+    "type": "INSIDE",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_17",
+    "type": "INSIDE",
+    "block": "49RP-M9LN-JMF",
+    "doc": "13АВ-РД-КМ-К3",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   }
+  ],
+  "CONTAINS": [
+   {
+    "id": "CONTAINS_00",
+    "type": "CONTAINS",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_01",
+    "type": "CONTAINS",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_02",
+    "type": "CONTAINS",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_03",
+    "type": "CONTAINS",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_04",
+    "type": "CONTAINS",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_05",
+    "type": "CONTAINS",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "area",
+    "b_cls": "stray",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_06",
+    "type": "CONTAINS",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "a_cls": "area",
+    "b_cls": "stray",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_07",
+    "type": "CONTAINS",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_08",
+    "type": "CONTAINS",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_09",
+    "type": "CONTAINS",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_10",
+    "type": "CONTAINS",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_11",
+    "type": "CONTAINS",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_12",
+    "type": "CONTAINS",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_13",
+    "type": "CONTAINS",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "a_cls": "area",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_14",
+    "type": "CONTAINS",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "a_cls": "area",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_15",
+    "type": "CONTAINS",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "a_cls": "area",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_16",
+    "type": "CONTAINS",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_17",
+    "type": "CONTAINS",
+    "block": "49RP-M9LN-JMF",
+    "doc": "13АВ-РД-КМ-К3",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "detail": {
+     "mode": "polygon"
+    }
+   }
+  ],
+  "PART_OF": [
+   {
+    "id": "PART_OF_00",
+    "type": "PART_OF",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_01",
+    "type": "PART_OF",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_02",
+    "type": "PART_OF",
+    "block": "7MFK-GCJM-AVT",
+    "doc": "13АВ-РД-ГП2 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "vector_raster_mix",
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_03",
+    "type": "PART_OF",
+    "block": "blk_9a8c86a7e64543069b1424ad220a2dca",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_04",
+    "type": "PART_OF",
+    "block": "blk_9a8c86a7e64543069b1424ad220a2dca",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_05",
+    "type": "PART_OF",
+    "block": "blk_9a8c86a7e64543069b1424ad220a2dca",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_06",
+    "type": "PART_OF",
+    "block": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "area",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_07",
+    "type": "PART_OF",
+    "block": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "area",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_08",
+    "type": "PART_OF",
+    "block": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "area",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_09",
+    "type": "PART_OF",
+    "block": "9TP6-RNQ3-QLN",
+    "doc": "13АВ-РД-НВ V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "vector_raster_mix",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_10",
+    "type": "PART_OF",
+    "block": "9TP6-RNQ3-QLN",
+    "doc": "13АВ-РД-НВ V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "vector_raster_mix",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_11",
+    "type": "PART_OF",
+    "block": "9TP6-RNQ3-QLN",
+    "doc": "13АВ-РД-НВ V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "vector_raster_mix",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_12",
+    "type": "PART_OF",
+    "block": "7YMA-E7V4-9E3",
+    "doc": "13АВ-РД-КМ-К6",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_13",
+    "type": "PART_OF",
+    "block": "7YMA-E7V4-9E3",
+    "doc": "13АВ-РД-КМ-К6",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_14",
+    "type": "PART_OF",
+    "block": "4YRN-VTFD-MAM",
+    "doc": "13АВ-РД-КК-К1 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "area",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_15",
+    "type": "PART_OF",
+    "block": "4YRN-VTFD-MAM",
+    "doc": "13АВ-РД-КК-К1 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_16",
+    "type": "PART_OF",
+    "block": "4YRN-VTFD-MAM",
+    "doc": "13АВ-РД-КК-К1 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "a_cls": "stray",
+    "b_cls": "area",
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_17",
+    "type": "PART_OF",
+    "block": "blk_362a88d5b0ca42b8b6946530dcabdc29",
+    "doc": "ПД-00542664-СОУЭ-5_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "detail": {}
+   }
+  ],
+  "ADJACENT": [
+   {
+    "id": "ADJACENT_00",
+    "type": "ADJACENT",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "detail": {
+     "gap_pt": 4.32,
+     "tol_pt": 9.1304
+    }
+   },
+   {
+    "id": "ADJACENT_01",
+    "type": "ADJACENT",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.1304
+    }
+   },
+   {
+    "id": "ADJACENT_02",
+    "type": "ADJACENT",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.1304
+    }
+   },
+   {
+    "id": "ADJACENT_03",
+    "type": "ADJACENT",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.4265
+    }
+   },
+   {
+    "id": "ADJACENT_04",
+    "type": "ADJACENT",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "a_cls": "stray",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 8.64,
+     "tol_pt": 9.4265
+    }
+   },
+   {
+    "id": "ADJACENT_05",
+    "type": "ADJACENT",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "a_cls": "stray",
+    "b_cls": "stray",
+    "detail": {
+     "gap_pt": 2.64,
+     "tol_pt": 9.4265
+    }
+   },
+   {
+    "id": "ADJACENT_06",
+    "type": "ADJACENT",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 11.7997
+    }
+   },
+   {
+    "id": "ADJACENT_07",
+    "type": "ADJACENT",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 8.64,
+     "tol_pt": 11.7997
+    }
+   },
+   {
+    "id": "ADJACENT_08",
+    "type": "ADJACENT",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 11.7997
+    }
+   },
+   {
+    "id": "ADJACENT_09",
+    "type": "ADJACENT",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 2.4365,
+     "tol_pt": 12.0
+    }
+   },
+   {
+    "id": "ADJACENT_10",
+    "type": "ADJACENT",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 1.92,
+     "tol_pt": 12.0
+    }
+   },
+   {
+    "id": "ADJACENT_11",
+    "type": "ADJACENT",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.779,
+     "tol_pt": 12.0
+    }
+   },
+   {
+    "id": "ADJACENT_12",
+    "type": "ADJACENT",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.6038
+    }
+   },
+   {
+    "id": "ADJACENT_13",
+    "type": "ADJACENT",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.6038
+    }
+   },
+   {
+    "id": "ADJACENT_14",
+    "type": "ADJACENT",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.6038
+    }
+   },
+   {
+    "id": "ADJACENT_15",
+    "type": "ADJACENT",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.8487
+    }
+   },
+   {
+    "id": "ADJACENT_16",
+    "type": "ADJACENT",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.8487
+    }
+   },
+   {
+    "id": "ADJACENT_17",
+    "type": "ADJACENT",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "a_cls": "linear",
+    "b_cls": "stray",
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.8487
+    }
+   }
+  ]
+ }
+}

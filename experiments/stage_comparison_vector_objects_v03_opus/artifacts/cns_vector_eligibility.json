@@ -1,0 +1,159 @@
+{
+ "definition": {
+  "eligible": "vector layer present, 20 <= n_seg <= 200000, largest raster < 50 % of the block, not empty",
+  "vision_only_raster": "class raster (raster_only, or raster >=50 % with <=200 segments)",
+  "too_thin_lt20_segments": "fewer than 20 inked segments — no object structure to build"
+ },
+ "counts": {
+  "eligible": 39336,
+  "too_thin_lt20_segments": 2144,
+  "vision_only_raster": 1007,
+  "too_heavy_gt200k_segments": 502,
+  "vision_only_raster_dominant": 153,
+  "vision_only_no_vector": 114,
+  "no_geometry_empty": 5
+ },
+ "shares": {
+  "eligible": 0.90927,
+  "too_thin_lt20_segments": 0.04956,
+  "vision_only_raster": 0.02328,
+  "too_heavy_gt200k_segments": 0.0116,
+  "vision_only_raster_dominant": 0.00354,
+  "vision_only_no_vector": 0.00264,
+  "no_geometry_empty": 0.00012
+ },
+ "eligible_share": 0.90927,
+ "vision_required_share": 0.02956,
+ "degraded_but_eligible": {
+  "curved_text_share_of_eligible": 0.00076,
+  "no_text_layer_share_of_eligible": 0.0243,
+  "broken_text_share_of_eligible": 0.01355,
+  "raster_patch_share_of_eligible": 0.0483,
+  "no_uniq_desig_near_geom_share_of_eligible": 0.08788
+ },
+ "eligible_geometry_and_text": 0.87485,
+ "excluding_stamps": {
+  "n": 28599,
+  "share_of_corpus": 0.66108,
+  "eligible": 0.93063,
+  "counts": {
+   "eligible": 26615,
+   "vision_only_raster": 1007,
+   "too_heavy_gt200k_segments": 502,
+   "too_thin_lt20_segments": 345,
+   "vision_only_raster_dominant": 111,
+   "vision_only_no_vector": 14,
+   "no_geometry_empty": 5
+  }
+ },
+ "by_discipline": {
+  "AR": {
+   "n": 9636,
+   "eligible": 0.9785,
+   "vision_only": 0.0184
+  },
+  "EOM": {
+   "n": 4604,
+   "eligible": 0.9246,
+   "vision_only": 0.0254
+  },
+  "GP": {
+   "n": 118,
+   "eligible": 0.7712,
+   "vision_only": 0.0593
+  },
+  "ITP": {
+   "n": 627,
+   "eligible": 0.7608,
+   "vision_only": 0.0351
+  },
+  "KJ": {
+   "n": 7788,
+   "eligible": 0.9856,
+   "vision_only": 0.0077
+  },
+  "KM": {
+   "n": 980,
+   "eligible": 0.9663,
+   "vision_only": 0.002
+  },
+  "OV": {
+   "n": 7631,
+   "eligible": 0.7842,
+   "vision_only": 0.067
+  },
+  "POS": {
+   "n": 64,
+   "eligible": 1.0,
+   "vision_only": 0.0
+  },
+  "PT": {
+   "n": 426,
+   "eligible": 0.8592,
+   "vision_only": 0.0423
+  },
+  "SS": {
+   "n": 6538,
+   "eligible": 0.933,
+   "vision_only": 0.0165
+  },
+  "TX": {
+   "n": 449,
+   "eligible": 0.7862,
+   "vision_only": 0.1269
+  },
+  "VK": {
+   "n": 4400,
+   "eligible": 0.8164,
+   "vision_only": 0.0443
+  }
+ },
+ "by_class": {
+  "stamp": {
+   "n": 14662,
+   "eligible": 0.8676
+  },
+  "drawing": {
+   "n": 24747,
+   "eligible": 0.9775
+  },
+  "table": {
+   "n": 478,
+   "eligible": 0.9247
+  },
+  "legend_notes": {
+   "n": 368,
+   "eligible": 0.8179
+  },
+  "raster": {
+   "n": 1007,
+   "eligible": 0.0
+  },
+  "vector_raster_mix": {
+   "n": 1961,
+   "eligible": 0.8429
+  },
+  "empty": {
+   "n": 5,
+   "eligible": 0.0
+  },
+  "curved_text": {
+   "n": 33,
+   "eligible": 0.9091
+  }
+ },
+ "segments_of_eligible": {
+  "p10": 260.0,
+  "p25": 905.75,
+  "p50": 2061.0,
+  "p75": 12097.75,
+  "p90": 41354.0,
+  "p99": 130518.35
+ },
+ "corpus_context": {
+  "n_graphic_blocks_total_in_667_result_json": 52057,
+  "n_blocks_with_pdf_present": 43261,
+  "share_of_all_graphic_blocks_measured": 0.83103,
+  "note": "8 796 blocks (16.9 %) live in versions whose document.pdf is absent — they cannot be read at all"
+ }
+}

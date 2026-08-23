@@ -1,0 +1,266 @@
+[
+ {
+  "kind": "table_row_insert",
+  "name": "NR2_AR_blk_ede5",
+  "carrier": "AR-13АВ-РД-АР1.2-К5-v004-blk_ede531d29f3d48bc98ae16f81ef82652",
+  "manifest": {
+   "cf_class": "N",
+   "cf_id": "NR2_row_insert_shift",
+   "params": {
+    "row_gap_pt": 26.88,
+    "n_rules": 63,
+    "shift": true,
+    "rule_len_pt": 269.28,
+    "texts_added": 2
+   },
+   "change_bbox_pt": [
+    226.8,
+    1150.96,
+    496.08,
+    1679.2
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "n_seg_before": 1010,
+   "n_seg_after": 1011
+  }
+ },
+ {
+  "kind": "table_row_insert",
+  "name": "NR2_ITP_blk_2d0c",
+  "carrier": "ITP-ПД-00542664-АИТ.ГСВ_V1-v001-blk_2d0c258f773043e8b7f6481feec6fc4b",
+  "manifest": {
+   "cf_class": "N",
+   "cf_id": "NR2_row_insert_shift",
+   "params": {
+    "row_gap_pt": 42.24,
+    "n_rules": 5,
+    "shift": true,
+    "rule_len_pt": 524.065,
+    "texts_added": 7
+   },
+   "change_bbox_pt": [
+    648.895,
+    783.72,
+    1172.959,
+    828.802
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "n_seg_before": 1724,
+   "n_seg_after": 1725
+  }
+ },
+ {
+  "kind": "table_row_insert",
+  "name": "NR2_KJ_AD4H-APG",
+  "carrier": "KJ-13АВ-РД-КЖ5.30-31.1-К2-v002-AD4H-APGD-H7H",
+  "manifest": {
+   "cf_class": "N",
+   "cf_id": "NR2_row_insert_shift",
+   "params": {
+    "row_gap_pt": 42.48,
+    "n_rules": 5,
+    "shift": true,
+    "rule_len_pt": 340.32,
+    "texts_added": 14
+   },
+   "change_bbox_pt": [
+    2029.44,
+    1542.0,
+    2369.76,
+    1671.838
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "n_seg_before": 2702,
+   "n_seg_after": 2703
+  }
+ },
+ {
+  "kind": "table_row_insert",
+  "name": "NR2_KM_9R9P-HVP",
+  "carrier": "KM-13АВ-РД-НВФ-К4-v001-9R9P-HVPN-CVQ",
+  "manifest": {
+   "cf_class": "N",
+   "cf_id": "NR2_row_insert_shift",
+   "params": {
+    "row_gap_pt": 41.4,
+    "n_rules": 10,
+    "shift": true,
+    "rule_len_pt": 524.334,
+    "texts_added": 7
+   },
+   "change_bbox_pt": [
+    651.906,
+    785.96,
+    1176.24,
+    829.039
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "n_seg_before": 620,
+   "n_seg_after": 621
+  }
+ },
+ {
+  "kind": "glyph_real",
+  "name": "GLYPHreal_EOM_blk_1267",
+  "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_12672bfa817948989c9d4464a0c80f84",
+  "n_obj": 1603,
+  "n_flagged": 391,
+  "diag": {
+   "n_candidates": 1576,
+   "n_runs_h": 84,
+   "n_runs_v": 4,
+   "n_flagged": 391,
+   "n_objects": 1603,
+   "params": {
+    "base_tol": 0.35,
+    "h_ratio": 2.5,
+    "gap_max": 1.2,
+    "gap_min": -0.35,
+    "run_min": 3,
+    "h_max_frac": 0.06,
+    "closed_only": false
+   }
+  }
+ },
+ {
+  "kind": "glyph_real",
+  "name": "GLYPHreal_EOM_blk_077f",
+  "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_077f61546764467f882caf2b8a5bfc5f",
+  "n_obj": 853,
+  "n_flagged": 459,
+  "diag": {
+   "n_candidates": 817,
+   "n_runs_h": 58,
+   "n_runs_v": 15,
+   "n_flagged": 459,
+   "n_objects": 853,
+   "params": {
+    "base_tol": 0.35,
+    "h_ratio": 2.5,
+    "gap_max": 1.2,
+    "gap_min": -0.35,
+    "run_min": 3,
+    "h_max_frac": 0.06,
+    "closed_only": false
+   }
+  }
+ },
+ {
+  "kind": "glyph_real",
+  "name": "GLYPHreal_EOM_blk_6916",
+  "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_6916c4bb3298472a9cdd30d98d48899d",
+  "n_obj": 3784,
+  "n_flagged": 467,
+  "diag": {
+   "n_candidates": 3734,
+   "n_runs_h": 2,
+   "n_runs_v": 125,
+   "n_flagged": 467,
+   "n_objects": 3784,
+   "params": {
+    "base_tol": 0.35,
+    "h_ratio": 2.5,
+    "gap_max": 1.2,
+    "gap_min": -0.35,
+    "run_min": 3,
+    "h_max_frac": 0.06,
+    "closed_only": false
+   }
+  }
+ },
+ {
+  "kind": "glyph_real",
+  "name": "GLYPHreal_EOM_blk_c891",
+  "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_c891ddac9954415a8ff37af1ad3c38e2",
+  "n_obj": 199,
+  "n_flagged": 157,
+  "diag": {
+   "n_candidates": 183,
+   "n_runs_h": 12,
+   "n_runs_v": 1,
+   "n_flagged": 157,
+   "n_objects": 199,
+   "params": {
+    "base_tol": 0.35,
+    "h_ratio": 2.5,
+    "gap_max": 1.2,
+    "gap_min": -0.35,
+    "run_min": 3,
+    "h_max_frac": 0.06,
+    "closed_only": false
+   }
+  }
+ },
+ {
+  "kind": "glyph_d9",
+  "name": "GLYPHd9_AR_6WNV-DWD",
+  "carrier": "AR-13АВ-РД-АР1.2-К3-v001-6WNV-DWDA-4CQ",
+  "n_obj_before": 75,
+  "n_obj_after": 508,
+  "n_gt": 128,
+  "n_det": 208,
+  "prf": {
+   "tp": 81,
+   "fp": 127,
+   "fn": 47,
+   "precision": 0.3894,
+   "recall": 0.6328,
+   "n_det": 208,
+   "n_gt": 128
+  }
+ },
+ {
+  "kind": "glyph_d9",
+  "name": "GLYPHd9_EOM_blk_4f3f",
+  "carrier": "EOM-СТ26_01-14-ЭОМ-3-РД_V1-v001-blk_4f3fadc77c584364a5ee052c44eb0016",
+  "n_obj_before": 161,
+  "n_obj_after": 1442,
+  "n_gt": 988,
+  "n_det": 172,
+  "prf": {
+   "tp": 158,
+   "fp": 14,
+   "fn": 830,
+   "precision": 0.9186,
+   "recall": 0.1599,
+   "n_det": 172,
+   "n_gt": 988
+  }
+ },
+ {
+  "kind": "glyph_d9",
+  "name": "GLYPHd9_GP_7DTQ-7FJ",
+  "carrier": "GP-13АВ-РД-ГП1-v001-7DTQ-7FJA-Y6G",
+  "n_obj_before": 32,
+  "n_obj_after": 852,
+  "n_gt": 782,
+  "n_det": 512,
+  "prf": {
+   "tp": 493,
+   "fp": 19,
+   "fn": 289,
+   "precision": 0.9629,
+   "recall": 0.6304,
+   "n_det": 512,
+   "n_gt": 782
+  }
+ },
+ {
+  "kind": "glyph_d9",
+  "name": "GLYPHd9_AR_blk_ede5",
+  "carrier": "AR-13АВ-РД-АР1.2-К5-v004-blk_ede531d29f3d48bc98ae16f81ef82652",
+  "n_obj_before": 80,
+  "n_obj_after": 6831,
+  "n_gt": 6703,
+  "n_det": 62,
+  "prf": {
+   "tp": 50,
+   "fp": 12,
+   "fn": 6653,
+   "precision": 0.8065,
+   "recall": 0.0075,
+   "n_det": 62,
+   "n_gt": 6703
+  }
+ }
+]

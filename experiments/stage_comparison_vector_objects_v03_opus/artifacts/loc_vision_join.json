@@ -1,0 +1,59 @@
+{
+ "provenance": {
+  "n_rows": 5984,
+  "n_rows_from_replay": 1315,
+  "n_C_rows_still_scored_by_the_defective_scorer": 424
+ },
+ "n_joined": 5748,
+ "n_cf_rows_with_picture": 1598,
+ "none": {
+  "n": 1437,
+  "picture_invisible": {
+   "n": 108,
+   "share": 0.0752,
+   "ledger_L2": 0.3611,
+   "ledger_L4": 0.1667,
+   "median_touched_ink_pt": 0.369
+  },
+  "picture_barely_visible_le_1e-4": {
+   "n": 321,
+   "ledger_L2": 0.8411,
+   "ledger_L4": 0.6199
+  },
+  "picture_visible_gt_1e-4": {
+   "n": 1008,
+   "ledger_L2": 0.9732,
+   "ledger_L4": 0.9087
+  },
+  "ledger_misses": {
+   "n": 147,
+   "share_of_misses_that_are_picture_invisible": 0.4694,
+   "share_of_misses_below_1e-4_of_pixels": 0.8163
+  }
+ },
+ "round025": {
+  "n": 1437,
+  "picture_invisible": {
+   "n": 108,
+   "share": 0.0752,
+   "ledger_L2": 0.3148,
+   "ledger_L4": 0.1389,
+   "median_touched_ink_pt": 0.369
+  },
+  "picture_barely_visible_le_1e-4": {
+   "n": 321,
+   "ledger_L2": 0.8006,
+   "ledger_L4": 0.5919
+  },
+  "picture_visible_gt_1e-4": {
+   "n": 1008,
+   "ledger_L2": 0.9583,
+   "ledger_L4": 0.8859
+  },
+  "ledger_misses": {
+   "n": 180,
+   "share_of_misses_that_are_picture_invisible": 0.4111,
+   "share_of_misses_below_1e-4_of_pixels": 0.7667
+  }
+ }
+}

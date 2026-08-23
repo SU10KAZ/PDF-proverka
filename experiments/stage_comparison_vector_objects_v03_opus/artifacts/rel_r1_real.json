@@ -1,0 +1,2978 @@
+[
+ {
+  "pair_id": "AR-b38a7dbc",
+  "discipline": "AR",
+  "classes": [
+   "unchanged_control",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 6.429,
+  "S_b": 6.429,
+  "S_shared": 6.429,
+  "n_seg": [
+   32312,
+   32312
+  ],
+  "n_obj": [
+   2019,
+   2019
+  ],
+  "obj_matched": 1853,
+  "reg": [
+   -0.092,
+   -0.006,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 3351,
+   "PART_OF": 1,
+   "INSIDE": 43,
+   "CONTAINS": 43,
+   "ADJACENT": 7989,
+   "ALIGNED": 3436,
+   "LEADER_TO": 485,
+   "LABEL_ANCHOR": 1248,
+   "REPEATED_WITH": 214
+  },
+  "countsB": {
+   "CONNECTED_TO": 3351,
+   "PART_OF": 1,
+   "INSIDE": 43,
+   "CONTAINS": 43,
+   "ADJACENT": 7989,
+   "ALIGNED": 3436,
+   "LEADER_TO": 485,
+   "LABEL_ANCHOR": 1248,
+   "REPEATED_WITH": 214
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 3351,
+    "endpoints_ok": 2673,
+    "survived": 2601,
+    "survived_of_endpoints_ok": 2601
+   },
+   "INSIDE": {
+    "n": 43,
+    "endpoints_ok": 43,
+    "survived": 43,
+    "survived_of_endpoints_ok": 43
+   },
+   "CONTAINS": {
+    "n": 43,
+    "endpoints_ok": 43,
+    "survived": 43,
+    "survived_of_endpoints_ok": 43
+   },
+   "PART_OF": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "ADJACENT": {
+    "n": 7989,
+    "endpoints_ok": 6247,
+    "survived": 6176,
+    "survived_of_endpoints_ok": 6176
+   },
+   "ALIGNED": {
+    "n": 3436,
+    "endpoints_ok": 3099,
+    "survived": 3051,
+    "survived_of_endpoints_ok": 3051
+   },
+   "LEADER_TO": {
+    "n": 485,
+    "endpoints_ok": 322,
+    "survived": 304,
+    "survived_of_endpoints_ok": 304
+   },
+   "LABEL_ANCHOR": {
+    "n": 1248,
+    "endpoints_ok": 1162,
+    "survived": 1158,
+    "survived_of_endpoints_ok": 1158
+   },
+   "REPEATED_WITH": {
+    "n": 214,
+    "endpoints_ok": 210,
+    "survived": 210,
+    "survived_of_endpoints_ok": 210
+   }
+  }
+ },
+ {
+  "pair_id": "TX-95031dbd",
+  "discipline": "TX",
+  "classes": [
+   "unchanged_control",
+   "no_labels",
+   "rotated_page"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 0.48,
+  "S_b": 0.48,
+  "S_shared": 0.48,
+  "n_seg": [
+   814,
+   814
+  ],
+  "n_obj": [
+   120,
+   120
+  ],
+  "obj_matched": 120,
+  "reg": [
+   -0.09,
+   -0.01,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 56,
+   "PART_OF": 1,
+   "INSIDE": 38,
+   "CONTAINS": 38,
+   "ADJACENT": 60,
+   "ALIGNED": 93,
+   "LEADER_TO": 16,
+   "LABEL_ANCHOR": 0,
+   "REPEATED_WITH": 8
+  },
+  "countsB": {
+   "CONNECTED_TO": 56,
+   "PART_OF": 1,
+   "INSIDE": 38,
+   "CONTAINS": 38,
+   "ADJACENT": 60,
+   "ALIGNED": 93,
+   "LEADER_TO": 16,
+   "LABEL_ANCHOR": 0,
+   "REPEATED_WITH": 8
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 56,
+    "endpoints_ok": 56,
+    "survived": 56,
+    "survived_of_endpoints_ok": 56
+   },
+   "INSIDE": {
+    "n": 38,
+    "endpoints_ok": 38,
+    "survived": 38,
+    "survived_of_endpoints_ok": 38
+   },
+   "CONTAINS": {
+    "n": 38,
+    "endpoints_ok": 38,
+    "survived": 38,
+    "survived_of_endpoints_ok": 38
+   },
+   "PART_OF": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "ADJACENT": {
+    "n": 60,
+    "endpoints_ok": 60,
+    "survived": 60,
+    "survived_of_endpoints_ok": 60
+   },
+   "ALIGNED": {
+    "n": 93,
+    "endpoints_ok": 93,
+    "survived": 93,
+    "survived_of_endpoints_ok": 93
+   },
+   "LEADER_TO": {
+    "n": 16,
+    "endpoints_ok": 16,
+    "survived": 16,
+    "survived_of_endpoints_ok": 16
+   },
+   "REPEATED_WITH": {
+    "n": 8,
+    "endpoints_ok": 8,
+    "survived": 8,
+    "survived_of_endpoints_ok": 8
+   }
+  }
+ },
+ {
+  "pair_id": "VK-b71afe81",
+  "discipline": "VK",
+  "classes": [
+   "different_packaging",
+   "rotated_page",
+   "dense_block",
+   "garbled_text_layer"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 9.426,
+  "S_b": 9.426,
+  "S_shared": 9.426,
+  "n_seg": [
+   16205,
+   16205
+  ],
+  "n_obj": [
+   242,
+   242
+  ],
+  "obj_matched": 233,
+  "reg": [
+   -0.054,
+   -0.08,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 186,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 2862,
+   "ALIGNED": 191,
+   "LEADER_TO": 20,
+   "LABEL_ANCHOR": 77,
+   "REPEATED_WITH": 22
+  },
+  "countsB": {
+   "CONNECTED_TO": 186,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 2862,
+   "ALIGNED": 191,
+   "LEADER_TO": 20,
+   "LABEL_ANCHOR": 77,
+   "REPEATED_WITH": 22
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 186,
+    "endpoints_ok": 166,
+    "survived": 166,
+    "survived_of_endpoints_ok": 166
+   },
+   "ADJACENT": {
+    "n": 2862,
+    "endpoints_ok": 2688,
+    "survived": 2688,
+    "survived_of_endpoints_ok": 2688
+   },
+   "ALIGNED": {
+    "n": 191,
+    "endpoints_ok": 182,
+    "survived": 182,
+    "survived_of_endpoints_ok": 182
+   },
+   "LEADER_TO": {
+    "n": 20,
+    "endpoints_ok": 20,
+    "survived": 20,
+    "survived_of_endpoints_ok": 20
+   },
+   "LABEL_ANCHOR": {
+    "n": 77,
+    "endpoints_ok": 76,
+    "survived": 8,
+    "survived_of_endpoints_ok": 8
+   },
+   "REPEATED_WITH": {
+    "n": 22,
+    "endpoints_ok": 21,
+    "survived": 21,
+    "survived_of_endpoints_ok": 21
+   }
+  }
+ },
+ {
+  "pair_id": "SS-6fc75e05",
+  "discipline": "SS",
+  "classes": [
+   "different_packaging",
+   "with_labels",
+   "table_like"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 10.995,
+  "S_b": 10.995,
+  "S_shared": 10.995,
+  "n_seg": [
+   5845,
+   12921
+  ],
+  "n_obj": [
+   57,
+   57
+  ],
+  "obj_matched": 40,
+  "reg": [
+   -0.05,
+   -0.05,
+   0.9977
+  ],
+  "countsA": {
+   "CONNECTED_TO": 29,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 217,
+   "ALIGNED": 37,
+   "LEADER_TO": 11,
+   "LABEL_ANCHOR": 53,
+   "REPEATED_WITH": 0
+  },
+  "countsB": {
+   "CONNECTED_TO": 44,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 170,
+   "ALIGNED": 43,
+   "LEADER_TO": 15,
+   "LABEL_ANCHOR": 53,
+   "REPEATED_WITH": 0
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 29,
+    "endpoints_ok": 20,
+    "survived": 16,
+    "survived_of_endpoints_ok": 16
+   },
+   "ADJACENT": {
+    "n": 217,
+    "endpoints_ok": 105,
+    "survived": 87,
+    "survived_of_endpoints_ok": 87
+   },
+   "ALIGNED": {
+    "n": 37,
+    "endpoints_ok": 30,
+    "survived": 25,
+    "survived_of_endpoints_ok": 25
+   },
+   "LEADER_TO": {
+    "n": 11,
+    "endpoints_ok": 11,
+    "survived": 7,
+    "survived_of_endpoints_ok": 7
+   },
+   "LABEL_ANCHOR": {
+    "n": 53,
+    "endpoints_ok": 38,
+    "survived": 36,
+    "survived_of_endpoints_ok": 36
+   }
+  }
+ },
+ {
+  "pair_id": "KJ-b5c82f7c",
+  "discipline": "KJ",
+  "classes": [
+   "bbox_boundary_artifact",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 8.876,
+  "S_b": 8.876,
+  "S_shared": 8.876,
+  "n_seg": [
+   7253,
+   7254
+  ],
+  "n_obj": [
+   578,
+   579
+  ],
+  "obj_matched": 570,
+  "reg": [
+   -0.05,
+   -0.05,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 563,
+   "PART_OF": 0,
+   "INSIDE": 12,
+   "CONTAINS": 12,
+   "ADJACENT": 1484,
+   "ALIGNED": 905,
+   "LEADER_TO": 114,
+   "LABEL_ANCHOR": 328,
+   "REPEATED_WITH": 112
+  },
+  "countsB": {
+   "CONNECTED_TO": 563,
+   "PART_OF": 0,
+   "INSIDE": 12,
+   "CONTAINS": 12,
+   "ADJACENT": 1484,
+   "ALIGNED": 906,
+   "LEADER_TO": 114,
+   "LABEL_ANCHOR": 328,
+   "REPEATED_WITH": 112
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 563,
+    "endpoints_ok": 537,
+    "survived": 537,
+    "survived_of_endpoints_ok": 537
+   },
+   "INSIDE": {
+    "n": 12,
+    "endpoints_ok": 12,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   },
+   "CONTAINS": {
+    "n": 12,
+    "endpoints_ok": 12,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   },
+   "ADJACENT": {
+    "n": 1484,
+    "endpoints_ok": 1444,
+    "survived": 1444,
+    "survived_of_endpoints_ok": 1444
+   },
+   "ALIGNED": {
+    "n": 905,
+    "endpoints_ok": 886,
+    "survived": 879,
+    "survived_of_endpoints_ok": 879
+   },
+   "LEADER_TO": {
+    "n": 114,
+    "endpoints_ok": 105,
+    "survived": 105,
+    "survived_of_endpoints_ok": 105
+   },
+   "LABEL_ANCHOR": {
+    "n": 328,
+    "endpoints_ok": 325,
+    "survived": 325,
+    "survived_of_endpoints_ok": 325
+   },
+   "REPEATED_WITH": {
+    "n": 112,
+    "endpoints_ok": 112,
+    "survived": 112,
+    "survived_of_endpoints_ok": 112
+   }
+  }
+ },
+ {
+  "pair_id": "AR-46f62636",
+  "discipline": "AR",
+  "classes": [
+   "bbox_boundary_artifact",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 6.429,
+  "S_b": 6.429,
+  "S_shared": 6.429,
+  "n_seg": [
+   30876,
+   30877
+  ],
+  "n_obj": [
+   1936,
+   1937
+  ],
+  "obj_matched": 1783,
+  "reg": [
+   -0.05,
+   -0.05,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 3102,
+   "PART_OF": 1,
+   "INSIDE": 49,
+   "CONTAINS": 49,
+   "ADJACENT": 6986,
+   "ALIGNED": 3295,
+   "LEADER_TO": 472,
+   "LABEL_ANCHOR": 1090,
+   "REPEATED_WITH": 205
+  },
+  "countsB": {
+   "CONNECTED_TO": 3102,
+   "PART_OF": 1,
+   "INSIDE": 49,
+   "CONTAINS": 49,
+   "ADJACENT": 6986,
+   "ALIGNED": 3296,
+   "LEADER_TO": 472,
+   "LABEL_ANCHOR": 1090,
+   "REPEATED_WITH": 205
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 3102,
+    "endpoints_ok": 2332,
+    "survived": 2284,
+    "survived_of_endpoints_ok": 2284
+   },
+   "INSIDE": {
+    "n": 49,
+    "endpoints_ok": 48,
+    "survived": 48,
+    "survived_of_endpoints_ok": 48
+   },
+   "CONTAINS": {
+    "n": 49,
+    "endpoints_ok": 48,
+    "survived": 48,
+    "survived_of_endpoints_ok": 48
+   },
+   "PART_OF": {
+    "n": 1,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ADJACENT": {
+    "n": 6986,
+    "endpoints_ok": 5823,
+    "survived": 5761,
+    "survived_of_endpoints_ok": 5761
+   },
+   "ALIGNED": {
+    "n": 3295,
+    "endpoints_ok": 2965,
+    "survived": 2914,
+    "survived_of_endpoints_ok": 2914
+   },
+   "LEADER_TO": {
+    "n": 472,
+    "endpoints_ok": 320,
+    "survived": 310,
+    "survived_of_endpoints_ok": 310
+   },
+   "LABEL_ANCHOR": {
+    "n": 1090,
+    "endpoints_ok": 1060,
+    "survived": 1055,
+    "survived_of_endpoints_ok": 1055
+   },
+   "REPEATED_WITH": {
+    "n": 205,
+    "endpoints_ok": 205,
+    "survived": 205,
+    "survived_of_endpoints_ok": 205
+   }
+  }
+ },
+ {
+  "pair_id": "SS-392b7bd3",
+  "discipline": "SS",
+  "classes": [
+   "bbox_boundary_artifact",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 10.988,
+  "S_b": 10.988,
+  "S_shared": 10.988,
+  "n_seg": [
+   860,
+   862
+  ],
+  "n_obj": [
+   18,
+   19
+  ],
+  "obj_matched": 17,
+  "reg": [
+   -0.08,
+   -0.05,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 6,
+   "PART_OF": 0,
+   "INSIDE": 8,
+   "CONTAINS": 8,
+   "ADJACENT": 32,
+   "ALIGNED": 7,
+   "LEADER_TO": 1,
+   "LABEL_ANCHOR": 12,
+   "REPEATED_WITH": 0
+  },
+  "countsB": {
+   "CONNECTED_TO": 6,
+   "PART_OF": 0,
+   "INSIDE": 8,
+   "CONTAINS": 8,
+   "ADJACENT": 32,
+   "ALIGNED": 8,
+   "LEADER_TO": 1,
+   "LABEL_ANCHOR": 12,
+   "REPEATED_WITH": 0
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 6,
+    "endpoints_ok": 5,
+    "survived": 5,
+    "survived_of_endpoints_ok": 5
+   },
+   "INSIDE": {
+    "n": 8,
+    "endpoints_ok": 7,
+    "survived": 7,
+    "survived_of_endpoints_ok": 7
+   },
+   "CONTAINS": {
+    "n": 8,
+    "endpoints_ok": 7,
+    "survived": 7,
+    "survived_of_endpoints_ok": 7
+   },
+   "ADJACENT": {
+    "n": 32,
+    "endpoints_ok": 27,
+    "survived": 27,
+    "survived_of_endpoints_ok": 27
+   },
+   "ALIGNED": {
+    "n": 7,
+    "endpoints_ok": 7,
+    "survived": 6,
+    "survived_of_endpoints_ok": 6
+   },
+   "LEADER_TO": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "LABEL_ANCHOR": {
+    "n": 12,
+    "endpoints_ok": 12,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   }
+  }
+ },
+ {
+  "pair_id": "EOM-36de2ce2",
+  "discipline": "EOM",
+  "classes": [
+   "block_moved",
+   "rotated_page",
+   "few_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 1.92,
+  "S_b": 1.92,
+  "S_shared": 1.92,
+  "n_seg": [
+   2207,
+   2207
+  ],
+  "n_obj": [
+   388,
+   388
+  ],
+  "obj_matched": 383,
+  "reg": [
+   -0.05,
+   -0.05,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 644,
+   "PART_OF": 0,
+   "INSIDE": 1,
+   "CONTAINS": 1,
+   "ADJACENT": 1098,
+   "ALIGNED": 474,
+   "LEADER_TO": 72,
+   "LABEL_ANCHOR": 41,
+   "REPEATED_WITH": 19
+  },
+  "countsB": {
+   "CONNECTED_TO": 644,
+   "PART_OF": 0,
+   "INSIDE": 1,
+   "CONTAINS": 1,
+   "ADJACENT": 1098,
+   "ALIGNED": 474,
+   "LEADER_TO": 72,
+   "LABEL_ANCHOR": 41,
+   "REPEATED_WITH": 19
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 644,
+    "endpoints_ok": 632,
+    "survived": 632,
+    "survived_of_endpoints_ok": 632
+   },
+   "INSIDE": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "CONTAINS": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "ADJACENT": {
+    "n": 1098,
+    "endpoints_ok": 1077,
+    "survived": 1077,
+    "survived_of_endpoints_ok": 1077
+   },
+   "ALIGNED": {
+    "n": 474,
+    "endpoints_ok": 459,
+    "survived": 459,
+    "survived_of_endpoints_ok": 459
+   },
+   "LEADER_TO": {
+    "n": 72,
+    "endpoints_ok": 71,
+    "survived": 64,
+    "survived_of_endpoints_ok": 64
+   },
+   "LABEL_ANCHOR": {
+    "n": 41,
+    "endpoints_ok": 41,
+    "survived": 41,
+    "survived_of_endpoints_ok": 41
+   },
+   "REPEATED_WITH": {
+    "n": 19,
+    "endpoints_ok": 19,
+    "survived": 19,
+    "survived_of_endpoints_ok": 19
+   }
+  }
+ },
+ {
+  "pair_id": "KJ-548814a7",
+  "discipline": "KJ",
+  "classes": [
+   "block_moved",
+   "few_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 0.365,
+  "S_b": 0.387,
+  "S_shared": 0.387,
+  "n_seg": [
+   63,
+   63
+  ],
+  "n_obj": [
+   15,
+   15
+  ],
+  "obj_matched": 0,
+  "reg": [
+   137.45,
+   46.833,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 7,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 15,
+   "ALIGNED": 2,
+   "LEADER_TO": 5,
+   "LABEL_ANCHOR": 0,
+   "REPEATED_WITH": 0
+  },
+  "countsB": {
+   "CONNECTED_TO": 7,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 16,
+   "ALIGNED": 2,
+   "LEADER_TO": 5,
+   "LABEL_ANCHOR": 2,
+   "REPEATED_WITH": 0
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 7,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ADJACENT": {
+    "n": 15,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ALIGNED": {
+    "n": 2,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "LEADER_TO": {
+    "n": 5,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   }
+  }
+ },
+ {
+  "pair_id": "EOM-3306e907",
+  "discipline": "EOM",
+  "classes": [
+   "block_moved",
+   "rotated_page"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 0.84,
+  "S_b": 0.84,
+  "S_shared": 0.84,
+  "n_seg": [
+   2784,
+   2784
+  ],
+  "n_obj": [
+   468,
+   468
+  ],
+  "obj_matched": 427,
+  "reg": [
+   -0.05,
+   -0.05,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 1008,
+   "PART_OF": 1,
+   "INSIDE": 7,
+   "CONTAINS": 7,
+   "ADJACENT": 1500,
+   "ALIGNED": 478,
+   "LEADER_TO": 90,
+   "LABEL_ANCHOR": 50,
+   "REPEATED_WITH": 27
+  },
+  "countsB": {
+   "CONNECTED_TO": 1008,
+   "PART_OF": 1,
+   "INSIDE": 7,
+   "CONTAINS": 7,
+   "ADJACENT": 1500,
+   "ALIGNED": 478,
+   "LEADER_TO": 90,
+   "LABEL_ANCHOR": 50,
+   "REPEATED_WITH": 27
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 1008,
+    "endpoints_ok": 832,
+    "survived": 830,
+    "survived_of_endpoints_ok": 830
+   },
+   "INSIDE": {
+    "n": 7,
+    "endpoints_ok": 7,
+    "survived": 7,
+    "survived_of_endpoints_ok": 7
+   },
+   "CONTAINS": {
+    "n": 7,
+    "endpoints_ok": 7,
+    "survived": 7,
+    "survived_of_endpoints_ok": 7
+   },
+   "PART_OF": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "ADJACENT": {
+    "n": 1500,
+    "endpoints_ok": 1304,
+    "survived": 1291,
+    "survived_of_endpoints_ok": 1291
+   },
+   "ALIGNED": {
+    "n": 478,
+    "endpoints_ok": 396,
+    "survived": 394,
+    "survived_of_endpoints_ok": 394
+   },
+   "LEADER_TO": {
+    "n": 90,
+    "endpoints_ok": 66,
+    "survived": 65,
+    "survived_of_endpoints_ok": 65
+   },
+   "LABEL_ANCHOR": {
+    "n": 50,
+    "endpoints_ok": 47,
+    "survived": 46,
+    "survived_of_endpoints_ok": 46
+   },
+   "REPEATED_WITH": {
+    "n": 27,
+    "endpoints_ok": 26,
+    "survived": 26,
+    "survived_of_endpoints_ok": 26
+   }
+  }
+ },
+ {
+  "pair_id": "SS-982f7f30",
+  "discipline": "SS",
+  "classes": [
+   "block_moved",
+   "with_labels",
+   "table_like"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 10.988,
+  "S_b": 10.987,
+  "S_shared": 10.988,
+  "n_seg": [
+   5848,
+   4700
+  ],
+  "n_obj": [
+   54,
+   52
+  ],
+  "obj_matched": 39,
+  "reg": [
+   0.0,
+   -0.05,
+   0.9928
+  ],
+  "countsA": {
+   "CONNECTED_TO": 43,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 169,
+   "ALIGNED": 39,
+   "LEADER_TO": 20,
+   "LABEL_ANCHOR": 53,
+   "REPEATED_WITH": 0
+  },
+  "countsB": {
+   "CONNECTED_TO": 28,
+   "PART_OF": 6,
+   "INSIDE": 48,
+   "CONTAINS": 48,
+   "ADJACENT": 179,
+   "ALIGNED": 40,
+   "LEADER_TO": 14,
+   "LABEL_ANCHOR": 50,
+   "REPEATED_WITH": 0
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 43,
+    "endpoints_ok": 34,
+    "survived": 25,
+    "survived_of_endpoints_ok": 25
+   },
+   "ADJACENT": {
+    "n": 169,
+    "endpoints_ok": 92,
+    "survived": 91,
+    "survived_of_endpoints_ok": 91
+   },
+   "ALIGNED": {
+    "n": 39,
+    "endpoints_ok": 31,
+    "survived": 30,
+    "survived_of_endpoints_ok": 30
+   },
+   "LEADER_TO": {
+    "n": 20,
+    "endpoints_ok": 20,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   },
+   "LABEL_ANCHOR": {
+    "n": 53,
+    "endpoints_ok": 38,
+    "survived": 37,
+    "survived_of_endpoints_ok": 37
+   }
+  }
+ },
+ {
+  "pair_id": "KJ-25717577",
+  "discipline": "KJ",
+  "classes": [
+   "text_only_change",
+   "table_only_change",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 8.874,
+  "S_b": 8.874,
+  "S_shared": 8.874,
+  "n_seg": [
+   1958,
+   1952
+  ],
+  "n_obj": [
+   33,
+   32
+  ],
+  "obj_matched": 11,
+  "reg": [
+   0.41,
+   -29.351,
+   0.142
+  ],
+  "countsA": {
+   "CONNECTED_TO": 47,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 82,
+   "ALIGNED": 17,
+   "LEADER_TO": 20,
+   "LABEL_ANCHOR": 30,
+   "REPEATED_WITH": 0
+  },
+  "countsB": {
+   "CONNECTED_TO": 34,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 81,
+   "ALIGNED": 18,
+   "LEADER_TO": 14,
+   "LABEL_ANCHOR": 29,
+   "REPEATED_WITH": 0
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 47,
+    "endpoints_ok": 3,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "ADJACENT": {
+    "n": 82,
+    "endpoints_ok": 6,
+    "survived": 5,
+    "survived_of_endpoints_ok": 5
+   },
+   "ALIGNED": {
+    "n": 17,
+    "endpoints_ok": 4,
+    "survived": 4,
+    "survived_of_endpoints_ok": 4
+   },
+   "LEADER_TO": {
+    "n": 20,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "LABEL_ANCHOR": {
+    "n": 30,
+    "endpoints_ok": 11,
+    "survived": 6,
+    "survived_of_endpoints_ok": 6
+   }
+  }
+ },
+ {
+  "pair_id": "SS-76640e11",
+  "discipline": "SS",
+  "classes": [
+   "text_only_change",
+   "with_labels"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 8.856,
+  "S_b": 12.401,
+  "S_shared": 12.401,
+  "n_seg": [
+   6726,
+   6155
+  ],
+  "n_obj": [
+   313,
+   311
+  ],
+  "obj_matched": 302,
+  "reg": [
+   -0.053,
+   -0.057,
+   0.9974
+  ],
+  "countsA": {
+   "CONNECTED_TO": 423,
+   "PART_OF": 1,
+   "INSIDE": 1,
+   "CONTAINS": 1,
+   "ADJACENT": 652,
+   "ALIGNED": 447,
+   "LEADER_TO": 32,
+   "LABEL_ANCHOR": 108,
+   "REPEATED_WITH": 31
+  },
+  "countsB": {
+   "CONNECTED_TO": 418,
+   "PART_OF": 1,
+   "INSIDE": 1,
+   "CONTAINS": 1,
+   "ADJACENT": 655,
+   "ALIGNED": 434,
+   "LEADER_TO": 32,
+   "LABEL_ANCHOR": 108,
+   "REPEATED_WITH": 31
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 423,
+    "endpoints_ok": 411,
+    "survived": 409,
+    "survived_of_endpoints_ok": 409
+   },
+   "INSIDE": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "CONTAINS": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "PART_OF": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "ADJACENT": {
+    "n": 652,
+    "endpoints_ok": 651,
+    "survived": 651,
+    "survived_of_endpoints_ok": 651
+   },
+   "ALIGNED": {
+    "n": 447,
+    "endpoints_ok": 422,
+    "survived": 421,
+    "survived_of_endpoints_ok": 421
+   },
+   "LEADER_TO": {
+    "n": 32,
+    "endpoints_ok": 30,
+    "survived": 30,
+    "survived_of_endpoints_ok": 30
+   },
+   "LABEL_ANCHOR": {
+    "n": 108,
+    "endpoints_ok": 107,
+    "survived": 107,
+    "survived_of_endpoints_ok": 107
+   },
+   "REPEATED_WITH": {
+    "n": 31,
+    "endpoints_ok": 31,
+    "survived": 31,
+    "survived_of_endpoints_ok": 31
+   }
+  }
+ },
+ {
+  "pair_id": "EOM-0c86dfde",
+  "discipline": "EOM",
+  "classes": [
+   "text_only_change",
+   "object_moved_label",
+   "dense_block"
+  ],
+  "expected": "NO_GRAPHIC_CHANGE",
+  "S_a": 8.859,
+  "S_b": 8.859,
+  "S_shared": 8.859,
+  "n_seg": [
+   53517,
+   50063
+  ],
+  "n_obj": [
+   1985,
+   1922
+  ],
+  "obj_matched": 1730,
+  "reg": [
+   0.0,
+   0.05,
+   0.999
+  ],
+  "countsA": {
+   "CONNECTED_TO": 1591,
+   "PART_OF": 6,
+   "INSIDE": 546,
+   "CONTAINS": 546,
+   "ADJACENT": 10240,
+   "ALIGNED": 3328,
+   "LEADER_TO": 91,
+   "LABEL_ANCHOR": 1145,
+   "REPEATED_WITH": 258
+  },
+  "countsB": {
+   "CONNECTED_TO": 1712,
+   "PART_OF": 6,
+   "INSIDE": 509,
+   "CONTAINS": 509,
+   "ADJACENT": 9883,
+   "ALIGNED": 3135,
+   "LEADER_TO": 88,
+   "LABEL_ANCHOR": 1100,
+   "REPEATED_WITH": 139
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 1591,
+    "endpoints_ok": 1363,
+    "survived": 1326,
+    "survived_of_endpoints_ok": 1326
+   },
+   "INSIDE": {
+    "n": 546,
+    "endpoints_ok": 493,
+    "survived": 493,
+    "survived_of_endpoints_ok": 493
+   },
+   "CONTAINS": {
+    "n": 546,
+    "endpoints_ok": 493,
+    "survived": 493,
+    "survived_of_endpoints_ok": 493
+   },
+   "PART_OF": {
+    "n": 6,
+    "endpoints_ok": 6,
+    "survived": 6,
+    "survived_of_endpoints_ok": 6
+   },
+   "ADJACENT": {
+    "n": 10240,
+    "endpoints_ok": 8681,
+    "survived": 8542,
+    "survived_of_endpoints_ok": 8542
+   },
+   "ALIGNED": {
+    "n": 3328,
+    "endpoints_ok": 2474,
+    "survived": 2287,
+    "survived_of_endpoints_ok": 2287
+   },
+   "LEADER_TO": {
+    "n": 91,
+    "endpoints_ok": 80,
+    "survived": 74,
+    "survived_of_endpoints_ok": 74
+   },
+   "LABEL_ANCHOR": {
+    "n": 1145,
+    "endpoints_ok": 1045,
+    "survived": 1000,
+    "survived_of_endpoints_ok": 1000
+   },
+   "REPEATED_WITH": {
+    "n": 258,
+    "endpoints_ok": 135,
+    "survived": 134,
+    "survived_of_endpoints_ok": 134
+   }
+  }
+ },
+ {
+  "pair_id": "EOM-c50e2170",
+  "discipline": "EOM",
+  "classes": [
+   "object_removed",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 12.537,
+  "S_b": 10.508,
+  "S_shared": 12.537,
+  "n_seg": [
+   8027,
+   4502
+  ],
+  "n_obj": [
+   743,
+   685
+  ],
+  "obj_matched": 652,
+  "reg": [
+   0.007,
+   -0.03,
+   0.988
+  ],
+  "countsA": {
+   "CONNECTED_TO": 259,
+   "PART_OF": 0,
+   "INSIDE": 3,
+   "CONTAINS": 3,
+   "ADJACENT": 2642,
+   "ALIGNED": 1245,
+   "LEADER_TO": 32,
+   "LABEL_ANCHOR": 429,
+   "REPEATED_WITH": 374
+  },
+  "countsB": {
+   "CONNECTED_TO": 389,
+   "PART_OF": 1,
+   "INSIDE": 10,
+   "CONTAINS": 10,
+   "ADJACENT": 2352,
+   "ALIGNED": 1144,
+   "LEADER_TO": 36,
+   "LABEL_ANCHOR": 384,
+   "REPEATED_WITH": 48
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 259,
+    "endpoints_ok": 186,
+    "survived": 166,
+    "survived_of_endpoints_ok": 166
+   },
+   "INSIDE": {
+    "n": 3,
+    "endpoints_ok": 3,
+    "survived": 3,
+    "survived_of_endpoints_ok": 3
+   },
+   "CONTAINS": {
+    "n": 3,
+    "endpoints_ok": 3,
+    "survived": 3,
+    "survived_of_endpoints_ok": 3
+   },
+   "ADJACENT": {
+    "n": 2642,
+    "endpoints_ok": 2273,
+    "survived": 2040,
+    "survived_of_endpoints_ok": 2040
+   },
+   "ALIGNED": {
+    "n": 1245,
+    "endpoints_ok": 1012,
+    "survived": 923,
+    "survived_of_endpoints_ok": 923
+   },
+   "LEADER_TO": {
+    "n": 32,
+    "endpoints_ok": 30,
+    "survived": 26,
+    "survived_of_endpoints_ok": 26
+   },
+   "LABEL_ANCHOR": {
+    "n": 429,
+    "endpoints_ok": 362,
+    "survived": 340,
+    "survived_of_endpoints_ok": 340
+   },
+   "REPEATED_WITH": {
+    "n": 374,
+    "endpoints_ok": 345,
+    "survived": 18,
+    "survived_of_endpoints_ok": 18
+   }
+  }
+ },
+ {
+  "pair_id": "AR-dbfd82b8",
+  "discipline": "AR",
+  "classes": [
+   "object_removed",
+   "with_labels",
+   "table_like"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.393,
+  "S_b": 9.393,
+  "S_shared": 9.393,
+  "n_seg": [
+   8895,
+   7829
+  ],
+  "n_obj": [
+   215,
+   179
+  ],
+  "obj_matched": 143,
+  "reg": [
+   -0.07,
+   -0.05,
+   0.8407
+  ],
+  "countsA": {
+   "CONNECTED_TO": 526,
+   "PART_OF": 0,
+   "INSIDE": 187,
+   "CONTAINS": 187,
+   "ADJACENT": 986,
+   "ALIGNED": 188,
+   "LEADER_TO": 5,
+   "LABEL_ANCHOR": 92,
+   "REPEATED_WITH": 1
+  },
+  "countsB": {
+   "CONNECTED_TO": 515,
+   "PART_OF": 0,
+   "INSIDE": 167,
+   "CONTAINS": 167,
+   "ADJACENT": 963,
+   "ALIGNED": 158,
+   "LEADER_TO": 5,
+   "LABEL_ANCHOR": 55,
+   "REPEATED_WITH": 1
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 526,
+    "endpoints_ok": 442,
+    "survived": 441,
+    "survived_of_endpoints_ok": 441
+   },
+   "INSIDE": {
+    "n": 187,
+    "endpoints_ok": 140,
+    "survived": 131,
+    "survived_of_endpoints_ok": 131
+   },
+   "CONTAINS": {
+    "n": 187,
+    "endpoints_ok": 140,
+    "survived": 131,
+    "survived_of_endpoints_ok": 131
+   },
+   "ADJACENT": {
+    "n": 986,
+    "endpoints_ok": 692,
+    "survived": 688,
+    "survived_of_endpoints_ok": 688
+   },
+   "ALIGNED": {
+    "n": 188,
+    "endpoints_ok": 123,
+    "survived": 118,
+    "survived_of_endpoints_ok": 118
+   },
+   "LEADER_TO": {
+    "n": 5,
+    "endpoints_ok": 5,
+    "survived": 3,
+    "survived_of_endpoints_ok": 3
+   },
+   "LABEL_ANCHOR": {
+    "n": 92,
+    "endpoints_ok": 56,
+    "survived": 55,
+    "survived_of_endpoints_ok": 55
+   },
+   "REPEATED_WITH": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   }
+  }
+ },
+ {
+  "pair_id": "VK-56115717",
+  "discipline": "VK",
+  "classes": [
+   "object_removed",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.424,
+  "S_b": 9.423,
+  "S_shared": 9.424,
+  "n_seg": [
+   27227,
+   12395
+  ],
+  "n_obj": [
+   1001,
+   552
+  ],
+  "obj_matched": 421,
+  "reg": [
+   -0.05,
+   0.05,
+   0.48
+  ],
+  "countsA": {
+   "CONNECTED_TO": 829,
+   "PART_OF": 2,
+   "INSIDE": 2,
+   "CONTAINS": 2,
+   "ADJACENT": 1925,
+   "ALIGNED": 1260,
+   "LEADER_TO": 68,
+   "LABEL_ANCHOR": 617,
+   "REPEATED_WITH": 65
+  },
+  "countsB": {
+   "CONNECTED_TO": 464,
+   "PART_OF": 2,
+   "INSIDE": 2,
+   "CONTAINS": 2,
+   "ADJACENT": 1009,
+   "ALIGNED": 578,
+   "LEADER_TO": 49,
+   "LABEL_ANCHOR": 328,
+   "REPEATED_WITH": 34
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 829,
+    "endpoints_ok": 343,
+    "survived": 336,
+    "survived_of_endpoints_ok": 336
+   },
+   "INSIDE": {
+    "n": 2,
+    "endpoints_ok": 1,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "CONTAINS": {
+    "n": 2,
+    "endpoints_ok": 1,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "PART_OF": {
+    "n": 2,
+    "endpoints_ok": 1,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ADJACENT": {
+    "n": 1925,
+    "endpoints_ok": 693,
+    "survived": 675,
+    "survived_of_endpoints_ok": 675
+   },
+   "ALIGNED": {
+    "n": 1260,
+    "endpoints_ok": 365,
+    "survived": 295,
+    "survived_of_endpoints_ok": 295
+   },
+   "LEADER_TO": {
+    "n": 68,
+    "endpoints_ok": 48,
+    "survived": 47,
+    "survived_of_endpoints_ok": 47
+   },
+   "LABEL_ANCHOR": {
+    "n": 617,
+    "endpoints_ok": 265,
+    "survived": 253,
+    "survived_of_endpoints_ok": 253
+   },
+   "REPEATED_WITH": {
+    "n": 65,
+    "endpoints_ok": 25,
+    "survived": 8,
+    "survived_of_endpoints_ok": 8
+   }
+  }
+ },
+ {
+  "pair_id": "AR-441907a2",
+  "discipline": "AR",
+  "classes": [
+   "object_removed",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.145,
+  "S_b": 9.159,
+  "S_shared": 9.159,
+  "n_seg": [
+   16388,
+   10793
+  ],
+  "n_obj": [
+   282,
+   191
+  ],
+  "obj_matched": 176,
+  "reg": [
+   -0.05,
+   -0.05,
+   0.5579
+  ],
+  "countsA": {
+   "CONNECTED_TO": 576,
+   "PART_OF": 3,
+   "INSIDE": 11,
+   "CONTAINS": 11,
+   "ADJACENT": 1043,
+   "ALIGNED": 228,
+   "LEADER_TO": 80,
+   "LABEL_ANCHOR": 175,
+   "REPEATED_WITH": 1
+  },
+  "countsB": {
+   "CONNECTED_TO": 412,
+   "PART_OF": 1,
+   "INSIDE": 9,
+   "CONTAINS": 9,
+   "ADJACENT": 773,
+   "ALIGNED": 155,
+   "LEADER_TO": 57,
+   "LABEL_ANCHOR": 116,
+   "REPEATED_WITH": 1
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 576,
+    "endpoints_ok": 396,
+    "survived": 396,
+    "survived_of_endpoints_ok": 396
+   },
+   "INSIDE": {
+    "n": 11,
+    "endpoints_ok": 8,
+    "survived": 8,
+    "survived_of_endpoints_ok": 8
+   },
+   "CONTAINS": {
+    "n": 11,
+    "endpoints_ok": 8,
+    "survived": 8,
+    "survived_of_endpoints_ok": 8
+   },
+   "PART_OF": {
+    "n": 3,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "ADJACENT": {
+    "n": 1043,
+    "endpoints_ok": 749,
+    "survived": 749,
+    "survived_of_endpoints_ok": 749
+   },
+   "ALIGNED": {
+    "n": 228,
+    "endpoints_ok": 143,
+    "survived": 142,
+    "survived_of_endpoints_ok": 142
+   },
+   "LEADER_TO": {
+    "n": 80,
+    "endpoints_ok": 47,
+    "survived": 47,
+    "survived_of_endpoints_ok": 47
+   },
+   "LABEL_ANCHOR": {
+    "n": 175,
+    "endpoints_ok": 102,
+    "survived": 101,
+    "survived_of_endpoints_ok": 101
+   },
+   "REPEATED_WITH": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   }
+  }
+ },
+ {
+  "pair_id": "SS-c7aa8d26",
+  "discipline": "SS",
+  "classes": [
+   "object_added",
+   "with_labels",
+   "sparse_block"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 10.995,
+  "S_b": 10.995,
+  "S_shared": 10.995,
+  "n_seg": [
+   540,
+   726
+  ],
+  "n_obj": [
+   16,
+   29
+  ],
+  "obj_matched": 11,
+  "reg": [
+   -0.02,
+   -0.03,
+   0.9352
+  ],
+  "countsA": {
+   "CONNECTED_TO": 11,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 25,
+   "ALIGNED": 7,
+   "LEADER_TO": 0,
+   "LABEL_ANCHOR": 11,
+   "REPEATED_WITH": 1
+  },
+  "countsB": {
+   "CONNECTED_TO": 17,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 48,
+   "ALIGNED": 15,
+   "LEADER_TO": 2,
+   "LABEL_ANCHOR": 18,
+   "REPEATED_WITH": 1
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 11,
+    "endpoints_ok": 7,
+    "survived": 5,
+    "survived_of_endpoints_ok": 5
+   },
+   "ADJACENT": {
+    "n": 25,
+    "endpoints_ok": 21,
+    "survived": 20,
+    "survived_of_endpoints_ok": 20
+   },
+   "ALIGNED": {
+    "n": 7,
+    "endpoints_ok": 7,
+    "survived": 5,
+    "survived_of_endpoints_ok": 5
+   },
+   "LABEL_ANCHOR": {
+    "n": 11,
+    "endpoints_ok": 6,
+    "survived": 6,
+    "survived_of_endpoints_ok": 6
+   },
+   "REPEATED_WITH": {
+    "n": 1,
+    "endpoints_ok": 1,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   }
+  }
+ },
+ {
+  "pair_id": "AR-a32b30a6",
+  "discipline": "AR",
+  "classes": [
+   "object_added",
+   "raster_graphics",
+   "no_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "error": "no geometry"
+ },
+ {
+  "pair_id": "EOM-7fef43a3",
+  "discipline": "EOM",
+  "classes": [
+   "object_added",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 1.537,
+  "S_b": 13.964,
+  "S_shared": 13.964,
+  "n_seg": [
+   10972,
+   10972
+  ],
+  "n_obj": [
+   200,
+   200
+  ],
+  "obj_matched": 198,
+  "reg": [
+   -0.1,
+   0.0,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 368,
+   "PART_OF": 2,
+   "INSIDE": 108,
+   "CONTAINS": 108,
+   "ADJACENT": 1783,
+   "ALIGNED": 188,
+   "LEADER_TO": 55,
+   "LABEL_ANCHOR": 0,
+   "REPEATED_WITH": 3
+  },
+  "countsB": {
+   "CONNECTED_TO": 368,
+   "PART_OF": 2,
+   "INSIDE": 108,
+   "CONTAINS": 108,
+   "ADJACENT": 1783,
+   "ALIGNED": 188,
+   "LEADER_TO": 55,
+   "LABEL_ANCHOR": 23,
+   "REPEATED_WITH": 3
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 368,
+    "endpoints_ok": 358,
+    "survived": 358,
+    "survived_of_endpoints_ok": 358
+   },
+   "INSIDE": {
+    "n": 108,
+    "endpoints_ok": 107,
+    "survived": 107,
+    "survived_of_endpoints_ok": 107
+   },
+   "CONTAINS": {
+    "n": 108,
+    "endpoints_ok": 107,
+    "survived": 107,
+    "survived_of_endpoints_ok": 107
+   },
+   "PART_OF": {
+    "n": 2,
+    "endpoints_ok": 2,
+    "survived": 2,
+    "survived_of_endpoints_ok": 2
+   },
+   "ADJACENT": {
+    "n": 1783,
+    "endpoints_ok": 1761,
+    "survived": 1761,
+    "survived_of_endpoints_ok": 1761
+   },
+   "ALIGNED": {
+    "n": 188,
+    "endpoints_ok": 184,
+    "survived": 184,
+    "survived_of_endpoints_ok": 184
+   },
+   "LEADER_TO": {
+    "n": 55,
+    "endpoints_ok": 55,
+    "survived": 55,
+    "survived_of_endpoints_ok": 55
+   },
+   "REPEATED_WITH": {
+    "n": 3,
+    "endpoints_ok": 3,
+    "survived": 3,
+    "survived_of_endpoints_ok": 3
+   }
+  }
+ },
+ {
+  "pair_id": "EOM-46355862",
+  "discipline": "EOM",
+  "classes": [
+   "object_added",
+   "dense_block",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.424,
+  "S_b": 9.445,
+  "S_shared": 9.445,
+  "n_seg": [
+   27845,
+   60524
+  ],
+  "n_obj": [
+   3636,
+   4765
+  ],
+  "obj_matched": 778,
+  "reg": [
+   -0.076,
+   76.497,
+   0.4109
+  ],
+  "countsA": {
+   "CONNECTED_TO": 2192,
+   "PART_OF": 4,
+   "INSIDE": 142,
+   "CONTAINS": 142,
+   "ADJACENT": 14364,
+   "ALIGNED": 6884,
+   "LEADER_TO": 119,
+   "LABEL_ANCHOR": 511,
+   "REPEATED_WITH": 463
+  },
+  "countsB": {
+   "CONNECTED_TO": 5015,
+   "PART_OF": 11,
+   "INSIDE": 611,
+   "CONTAINS": 611,
+   "ADJACENT": 35180,
+   "ALIGNED": 9797,
+   "LEADER_TO": 791,
+   "LABEL_ANCHOR": 1867,
+   "REPEATED_WITH": 709
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 2192,
+    "endpoints_ok": 327,
+    "survived": 130,
+    "survived_of_endpoints_ok": 130
+   },
+   "INSIDE": {
+    "n": 142,
+    "endpoints_ok": 13,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "CONTAINS": {
+    "n": 142,
+    "endpoints_ok": 13,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "PART_OF": {
+    "n": 4,
+    "endpoints_ok": 1,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ADJACENT": {
+    "n": 14364,
+    "endpoints_ok": 1382,
+    "survived": 590,
+    "survived_of_endpoints_ok": 590
+   },
+   "ALIGNED": {
+    "n": 6884,
+    "endpoints_ok": 669,
+    "survived": 380,
+    "survived_of_endpoints_ok": 380
+   },
+   "LEADER_TO": {
+    "n": 119,
+    "endpoints_ok": 12,
+    "survived": 5,
+    "survived_of_endpoints_ok": 5
+   },
+   "LABEL_ANCHOR": {
+    "n": 511,
+    "endpoints_ok": 121,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "REPEATED_WITH": {
+    "n": 463,
+    "endpoints_ok": 79,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   }
+  }
+ },
+ {
+  "pair_id": "SS-a369f492",
+  "discipline": "SS",
+  "classes": [
+   "object_added",
+   "object_moved",
+   "raster_graphics",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 15.244,
+  "S_b": 13.194,
+  "S_shared": 15.244,
+  "n_seg": [
+   4876,
+   6678
+  ],
+  "n_obj": [
+   151,
+   202
+  ],
+  "obj_matched": 140,
+  "reg": [
+   -0.1,
+   0.0,
+   1.0
+  ],
+  "countsA": {
+   "CONNECTED_TO": 345,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 1168,
+   "ALIGNED": 70,
+   "LEADER_TO": 6,
+   "LABEL_ANCHOR": 25,
+   "REPEATED_WITH": 3
+  },
+  "countsB": {
+   "CONNECTED_TO": 405,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 1358,
+   "ALIGNED": 119,
+   "LEADER_TO": 14,
+   "LABEL_ANCHOR": 49,
+   "REPEATED_WITH": 3
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 345,
+    "endpoints_ok": 285,
+    "survived": 282,
+    "survived_of_endpoints_ok": 282
+   },
+   "ADJACENT": {
+    "n": 1168,
+    "endpoints_ok": 951,
+    "survived": 944,
+    "survived_of_endpoints_ok": 944
+   },
+   "ALIGNED": {
+    "n": 70,
+    "endpoints_ok": 64,
+    "survived": 60,
+    "survived_of_endpoints_ok": 60
+   },
+   "LEADER_TO": {
+    "n": 6,
+    "endpoints_ok": 6,
+    "survived": 6,
+    "survived_of_endpoints_ok": 6
+   },
+   "LABEL_ANCHOR": {
+    "n": 25,
+    "endpoints_ok": 25,
+    "survived": 25,
+    "survived_of_endpoints_ok": 25
+   },
+   "REPEATED_WITH": {
+    "n": 3,
+    "endpoints_ok": 3,
+    "survived": 3,
+    "survived_of_endpoints_ok": 3
+   }
+  }
+ },
+ {
+  "pair_id": "VK-148ffe6c",
+  "discipline": "VK",
+  "classes": [
+   "object_added",
+   "object_moved",
+   "rotated_page",
+   "dense_block"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.428,
+  "S_b": 9.327,
+  "S_shared": 9.428,
+  "n_seg": [
+   106552,
+   115081
+  ],
+  "n_obj": [
+   946,
+   1097
+  ],
+  "obj_matched": 658,
+  "reg": [
+   0.05,
+   -0.05,
+   0.6335
+  ],
+  "countsA": {
+   "CONNECTED_TO": 756,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 5371,
+   "ALIGNED": 857,
+   "LEADER_TO": 109,
+   "LABEL_ANCHOR": 333,
+   "REPEATED_WITH": 47
+  },
+  "countsB": {
+   "CONNECTED_TO": 1097,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 5154,
+   "ALIGNED": 1176,
+   "LEADER_TO": 365,
+   "LABEL_ANCHOR": 496,
+   "REPEATED_WITH": 50
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 756,
+    "endpoints_ok": 495,
+    "survived": 488,
+    "survived_of_endpoints_ok": 488
+   },
+   "ADJACENT": {
+    "n": 5371,
+    "endpoints_ok": 2149,
+    "survived": 2136,
+    "survived_of_endpoints_ok": 2136
+   },
+   "ALIGNED": {
+    "n": 857,
+    "endpoints_ok": 585,
+    "survived": 565,
+    "survived_of_endpoints_ok": 565
+   },
+   "LEADER_TO": {
+    "n": 109,
+    "endpoints_ok": 84,
+    "survived": 82,
+    "survived_of_endpoints_ok": 82
+   },
+   "LABEL_ANCHOR": {
+    "n": 333,
+    "endpoints_ok": 253,
+    "survived": 44,
+    "survived_of_endpoints_ok": 44
+   },
+   "REPEATED_WITH": {
+    "n": 47,
+    "endpoints_ok": 32,
+    "survived": 30,
+    "survived_of_endpoints_ok": 30
+   }
+  }
+ },
+ {
+  "pair_id": "OV-93cc012f",
+  "discipline": "OV",
+  "classes": [
+   "object_added",
+   "object_moved",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.427,
+  "S_b": 9.767,
+  "S_shared": 9.767,
+  "n_seg": [
+   9880,
+   9620
+  ],
+  "n_obj": [
+   185,
+   167
+  ],
+  "obj_matched": 72,
+  "reg": [
+   -4.825,
+   -1.735,
+   0.2831
+  ],
+  "countsA": {
+   "CONNECTED_TO": 209,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 1156,
+   "ALIGNED": 100,
+   "LEADER_TO": 53,
+   "LABEL_ANCHOR": 128,
+   "REPEATED_WITH": 5
+  },
+  "countsB": {
+   "CONNECTED_TO": 168,
+   "PART_OF": 0,
+   "INSIDE": 7,
+   "CONTAINS": 7,
+   "ADJACENT": 1145,
+   "ALIGNED": 95,
+   "LEADER_TO": 42,
+   "LABEL_ANCHOR": 114,
+   "REPEATED_WITH": 7
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 209,
+    "endpoints_ok": 62,
+    "survived": 39,
+    "survived_of_endpoints_ok": 39
+   },
+   "ADJACENT": {
+    "n": 1156,
+    "endpoints_ok": 240,
+    "survived": 208,
+    "survived_of_endpoints_ok": 208
+   },
+   "ALIGNED": {
+    "n": 100,
+    "endpoints_ok": 16,
+    "survived": 2,
+    "survived_of_endpoints_ok": 2
+   },
+   "LEADER_TO": {
+    "n": 53,
+    "endpoints_ok": 20,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   },
+   "LABEL_ANCHOR": {
+    "n": 128,
+    "endpoints_ok": 62,
+    "survived": 37,
+    "survived_of_endpoints_ok": 37
+   },
+   "REPEATED_WITH": {
+    "n": 5,
+    "endpoints_ok": 4,
+    "survived": 2,
+    "survived_of_endpoints_ok": 2
+   }
+  }
+ },
+ {
+  "pair_id": "AR-55eda7fb",
+  "discipline": "AR",
+  "classes": [
+   "small_local_change",
+   "table_only_change",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.13,
+  "S_b": 9.13,
+  "S_shared": 9.13,
+  "n_seg": [
+   4315,
+   4412
+  ],
+  "n_obj": [
+   128,
+   141
+  ],
+  "obj_matched": 128,
+  "reg": [
+   -0.05,
+   -0.05,
+   0.9763
+  ],
+  "countsA": {
+   "CONNECTED_TO": 201,
+   "PART_OF": 2,
+   "INSIDE": 6,
+   "CONTAINS": 6,
+   "ADJACENT": 303,
+   "ALIGNED": 90,
+   "LEADER_TO": 37,
+   "LABEL_ANCHOR": 123,
+   "REPEATED_WITH": 7
+  },
+  "countsB": {
+   "CONNECTED_TO": 217,
+   "PART_OF": 2,
+   "INSIDE": 6,
+   "CONTAINS": 6,
+   "ADJACENT": 368,
+   "ALIGNED": 108,
+   "LEADER_TO": 40,
+   "LABEL_ANCHOR": 134,
+   "REPEATED_WITH": 11
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 201,
+    "endpoints_ok": 201,
+    "survived": 194,
+    "survived_of_endpoints_ok": 194
+   },
+   "INSIDE": {
+    "n": 6,
+    "endpoints_ok": 6,
+    "survived": 6,
+    "survived_of_endpoints_ok": 6
+   },
+   "CONTAINS": {
+    "n": 6,
+    "endpoints_ok": 6,
+    "survived": 6,
+    "survived_of_endpoints_ok": 6
+   },
+   "PART_OF": {
+    "n": 2,
+    "endpoints_ok": 2,
+    "survived": 2,
+    "survived_of_endpoints_ok": 2
+   },
+   "ADJACENT": {
+    "n": 303,
+    "endpoints_ok": 303,
+    "survived": 298,
+    "survived_of_endpoints_ok": 298
+   },
+   "ALIGNED": {
+    "n": 90,
+    "endpoints_ok": 90,
+    "survived": 84,
+    "survived_of_endpoints_ok": 84
+   },
+   "LEADER_TO": {
+    "n": 37,
+    "endpoints_ok": 37,
+    "survived": 33,
+    "survived_of_endpoints_ok": 33
+   },
+   "LABEL_ANCHOR": {
+    "n": 123,
+    "endpoints_ok": 123,
+    "survived": 114,
+    "survived_of_endpoints_ok": 114
+   },
+   "REPEATED_WITH": {
+    "n": 7,
+    "endpoints_ok": 7,
+    "survived": 7,
+    "survived_of_endpoints_ok": 7
+   }
+  }
+ },
+ {
+  "pair_id": "AR-577a293f",
+  "discipline": "AR",
+  "classes": [
+   "small_local_change",
+   "table_only_change",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.393,
+  "S_b": 9.393,
+  "S_shared": 9.393,
+  "n_seg": [
+   11378,
+   10642
+  ],
+  "n_obj": [
+   244,
+   199
+  ],
+  "obj_matched": 60,
+  "reg": [
+   -0.09,
+   -0.01,
+   0.5534
+  ],
+  "countsA": {
+   "CONNECTED_TO": 433,
+   "PART_OF": 0,
+   "INSIDE": 195,
+   "CONTAINS": 195,
+   "ADJACENT": 1237,
+   "ALIGNED": 232,
+   "LEADER_TO": 22,
+   "LABEL_ANCHOR": 71,
+   "REPEATED_WITH": 5
+  },
+  "countsB": {
+   "CONNECTED_TO": 428,
+   "PART_OF": 0,
+   "INSIDE": 182,
+   "CONTAINS": 182,
+   "ADJACENT": 986,
+   "ALIGNED": 212,
+   "LEADER_TO": 22,
+   "LABEL_ANCHOR": 74,
+   "REPEATED_WITH": 3
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 433,
+    "endpoints_ok": 104,
+    "survived": 78,
+    "survived_of_endpoints_ok": 78
+   },
+   "INSIDE": {
+    "n": 195,
+    "endpoints_ok": 18,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   },
+   "CONTAINS": {
+    "n": 195,
+    "endpoints_ok": 18,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   },
+   "ADJACENT": {
+    "n": 1237,
+    "endpoints_ok": 74,
+    "survived": 36,
+    "survived_of_endpoints_ok": 36
+   },
+   "ALIGNED": {
+    "n": 232,
+    "endpoints_ok": 18,
+    "survived": 9,
+    "survived_of_endpoints_ok": 9
+   },
+   "LEADER_TO": {
+    "n": 22,
+    "endpoints_ok": 4,
+    "survived": 1,
+    "survived_of_endpoints_ok": 1
+   },
+   "LABEL_ANCHOR": {
+    "n": 71,
+    "endpoints_ok": 32,
+    "survived": 13,
+    "survived_of_endpoints_ok": 13
+   },
+   "REPEATED_WITH": {
+    "n": 5,
+    "endpoints_ok": 1,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   }
+  }
+ },
+ {
+  "pair_id": "EOM-14558cda",
+  "discipline": "EOM",
+  "classes": [
+   "object_added",
+   "occluding_fill",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 12.579,
+  "S_b": 12.977,
+  "S_shared": 12.977,
+  "n_seg": [
+   7932,
+   7767
+  ],
+  "n_obj": [
+   240,
+   226
+  ],
+  "obj_matched": 212,
+  "reg": [
+   -0.03,
+   -0.06,
+   0.89
+  ],
+  "countsA": {
+   "CONNECTED_TO": 410,
+   "PART_OF": 0,
+   "INSIDE": 37,
+   "CONTAINS": 37,
+   "ADJACENT": 2797,
+   "ALIGNED": 267,
+   "LEADER_TO": 14,
+   "LABEL_ANCHOR": 22,
+   "REPEATED_WITH": 72
+  },
+  "countsB": {
+   "CONNECTED_TO": 385,
+   "PART_OF": 0,
+   "INSIDE": 37,
+   "CONTAINS": 37,
+   "ADJACENT": 2554,
+   "ALIGNED": 249,
+   "LEADER_TO": 13,
+   "LABEL_ANCHOR": 12,
+   "REPEATED_WITH": 59
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 410,
+    "endpoints_ok": 325,
+    "survived": 279,
+    "survived_of_endpoints_ok": 279
+   },
+   "INSIDE": {
+    "n": 37,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "CONTAINS": {
+    "n": 37,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ADJACENT": {
+    "n": 2797,
+    "endpoints_ok": 2241,
+    "survived": 2067,
+    "survived_of_endpoints_ok": 2067
+   },
+   "ALIGNED": {
+    "n": 267,
+    "endpoints_ok": 223,
+    "survived": 204,
+    "survived_of_endpoints_ok": 204
+   },
+   "LEADER_TO": {
+    "n": 14,
+    "endpoints_ok": 8,
+    "survived": 7,
+    "survived_of_endpoints_ok": 7
+   },
+   "LABEL_ANCHOR": {
+    "n": 22,
+    "endpoints_ok": 11,
+    "survived": 9,
+    "survived_of_endpoints_ok": 9
+   },
+   "REPEATED_WITH": {
+    "n": 72,
+    "endpoints_ok": 59,
+    "survived": 51,
+    "survived_of_endpoints_ok": 51
+   }
+  }
+ },
+ {
+  "pair_id": "AR-5acaab0e",
+  "discipline": "AR",
+  "classes": [
+   "object_added",
+   "dense_block",
+   "hatch_noise",
+   "with_labels"
+  ],
+  "expected": "GRAPHIC_CHANGE",
+  "S_a": 9.13,
+  "S_b": 9.13,
+  "S_shared": 9.13,
+  "n_seg": [
+   111161,
+   111000
+  ],
+  "n_obj": [
+   6130,
+   6122
+  ],
+  "obj_matched": 1602,
+  "reg": [
+   -0.05,
+   13.85,
+   0.1769
+  ],
+  "countsA": {
+   "CONNECTED_TO": 13191,
+   "PART_OF": 20,
+   "INSIDE": 134,
+   "CONTAINS": 134,
+   "ADJACENT": 63291,
+   "ALIGNED": 11106,
+   "LEADER_TO": 790,
+   "LABEL_ANCHOR": 983,
+   "REPEATED_WITH": 401
+  },
+  "countsB": {
+   "CONNECTED_TO": 12407,
+   "PART_OF": 2,
+   "INSIDE": 20,
+   "CONTAINS": 20,
+   "ADJACENT": 63424,
+   "ALIGNED": 10885,
+   "LEADER_TO": 819,
+   "LABEL_ANCHOR": 943,
+   "REPEATED_WITH": 427
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 13191,
+    "endpoints_ok": 4121,
+    "survived": 1577,
+    "survived_of_endpoints_ok": 1577
+   },
+   "INSIDE": {
+    "n": 134,
+    "endpoints_ok": 12,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "CONTAINS": {
+    "n": 134,
+    "endpoints_ok": 12,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "PART_OF": {
+    "n": 20,
+    "endpoints_ok": 7,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ADJACENT": {
+    "n": 63291,
+    "endpoints_ok": 11004,
+    "survived": 5524,
+    "survived_of_endpoints_ok": 5524
+   },
+   "ALIGNED": {
+    "n": 11106,
+    "endpoints_ok": 1026,
+    "survived": 137,
+    "survived_of_endpoints_ok": 137
+   },
+   "LEADER_TO": {
+    "n": 790,
+    "endpoints_ok": 285,
+    "survived": 111,
+    "survived_of_endpoints_ok": 111
+   },
+   "LABEL_ANCHOR": {
+    "n": 983,
+    "endpoints_ok": 366,
+    "survived": 120,
+    "survived_of_endpoints_ok": 120
+   },
+   "REPEATED_WITH": {
+    "n": 401,
+    "endpoints_ok": 24,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   }
+  }
+ },
+ {
+  "pair_id": "AR-490254e9",
+  "discipline": "AR",
+  "classes": [
+   "block_scope_change",
+   "with_labels"
+  ],
+  "expected": "NOT_COMPARABLE",
+  "S_a": 9.13,
+  "S_b": 9.13,
+  "S_shared": 9.13,
+  "n_seg": [
+   466,
+   4398
+  ],
+  "n_obj": [
+   28,
+   242
+  ],
+  "obj_matched": 28,
+  "reg": [
+   -0.05,
+   -0.05,
+   0.9968
+  ],
+  "countsA": {
+   "CONNECTED_TO": 31,
+   "PART_OF": 0,
+   "INSIDE": 0,
+   "CONTAINS": 0,
+   "ADJACENT": 68,
+   "ALIGNED": 13,
+   "LEADER_TO": 3,
+   "LABEL_ANCHOR": 22,
+   "REPEATED_WITH": 0
+  },
+  "countsB": {
+   "CONNECTED_TO": 329,
+   "PART_OF": 4,
+   "INSIDE": 28,
+   "CONTAINS": 28,
+   "ADJACENT": 833,
+   "ALIGNED": 235,
+   "LEADER_TO": 46,
+   "LABEL_ANCHOR": 133,
+   "REPEATED_WITH": 9
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 31,
+    "endpoints_ok": 31,
+    "survived": 29,
+    "survived_of_endpoints_ok": 29
+   },
+   "ADJACENT": {
+    "n": 68,
+    "endpoints_ok": 68,
+    "survived": 61,
+    "survived_of_endpoints_ok": 61
+   },
+   "ALIGNED": {
+    "n": 13,
+    "endpoints_ok": 13,
+    "survived": 5,
+    "survived_of_endpoints_ok": 5
+   },
+   "LEADER_TO": {
+    "n": 3,
+    "endpoints_ok": 3,
+    "survived": 3,
+    "survived_of_endpoints_ok": 3
+   },
+   "LABEL_ANCHOR": {
+    "n": 22,
+    "endpoints_ok": 22,
+    "survived": 18,
+    "survived_of_endpoints_ok": 18
+   }
+  }
+ },
+ {
+  "pair_id": "OV-2cc2a382",
+  "discipline": "OV",
+  "classes": [
+   "block_scope_change",
+   "raster_graphics",
+   "no_labels"
+  ],
+  "expected": "NOT_COMPARABLE",
+  "error": "no geometry"
+ },
+ {
+  "pair_id": "EOM-1db297d2",
+  "discipline": "EOM",
+  "classes": [
+   "uncertain",
+   "block_match_failure"
+  ],
+  "expected": "UNCERTAIN",
+  "S_a": 10.517,
+  "S_b": 10.119,
+  "S_shared": 10.517,
+  "n_seg": [
+   713,
+   894
+  ],
+  "n_obj": [
+   46,
+   54
+  ],
+  "obj_matched": 0,
+  "reg": [
+   -848.635,
+   -202.946,
+   0.0181
+  ],
+  "countsA": {
+   "CONNECTED_TO": 2,
+   "PART_OF": 0,
+   "INSIDE": 3,
+   "CONTAINS": 3,
+   "ADJACENT": 39,
+   "ALIGNED": 35,
+   "LEADER_TO": 0,
+   "LABEL_ANCHOR": 21,
+   "REPEATED_WITH": 10
+  },
+  "countsB": {
+   "CONNECTED_TO": 57,
+   "PART_OF": 0,
+   "INSIDE": 6,
+   "CONTAINS": 6,
+   "ADJACENT": 148,
+   "ALIGNED": 49,
+   "LEADER_TO": 15,
+   "LABEL_ANCHOR": 38,
+   "REPEATED_WITH": 0
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 2,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "INSIDE": {
+    "n": 3,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "CONTAINS": {
+    "n": 3,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ADJACENT": {
+    "n": 39,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "ALIGNED": {
+    "n": 35,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "LABEL_ANCHOR": {
+    "n": 21,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   },
+   "REPEATED_WITH": {
+    "n": 10,
+    "endpoints_ok": 0,
+    "survived": 0,
+    "survived_of_endpoints_ok": 0
+   }
+  }
+ },
+ {
+  "pair_id": "GP-6bc1c029",
+  "discipline": "GP",
+  "classes": [
+   "uncertain",
+   "dense_block"
+  ],
+  "expected": "UNCERTAIN",
+  "S_a": 11.881,
+  "S_b": 11.881,
+  "S_shared": 11.881,
+  "n_seg": [
+   378441,
+   314651
+  ],
+  "n_obj": [
+   3601,
+   2682
+  ],
+  "obj_matched": 2497,
+  "reg": [
+   -0.05,
+   0.05,
+   0.9902
+  ],
+  "countsA": {
+   "CONNECTED_TO": 9066,
+   "PART_OF": 48,
+   "INSIDE": 759,
+   "CONTAINS": 759,
+   "ADJACENT": 32718,
+   "ALIGNED": 5802,
+   "LEADER_TO": 630,
+   "LABEL_ANCHOR": 1394,
+   "REPEATED_WITH": 39
+  },
+  "countsB": {
+   "CONNECTED_TO": 7709,
+   "PART_OF": 31,
+   "INSIDE": 429,
+   "CONTAINS": 429,
+   "ADJACENT": 24368,
+   "ALIGNED": 4560,
+   "LEADER_TO": 632,
+   "LABEL_ANCHOR": 1169,
+   "REPEATED_WITH": 39
+  },
+  "surv": {
+   "CONNECTED_TO": {
+    "n": 9066,
+    "endpoints_ok": 7360,
+    "survived": 7011,
+    "survived_of_endpoints_ok": 7011
+   },
+   "INSIDE": {
+    "n": 759,
+    "endpoints_ok": 378,
+    "survived": 365,
+    "survived_of_endpoints_ok": 365
+   },
+   "CONTAINS": {
+    "n": 759,
+    "endpoints_ok": 378,
+    "survived": 365,
+    "survived_of_endpoints_ok": 365
+   },
+   "PART_OF": {
+    "n": 48,
+    "endpoints_ok": 12,
+    "survived": 12,
+    "survived_of_endpoints_ok": 12
+   },
+   "ADJACENT": {
+    "n": 32718,
+    "endpoints_ok": 21960,
+    "survived": 21258,
+    "survived_of_endpoints_ok": 21258
+   },
+   "ALIGNED": {
+    "n": 5802,
+    "endpoints_ok": 3843,
+    "survived": 3372,
+    "survived_of_endpoints_ok": 3372
+   },
+   "LEADER_TO": {
+    "n": 630,
+    "endpoints_ok": 615,
+    "survived": 583,
+    "survived_of_endpoints_ok": 583
+   },
+   "LABEL_ANCHOR": {
+    "n": 1394,
+    "endpoints_ok": 1121,
+    "survived": 1109,
+    "survived_of_endpoints_ok": 1109
+   },
+   "REPEATED_WITH": {
+    "n": 39,
+    "endpoints_ok": 37,
+    "survived": 34,
+    "survived_of_endpoints_ok": 34
+   }
+  }
+ }
+]

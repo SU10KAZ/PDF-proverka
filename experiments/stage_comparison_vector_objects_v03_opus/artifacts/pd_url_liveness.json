@@ -1,0 +1,1444 @@
+{
+ "summary": {
+  "n_doc_versions": 96,
+  "n_alive": 63,
+  "n_dead": 28,
+  "n_partial": 5,
+  "n_no_url_at_all": 0,
+  "blocks_total": 8796,
+  "blocks_with_url": 6296,
+  "blocks_in_alive_docs": 3041
+ },
+ "documents": [
+  {
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ1",
+   "version": "v001",
+   "n_image_blocks": 652,
+   "n_with_url": 539,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ1",
+   "version": "v002",
+   "n_image_blocks": 244,
+   "n_with_url": 159,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ2",
+   "version": "v001",
+   "n_image_blocks": 330,
+   "n_with_url": 291,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ2",
+   "version": "v002",
+   "n_image_blocks": 110,
+   "n_with_url": 73,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ3",
+   "version": "v001",
+   "n_image_blocks": 114,
+   "n_with_url": 92,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ3",
+   "version": "v002",
+   "n_image_blocks": 73,
+   "n_with_url": 51,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AI",
+   "doc_id": "133_23-ГК-АИ4",
+   "version": "v001",
+   "n_image_blocks": 118,
+   "n_with_url": 92,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AI",
+   "doc_id": "133_23-ГК-АИ4",
+   "version": "v002",
+   "n_image_blocks": 85,
+   "n_with_url": 59,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "1154.2 НФС.2-СФБ V1",
+   "version": "v001",
+   "n_image_blocks": 190,
+   "n_with_url": 119,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "1154.2-НФС-Камень V1",
+   "version": "v001",
+   "n_image_blocks": 89,
+   "n_with_url": 57,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133-23-ГК-АР1",
+   "version": "v001",
+   "n_image_blocks": 152,
+   "n_with_url": 135,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133-23-ГК-АР1",
+   "version": "v002",
+   "n_image_blocks": 67,
+   "n_with_url": 51,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133-23-ГК-АР7",
+   "version": "v001",
+   "n_image_blocks": 60,
+   "n_with_url": 53,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133-23-ГК-АР7",
+   "version": "v002",
+   "n_image_blocks": 60,
+   "n_with_url": 53,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР2",
+   "version": "v001",
+   "n_image_blocks": 64,
+   "n_with_url": 55,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР2",
+   "version": "v002",
+   "n_image_blocks": 40,
+   "n_with_url": 30,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР3",
+   "version": "v001",
+   "n_image_blocks": 69,
+   "n_with_url": 44,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР3",
+   "version": "v002",
+   "n_image_blocks": 83,
+   "n_with_url": 58,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР4",
+   "version": "v001",
+   "n_image_blocks": 199,
+   "n_with_url": 174,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР4",
+   "version": "v002",
+   "n_image_blocks": 89,
+   "n_with_url": 64,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР5",
+   "version": "v001",
+   "n_image_blocks": 111,
+   "n_with_url": 90,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР5",
+   "version": "v002",
+   "n_image_blocks": 50,
+   "n_with_url": 33,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР6",
+   "version": "v001",
+   "n_image_blocks": 40,
+   "n_with_url": 35,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР9",
+   "version": "v001",
+   "n_image_blocks": 38,
+   "n_with_url": 29,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "133_23-ГК-АР9",
+   "version": "v002",
+   "n_image_blocks": 38,
+   "n_with_url": 29,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "НО-757 Альбом РД. Световоды V1",
+   "version": "v001",
+   "n_image_blocks": 25,
+   "n_with_url": 9,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "AR",
+   "doc_id": "ОПР-НВФ V1",
+   "version": "v001",
+   "n_image_blocks": 149,
+   "n_with_url": 98,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "087-РД-ГП5",
+   "version": "v001",
+   "n_image_blocks": 57,
+   "n_with_url": 48,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133-23-ГК-ЭС",
+   "version": "v001",
+   "n_image_blocks": 13,
+   "n_with_url": 10,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-ГРЩ",
+   "version": "v001",
+   "n_image_blocks": 56,
+   "n_with_url": 39,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-НС.ЭМ",
+   "version": "v001",
+   "n_image_blocks": 48,
+   "n_with_url": 35,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-ЭГ",
+   "version": "v001",
+   "n_image_blocks": 71,
+   "n_with_url": 49,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-ЭМ1",
+   "version": "v001",
+   "n_image_blocks": 75,
+   "n_with_url": 56,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-ЭО1",
+   "version": "v001",
+   "n_image_blocks": 40,
+   "n_with_url": 25,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-ЭО2",
+   "version": "v001",
+   "n_image_blocks": 65,
+   "n_with_url": 45,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-ЭО2",
+   "version": "v002",
+   "n_image_blocks": 48,
+   "n_with_url": 23,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "133_23-ГК-ЭО3",
+   "version": "v001",
+   "n_image_blocks": 233,
+   "n_with_url": 165,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "EOM",
+   "doc_id": "СК-4324-ЭРА-ЭР",
+   "version": "v001",
+   "n_image_blocks": 300,
+   "n_with_url": 191,
+   "sample_status": [
+    404,
+    200,
+    200,
+    200
+   ],
+   "alive": false,
+   "partial": true
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "087-РД-АР",
+   "version": "v001",
+   "n_image_blocks": 185,
+   "n_with_url": 154,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "087-РД-ГП1",
+   "version": "v001",
+   "n_image_blocks": 5,
+   "n_with_url": 2,
+   "sample_status": [
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "087-РД-ГП2",
+   "version": "v001",
+   "n_image_blocks": 80,
+   "n_with_url": 69,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "087-РД-ГП3",
+   "version": "v001",
+   "n_image_blocks": 153,
+   "n_with_url": 123,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "087-РД-ГП4 V2",
+   "version": "v001",
+   "n_image_blocks": 5,
+   "n_with_url": 2,
+   "sample_status": [
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "087-РД-ГП8",
+   "version": "v001",
+   "n_image_blocks": 39,
+   "n_with_url": 28,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "133-23-ГК-ГП1",
+   "version": "v001",
+   "n_image_blocks": 7,
+   "n_with_url": 3,
+   "sample_status": [
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "GP",
+   "doc_id": "133-23-ГК-ГП3",
+   "version": "v001",
+   "n_image_blocks": 80,
+   "n_with_url": 67,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "ITP",
+   "doc_id": "133-23-ГК-УУТЭ1",
+   "version": "v001",
+   "n_image_blocks": 40,
+   "n_with_url": 25,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "ITP",
+   "doc_id": "133-23-ГК-УУТЭ2",
+   "version": "v001",
+   "n_image_blocks": 49,
+   "n_with_url": 30,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "ITP",
+   "doc_id": "133_23-ГК-ИТП.АК",
+   "version": "v001",
+   "n_image_blocks": 75,
+   "n_with_url": 37,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "ITP",
+   "doc_id": "133_23-ГК-ИТП.ЭМ",
+   "version": "v001",
+   "n_image_blocks": 48,
+   "n_with_url": 35,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "KM",
+   "doc_id": "133-23-ГК-КМ1",
+   "version": "v001",
+   "n_image_blocks": 60,
+   "n_with_url": 47,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "KM",
+   "doc_id": "133-23-ГК-КМ2",
+   "version": "v001",
+   "n_image_blocks": 74,
+   "n_with_url": 54,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "OV",
+   "doc_id": "133-23-ГК-ОВ2.2",
+   "version": "v001",
+   "n_image_blocks": 292,
+   "n_with_url": 224,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "OV",
+   "doc_id": "133-23-ГК-ОВ3",
+   "version": "v001",
+   "n_image_blocks": 314,
+   "n_with_url": 237,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "OV",
+   "doc_id": "133_23-ГК-ОВ1.1",
+   "version": "v001",
+   "n_image_blocks": 57,
+   "n_with_url": 39,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "OV",
+   "doc_id": "133_23-ГК-ОВ1.2",
+   "version": "v001",
+   "n_image_blocks": 90,
+   "n_with_url": 56,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "OV",
+   "doc_id": "133_23-ГК-ОВ2.1",
+   "version": "v001",
+   "n_image_blocks": 136,
+   "n_with_url": 102,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "POS",
+   "doc_id": "133-23-ГК-ГП4",
+   "version": "v001",
+   "n_image_blocks": 3,
+   "n_with_url": 1,
+   "sample_status": [
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "POS",
+   "doc_id": "133_23-ГК-ПОС1",
+   "version": "v001",
+   "n_image_blocks": 114,
+   "n_with_url": 76,
+   "sample_status": [
+    404,
+    200,
+    404,
+    200
+   ],
+   "alive": false,
+   "partial": true
+  },
+  {
+   "discipline": "POS",
+   "doc_id": "2025_12_24_М31А",
+   "version": "v001",
+   "n_image_blocks": 3,
+   "n_with_url": 2,
+   "sample_status": [
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "PT",
+   "doc_id": "133-23-ГК-АГПТ",
+   "version": "v001",
+   "n_image_blocks": 43,
+   "n_with_url": 34,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "PT",
+   "doc_id": "133_23-ГК-ПТ",
+   "version": "v001",
+   "n_image_blocks": 48,
+   "n_with_url": 28,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133-23-ГК-СКУД",
+   "version": "v001",
+   "n_image_blocks": 72,
+   "n_with_url": 41,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-АСКУВТ",
+   "version": "v001",
+   "n_image_blocks": 68,
+   "n_with_url": 41,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-АСКУЭ",
+   "version": "v001",
+   "n_image_blocks": 67,
+   "n_with_url": 43,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-АСКУЭ",
+   "version": "v002",
+   "n_image_blocks": 27,
+   "n_with_url": 10,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-АСУД.И",
+   "version": "v001",
+   "n_image_blocks": 7,
+   "n_with_url": 6,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-АСУД.Л",
+   "version": "v001",
+   "n_image_blocks": 71,
+   "n_with_url": 38,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-КК",
+   "version": "v001",
+   "n_image_blocks": 92,
+   "n_with_url": 63,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-НС.АК",
+   "version": "v001",
+   "n_image_blocks": 28,
+   "n_with_url": 16,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-ОЗДС",
+   "version": "v001",
+   "n_image_blocks": 30,
+   "n_with_url": 19,
+   "sample_status": [
+    200,
+    404,
+    200,
+    200
+   ],
+   "alive": false,
+   "partial": true
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-ПБ",
+   "version": "v001",
+   "n_image_blocks": 333,
+   "n_with_url": 246,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-ПБ",
+   "version": "v002",
+   "n_image_blocks": 218,
+   "n_with_url": 128,
+   "sample_status": [
+    200,
+    200,
+    200,
+    404
+   ],
+   "alive": false,
+   "partial": true
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-РТ",
+   "version": "v001",
+   "n_image_blocks": 111,
+   "n_with_url": 68,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-САКЗ",
+   "version": "v001",
+   "n_image_blocks": 18,
+   "n_with_url": 12,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-САКЗ",
+   "version": "v002",
+   "n_image_blocks": 14,
+   "n_with_url": 8,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-СДС",
+   "version": "v001",
+   "n_image_blocks": 89,
+   "n_with_url": 51,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-СКС",
+   "version": "v001",
+   "n_image_blocks": 36,
+   "n_with_url": 19,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-СКС",
+   "version": "v002",
+   "n_image_blocks": 54,
+   "n_with_url": 30,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-СКТВ",
+   "version": "v001",
+   "n_image_blocks": 96,
+   "n_with_url": 61,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-СОТ",
+   "version": "v001",
+   "n_image_blocks": 108,
+   "n_with_url": 59,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-СОТ V1",
+   "version": "v001",
+   "n_image_blocks": 104,
+   "n_with_url": 56,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "SS",
+   "doc_id": "133_23-ГК-СОТС",
+   "version": "v001",
+   "n_image_blocks": 58,
+   "n_with_url": 30,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "TX",
+   "doc_id": "133-23-ГК-ТХ.А",
+   "version": "v001",
+   "n_image_blocks": 31,
+   "n_with_url": 22,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "TX",
+   "doc_id": "133_23-ГК-ТХ.ВТ",
+   "version": "v001",
+   "n_image_blocks": 43,
+   "n_with_url": 31,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "TX",
+   "doc_id": "133_23-ГК-ТХ.ВТ V1",
+   "version": "v001",
+   "n_image_blocks": 43,
+   "n_with_url": 31,
+   "sample_status": [
+    404,
+    404,
+    404,
+    404
+   ],
+   "alive": false,
+   "partial": false
+  },
+  {
+   "discipline": "TX",
+   "doc_id": "133_23-ГК-ТХ.М",
+   "version": "v001",
+   "n_image_blocks": 19,
+   "n_with_url": 14,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "TX",
+   "doc_id": "133_23-ГК-ТХ.М V1",
+   "version": "v001",
+   "n_image_blocks": 19,
+   "n_with_url": 14,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "TX",
+   "doc_id": "133_23-ГК-ТХ.О",
+   "version": "v001",
+   "n_image_blocks": 9,
+   "n_with_url": 4,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "VK",
+   "doc_id": "133-23-ГК-ВК4",
+   "version": "v001",
+   "n_image_blocks": 26,
+   "n_with_url": 19,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "VK",
+   "doc_id": "133_23-ГК-ВК1",
+   "version": "v001",
+   "n_image_blocks": 114,
+   "n_with_url": 77,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "VK",
+   "doc_id": "133_23-ГК-ВК2",
+   "version": "v001",
+   "n_image_blocks": 170,
+   "n_with_url": 131,
+   "sample_status": [
+    200,
+    404,
+    200,
+    200
+   ],
+   "alive": false,
+   "partial": true
+  },
+  {
+   "discipline": "VK",
+   "doc_id": "133_23-ГК-ВК2",
+   "version": "v002",
+   "n_image_blocks": 197,
+   "n_with_url": 120,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "VK",
+   "doc_id": "133_23-ГК-ВК3",
+   "version": "v001",
+   "n_image_blocks": 15,
+   "n_with_url": 15,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "VK",
+   "doc_id": "133_23-ГК-ВК3",
+   "version": "v002",
+   "n_image_blocks": 51,
+   "n_with_url": 32,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  },
+  {
+   "discipline": "VK",
+   "doc_id": "75СГ-24-ДК1 (врем. сети)",
+   "version": "v001",
+   "n_image_blocks": 13,
+   "n_with_url": 8,
+   "sample_status": [
+    200,
+    200,
+    200,
+    200
+   ],
+   "alive": true,
+   "partial": false
+  }
+ ]
+}

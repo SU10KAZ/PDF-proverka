@@ -1,0 +1,37 @@
+{
+ "census": {
+  "n_blocks": 43261,
+  "n_text_lt5_all": 3089,
+  "share_all": 0.0714,
+  "n_blocks_with_geometry": 42311,
+  "n_text_lt5_with_geometry": 2247,
+  "share_with_geometry": 0.0531,
+  "n_seg_median": 1848,
+  "n_seg_mean": 16712.8,
+  "share_ge_10000_segments": 0.2576,
+  "share_lt_10_segments": 0.0296,
+  "checks": {
+   "G5'_7.14pct_of_43261": true,
+   "N-4_5.3pct_of_42311": true
+  }
+ },
+ "M2_same_pdf_sha256": {
+  "n_version_pairs": 122,
+  "n_same_sha": 7
+ },
+ "M6_stamp_share": {
+  "n_pairs": 3940,
+  "n_stamp": 1511,
+  "share": 0.3835
+ },
+ "M13_quiet_pairs": {
+  "n_le_2e-4": 333,
+  "n_exactly_zero": 182,
+  "n_with_measure": 3940
+ },
+ "G1_carrier_set_reproduced": {
+  "n_blocks": 203,
+  "n_segments": 469208,
+  "n_disciplines": 12
+ }
+}

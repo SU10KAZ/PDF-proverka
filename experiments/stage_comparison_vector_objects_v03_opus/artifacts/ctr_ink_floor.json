@@ -1,0 +1,104 @@
+{
+ "no_labels": {
+  "lt2": {
+   "n": 22,
+   "share_obj": 0.0604,
+   "share_ink": 0.0059
+  },
+  "lt20": {
+   "n": 330,
+   "share_obj": 0.9066,
+   "share_ink": 0.5728
+  },
+  "lt60": {
+   "n": 353,
+   "share_obj": 0.9698,
+   "share_ink": 0.7507
+  }
+ },
+ "node": {
+  "lt2": {
+   "n": 0,
+   "share_obj": 0.0,
+   "share_ink": 0.0
+  },
+  "lt20": {
+   "n": 10,
+   "share_obj": 0.0943,
+   "share_ink": 0.0048
+  },
+  "lt60": {
+   "n": 21,
+   "share_obj": 0.1981,
+   "share_ink": 0.0402
+  }
+ },
+ "plan_dense": {
+  "lt2": {
+   "n": 45,
+   "share_obj": 0.0606,
+   "share_ink": 0.0002
+  },
+  "lt20": {
+   "n": 145,
+   "share_obj": 0.1954,
+   "share_ink": 0.0056
+  },
+  "lt60": {
+   "n": 250,
+   "share_obj": 0.3369,
+   "share_ink": 0.0211
+  }
+ },
+ "polygon_block": {
+  "lt2": {
+   "n": 129,
+   "share_obj": 0.2371,
+   "share_ink": 0.001
+  },
+  "lt20": {
+   "n": 258,
+   "share_obj": 0.4743,
+   "share_ink": 0.0061
+  },
+  "lt60": {
+   "n": 377,
+   "share_obj": 0.693,
+   "share_ink": 0.0343
+  }
+ },
+ "rotated_270": {
+  "lt2": {
+   "n": 0,
+   "share_obj": 0.0,
+   "share_ink": 0.0
+  },
+  "lt20": {
+   "n": 0,
+   "share_obj": 0.0,
+   "share_ink": 0.0
+  },
+  "lt60": {
+   "n": 7,
+   "share_obj": 0.1429,
+   "share_ink": 0.0269
+  }
+ },
+ "scheme": {
+  "lt2": {
+   "n": 40,
+   "share_obj": 0.023,
+   "share_ink": 0.0003
+  },
+  "lt20": {
+   "n": 385,
+   "share_obj": 0.2218,
+   "share_ink": 0.0192
+  },
+  "lt60": {
+   "n": 597,
+   "share_obj": 0.3439,
+   "share_ink": 0.057
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "n_blocks": 40,
+ "object_id_preserved": {
+  "A1_path_split": {
+   "n": 40,
+   "median": 1.0,
+   "mean": 1.0,
+   "min": 1.0
+  },
+  "A2_path_merge": {
+   "n": 40,
+   "median": 1.0,
+   "mean": 1.0,
+   "min": 1.0
+  },
+  "A5_order_shuffle": {
+   "n": 40,
+   "median": 1.0,
+   "mean": 1.0,
+   "min": 1.0
+  },
+  "A8_lineweight": {
+   "n": 40,
+   "median": 1.0,
+   "mean": 1.0,
+   "min": 1.0
+  },
+  "A6_round_0.01": {
+   "n": 40,
+   "median": 0.705,
+   "mean": 0.6959,
+   "min": 0.1257
+  },
+  "A6_round_0.25": {
+   "n": 40,
+   "median": 0.391,
+   "mean": 0.3682,
+   "min": 0.0114
+  },
+  "A4b_circle_to_chords5": {
+   "n": 31,
+   "median": 0.8235,
+   "mean": 0.6561,
+   "min": 0.0
+  }
+ }
+}

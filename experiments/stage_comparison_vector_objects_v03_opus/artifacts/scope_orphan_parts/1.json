@@ -1,0 +1,328 @@
+[
+ {
+  "doc_id": "13АВ-РД-КЖ5.30-31.1-К2",
+  "disc": "KJ",
+  "kind": "1:0_orphan_a",
+  "page_a": 13,
+  "page_b": 14,
+  "block": "9A9R-3TLQ-CEJ",
+  "side": "a",
+  "rect_pt": [
+   1462.2,
+   1322.3,
+   1753.6,
+   1521.1
+  ],
+  "page_frame": {
+   "error": "no vector geometry on one side",
+   "n_seg_a": 167,
+   "n_seg_b": 0
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-АР1.1-ПА V1",
+  "disc": "AR",
+  "kind": "1:0_orphan_a",
+  "page_a": 11,
+  "page_b": 11,
+  "block": "4JMQ-CLJM-MV3",
+  "side": "a",
+  "rect_pt": [
+   1307.7,
+   1460.6,
+   1790.6,
+   1670.9
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 1103,
+   "n_seg_b": 1103,
+   "ink_len_a": 7195.24,
+   "ink_len_b": 7195.24,
+   "n_obj_a": 120,
+   "n_obj_b": 120,
+   "S": 8.8988,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    1307.7,
+    1460.6,
+    1790.6,
+    1670.9
+   ],
+   "clip_b": [
+    1307.7,
+    1460.6,
+    1790.6,
+    1670.9
+   ],
+   "t_sec": 1.5
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+  "disc": "SS",
+  "kind": "1:0_orphan_a",
+  "page_a": 107,
+  "page_b": 60,
+  "block": "7GXD-UYQW-4LG",
+  "side": "a",
+  "rect_pt": [
+   24.5,
+   7.2,
+   561.2,
+   350.9
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 304,
+   "n_seg_b": 304,
+   "ink_len_a": 8506.32,
+   "ink_len_b": 8506.32,
+   "n_obj_a": 53,
+   "n_obj_b": 53,
+   "S": 8.04,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    24.5,
+    7.2,
+    561.2,
+    350.9
+   ],
+   "clip_b": [
+    24.5,
+    7.2,
+    561.2,
+    350.9
+   ],
+   "t_sec": 0.5
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-АР1.1-К2",
+  "disc": "AR",
+  "kind": "1:0_orphan_a",
+  "page_a": 7,
+  "page_b": 7,
+  "block": "7P4R-CK6N-Y39",
+  "side": "a",
+  "rect_pt": [
+   999.0,
+   1336.5,
+   1787.7,
+   1664.4
+  ],
+  "page_frame": {
+   "n_records": 5,
+   "n_records_interior": 3,
+   "n_records_big": 4,
+   "by_type": {
+    "MOVED_OBJECT": 3,
+    "ADDED_OBJECT": 2
+   },
+   "by_type_big": {
+    "ADDED_OBJECT": 2,
+    "MOVED_OBJECT": 2
+   },
+   "changed_len_total": 2627.293,
+   "changed_len_big": 2622.81,
+   "added_removed_len": 624.62,
+   "added_removed_big": 2,
+   "similarity": 0.675052,
+   "n_seg_a": 648,
+   "n_seg_b": 679,
+   "ink_len_a": 3715.31,
+   "ink_len_b": 4369.97,
+   "n_obj_a": 37,
+   "n_obj_b": 40,
+   "S": 10.1155,
+   "rec_top": [
+    [
+     "MOVED_OBJECT",
+     [
+      1290.4,
+      1502.4,
+      1316.6,
+      1592.6
+     ],
+     1766.5,
+     0
+    ],
+    [
+     "ADDED_OBJECT",
+     [
+      1043.2,
+      1336.5,
+      1515.8,
+      1354.0
+     ],
+     578.0,
+     1
+    ],
+    [
+     "MOVED_OBJECT",
+     [
+      1290.7,
+      1474.8,
+      1316.6,
+      1478.2
+     ],
+     231.7,
+     0
+    ],
+    [
+     "ADDED_OBJECT",
+     [
+      998.9,
+      1336.5,
+      1013.5,
+      1354.0
+     ],
+     46.6,
+     1
+    ],
+    [
+     "MOVED_OBJECT",
+     [
+      1572.4,
+      1588.3,
+      1597.7,
+      1588.3
+     ],
+     4.5,
+     0
+    ]
+   ],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.7337,
+   "clip_a": [
+    999.0,
+    1336.5,
+    1787.7,
+    1664.4
+   ],
+   "clip_b": [
+    999.0,
+    1336.5,
+    1787.7,
+    1664.4
+   ],
+   "t_sec": 2.9
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-ЭМ-К5",
+  "disc": "EOM",
+  "kind": "0:1_orphan_b",
+  "page_a": 30,
+  "page_b": 31,
+  "block": "7GWA-7ETE-6RK",
+  "side": "b",
+  "rect_pt": [
+   649.0,
+   783.0,
+   1174.7,
+   828.1
+  ],
+  "page_frame": {
+   "n_records": 0,
+   "n_records_interior": 0,
+   "n_records_big": 0,
+   "by_type": {},
+   "by_type_big": {},
+   "changed_len_total": 0,
+   "changed_len_big": 0,
+   "added_removed_len": 0,
+   "added_removed_big": 0,
+   "similarity": 1.0,
+   "n_seg_a": 22,
+   "n_seg_b": 22,
+   "ink_len_a": 3916.32,
+   "ink_len_b": 3916.84,
+   "n_obj_a": 13,
+   "n_obj_b": 13,
+   "S": 10.9938,
+   "rec_top": [],
+   "n_records_outside_roi": 0,
+   "len_outside_roi": 0,
+   "n_big_outside_roi": 0,
+   "reg_offset": [
+    0.05,
+    -0.15
+   ],
+   "reg_score": 1.0,
+   "clip_a": [
+    649.0,
+    783.0,
+    1174.7,
+    828.1
+   ],
+   "clip_b": [
+    649.0,
+    783.0,
+    1174.7,
+    828.1
+   ],
+   "t_sec": 0.1
+  }
+ },
+ {
+  "doc_id": "13АВ-РД-КЖ5.30-31.1-К2",
+  "disc": "KJ",
+  "kind": "1:0_orphan_a",
+  "page_a": 13,
+  "page_b": 14,
+  "block": "4HCL-NG3U-4PU",
+  "side": "a",
+  "rect_pt": [
+   1469.9,
+   1519.7,
+   1704.2,
+   1613.8
+  ],
+  "page_frame": {
+   "error": "no vector geometry on one side",
+   "n_seg_a": 151,
+   "n_seg_b": 0
+  }
+ }
+]

@@ -1,0 +1,1721 @@
+{
+ "rows": [
+  {
+   "case_id": "vis01",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.55,
+   "why": "Стена со штриховкой и осевая линия совпадают; отличается только положение синих текстовых подписей.",
+   "pair_id": "EOM-0c86dfde",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "EOM",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 41.115,
+   "structural": 0.040182,
+   "raw_diff": 0.059241,
+   "size_mismatch": false,
+   "tokens_case": 678.8,
+   "px_left": [
+    701,
+    322
+   ],
+   "px_right": [
+    701,
+    322
+   ],
+   "eye_note_ru": "различие только в тексте марки (K1.2.3п / K1.2.3п-12) и её подчёркивании; стены, штриховка, оси совпадают",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 41.1 pt) на паре класса text_only_change",
+   "batch": 1
+  },
+  {
+   "case_id": "vis02",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.62,
+   "why": "Слева вдоль левой грани шкафа есть оранжевая вертикальная полоса и сплошная серая заливка стен, справа этой полосы нет, а стены показаны только штриховкой",
+   "pair_id": "EOM-14558cda",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "EOM",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 9222.909,
+   "structural": 0.145222,
+   "raw_diff": 0.27301,
+   "size_mismatch": false,
+   "tokens_case": 943.2,
+   "px_left": [
+    487,
+    701
+   ],
+   "px_right": [
+    487,
+    701
+   ],
+   "eye_note_ru": "слева весь вид закрыт серой заливкой и оранжевой полосой, справа заливки нет",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 9 223 pt) на паре класса occluding_fill",
+   "batch": 2
+  },
+  {
+   "case_id": "vis03",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.78,
+   "why": "Клеммник, синие линии и оба кружка-соединителя совпадают; в правом верхний кружок лишь чуть иначе оцифрован",
+   "pair_id": null,
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "discipline": "SS",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.0,
+   "raw_diff": 0.000579,
+   "size_mismatch": false,
+   "tokens_case": 890.2,
+   "px_left": [
+    701,
+    451
+   ],
+   "px_right": [
+    701,
+    451
+   ],
+   "eye_note_ru": "тот же символ, окружность стала слегка угловатой",
+   "why_uncertain_ru": "A6_round_0.5 на кружке соединения кабелей",
+   "batch": 3
+  },
+  {
+   "case_id": "vis04",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.9,
+   "why": "Символ диода/стабилитрона со стрелками излучения совпадает полностью по форме и положению.",
+   "pair_id": "SS-392b7bd3",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "SS",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 0.06,
+   "structural": 0.0,
+   "raw_diff": 0.019762,
+   "size_mismatch": true,
+   "tokens_case": 215.0,
+   "px_left": [
+    209,
+    208
+   ],
+   "px_right": [
+    208,
+    209
+   ],
+   "eye_note_ru": "символ (диод + молния) идентичен",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 0.1 pt) на паре класса bbox_boundary_artifact",
+   "batch": 4
+  },
+  {
+   "case_id": "vis05",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": false,
+   "conf": 0.55,
+   "why": "В центре слева массивный залитый клин над диагональю, справа на его месте тонкая узкая линия — форма элемента иная.",
+   "pair_id": null,
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "discipline": "GP",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.000804,
+   "raw_diff": 0.010212,
+   "size_mismatch": false,
+   "tokens_case": 270.4,
+   "px_left": [
+    257,
+    237
+   ],
+   "px_right": [
+    257,
+    237
+   ],
+   "eye_note_ru": "тот же фрагмент",
+   "why_uncertain_ru": "A6_round_0.5 внутри плотного фрагмента генплана",
+   "batch": 5
+  },
+  {
+   "case_id": "vis06",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.8,
+   "why": "Справа над шифром появились две толстые горизонтальные черты (подчёркивание/зачёркивание), слева их нет.",
+   "pair_id": null,
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "discipline": "KJ",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.004249,
+   "raw_diff": 0.004249,
+   "size_mismatch": false,
+   "tokens_case": 837.4,
+   "px_left": [
+    701,
+    423
+   ],
+   "px_right": [
+    701,
+    423
+   ],
+   "eye_note_ru": "справа над надписью появились две толстые чёрточки",
+   "why_uncertain_ru": "C2_add_object",
+   "batch": 1
+  },
+  {
+   "case_id": "vis07",
+   "role": "B",
+   "source_kind": "REAL",
+   "answer_set": 2,
+   "truth": "DIFFERENT",
+   "raw_answer": "разные чертежи",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.97,
+   "why": "Слева таблица «Условные обозначения» со светильниками, справа узел «Проход кабелей через перегородки и перекрытия»",
+   "pair_id": "EOM-1db297d2",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "EOM",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.036776,
+   "raw_diff": 0.079629,
+   "size_mismatch": true,
+   "tokens_case": 1233.8000000000002,
+   "px_left": [
+    701,
+    670
+   ],
+   "px_right": [
+    700,
+    701
+   ],
+   "eye_note_ru": "слева «Условные обозначения», справа «Проход кабелей через перегородки» — разные чертежи",
+   "why_uncertain_ru": "пара, на которой компаратор отказался выравниваться (ALIGNMENT_UNAVAILABLE / no_consensus); зонд mine пометил её как block_match_failure",
+   "batch": 2
+  },
+  {
+   "case_id": "vis08",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.6,
+   "why": "У правого узла ø50 появился дополнительный фитинг/отвод с отметкой, стрелка уклона переехала к тройнику",
+   "pair_id": "VK-148ffe6c",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "VK",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 1451.589,
+   "structural": 0.003115,
+   "raw_diff": 0.018335,
+   "size_mismatch": false,
+   "tokens_case": 996.0,
+   "px_left": [
+    701,
+    522
+   ],
+   "px_right": [
+    701,
+    522
+   ],
+   "eye_note_ru": "справа у тройника добавлена муфта и отметка -0,019 вместо -0,050",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 1 452 pt) на аксонометрии трубопровода",
+   "batch": 3
+  },
+  {
+   "case_id": "vis09",
+   "role": "B",
+   "source_kind": "REAL",
+   "answer_set": 2,
+   "truth": "SAME",
+   "raw_answer": "один и тот же чертёж",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.93,
+   "why": "Оба — узел В прохода кабеля в гильзе, те же элементы и подписи, справа кроп смещён и обрезан слева.",
+   "pair_id": "SS-a369f492",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "SS",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.128816,
+   "raw_diff": 0.252253,
+   "size_mismatch": true,
+   "tokens_case": 1101.6999999999998,
+   "px_left": [
+    701,
+    554
+   ],
+   "px_right": [
+    632,
+    701
+   ],
+   "eye_note_ru": "на обоих кропах узел В прохода кабеля в гильзе, разный масштаб",
+   "why_uncertain_ru": "блок класса vector_raster_mix; сопоставитель связал блоки, в которых предмет один, но масштаб и состав листа разные",
+   "batch": 4
+  },
+  {
+   "case_id": "vis10",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.95,
+   "why": "Справа появились дверное полотно и штриховая дуга открывания, слева на этом месте пусто.",
+   "pair_id": "EOM-c50e2170",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "EOM",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 113.15,
+   "structural": 0.007876,
+   "raw_diff": 0.023451,
+   "size_mismatch": false,
+   "tokens_case": 1207.4,
+   "px_left": [
+    668,
+    693
+   ],
+   "px_right": [
+    668,
+    693
+   ],
+   "eye_note_ru": "справа добавлена дверь: створка и пунктирная дуга открывания",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 113.2 pt) на том же плане, другое окно",
+   "batch": 5
+  },
+  {
+   "case_id": "vis11",
+   "role": "C",
+   "source_kind": "REAL",
+   "answer_set": 2,
+   "truth": "DIFFERENT",
+   "raw_answer": "разные чертежи",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.95,
+   "why": "Слева опалубка фундаментов Фпк-3/Фпк-4, справа армирование Фпк-2 — разная геометрия и содержание.",
+   "pair_id": "AR-a32b30a6",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "AR",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.047747,
+   "raw_diff": 0.094327,
+   "size_mismatch": true,
+   "tokens_case": 890.2,
+   "px_left": [
+    701,
+    455
+   ],
+   "px_right": [
+    701,
+    460
+   ],
+   "eye_note_ru": "слева «Опалубка», справа «Армирование» — разные чертежи",
+   "why_uncertain_ru": "правый блок содержит ДВА чертежа, левый один; сопоставитель связал блоки целиком, вектор-слоя нет (растр)",
+   "batch": 1
+  },
+  {
+   "case_id": "vis12",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.85,
+   "why": "Тот же кружок с выноской вправо, отличается только число сегментов аппроксимации окружности",
+   "pair_id": null,
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "discipline": "PT",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.000217,
+   "raw_diff": 0.006355,
+   "size_mismatch": false,
+   "tokens_case": 251.2,
+   "px_left": [
+    254,
+    254
+   ],
+   "px_right": [
+    254,
+    254
+   ],
+   "eye_note_ru": "тот же знак дерева, чуть иная многоугольность",
+   "why_uncertain_ru": "A6_round_0.5 на условном знаке дерева",
+   "batch": 2
+  },
+  {
+   "case_id": "vis13",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.85,
+   "why": "Клетки штампа и подпись совпадают полностью",
+   "pair_id": "SS-6fc75e05",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "SS",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 9.1e-05,
+   "raw_diff": 0.031985,
+   "size_mismatch": false,
+   "tokens_case": 712.4,
+   "px_left": [
+    481,
+    481
+   ],
+   "px_right": [
+    481,
+    481
+   ],
+   "eye_note_ru": "подпись в штампе побитово та же картинка; расхождение только в разложении на примитивы",
+   "why_uncertain_ru": "окно, где стороны несут одну краску, но разное число примитивов: 200 против 1658 сегментов (×8.3) при равной длине штриха (отношение 1.016)",
+   "batch": 3
+  },
+  {
+   "case_id": "vis14",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.88,
+   "why": "Слева пусто, справа появился параллелограмм с цифрой 1.",
+   "pair_id": "AR-5acaab0e",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "AR",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 50.141,
+   "structural": 0.03623,
+   "raw_diff": 0.03623,
+   "size_mismatch": false,
+   "tokens_case": 316.0,
+   "px_left": [
+    402,
+    209
+   ],
+   "px_right": [
+    402,
+    209
+   ],
+   "eye_note_ru": "справа добавлена выноска-параллелограмм с цифрой 1",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 50.1 pt) на плотном плане со штриховкой",
+   "batch": 4
+  },
+  {
+   "case_id": "vis15",
+   "role": "C",
+   "source_kind": "REAL",
+   "answer_set": 2,
+   "truth": "SAME",
+   "raw_answer": "один и тот же чертёж",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.95,
+   "why": "Оба кропа — «Фундамент под оборудование Фпк-3, Фпк-4. Опалубка» с теми же осями 3.5-3.7 и теми же двумя штрихованными прямоугольниками.",
+   "pair_id": "AR-a32b30a6",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "AR",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.048678,
+   "raw_diff": 0.086062,
+   "size_mismatch": true,
+   "tokens_case": 837.4000000000001,
+   "px_left": [
+    701,
+    455
+   ],
+   "px_right": [
+    701,
+    398
+   ],
+   "eye_note_ru": "тот же чертёж «Фундамент под оборудование Фпк-3, Фпк-4. Опалубка», другой масштаб",
+   "why_uncertain_ru": "оба блока чисто растровые (вектор-слоя нет вообще), сравнивать нечем кроме картинки",
+   "batch": 5
+  },
+  {
+   "case_id": "vis16",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.9,
+   "why": "Слева между кружками есть средний круг (дерево) с выноской, справа он отсутствует.",
+   "pair_id": null,
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "discipline": "PT",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.011083,
+   "raw_diff": 0.011718,
+   "size_mismatch": false,
+   "tokens_case": 251.2,
+   "px_left": [
+    254,
+    254
+   ],
+   "px_right": [
+    254,
+    254
+   ],
+   "eye_note_ru": "справа исчез один знак дерева",
+   "why_uncertain_ru": "C1_remove_object",
+   "batch": 1
+  },
+  {
+   "case_id": "vis17",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.88,
+   "why": "Стойка, две горизонтальные полосы и верхний синий фрагмент совпадают попиксельно",
+   "pair_id": null,
+   "cf_id": "A2_path_merge",
+   "cf_class": "A",
+   "discipline": "EOM",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.0,
+   "raw_diff": 0.0,
+   "size_mismatch": false,
+   "tokens_case": 722.0,
+   "px_left": [
+    386,
+    616
+   ],
+   "px_right": [
+    386,
+    616
+   ],
+   "eye_note_ru": "картинка идентична",
+   "why_uncertain_ru": "A2_path_merge: соседние сегменты слиты в полилинии",
+   "batch": 2
+  },
+  {
+   "case_id": "vis18",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.9,
+   "why": "Справа добавлены горизонтальный двойной серый элемент и штриховая дуга, слева вместо них вертикальная линия",
+   "pair_id": "EOM-c50e2170",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "EOM",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 151.564,
+   "structural": 0.021861,
+   "raw_diff": 0.037696,
+   "size_mismatch": true,
+   "tokens_case": 414.6,
+   "px_left": [
+    372,
+    348
+   ],
+   "px_right": [
+    372,
+    349
+   ],
+   "eye_note_ru": "справа добавлены дуга открывания двери и прямоугольник, слева есть вертикальная серая линия",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 151.6 pt) на паре класса object_removed",
+   "batch": 3
+  },
+  {
+   "case_id": "vis19",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.88,
+   "why": "Пунктирные линии, зигзаг и штриховые контакты идентичны по форме и положению.",
+   "pair_id": null,
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "discipline": "KJ",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.000134,
+   "raw_diff": 0.005069,
+   "size_mismatch": false,
+   "tokens_case": 409.8,
+   "px_left": [
+    310,
+    385
+   ],
+   "px_right": [
+    310,
+    385
+   ],
+   "eye_note_ru": "тот же символ арматурного стыка",
+   "why_uncertain_ru": "A6_round_0.5: координаты объекта округлены до 0.5 pt — точность экспорта CAD",
+   "batch": 4
+  },
+  {
+   "case_id": "vis20",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.85,
+   "why": "Справа в средних строках таблицы появился вертикальный отрезок-разделитель, слева его нет.",
+   "pair_id": null,
+   "cf_id": "C9_add_branch",
+   "cf_class": "C",
+   "discipline": "OV",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.003497,
+   "raw_diff": 0.003595,
+   "size_mismatch": false,
+   "tokens_case": 837.4,
+   "px_left": [
+    421,
+    701
+   ],
+   "px_right": [
+    421,
+    701
+   ],
+   "eye_note_ru": "справа в таблице появилась вертикальная линия",
+   "why_uncertain_ru": "C9_add_branch: к линейной сети добавлена одна ветвь",
+   "batch": 5
+  },
+  {
+   "case_id": "vis21",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.6,
+   "why": "Обе подписи в штампе одинаковы по форме, различается лишь их векторная отрисовка (заливка/контур).",
+   "pair_id": null,
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "discipline": "VK",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.00145,
+   "raw_diff": 0.016081,
+   "size_mismatch": false,
+   "tokens_case": 597.2,
+   "px_left": [
+    481,
+    400
+   ],
+   "px_right": [
+    481,
+    400
+   ],
+   "eye_note_ru": "та же подпись, хвост росчерка стал ступенчатым",
+   "why_uncertain_ru": "A6_round_0.5 на росчерке подписи (тонкая кривая)",
+   "batch": 1
+  },
+  {
+   "case_id": "vis22",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.8,
+   "why": "Слева есть знак обрыва (зигзаг) с двумя полками и продолжение штриховой линии вправо, справа их нет",
+   "pair_id": null,
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "discipline": "KJ",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.008793,
+   "raw_diff": 0.008793,
+   "size_mismatch": false,
+   "tokens_case": 472.2,
+   "px_left": [
+    366,
+    385
+   ],
+   "px_right": [
+    366,
+    385
+   ],
+   "eye_note_ru": "справа исчез символ арматурного стыка",
+   "why_uncertain_ru": "C1_remove_object: один объект слоя удалён целиком",
+   "batch": 2
+  },
+  {
+   "case_id": "vis23",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.82,
+   "why": "План санузла, лестница и синий прибор идентичны",
+   "pair_id": "EOM-0c86dfde",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "EOM",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 3.512,
+   "structural": 0.0,
+   "raw_diff": 0.0,
+   "size_mismatch": false,
+   "tokens_case": 520.2,
+   "px_left": [
+    235,
+    701
+   ],
+   "px_right": [
+    235,
+    701
+   ],
+   "eye_note_ru": "глазами картинки не отличаются",
+   "why_uncertain_ru": "запись реестра REMOVED_OBJECT (change_len 3.5 pt) внутри плотного плана",
+   "batch": 3
+  },
+  {
+   "case_id": "vis24",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.92,
+   "why": "Справа под профилем появился прямоугольный блок с двумя анкерами и размерными засечками, слева его нет.",
+   "pair_id": "AR-55eda7fb",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "AR",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 350.461,
+   "structural": 0.026352,
+   "raw_diff": 0.039307,
+   "size_mismatch": false,
+   "tokens_case": 731.6,
+   "px_left": [
+    701,
+    368
+   ],
+   "px_right": [
+    701,
+    368
+   ],
+   "eye_note_ru": "справа добавлены два анкера с кружками и размерная цепочка .80.",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 350.5 pt) на листе перемычек",
+   "batch": 4
+  },
+  {
+   "case_id": "vis25",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.92,
+   "why": "Справа под штриховой линией добавлен символ разрыва (зигзаг с двумя поперечными полочками), слева область пустая.",
+   "pair_id": null,
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "discipline": "KJ",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.010812,
+   "raw_diff": 0.010812,
+   "size_mismatch": false,
+   "tokens_case": 441.0,
+   "px_left": [
+    326,
+    385
+   ],
+   "px_right": [
+    326,
+    385
+   ],
+   "eye_note_ru": "справа появился символ арматурного стыка",
+   "why_uncertain_ru": "C2_add_object: объект продублирован в свободное место блока",
+   "batch": 5
+  },
+  {
+   "case_id": "vis26",
+   "role": "B",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.55,
+   "why": "Фрагмент логотипа «РОЕ» идентичен по форме и положению, отличается только растрирование краёв.",
+   "pair_id": "SS-982f7f30",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "SS",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 0.24,
+   "structural": 0.0,
+   "raw_diff": 0.012866,
+   "size_mismatch": false,
+   "tokens_case": 215.0,
+   "px_left": [
+    209,
+    209
+   ],
+   "px_right": [
+    209,
+    209
+   ],
+   "eye_note_ru": "логотип идентичен",
+   "why_uncertain_ru": "запись реестра REMOVED_OBJECT (change_len 0.2 pt) на логотипе: контурный текст + заливка, вектор-описание бесполезно",
+   "batch": 1
+  },
+  {
+   "case_id": "vis27",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.9,
+   "why": "Справа отсутствует нижний кружок-соединение и уходящая от него вправо синяя линия",
+   "pair_id": null,
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "discipline": "SS",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.004083,
+   "raw_diff": 0.004185,
+   "size_mismatch": false,
+   "tokens_case": 890.2,
+   "px_left": [
+    701,
+    451
+   ],
+   "px_right": [
+    701,
+    451
+   ],
+   "eye_note_ru": "справа исчезли кружок соединения и отрезок кабеля",
+   "why_uncertain_ru": "C1_remove_object",
+   "batch": 2
+  },
+  {
+   "case_id": "vis28",
+   "role": "A",
+   "source_kind": "REAL",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.85,
+   "why": "Разрез а-а, штриховки, размерные цепочки и выноски совпадают",
+   "pair_id": "AR-441907a2",
+   "cf_id": null,
+   "cf_class": null,
+   "discipline": "AR",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 15582.105,
+   "structural": 0.0,
+   "raw_diff": 0.0,
+   "size_mismatch": false,
+   "tokens_case": 1101.8,
+   "px_left": [
+    679,
+    603
+   ],
+   "px_right": [
+    679,
+    603
+   ],
+   "eye_note_ru": "ПЕРЕСМОТРЕНО: мой первый глазной вердикт был «добавлен слой штриховки» и он ОШИБОЧЕН — кропы двух версий побитово идентичны (md5 совпал), пиксельный арбитр даёт структурную разницу 0.0",
+   "why_uncertain_ru": "запись реестра REMOVED_OBJECT длиной 15 582 pt на паре класса object_removed — самая крупная запись реестра во всём наборе",
+   "batch": 3
+  },
+  {
+   "case_id": "vis29",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "pred": "DIFFERENT",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.85,
+   "why": "Справа присутствует синяя дуга, слева этот участок пустой.",
+   "pair_id": null,
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "discipline": "ITP",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.009601,
+   "raw_diff": 0.009601,
+   "size_mismatch": false,
+   "tokens_case": 289.6,
+   "px_left": [
+    296,
+    253
+   ],
+   "px_right": [
+    296,
+    253
+   ],
+   "eye_note_ru": "справа появилась синяя дуга",
+   "why_uncertain_ru": "C2_add_object",
+   "batch": 4
+  },
+  {
+   "case_id": "vis30",
+   "role": "A",
+   "source_kind": "CF",
+   "answer_set": 1,
+   "truth": "SAME",
+   "raw_answer": "графика та же",
+   "pred": "SAME",
+   "offlist": false,
+   "correct": true,
+   "conf": 0.9,
+   "why": "Стенка со штриховкой, зигзагами разрыва и штриховой линией совпадает попиксельно по положению и форме.",
+   "pair_id": null,
+   "cf_id": "A1_path_split",
+   "cf_class": "A",
+   "discipline": "KJ",
+   "rec_type": null,
+   "change_len": null,
+   "structural": 0.0,
+   "raw_diff": 0.0,
+   "size_mismatch": false,
+   "tokens_case": 565.8,
+   "px_left": [
+    476,
+    413
+   ],
+   "px_right": [
+    476,
+    413
+   ],
+   "eye_note_ru": "картинка идентична",
+   "why_uncertain_ru": "A1_path_split: каждый путь разбит на односегментные пути (упаковка другая, краска та же)",
+   "batch": 5
+  }
+ ],
+ "S1": {
+  "ALL": {
+   "n": 30,
+   "correct": 29,
+   "acc": 0.9666666666666667,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 30,
+    "best_label": [
+     "SAME",
+     "DIFFERENT"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "SAME": 15,
+     "DIFFERENT": 15
+    }
+   }
+  },
+  "role_A": {
+   "n": 25,
+   "correct": 24,
+   "acc": 0.96,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 25,
+    "best_label": [
+     "DIFFERENT"
+    ],
+    "baseline_acc": 0.52,
+    "truth_counts": {
+     "SAME": 12,
+     "DIFFERENT": 13
+    }
+   }
+  },
+  "role_B": {
+   "n": 3,
+   "correct": 3,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 3,
+    "best_label": [
+     "SAME"
+    ],
+    "baseline_acc": 0.6666666666666666,
+    "truth_counts": {
+     "DIFFERENT": 1,
+     "SAME": 2
+    }
+   }
+  },
+  "role_C": {
+   "n": 2,
+   "correct": 2,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 2,
+    "best_label": [
+     "DIFFERENT",
+     "SAME"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "DIFFERENT": 1,
+     "SAME": 1
+    }
+   }
+  },
+  "src_REAL": {
+   "n": 16,
+   "correct": 16,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 16,
+    "best_label": [
+     "SAME",
+     "DIFFERENT"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "SAME": 8,
+     "DIFFERENT": 8
+    }
+   }
+  },
+  "src_REAL_role_A": {
+   "n": 11,
+   "correct": 11,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 11,
+    "best_label": [
+     "DIFFERENT"
+    ],
+    "baseline_acc": 0.5454545454545454,
+    "truth_counts": {
+     "SAME": 5,
+     "DIFFERENT": 6
+    }
+   }
+  },
+  "src_REAL_role_B": {
+   "n": 3,
+   "correct": 3,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 3,
+    "best_label": [
+     "SAME"
+    ],
+    "baseline_acc": 0.6666666666666666,
+    "truth_counts": {
+     "DIFFERENT": 1,
+     "SAME": 2
+    }
+   }
+  },
+  "src_REAL_role_C": {
+   "n": 2,
+   "correct": 2,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 2,
+    "best_label": [
+     "DIFFERENT",
+     "SAME"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "DIFFERENT": 1,
+     "SAME": 1
+    }
+   }
+  },
+  "src_CF": {
+   "n": 14,
+   "correct": 13,
+   "acc": 0.9285714285714286,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 14,
+    "best_label": [
+     "SAME",
+     "DIFFERENT"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "SAME": 7,
+     "DIFFERENT": 7
+    }
+   }
+  },
+  "src_CF_role_A": {
+   "n": 14,
+   "correct": 13,
+   "acc": 0.9285714285714286,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 14,
+    "best_label": [
+     "SAME",
+     "DIFFERENT"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "SAME": 7,
+     "DIFFERENT": 7
+    }
+   }
+  },
+  "truth_SAME": {
+   "n": 15,
+   "correct": 14,
+   "acc": 0.9333333333333333,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 15,
+    "best_label": [
+     "SAME"
+    ],
+    "baseline_acc": 1.0,
+    "truth_counts": {
+     "SAME": 15
+    }
+   }
+  },
+  "truth_SAME_REAL": {
+   "n": 8,
+   "correct": 8,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 8,
+    "best_label": [
+     "SAME"
+    ],
+    "baseline_acc": 1.0,
+    "truth_counts": {
+     "SAME": 8
+    }
+   }
+  },
+  "truth_SAME_CF": {
+   "n": 7,
+   "correct": 6,
+   "acc": 0.8571428571428571,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 7,
+    "best_label": [
+     "SAME"
+    ],
+    "baseline_acc": 1.0,
+    "truth_counts": {
+     "SAME": 7
+    }
+   }
+  },
+  "truth_DIFFERENT": {
+   "n": 15,
+   "correct": 15,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 15,
+    "best_label": [
+     "DIFFERENT"
+    ],
+    "baseline_acc": 1.0,
+    "truth_counts": {
+     "DIFFERENT": 15
+    }
+   }
+  },
+  "truth_DIFFERENT_REAL": {
+   "n": 8,
+   "correct": 8,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 8,
+    "best_label": [
+     "DIFFERENT"
+    ],
+    "baseline_acc": 1.0,
+    "truth_counts": {
+     "DIFFERENT": 8
+    }
+   }
+  },
+  "truth_DIFFERENT_CF": {
+   "n": 7,
+   "correct": 7,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 7,
+    "best_label": [
+     "DIFFERENT"
+    ],
+    "baseline_acc": 1.0,
+    "truth_counts": {
+     "DIFFERENT": 7
+    }
+   }
+  },
+  "answer_set_1": {
+   "n": 26,
+   "correct": 25,
+   "acc": 0.9615384615384616,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 26,
+    "best_label": [
+     "SAME",
+     "DIFFERENT"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "SAME": 13,
+     "DIFFERENT": 13
+    }
+   }
+  },
+  "answer_set_2": {
+   "n": 4,
+   "correct": 4,
+   "acc": 1.0,
+   "idk": 0,
+   "unparsed": 0,
+   "majority": {
+    "n": 4,
+    "best_label": [
+     "DIFFERENT",
+     "SAME"
+    ],
+    "baseline_acc": 0.5,
+    "truth_counts": {
+     "DIFFERENT": 2,
+     "SAME": 2
+    }
+   }
+  },
+  "confusion": {
+   "SAME->SAME": 14,
+   "DIFFERENT->DIFFERENT": 15,
+   "SAME->DIFFERENT": 1
+  },
+  "by_batch": {
+   "1": {
+    "n": 6,
+    "correct": 6,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "2": {
+    "n": 6,
+    "correct": 6,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "3": {
+    "n": 6,
+    "correct": 6,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "4": {
+    "n": 6,
+    "correct": 6,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "5": {
+    "n": 6,
+    "correct": 5,
+    "acc": 0.8333333333333334,
+    "idk": 0,
+    "unparsed": 0
+   }
+  },
+  "by_discipline": {
+   "AR": {
+    "n": 5,
+    "correct": 5,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "EOM": {
+    "n": 7,
+    "correct": 7,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "GP": {
+    "n": 1,
+    "correct": 0,
+    "acc": 0.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "ITP": {
+    "n": 1,
+    "correct": 1,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "KJ": {
+    "n": 5,
+    "correct": 5,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "OV": {
+    "n": 1,
+    "correct": 1,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "PT": {
+    "n": 2,
+    "correct": 2,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "SS": {
+    "n": 6,
+    "correct": 6,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "VK": {
+    "n": 2,
+    "correct": 2,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   }
+  },
+  "by_cf_id": {
+   "A1_path_split": {
+    "n": 1,
+    "correct": 1,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "A2_path_merge": {
+    "n": 1,
+    "correct": 1,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "A6_round_0.5": {
+    "n": 5,
+    "correct": 4,
+    "acc": 0.8,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "C1_remove_object": {
+    "n": 3,
+    "correct": 3,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "C2_add_object": {
+    "n": 3,
+    "correct": 3,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   },
+   "C9_add_branch": {
+    "n": 1,
+    "correct": 1,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0
+   }
+  },
+  "DIFFERENT_as_positive": {
+   "tp": 15,
+   "fp": 1,
+   "fn": 0,
+   "tn": 14,
+   "precision": 0.9375,
+   "recall": 1.0
+  },
+  "DIFFERENT_as_positive_REAL": {
+   "tp": 8,
+   "fp": 0,
+   "fn": 0,
+   "tn": 8,
+   "precision": 1.0,
+   "recall": 1.0
+  },
+  "DIFFERENT_as_positive_CF": {
+   "tp": 7,
+   "fp": 1,
+   "fn": 0,
+   "tn": 6,
+   "precision": 0.875,
+   "recall": 1.0
+  }
+ },
+ "S2": {
+  "bands": {
+   "<0.3": {
+    "n": 0,
+    "correct": 0,
+    "acc": null,
+    "idk": 0,
+    "unparsed": 0,
+    "conf_mean": null,
+    "cases": [],
+    "wrong": []
+   },
+   "0.3-0.7": {
+    "n": 6,
+    "correct": 5,
+    "acc": 0.8333333333333334,
+    "idk": 0,
+    "unparsed": 0,
+    "conf_mean": 0.5783333333333334,
+    "cases": [
+     "vis01",
+     "vis02",
+     "vis05",
+     "vis08",
+     "vis21",
+     "vis26"
+    ],
+    "wrong": [
+     "vis05"
+    ]
+   },
+   ">0.7": {
+    "n": 24,
+    "correct": 24,
+    "acc": 1.0,
+    "idk": 0,
+    "unparsed": 0,
+    "conf_mean": 0.8825,
+    "cases": [
+     "vis03",
+     "vis04",
+     "vis06",
+     "vis07",
+     "vis09",
+     "vis10",
+     "vis11",
+     "vis12",
+     "vis13",
+     "vis14",
+     "vis15",
+     "vis16",
+     "vis17",
+     "vis18",
+     "vis19",
+     "vis20",
+     "vis22",
+     "vis23",
+     "vis24",
+     "vis25",
+     "vis27",
+     "vis28",
+     "vis29",
+     "vis30"
+    ],
+    "wrong": []
+   }
+  },
+  "conf_stats": {
+   "correct": {
+    "n": 29,
+    "mean": 0.8310344827586207,
+    "median": 0.88,
+    "min": 0.55,
+    "max": 0.97
+   },
+   "wrong": {
+    "n": 1,
+    "mean": 0.55,
+    "median": 0.55,
+    "min": 0.55,
+    "max": 0.55
+   }
+  },
+  "point_biserial_r": 0.3867546633188461,
+  "brier": 0.05215,
+  "ece_3bands": 0.14500000000000005,
+  "auc_conf_vs_correct": 0.9655172413793104,
+  "threshold_sweep": [
+   {
+    "thr": 0.0,
+    "kept": 30,
+    "acc": 0.9666666666666667,
+    "dropped": 0
+   },
+   {
+    "thr": 0.55,
+    "kept": 30,
+    "acc": 0.9666666666666667,
+    "dropped": 0
+   },
+   {
+    "thr": 0.6,
+    "kept": 27,
+    "acc": 1.0,
+    "dropped": 3
+   },
+   {
+    "thr": 0.62,
+    "kept": 25,
+    "acc": 1.0,
+    "dropped": 5
+   },
+   {
+    "thr": 0.7,
+    "kept": 24,
+    "acc": 1.0,
+    "dropped": 6
+   },
+   {
+    "thr": 0.78,
+    "kept": 24,
+    "acc": 1.0,
+    "dropped": 6
+   },
+   {
+    "thr": 0.8,
+    "kept": 23,
+    "acc": 1.0,
+    "dropped": 7
+   },
+   {
+    "thr": 0.85,
+    "kept": 20,
+    "acc": 1.0,
+    "dropped": 10
+   },
+   {
+    "thr": 0.88,
+    "kept": 15,
+    "acc": 1.0,
+    "dropped": 15
+   },
+   {
+    "thr": 0.9,
+    "kept": 12,
+    "acc": 1.0,
+    "dropped": 18
+   }
+  ]
+ },
+ "S3": [
+  {
+   "case_id": "vis05",
+   "role": "A",
+   "source_kind": "CF",
+   "truth": "SAME",
+   "pred": "DIFFERENT",
+   "raw_answer": "есть графическое отличие",
+   "conf": 0.55,
+   "why": "В центре слева массивный залитый клин над диагональю, справа на его месте тонкая узкая линия — форма элемента иная.",
+   "structural": 0.000804,
+   "raw_diff": 0.010212,
+   "cf_id": "A6_round_0.5",
+   "rec_type": null,
+   "change_len": null,
+   "discipline": "GP",
+   "pair_id": null,
+   "eye_note_ru": "тот же фрагмент",
+   "why_uncertain_ru": "A6_round_0.5 внутри плотного фрагмента генплана",
+   "tokens_case": 270.4
+  }
+ ],
+ "S4": {
+  "sum_tokens": 19840.7,
+  "median_per_case": 695.5999999999999,
+  "min": 215.0,
+  "max": 1233.8000000000002,
+  "mean": 661.3566666666667,
+  "per_crop": {
+   "median": 347.79999999999995
+  },
+  "by_source": {
+   "REAL": {
+    "n": 16,
+    "sum": 12115.1,
+    "median": 784.5
+   },
+   "CF": {
+    "n": 14,
+    "sum": 7725.6,
+    "median": 519.0
+   }
+  }
+ }
+}

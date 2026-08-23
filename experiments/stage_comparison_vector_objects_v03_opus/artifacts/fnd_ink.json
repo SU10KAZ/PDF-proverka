@@ -1,0 +1,5279 @@
+{
+ "census": {
+  "n_blocks_sampled": 260,
+  "n_blocks_with_geometry": 246,
+  "n_blocks_error": 2,
+  "paths_total": 7198165,
+  "paths_invisible": 9676,
+  "paths_outside_clip": 6479656,
+  "share_paths_invisible": 0.0013442314812177826,
+  "segments_raw": 3415430,
+  "segments_invisible": 46454,
+  "share_segments_invisible": 0.013601215659521642,
+  "median_block_invisible_share": 0.0,
+  "mean_block_invisible_share": 0.03474820110119381,
+  "n_blocks_invisible_gt_20pct": 6,
+  "share_blocks_invisible_gt_20pct": 0.024390243902439025,
+  "n_blocks_invisible_gt_50pct": 5,
+  "by_rule_segments": {
+   "white_fill_white_stroke": 20018,
+   "white_fill_no_stroke": 26283,
+   "white_stroke_no_fill": 153
+  },
+  "by_rule_paths": {
+   "outside_clip": 6479656,
+   "white_fill_white_stroke": 3084,
+   "white_fill_no_stroke": 6517,
+   "white_stroke_no_fill": 75
+  },
+  "by_discipline": {
+   "AR": {
+    "blocks": 56,
+    "segments_raw": 353717,
+    "segments_invisible": 14872,
+    "share": 0.042044911610129
+   },
+   "EOM": {
+    "blocks": 30,
+    "segments_raw": 337095,
+    "segments_invisible": 5433,
+    "share": 0.01611711831976149
+   },
+   "ITP": {
+    "blocks": 4,
+    "segments_raw": 29669,
+    "segments_invisible": 0,
+    "share": 0.0
+   },
+   "KJ": {
+    "blocks": 38,
+    "segments_raw": 76513,
+    "segments_invisible": 1281,
+    "share": 0.016742252950479004
+   },
+   "KM": {
+    "blocks": 4,
+    "segments_raw": 3106,
+    "segments_invisible": 6,
+    "share": 0.0019317450096587251
+   },
+   "OV": {
+    "blocks": 42,
+    "segments_raw": 572899,
+    "segments_invisible": 5037,
+    "share": 0.008792125662638615
+   },
+   "PT": {
+    "blocks": 5,
+    "segments_raw": 2998,
+    "segments_invisible": 24,
+    "share": 0.008005336891260841
+   },
+   "SS": {
+    "blocks": 47,
+    "segments_raw": 760282,
+    "segments_invisible": 19306,
+    "share": 0.025393209361789442
+   },
+   "TX": {
+    "blocks": 7,
+    "segments_raw": 21029,
+    "segments_invisible": 52,
+    "share": 0.002472775690712825
+   },
+   "VK": {
+    "blocks": 25,
+    "segments_raw": 1258122,
+    "segments_invisible": 443,
+    "share": 0.00035211211631304434
+   }
+  }
+ },
+ "proof": {
+  "dpi": 200,
+  "window": "5x5 max-min of grayscale",
+  "flat_threshold": 20,
+  "visible_segments": {
+   "n": 27564,
+   "median": 223.0,
+   "mean": 193.754534900595,
+   "p90": 255.0,
+   "share_flat_lt20": 0.006893048904368016
+  },
+  "invisible_segments_by_rule": {
+   "white_fill_white_stroke": {
+    "n": 3153,
+    "median": 179.0,
+    "mean": 128.69584522676817,
+    "p90": 255.0,
+    "share_flat_lt20": 0.3840786552489692
+   },
+   "white_fill_no_stroke": {
+    "n": 6540,
+    "median": 214.0,
+    "mean": 162.6940366972477,
+    "p90": 255.0,
+    "share_flat_lt20": 0.20963302752293578
+   },
+   "white_stroke_no_fill": {
+    "n": 348,
+    "median": 226.0,
+    "mean": 166.54310344827587,
+    "p90": 226.0,
+    "share_flat_lt20": 0.2471264367816092
+   }
+  },
+  "n_blocks_used": 22,
+  "per_block": [
+   {
+    "block_id": "blk_243eacf7e18b4ca6a4763c8c0d1f18e0",
+    "n_visible_samples": 1230,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_white_stroke": 0.0
+   },
+   {
+    "block_id": "XERR-X394-UDH",
+    "n_visible_samples": 1206,
+    "median_visible_contrast": 226.0,
+    "median_contrast_white_fill_no_stroke": 226.0
+   },
+   {
+    "block_id": "T4P3-WWCD-RT9",
+    "n_visible_samples": 1287,
+    "median_visible_contrast": 120.0,
+    "median_contrast_white_fill_no_stroke": 227.0
+   },
+   {
+    "block_id": "3WUW-LA3G-Q4W",
+    "n_visible_samples": 1254,
+    "median_visible_contrast": 236.0,
+    "median_contrast_white_stroke_no_fill": 0.0,
+    "median_contrast_white_fill_no_stroke": 0.0
+   },
+   {
+    "block_id": "blk_19d7a6ee4b10490bb9863a923b885aab",
+    "n_visible_samples": 1206,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_no_stroke": 187.0
+   },
+   {
+    "block_id": "blk_9183b09de7cb422a9bfee48a8caff444",
+    "n_visible_samples": 1218,
+    "median_visible_contrast": 47.0,
+    "median_contrast_white_fill_no_stroke": 191.5
+   },
+   {
+    "block_id": "76UX-NX6N-9T3",
+    "n_visible_samples": 1224,
+    "median_visible_contrast": 250.0,
+    "median_contrast_white_fill_white_stroke": 154.0
+   },
+   {
+    "block_id": "7JQJ-MGPC-MR7",
+    "n_visible_samples": 1647,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_no_stroke": 0.0
+   },
+   {
+    "block_id": "4MYL-WXGT-6AD",
+    "n_visible_samples": 1497,
+    "median_visible_contrast": 179.0,
+    "median_contrast_white_fill_no_stroke": 182.5
+   },
+   {
+    "block_id": "blk_6cf2ff8267fc4c11be0b41263df72cfe",
+    "n_visible_samples": 1203,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_white_stroke": 0.0
+   },
+   {
+    "block_id": "blk_d03d6db867b44f77bc7f2f4553f76925",
+    "n_visible_samples": 1452,
+    "median_visible_contrast": 144.0,
+    "median_contrast_white_fill_no_stroke": 161.0
+   },
+   {
+    "block_id": "4W9H-6RT9-CUM",
+    "n_visible_samples": 1380,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_white_stroke": 1.0
+   },
+   {
+    "block_id": "FHEM-UYGV-P33",
+    "n_visible_samples": 1209,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_no_stroke": 255.0
+   },
+   {
+    "block_id": "7UYR-JPE7-99E",
+    "n_visible_samples": 1206,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_no_stroke": 0.0
+   },
+   {
+    "block_id": "blk_0d9de24007e742d5a234a77218414eb6",
+    "n_visible_samples": 1230,
+    "median_visible_contrast": 71.0,
+    "median_contrast_white_fill_white_stroke": 226.0
+   },
+   {
+    "block_id": "blk_203011a8237247a99aa60a63672522d0",
+    "n_visible_samples": 1218,
+    "median_visible_contrast": 255.0,
+    "median_contrast_white_fill_no_stroke": 242.0
+   },
+   {
+    "block_id": "blk_df1b6852e58742d3a98644895f4cf266",
+    "n_visible_samples": 1230,
+    "median_visible_contrast": 179.0,
+    "median_contrast_white_fill_white_stroke": 179.0,
+    "median_contrast_white_stroke_no_fill": 226.0
+   },
+   {
+    "block_id": "Y9QE-HXGD-7E6",
+    "n_visible_samples": 741,
+    "median_visible_contrast": 207.0,
+    "median_contrast_white_fill_no_stroke": 0.0
+   },
+   {
+    "block_id": "9CMD-MH46-FHH",
+    "n_visible_samples": 1233,
+    "median_visible_contrast": 223.0,
+    "median_contrast_white_fill_no_stroke": 255.0
+   },
+   {
+    "block_id": "7VV9-VCDX-CEG",
+    "n_visible_samples": 1248,
+    "median_visible_contrast": 182.0,
+    "median_contrast_white_fill_no_stroke": 0.5
+   },
+   {
+    "block_id": "blk_4777bda541ef4f8a862b9be9bd2a5bdf",
+    "n_visible_samples": 1212,
+    "median_visible_contrast": 86.0,
+    "median_contrast_white_stroke_no_fill": 76.5,
+    "median_contrast_white_fill_no_stroke": 11.0
+   },
+   {
+    "block_id": "blk_35e50ef448484f0e8bcda71b7cf6813a",
+    "n_visible_samples": 1233,
+    "median_visible_contrast": 169.0,
+    "median_contrast_white_fill_no_stroke": 139.5
+   }
+  ]
+ },
+ "rules": {
+  "outside_clip": "path bbox does not intersect the block clip — nothing of it is in the crop",
+  "zero_opacity": "fill_opacity<=0.01 and stroke_opacity<=0.01 — the painter is fully transparent",
+  "white_fill_no_stroke": "fill is white and there is no stroke colour — a knockout box: it produces 4 phantom rectangle edges but no visible edge on white paper",
+  "white_stroke_no_fill": "stroke is white and there is no fill — the stroke paints paper on paper",
+  "white_fill_white_stroke": "both fill and stroke are white — same as above",
+  "degenerate": "path rect has zero width and zero height"
+ },
+ "seed": 20260823,
+ "rows": [
+  {
+   "block_id": "blk_243eacf7e18b4ca6a4763c8c0d1f18e0",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-5_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 16638,
+   "paths_invisible": 2,
+   "paths_outside_clip": 16609,
+   "seg_raw": 422,
+   "seg_inked": 410,
+   "seg_invisible": 12,
+   "invisible_share": 0.02843601895734597,
+   "by_rule_paths": {
+    "outside_clip": 16609,
+    "white_fill_white_stroke": 2
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 12
+   }
+  },
+  {
+   "block_id": "4D7P-APQW-KFM",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-НВ V1",
+   "version": "v001",
+   "rotation": 90,
+   "paths_total": 19,
+   "paths_invisible": 4,
+   "paths_outside_clip": 15,
+   "seg_raw": 6,
+   "seg_inked": 0,
+   "seg_invisible": 6,
+   "invisible_share": 1.0,
+   "by_rule_paths": {
+    "outside_clip": 15,
+    "white_fill_no_stroke": 4
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 6
+   }
+  },
+  {
+   "block_id": "A47J-GEUC-LUA",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К2 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 548,
+   "paths_invisible": 0,
+   "paths_outside_clip": 521,
+   "seg_raw": 1257,
+   "seg_inked": 1257,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 521
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4TV4-NK4R-MN9",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-СОУЭ-ПА",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 38456,
+   "paths_invisible": 0,
+   "paths_outside_clip": 36742,
+   "seg_raw": 12344,
+   "seg_inked": 12344,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 36742
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "XERR-X394-UDH",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К2 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 1681,
+   "paths_invisible": 231,
+   "paths_outside_clip": 1152,
+   "seg_raw": 18605,
+   "seg_inked": 17681,
+   "seg_invisible": 924,
+   "invisible_share": 0.04966406879871003,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 231,
+    "outside_clip": 1152
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 924
+   }
+  },
+  {
+   "block_id": "blk_2d843933d75c4aa79418d3cb3dafdc61",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ1-1.4_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 246343,
+   "paths_invisible": 0,
+   "paths_outside_clip": 246331,
+   "seg_raw": 538,
+   "seg_inked": 538,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 246331
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_ea86acb62b444fc4b39557812c2aff75",
+   "discipline": "ITP",
+   "doc_id": "ПД-00542664-ИТП.АТМ_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 212,
+   "paths_invisible": 0,
+   "paths_outside_clip": 141,
+   "seg_raw": 683,
+   "seg_inked": 683,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 141
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_70caef176c5c4687b447958cc4616ee1",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ5-02.1-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 26910,
+   "paths_invisible": 0,
+   "paths_outside_clip": 25496,
+   "seg_raw": 1414,
+   "seg_inked": 1414,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 25496
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_c9718ebeeea74a83a7081e0611193f8c",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР0-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 34569,
+   "paths_invisible": 0,
+   "paths_outside_clip": 34517,
+   "seg_raw": 84,
+   "seg_inked": 84,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 34517
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "T4P3-WWCD-RT9",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "version": "v003",
+   "rotation": 0,
+   "paths_total": 2588,
+   "paths_invisible": 12,
+   "paths_outside_clip": 2533,
+   "seg_raw": 1762,
+   "seg_inked": 1714,
+   "seg_invisible": 48,
+   "invisible_share": 0.02724177071509648,
+   "by_rule_paths": {
+    "outside_clip": 2533,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 48
+   }
+  },
+  {
+   "block_id": "3WUW-LA3G-Q4W",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 72052,
+   "paths_invisible": 14,
+   "paths_outside_clip": 70359,
+   "seg_raw": 8822,
+   "seg_inked": 8766,
+   "seg_invisible": 56,
+   "invisible_share": 0.006347766946270687,
+   "by_rule_paths": {
+    "outside_clip": 70359,
+    "white_stroke_no_fill": 7,
+    "white_fill_no_stroke": 7
+   },
+   "by_rule_segments": {
+    "white_stroke_no_fill": 28,
+    "white_fill_no_stroke": 28
+   }
+  },
+  {
+   "block_id": "blk_f53c363af417457fac37737ee3bda07d",
+   "discipline": "ITP",
+   "doc_id": "ПД-00542664-ИТП.АТМ_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 23814,
+   "paths_invisible": 0,
+   "paths_outside_clip": 23601,
+   "seg_raw": 2275,
+   "seg_inked": 2275,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 23601
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_19d7a6ee4b10490bb9863a923b885aab",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ-АС-01.1б_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 15320,
+   "paths_invisible": 28,
+   "paths_outside_clip": 13953,
+   "seg_raw": 1718,
+   "seg_inked": 1607,
+   "seg_invisible": 111,
+   "invisible_share": 0.06461001164144353,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 28,
+    "outside_clip": 13953
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 111
+   }
+  },
+  {
+   "block_id": "blk_9183b09de7cb422a9bfee48a8caff444",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР0-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 84221,
+   "paths_invisible": 200,
+   "paths_outside_clip": 69938,
+   "seg_raw": 15797,
+   "seg_inked": 14997,
+   "seg_invisible": 800,
+   "invisible_share": 0.0506425270621004,
+   "by_rule_paths": {
+    "outside_clip": 69938,
+    "white_fill_no_stroke": 200
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 800
+   }
+  },
+  {
+   "block_id": "76UX-NX6N-9T3",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-ПА",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 22879,
+   "paths_invisible": 79,
+   "paths_outside_clip": 15274,
+   "seg_raw": 20843,
+   "seg_inked": 20369,
+   "seg_invisible": 474,
+   "invisible_share": 0.022741447968142783,
+   "by_rule_paths": {
+    "outside_clip": 15274,
+    "white_fill_white_stroke": 79
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 474
+   }
+  },
+  {
+   "block_id": "6DP6-H9YR-FAD",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 28,
+   "paths_invisible": 0,
+   "paths_outside_clip": 28,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 28
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7JQJ-MGPC-MR7",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1749,
+   "paths_invisible": 12,
+   "paths_outside_clip": 1682,
+   "seg_raw": 1145,
+   "seg_inked": 1097,
+   "seg_invisible": 48,
+   "invisible_share": 0.04192139737991266,
+   "by_rule_paths": {
+    "outside_clip": 1682,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 48
+   }
+  },
+  {
+   "block_id": "96WG-JQNC-K7P",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К4 (Книга 1)",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2088,
+   "paths_invisible": 0,
+   "paths_outside_clip": 590,
+   "seg_raw": 6652,
+   "seg_inked": 6652,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 590
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_d868cdc75bf54f7d8da55411a63142f4",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.42.1-К2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 534,
+   "paths_invisible": 0,
+   "paths_outside_clip": 529,
+   "seg_raw": 62,
+   "seg_inked": 62,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 529
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4MYL-WXGT-6AD",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К3",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 11474,
+   "paths_invisible": 3,
+   "paths_outside_clip": 11092,
+   "seg_raw": 511,
+   "seg_inked": 499,
+   "seg_invisible": 12,
+   "invisible_share": 0.023483365949119372,
+   "by_rule_paths": {
+    "outside_clip": 11092,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "blk_a2b63e9821dc4b5a86692b86ee92d0a9",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-НК_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 49497,
+   "paths_invisible": 0,
+   "paths_outside_clip": 49185,
+   "seg_raw": 832,
+   "seg_inked": 832,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 49185
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_bd39a0dc76c04fe1a7b7eb9b7e544c4b",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.40-41.1-К2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 837,
+   "paths_invisible": 0,
+   "paths_outside_clip": 820,
+   "seg_raw": 3210,
+   "seg_inked": 3210,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 820
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_cd698a6a52d64c398a47b12564bba421",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ1-1.5_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 81445,
+   "paths_invisible": 0,
+   "paths_outside_clip": 80194,
+   "seg_raw": 1994,
+   "seg_inked": 1994,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 80194
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_6cf2ff8267fc4c11be0b41263df72cfe",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4476,
+   "paths_invisible": 6,
+   "paths_outside_clip": 2235,
+   "seg_raw": 91674,
+   "seg_inked": 91638,
+   "seg_invisible": 36,
+   "invisible_share": 0.00039269585705870805,
+   "by_rule_paths": {
+    "outside_clip": 2235,
+    "white_fill_white_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 36
+   }
+  },
+  {
+   "block_id": "4UGX-3ETV-6PH",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ДК-К2 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 785,
+   "paths_invisible": 0,
+   "paths_outside_clip": 759,
+   "seg_raw": 1895,
+   "seg_inked": 1895,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 759
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_d03d6db867b44f77bc7f2f4553f76925",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ1-Д-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 521,
+   "paths_invisible": 6,
+   "paths_outside_clip": 152,
+   "seg_raw": 1476,
+   "seg_inked": 1452,
+   "seg_invisible": 24,
+   "invisible_share": 0.016260162601626018,
+   "by_rule_paths": {
+    "outside_clip": 152,
+    "white_fill_no_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 24
+   }
+  },
+  {
+   "block_id": "blk_6eac652c036c43d1b97f1c3adfff6bf7",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ2-7-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 155253,
+   "paths_invisible": 0,
+   "paths_outside_clip": 120763,
+   "seg_raw": 38283,
+   "seg_inked": 38283,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 120763
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4W9H-6RT9-CUM",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К5",
+   "version": "v003",
+   "rotation": 0,
+   "paths_total": 9094,
+   "paths_invisible": 18,
+   "paths_outside_clip": 8969,
+   "seg_raw": 1028,
+   "seg_inked": 920,
+   "seg_invisible": 108,
+   "invisible_share": 0.10505836575875487,
+   "by_rule_paths": {
+    "outside_clip": 8969,
+    "white_fill_white_stroke": 18
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 108
+   }
+  },
+  {
+   "block_id": "blk_8c2319c9f94148039abe8ee5debdcbf3",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К2 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 6639,
+   "paths_invisible": 0,
+   "paths_outside_clip": 6434,
+   "seg_raw": 1332,
+   "seg_inked": 1332,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 6434
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "UD63-F7G6-6J3",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 5471,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4637,
+   "seg_raw": 4754,
+   "seg_inked": 4754,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4637
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "76RC-4DF9-YTC",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 5307,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3592,
+   "seg_raw": 12522,
+   "seg_inked": 12522,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3592
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "A344-CNNL-DJC",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 495,
+   "paths_invisible": 0,
+   "paths_outside_clip": 486,
+   "seg_raw": 194,
+   "seg_inked": 194,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 486
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_da4b9bf96e5147ab95eddcb2bab18670",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ1-4.1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 11140,
+   "paths_invisible": 0,
+   "paths_outside_clip": 9850,
+   "seg_raw": 1318,
+   "seg_inked": 1318,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 9850
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "9CDJ-FH3Y-VXQ",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.25-29.1-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 716,
+   "paths_invisible": 0,
+   "paths_outside_clip": 699,
+   "seg_raw": 2686,
+   "seg_inked": 2686,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 699
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_80efd0b7df314153aad622e515026f0f",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ2-4-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 262783,
+   "paths_invisible": 0,
+   "paths_outside_clip": 236153,
+   "seg_raw": 26781,
+   "seg_inked": 26781,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 236153
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "FHEM-UYGV-P33",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3-К6",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 4213,
+   "paths_invisible": 987,
+   "paths_outside_clip": 2187,
+   "seg_raw": 24083,
+   "seg_inked": 20139,
+   "seg_invisible": 3944,
+   "invisible_share": 0.16376697255325334,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 987,
+    "outside_clip": 2187
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 3944
+   }
+  },
+  {
+   "block_id": "7UYR-JPE7-99E",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.1-К2 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 920,
+   "paths_invisible": 2,
+   "paths_outside_clip": 92,
+   "seg_raw": 81127,
+   "seg_inked": 81119,
+   "seg_invisible": 8,
+   "invisible_share": 9.861082007223243e-05,
+   "by_rule_paths": {
+    "outside_clip": 92,
+    "white_fill_no_stroke": 2
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 8
+   }
+  },
+  {
+   "block_id": "blk_0d9de24007e742d5a234a77218414eb6",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К2 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 39764,
+   "paths_invisible": 4,
+   "paths_outside_clip": 34630,
+   "seg_raw": 11880,
+   "seg_inked": 11868,
+   "seg_invisible": 12,
+   "invisible_share": 0.00101010101010101,
+   "by_rule_paths": {
+    "outside_clip": 34630,
+    "white_fill_white_stroke": 4
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 12
+   }
+  },
+  {
+   "block_id": "LW4A-WDHW-7KD",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР0.2-ПА",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1315,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1290,
+   "seg_raw": 165,
+   "seg_inked": 165,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1290
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_203011a8237247a99aa60a63672522d0",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.40-41.2-К2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1018,
+   "paths_invisible": 103,
+   "paths_outside_clip": 135,
+   "seg_raw": 10952,
+   "seg_inked": 10540,
+   "seg_invisible": 412,
+   "invisible_share": 0.03761869978086194,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 103,
+    "outside_clip": 135
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 412
+   }
+  },
+  {
+   "block_id": "4TE7-9XED-WFM",
+   "discipline": "KM",
+   "doc_id": "13АВ-РД-НВФ-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 27823,
+   "paths_invisible": 0,
+   "paths_outside_clip": 27796,
+   "seg_raw": 603,
+   "seg_inked": 603,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 27796
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_33e5904284714ac88562e23150fd4774",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ6-01.2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 10980,
+   "paths_invisible": 0,
+   "paths_outside_clip": 10349,
+   "seg_raw": 643,
+   "seg_inked": 643,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 10349
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_df1b6852e58742d3a98644895f4cf266",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-ППТ-ПА_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 8168,
+   "paths_invisible": 2507,
+   "paths_outside_clip": 4388,
+   "seg_raw": 26253,
+   "seg_inked": 9834,
+   "seg_invisible": 16419,
+   "invisible_share": 0.6254142383727574,
+   "by_rule_paths": {
+    "outside_clip": 4388,
+    "white_fill_white_stroke": 2465,
+    "white_stroke_no_fill": 42
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 16335,
+    "white_stroke_no_fill": 84
+   }
+  },
+  {
+   "block_id": "6AEP-JNYX-AKP",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ3 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 0,
+   "paths_invisible": 0,
+   "paths_outside_clip": 0,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {},
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "Y9QE-HXGD-7E6",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К4 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 48,
+   "paths_invisible": 1,
+   "paths_outside_clip": 43,
+   "seg_raw": 251,
+   "seg_inked": 247,
+   "seg_invisible": 4,
+   "invisible_share": 0.01593625498007968,
+   "by_rule_paths": {
+    "outside_clip": 43,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "9CMD-MH46-FHH",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.1-К1 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 198,
+   "paths_invisible": 12,
+   "paths_outside_clip": 171,
+   "seg_raw": 5380,
+   "seg_inked": 5332,
+   "seg_invisible": 48,
+   "invisible_share": 0.008921933085501859,
+   "by_rule_paths": {
+    "outside_clip": 171,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 48
+   }
+  },
+  {
+   "block_id": "9ECU-9W7P-EHH",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-МЗ",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 57,
+   "paths_invisible": 0,
+   "paths_outside_clip": 51,
+   "seg_raw": 29,
+   "seg_inked": 29,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 51
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7VV9-VCDX-CEG",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К1 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4771,
+   "paths_invisible": 1,
+   "paths_outside_clip": 4754,
+   "seg_raw": 1252,
+   "seg_inked": 1248,
+   "seg_invisible": 4,
+   "invisible_share": 0.003194888178913738,
+   "by_rule_paths": {
+    "outside_clip": 4754,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "blk_4b234338f17e4888a1a50b7e78812d26",
+   "discipline": "EOM",
+   "doc_id": "СТ26_01-14-ЭГ-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 20896,
+   "paths_invisible": 0,
+   "paths_outside_clip": 19908,
+   "seg_raw": 988,
+   "seg_inked": 988,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 19908
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_ad44e62372fd4838b29a3156135c5e59",
+   "discipline": "AR",
+   "doc_id": "ПД-00542664-АР1.2-3_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 14494,
+   "paths_invisible": 0,
+   "paths_outside_clip": 9347,
+   "seg_raw": 17524,
+   "seg_inked": 17524,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 9347
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_44181cf68bb24e73bf54a4e8d9624f3e",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ2-К1 V1",
+   "version": "v002",
+   "rotation": 270,
+   "paths_total": 1588,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1586,
+   "seg_raw": 1,
+   "seg_inked": 1,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1586
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_9eb9e8c1508e43679d91c8a0eea7f97d",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 315,
+   "paths_invisible": 0,
+   "paths_outside_clip": 188,
+   "seg_raw": 4146,
+   "seg_inked": 4146,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 188
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "EHYW-YJU4-VUA",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ДК-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1517,
+   "paths_invisible": 0,
+   "paths_outside_clip": 387,
+   "seg_raw": 36042,
+   "seg_inked": 36042,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 387
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_4777bda541ef4f8a862b9be9bd2a5bdf",
+   "discipline": "VK",
+   "doc_id": "ПД-ОО542664-ВК0-2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 37806,
+   "paths_invisible": 5,
+   "paths_outside_clip": 21837,
+   "seg_raw": 20987,
+   "seg_inked": 20979,
+   "seg_invisible": 8,
+   "invisible_share": 0.00038118835469576405,
+   "by_rule_paths": {
+    "outside_clip": 21837,
+    "white_stroke_no_fill": 4,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_stroke_no_fill": 4,
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "RNTQ-6RHP-QG3",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1736,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1719,
+   "seg_raw": 2626,
+   "seg_inked": 2626,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1719
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7Y7F-LK4W-KUF",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-СОУЭ-К3-К6",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 264,
+   "paths_invisible": 0,
+   "paths_outside_clip": 254,
+   "seg_raw": 429,
+   "seg_inked": 429,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 254
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "9V7L-RRG3-K66",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3-К5-К6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 632,
+   "paths_invisible": 0,
+   "paths_outside_clip": 631,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 631
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_35e50ef448484f0e8bcda71b7cf6813a",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1671,
+   "paths_invisible": 32,
+   "paths_outside_clip": 1353,
+   "seg_raw": 15305,
+   "seg_inked": 15177,
+   "seg_invisible": 128,
+   "invisible_share": 0.00836327997386475,
+   "by_rule_paths": {
+    "outside_clip": 1353,
+    "white_fill_no_stroke": 32
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 128
+   }
+  },
+  {
+   "block_id": "blk_09e14ab8d95145b8a2bdc4279683d3c3",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.33-38.1-К2",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 969,
+   "paths_invisible": 0,
+   "paths_outside_clip": 916,
+   "seg_raw": 577,
+   "seg_inked": 577,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 916
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7FXC-NKFL-NL9",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АСКУВТ",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 44804,
+   "paths_invisible": 0,
+   "paths_outside_clip": 44126,
+   "seg_raw": 6027,
+   "seg_inked": 6027,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 44126
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_d75a4259797440b5be7c0b18f180f89a",
+   "discipline": "EOM",
+   "doc_id": "СТ26_01-14-ЭГ-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 14528,
+   "paths_invisible": 144,
+   "paths_outside_clip": 10992,
+   "seg_raw": 7323,
+   "seg_inked": 6754,
+   "seg_invisible": 569,
+   "invisible_share": 0.07770039601256316,
+   "by_rule_paths": {
+    "outside_clip": 10992,
+    "white_fill_no_stroke": 144
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 569
+   }
+  },
+  {
+   "block_id": "blk_cd05abe76f3e4e57a2db6cae15755f31",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.40-41.2-К2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 447,
+   "paths_invisible": 0,
+   "paths_outside_clip": 435,
+   "seg_raw": 382,
+   "seg_inked": 382,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 435
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_756e2895634344afae7c4606d814fffd",
+   "discipline": "VK",
+   "doc_id": "ПД-ОО542664-ВК1-1.1.3_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 39639,
+   "paths_invisible": 3,
+   "paths_outside_clip": 39630,
+   "seg_raw": 780,
+   "seg_inked": 768,
+   "seg_invisible": 12,
+   "invisible_share": 0.015384615384615385,
+   "by_rule_paths": {
+    "outside_clip": 39630,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "7Y64-3KMH-QCQ",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР0.4-ПА",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1494,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1477,
+   "seg_raw": 2114,
+   "seg_inked": 2114,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1477
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "ACGX-T77J-AX9",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР0.1-ПА",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1199,
+   "paths_invisible": 12,
+   "paths_outside_clip": 1126,
+   "seg_raw": 1386,
+   "seg_inked": 1338,
+   "seg_invisible": 48,
+   "invisible_share": 0.03463203463203463,
+   "by_rule_paths": {
+    "outside_clip": 1126,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 48
+   }
+  },
+  {
+   "block_id": "blk_6889d7edeb764c39b58d8eaa43065b68",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-РФ_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 23555,
+   "paths_invisible": 0,
+   "paths_outside_clip": 11227,
+   "seg_raw": 66398,
+   "seg_inked": 66398,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 11227
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "476U-VP4A-TC9",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К5",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 1469,
+   "paths_invisible": 34,
+   "paths_outside_clip": 1203,
+   "seg_raw": 3589,
+   "seg_inked": 3453,
+   "seg_invisible": 136,
+   "invisible_share": 0.03789356366675954,
+   "by_rule_paths": {
+    "outside_clip": 1203,
+    "white_fill_no_stroke": 34
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 136
+   }
+  },
+  {
+   "block_id": "blk_4fdd4fc7d2e74bcfb65cfb6e3ffdc933",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР2-1-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 6685,
+   "paths_invisible": 4,
+   "paths_outside_clip": 6056,
+   "seg_raw": 779,
+   "seg_inked": 763,
+   "seg_invisible": 16,
+   "invisible_share": 0.02053915275994865,
+   "by_rule_paths": {
+    "outside_clip": 6056,
+    "white_fill_no_stroke": 4
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 16
+   }
+  },
+  {
+   "block_id": "blk_a4641068eb5a431d9f52da76befa0eb5",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР1-3-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 30040,
+   "paths_invisible": 130,
+   "paths_outside_clip": 22251,
+   "seg_raw": 12447,
+   "seg_inked": 11927,
+   "seg_invisible": 520,
+   "invisible_share": 0.04177713505262312,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 130,
+    "outside_clip": 22251
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 520
+   }
+  },
+  {
+   "block_id": "blk_95951fb307c944f0b7e43d66ae080b7f",
+   "discipline": "PT",
+   "doc_id": "ПД-ОО542664-АПТ0_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 589473,
+   "paths_invisible": 0,
+   "paths_outside_clip": 589392,
+   "seg_raw": 309,
+   "seg_inked": 309,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 589392
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4HHR-Y6K6-CXC",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 693,
+   "paths_invisible": 2,
+   "paths_outside_clip": 658,
+   "seg_raw": 81,
+   "seg_inked": 73,
+   "seg_invisible": 8,
+   "invisible_share": 0.09876543209876543,
+   "by_rule_paths": {
+    "outside_clip": 658,
+    "white_fill_no_stroke": 2
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 8
+   }
+  },
+  {
+   "block_id": "4LJW-CQ9C-CR7",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "version": "v002",
+   "rotation": 270,
+   "paths_total": 10092,
+   "paths_invisible": 0,
+   "paths_outside_clip": 9918,
+   "seg_raw": 1027,
+   "seg_inked": 1027,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 9918
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "69LT-TEH7-9YA",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 11974,
+   "paths_invisible": 3,
+   "paths_outside_clip": 10546,
+   "seg_raw": 4986,
+   "seg_inked": 4970,
+   "seg_invisible": 16,
+   "invisible_share": 0.003208985158443642,
+   "by_rule_paths": {
+    "outside_clip": 10546,
+    "white_fill_white_stroke": 2,
+    "white_stroke_no_fill": 1
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 12,
+    "white_stroke_no_fill": 4
+   }
+  },
+  {
+   "block_id": "blk_35ad57daff4b42f7beec8fc4d4ba8fd6",
+   "discipline": "EOM",
+   "doc_id": "ПД-00260568-ЭМ_2-1.1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 2348,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1979,
+   "seg_raw": 23918,
+   "seg_inked": 23918,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1979
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7PKN-HQWF-C6T",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К6 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2227,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1699,
+   "seg_raw": 44167,
+   "seg_inked": 44167,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1699
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "9T6L-XF7J-G4W",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К6 (Книга 2)",
+   "version": "v003",
+   "rotation": 0,
+   "paths_total": 65306,
+   "paths_invisible": 6,
+   "paths_outside_clip": 65242,
+   "seg_raw": 247,
+   "seg_inked": 211,
+   "seg_invisible": 36,
+   "invisible_share": 0.145748987854251,
+   "by_rule_paths": {
+    "outside_clip": 65242,
+    "white_fill_white_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 36
+   }
+  },
+  {
+   "block_id": "blk_74b756adc35642da9f4303971a7349a3",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-1_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 3202,
+   "paths_invisible": 0,
+   "paths_outside_clip": 2981,
+   "seg_raw": 2911,
+   "seg_inked": 2911,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 2981
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_983e1481e745451cb1d6f0a9f92e66ce",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.10.2-К3_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 129,
+   "paths_invisible": 0,
+   "paths_outside_clip": 112,
+   "seg_raw": 2346,
+   "seg_inked": 2346,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 112
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "JY9A-6K9N-7CN",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 82,
+   "paths_invisible": 0,
+   "paths_outside_clip": 67,
+   "seg_raw": 425,
+   "seg_inked": 425,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 67
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_7a5c878c4db546c3a70403091a04eefe",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ1-Г-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 521,
+   "paths_invisible": 6,
+   "paths_outside_clip": 152,
+   "seg_raw": 1476,
+   "seg_inked": 1452,
+   "seg_invisible": 24,
+   "invisible_share": 0.016260162601626018,
+   "by_rule_paths": {
+    "outside_clip": 152,
+    "white_fill_no_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 24
+   }
+  },
+  {
+   "block_id": "blk_02bf2358c3c24bd5b83e0179e2410753",
+   "discipline": "EOM",
+   "doc_id": "СТ26_01-14-ЭОМ-5-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 58731,
+   "paths_invisible": 0,
+   "paths_outside_clip": 57714,
+   "seg_raw": 1017,
+   "seg_inked": 1017,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 57714
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7EQX-JCM9-JG6",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К2",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 2765,
+   "paths_invisible": 12,
+   "paths_outside_clip": 2696,
+   "seg_raw": 1211,
+   "seg_inked": 1163,
+   "seg_invisible": 48,
+   "invisible_share": 0.03963666391412056,
+   "by_rule_paths": {
+    "outside_clip": 2696,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 48
+   }
+  },
+  {
+   "block_id": "blk_74f7bdc8175145768df6e2f11bf2d0f9",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР0-АС-1-РД_V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 43115,
+   "paths_invisible": 25,
+   "paths_outside_clip": 36056,
+   "seg_raw": 7244,
+   "seg_inked": 7148,
+   "seg_invisible": 96,
+   "invisible_share": 0.013252346769740474,
+   "by_rule_paths": {
+    "outside_clip": 36056,
+    "white_fill_no_stroke": 25
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 96
+   }
+  },
+  {
+   "block_id": "blk_9665e5456f9e4283be81538ac35d146e",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР1-1-1-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 15602,
+   "paths_invisible": 48,
+   "paths_outside_clip": 13924,
+   "seg_raw": 1942,
+   "seg_inked": 1750,
+   "seg_invisible": 192,
+   "invisible_share": 0.09886714727085479,
+   "by_rule_paths": {
+    "outside_clip": 13924,
+    "white_fill_no_stroke": 48
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 192
+   }
+  },
+  {
+   "block_id": "blk_13931b3e86054da992af2f1ab4947ea6",
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ1",
+   "version": "v002",
+   "rotation": 0,
+   "error": "FileNotFoundError: no such file: 'projects_v2/objects/213_Mosfilmovskaya_31A_KingSons/disciplines/AI/documents/133-23-ГК-АИ1/versions/v002/02_work/document.pdf'"
+  },
+  {
+   "block_id": "7KXV-TUWQ-LT6",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К6 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1899,
+   "paths_invisible": 261,
+   "paths_outside_clip": 696,
+   "seg_raw": 31523,
+   "seg_inked": 30479,
+   "seg_invisible": 1044,
+   "invisible_share": 0.03311867525298988,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 261,
+    "outside_clip": 696
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 1044
+   }
+  },
+  {
+   "block_id": "6JLU-4LUG-PEC",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.30-31.1-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 827,
+   "paths_invisible": 0,
+   "paths_outside_clip": 817,
+   "seg_raw": 141,
+   "seg_inked": 141,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 817
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_fcf6d21bf2574299970d46d86c00670a",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ6-01.2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 39334,
+   "paths_invisible": 0,
+   "paths_outside_clip": 37843,
+   "seg_raw": 1491,
+   "seg_inked": 1491,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 37843
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4JCG-YWAP-UKM",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2696,
+   "paths_invisible": 32,
+   "paths_outside_clip": 2627,
+   "seg_raw": 995,
+   "seg_inked": 867,
+   "seg_invisible": 128,
+   "invisible_share": 0.12864321608040202,
+   "by_rule_paths": {
+    "outside_clip": 2627,
+    "white_fill_no_stroke": 32
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 128
+   }
+  },
+  {
+   "block_id": "blk_1f45896faa30453aa4f5172998225351",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 151,
+   "paths_invisible": 1,
+   "paths_outside_clip": 134,
+   "seg_raw": 89,
+   "seg_inked": 83,
+   "seg_invisible": 6,
+   "invisible_share": 0.06741573033707865,
+   "by_rule_paths": {
+    "outside_clip": 134,
+    "white_fill_white_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 6
+   }
+  },
+  {
+   "block_id": "blk_3cb0a0c37e0047bda936d400f4d8371f",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО1-ПА_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 106,
+   "paths_invisible": 7,
+   "paths_outside_clip": 73,
+   "seg_raw": 1358,
+   "seg_inked": 1330,
+   "seg_invisible": 28,
+   "invisible_share": 0.020618556701030927,
+   "by_rule_paths": {
+    "outside_clip": 73,
+    "white_fill_no_stroke": 7
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 28
+   }
+  },
+  {
+   "block_id": "blk_3572a5ad6c544872933e1f3662f4aecd",
+   "discipline": "VK",
+   "doc_id": "СТ26_01-14-ВК-1-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 481913,
+   "paths_invisible": 0,
+   "paths_outside_clip": 481187,
+   "seg_raw": 726,
+   "seg_inked": 726,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 481187
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "77M6-RK3R-VMF",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К1 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1836,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1822,
+   "seg_raw": 378,
+   "seg_inked": 378,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1822
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_be979264faba440aa93e4fe9ca8b17ec",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР3-3-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 24943,
+   "paths_invisible": 4,
+   "paths_outside_clip": 24259,
+   "seg_raw": 760,
+   "seg_inked": 744,
+   "seg_invisible": 16,
+   "invisible_share": 0.021052631578947368,
+   "by_rule_paths": {
+    "outside_clip": 24259,
+    "white_fill_no_stroke": 4
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 16
+   }
+  },
+  {
+   "block_id": "QNTF-FFFQ-9QE",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.30-31.2-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 816,
+   "paths_invisible": 0,
+   "paths_outside_clip": 805,
+   "seg_raw": 254,
+   "seg_inked": 254,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 805
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7WQX-3WY7-MTQ",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-ПА",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 75291,
+   "paths_invisible": 8,
+   "paths_outside_clip": 69832,
+   "seg_raw": 12851,
+   "seg_inked": 12803,
+   "seg_invisible": 48,
+   "invisible_share": 0.003735117889658392,
+   "by_rule_paths": {
+    "outside_clip": 69832,
+    "white_fill_white_stroke": 8
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 48
+   }
+  },
+  {
+   "block_id": "4QL6-YMC3-7JG",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ2-К2 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 17340,
+   "paths_invisible": 10,
+   "paths_outside_clip": 15700,
+   "seg_raw": 4299,
+   "seg_inked": 4247,
+   "seg_invisible": 52,
+   "invisible_share": 0.012095836240986277,
+   "by_rule_paths": {
+    "outside_clip": 15700,
+    "white_fill_white_stroke": 10
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 52
+   }
+  },
+  {
+   "block_id": "6FLA-G7UP-7WK",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1-К1 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2335,
+   "paths_invisible": 1,
+   "paths_outside_clip": 2318,
+   "seg_raw": 1673,
+   "seg_inked": 1669,
+   "seg_invisible": 4,
+   "invisible_share": 0.002390914524805738,
+   "by_rule_paths": {
+    "outside_clip": 2318,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "73MU-LX39-7T3",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К4 (Книга 2)",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 82664,
+   "paths_invisible": 2,
+   "paths_outside_clip": 82643,
+   "seg_raw": 78,
+   "seg_inked": 66,
+   "seg_invisible": 12,
+   "invisible_share": 0.15384615384615385,
+   "by_rule_paths": {
+    "outside_clip": 82643,
+    "white_fill_white_stroke": 2
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 12
+   }
+  },
+  {
+   "block_id": "6HMN-HXKN-9KP",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "version": "v002",
+   "rotation": 270,
+   "paths_total": 10646,
+   "paths_invisible": 0,
+   "paths_outside_clip": 10472,
+   "seg_raw": 1028,
+   "seg_inked": 1028,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 10472
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "DPT6-NMJ6-KMA",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1-К6 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1565,
+   "paths_invisible": 1,
+   "paths_outside_clip": 1507,
+   "seg_raw": 3623,
+   "seg_inked": 3619,
+   "seg_invisible": 4,
+   "invisible_share": 0.0011040574109853713,
+   "by_rule_paths": {
+    "outside_clip": 1507,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "64FK-LFCJ-LFR",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 169,
+   "paths_invisible": 0,
+   "paths_outside_clip": 164,
+   "seg_raw": 269,
+   "seg_inked": 269,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 164
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4KX6-76HY-74F",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ДК-К1 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2427,
+   "paths_invisible": 1,
+   "paths_outside_clip": 2410,
+   "seg_raw": 1674,
+   "seg_inked": 1670,
+   "seg_invisible": 4,
+   "invisible_share": 0.0023894862604540022,
+   "by_rule_paths": {
+    "outside_clip": 2410,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "blk_8f23b6eec5c44220a271099f9fb6a604",
+   "discipline": "ITP",
+   "doc_id": "ПД-00542664-ИТП.ТМ",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 92,
+   "paths_invisible": 0,
+   "paths_outside_clip": 17,
+   "seg_raw": 294,
+   "seg_inked": 294,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 17
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "64U7-DPLA-Q33",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1944,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1927,
+   "seg_raw": 1918,
+   "seg_inked": 1918,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1927
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "NX4P-4UM3-PM4",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К4 (Книга 1)",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 181968,
+   "paths_invisible": 0,
+   "paths_outside_clip": 181844,
+   "seg_raw": 243,
+   "seg_inked": 243,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 181844
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "6DWN-WK3K-RN3",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-ПА",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 36060,
+   "paths_invisible": 0,
+   "paths_outside_clip": 36047,
+   "seg_raw": 122,
+   "seg_inked": 122,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 36047
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_00c6e5b420e54e548b3849e2949b59a7",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР4-4-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 81032,
+   "paths_invisible": 53,
+   "paths_outside_clip": 51011,
+   "seg_raw": 30204,
+   "seg_inked": 29992,
+   "seg_invisible": 212,
+   "invisible_share": 0.007018937889021322,
+   "by_rule_paths": {
+    "outside_clip": 51011,
+    "white_fill_no_stroke": 53
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 212
+   }
+  },
+  {
+   "block_id": "blk_52a35e2d558045a4b8afc4e7ff1c8c5a",
+   "discipline": "EOM",
+   "doc_id": "СТ26_01-14-ЭОМ-6-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 65486,
+   "paths_invisible": 51,
+   "paths_outside_clip": 61111,
+   "seg_raw": 7029,
+   "seg_inked": 6825,
+   "seg_invisible": 204,
+   "invisible_share": 0.029022620571916347,
+   "by_rule_paths": {
+    "outside_clip": 61111,
+    "white_fill_no_stroke": 51
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 204
+   }
+  },
+  {
+   "block_id": "blk_af08953cb86345038338a24a301739a8",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ1-3.4_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 28187,
+   "paths_invisible": 0,
+   "paths_outside_clip": 28175,
+   "seg_raw": 538,
+   "seg_inked": 538,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 28175
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_a27865d1f17e436aaea841af8c59b6c9",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14_ОВ2-6-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 440,
+   "paths_invisible": 6,
+   "paths_outside_clip": 126,
+   "seg_raw": 1256,
+   "seg_inked": 1232,
+   "seg_invisible": 24,
+   "invisible_share": 0.01910828025477707,
+   "by_rule_paths": {
+    "outside_clip": 126,
+    "white_fill_no_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 24
+   }
+  },
+  {
+   "block_id": "4F3U-TNAH-ANN",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К5",
+   "version": "v003",
+   "rotation": 270,
+   "paths_total": 20756,
+   "paths_invisible": 2,
+   "paths_outside_clip": 20633,
+   "seg_raw": 447,
+   "seg_inked": 444,
+   "seg_invisible": 3,
+   "invisible_share": 0.006711409395973154,
+   "by_rule_paths": {
+    "outside_clip": 20633,
+    "white_stroke_no_fill": 2
+   },
+   "by_rule_segments": {
+    "white_stroke_no_fill": 3
+   }
+  },
+  {
+   "block_id": "blk_c804d72a320f43239856efd8db1cbb9f",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ7-01.1-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 32623,
+   "paths_invisible": 73,
+   "paths_outside_clip": 25531,
+   "seg_raw": 8140,
+   "seg_inked": 7848,
+   "seg_invisible": 292,
+   "invisible_share": 0.03587223587223587,
+   "by_rule_paths": {
+    "outside_clip": 25531,
+    "white_fill_no_stroke": 73
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 292
+   }
+  },
+  {
+   "block_id": "47UV-RM99-HFR",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 82713,
+   "paths_invisible": 1,
+   "paths_outside_clip": 78382,
+   "seg_raw": 7382,
+   "seg_inked": 7376,
+   "seg_invisible": 6,
+   "invisible_share": 0.000812787862367922,
+   "by_rule_paths": {
+    "outside_clip": 78382,
+    "white_fill_white_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 6
+   }
+  },
+  {
+   "block_id": "9VXK-PT7Q-P9X",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ДК-К6 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 5202,
+   "paths_invisible": 1,
+   "paths_outside_clip": 4742,
+   "seg_raw": 41429,
+   "seg_inked": 41425,
+   "seg_invisible": 4,
+   "invisible_share": 9.65507253373241e-05,
+   "by_rule_paths": {
+    "outside_clip": 4742,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "4TCP-A74J-KK4",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ2-ПА V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 5363,
+   "paths_invisible": 12,
+   "paths_outside_clip": 5286,
+   "seg_raw": 1277,
+   "seg_inked": 1229,
+   "seg_invisible": 48,
+   "invisible_share": 0.037588097102584185,
+   "by_rule_paths": {
+    "outside_clip": 5286,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 48
+   }
+  },
+  {
+   "block_id": "49FW-PEWV-7CV",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.1-К2 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 49,
+   "paths_invisible": 0,
+   "paths_outside_clip": 22,
+   "seg_raw": 1301,
+   "seg_inked": 1301,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 22
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "WC9C-NH3U-FK4",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АСКУВТ",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 28183,
+   "paths_invisible": 12,
+   "paths_outside_clip": 26079,
+   "seg_raw": 2989,
+   "seg_inked": 2917,
+   "seg_invisible": 72,
+   "invisible_share": 0.024088323854131816,
+   "by_rule_paths": {
+    "outside_clip": 26079,
+    "white_fill_white_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 72
+   }
+  },
+  {
+   "block_id": "blk_75562cc9229b4eb9a053dfe11e56fe6a",
+   "discipline": "OV",
+   "doc_id": "ПД-00260568-ОВ1-1.1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1022,
+   "paths_invisible": 0,
+   "paths_outside_clip": 945,
+   "seg_raw": 292,
+   "seg_inked": 292,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 945
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_5fa9df0a58dd49e681bfb79e78ac904c",
+   "discipline": "AR",
+   "doc_id": "01-14-АР0-АС-1-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 34043,
+   "paths_invisible": 3,
+   "paths_outside_clip": 32112,
+   "seg_raw": 2067,
+   "seg_inked": 2055,
+   "seg_invisible": 12,
+   "invisible_share": 0.005805515239477504,
+   "by_rule_paths": {
+    "outside_clip": 32112,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "HFWQ-AWL7-6PD",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3-К6",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 3446,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3429,
+   "seg_raw": 2424,
+   "seg_inked": 2424,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3429
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_295e2310bf014a81aa8cf7157b8fa7e2",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ-АС-01.1а_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 11833,
+   "paths_invisible": 33,
+   "paths_outside_clip": 8674,
+   "seg_raw": 3320,
+   "seg_inked": 3188,
+   "seg_invisible": 132,
+   "invisible_share": 0.03975903614457831,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 33,
+    "outside_clip": 8674
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 132
+   }
+  },
+  {
+   "block_id": "blk_daa9f8dad70a4cc787810f18f8084062",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ1-1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 47538,
+   "paths_invisible": 387,
+   "paths_outside_clip": 24723,
+   "seg_raw": 103408,
+   "seg_inked": 102632,
+   "seg_invisible": 776,
+   "invisible_share": 0.007504254989942751,
+   "by_rule_paths": {
+    "outside_clip": 24723,
+    "white_fill_no_stroke": 385,
+    "white_stroke_no_fill": 2
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 770,
+    "white_stroke_no_fill": 6
+   }
+  },
+  {
+   "block_id": "blk_4e5df6cae4fb488ab7a398e21c6b727d",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР4-4-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 119553,
+   "paths_invisible": 3,
+   "paths_outside_clip": 106452,
+   "seg_raw": 13184,
+   "seg_inked": 13172,
+   "seg_invisible": 12,
+   "invisible_share": 0.0009101941747572816,
+   "by_rule_paths": {
+    "outside_clip": 106452,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "blk_f43ea2c5452c4ec28a57b0fbf56c5a1b",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-5_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 1333,
+   "paths_invisible": 1,
+   "paths_outside_clip": 1139,
+   "seg_raw": 2143,
+   "seg_inked": 2137,
+   "seg_invisible": 6,
+   "invisible_share": 0.0027998133457769483,
+   "by_rule_paths": {
+    "outside_clip": 1139,
+    "white_fill_white_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 6
+   }
+  },
+  {
+   "block_id": "4P9U-HHXK-X3X",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1958,
+   "paths_invisible": 70,
+   "paths_outside_clip": 1707,
+   "seg_raw": 3528,
+   "seg_inked": 3250,
+   "seg_invisible": 278,
+   "invisible_share": 0.07879818594104308,
+   "by_rule_paths": {
+    "outside_clip": 1707,
+    "white_fill_no_stroke": 70
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 278
+   }
+  },
+  {
+   "block_id": "Y99E-CFXT-VKH",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.17-23.1-К2",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 876,
+   "paths_invisible": 0,
+   "paths_outside_clip": 870,
+   "seg_raw": 62,
+   "seg_inked": 62,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 870
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "YRTE-HYWP-QPR",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3-К3-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 89080,
+   "paths_invisible": 104,
+   "paths_outside_clip": 76229,
+   "seg_raw": 22377,
+   "seg_inked": 21773,
+   "seg_invisible": 604,
+   "invisible_share": 0.026992000715019886,
+   "by_rule_paths": {
+    "white_fill_white_stroke": 102,
+    "outside_clip": 76229,
+    "white_stroke_no_fill": 2
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 599,
+    "white_stroke_no_fill": 5
+   }
+  },
+  {
+   "block_id": "blk_dd388fc8160f4dab9fc2308cec70b88d",
+   "discipline": "EOM",
+   "doc_id": "СТ26_01-14-ЭОМ-6-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 127386,
+   "paths_invisible": 832,
+   "paths_outside_clip": 92586,
+   "seg_raw": 38443,
+   "seg_inked": 35123,
+   "seg_invisible": 3320,
+   "invisible_share": 0.08636162630387847,
+   "by_rule_paths": {
+    "outside_clip": 92586,
+    "white_fill_no_stroke": 832
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 3320
+   }
+  },
+  {
+   "block_id": "blk_1c07e746ad0f4283b06ec0d08ee12b31",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР2-7-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4840,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3521,
+   "seg_raw": 1319,
+   "seg_inked": 1319,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3521
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7QH4-36UN-TKU",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ДК-К4 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4647,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3250,
+   "seg_raw": 42381,
+   "seg_inked": 42381,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3250
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "6HXL-4M37-QUF",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 17526,
+   "paths_invisible": 0,
+   "paths_outside_clip": 16625,
+   "seg_raw": 1347,
+   "seg_inked": 1347,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 16625
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "6KPX-JKV3-YWK",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К7 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 28021,
+   "paths_invisible": 0,
+   "paths_outside_clip": 22631,
+   "seg_raw": 11584,
+   "seg_inked": 11584,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 22631
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "49UC-HAFX-73T",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ7.2-К1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2283,
+   "paths_invisible": 12,
+   "paths_outside_clip": 2227,
+   "seg_raw": 791,
+   "seg_inked": 745,
+   "seg_invisible": 46,
+   "invisible_share": 0.05815423514538559,
+   "by_rule_paths": {
+    "outside_clip": 2227,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 46
+   }
+  },
+  {
+   "block_id": "6JM6-PQDL-FFA",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.25-29.1-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1742,
+   "paths_invisible": 7,
+   "paths_outside_clip": 1699,
+   "seg_raw": 1516,
+   "seg_inked": 1488,
+   "seg_invisible": 28,
+   "invisible_share": 0.018469656992084433,
+   "by_rule_paths": {
+    "outside_clip": 1699,
+    "white_fill_no_stroke": 7
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 28
+   }
+  },
+  {
+   "block_id": "N4EF-QFDF-Y7F",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 5650,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4310,
+   "seg_raw": 28810,
+   "seg_inked": 28810,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4310
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_5bc706137fe24801b41df95ba07a7e19",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-ПС-6_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 68671,
+   "paths_invisible": 0,
+   "paths_outside_clip": 68171,
+   "seg_raw": 42478,
+   "seg_inked": 42478,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 68171
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_8143dc56666942619dee27c06db79044",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-6_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 4077,
+   "paths_invisible": 6,
+   "paths_outside_clip": 2336,
+   "seg_raw": 70575,
+   "seg_inked": 70539,
+   "seg_invisible": 36,
+   "invisible_share": 0.0005100956429330499,
+   "by_rule_paths": {
+    "outside_clip": 2336,
+    "white_fill_white_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 36
+   }
+  },
+  {
+   "block_id": "KQD6-R9CR-GU4",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.1-К2 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 6889,
+   "paths_invisible": 12,
+   "paths_outside_clip": 6231,
+   "seg_raw": 9352,
+   "seg_inked": 9339,
+   "seg_invisible": 13,
+   "invisible_share": 0.001390076988879384,
+   "by_rule_paths": {
+    "outside_clip": 6231,
+    "white_stroke_no_fill": 12
+   },
+   "by_rule_segments": {
+    "white_stroke_no_fill": 13
+   }
+  },
+  {
+   "block_id": "4HJC-YMYJ-77F",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 40461,
+   "paths_invisible": 0,
+   "paths_outside_clip": 14498,
+   "seg_raw": 54560,
+   "seg_inked": 54560,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 14498
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "9C3D-DWPG-VQN",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1.2-ПА V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 36,
+   "paths_invisible": 0,
+   "paths_outside_clip": 32,
+   "seg_raw": 255,
+   "seg_inked": 255,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 32
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4W3Y-RD3X-UXV",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 29591,
+   "paths_invisible": 100,
+   "paths_outside_clip": 13350,
+   "seg_raw": 30903,
+   "seg_inked": 30303,
+   "seg_invisible": 600,
+   "invisible_share": 0.019415590719347637,
+   "by_rule_paths": {
+    "outside_clip": 13350,
+    "white_fill_white_stroke": 100
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 600
+   }
+  },
+  {
+   "block_id": "7W3N-7JV3-4Q9",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К2 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2147,
+   "paths_invisible": 0,
+   "paths_outside_clip": 2120,
+   "seg_raw": 1259,
+   "seg_inked": 1259,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 2120
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_212517bcf6de47cc929e34b797de11f5",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭОМ-НС V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 20303,
+   "paths_invisible": 0,
+   "paths_outside_clip": 19375,
+   "seg_raw": 43044,
+   "seg_inked": 43044,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 19375
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_ec9f5bea595442adbc75c125e8e0dbbf",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ1-Д-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 21664,
+   "paths_invisible": 0,
+   "paths_outside_clip": 19982,
+   "seg_raw": 1712,
+   "seg_inked": 1712,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 19982
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_88f26ea6c99e4dce971cb29e78ad0ffb",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.36-38.2-К1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 6636,
+   "paths_invisible": 7,
+   "paths_outside_clip": 5162,
+   "seg_raw": 13556,
+   "seg_inked": 13528,
+   "seg_invisible": 28,
+   "invisible_share": 0.0020655060489820007,
+   "by_rule_paths": {
+    "outside_clip": 5162,
+    "white_fill_no_stroke": 7
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 28
+   }
+  },
+  {
+   "block_id": "A3KY-PQGD-P7D",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АСУД.Л V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 107340,
+   "paths_invisible": 0,
+   "paths_outside_clip": 106660,
+   "seg_raw": 5704,
+   "seg_inked": 5704,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 106660
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_6cec796addf3423286cd716ef2f583c5",
+   "discipline": "VK",
+   "doc_id": "ПД-ОО542664-ВК1-1.1.3_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 56209,
+   "paths_invisible": 15,
+   "paths_outside_clip": 32040,
+   "seg_raw": 53745,
+   "seg_inked": 53523,
+   "seg_invisible": 222,
+   "invisible_share": 0.004130616801562936,
+   "by_rule_paths": {
+    "outside_clip": 32040,
+    "white_fill_no_stroke": 15
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 222
+   }
+  },
+  {
+   "block_id": "blk_286988586db0468c9b5d11cee954119e",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АСКУВТ_(Книга_1)_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 107639,
+   "paths_invisible": 0,
+   "paths_outside_clip": 102083,
+   "seg_raw": 11782,
+   "seg_inked": 11782,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 102083
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7PYD-DA6N-9PM",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К3-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 32,
+   "paths_invisible": 0,
+   "paths_outside_clip": 31,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 31
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7K3K-4NTR-DT6",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 5236,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3896,
+   "seg_raw": 28806,
+   "seg_inked": 28806,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3896
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_e589685d3fc6472c8539bfc61ad51fda",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ-АС-01.1а_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 21595,
+   "paths_invisible": 0,
+   "paths_outside_clip": 20913,
+   "seg_raw": 913,
+   "seg_inked": 913,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 20913
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_806d4f0065834ad8b8077ccb96f36170",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ1-3-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 152558,
+   "paths_invisible": 0,
+   "paths_outside_clip": 151217,
+   "seg_raw": 1341,
+   "seg_inked": 1341,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 151217
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_05d60eadeb9944ffa51a4503b3fb0239",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 254,
+   "paths_invisible": 0,
+   "paths_outside_clip": 137,
+   "seg_raw": 3341,
+   "seg_inked": 3341,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 137
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_1233f389063145009f68d2755b400b5a",
+   "discipline": "EOM",
+   "doc_id": "СТ26_01-14-ЭОМ-5-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 68890,
+   "paths_invisible": 0,
+   "paths_outside_clip": 67868,
+   "seg_raw": 1022,
+   "seg_inked": 1022,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 67868
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "6DNM-FUL4-DY4",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 6373,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4445,
+   "seg_raw": 16336,
+   "seg_inked": 16336,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4445
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "67E6-FNPQ-WV9",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК2-К2 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1856,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1830,
+   "seg_raw": 1899,
+   "seg_inked": 1899,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1830
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_12bf7d2694064f2fb768ec8602faef69",
+   "discipline": "VK",
+   "doc_id": "СТ26_01-14-ВК-5-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 684,
+   "paths_invisible": 0,
+   "paths_outside_clip": 684,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 684
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_f8e6e5270faa4be18eb661496230cc02",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ2-7-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 212476,
+   "paths_invisible": 357,
+   "paths_outside_clip": 138253,
+   "seg_raw": 75716,
+   "seg_inked": 74288,
+   "seg_invisible": 1428,
+   "invisible_share": 0.018859950340747,
+   "by_rule_paths": {
+    "outside_clip": 138253,
+    "white_fill_no_stroke": 357
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 1428
+   }
+  },
+  {
+   "block_id": "LFL4-9XY6-MUH",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.2-К3 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 206,
+   "paths_invisible": 0,
+   "paths_outside_clip": 180,
+   "seg_raw": 1053,
+   "seg_inked": 1053,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 180
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4WHA-KHVK-UHK",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-К3-6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 12450,
+   "paths_invisible": 6,
+   "paths_outside_clip": 11612,
+   "seg_raw": 2490,
+   "seg_inked": 2454,
+   "seg_invisible": 36,
+   "invisible_share": 0.014457831325301205,
+   "by_rule_paths": {
+    "outside_clip": 11612,
+    "white_fill_white_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 36
+   }
+  },
+  {
+   "block_id": "blk_a162caca1b064571b7ae4527ac755404",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СДС_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 73012,
+   "paths_invisible": 0,
+   "paths_outside_clip": 72627,
+   "seg_raw": 29926,
+   "seg_inked": 29926,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 72627
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "9VRQ-GVDL-JXX",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К6 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2453,
+   "paths_invisible": 303,
+   "paths_outside_clip": 668,
+   "seg_raw": 30313,
+   "seg_inked": 29101,
+   "seg_invisible": 1212,
+   "invisible_share": 0.039982845643783196,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 303,
+    "outside_clip": 668
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 1212
+   }
+  },
+  {
+   "block_id": "XJWV-CDRE-PLN",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 27,
+   "paths_invisible": 0,
+   "paths_outside_clip": 27,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 27
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_ff43f9eacd6c481694b5a1da3100c2ce",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ1-0.3-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4251,
+   "paths_invisible": 40,
+   "paths_outside_clip": 2834,
+   "seg_raw": 1579,
+   "seg_inked": 1419,
+   "seg_invisible": 160,
+   "invisible_share": 0.1013299556681444,
+   "by_rule_paths": {
+    "outside_clip": 2834,
+    "white_fill_no_stroke": 40
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 160
+   }
+  },
+  {
+   "block_id": "A3PN-YU9A-M4A",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.24.1-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 908,
+   "paths_invisible": 0,
+   "paths_outside_clip": 891,
+   "seg_raw": 2840,
+   "seg_inked": 2840,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 891
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_716aa44bc3a14ad0a25383397a2df761",
+   "discipline": "PT",
+   "doc_id": "ПД-ОО542664-АПТ1.2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 49,
+   "paths_invisible": 3,
+   "paths_outside_clip": 40,
+   "seg_raw": 1007,
+   "seg_inked": 995,
+   "seg_invisible": 12,
+   "invisible_share": 0.011916583912611719,
+   "by_rule_paths": {
+    "outside_clip": 40,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "blk_e1941860bc7d48c49001e67a05b1d0d5",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР1-5-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 19422,
+   "paths_invisible": 0,
+   "paths_outside_clip": 17943,
+   "seg_raw": 1479,
+   "seg_inked": 1479,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 17943
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_bf7a15a717754053bb1797d058137889",
+   "discipline": "OV",
+   "doc_id": "ПД-00260568-ОВ1-1.1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1013,
+   "paths_invisible": 0,
+   "paths_outside_clip": 936,
+   "seg_raw": 292,
+   "seg_inked": 292,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 936
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "96FX-7X76-R4K",
+   "discipline": "KM",
+   "doc_id": "13АВ-РД-НВФ-К5",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 221792,
+   "paths_invisible": 1,
+   "paths_outside_clip": 221104,
+   "seg_raw": 1813,
+   "seg_inked": 1807,
+   "seg_invisible": 6,
+   "invisible_share": 0.003309431880860452,
+   "by_rule_paths": {
+    "outside_clip": 221104,
+    "white_fill_white_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 6
+   }
+  },
+  {
+   "block_id": "blk_d9a981165d7a444ba1c094a06cbc618b",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР2-4-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 26940,
+   "paths_invisible": 160,
+   "paths_outside_clip": 17143,
+   "seg_raw": 13143,
+   "seg_inked": 12503,
+   "seg_invisible": 640,
+   "invisible_share": 0.04869512287909914,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 160,
+    "outside_clip": 17143
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 640
+   }
+  },
+  {
+   "block_id": "blk_63032083939f4d9cae9f54df3a635050",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-ПС-6_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 34183,
+   "paths_invisible": 0,
+   "paths_outside_clip": 33684,
+   "seg_raw": 42474,
+   "seg_inked": 42474,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 33684
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7L9H-TAXL-PHY",
+   "discipline": "KM",
+   "doc_id": "13АВ-РД-КМ-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1420,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1390,
+   "seg_raw": 276,
+   "seg_inked": 276,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1390
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_7f30464a8ae6402a913a8788015fd8ac",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ1-3-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 123293,
+   "paths_invisible": 0,
+   "paths_outside_clip": 121944,
+   "seg_raw": 1349,
+   "seg_inked": 1349,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 121944
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "6YA6-AWFQ-HYK",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ7.2-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 547,
+   "paths_invisible": 0,
+   "paths_outside_clip": 542,
+   "seg_raw": 104,
+   "seg_inked": 104,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 542
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7TD6-TVND-RNV",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К6 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 3117,
+   "paths_invisible": 0,
+   "paths_outside_clip": 2603,
+   "seg_raw": 42873,
+   "seg_inked": 42873,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 2603
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_5f7d35fc522d4ff983a4c4fb533b24e1",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-СОУЭ-ПА",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 7085,
+   "paths_invisible": 0,
+   "paths_outside_clip": 6422,
+   "seg_raw": 7071,
+   "seg_inked": 7071,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 6422
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "93LH-RLDW-LG6",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К2 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 21599,
+   "paths_invisible": 0,
+   "paths_outside_clip": 12000,
+   "seg_raw": 31223,
+   "seg_inked": 31223,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 12000
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_667afd1e33a04797b1dbc6dc04619eb6",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР1-2-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 24577,
+   "paths_invisible": 24,
+   "paths_outside_clip": 21579,
+   "seg_raw": 4043,
+   "seg_inked": 3947,
+   "seg_invisible": 96,
+   "invisible_share": 0.023744744001978728,
+   "by_rule_paths": {
+    "outside_clip": 21579,
+    "white_fill_no_stroke": 24
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 96
+   }
+  },
+  {
+   "block_id": "blk_b8b2142a3e1148ceb408afd9d93a4bb6",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ3-01.2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 11906,
+   "paths_invisible": 0,
+   "paths_outside_clip": 10983,
+   "seg_raw": 971,
+   "seg_inked": 971,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 10983
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_d3f89e43957140fea7fbe2698bdd7fd7",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14_ОВ2-6-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 246,
+   "paths_invisible": 3,
+   "paths_outside_clip": 68,
+   "seg_raw": 712,
+   "seg_inked": 700,
+   "seg_invisible": 12,
+   "invisible_share": 0.016853932584269662,
+   "by_rule_paths": {
+    "outside_clip": 68,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "blk_4dd0023ffe354c6eb70596db6135ce9d",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-НК1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 360,
+   "paths_invisible": 0,
+   "paths_outside_clip": 187,
+   "seg_raw": 684,
+   "seg_inked": 684,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 187
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_78dca0af2bcd443c8db1b65847be06ba",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ1-6.1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4858,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4687,
+   "seg_raw": 476,
+   "seg_inked": 476,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4687
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_1d94be618c314faf90ca84018c97e0a8",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР1-2-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 21533,
+   "paths_invisible": 44,
+   "paths_outside_clip": 19342,
+   "seg_raw": 6038,
+   "seg_inked": 5862,
+   "seg_invisible": 176,
+   "invisible_share": 0.02914872474329248,
+   "by_rule_paths": {
+    "outside_clip": 19342,
+    "white_fill_no_stroke": 44
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 176
+   }
+  },
+  {
+   "block_id": "W4LV-JHD4-K3V",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ1.2-ПА V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4244,
+   "paths_invisible": 0,
+   "paths_outside_clip": 507,
+   "seg_raw": 15966,
+   "seg_inked": 15966,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 507
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7GCH-D39J-4JN",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.24.1-К2",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 891,
+   "paths_invisible": 0,
+   "paths_outside_clip": 811,
+   "seg_raw": 1093,
+   "seg_inked": 1093,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 811
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_2c669f885a2b4e6da1f24293b2d42b4c",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ1-2.1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 14659,
+   "paths_invisible": 0,
+   "paths_outside_clip": 13304,
+   "seg_raw": 1355,
+   "seg_inked": 1355,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 13304
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_8bd24aea8d304d729a2ad46a47ec0cd0",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ0-2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1359,
+   "paths_invisible": 6,
+   "paths_outside_clip": 1231,
+   "seg_raw": 498,
+   "seg_inked": 481,
+   "seg_invisible": 17,
+   "invisible_share": 0.03413654618473896,
+   "by_rule_paths": {
+    "outside_clip": 1231,
+    "white_fill_no_stroke": 6
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 17
+   }
+  },
+  {
+   "block_id": "blk_093b0d196cef42b58cc08456fd9d8d6a",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-ПС-2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 24216,
+   "paths_invisible": 118,
+   "paths_outside_clip": 6097,
+   "seg_raw": 27812,
+   "seg_inked": 27109,
+   "seg_invisible": 703,
+   "invisible_share": 0.025276858909823098,
+   "by_rule_paths": {
+    "outside_clip": 6097,
+    "white_fill_white_stroke": 117,
+    "white_stroke_no_fill": 1
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 702,
+    "white_stroke_no_fill": 1
+   }
+  },
+  {
+   "block_id": "6PAM-YFQJ-YNT",
+   "discipline": "KM",
+   "doc_id": "Mockup 3",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 616,
+   "paths_invisible": 0,
+   "paths_outside_clip": 537,
+   "seg_raw": 414,
+   "seg_inked": 414,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 537
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_106a1b0042b6470ebb74aa016a6ce2fe",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ1-2.1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4324,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4147,
+   "seg_raw": 2284,
+   "seg_inked": 2284,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4147
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_5405c9ae56314ef69e75729e7d12baec",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР2-А-Е,Ф-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2270,
+   "paths_invisible": 0,
+   "paths_outside_clip": 822,
+   "seg_raw": 1448,
+   "seg_inked": 1448,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 822
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7XTK-DJYD-DU4",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1-К6 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1267,
+   "paths_invisible": 1,
+   "paths_outside_clip": 1209,
+   "seg_raw": 3695,
+   "seg_inked": 3691,
+   "seg_invisible": 4,
+   "invisible_share": 0.0010825439783491205,
+   "by_rule_paths": {
+    "outside_clip": 1209,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "blk_98a88f35c5fc43688e86895edeacef85",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ3_1-ПА_(Книга_1)_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 955,
+   "paths_invisible": 0,
+   "paths_outside_clip": 948,
+   "seg_raw": 130,
+   "seg_inked": 130,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 948
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "9WAM-WKR4-YMY",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ3 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 0,
+   "paths_invisible": 0,
+   "paths_outside_clip": 0,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {},
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_460c1a3d4b904855ae983c9c65449564",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-СОУЭ-ПА",
+   "version": "v002",
+   "rotation": 270,
+   "paths_total": 2680,
+   "paths_invisible": 0,
+   "paths_outside_clip": 626,
+   "seg_raw": 14554,
+   "seg_inked": 14554,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 626
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_296fbf39bb23403cbba1a562f6e88ae0",
+   "discipline": "SS",
+   "doc_id": "СТ26_01-14-УУТЭ2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 489,
+   "paths_invisible": 1,
+   "paths_outside_clip": 41,
+   "seg_raw": 1371,
+   "seg_inked": 1367,
+   "seg_invisible": 4,
+   "invisible_share": 0.0029175784099197666,
+   "by_rule_paths": {
+    "white_fill_white_stroke": 1,
+    "outside_clip": 41
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 4
+   }
+  },
+  {
+   "block_id": "4DM9-UMK3-XTT",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4199,
+   "paths_invisible": 130,
+   "paths_outside_clip": 3999,
+   "seg_raw": 3251,
+   "seg_inked": 2733,
+   "seg_invisible": 518,
+   "invisible_share": 0.15933558904952322,
+   "by_rule_paths": {
+    "outside_clip": 3999,
+    "white_fill_no_stroke": 130
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 518
+   }
+  },
+  {
+   "block_id": "blk_d8b99d78039c4a1dbe1b0320b6b23164",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ0-1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 709,
+   "paths_invisible": 64,
+   "paths_outside_clip": 645,
+   "seg_raw": 256,
+   "seg_inked": 0,
+   "seg_invisible": 256,
+   "invisible_share": 1.0,
+   "by_rule_paths": {
+    "outside_clip": 645,
+    "white_fill_no_stroke": 64
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 256
+   }
+  },
+  {
+   "block_id": "blk_344dc7d9298e4bb3981e77aa780cca86",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ0-1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 88560,
+   "paths_invisible": 64,
+   "paths_outside_clip": 88496,
+   "seg_raw": 256,
+   "seg_inked": 0,
+   "seg_invisible": 256,
+   "invisible_share": 1.0,
+   "by_rule_paths": {
+    "outside_clip": 88496,
+    "white_fill_no_stroke": 64
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 256
+   }
+  },
+  {
+   "block_id": "blk_43ed67e52a8c457a834c40c321f3d3ab",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.2-К2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 3193,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3166,
+   "seg_raw": 1256,
+   "seg_inked": 1256,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3166
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "47GM-XADV-FVJ",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К4",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 495,
+   "paths_invisible": 0,
+   "paths_outside_clip": 396,
+   "seg_raw": 2268,
+   "seg_inked": 2268,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 396
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_1f82551ea5e04bb8aca35a167b67db95",
+   "discipline": "PT",
+   "doc_id": "ПД-ОО542664-АПТ1.3_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 49134,
+   "paths_invisible": 0,
+   "paths_outside_clip": 49000,
+   "seg_raw": 471,
+   "seg_inked": 471,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 49000
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "PRVC-XMRM-DXT",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК2-К4 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 885,
+   "paths_invisible": 1,
+   "paths_outside_clip": 867,
+   "seg_raw": 1885,
+   "seg_inked": 1881,
+   "seg_invisible": 4,
+   "invisible_share": 0.002122015915119363,
+   "by_rule_paths": {
+    "outside_clip": 867,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "7TAH-HECG-VDR",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-К4-5",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 6071,
+   "paths_invisible": 29,
+   "paths_outside_clip": 5928,
+   "seg_raw": 1103,
+   "seg_inked": 929,
+   "seg_invisible": 174,
+   "invisible_share": 0.15775158658204896,
+   "by_rule_paths": {
+    "outside_clip": 5928,
+    "white_fill_white_stroke": 29
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 174
+   }
+  },
+  {
+   "block_id": "blk_e691d31c914a4b1b9ee734188240e969",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ3_1-ПА_(Книга_1)_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 955,
+   "paths_invisible": 15,
+   "paths_outside_clip": 892,
+   "seg_raw": 775,
+   "seg_inked": 715,
+   "seg_invisible": 60,
+   "invisible_share": 0.07741935483870968,
+   "by_rule_paths": {
+    "outside_clip": 892,
+    "white_fill_no_stroke": 15
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 60
+   }
+  },
+  {
+   "block_id": "blk_3efd3627b24140eda70aa9efa2fff421",
+   "discipline": "PT",
+   "doc_id": "ПД-ОО542664-АПТ1.1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 103637,
+   "paths_invisible": 3,
+   "paths_outside_clip": 102906,
+   "seg_raw": 740,
+   "seg_inked": 728,
+   "seg_invisible": 12,
+   "invisible_share": 0.016216216216216217,
+   "by_rule_paths": {
+    "outside_clip": 102906,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "7LYE-PJ63-77W",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ2-К2 V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 7772,
+   "paths_invisible": 0,
+   "paths_outside_clip": 7678,
+   "seg_raw": 763,
+   "seg_inked": 763,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 7678
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_ed9a9ad5374d443bbfc04995548850c1",
+   "discipline": "ITP",
+   "doc_id": "ПД-00542664-АИТ.СС.ПС_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 1738,
+   "paths_invisible": 0,
+   "paths_outside_clip": 1347,
+   "seg_raw": 26417,
+   "seg_inked": 26417,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 1347
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_5850f08c8fd0407fb58e4271cd648198",
+   "discipline": "EOM",
+   "doc_id": "ПД-00260568-ЭМ_1-1_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 6562,
+   "paths_invisible": 0,
+   "paths_outside_clip": 2058,
+   "seg_raw": 32093,
+   "seg_inked": 32093,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 2058
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_4ccf4f5d49ef4d19ab1f55a59b61990a",
+   "discipline": "SS",
+   "doc_id": "13AB-РД-СОТ-К7 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 76,
+   "paths_invisible": 1,
+   "paths_outside_clip": 50,
+   "seg_raw": 1204,
+   "seg_inked": 1200,
+   "seg_invisible": 4,
+   "invisible_share": 0.0033222591362126247,
+   "by_rule_paths": {
+    "outside_clip": 50,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "blk_086a4643d6794c689639a03ba04aae12",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР3-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 22302,
+   "paths_invisible": 0,
+   "paths_outside_clip": 21010,
+   "seg_raw": 1292,
+   "seg_inked": 1292,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 21010
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_8aee22a01e8a446da338ef1fa58ffd22",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ2-5-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 664,
+   "paths_invisible": 0,
+   "paths_outside_clip": 664,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 664
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_9f87c69e3a3f44788e411566b0a12c10",
+   "discipline": "AI",
+   "doc_id": "133-23-ГК-АИ2",
+   "version": "v002",
+   "rotation": 0,
+   "error": "FileNotFoundError: no such file: 'projects_v2/objects/213_Mosfilmovskaya_31A_KingSons/disciplines/AI/documents/133-23-ГК-АИ2/versions/v002/02_work/document.pdf'"
+  },
+  {
+   "block_id": "blk_44b556e6bbfb4d01b6aab382fa9eb233",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ1-1.4_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 86736,
+   "paths_invisible": 60,
+   "paths_outside_clip": 14688,
+   "seg_raw": 79001,
+   "seg_inked": 77974,
+   "seg_invisible": 1027,
+   "invisible_share": 0.012999835445120948,
+   "by_rule_paths": {
+    "white_fill_no_stroke": 60,
+    "outside_clip": 14688
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 1027
+   }
+  },
+  {
+   "block_id": "blk_09f9dfaad7f841889b72f5b69e07e35a",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АСКУВТ_(Книга_3)_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 28496,
+   "paths_invisible": 8,
+   "paths_outside_clip": 17871,
+   "seg_raw": 74221,
+   "seg_inked": 74173,
+   "seg_invisible": 48,
+   "invisible_share": 0.0006467172363616766,
+   "by_rule_paths": {
+    "outside_clip": 17871,
+    "white_fill_white_stroke": 8
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 48
+   }
+  },
+  {
+   "block_id": "blk_69299b30501043399f2d0f2dbd941a87",
+   "discipline": "VK",
+   "doc_id": "ПД-ОО542664-ВК1-1.1.2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 39184,
+   "paths_invisible": 1,
+   "paths_outside_clip": 17219,
+   "seg_raw": 84582,
+   "seg_inked": 84567,
+   "seg_invisible": 15,
+   "invisible_share": 0.0001773426970277364,
+   "by_rule_paths": {
+    "outside_clip": 17219,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 15
+   }
+  },
+  {
+   "block_id": "blk_732a518da6d04162acc097b7ed032d10",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ1-0.3-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4989,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3502,
+   "seg_raw": 1487,
+   "seg_inked": 1487,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3502
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_bb8c16f64a3449e1a04a0dfa0f2b4b5b",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ6.1-К2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2461,
+   "paths_invisible": 0,
+   "paths_outside_clip": 2444,
+   "seg_raw": 2820,
+   "seg_inked": 2820,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 2444
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_b2b340f5d1414393a6675ff9e53f58f1",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР3-6-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 26692,
+   "paths_invisible": 0,
+   "paths_outside_clip": 25601,
+   "seg_raw": 1091,
+   "seg_inked": 1091,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 25601
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_1e99770c623b4abda14797ddab6e8393",
+   "discipline": "VK",
+   "doc_id": "ПД-ОО542664-ВК1-1.1.2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 15770,
+   "paths_invisible": 18,
+   "paths_outside_clip": 1867,
+   "seg_raw": 27215,
+   "seg_inked": 27071,
+   "seg_invisible": 144,
+   "invisible_share": 0.005291199706044461,
+   "by_rule_paths": {
+    "outside_clip": 1867,
+    "white_fill_no_stroke": 18
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 144
+   }
+  },
+  {
+   "block_id": "blk_93d371f9f07344899c882402cf7f6a08",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 47,
+   "paths_invisible": 1,
+   "paths_outside_clip": 41,
+   "seg_raw": 789,
+   "seg_inked": 785,
+   "seg_invisible": 4,
+   "invisible_share": 0.005069708491761723,
+   "by_rule_paths": {
+    "outside_clip": 41,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "6UNR-HU6X-JD7",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 35388,
+   "paths_invisible": 0,
+   "paths_outside_clip": 35219,
+   "seg_raw": 1013,
+   "seg_inked": 1013,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 35219
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_92484edb83b84dde8351d197eb0dacab",
+   "discipline": "AR",
+   "doc_id": "ПД-00542664-АР1.2-2_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4302,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3717,
+   "seg_raw": 1514,
+   "seg_inked": 1514,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3717
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_4e7738463fc647ec80b296f233253b32",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР3-6-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 119649,
+   "paths_invisible": 957,
+   "paths_outside_clip": 114064,
+   "seg_raw": 8932,
+   "seg_inked": 5104,
+   "seg_invisible": 3828,
+   "invisible_share": 0.42857142857142855,
+   "by_rule_paths": {
+    "outside_clip": 114064,
+    "white_fill_no_stroke": 957
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 3828
+   }
+  },
+  {
+   "block_id": "blk_50a98f31313f4f9e87dc8253a99f5d57",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-СОТ-ПА_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 29894,
+   "paths_invisible": 0,
+   "paths_outside_clip": 28193,
+   "seg_raw": 12721,
+   "seg_inked": 12721,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 28193
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_ccaebfe0e54147d3a36ab5025d46376b",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ2-4-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 276083,
+   "paths_invisible": 0,
+   "paths_outside_clip": 276046,
+   "seg_raw": 1722,
+   "seg_inked": 1722,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 276046
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_a06d859b26d444b1a4124273a5eded9f",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АСКУВТ_(Книга_1)_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4859,
+   "paths_invisible": 2,
+   "paths_outside_clip": 4171,
+   "seg_raw": 5007,
+   "seg_inked": 4991,
+   "seg_invisible": 16,
+   "invisible_share": 0.003195526263231476,
+   "by_rule_paths": {
+    "outside_clip": 4171,
+    "white_fill_white_stroke": 2
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 16
+   }
+  },
+  {
+   "block_id": "blk_3e9c50fbd01d440daaeaadb1486f06c0",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР2-2-2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 14427,
+   "paths_invisible": 0,
+   "paths_outside_clip": 13183,
+   "seg_raw": 1244,
+   "seg_inked": 1244,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 13183
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4T3A-4RW6-RA7",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ДК-К3 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 11595,
+   "paths_invisible": 1,
+   "paths_outside_clip": 11153,
+   "seg_raw": 40235,
+   "seg_inked": 40231,
+   "seg_invisible": 4,
+   "invisible_share": 9.941593140300733e-05,
+   "by_rule_paths": {
+    "outside_clip": 11153,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "7NQU-DGUM-D7D",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К5",
+   "version": "v002",
+   "rotation": 270,
+   "paths_total": 15983,
+   "paths_invisible": 0,
+   "paths_outside_clip": 15840,
+   "seg_raw": 871,
+   "seg_inked": 871,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 15840
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "7FYF-449Y-YAR",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К3",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2095,
+   "paths_invisible": 12,
+   "paths_outside_clip": 2027,
+   "seg_raw": 1159,
+   "seg_inked": 1111,
+   "seg_invisible": 48,
+   "invisible_share": 0.04141501294219154,
+   "by_rule_paths": {
+    "outside_clip": 2027,
+    "white_fill_no_stroke": 12
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 48
+   }
+  },
+  {
+   "block_id": "blk_0ddd3088b3e94678a0db41133e6cdaa8",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОТС_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 25342,
+   "paths_invisible": 0,
+   "paths_outside_clip": 24795,
+   "seg_raw": 39416,
+   "seg_inked": 39416,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 24795
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_c401b4712f24439ba8b3db95d0e7f04e",
+   "discipline": "EOM",
+   "doc_id": "СТ26_01-14-ЭОМ-1-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 24890,
+   "paths_invisible": 295,
+   "paths_outside_clip": 19511,
+   "seg_raw": 6995,
+   "seg_inked": 5815,
+   "seg_invisible": 1180,
+   "invisible_share": 0.16869192280200143,
+   "by_rule_paths": {
+    "outside_clip": 19511,
+    "white_fill_no_stroke": 295
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 1180
+   }
+  },
+  {
+   "block_id": "VJM4-KGAK-KU7",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К4",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 30039,
+   "paths_invisible": 2,
+   "paths_outside_clip": 29722,
+   "seg_raw": 469,
+   "seg_inked": 462,
+   "seg_invisible": 7,
+   "invisible_share": 0.014925373134328358,
+   "by_rule_paths": {
+    "outside_clip": 29722,
+    "white_fill_white_stroke": 1,
+    "white_stroke_no_fill": 1
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 6,
+    "white_stroke_no_fill": 1
+   }
+  },
+  {
+   "block_id": "blk_2853c3ca373a415d9ee1e4879e04e2d3",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ7-01.2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 6539,
+   "paths_invisible": 0,
+   "paths_outside_clip": 5075,
+   "seg_raw": 1464,
+   "seg_inked": 1464,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 5075
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_b9a7a8b31be54e1f8b8875f967e8c3bc",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-1_V1",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 3893,
+   "paths_invisible": 0,
+   "paths_outside_clip": 3361,
+   "seg_raw": 45628,
+   "seg_inked": 45628,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 3361
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "G4MX-HEDH-FU7",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2542,
+   "paths_invisible": 0,
+   "paths_outside_clip": 410,
+   "seg_raw": 829243,
+   "seg_inked": 829243,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 410
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "663H-WFMR-7LN",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-К3-6",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 8815,
+   "paths_invisible": 94,
+   "paths_outside_clip": 6915,
+   "seg_raw": 5205,
+   "seg_inked": 4641,
+   "seg_invisible": 564,
+   "invisible_share": 0.10835734870317003,
+   "by_rule_paths": {
+    "outside_clip": 6915,
+    "white_fill_white_stroke": 94
+   },
+   "by_rule_segments": {
+    "white_fill_white_stroke": 564
+   }
+  },
+  {
+   "block_id": "blk_19058b25ea3a423b98282a75e49a3e8d",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ5-01.2-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 4672,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4296,
+   "seg_raw": 430,
+   "seg_inked": 430,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4296
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_6065932afdd84da0b408ff87f6edd24e",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-ДЛ_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 25669,
+   "paths_invisible": 0,
+   "paths_outside_clip": 25637,
+   "seg_raw": 677,
+   "seg_inked": 677,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 25637
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_bd2d75f6f91c4de1aa4cf2d9d116c176",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ0-3_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 240,
+   "paths_invisible": 11,
+   "paths_outside_clip": 229,
+   "seg_raw": 44,
+   "seg_inked": 0,
+   "seg_invisible": 44,
+   "invisible_share": 1.0,
+   "by_rule_paths": {
+    "outside_clip": 229,
+    "white_fill_no_stroke": 11
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 44
+   }
+  },
+  {
+   "block_id": "blk_075b3b2ae0be4ba4afea3d0b2502b162",
+   "discipline": "PT",
+   "doc_id": "ПД-ОО542664-АПТ1.3_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 92721,
+   "paths_invisible": 0,
+   "paths_outside_clip": 92587,
+   "seg_raw": 471,
+   "seg_inked": 471,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 92587
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "73UK-YRKN-CNL",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К3",
+   "version": "v001",
+   "rotation": 90,
+   "paths_total": 87471,
+   "paths_invisible": 0,
+   "paths_outside_clip": 87471,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 87471
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_e029e93043b94ac5b7acc110045d1c43",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ2-5-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 267,
+   "paths_invisible": 5,
+   "paths_outside_clip": 72,
+   "seg_raw": 780,
+   "seg_inked": 760,
+   "seg_invisible": 20,
+   "invisible_share": 0.02564102564102564,
+   "by_rule_paths": {
+    "outside_clip": 72,
+    "white_fill_no_stroke": 5
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 20
+   }
+  },
+  {
+   "block_id": "TUHQ-YLHM-AHA",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1.2-ПА V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 239,
+   "paths_invisible": 1,
+   "paths_outside_clip": 27,
+   "seg_raw": 16548,
+   "seg_inked": 16544,
+   "seg_invisible": 4,
+   "invisible_share": 0.00024172105390379503,
+   "by_rule_paths": {
+    "outside_clip": 27,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "7VRQ-946R-GXV",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ3 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 0,
+   "paths_invisible": 0,
+   "paths_outside_clip": 0,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {},
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "63C7-NLHH-HRW",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3-К3",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 67,
+   "paths_invisible": 0,
+   "paths_outside_clip": 65,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 65
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "69VQ-KVU7-4XG",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 51,
+   "paths_invisible": 1,
+   "paths_outside_clip": 46,
+   "seg_raw": 244,
+   "seg_inked": 240,
+   "seg_invisible": 4,
+   "invisible_share": 0.01639344262295082,
+   "by_rule_paths": {
+    "outside_clip": 46,
+    "white_fill_no_stroke": 1
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 4
+   }
+  },
+  {
+   "block_id": "44W6-RQY4-JVQ",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 6015,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4677,
+   "seg_raw": 28469,
+   "seg_inked": 28469,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4677
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_6279d3f73ff840c2abc06456780e5eb5",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ7-02.1-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 12410,
+   "paths_invisible": 0,
+   "paths_outside_clip": 11938,
+   "seg_raw": 2171,
+   "seg_inked": 2171,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 11938
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4R3C-TUKX-33L",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ7.2-К1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 2575,
+   "paths_invisible": 3,
+   "paths_outside_clip": 2522,
+   "seg_raw": 1042,
+   "seg_inked": 1030,
+   "seg_invisible": 12,
+   "invisible_share": 0.011516314779270634,
+   "by_rule_paths": {
+    "outside_clip": 2522,
+    "white_fill_no_stroke": 3
+   },
+   "by_rule_segments": {
+    "white_fill_no_stroke": 12
+   }
+  },
+  {
+   "block_id": "4FY9-4HEJ-RDA",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК2-К2 V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 508,
+   "paths_invisible": 0,
+   "paths_outside_clip": 157,
+   "seg_raw": 46528,
+   "seg_inked": 46528,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 157
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "4AJE-7URL-ADH",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К4",
+   "version": "v001",
+   "rotation": 270,
+   "paths_total": 5453,
+   "paths_invisible": 1,
+   "paths_outside_clip": 5249,
+   "seg_raw": 334,
+   "seg_inked": 330,
+   "seg_invisible": 4,
+   "invisible_share": 0.011976047904191617,
+   "by_rule_paths": {
+    "outside_clip": 5249,
+    "white_stroke_no_fill": 1
+   },
+   "by_rule_segments": {
+    "white_stroke_no_fill": 4
+   }
+  },
+  {
+   "block_id": "blk_4e392fb6763345efa15e71d23ffa3357",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АСКУВТ_(Книга_2)_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 28681,
+   "paths_invisible": 0,
+   "paths_outside_clip": 28611,
+   "seg_raw": 269,
+   "seg_inked": 269,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 28611
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_6c599a8155e24fb4b62a2a71932a66e6",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 75,
+   "paths_invisible": 0,
+   "paths_outside_clip": 58,
+   "seg_raw": 1032,
+   "seg_inked": 1032,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 58
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "6R4R-KGK3-YUA",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+   "version": "v002",
+   "rotation": 270,
+   "paths_total": 15515,
+   "paths_invisible": 0,
+   "paths_outside_clip": 13799,
+   "seg_raw": 12440,
+   "seg_inked": 12440,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 13799
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "blk_13997431270440fab4535fb6230b3e8f",
+   "discipline": "KJ",
+   "doc_id": "СТ26_01-14-КЖ1-02.1-РД_V1",
+   "version": "v001",
+   "rotation": 0,
+   "paths_total": 8293,
+   "paths_invisible": 0,
+   "paths_outside_clip": 8293,
+   "seg_raw": 0,
+   "seg_inked": 0,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 8293
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "ACNY-JPXV-WMF",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К4 (Книга 2)",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 5014,
+   "paths_invisible": 0,
+   "paths_outside_clip": 4049,
+   "seg_raw": 5252,
+   "seg_inked": 5252,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 4049
+   },
+   "by_rule_segments": {}
+  },
+  {
+   "block_id": "6YY3-D3QQ-PXC",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+   "version": "v002",
+   "rotation": 0,
+   "paths_total": 35,
+   "paths_invisible": 0,
+   "paths_outside_clip": 33,
+   "seg_raw": 8,
+   "seg_inked": 8,
+   "seg_invisible": 0,
+   "invisible_share": 0.0,
+   "by_rule_paths": {
+    "outside_clip": 33
+   },
+   "by_rule_segments": {}
+  }
+ ]
+}

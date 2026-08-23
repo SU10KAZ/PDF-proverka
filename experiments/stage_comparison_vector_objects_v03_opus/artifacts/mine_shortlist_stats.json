@@ -1,0 +1,260 @@
+{
+ "schema_version": "mine_shortlist/1",
+ "research_only": true,
+ "n_pairs_total": 3940,
+ "n_shortlisted": 153,
+ "per_class": {
+  "unchanged_control": {
+   "n_candidates": 323,
+   "n_picked": 14,
+   "picked": [
+    "SS-d2b78730",
+    "SS-706be45f",
+    "SS-4f35ebb9",
+    "SS-c82e9410",
+    "SS-3f502ee5",
+    "KJ-16a2b044",
+    "SS-a18599b0",
+    "EOM-eef29f17",
+    "TX-370d6fbf",
+    "AR-b38a7dbc",
+    "AR-48aadccf",
+    "TX-4f31c75c",
+    "GP-be4ff946",
+    "SS-ce0b79ae"
+   ]
+  },
+  "small_local_change": {
+   "n_candidates": 923,
+   "n_picked": 14,
+   "picked": [
+    "EOM-b3390cc8",
+    "AR-d6f28734",
+    "AR-4ae21742",
+    "TX-48b03208",
+    "SS-1bf1e9bf",
+    "AR-531617fa",
+    "VK-2eadae61",
+    "SS-9545677f",
+    "KJ-b5c82f7c",
+    "SS-3f7d89d0",
+    "SS-3c497161",
+    "SS-cc768223",
+    "TX-c80a4620",
+    "SS-e28b498f"
+   ]
+  },
+  "object_added": {
+   "n_candidates": 777,
+   "n_picked": 14,
+   "picked": [
+    "SS-8ee57c88",
+    "SS-153a53c2",
+    "SS-392b7bd3",
+    "SS-9673ab22",
+    "SS-b689be61",
+    "SS-444d4774",
+    "SS-3dcf87d6",
+    "SS-5fe7a34d",
+    "SS-ae997bf4",
+    "SS-38ac90f3",
+    "SS-fddbeb2b",
+    "SS-14065bf2",
+    "SS-3f7d89d0",
+    "SS-94ff638e"
+   ]
+  },
+  "object_removed": {
+   "n_candidates": 458,
+   "n_picked": 14,
+   "picked": [
+    "SS-43a768e2",
+    "SS-05401587",
+    "SS-1bf1e9bf",
+    "SS-8bd93ce6",
+    "SS-01d8ddda",
+    "SS-c9646f92",
+    "SS-8970901a",
+    "SS-272036ec",
+    "SS-6cd828d8",
+    "SS-95eb2b93",
+    "SS-88574f25",
+    "SS-3f408d81",
+    "SS-7f8f9c4f",
+    "SS-d4e927b3"
+   ]
+  },
+  "object_moved": {
+   "n_candidates": 225,
+   "n_picked": 14,
+   "picked": [
+    "SS-651c681f",
+    "EOM-f1f42641",
+    "SS-cc32de7d",
+    "VK-f355ee3a",
+    "SS-a02c8a89",
+    "TX-c3e2af66",
+    "SS-f41a4287",
+    "AR-46f62636",
+    "SS-d90526aa",
+    "TX-3e95d288",
+    "SS-ea6888c9",
+    "TX-bdb39f1c",
+    "OV-93cc012f",
+    "KM-42f460d1"
+   ]
+  },
+  "block_moved": {
+   "n_candidates": 309,
+   "n_picked": 14,
+   "picked": [
+    "AR-cf37335e",
+    "SS-9ec34042",
+    "KJ-30148cf0",
+    "EOM-b3390cc8",
+    "AR-937ab40b",
+    "SS-0fc42ea3",
+    "EOM-3e86c318",
+    "AR-321bc1fd",
+    "AR-1b9efa72",
+    "SS-8283837e",
+    "AR-548582b8",
+    "SS-a18599b0",
+    "OV-b9c6fb68",
+    "EOM-985567cd"
+   ]
+  },
+  "rotated_page": {
+   "n_candidates": 230,
+   "n_picked": 14,
+   "picked": [
+    "EOM-27848006",
+    "KM-b3040758",
+    "SS-88f22d35",
+    "EOM-7e07dc84",
+    "SS-5f190ee6",
+    "TX-781f3c48",
+    "AR-ec254411",
+    "SS-25957ecb",
+    "SS-ba5c284d",
+    "KM-422c690a",
+    "TX-8dd10234",
+    "EOM-36de2ce2",
+    "VK-148ffe6c",
+    "AR-4fa856ef"
+   ]
+  },
+  "rotated_page_quiet": {
+   "n_candidates": 125,
+   "n_picked": 6,
+   "picked": [
+    "SS-2bdd0fd0",
+    "VK-bed7d1f0",
+    "VK-a99eb538",
+    "GP-d82c9765",
+    "GP-78d25af4",
+    "TX-35667630"
+   ]
+  },
+  "bbox_shape_change": {
+   "n_candidates": 459,
+   "n_picked": 8,
+   "picked": [
+    "EOM-81ca2c16",
+    "AR-356cd1ed",
+    "AR-69e25353",
+    "AR-49c7c898",
+    "AR-f403c342",
+    "AR-f13d20c6",
+    "AR-490254e9",
+    "AR-cde8135e"
+   ]
+  },
+  "stamp_block": {
+   "n_candidates": 1322,
+   "n_picked": 12,
+   "picked": [
+    "VK-2633f592",
+    "TX-f1b816ec",
+    "SS-60f07e8e",
+    "SS-0c85e176",
+    "SS-f507081c",
+    "AR-0d0dba46",
+    "SS-aecfbb7e",
+    "OV-fa71298c",
+    "EOM-a45b41b8",
+    "EOM-4c5ad62e",
+    "SS-0d499cc7",
+    "VK-6bfa877e"
+   ]
+  },
+  "heavy_change": {
+   "n_candidates": 514,
+   "n_picked": 10,
+   "picked": [
+    "OV-2cc2a382",
+    "OV-a230726c",
+    "EOM-81ca2c16",
+    "AR-899c6321",
+    "AR-aab8d4f9",
+    "AR-356cd1ed",
+    "AR-69e25353",
+    "AR-49c7c898",
+    "AR-8005897e",
+    "AR-9362a60b"
+   ]
+  },
+  "dense_ink": {
+   "n_candidates": 207,
+   "n_picked": 12,
+   "picked": [
+    "EOM-274e74c0",
+    "GP-6bc1c029",
+    "GP-d3a9a137",
+    "AR-5acaab0e",
+    "AR-0d719e40",
+    "EOM-14558cda",
+    "AR-333cf555",
+    "EOM-8d181d99",
+    "AR-c8534ab7",
+    "AR-1ffd93f9",
+    "AR-69e25353",
+    "AR-28085491"
+   ]
+  },
+  "sparse_ink": {
+   "n_candidates": 32,
+   "n_picked": 8,
+   "picked": [
+    "EOM-8fdd7c14",
+    "EOM-7bf18435",
+    "EOM-e038b4d2",
+    "EOM-310c0334",
+    "EOM-f5a190df",
+    "VK-b41c33ff",
+    "SS-d35d2e18",
+    "SS-ce226102"
+   ]
+  },
+  "no_ocr_text": {
+   "n_candidates": 0,
+   "n_picked": 0,
+   "picked": []
+  },
+  "many_components": {
+   "n_candidates": 986,
+   "n_picked": 8,
+   "picked": [
+    "EOM-c50e2170",
+    "AR-24ba83e9",
+    "EOM-677cac78",
+    "AR-dbfd82b8",
+    "AR-b1dc37a3",
+    "VK-3805a780",
+    "EOM-6a1e93b1",
+    "EOM-85744556"
+   ]
+  }
+ },
+ "note": "n_candidates = how many pairs in the whole screened corpus satisfy the rule"
+}

@@ -1,0 +1,323 @@
+{
+ "rows": [
+  {
+   "block_id": "blk_fc686f67d4bb4747a9d4b5f7477d022d",
+   "discipline": "AR",
+   "n_seg": 22109,
+   "n_obj": 1741,
+   "n_fam": 572,
+   "n_rep": 132,
+   "t_obj": 0.9902,
+   "t_fam": 0.2354,
+   "t_fam_pair": 0.4179
+  },
+  {
+   "block_id": "blk_010c2b7d7b754eedaec81e3810ec0115",
+   "discipline": "AR",
+   "n_seg": 5473,
+   "n_obj": 163,
+   "n_fam": 109,
+   "n_rep": 24,
+   "t_obj": 0.1655,
+   "t_fam": 0.0125,
+   "t_fam_pair": 0.0231
+  },
+  {
+   "block_id": "6TQ4-DCQW-PUM",
+   "discipline": "AR",
+   "n_seg": 1227,
+   "n_obj": 241,
+   "n_fam": 117,
+   "n_rep": 31,
+   "t_obj": 0.0333,
+   "t_fam": 0.0132,
+   "t_fam_pair": 0.0228
+  },
+  {
+   "block_id": "7DYA-U9V7-J4A",
+   "discipline": "AR",
+   "n_seg": 506,
+   "n_obj": 160,
+   "n_fam": 19,
+   "n_rep": 11,
+   "t_obj": 0.0196,
+   "t_fam": 0.0039,
+   "t_fam_pair": 0.0075
+  },
+  {
+   "block_id": "7G77-QJ6Y-X3Q",
+   "discipline": "AR",
+   "n_seg": 94,
+   "n_obj": 11,
+   "n_fam": 11,
+   "n_rep": 0,
+   "t_obj": 0.0019,
+   "t_fam": 0.0007,
+   "t_fam_pair": 0.0013
+  },
+  {
+   "block_id": "blk_76cc470192774adcb495f77958dbeba5",
+   "discipline": "AR",
+   "n_seg": 27,
+   "n_obj": 24,
+   "n_fam": 10,
+   "n_rep": 6,
+   "t_obj": 0.0011,
+   "t_fam": 0.0009,
+   "t_fam_pair": 0.0012
+  },
+  {
+   "block_id": "blk_fde52a21aa754fb7b675b9809312fc54",
+   "discipline": "AR",
+   "n_seg": 345,
+   "n_obj": 153,
+   "n_fam": 78,
+   "n_rep": 16,
+   "t_obj": 0.0083,
+   "t_fam": 0.0096,
+   "t_fam_pair": 0.0153
+  },
+  {
+   "block_id": "blk_15c2bebea33e4856bcf9659c9df4a7ee",
+   "discipline": "EOM",
+   "n_seg": 7549,
+   "n_obj": 236,
+   "n_fam": 142,
+   "n_rep": 36,
+   "t_obj": 1.3369,
+   "t_fam": 0.016,
+   "t_fam_pair": 0.0249
+  },
+  {
+   "block_id": "blk_a4a3ff36fe9b471ba802b57c55c36776",
+   "discipline": "EOM",
+   "n_seg": 33913,
+   "n_obj": 110,
+   "n_fam": 87,
+   "n_rep": 11,
+   "t_obj": 0.7939,
+   "t_fam": 0.0073,
+   "t_fam_pair": 0.0097
+  },
+  {
+   "block_id": "blk_7ce8e6b09aab4e2b9af1b2c23bfdefde",
+   "discipline": "EOM",
+   "n_seg": 6100,
+   "n_obj": 122,
+   "n_fam": 91,
+   "n_rep": 20,
+   "t_obj": 0.1714,
+   "t_fam": 0.0106,
+   "t_fam_pair": 0.0146
+  },
+  {
+   "block_id": "blk_9deea62d8729406ba862660702617d19",
+   "discipline": "EOM",
+   "n_seg": 1226,
+   "n_obj": 42,
+   "n_fam": 20,
+   "n_rep": 7,
+   "t_obj": 0.0308,
+   "t_fam": 0.0019,
+   "t_fam_pair": 0.0033
+  },
+  {
+   "block_id": "blk_629d36b5df9b4722bae8f3d4330bf147",
+   "discipline": "EOM",
+   "n_seg": 2220,
+   "n_obj": 277,
+   "n_fam": 91,
+   "n_rep": 29,
+   "t_obj": 0.0509,
+   "t_fam": 0.0114,
+   "t_fam_pair": 0.0188
+  },
+  {
+   "block_id": "blk_d5732e53e774483b907434246f8a9a55",
+   "discipline": "EOM",
+   "n_seg": 360,
+   "n_obj": 72,
+   "n_fam": 44,
+   "n_rep": 15,
+   "t_obj": 0.0093,
+   "t_fam": 0.0036,
+   "t_fam_pair": 0.0054
+  },
+  {
+   "block_id": "blk_48a6f7785578461c90388fdb50bd0676",
+   "discipline": "EOM",
+   "n_seg": 209,
+   "n_obj": 57,
+   "n_fam": 12,
+   "n_rep": 6,
+   "t_obj": 0.0066,
+   "t_fam": 0.0015,
+   "t_fam_pair": 0.0025
+  },
+  {
+   "block_id": "4WAT-ULFM-96Q",
+   "discipline": "EOM",
+   "n_seg": 23,
+   "n_obj": 12,
+   "n_fam": 4,
+   "n_rep": 1,
+   "t_obj": 0.0017,
+   "t_fam": 0.0005,
+   "t_fam_pair": 0.0007
+  },
+  {
+   "block_id": "A7VL-W7KW-6Y7",
+   "discipline": "GP",
+   "n_seg": 8108,
+   "n_obj": 962,
+   "n_fam": 434,
+   "n_rep": 86,
+   "t_obj": 0.4445,
+   "t_fam": 0.1109,
+   "t_fam_pair": 0.1841
+  },
+  {
+   "block_id": "49XX-FC44-QW4",
+   "discipline": "GP",
+   "n_seg": 40303,
+   "n_obj": 105,
+   "n_fam": 80,
+   "n_rep": 10,
+   "t_obj": 0.8663,
+   "t_fam": 0.0072,
+   "t_fam_pair": 0.0124
+  },
+  {
+   "block_id": "43CL-VVJR-QPF",
+   "discipline": "GP",
+   "n_seg": 1357,
+   "n_obj": 177,
+   "n_fam": 97,
+   "n_rep": 26,
+   "t_obj": 0.0727,
+   "t_fam": 0.0113,
+   "t_fam_pair": 0.0194
+  },
+  {
+   "block_id": "blk_7bb4fad7511c467894373f9d1b26c3d5",
+   "discipline": "ITP",
+   "n_seg": 26787,
+   "n_obj": 809,
+   "n_fam": 356,
+   "n_rep": 92,
+   "t_obj": 0.703,
+   "t_fam": 0.0664,
+   "t_fam_pair": 0.1099
+  },
+  {
+   "block_id": "blk_25038f83c3c140f383c5959c1f9cedfc",
+   "discipline": "ITP",
+   "n_seg": 25488,
+   "n_obj": 1267,
+   "n_fam": 336,
+   "n_rep": 182,
+   "t_obj": 0.4055,
+   "t_fam": 0.1519,
+   "t_fam_pair": 0.2798
+  },
+  {
+   "block_id": "blk_2d0c258f773043e8b7f6481feec6fc4b",
+   "discipline": "ITP",
+   "n_seg": 1724,
+   "n_obj": 33,
+   "n_fam": 18,
+   "n_rep": 7,
+   "t_obj": 0.0336,
+   "t_fam": 0.002,
+   "t_fam_pair": 0.0088
+  },
+  {
+   "block_id": "blk_84655520f60a412094b8f4535d995093",
+   "discipline": "ITP",
+   "n_seg": 1341,
+   "n_obj": 40,
+   "n_fam": 12,
+   "n_rep": 4,
+   "t_obj": 0.0261,
+   "t_fam": 0.0014,
+   "t_fam_pair": 0.0019
+  },
+  {
+   "block_id": "blk_e4d353bc34de420282798c062f84babc",
+   "discipline": "ITP",
+   "n_seg": 261,
+   "n_obj": 10,
+   "n_fam": 6,
+   "n_rep": 1,
+   "t_obj": 0.0039,
+   "t_fam": 0.0004,
+   "t_fam_pair": 0.0006
+  },
+  {
+   "block_id": "9KVY-JMHY-WRK",
+   "discipline": "KJ",
+   "n_seg": 6684,
+   "n_obj": 1333,
+   "n_fam": 557,
+   "n_rep": 130,
+   "t_obj": 0.2217,
+   "t_fam": 0.2056,
+   "t_fam_pair": 0.3616
+  },
+  {
+   "block_id": "AD4H-APGD-H7H",
+   "discipline": "KJ",
+   "n_seg": 2702,
+   "n_obj": 35,
+   "n_fam": 21,
+   "n_rep": 4,
+   "t_obj": 0.0357,
+   "t_fam": 0.0023,
+   "t_fam_pair": 0.0065
+  },
+  {
+   "block_id": "blk_af10554836174a48b2a4b7e3441e40ea",
+   "discipline": "KJ",
+   "n_seg": 1655,
+   "n_obj": 157,
+   "n_fam": 95,
+   "n_rep": 16,
+   "t_obj": 0.0266,
+   "t_fam": 0.0088,
+   "t_fam_pair": 0.0137
+  },
+  {
+   "block_id": "794X-LEHV-FAD",
+   "discipline": "KJ",
+   "n_seg": 494,
+   "n_obj": 27,
+   "n_fam": 26,
+   "n_rep": 1,
+   "t_obj": 0.0074,
+   "t_fam": 0.0018,
+   "t_fam_pair": 0.0026
+  },
+  {
+   "block_id": "blk_a5f5d979bba34d029b25e1ac7d0b5f70",
+   "discipline": "KJ",
+   "n_seg": 223,
+   "n_obj": 18,
+   "n_fam": 17,
+   "n_rep": 1,
+   "t_obj": 0.0035,
+   "t_fam": 0.0011,
+   "t_fam_pair": 0.0016
+  },
+  {
+   "block_id": "blk_80f4ab7078f64595b579723c5cfa4ee2",
+   "discipline": "KJ",
+   "n_seg": 68524,
+   "n_obj": 1478,
+   "n_fam": 538,
+   "n_rep": 97,
+   "t_obj": 1.9559,
+   "t_fam": 0.1831,
+   "t_fam_pair": 0.3088
+  }
+ ]
+}

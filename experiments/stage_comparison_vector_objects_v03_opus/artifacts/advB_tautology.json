@@ -1,0 +1,75 @@
+{
+ "n_blocks": 203,
+ "per_rewrite": {
+  "A1_path_split": {
+   "geometry_identical": 203,
+   "n": 203,
+   "style_changed": 0,
+   "path_changed": 201,
+   "geometry_identical_share": 1.0
+  },
+  "A2_path_merge": {
+   "geometry_identical": 203,
+   "n": 203,
+   "style_changed": 0,
+   "path_changed": 198,
+   "geometry_identical_share": 1.0
+  },
+  "A5_order_shuffle": {
+   "geometry_identical": 203,
+   "n": 203,
+   "style_changed": 0,
+   "path_changed": 0,
+   "geometry_identical_share": 1.0
+  },
+  "A8_lineweight": {
+   "geometry_identical": 203,
+   "n": 203,
+   "style_changed": 203,
+   "path_changed": 0,
+   "geometry_identical_share": 1.0
+  },
+  "A4_circle_to_bezier": {
+   "geometry_identical": 40,
+   "n": 203,
+   "style_changed": 153,
+   "path_changed": 153,
+   "geometry_identical_share": 0.197
+  },
+  "A6_round_0.25": {
+   "geometry_identical": 0,
+   "n": 203,
+   "style_changed": 101,
+   "path_changed": 101,
+   "geometry_identical_share": 0.0
+  },
+  "X1_split_at_0.37": {
+   "geometry_identical": 0,
+   "n": 203,
+   "style_changed": 203,
+   "path_changed": 203,
+   "geometry_identical_share": 0.0
+  },
+  "X7_rect_to_lines": {
+   "geometry_identical": 203,
+   "n": 203,
+   "style_changed": 0,
+   "path_changed": 133,
+   "geometry_identical_share": 1.0
+  },
+  "X8_lines_to_rect": {
+   "geometry_identical": 203,
+   "n": 203,
+   "style_changed": 0,
+   "path_changed": 168,
+   "geometry_identical_share": 1.0
+  },
+  "X2_reverse_vertices": {
+   "geometry_identical": 203,
+   "n": 203,
+   "style_changed": 0,
+   "path_changed": 0,
+   "geometry_identical_share": 1.0
+  }
+ }
+}

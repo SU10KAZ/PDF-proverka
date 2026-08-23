@@ -1,0 +1,457 @@
+{
+ "n_cases": 56,
+ "truth": {
+  "GC": 27,
+  "NO": 29
+ },
+ "overall": {
+  "armA": {
+   "n": 56,
+   "accuracy": 0.768,
+   "false_graphic_changes": 1,
+   "fp_rate": 0.034,
+   "recall": 0.556,
+   "tokens_total": 2068.1,
+   "tokens_per_case": 36.9
+  },
+  "armB": {
+   "n": 56,
+   "accuracy": 0.875,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.741,
+   "tokens_total": 181512.6,
+   "tokens_per_case": 3241.3
+  },
+  "armC": {
+   "n": 56,
+   "accuracy": 0.875,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.741,
+   "tokens_total": 10989.2,
+   "tokens_per_case": 196.2
+  },
+  "armA_direct": {
+   "n": 56,
+   "accuracy": 0.804,
+   "false_graphic_changes": 1,
+   "fp_rate": 0.034,
+   "recall": 0.63,
+   "tokens_total": 2068.1,
+   "tokens_per_case": 36.9
+  }
+ },
+ "REAL": {
+  "armA": {
+   "n": 29,
+   "accuracy": 0.828,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.667,
+   "tokens_total": 1623.6,
+   "tokens_per_case": 56.0
+  },
+  "armB": {
+   "n": 29,
+   "accuracy": 0.862,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.733,
+   "tokens_total": 110221.9,
+   "tokens_per_case": 3800.8
+  },
+  "armC": {
+   "n": 29,
+   "accuracy": 0.828,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.667,
+   "tokens_total": 8195.6,
+   "tokens_per_case": 282.6
+  },
+  "armA_direct": {
+   "n": 29,
+   "accuracy": 0.828,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.667,
+   "tokens_total": 1623.6,
+   "tokens_per_case": 56.0
+  }
+ },
+ "CF": {
+  "armA": {
+   "n": 27,
+   "accuracy": 0.704,
+   "false_graphic_changes": 1,
+   "fp_rate": 0.067,
+   "recall": 0.417,
+   "tokens_total": 444.5,
+   "tokens_per_case": 16.5
+  },
+  "armB": {
+   "n": 27,
+   "accuracy": 0.889,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.75,
+   "tokens_total": 71290.7,
+   "tokens_per_case": 2640.4
+  },
+  "armC": {
+   "n": 27,
+   "accuracy": 0.926,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.833,
+   "tokens_total": 2793.6,
+   "tokens_per_case": 103.5
+  },
+  "armA_direct": {
+   "n": 27,
+   "accuracy": 0.778,
+   "false_graphic_changes": 1,
+   "fp_rate": 0.067,
+   "recall": 0.583,
+   "tokens_total": 444.5,
+   "tokens_per_case": 16.5
+  }
+ },
+ "overall_without_disputed_labels": {
+  "armA": {
+   "n": 54,
+   "accuracy": 0.778,
+   "false_graphic_changes": 1,
+   "fp_rate": 0.034,
+   "recall": 0.56,
+   "tokens_total": 2034.4,
+   "tokens_per_case": 37.7
+  },
+  "armB": {
+   "n": 54,
+   "accuracy": 0.907,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.8,
+   "tokens_total": 172565.7,
+   "tokens_per_case": 3195.7
+  },
+  "armC": {
+   "n": 54,
+   "accuracy": 0.907,
+   "false_graphic_changes": 0,
+   "fp_rate": 0.0,
+   "recall": 0.8,
+   "tokens_total": 10955.5,
+   "tokens_per_case": 202.9
+  },
+  "armA_direct": {
+   "n": 54,
+   "accuracy": 0.815,
+   "false_graphic_changes": 1,
+   "fp_rate": 0.034,
+   "recall": 0.64,
+   "tokens_total": 2034.4,
+   "tokens_per_case": 37.7
+  }
+ },
+ "local_change": {
+  "n": 14,
+  "recall": {
+   "A": 0.5,
+   "A_direct": 0.643,
+   "B": 0.786,
+   "C": 0.857
+  },
+  "right_object": {
+   "note": "знаменатель — 12 контрфактов класса C/D7, у которых есть точный bbox подмены в манифесте; две реальные пары small_local_change исключены (bbox подмены не существует)",
+   "n": 12,
+   "A_direct": 0.583,
+   "C": 0.833,
+   "B": 0.75,
+   "B_note": "рука B назвала верный объект во всех 9 случаях, где сработала (9/12)"
+  },
+  "rows": [
+   {
+    "case_id": "AR-55eda7fb",
+    "cf_id": null,
+    "truth": "GRAPHIC_CHANGE",
+    "structural": null,
+    "A": true,
+    "A_direct": true,
+    "B": true,
+    "C": true,
+    "A_right_object": null,
+    "C_right_object": null,
+    "B_text": "строка ПР-14: сечение перерисовано (добавлены анкеры и уголки 80x6), размеры 550/150 -> 1000"
+   },
+   {
+    "case_id": "EOM_blk_2ab0_C1_remove_object",
+    "cf_id": "C1_remove_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.001804,
+    "A": false,
+    "A_direct": true,
+    "B": true,
+    "C": false,
+    "A_right_object": true,
+    "C_right_object": false,
+    "B_text": "удалён прямоугольник условного обозначения 'Щит учета'"
+   },
+   {
+    "case_id": "GP_7EHD-V69_C6_reshape_object",
+    "cf_id": "C6_reshape_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.001934,
+    "A": true,
+    "A_direct": true,
+    "B": false,
+    "C": true,
+    "A_right_object": true,
+    "C_right_object": true,
+    "B_text": "схема подрезки лотков идентична"
+   },
+   {
+    "case_id": "AR_7WT4-934_D7_dim_geometry",
+    "cf_id": "D7_dim_geometry",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.00277,
+    "A": false,
+    "A_direct": false,
+    "B": false,
+    "C": true,
+    "A_right_object": false,
+    "C_right_object": true,
+    "B_text": "отличается только номер листа 9/13"
+   },
+   {
+    "case_id": "AR-577a293f",
+    "cf_id": null,
+    "truth": "GRAPHIC_CHANGE",
+    "structural": null,
+    "A": true,
+    "A_direct": true,
+    "B": true,
+    "C": true,
+    "A_right_object": null,
+    "C_right_object": null,
+    "B_text": "эскизы состава пола перерисованы: другое число и положение слоёв в 2.1, 2.4, 2.7"
+   },
+   {
+    "case_id": "VK_blk_f35e_C6_reshape_object",
+    "cf_id": "C6_reshape_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.002259,
+    "A": false,
+    "A_direct": false,
+    "B": false,
+    "C": true,
+    "A_right_object": false,
+    "C_right_object": true,
+    "B_text": "строка штампа идентична"
+   },
+   {
+    "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+    "cf_id": "D7_dim_geometry",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.007239,
+    "A": false,
+    "A_direct": false,
+    "B": true,
+    "C": true,
+    "A_right_object": false,
+    "C_right_object": true,
+    "B_text": "размерная цепочка перебита: вместо одного размера несколько (334/100) и добавлены засечки"
+   },
+   {
+    "case_id": "VK_blk_f35e_C1_remove_object",
+    "cf_id": "C1_remove_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.003653,
+    "A": false,
+    "A_direct": false,
+    "B": true,
+    "C": false,
+    "A_right_object": false,
+    "C_right_object": false,
+    "B_text": "подпись в верхней строке штампа: часть росчерка отсутствует"
+   },
+   {
+    "case_id": "KJ_blk_a5f5_C2_add_object",
+    "cf_id": "C2_add_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.010483,
+    "A": true,
+    "A_direct": true,
+    "B": true,
+    "C": true,
+    "A_right_object": true,
+    "C_right_object": true,
+    "B_text": "добавлены два толстых горизонтальных отрезка под текстом внизу"
+   },
+   {
+    "case_id": "VK_blk_f35e_C3_move_object",
+    "cf_id": "C3_move_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.006165,
+    "A": false,
+    "A_direct": true,
+    "B": true,
+    "C": true,
+    "A_right_object": true,
+    "C_right_object": true,
+    "B_text": "подпись во второй строке изменила форму/положение"
+   },
+   {
+    "case_id": "GP_7EHD-V69_C9_add_branch",
+    "cf_id": "C9_add_branch",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.001144,
+    "A": true,
+    "A_direct": true,
+    "B": true,
+    "C": true,
+    "A_right_object": true,
+    "C_right_object": true,
+    "B_text": "добавлен вертикальный отрезок-ветвь от размерной линии 265 ко второму лотку"
+   },
+   {
+    "case_id": "GP_7EHD-V69_C2_add_object",
+    "cf_id": "C2_add_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.013551,
+    "A": true,
+    "A_direct": true,
+    "B": true,
+    "C": true,
+    "A_right_object": true,
+    "C_right_object": true,
+    "B_text": "добавлен длинный горизонтальный элемент вверху листа"
+   },
+   {
+    "case_id": "SS_4YRN-VTF_C9_add_branch",
+    "cf_id": "C9_add_branch",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.002451,
+    "A": false,
+    "A_direct": false,
+    "B": true,
+    "C": true,
+    "A_right_object": false,
+    "C_right_object": true,
+    "B_text": "добавлена красная горизонтальная ветвь слева от лотка"
+   },
+   {
+    "case_id": "OV_blk_1924_C3_move_object",
+    "cf_id": "C3_move_object",
+    "truth": "GRAPHIC_CHANGE",
+    "structural": 0.002689,
+    "A": true,
+    "A_direct": true,
+    "B": true,
+    "C": true,
+    "A_right_object": true,
+    "C_right_object": true,
+    "B_text": "у обозначения 'Счётчик' изменена геометрия: пропала горизонтальная линия, символ перерисован"
+   }
+  ]
+ },
+ "gate": {
+  "n_interior_records": 63,
+  "prefilter_SAME": 19,
+  "vector_answers": 29,
+  "vision_windows": 15,
+  "whole_block_calls": 1,
+  "cases_with_any_vision": 10,
+  "vision_tokens_total": 8921.1
+ },
+ "C_vs_A": {
+  "flips": [
+   {
+    "case_id": "AR-a32b30a6",
+    "A": "NO_GRAPHIC_CHANGE",
+    "C": "GRAPHIC_CHANGE",
+    "truth": "GRAPHIC_CHANGE",
+    "vision_tokens": 2638.3,
+    "gain": 1
+   },
+   {
+    "case_id": "AR_7WT4-934_D7_dim_geometry",
+    "A": "NO_GRAPHIC_CHANGE",
+    "C": "GRAPHIC_CHANGE",
+    "truth": "GRAPHIC_CHANGE",
+    "vision_tokens": 430.2,
+    "gain": 1
+   },
+   {
+    "case_id": "KJ_7J9G-4UT_D9_text_to_curves",
+    "A": "GRAPHIC_CHANGE",
+    "C": "NO_GRAPHIC_CHANGE",
+    "truth": "NO_GRAPHIC_CHANGE",
+    "vision_tokens": 0.0,
+    "gain": 1
+   },
+   {
+    "case_id": "VK_blk_f35e_C6_reshape_object",
+    "A": "NO_GRAPHIC_CHANGE",
+    "C": "GRAPHIC_CHANGE",
+    "truth": "GRAPHIC_CHANGE",
+    "vision_tokens": 215.1,
+    "gain": 1
+   },
+   {
+    "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+    "A": "NO_GRAPHIC_CHANGE",
+    "C": "GRAPHIC_CHANGE",
+    "truth": "GRAPHIC_CHANGE",
+    "vision_tokens": 430.2,
+    "gain": 1
+   },
+   {
+    "case_id": "VK_blk_f35e_C3_move_object",
+    "A": "NO_GRAPHIC_CHANGE",
+    "C": "GRAPHIC_CHANGE",
+    "truth": "GRAPHIC_CHANGE",
+    "vision_tokens": 215.1,
+    "gain": 1
+   },
+   {
+    "case_id": "SS_4YRN-VTF_C9_add_branch",
+    "A": "NO_GRAPHIC_CHANGE",
+    "C": "GRAPHIC_CHANGE",
+    "truth": "GRAPHIC_CHANGE",
+    "vision_tokens": 1058.5,
+    "gain": 1
+   },
+   {
+    "case_id": "AR-441907a2",
+    "A": "GRAPHIC_CHANGE",
+    "C": "NO_GRAPHIC_CHANGE",
+    "truth": "GRAPHIC_CHANGE",
+    "vision_tokens": 0.0,
+    "gain": -1
+   }
+  ],
+  "cases_fixed": 7,
+  "cases_broken": 1,
+  "net_cases": 6,
+  "vision_tokens_spent": 8921.1,
+  "tokens_per_net_case": 1486.9,
+  "delta_accuracy": 0.107
+ },
+ "baselines": {
+  "constant_answer": 0.518,
+  "constant_note": "лучшая постоянная стратегия на наборе (29 NO из 56)"
+ },
+ "cost": {
+  "armB_calls": 56,
+  "armB_images": 112,
+  "armC_calls": 16,
+  "armC_cases_touched_by_vision": 10,
+  "armC_share_of_cases_with_vision": 0.179,
+  "armC_tokens_per_case_without_VC": 149.1,
+  "ratio_B_to_C": 16.5,
+  "ratio_B_to_A": 87.8
+ }
+}

@@ -1,0 +1,240 @@
+[
+ {
+  "kind": "real",
+  "pair_id": "AR-577a293f",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_AR-577a293f_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_AR-577a293f_B.png",
+  "one_to_one": 0.00524,
+  "classes": [
+   "small_local_change",
+   "table_only_change",
+   "with_labels"
+  ],
+  "n_flagged": 238,
+  "n_obj_a": 244,
+  "n_obj_b": 199,
+  "n_seg_a": 11378,
+  "n_seg_b": 10642
+ },
+ {
+  "kind": "real",
+  "pair_id": "SS-a369f492",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_SS-a369f492_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_SS-a369f492_B.png",
+  "one_to_one": 0.03725,
+  "classes": [
+   "object_added",
+   "object_moved",
+   "raster_graphics",
+   "with_labels"
+  ],
+  "n_flagged": 109,
+  "n_obj_a": 151,
+  "n_obj_b": 233,
+  "n_seg_a": 4876,
+  "n_seg_b": 6678
+ },
+ {
+  "kind": "real",
+  "pair_id": "EOM-7fef43a3",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_EOM-7fef43a3_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_EOM-7fef43a3_B.png",
+  "one_to_one": 0.15001,
+  "classes": [
+   "object_added",
+   "with_labels"
+  ],
+  "n_flagged": 1527,
+  "n_obj_a": 1635,
+  "n_obj_b": 200,
+  "n_seg_a": 10972,
+  "n_seg_b": 10972
+ },
+ {
+  "kind": "real",
+  "pair_id": "AR-441907a2",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_AR-441907a2_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_AR-441907a2_B.png",
+  "one_to_one": 0.43524,
+  "classes": [
+   "object_removed",
+   "with_labels"
+  ],
+  "n_flagged": 178,
+  "n_obj_a": 292,
+  "n_obj_b": 191,
+  "n_seg_a": 16388,
+  "n_seg_b": 10793
+ },
+ {
+  "kind": "real",
+  "pair_id": "SS-76640e11",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_SS-76640e11_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_SS-76640e11_B.png",
+  "one_to_one": 0.44804,
+  "classes": [
+   "text_only_change",
+   "with_labels"
+  ],
+  "n_flagged": 225,
+  "n_obj_a": 412,
+  "n_obj_b": 311,
+  "n_seg_a": 6726,
+  "n_seg_b": 6155
+ },
+ {
+  "kind": "real",
+  "pair_id": "SS-c7aa8d26",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_SS-c7aa8d26_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_SS-c7aa8d26_B.png",
+  "one_to_one": 0.49818,
+  "classes": [
+   "object_added",
+   "with_labels",
+   "sparse_block"
+  ],
+  "n_flagged": 9,
+  "n_obj_a": 16,
+  "n_obj_b": 29,
+  "n_seg_a": 540,
+  "n_seg_b": 726
+ },
+ {
+  "kind": "real",
+  "pair_id": "AR-490254e9",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_AR-490254e9_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_AR-490254e9_B.png",
+  "one_to_one": 0.52471,
+  "classes": [
+   "block_scope_change",
+   "with_labels"
+  ],
+  "n_flagged": 8,
+  "n_obj_a": 28,
+  "n_obj_b": 242,
+  "n_seg_a": 466,
+  "n_seg_b": 4398
+ },
+ {
+  "kind": "real",
+  "pair_id": "VK-148ffe6c",
+  "png_a": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_VK-148ffe6c_A.png",
+  "png_b": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/real_VK-148ffe6c_B.png",
+  "one_to_one": 0.62554,
+  "classes": [
+   "object_added",
+   "object_moved",
+   "rotated_page",
+   "dense_block"
+  ],
+  "n_flagged": 449,
+  "n_obj_a": 946,
+  "n_obj_b": 1093,
+  "n_seg_a": 106552,
+  "n_seg_b": 115081
+ },
+ {
+  "kind": "cf",
+  "block_id": "7NCR-4CRV-LK7",
+  "rewrite": "A6_round_0.5",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_7NCR-4CRV-_A6_round_0.5.png",
+  "one_to_one": 0.06954,
+  "n_seg": 3950,
+  "discipline": "SS",
+  "cls": "stamp",
+  "n_obj": 69,
+  "n_obj_rw": 42,
+  "n_flagged": 64
+ },
+ {
+  "kind": "cf",
+  "block_id": "blk_a5f5d979bba34d029b25e1ac7d0b5f70",
+  "rewrite": "A6_round_0.5",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_blk_a5f5d9_A6_round_0.5.png",
+  "one_to_one": 0.07583,
+  "n_seg": 223,
+  "discipline": "KJ",
+  "cls": "stamp",
+  "n_obj": 18,
+  "n_obj_rw": 23,
+  "n_flagged": 13
+ },
+ {
+  "kind": "cf",
+  "block_id": "4MPL-MKEN-UWF",
+  "rewrite": "A6_round_0.5",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_4MPL-MKEN-_A6_round_0.5.png",
+  "one_to_one": 0.0801,
+  "n_seg": 10774,
+  "discipline": "SS",
+  "cls": "vector_raster_mix",
+  "n_obj": 50,
+  "n_obj_rw": 42,
+  "n_flagged": 39
+ },
+ {
+  "kind": "cf",
+  "block_id": "4U34-MVRJ-KMM",
+  "rewrite": "A6_round_0.5",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_4U34-MVRJ-_A6_round_0.5.png",
+  "one_to_one": 0.12909,
+  "n_seg": 9531,
+  "discipline": "KM",
+  "cls": "drawing",
+  "n_obj": 690,
+  "n_obj_rw": 472,
+  "n_flagged": 641
+ },
+ {
+  "kind": "cf",
+  "block_id": "77EM-7LQU-DCN",
+  "rewrite": "A4_circle_to_bezier",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_77EM-7LQU-_A4_circle_to_bezier.png",
+  "one_to_one": 0.13128,
+  "n_seg": 23,
+  "discipline": "EOM",
+  "cls": "vector_raster_mix",
+  "n_obj": 12,
+  "n_obj_rw": 11,
+  "n_flagged": 1
+ },
+ {
+  "kind": "cf",
+  "block_id": "MD36-6R6J-DYY",
+  "rewrite": "A6_round_0.5",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_MD36-6R6J-_A6_round_0.5.png",
+  "one_to_one": 0.13825,
+  "n_seg": 232,
+  "discipline": "KJ",
+  "cls": "stamp",
+  "n_obj": 16,
+  "n_obj_rw": 23,
+  "n_flagged": 13
+ },
+ {
+  "kind": "cf",
+  "block_id": "9KUG-M73M-7LX",
+  "rewrite": "A6_round_0.5",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_9KUG-M73M-_A6_round_0.5.png",
+  "one_to_one": 0.15447,
+  "n_seg": 5109,
+  "discipline": "AR",
+  "cls": "vector_raster_mix",
+  "n_obj": 175,
+  "n_obj_rw": 74,
+  "n_flagged": 160
+ },
+ {
+  "kind": "cf",
+  "block_id": "TVWH-NLRM-GNJ",
+  "rewrite": "A6_round_0.5",
+  "png": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/grp_overlays/cf_TVWH-NLRM-_A6_round_0.5.png",
+  "one_to_one": 0.18105,
+  "n_seg": 397,
+  "discipline": "EOM",
+  "cls": "drawing",
+  "n_obj": 8,
+  "n_obj_rw": 11,
+  "n_flagged": 4
+ }
+]

@@ -1,0 +1,240 @@
+[
+ {
+  "block_id": "7HJD-7KUY-PPF",
+  "n_seg": 302513,
+  "variants": {
+   "native": {
+    "S": 0.24,
+    "S_source": "geom",
+    "n_obj": 23385,
+    "tokens": 1681802,
+    "secs": 6.7
+   },
+   "S=1pt": {
+    "S": 1.0,
+    "S_source": "override",
+    "n_obj": 15418,
+    "tokens": 1131640,
+    "secs": 7.5
+   },
+   "S=2pt": {
+    "S": 2.0,
+    "S_source": "override",
+    "n_obj": 11345,
+    "tokens": 841085,
+    "secs": 9.3
+   },
+   "S=5pt": {
+    "S": 5.0,
+    "S_source": "override",
+    "n_obj": 5302,
+    "tokens": 395480,
+    "secs": 10.4
+   }
+  }
+ },
+ {
+  "block_id": "9F3V-QCMT-NKU",
+  "n_seg": 305660,
+  "variants": {
+   "native": {
+    "S": 0.24,
+    "S_source": "geom",
+    "n_obj": 22803,
+    "tokens": 1639979,
+    "secs": 8.1
+   },
+   "S=1pt": {
+    "S": 1.0,
+    "S_source": "override",
+    "n_obj": 15157,
+    "tokens": 1111867,
+    "secs": 9.4
+   },
+   "S=2pt": {
+    "S": 2.0,
+    "S_source": "override",
+    "n_obj": 11384,
+    "tokens": 842229,
+    "secs": 9.8
+   },
+   "S=5pt": {
+    "S": 5.0,
+    "S_source": "override",
+    "n_obj": 5260,
+    "tokens": 391304,
+    "secs": 10.9
+   }
+  }
+ },
+ {
+  "block_id": "69J7-79CR-4DF",
+  "n_seg": 606949,
+  "variants": {
+   "native": {
+    "S": 0.123,
+    "S_source": "geom",
+    "n_obj": 15800,
+    "tokens": 1235733,
+    "secs": 14.6
+   },
+   "S=1pt": {
+    "S": 1.0,
+    "S_source": "override",
+    "n_obj": 15451,
+    "tokens": 1211856,
+    "secs": 14.5
+   },
+   "S=2pt": {
+    "S": 2.0,
+    "S_source": "override",
+    "n_obj": 11156,
+    "tokens": 894675,
+    "secs": 19.1
+   },
+   "S=5pt": {
+    "S": 5.0,
+    "S_source": "override",
+    "n_obj": 6647,
+    "tokens": 530356,
+    "secs": 21.4
+   }
+  }
+ },
+ {
+  "block_id": "9YVP-DUNF-PUA",
+  "n_seg": 1348413,
+  "variants": {
+   "native": {
+    "S": 5.9179,
+    "S_source": "text",
+    "n_obj": 15779,
+    "tokens": 1116739,
+    "secs": 49.0
+   },
+   "S=1pt": {
+    "S": 1.0,
+    "S_source": "override",
+    "n_obj": 77024,
+    "tokens": 5408922,
+    "secs": 52.0
+   },
+   "S=2pt": {
+    "S": 2.0,
+    "S_source": "override",
+    "n_obj": 33849,
+    "tokens": 2420493,
+    "secs": 50.3
+   },
+   "S=5pt": {
+    "S": 5.0,
+    "S_source": "override",
+    "n_obj": 16469,
+    "tokens": 1169560,
+    "secs": 49.6
+   }
+  }
+ },
+ {
+  "block_id": "blk_e7817fd8a5ec4a829ef5eacefc93d88a",
+  "n_seg": 471366,
+  "variants": {
+   "native": {
+    "S": 7.0796,
+    "S_source": "text",
+    "n_obj": 11021,
+    "tokens": 814660,
+    "secs": 33.4
+   },
+   "S=1pt": {
+    "S": 1.0,
+    "S_source": "override",
+    "n_obj": 61599,
+    "tokens": 4524334,
+    "secs": 62.6
+   },
+   "S=2pt": {
+    "S": 2.0,
+    "S_source": "override",
+    "n_obj": 30060,
+    "tokens": 2195870,
+    "secs": 40.4
+   },
+   "S=5pt": {
+    "S": 5.0,
+    "S_source": "override",
+    "n_obj": 14409,
+    "tokens": 1059462,
+    "secs": 33.8
+   }
+  }
+ },
+ {
+  "block_id": "4UHA-TD34-LLE",
+  "n_seg": 84134,
+  "variants": {
+   "native": {
+    "S": 0.1835,
+    "S_source": "geom",
+    "n_obj": 6061,
+    "tokens": 437261,
+    "secs": 2.8
+   },
+   "S=1pt": {
+    "S": 1.0,
+    "S_source": "override",
+    "n_obj": 5043,
+    "tokens": 368297,
+    "secs": 2.1
+   },
+   "S=2pt": {
+    "S": 2.0,
+    "S_source": "override",
+    "n_obj": 3515,
+    "tokens": 259675,
+    "secs": 2.4
+   },
+   "S=5pt": {
+    "S": 5.0,
+    "S_source": "override",
+    "n_obj": 1884,
+    "tokens": 142185,
+    "secs": 3.0
+   }
+  }
+ },
+ {
+  "block_id": "79RM-T3AL-6MA",
+  "n_seg": 98457,
+  "variants": {
+   "native": {
+    "S": 6.0546,
+    "S_source": "text",
+    "n_obj": 2835,
+    "tokens": 206014,
+    "secs": 8.8
+   },
+   "S=1pt": {
+    "S": 1.0,
+    "S_source": "override",
+    "n_obj": 9067,
+    "tokens": 644479,
+    "secs": 3.4
+   },
+   "S=2pt": {
+    "S": 2.0,
+    "S_source": "override",
+    "n_obj": 7697,
+    "tokens": 551271,
+    "secs": 3.8
+   },
+   "S=5pt": {
+    "S": 5.0,
+    "S_source": "override",
+    "n_obj": 3594,
+    "tokens": 261437,
+    "secs": 3.8
+   }
+  }
+ }
+]

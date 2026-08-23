@@ -1,0 +1,235 @@
+{
+ "DEV_random_64": {
+  "v1_frozen": {
+   "n": 64,
+   "accuracy": 0.9844,
+   "confusion": {
+    "drawing->drawing": 27,
+    "drawing->vector_raster_mix": 1,
+    "legend_notes->legend_notes": 1,
+    "stamp->stamp": 30,
+    "table->table": 1,
+    "vector_raster_mix->vector_raster_mix": 4
+   },
+   "errors": [
+    {
+     "label": "R53",
+     "eye": "drawing",
+     "pred": "vector_raster_mix",
+     "rule": "R6_mix_raster",
+     "note": "узел А крепления ограждения"
+    }
+   ]
+  },
+  "v2_repaired": {
+   "n": 64,
+   "accuracy": 0.9844,
+   "confusion": {
+    "drawing->drawing": 27,
+    "drawing->vector_raster_mix": 1,
+    "legend_notes->legend_notes": 1,
+    "stamp->stamp": 30,
+    "table->table": 1,
+    "vector_raster_mix->vector_raster_mix": 4
+   },
+   "errors": [
+    {
+     "label": "R53",
+     "eye": "drawing",
+     "pred": "vector_raster_mix",
+     "rule": "R6_mix_raster",
+     "note": "узел А крепления ограждения"
+    }
+   ]
+  }
+ },
+ "HOLDOUT_random_39": {
+  "v1_frozen": {
+   "n": 39,
+   "accuracy": 0.9487,
+   "confusion": {
+    "drawing->drawing": 25,
+    "drawing->vector_raster_mix": 1,
+    "legend_notes->drawing": 1,
+    "stamp->stamp": 10,
+    "vector_raster_mix->vector_raster_mix": 2
+   },
+   "errors": [
+    {
+     "label": "H14",
+     "eye": "drawing",
+     "pred": "vector_raster_mix",
+     "rule": "R6_mix_raster",
+     "note": "аксонометрия (разреженная)"
+    },
+    {
+     "label": "H35",
+     "eye": "legend_notes",
+     "pred": "drawing",
+     "rule": "R9_drawing",
+     "note": "условные обозначения"
+    }
+   ]
+  },
+  "v2_repaired": {
+   "n": 39,
+   "accuracy": 0.9487,
+   "confusion": {
+    "drawing->drawing": 25,
+    "drawing->vector_raster_mix": 1,
+    "legend_notes->drawing": 1,
+    "stamp->stamp": 10,
+    "vector_raster_mix->vector_raster_mix": 2
+   },
+   "errors": [
+    {
+     "label": "H14",
+     "eye": "drawing",
+     "pred": "vector_raster_mix",
+     "rule": "R6_mix_raster",
+     "note": "аксонометрия (разреженная)"
+    },
+    {
+     "label": "H35",
+     "eye": "legend_notes",
+     "pred": "drawing",
+     "rule": "R9_drawing",
+     "note": "условные обозначения"
+    }
+   ]
+  }
+ },
+ "TARGETED_rare_30": {
+  "v1_frozen": {
+   "n": 30,
+   "accuracy": 0.7333,
+   "confusion": {
+    "curved_text->curved_text": 1,
+    "drawing->curved_text": 3,
+    "legend_notes->legend_notes": 4,
+    "raster->raster": 4,
+    "table->stamp": 4,
+    "table->table": 4,
+    "vector_raster_mix->table": 1,
+    "vector_raster_mix->vector_raster_mix": 9
+   },
+   "errors": [
+    {
+     "label": "T05",
+     "eye": "drawing",
+     "pred": "curved_text",
+     "rule": "R4_curved_text",
+     "note": "узел подвески — текста НЕТ вообще, кривые = дуги крюков"
+    },
+    {
+     "label": "T06",
+     "eye": "drawing",
+     "pred": "curved_text",
+     "rule": "R4_curved_text",
+     "note": "узел лотков — текста нет"
+    },
+    {
+     "label": "T07",
+     "eye": "drawing",
+     "pred": "curved_text",
+     "rule": "R4_curved_text",
+     "note": "узел лотка — текста нет"
+    },
+    {
+     "label": "T22",
+     "eye": "table",
+     "pred": "stamp",
+     "rule": "R5_stamp_geom",
+     "note": "экспликация помещений"
+    },
+    {
+     "label": "T23",
+     "eye": "table",
+     "pred": "stamp",
+     "rule": "R5_stamp_geom",
+     "note": "условные обозначения — таблица"
+    },
+    {
+     "label": "T24",
+     "eye": "table",
+     "pred": "stamp",
+     "rule": "R5_stamp_geom",
+     "note": "экспликация помещений"
+    },
+    {
+     "label": "T25",
+     "eye": "table",
+     "pred": "stamp",
+     "rule": "R5_stamp_geom",
+     "note": "ведомость деталей ×2"
+    },
+    {
+     "label": "T29",
+     "eye": "vector_raster_mix",
+     "pred": "table",
+     "rule": "R7_table",
+     "note": "примечания + растровая картинка узла"
+    }
+   ]
+  },
+  "v2_repaired": {
+   "n": 30,
+   "accuracy": 0.9667,
+   "confusion": {
+    "curved_text->curved_text": 1,
+    "drawing->drawing": 3,
+    "legend_notes->legend_notes": 4,
+    "raster->raster": 4,
+    "table->table": 8,
+    "vector_raster_mix->table": 1,
+    "vector_raster_mix->vector_raster_mix": 9
+   },
+   "errors": [
+    {
+     "label": "T29",
+     "eye": "vector_raster_mix",
+     "pred": "table",
+     "rule": "R7_table_v2",
+     "note": "примечания + растровая картинка узла"
+    }
+   ]
+  },
+  "precision_per_predicted_bucket": {
+   "raster": {
+    "n": 4,
+    "v1_pred_correct": 4,
+    "v2_pred_correct": 4
+   },
+   "curved_text": {
+    "n": 4,
+    "v1_pred_correct": 1,
+    "v2_pred_correct": 4
+   },
+   "vector_raster_mix": {
+    "n": 6,
+    "v1_pred_correct": 6,
+    "v2_pred_correct": 6
+   },
+   "table": {
+    "n": 4,
+    "v1_pred_correct": 4,
+    "v2_pred_correct": 4
+   },
+   "legend_notes": {
+    "n": 4,
+    "v1_pred_correct": 4,
+    "v2_pred_correct": 4
+   },
+   "stamp_geom": {
+    "n": 4,
+    "v1_pred_correct": 0,
+    "v2_pred_correct": 4
+   },
+   "thin": {
+    "n": 4,
+    "v1_pred_correct": 3,
+    "v2_pred_correct": 3
+   }
+  }
+ }
+}

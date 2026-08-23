@@ -1,0 +1,84 @@
+{
+ "name": "GraphicChangeLedger v0.3 (probe ldg)",
+ "note": "Каждый тип и каждая фраза включены в контракт только потому, что встретились на данных трека и были измерены. Числа — в artifacts/ldg_cf_summary.json, ldg_real_rows.json, ldg_weld_ablation.json.",
+ "envelope": {
+  "changes": "[record]"
+ },
+ "record": {
+  "type": "REMOVED_OBJECT | ADDED_OBJECT | MOVED_OBJECT | CHANGED_OBJECT",
+  "welded": "bool — краска вварена в сохранившуюся геометрию (ответвление/перемычка/закрытый разрыв)",
+  "shape": "GAP_CLOSED | BRANCH_ADDED (необязательно; только эти две формы допущены к слову)",
+  "object_before": "{object_id, cls, bbox_pt, label, share} | null",
+  "object_after": "{object_id, cls, bbox_pt, label, share} | null",
+  "evidence": "[{kind: ink_lost|ink_new|translation|attachment|contact|frame, ...}]"
+ },
+ "types_measured": {
+  "REMOVED_OBJECT": {
+   "records": 98,
+   "disciplines": 12,
+   "true_cf_share": 0.898
+  },
+  "ADDED_OBJECT": {
+   "records": 514,
+   "disciplines": 12,
+   "true_object_share_without_weld_flag": 0.44
+  },
+  "MOVED_OBJECT": {
+   "records": 60,
+   "disciplines": 11,
+   "true_cf_share": 0.967
+  },
+  "CHANGED_OBJECT": {
+   "records": 84,
+   "disciplines": 12
+  }
+ },
+ "types_rejected": {
+  "GAP_OPENED": "2 записи, истинных 0 — контрфакта, который открывает разрыв, в наборе нет: не на чем проверить",
+  "BRANCH_REMOVED": "10 записей, истинных 0 — контрфакта, который удаляет ответвление, в наборе нет",
+  "SPLIT_OBJECT / MERGED_OBJECTS": "C7 ловится в 0.128 случаев, C8 — как ADDED+welded; отдельного типа данные не потребовали",
+  "RENAMED / LABEL_CHANGED": "запрещено §7: 0 записей на 166 текстовых контрфактах"
+ },
+ "evidence_rule": "каждая запись обязана нести ink_lost или ink_new (длина непарной краски в точках PDF). Текст доказательством не является: kind 'label' в контракте отсутствует.",
+ "phrases": {
+  "OBJECT_REMOVED": {
+   "text": "Удалён графический объект.",
+   "precision_cf": 1.0,
+   "recall_cf": 0.337,
+   "gate": "не welded"
+  },
+  "OBJECT_ADDED": {
+   "text": "Добавлен графический объект.",
+   "precision_cf": 0.667,
+   "precision_without_weld_gate": 0.482,
+   "recall_cf": 0.732,
+   "gate": "не welded"
+  },
+  "ADDED_SAME_KIND": {
+   "text": "Добавлено N однотипных графических объекта.",
+   "precision_cf": 1.0,
+   "recall_cf": 0.605
+  },
+  "CONFIG_CHANGED": {
+   "text": "Изменена конфигурация элемента.",
+   "precision_cf": 0.582,
+   "share_false": 0.0,
+   "recall_cf_C3": 0.861,
+   "recall_cf_C6": 0.81
+  },
+  "OPENING_REMOVED": {
+   "text": "Удалён проём.",
+   "status": "ЗАПРЕЩЕНА",
+   "precision_geometry": 0.818,
+   "precision_of_the_word_by_eye": 0.125,
+   "replacement": "Разрыв в линии закрыт: линия стала непрерывной."
+  },
+  "BRANCH_ADDED": {
+   "text": "Добавлены два ответвления.",
+   "status": "ЗАПРЕЩЕНА В ТАКОЙ ФОРМЕ",
+   "precision_geometry_with_count": 0.524,
+   "precision_of_the_word_by_eye": 0.125,
+   "replacement": "К существующей линии пристроен новый отрезок (N шт.)."
+  }
+ }
+}

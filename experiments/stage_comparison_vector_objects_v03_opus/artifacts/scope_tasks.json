@@ -1,0 +1,9163 @@
+{
+ "schema_version": "scope_tasks/1",
+ "seed": 20260823,
+ "n": 90,
+ "tasks": [
+  {
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "discipline": "AR",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v003/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 9,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "9DHY-XQGC-4AR",
+     "coords_px": [
+      281.0,
+      3861.0,
+      7472.0,
+      6873.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.02839,
+      0.55046,
+      0.75237,
+      0.97976
+     ]
+    },
+    {
+     "id": "4CPH-ENT4-6C6",
+     "coords_px": [
+      3839.0,
+      4677.0,
+      4333.0,
+      6493.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.38655,
+      0.66676,
+      0.43628,
+      0.9256
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "T4P3-WWCD-RT9",
+     "coords_px": [
+      3943.0,
+      3877.0,
+      7480.0,
+      4691.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.39702,
+      0.55274,
+      0.75317,
+      0.66876
+     ]
+    },
+    {
+     "id": "9QKX-7CUT-AWA",
+     "coords_px": [
+      3793.0,
+      4815.0,
+      7698.0,
+      6481.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.38192,
+      0.68643,
+      0.77512,
+      0.92389
+     ]
+    },
+    {
+     "id": "FTJG-RH3F-JQ3",
+     "coords_px": [
+      307.0,
+      3887.0,
+      3803.0,
+      6897.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.031,
+      0.55416,
+      0.38293,
+      0.98318
+     ]
+    }
+   ],
+   "union_iou": 0.9535,
+   "union_contain": 0.9911,
+   "union_area_ratio": 0.9704,
+   "sum_area_a": 0.323679,
+   "sum_area_b": 0.285669,
+   "task_id": "T0000",
+   "tags": [
+    "m14:AR-490254e9"
+   ],
+   "forced_pair": [
+    "4CPH-ENT4-6C6",
+    "9QKX-7CUT-AWA"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 145,
+   "page_b": 112,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7W3K-HLP3-74K",
+     "coords_px": [
+      413.0,
+      1671.0,
+      2032.0,
+      1947.0
+     ],
+     "page_px": [
+      2480,
+      3507
+     ],
+     "page_index": 144,
+     "cat": null,
+     "norm": [
+      0.1668,
+      0.47662,
+      0.8195,
+      0.5553
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_22190bc12d204174a27b8ac00f64f4a4",
+     "coords_px": [
+      218.0,
+      96.0,
+      2479.0,
+      3320.0
+     ],
+     "page_px": [
+      2481,
+      3508
+     ],
+     "page_index": 111,
+     "cat": null,
+     "norm": [
+      0.08782,
+      0.02735,
+      0.9993,
+      0.94648
+     ]
+    }
+   ],
+   "union_iou": 0.0613,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.0613,
+   "sum_area_a": 0.051353,
+   "sum_area_b": 0.837765,
+   "task_id": "T0001",
+   "tags": [
+    "m14:OV-2cc2a382"
+   ],
+   "forced_pair": [
+    "7W3K-HLP3-74K",
+    "blk_22190bc12d204174a27b8ac00f64f4a4"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v002/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 10,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 10,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "ECED-N4QA-PT6",
+     "coords_px": [
+      3907.0,
+      4745.0,
+      5188.0,
+      6797.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.3934,
+      0.67645,
+      0.52245,
+      0.96893
+     ]
+    },
+    {
+     "id": "79CR-EY4E-VTV",
+     "coords_px": [
+      5294.0,
+      4765.0,
+      6392.0,
+      6759.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.53312,
+      0.6793,
+      0.64365,
+      0.96351
+     ]
+    },
+    {
+     "id": "7JCY-DQT7-NNJ",
+     "coords_px": [
+      6404.0,
+      4653.0,
+      7620.0,
+      5835.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.64486,
+      0.66334,
+      0.76726,
+      0.83181
+     ]
+    },
+    {
+     "id": "7ATK-XMKX-KTV",
+     "coords_px": [
+      6418.0,
+      5837.0,
+      7438.0,
+      6951.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.64627,
+      0.8321,
+      0.74894,
+      0.99088
+     ]
+    },
+    {
+     "id": "RHGW-QKDX-UNN",
+     "coords_px": [
+      3985.0,
+      3833.0,
+      7508.0,
+      4629.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.40125,
+      0.54647,
+      0.75599,
+      0.65992
+     ]
+    },
+    {
+     "id": "7XEK-LDGG-HUY",
+     "coords_px": [
+      341.0,
+      3829.0,
+      3841.0,
+      4605.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.03443,
+      0.5459,
+      0.38675,
+      0.6565
+     ]
+    },
+    {
+     "id": "7QAK-QKH9-DDW",
+     "coords_px": [
+      331.0,
+      4627.0,
+      3863.0,
+      5169.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.03342,
+      0.65964,
+      0.38897,
+      0.73689
+     ]
+    },
+    {
+     "id": "3LQ6-WGPC-JL6",
+     "coords_px": [
+      323.0,
+      5173.0,
+      3861.0,
+      5725.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.03262,
+      0.73746,
+      0.38877,
+      0.81613
+     ]
+    },
+    {
+     "id": "6JF3-CTDT-XQ3",
+     "coords_px": [
+      339.0,
+      5725.0,
+      3863.0,
+      6259.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.03423,
+      0.81613,
+      0.38897,
+      0.89225
+     ]
+    },
+    {
+     "id": "9FED-47QK-HH7",
+     "coords_px": [
+      323.0,
+      6263.0,
+      3869.0,
+      6803.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.03262,
+      0.89282,
+      0.38957,
+      0.96978
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "LAMT-QJUU-VTJ",
+     "coords_px": [
+      261.0,
+      3813.0,
+      7554.0,
+      6879.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.02637,
+      0.54361,
+      0.76062,
+      0.98062
+     ]
+    },
+    {
+     "id": "43XV-CANP-K4U",
+     "coords_px": [
+      3961.0,
+      4681.0,
+      6406.0,
+      6933.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.39883,
+      0.66733,
+      0.64506,
+      0.98831
+     ]
+    },
+    {
+     "id": "7GG6-EW3D-HAA",
+     "coords_px": [
+      6416.0,
+      4665.0,
+      7678.0,
+      6897.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.64606,
+      0.66505,
+      0.7731,
+      0.98318
+     ]
+    }
+   ],
+   "union_iou": 0.9733,
+   "union_contain": 0.9942,
+   "union_area_ratio": 0.9845,
+   "sum_area_a": 0.29526,
+   "sum_area_b": 0.440315,
+   "task_id": "T0002",
+   "tags": [
+    "m14:AR-49c7c898"
+   ],
+   "forced_pair": [
+    "RHGW-QKDX-UNN",
+    "LAMT-QJUU-VTJ"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.2-К5",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v002/02_work/document.pdf",
+   "page_a": 10,
+   "page_b": 12,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "XCAP-D46J-V6T",
+     "coords_px": [
+      4362.0,
+      5368.0,
+      4918.0,
+      6118.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.43919,
+      0.76533,
+      0.49517,
+      0.87226
+     ]
+    },
+    {
+     "id": "WXM3-VTJJ-X69",
+     "coords_px": [
+      3534.0,
+      5102.0,
+      4056.0,
+      5944.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.35582,
+      0.7274,
+      0.40838,
+      0.84745
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "N4KX-PH4V-4U4",
+     "coords_px": [
+      4174.0,
+      4955.0,
+      8518.0,
+      6881.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.28025,
+      0.70639,
+      0.57191,
+      0.9809
+     ]
+    }
+   ],
+   "union_iou": 0.2521,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.2521,
+   "sum_area_a": 0.012295,
+   "sum_area_b": 0.080065,
+   "task_id": "T0003",
+   "tags": [
+    "m14:AR-899c6321"
+   ],
+   "forced_pair": [
+    "WXM3-VTJJ-X69",
+    "N4KX-PH4V-4U4"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.2-К3",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К3/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К3/versions/v002/02_work/document.pdf",
+   "page_a": 6,
+   "page_b": 7,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 6,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "9CLT-6PNV-WJ9",
+     "coords_px": [
+      185.0,
+      0.0,
+      5978.0,
+      4227.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.01872,
+      0.0,
+      0.60197,
+      0.60262
+     ]
+    },
+    {
+     "id": "9CAC-Y4NW-E9X",
+     "coords_px": [
+      705.0,
+      4333.0,
+      2975.0,
+      5477.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.07107,
+      0.61773,
+      0.29958,
+      0.78079
+     ]
+    },
+    {
+     "id": "9CL7-6UUE-47D",
+     "coords_px": [
+      2967.0,
+      4367.0,
+      5386.0,
+      5501.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.29877,
+      0.62258,
+      0.54238,
+      0.78421
+     ]
+    },
+    {
+     "id": "4GDN-CJH6-KMF",
+     "coords_px": [
+      5390.0,
+      4379.0,
+      6638.0,
+      5437.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.54278,
+      0.62429,
+      0.66841,
+      0.77509
+     ]
+    },
+    {
+     "id": "XH73-CT73-MVX",
+     "coords_px": [
+      2379.0,
+      5659.0,
+      3985.0,
+      6797.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.23958,
+      0.80673,
+      0.40125,
+      0.96893
+     ]
+    },
+    {
+     "id": "7YJH-J9VK-X74",
+     "coords_px": [
+      533.0,
+      5609.0,
+      2057.0,
+      6741.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.05375,
+      0.7996,
+      0.20717,
+      0.96095
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "4JLG-H6WW-QFY",
+     "coords_px": [
+      4553.0,
+      61.0,
+      6866.0,
+      5995.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 6,
+     "cat": null,
+     "norm": [
+      0.45843,
+      0.00884,
+      0.69136,
+      0.85462
+     ]
+    },
+    {
+     "id": "A6AE-G4FA-RR4",
+     "coords_px": [
+      611.0,
+      4201.0,
+      4401.0,
+      6955.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 6,
+     "cat": null,
+     "norm": [
+      0.06161,
+      0.59892,
+      0.44312,
+      0.99145
+     ]
+    },
+    {
+     "id": "6M3T-K7KF-WLN",
+     "coords_px": [
+      249.0,
+      61.0,
+      4553.0,
+      4151.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 6,
+     "cat": null,
+     "norm": [
+      0.02517,
+      0.00884,
+      0.45843,
+      0.59179
+     ]
+    }
+   ],
+   "union_iou": 0.9265,
+   "union_contain": 0.9811,
+   "union_area_ratio": 0.9616,
+   "sum_area_a": 0.498033,
+   "sum_area_b": 0.599342,
+   "task_id": "T0004",
+   "tags": [
+    "m14:AR-aab8d4f9"
+   ],
+   "forced_pair": [
+    "4GDN-CJH6-KMF",
+    "4JLG-H6WW-QFY"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 140,
+   "page_b": 104,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7JNT-NMJR-FDU",
+     "coords_px": [
+      393.0,
+      1731.0,
+      2082.0,
+      1993.0
+     ],
+     "page_px": [
+      2480,
+      3507
+     ],
+     "page_index": 139,
+     "cat": null,
+     "norm": [
+      0.15874,
+      0.49373,
+      0.83965,
+      0.56842
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_ea0b3a1e167247d3a166c06739ce5ad3",
+     "coords_px": [
+      219.0,
+      148.0,
+      2474.0,
+      3328.0
+     ],
+     "page_px": [
+      2481,
+      3508
+     ],
+     "page_index": 103,
+     "cat": null,
+     "norm": [
+      0.0883,
+      0.04232,
+      0.99702,
+      0.94856
+     ]
+    }
+   ],
+   "union_iou": 0.0618,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.0618,
+   "sum_area_a": 0.050854,
+   "sum_area_b": 0.823513,
+   "task_id": "T0005",
+   "tags": [
+    "m14:OV-a230726c"
+   ],
+   "forced_pair": [
+    "7JNT-NMJR-FDU",
+    "blk_ea0b3a1e167247d3a166c06739ce5ad3"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 12,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "6GEN-LGP7-6WF",
+     "coords_px": [
+      235.0,
+      47.0,
+      4557.0,
+      2659.0
+     ],
+     "page_px": [
+      9932,
+      3507
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.02376,
+      0.01368,
+      0.45883,
+      0.75827
+     ]
+    },
+    {
+     "id": "9C6Y-LPGX-XCG",
+     "coords_px": [
+      4105.0,
+      2051.0,
+      4675.0,
+      2745.0
+     ],
+     "page_px": [
+      9932,
+      3507
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.41333,
+      0.58495,
+      0.47071,
+      0.78278
+     ]
+    },
+    {
+     "id": "64FK-LFCJ-LFR",
+     "coords_px": [
+      3159.0,
+      1879.0,
+      4495.0,
+      2685.0
+     ],
+     "page_px": [
+      9932,
+      3507
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.3181,
+      0.53592,
+      0.45259,
+      0.76568
+     ]
+    },
+    {
+     "id": "4MFL-3QN7-XN9",
+     "coords_px": [
+      3209.0,
+      2673.0,
+      4129.0,
+      3425.0
+     ],
+     "page_px": [
+      9932,
+      3507
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.32313,
+      0.76226,
+      0.41574,
+      0.97662
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "A9UN-AMGA-7DW",
+     "coords_px": [
+      223.0,
+      0.0,
+      5142.0,
+      2877.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.02128,
+      0.0,
+      0.4886,
+      0.58001
+     ]
+    },
+    {
+     "id": "9KLN-VR7R-CYR",
+     "coords_px": [
+      2454.0,
+      2855.0,
+      6874.0,
+      4839.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.23318,
+      0.57557,
+      0.65317,
+      0.97541
+     ]
+    }
+   ],
+   "union_iou": 0.6968,
+   "union_contain": 0.9987,
+   "union_area_ratio": 0.6983,
+   "sum_area_a": 0.386051,
+   "sum_area_b": 0.438974,
+   "task_id": "T0006",
+   "tags": [
+    "m14:EOM-81ca2c16"
+   ],
+   "forced_pair": [
+    "64FK-LFCJ-LFR",
+    "9KLN-VR7R-CYR"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-ЭМ-К4",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 11,
+   "kind": "N:M",
+   "rot_a": 270,
+   "rot_b": 0,
+   "rot_mismatch": true,
+   "n_a": 3,
+   "n_b": 4,
+   "blocks_a": [
+    {
+     "id": "9KQK-VUXM-3G6",
+     "coords_px": [
+      239.0,
+      47.0,
+      4565.0,
+      2626.0
+     ],
+     "page_px": [
+      9932,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.02416,
+      0.01368,
+      0.45963,
+      0.74872
+     ]
+    },
+    {
+     "id": "6MHL-9969-9HK",
+     "coords_px": [
+      8104.0,
+      44.0,
+      9854.0,
+      1953.0
+     ],
+     "page_px": [
+      9932,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.81595,
+      0.01254,
+      0.99215,
+      0.55701
+     ]
+    },
+    {
+     "id": "66XA-PE6E-N7Y",
+     "coords_px": [
+      4549.0,
+      45.0,
+      8096.0,
+      3432.0
+     ],
+     "page_px": [
+      9932,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.45802,
+      0.01311,
+      0.81518,
+      0.97835
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_b2586e98d64949dcb67bfd70451865fa",
+     "coords_px": [
+      6880.0,
+      43.0,
+      10462.0,
+      3369.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.65374,
+      0.00857,
+      0.99414,
+      0.67911
+     ]
+    },
+    {
+     "id": "blk_7dfdc73b7a264c69b0ca8c2caef11995",
+     "coords_px": [
+      238.0,
+      46.0,
+      2581.0,
+      3294.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.02261,
+      0.00922,
+      0.24522,
+      0.66393
+     ]
+    },
+    {
+     "id": "blk_e3b89b6a90f14c1699a3a8ed47eb9a99",
+     "coords_px": [
+      2599.0,
+      55.0,
+      4823.0,
+      3349.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.24696,
+      0.01107,
+      0.45826,
+      0.675
+     ]
+    },
+    {
+     "id": "blk_f0085f90ba3f4896b975790ca42fc3cd",
+     "coords_px": [
+      4042.0,
+      1137.0,
+      7124.0,
+      4134.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.38404,
+      0.22923,
+      0.67697,
+      0.83336
+     ]
+    }
+   ],
+   "union_iou": 0.8438,
+   "union_contain": 0.9916,
+   "union_area_ratio": 1.1667,
+   "sum_area_a": 0.76077,
+   "sum_area_b": 0.69126,
+   "task_id": "T0007",
+   "tags": [
+    "m14:EOM-27848006"
+   ],
+   "forced_pair": [
+    "6MHL-9969-9HK",
+    "blk_b2586e98d64949dcb67bfd70451865fa"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/02_work/document.pdf",
+   "page_a": 14,
+   "page_b": 14,
+   "kind": "N:1",
+   "rot_a": 270,
+   "rot_b": 270,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "49T6-PHCF-QLT",
+     "coords_px": [
+      3522.0,
+      4836.0,
+      4560.0,
+      5512.0
+     ],
+     "page_px": [
+      4962,
+      7016
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.70979,
+      0.68928,
+      0.91898,
+      0.78563
+     ]
+    },
+    {
+     "id": "7UFM-U4YY-N3L",
+     "coords_px": [
+      3534.0,
+      3470.0,
+      4870.0,
+      4790.0
+     ],
+     "page_px": [
+      4962,
+      7016
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.71221,
+      0.49458,
+      0.98146,
+      0.68273
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "LWRR-P4CJ-DTE",
+     "coords_px": [
+      3486.0,
+      3437.0,
+      4910.0,
+      5320.0
+     ],
+     "page_px": [
+      4962,
+      7016
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.70266,
+      0.48988,
+      0.98952,
+      0.75834
+     ]
+    }
+   ],
+   "union_iou": 0.8487,
+   "union_contain": 0.9304,
+   "union_area_ratio": 1.0267,
+   "sum_area_a": 0.070812,
+   "sum_area_b": 0.07701,
+   "task_id": "T0008",
+   "tags": [
+    "m14:SS-5f190ee6"
+   ],
+   "forced_pair": [
+    "7UFM-U4YY-N3L",
+    "LWRR-P4CJ-DTE"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К6 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_a": 38,
+   "page_b": 20,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "97JM-VWRH-AKM",
+     "coords_px": [
+      6174.0,
+      1852.0,
+      8668.0,
+      3776.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 37,
+     "cat": null,
+     "norm": [
+      0.58666,
+      0.37324,
+      0.82364,
+      0.76098
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9G3A-TYMJ-K4P",
+     "coords_px": [
+      6485.0,
+      1769.0,
+      8481.0,
+      3240.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 19,
+     "cat": null,
+     "norm": [
+      0.61619,
+      0.35657,
+      0.80581,
+      0.6531
+     ]
+    }
+   ],
+   "union_iou": 0.5583,
+   "union_contain": 0.9438,
+   "union_area_ratio": 1.6341,
+   "sum_area_a": 0.091889,
+   "sum_area_b": 0.056231,
+   "task_id": "T0009",
+   "tags": [
+    "m14:SS-cc32de7d"
+   ],
+   "forced_pair": [
+    "97JM-VWRH-AKM",
+    "9G3A-TYMJ-K4P"
+   ]
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.33-38.1-К2",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.33-38.1-К2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.33-38.1-К2/versions/v002/02_work/document.pdf",
+   "page_a": 16,
+   "page_b": 17,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9993-TJCJ-GNX",
+     "coords_px": [
+      4663.0,
+      41.0,
+      6300.0,
+      2015.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.4695,
+      0.00599,
+      0.63439,
+      0.28734
+     ]
+    },
+    {
+     "id": "4RVL-ANXR-NG6",
+     "coords_px": [
+      6804.0,
+      11.0,
+      8568.0,
+      1963.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.68512,
+      0.00171,
+      0.86269,
+      0.27993
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_bc536e8817dc43a58d31a942ae9e6dd8",
+     "coords_px": [
+      4727.0,
+      117.0,
+      8780.0,
+      1903.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 16,
+     "cat": null,
+     "norm": [
+      0.47588,
+      0.01661,
+      0.88396,
+      0.27128
+     ]
+    }
+   ],
+   "union_iou": 0.8368,
+   "union_contain": 0.9479,
+   "union_area_ratio": 1.0807,
+   "sum_area_a": 0.095797,
+   "sum_area_b": 0.103925,
+   "task_id": "T0010",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР0.4-ПА",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.4-ПА/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.4-ПА/versions/v002/02_work/document.pdf",
+   "page_a": 13,
+   "page_b": 14,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6WEW-UGNV-UFD",
+     "coords_px": [
+      7150.0,
+      65.0,
+      8520.0,
+      2647.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.71995,
+      0.00941,
+      0.85786,
+      0.37742
+     ]
+    },
+    {
+     "id": "6PMU-GDYL-DJC",
+     "coords_px": [
+      8550.0,
+      35.0,
+      9864.0,
+      2657.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.86088,
+      0.00513,
+      0.99315,
+      0.37885
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6LQD-3CUE-XPA",
+     "coords_px": [
+      7116.0,
+      49.0,
+      9880.0,
+      2839.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.71653,
+      0.00713,
+      0.99477,
+      0.40479
+     ]
+    }
+   ],
+   "union_iou": 0.9134,
+   "union_contain": 0.9947,
+   "union_area_ratio": 0.9228,
+   "sum_area_a": 0.100186,
+   "sum_area_b": 0.110644,
+   "task_id": "T0011",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+   "discipline": "SS",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/02_work/document.pdf",
+   "page_a": 69,
+   "page_b": 69,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7RUD-WHQN-LW7",
+     "coords_px": [
+      228.0,
+      140.0,
+      2348.0,
+      1126.0
+     ],
+     "page_px": [
+      2480,
+      3508
+     ],
+     "page_index": 68,
+     "cat": null,
+     "norm": [
+      0.09194,
+      0.03991,
+      0.94677,
+      0.32098
+     ]
+    },
+    {
+     "id": "797E-KT6F-GAF",
+     "coords_px": [
+      218.0,
+      1532.0,
+      2238.0,
+      2424.0
+     ],
+     "page_px": [
+      2480,
+      3508
+     ],
+     "page_index": 68,
+     "cat": null,
+     "norm": [
+      0.0879,
+      0.43672,
+      0.90242,
+      0.69099
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "AKEN-EDPT-NQC",
+     "coords_px": [
+      133.0,
+      70.0,
+      2388.0,
+      3376.0
+     ],
+     "page_px": [
+      2480,
+      3508
+     ],
+     "page_index": 68,
+     "cat": null,
+     "norm": [
+      0.05399,
+      0.01995,
+      0.96293,
+      0.96237
+     ]
+    }
+   ],
+   "union_iou": 0.6528,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.6528,
+   "sum_area_a": 0.447383,
+   "sum_area_b": 0.856605,
+   "task_id": "T0012",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/document.pdf",
+   "page_a": 19,
+   "page_b": 20,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "6FNJ-3QEP-9EC",
+     "coords_px": [
+      226.0,
+      59.0,
+      4976.0,
+      4921.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 18,
+     "cat": null,
+     "norm": [
+      0.02147,
+      0.01209,
+      0.47282,
+      0.99194
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6TNM-YDWG-LLG",
+     "coords_px": [
+      235.0,
+      59.0,
+      3683.0,
+      3437.0
+     ],
+     "page_px": [
+      14043,
+      4961
+     ],
+     "page_index": 19,
+     "cat": null,
+     "norm": [
+      0.0168,
+      0.01209,
+      0.26232,
+      0.69287
+     ]
+    },
+    {
+     "id": "7AUX-FR96-F7W",
+     "coords_px": [
+      3675.0,
+      131.0,
+      8503.0,
+      4919.0
+     ],
+     "page_px": [
+      14043,
+      4961
+     ],
+     "page_index": 19,
+     "cat": null,
+     "norm": [
+      0.26175,
+      0.0266,
+      0.60553,
+      0.99154
+     ]
+    }
+   ],
+   "union_iou": 0.7664,
+   "union_contain": 0.9996,
+   "union_area_ratio": 0.767,
+   "sum_area_a": 0.442253,
+   "sum_area_b": 0.498861,
+   "task_id": "T0013",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 28,
+   "page_b": 31,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 4,
+   "blocks_a": [
+    {
+     "id": "blk_41f774d4dd7d4772a8eea6efeca0f36b",
+     "coords_px": [
+      200.0,
+      16.0,
+      4502.0,
+      4870.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 27,
+     "cat": null,
+     "norm": [
+      0.02852,
+      0.00324,
+      0.6417,
+      0.98156
+     ]
+    },
+    {
+     "id": "blk_679670be1d6546afb13e55d05a5e4e96",
+     "coords_px": [
+      4566.0,
+      50.0,
+      6977.0,
+      1697.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 27,
+     "cat": null,
+     "norm": [
+      0.65078,
+      0.01017,
+      0.99448,
+      0.34215
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_5b519474e8f0443c9f1c20622cb6b1bf",
+     "coords_px": [
+      4267.0,
+      29.0,
+      7197.0,
+      1674.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 30,
+     "cat": null,
+     "norm": [
+      0.40542,
+      0.00575,
+      0.68391,
+      0.3375
+     ]
+    },
+    {
+     "id": "blk_b349271235884ec7b379933f3135555d",
+     "coords_px": [
+      215.0,
+      32.0,
+      4171.0,
+      4864.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 30,
+     "cat": null,
+     "norm": [
+      0.02038,
+      0.00649,
+      0.39636,
+      0.98039
+     ]
+    },
+    {
+     "id": "blk_d54c70b24e464932b9d11dc3b8298e15",
+     "coords_px": [
+      7384.0,
+      51.0,
+      10477.0,
+      1678.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 30,
+     "cat": null,
+     "norm": [
+      0.70163,
+      0.0103,
+      0.99557,
+      0.33816
+     ]
+    },
+    {
+     "id": "blk_a30b94e47e1e41d59e3d3f5a0949b633",
+     "coords_px": [
+      4435.0,
+      1696.0,
+      8324.0,
+      3326.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 30,
+     "cat": null,
+     "norm": [
+      0.42145,
+      0.3418,
+      0.79092,
+      0.67043
+     ]
+    }
+   ],
+   "union_iou": 0.9868,
+   "union_contain": 0.9962,
+   "union_area_ratio": 0.9943,
+   "sum_area_a": 0.713986,
+   "sum_area_b": 0.67634,
+   "task_id": "T0014",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ВК2.2-ПА V1",
+   "discipline": "VK",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.2-ПА V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.2-ПА V1/versions/v002/02_work/document.pdf",
+   "page_a": 12,
+   "page_b": 14,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "9JTF-GFTM-UGT",
+     "coords_px": [
+      199.0,
+      39.0,
+      9888.0,
+      14041.0
+     ],
+     "page_px": [
+      9932,
+      14043
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.02013,
+      0.00285,
+      0.99557,
+      0.99986
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_bd6ca7da7d804e84a40b461bb7d62abc",
+     "coords_px": [
+      184.0,
+      53.0,
+      7409.0,
+      8647.0
+     ],
+     "page_px": [
+      7523,
+      10635
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.02448,
+      0.00495,
+      0.98485,
+      0.81305
+     ]
+    },
+    {
+     "id": "blk_63a6cc786ae84478968b449b264b5663",
+     "coords_px": [
+      175.0,
+      8625.0,
+      5861.0,
+      10395.0
+     ],
+     "page_px": [
+      7523,
+      10635
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.02327,
+      0.811,
+      0.77903,
+      0.97747
+     ]
+    }
+   ],
+   "union_iou": 0.9616,
+   "union_contain": 1.0,
+   "union_area_ratio": 1.04,
+   "sum_area_a": 0.972521,
+   "sum_area_b": 0.901888,
+   "task_id": "T0015",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КМ-К4",
+   "discipline": "KM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v002/02_work/document.pdf",
+   "page_a": 6,
+   "page_b": 8,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9RPF-NKVP-KAF",
+     "coords_px": [
+      3705.0,
+      3427.0,
+      6471.0,
+      6449.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.24903,
+      0.4886,
+      0.43489,
+      0.91933
+     ]
+    },
+    {
+     "id": "647A-UCNR-UJV",
+     "coords_px": [
+      6793.0,
+      3331.0,
+      8411.0,
+      6213.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.45652,
+      0.47491,
+      0.56525,
+      0.88569
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "QFT9-XKJR-M9X",
+     "coords_px": [
+      3909.0,
+      3279.0,
+      8621.0,
+      6371.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.26273,
+      0.4675,
+      0.57936,
+      0.90821
+     ]
+    }
+   ],
+   "union_iou": 0.8798,
+   "union_contain": 0.9394,
+   "union_area_ratio": 1.0071,
+   "sum_area_a": 0.124717,
+   "sum_area_b": 0.139538,
+   "task_id": "T0016",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ТХ2-К1 V1",
+   "discipline": "TX",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 23,
+   "page_b": 23,
+   "kind": "N:1",
+   "rot_a": 270,
+   "rot_b": 270,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7L77-D3VL-LPD",
+     "coords_px": [
+      377.0,
+      247.0,
+      2028.0,
+      1547.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 22,
+     "cat": null,
+     "norm": [
+      0.10769,
+      0.1,
+      0.57835,
+      0.62419
+     ]
+    },
+    {
+     "id": "9R6C-HXMH-LXQ",
+     "coords_px": [
+      2122.0,
+      819.0,
+      3350.0,
+      1495.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 22,
+     "cat": null,
+     "norm": [
+      0.60513,
+      0.33065,
+      0.95499,
+      0.60323
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_b5172211b4d2455eaa737b74d6cc056e",
+     "coords_px": [
+      304.0,
+      200.0,
+      3380.0,
+      1642.0
+     ],
+     "page_px": [
+      3509,
+      2480
+     ],
+     "page_index": 22,
+     "cat": null,
+     "norm": [
+      0.08673,
+      0.08068,
+      0.96333,
+      0.66193
+     ]
+    }
+   ],
+   "union_iou": 0.8717,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.8717,
+   "sum_area_a": 0.342079,
+   "sum_area_b": 0.509523,
+   "task_id": "T0017",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ГП2",
+   "discipline": "GP",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП2/versions/v002/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 9,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "A7VL-W7KW-6Y7",
+     "coords_px": [
+      241.0,
+      61.0,
+      8355.0,
+      3225.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.02436,
+      0.00883,
+      0.84115,
+      0.45968
+     ]
+    },
+    {
+     "id": "96NK-ENQ6-4XT",
+     "coords_px": [
+      8359.0,
+      117.0,
+      9895.0,
+      1535.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.84155,
+      0.01681,
+      0.99617,
+      0.21887
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_f0b4919577b54a24853f2baba7285496",
+     "coords_px": [
+      676.0,
+      59.0,
+      9869.0,
+      3174.0
+     ],
+     "page_px": [
+      9934,
+      7017
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.06805,
+      0.00838,
+      0.99349,
+      0.45227
+     ]
+    }
+   ],
+   "union_iou": 0.9357,
+   "union_contain": 0.999,
+   "union_area_ratio": 1.0665,
+   "sum_area_a": 0.399484,
+   "sum_area_b": 0.410797,
+   "task_id": "T0018",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.24.2-К2",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.24.2-К2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.24.2-К2/versions/v002/02_work/document.pdf",
+   "page_a": 10,
+   "page_b": 11,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "96QN-7DNQ-CFW",
+     "coords_px": [
+      12564.0,
+      1085.0,
+      13432.0,
+      1821.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.84356,
+      0.15479,
+      0.90184,
+      0.25969
+     ]
+    },
+    {
+     "id": "6PN4-QY9N-UCG",
+     "coords_px": [
+      13500.0,
+      1071.0,
+      14356.0,
+      1821.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.90641,
+      0.15279,
+      0.96388,
+      0.25969
+     ]
+    },
+    {
+     "id": "7E3M-VVQU-A4R",
+     "coords_px": [
+      12540.0,
+      1827.0,
+      13514.0,
+      2569.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.84195,
+      0.26055,
+      0.90735,
+      0.36631
+     ]
+    },
+    {
+     "id": "6EAR-3P6D-EH7",
+     "coords_px": [
+      13532.0,
+      1827.0,
+      14450.0,
+      2613.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.90855,
+      0.26055,
+      0.97019,
+      0.37258
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "77FM-FNFM-4CL",
+     "coords_px": [
+      12320.0,
+      1047.0,
+      14578.0,
+      3167.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.82718,
+      0.14937,
+      0.97878,
+      0.45154
+     ]
+    }
+   ],
+   "union_iou": 0.6153,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.6153,
+   "sum_area_a": 0.026078,
+   "sum_area_b": 0.04581,
+   "task_id": "T0019",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 12,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 7,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4LER-3GL9-QPF",
+     "coords_px": [
+      789.0,
+      79.0,
+      4293.0,
+      1115.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.15921,
+      0.0114,
+      0.86538,
+      0.15906
+     ]
+    },
+    {
+     "id": "9X4U-4V4K-FMR",
+     "coords_px": [
+      783.0,
+      1115.0,
+      4291.0,
+      1825.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.158,
+      0.15906,
+      0.86497,
+      0.26026
+     ]
+    },
+    {
+     "id": "6MGD-N74H-KWY",
+     "coords_px": [
+      781.0,
+      1823.0,
+      4277.0,
+      2523.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.1576,
+      0.25998,
+      0.86215,
+      0.35975
+     ]
+    },
+    {
+     "id": "KYYK-T7J3-DNJ",
+     "coords_px": [
+      789.0,
+      2537.0,
+      4285.0,
+      3229.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.15921,
+      0.36174,
+      0.86376,
+      0.46038
+     ]
+    },
+    {
+     "id": "7G3V-N64H-KJ6",
+     "coords_px": [
+      777.0,
+      3241.0,
+      4297.0,
+      3957.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.15679,
+      0.46209,
+      0.86618,
+      0.56414
+     ]
+    },
+    {
+     "id": "GT9C-HCDA-PLE",
+     "coords_px": [
+      773.0,
+      3963.0,
+      4279.0,
+      4649.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.15599,
+      0.56499,
+      0.86256,
+      0.66277
+     ]
+    },
+    {
+     "id": "9QH7-UMRQ-AUA",
+     "coords_px": [
+      789.0,
+      4655.0,
+      4327.0,
+      5387.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.15921,
+      0.66363,
+      0.87223,
+      0.76796
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "VH73-P3NC-WCN",
+     "coords_px": [
+      765.0,
+      79.0,
+      4355.0,
+      5409.0
+     ],
+     "page_px": [
+      4961,
+      7015
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.15437,
+      0.0114,
+      0.87787,
+      0.77109
+     ]
+    }
+   ],
+   "union_iou": 0.9859,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.9859,
+   "sum_area_a": 0.531477,
+   "sum_area_b": 0.549636,
+   "task_id": "T0020",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К3 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_a": 21,
+   "page_b": 21,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "7X9H-E4VU-NKU",
+     "coords_px": [
+      5729.0,
+      1499.0,
+      7741.0,
+      4588.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 20,
+     "cat": null,
+     "norm": [
+      0.57681,
+      0.21374,
+      0.77934,
+      0.65403
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "A3QX-NXK4-W96",
+     "coords_px": [
+      5735.0,
+      1543.0,
+      7749.0,
+      2663.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 20,
+     "cat": null,
+     "norm": [
+      0.57741,
+      0.22001,
+      0.78015,
+      0.3796
+     ]
+    },
+    {
+     "id": "6LJN-XYMX-6Y7",
+     "coords_px": [
+      5699.0,
+      3630.0,
+      7869.0,
+      4818.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 20,
+     "cat": null,
+     "norm": [
+      0.57379,
+      0.51753,
+      0.79223,
+      0.68681
+     ]
+    }
+   ],
+   "union_iou": 0.8515,
+   "union_contain": 0.9858,
+   "union_area_ratio": 0.8745,
+   "sum_area_a": 0.089176,
+   "sum_area_b": 0.069332,
+   "task_id": "T0021",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ЭОМ-НС V1",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭОМ-НС V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭОМ-НС V1/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 12,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "7LAV-N4FW-M7P",
+     "coords_px": [
+      3029.0,
+      333.0,
+      6908.0,
+      2738.0
+     ],
+     "page_px": [
+      7016,
+      4962
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.43175,
+      0.06728,
+      0.98461,
+      0.55197
+     ]
+    },
+    {
+     "id": "66TN-JMA4-U4W",
+     "coords_px": [
+      255.0,
+      51.0,
+      2967.0,
+      3346.0
+     ],
+     "page_px": [
+      7016,
+      4962
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.03648,
+      0.01048,
+      0.42291,
+      0.67446
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_c5a3d9af0a184592ba95e6af554939d1",
+     "coords_px": [
+      229.0,
+      49.0,
+      2928.0,
+      3213.0
+     ],
+     "page_px": [
+      7017,
+      4963
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.03263,
+      0.00988,
+      0.41725,
+      0.64741
+     ]
+    },
+    {
+     "id": "blk_86d8047856424f80977fdaf6168fd9af",
+     "coords_px": [
+      2560.0,
+      164.0,
+      6641.0,
+      3753.0
+     ],
+     "page_px": [
+      7017,
+      4963
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.3648,
+      0.03295,
+      0.94639,
+      0.75613
+     ]
+    }
+   ],
+   "union_iou": 0.8542,
+   "union_contain": 0.9597,
+   "union_area_ratio": 0.9232,
+   "sum_area_a": 0.524553,
+   "sum_area_b": 0.665797,
+   "task_id": "T0022",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 32,
+   "page_b": 33,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "7Q9A-4QQ4-NJ3",
+     "coords_px": [
+      249.0,
+      75.0,
+      3675.0,
+      6983.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 31,
+     "cat": null,
+     "norm": [
+      0.02517,
+      0.01083,
+      0.37004,
+      0.99544
+     ]
+    },
+    {
+     "id": "9D4A-K7QA-9JJ",
+     "coords_px": [
+      3469.0,
+      63.0,
+      6886.0,
+      5065.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 31,
+     "cat": null,
+     "norm": [
+      0.34931,
+      0.00912,
+      0.69338,
+      0.72206
+     ]
+    },
+    {
+     "id": "9CG4-GFRC-KW7",
+     "coords_px": [
+      3427.0,
+      4715.0,
+      7704.0,
+      6979.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 31,
+     "cat": null,
+     "norm": [
+      0.34508,
+      0.67218,
+      0.77572,
+      0.99487
+     ]
+    },
+    {
+     "id": "6M4X-UYX3-EXG",
+     "coords_px": [
+      6480.0,
+      73.0,
+      9860.0,
+      5181.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 31,
+     "cat": null,
+     "norm": [
+      0.65251,
+      0.01055,
+      0.99275,
+      0.7386
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_cf4403923c8b4cc3bad3549c45e1b665",
+     "coords_px": [
+      222.0,
+      28.0,
+      6818.0,
+      6667.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 32,
+     "cat": null,
+     "norm": [
+      0.02238,
+      0.00396,
+      0.68642,
+      0.95022
+     ]
+    },
+    {
+     "id": "blk_c3ecd3ec53634570ad3fb0bb6626c206",
+     "coords_px": [
+      6455.0,
+      36.0,
+      9878.0,
+      4882.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 32,
+     "cat": null,
+     "norm": [
+      0.64988,
+      0.00511,
+      0.99444,
+      0.69587
+     ]
+    },
+    {
+     "id": "blk_74ede2f5c4274501bfbcf6bccc91f718",
+     "coords_px": [
+      3505.0,
+      4985.0,
+      7525.0,
+      6951.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 32,
+     "cat": null,
+     "norm": [
+      0.35288,
+      0.71055,
+      0.75759,
+      0.99075
+     ]
+    }
+   ],
+   "union_iou": 0.9855,
+   "union_contain": 0.9952,
+   "union_area_ratio": 0.9949,
+   "sum_area_a": 0.97155,
+   "sum_area_b": 0.979771,
+   "task_id": "T0023",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ВК2-К5 V1",
+   "discipline": "VK",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К5 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К5 V1/versions/v002/02_work/document.pdf",
+   "page_a": 14,
+   "page_b": 15,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "6AWE-97CP-NWU",
+     "coords_px": [
+      619.0,
+      1221.0,
+      6285.0,
+      3309.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.08837,
+      0.24627,
+      0.89595,
+      0.66707
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_887ac907800548b8b2742477e071fe02",
+     "coords_px": [
+      335.0,
+      417.0,
+      3295.0,
+      2143.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.04779,
+      0.08407,
+      0.4697,
+      0.43191
+     ]
+    },
+    {
+     "id": "blk_a1e1e45088c943a1851d1885a618b272",
+     "coords_px": [
+      3263.0,
+      433.0,
+      4179.0,
+      2764.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.46503,
+      0.08737,
+      0.59557,
+      0.5572
+     ]
+    },
+    {
+     "id": "blk_65079942f4864a9a9d8e97bd7b71f91e",
+     "coords_px": [
+      253.0,
+      2748.0,
+      4563.0,
+      4907.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.03613,
+      0.5539,
+      0.65035,
+      0.98911
+     ]
+    }
+   ],
+   "union_iou": 0.3587,
+   "union_contain": 0.6959,
+   "union_area_ratio": 0.6113,
+   "sum_area_a": 0.339829,
+   "sum_area_b": 0.475399,
+   "task_id": "T0024",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КМ-К2",
+   "discipline": "KM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v002/02_work/document.pdf",
+   "page_a": 6,
+   "page_b": 6,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "6WV7-PJVK-GMF",
+     "coords_px": [
+      369.0,
+      289.0,
+      3373.0,
+      4213.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.05274,
+      0.05844,
+      0.4809,
+      0.84925
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_9d5711d92751491881dea5a8370be80a",
+     "coords_px": [
+      300.0,
+      42.0,
+      3412.0,
+      1786.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.04281,
+      0.00841,
+      0.48633,
+      0.35991
+     ]
+    },
+    {
+     "id": "blk_43c5ca257a7742779cec843c8039c3ee",
+     "coords_px": [
+      350.0,
+      1811.0,
+      3062.0,
+      3604.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.04994,
+      0.36496,
+      0.43639,
+      0.72655
+     ]
+    },
+    {
+     "id": "blk_d4cf2ea29baa41cd8fedfcaf37a11282",
+     "coords_px": [
+      367.0,
+      3596.0,
+      3954.0,
+      4889.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.05232,
+      0.72487,
+      0.56361,
+      0.98556
+     ]
+    }
+   ],
+   "union_iou": 0.6653,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.6653,
+   "sum_area_a": 0.338597,
+   "sum_area_b": 0.428923,
+   "task_id": "T0025",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ТХ2-К4",
+   "discipline": "TX",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v002/02_work/document.pdf",
+   "page_a": 13,
+   "page_b": 15,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "64F7-F7EG-RTL",
+     "coords_px": [
+      2578.0,
+      138.0,
+      3374.0,
+      970.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.73489,
+      0.05569,
+      0.9618,
+      0.39144
+     ]
+    },
+    {
+     "id": "6CYQ-XHQE-EDM",
+     "coords_px": [
+      149.0,
+      39.0,
+      1409.0,
+      947.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.04274,
+      0.01613,
+      0.40171,
+      0.38226
+     ]
+    },
+    {
+     "id": "6LH3-G36Y-JKH",
+     "coords_px": [
+      617.0,
+      25.0,
+      1872.0,
+      941.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.17607,
+      0.01048,
+      0.5339,
+      0.37984
+     ]
+    },
+    {
+     "id": "4HUU-3MJA-EGC",
+     "coords_px": [
+      1663.0,
+      47.0,
+      2880.0,
+      967.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.47407,
+      0.01935,
+      0.82108,
+      0.39032
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "A4AH-LH64-XJJ",
+     "coords_px": [
+      127.0,
+      7.0,
+      3374.0,
+      973.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.03647,
+      0.00323,
+      0.96182,
+      0.39274
+     ]
+    }
+   ],
+   "union_iou": 0.9714,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.9714,
+   "sum_area_a": 0.468514,
+   "sum_area_b": 0.360441,
+   "task_id": "T0026",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.29.1-К1",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.29.1-К1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.29.1-К1/versions/v002/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 9,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 6,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4MAD-CFQY-ECT",
+     "coords_px": [
+      10808.0,
+      3930.0,
+      12226.0,
+      5724.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.72566,
+      0.56031,
+      0.82087,
+      0.81608
+     ]
+    },
+    {
+     "id": "MKCV-649P-6RF",
+     "coords_px": [
+      8980.0,
+      3998.0,
+      10790.0,
+      5668.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.60293,
+      0.57,
+      0.72445,
+      0.8081
+     ]
+    },
+    {
+     "id": "93RF-M69U-VEG",
+     "coords_px": [
+      4056.0,
+      3904.0,
+      8522.0,
+      5732.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.27232,
+      0.5566,
+      0.57218,
+      0.81722
+     ]
+    },
+    {
+     "id": "9AQK-UVEL-4DK",
+     "coords_px": [
+      5092.0,
+      5732.0,
+      7782.0,
+      6780.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.34188,
+      0.81722,
+      0.52249,
+      0.96664
+     ]
+    },
+    {
+     "id": "4AJF-6WCC-JDH",
+     "coords_px": [
+      2722.0,
+      3912.0,
+      4056.0,
+      5798.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.18276,
+      0.55774,
+      0.27232,
+      0.82663
+     ]
+    },
+    {
+     "id": "4QHH-X3NG-KGL",
+     "coords_px": [
+      126.0,
+      3884.0,
+      2722.0,
+      5898.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.00846,
+      0.55375,
+      0.18276,
+      0.84089
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "JVAA-NDDN-JXE",
+     "coords_px": [
+      63.0,
+      3999.0,
+      14280.0,
+      6857.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.0043,
+      0.57013,
+      0.95878,
+      0.97748
+     ]
+    }
+   ],
+   "union_iou": 0.8011,
+   "union_contain": 0.9603,
+   "union_area_ratio": 0.8627,
+   "sum_area_a": 0.232551,
+   "sum_area_b": 0.388811,
+   "task_id": "T0027",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v002/02_work/document.pdf",
+   "page_a": 12,
+   "page_b": 13,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 5,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7CHY-CVPV-EWD",
+     "coords_px": [
+      3551.0,
+      185.0,
+      6633.0,
+      1963.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.50627,
+      0.01872,
+      0.94555,
+      0.1977
+     ]
+    },
+    {
+     "id": "9RLP-CPKH-WM7",
+     "coords_px": [
+      3717.0,
+      1963.0,
+      6497.0,
+      3485.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.52993,
+      0.1977,
+      0.92617,
+      0.35092
+     ]
+    },
+    {
+     "id": "6V6Q-X9GR-WNL",
+     "coords_px": [
+      3709.0,
+      3503.0,
+      6617.0,
+      4955.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.52879,
+      0.35273,
+      0.94327,
+      0.49889
+     ]
+    },
+    {
+     "id": "67VQ-9CY3-6PK",
+     "coords_px": [
+      3693.0,
+      4963.0,
+      6557.0,
+      6440.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.52651,
+      0.4997,
+      0.93472,
+      0.64848
+     ]
+    },
+    {
+     "id": "4YN9-V3H4-66T",
+     "coords_px": [
+      3731.0,
+      6434.0,
+      6387.0,
+      7962.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.53193,
+      0.64788,
+      0.91049,
+      0.80169
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "979C-JCLE-A6T",
+     "coords_px": [
+      3631.0,
+      41.0,
+      6569.0,
+      7972.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.51767,
+      0.00423,
+      0.93643,
+      0.8027
+     ]
+    }
+   ],
+   "union_iou": 0.9356,
+   "union_contain": 0.9806,
+   "union_area_ratio": 1.0286,
+   "sum_area_a": 0.318877,
+   "sum_area_b": 0.334365,
+   "task_id": "T0028",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-СОУЭ-К3-К6",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v002/02_work/document.pdf",
+   "page_a": 26,
+   "page_b": 22,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6X3K-C73E-9LT",
+     "coords_px": [
+      3160.0,
+      3626.0,
+      4244.0,
+      4674.0
+     ],
+     "page_px": [
+      4962,
+      7016
+     ],
+     "page_index": 25,
+     "cat": null,
+     "norm": [
+      0.63699,
+      0.51696,
+      0.85536,
+      0.66629
+     ]
+    },
+    {
+     "id": "94YD-77R9-LWU",
+     "coords_px": [
+      4000.0,
+      3642.0,
+      4904.0,
+      4666.0
+     ],
+     "page_px": [
+      4962,
+      7016
+     ],
+     "page_index": 25,
+     "cat": null,
+     "norm": [
+      0.8062,
+      0.51924,
+      0.98832,
+      0.66515
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6Q7A-VTRF-TVN",
+     "coords_px": [
+      3216.0,
+      3606.0,
+      4908.0,
+      4680.0
+     ],
+     "page_px": [
+      4962,
+      7016
+     ],
+     "page_index": 21,
+     "cat": null,
+     "norm": [
+      0.64827,
+      0.51411,
+      0.98912,
+      0.66714
+     ]
+    }
+   ],
+   "union_iou": 0.943,
+   "union_contain": 0.9735,
+   "union_area_ratio": 1.0058,
+   "sum_area_a": 0.059182,
+   "sum_area_b": 0.052163,
+   "task_id": "T0029",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ЭМ-К4",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+   "page_a": 17,
+   "page_b": 19,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6NVN-VN7R-JU4",
+     "coords_px": [
+      2506.0,
+      3628.0,
+      4344.0,
+      4706.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 16,
+     "cat": null,
+     "norm": [
+      0.35729,
+      0.73145,
+      0.61933,
+      0.94879
+     ]
+    },
+    {
+     "id": "9CMU-DFXF-PL9",
+     "coords_px": [
+      660.0,
+      3498.0,
+      1904.0,
+      4134.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 16,
+     "cat": null,
+     "norm": [
+      0.0941,
+      0.70524,
+      0.27146,
+      0.83347
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_b197b1357cf649a495473e71420732e3",
+     "coords_px": [
+      222.0,
+      3525.0,
+      4314.0,
+      4915.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 18,
+     "cat": null,
+     "norm": [
+      0.0317,
+      0.71058,
+      0.6149,
+      0.99077
+     ]
+    }
+   ],
+   "union_iou": 0.7417,
+   "union_contain": 0.9698,
+   "union_area_ratio": 0.7828,
+   "sum_area_a": 0.079695,
+   "sum_area_b": 0.16341,
+   "task_id": "T0030",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 40,
+   "page_b": 41,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "66MN-CJWK-HGG",
+     "coords_px": [
+      501.0,
+      78.0,
+      2897.0,
+      3578.0
+     ],
+     "page_px": [
+      7016,
+      4962
+     ],
+     "page_index": 39,
+     "cat": null,
+     "norm": [
+      0.07153,
+      0.01572,
+      0.41294,
+      0.72108
+     ]
+    },
+    {
+     "id": "UAMM-V7YA-DYD",
+     "coords_px": [
+      653.0,
+      3295.0,
+      4602.0,
+      4870.0
+     ],
+     "page_px": [
+      7016,
+      4962
+     ],
+     "page_index": 39,
+     "cat": null,
+     "norm": [
+      0.09319,
+      0.66425,
+      0.65603,
+      0.98146
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_41645d02b7164f3ebccfa6e55a31f082",
+     "coords_px": [
+      259.0,
+      75.0,
+      2886.0,
+      4689.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 40,
+     "cat": null,
+     "norm": [
+      0.03686,
+      0.01514,
+      0.41141,
+      0.94519
+     ]
+    },
+    {
+     "id": "blk_49e94fb20d6245ca8a6948c64aae21f3",
+     "coords_px": [
+      2861.0,
+      3438.0,
+      4638.0,
+      4781.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 40,
+     "cat": null,
+     "norm": [
+      0.40785,
+      0.69292,
+      0.66112,
+      0.96369
+     ]
+    }
+   ],
+   "union_iou": 0.9196,
+   "union_contain": 0.9816,
+   "union_area_ratio": 0.9533,
+   "sum_area_a": 0.419354,
+   "sum_area_b": 0.416936,
+   "task_id": "T0031",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ВК2.2-ПА V1",
+   "discipline": "VK",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.2-ПА V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.2-ПА V1/versions/v002/02_work/document.pdf",
+   "page_a": 49,
+   "page_b": 51,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "LTML-9LCT-7YM",
+     "coords_px": [
+      6316.0,
+      23.0,
+      9930.0,
+      5665.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 48,
+     "cat": null,
+     "norm": [
+      0.636,
+      0.00342,
+      0.9998,
+      0.80758
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_90a56342dec8482d8217c9e6bc170fa3",
+     "coords_px": [
+      6620.0,
+      116.0,
+      9788.0,
+      1919.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 50,
+     "cat": null,
+     "norm": [
+      0.66647,
+      0.01648,
+      0.98545,
+      0.27353
+     ]
+    },
+    {
+     "id": "blk_770ae38c69e647cd88ea46d46d6ab9f7",
+     "coords_px": [
+      6366.0,
+      1954.0,
+      9881.0,
+      4763.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 50,
+     "cat": null,
+     "norm": [
+      0.64086,
+      0.27847,
+      0.99476,
+      0.67888
+     ]
+    }
+   ],
+   "union_iou": 0.8013,
+   "union_contain": 1.0,
+   "union_area_ratio": 1.248,
+   "sum_area_a": 0.292555,
+   "sum_area_b": 0.223697,
+   "task_id": "T0032",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КМ-К3",
+   "discipline": "KM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v002/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 9,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7K73-RWJY-TWK",
+     "coords_px": [
+      267.0,
+      97.0,
+      1841.0,
+      2479.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.01801,
+      0.01397,
+      0.12377,
+      0.35348
+     ]
+    },
+    {
+     "id": "AAHP-LCY7-EUP",
+     "coords_px": [
+      1861.0,
+      35.0,
+      4071.0,
+      2691.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.12512,
+      0.00513,
+      0.27362,
+      0.38369
+     ]
+    },
+    {
+     "id": "9VVX-AELL-FPH",
+     "coords_px": [
+      259.0,
+      2495.0,
+      1853.0,
+      4807.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.01747,
+      0.35576,
+      0.12458,
+      0.68529
+     ]
+    },
+    {
+     "id": "4HY3-V6K9-3AU",
+     "coords_px": [
+      1871.0,
+      2477.0,
+      4219.0,
+      5113.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.12579,
+      0.35319,
+      0.28356,
+      0.72891
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "94FW-JH9Y-HDY",
+     "coords_px": [
+      131.0,
+      83.0,
+      4113.0,
+      5111.0
+     ],
+     "page_px": [
+      14881,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.00887,
+      0.01197,
+      0.27644,
+      0.72862
+     ]
+    }
+   ],
+   "union_iou": 0.9338,
+   "union_contain": 0.9679,
+   "union_area_ratio": 1.0044,
+   "sum_area_a": 0.186699,
+   "sum_area_b": 0.191755,
+   "task_id": "T0033",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ТХ2-К4",
+   "discipline": "TX",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v002/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 11,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 6,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6HA4-YVLA-DGG",
+     "coords_px": [
+      2998.0,
+      73.0,
+      4314.0,
+      815.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.60435,
+      0.02108,
+      0.86946,
+      0.23248
+     ]
+    },
+    {
+     "id": "4R37-RLJR-FNG",
+     "coords_px": [
+      2716.0,
+      131.0,
+      3764.0,
+      825.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.54754,
+      0.03761,
+      0.75866,
+      0.23533
+     ]
+    },
+    {
+     "id": "4WXG-FVAN-CP7",
+     "coords_px": [
+      2710.0,
+      1005.0,
+      4262.0,
+      1860.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.54633,
+      0.28661,
+      0.85898,
+      0.53048
+     ]
+    },
+    {
+     "id": "66Y7-PGWP-UAR",
+     "coords_px": [
+      2612.0,
+      1019.0,
+      4238.0,
+      1860.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.52659,
+      0.2906,
+      0.85415,
+      0.53048
+     ]
+    },
+    {
+     "id": "4KX6-CQMP-Q6L",
+     "coords_px": [
+      2704.0,
+      1846.0,
+      4270.0,
+      2732.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.54512,
+      0.5265,
+      0.8606,
+      0.77892
+     ]
+    },
+    {
+     "id": "9X64-TJMQ-QY4",
+     "coords_px": [
+      2429.0,
+      1868.0,
+      4276.0,
+      2776.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.48952,
+      0.53276,
+      0.8618,
+      0.79145
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "RKWE-TTAT-XHP",
+     "coords_px": [
+      2471.0,
+      53.0,
+      4302.0,
+      2696.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.49799,
+      0.01538,
+      0.86704,
+      0.76866
+     ]
+    }
+   ],
+   "union_iou": 0.9359,
+   "union_contain": 0.9924,
+   "union_area_ratio": 1.0528,
+   "sum_area_a": 0.428547,
+   "sum_area_b": 0.278002,
+   "task_id": "T0034",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.33-38.1-К2",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.33-38.1-К2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.33-38.1-К2/versions/v002/02_work/document.pdf",
+   "page_a": 13,
+   "page_b": 14,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 5,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "4QF9-VLAT-MAU",
+     "coords_px": [
+      3139.0,
+      6109.0,
+      4825.0,
+      6897.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.31609,
+      0.87087,
+      0.48581,
+      0.98318
+     ]
+    },
+    {
+     "id": "6UAQ-EGA7-TQG",
+     "coords_px": [
+      3425.0,
+      5069.0,
+      4547.0,
+      5623.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.34488,
+      0.72263,
+      0.45782,
+      0.8016
+     ]
+    },
+    {
+     "id": "E9XD-K3GJ-3FK",
+     "coords_px": [
+      4613.0,
+      5469.0,
+      6116.0,
+      6343.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.46447,
+      0.77965,
+      0.61586,
+      0.90422
+     ]
+    },
+    {
+     "id": "499C-DH7P-4R7",
+     "coords_px": [
+      6100.0,
+      5485.0,
+      7206.0,
+      6317.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.61425,
+      0.78193,
+      0.72559,
+      0.90051
+     ]
+    },
+    {
+     "id": "9EYN-XT6M-GDF",
+     "coords_px": [
+      6162.0,
+      6317.0,
+      7082.0,
+      6667.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.6205,
+      0.90051,
+      0.71311,
+      0.9504
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_09e14ab8d95145b8a2bdc4279683d3c3",
+     "coords_px": [
+      3108.0,
+      4829.0,
+      5789.0,
+      6953.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.31291,
+      0.68834,
+      0.58279,
+      0.99098
+     ]
+    },
+    {
+     "id": "blk_a6dcc761b6ad47a4a99ffd91852201b6",
+     "coords_px": [
+      5815.0,
+      4998.0,
+      7550.0,
+      6914.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.5854,
+      0.71233,
+      0.7601,
+      0.98545
+     ]
+    }
+   ],
+   "union_iou": 0.7883,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.7883,
+   "sum_area_a": 0.064663,
+   "sum_area_b": 0.129395,
+   "task_id": "T0035",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "discipline": "AR",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v003/02_work/document.pdf",
+   "page_a": 14,
+   "page_b": 14,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "GVC9-GEPY-XD7",
+     "coords_px": [
+      3873.0,
+      47.0,
+      6933.0,
+      5254.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.55217,
+      0.00483,
+      0.98831,
+      0.52909
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "4MKN-WFYV-TQJ",
+     "coords_px": [
+      4331.0,
+      209.0,
+      6913.0,
+      2107.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.61745,
+      0.02114,
+      0.98546,
+      0.2122
+     ]
+    },
+    {
+     "id": "6J4W-P6A3-GKF",
+     "coords_px": [
+      3871.0,
+      2157.0,
+      6905.0,
+      3561.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.55188,
+      0.21723,
+      0.98432,
+      0.35857
+     ]
+    },
+    {
+     "id": "74JP-EN3A-GRU",
+     "coords_px": [
+      4103.0,
+      3619.0,
+      6801.0,
+      5260.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.58495,
+      0.36441,
+      0.9695,
+      0.5297
+     ]
+    }
+   ],
+   "union_iou": 0.9609,
+   "union_contain": 0.9982,
+   "union_area_ratio": 1.037,
+   "sum_area_a": 0.228654,
+   "sum_area_b": 0.194994,
+   "task_id": "T0036",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К4 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 1)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_a": 15,
+   "page_b": 15,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7DGK-NYHE-MCL",
+     "coords_px": [
+      2779.0,
+      41.0,
+      4931.0,
+      1715.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.26411,
+      0.00846,
+      0.46855,
+      0.34569
+     ]
+    },
+    {
+     "id": "7HRD-7EAH-MLJ",
+     "coords_px": [
+      5167.0,
+      25.0,
+      7181.0,
+      1601.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.49097,
+      0.00524,
+      0.68231,
+      0.32272
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6PWY-LGYA-PJQ",
+     "coords_px": [
+      2753.0,
+      75.0,
+      7281.0,
+      1865.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.26164,
+      0.01531,
+      0.69181,
+      0.37591
+     ]
+    }
+   ],
+   "union_iou": 0.8672,
+   "union_contain": 0.9704,
+   "union_area_ratio": 0.9179,
+   "sum_area_a": 0.129691,
+   "sum_area_b": 0.155119,
+   "task_id": "T0037",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/document.pdf",
+   "page_a": 47,
+   "page_b": 54,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9XYK-9R3D-QM4",
+     "coords_px": [
+      6067.0,
+      219.0,
+      7175.0,
+      1167.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 46,
+     "cat": null,
+     "norm": [
+      0.61083,
+      0.03135,
+      0.72237,
+      0.16643
+     ]
+    },
+    {
+     "id": "6KKE-ETGF-AUH",
+     "coords_px": [
+      6051.0,
+      1167.0,
+      7425.0,
+      2075.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 46,
+     "cat": null,
+     "norm": [
+      0.60922,
+      0.16643,
+      0.74753,
+      0.29581
+     ]
+    },
+    {
+     "id": "63KX-HP9D-3LJ",
+     "coords_px": [
+      7487.0,
+      235.0,
+      9317.0,
+      1155.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 46,
+     "cat": null,
+     "norm": [
+      0.75377,
+      0.03363,
+      0.93799,
+      0.16472
+     ]
+    },
+    {
+     "id": "6QU9-7XNY-FE6",
+     "coords_px": [
+      7493.0,
+      1161.0,
+      9485.0,
+      2081.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 46,
+     "cat": null,
+     "norm": [
+      0.75438,
+      0.16557,
+      0.9549,
+      0.29667
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "7L6E-3D76-KQE",
+     "coords_px": [
+      5965.0,
+      111.0,
+      9657.0,
+      2113.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 53,
+     "cat": null,
+     "norm": [
+      0.60056,
+      0.01596,
+      0.97222,
+      0.30123
+     ]
+    }
+   ],
+   "union_iou": 0.8651,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.8651,
+   "sum_area_a": 0.083398,
+   "sum_area_b": 0.10602,
+   "task_id": "T0038",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К2 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v002/02_work/document.pdf",
+   "page_a": 153,
+   "page_b": 134,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9P7L-NMX6-PWA",
+     "coords_px": [
+      408.0,
+      288.0,
+      2348.0,
+      1606.0
+     ],
+     "page_px": [
+      2481,
+      3509
+     ],
+     "page_index": 152,
+     "cat": null,
+     "norm": [
+      0.16452,
+      0.0821,
+      0.94677,
+      0.45781
+     ]
+    },
+    {
+     "id": "4FYR-XKE3-UXT",
+     "coords_px": [
+      158.0,
+      1622.0,
+      2414.0,
+      3130.0
+     ],
+     "page_px": [
+      2481,
+      3509
+     ],
+     "page_index": 152,
+     "cat": null,
+     "norm": [
+      0.06371,
+      0.46237,
+      0.97339,
+      0.89225
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "47ER-DJHG-RRD",
+     "coords_px": [
+      129.0,
+      323.0,
+      2475.0,
+      3233.0
+     ],
+     "page_px": [
+      2481,
+      3509
+     ],
+     "page_index": 133,
+     "cat": null,
+     "norm": [
+      0.05238,
+      0.09231,
+      0.99758,
+      0.92137
+     ]
+    }
+   ],
+   "union_iou": 0.9177,
+   "union_contain": 0.9874,
+   "union_area_ratio": 0.9405,
+   "sum_area_a": 0.684951,
+   "sum_area_b": 0.783632,
+   "task_id": "T0039",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ВК2-К2 V1",
+   "discipline": "VK",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К2 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К2 V1/versions/v002/02_work/document.pdf",
+   "page_a": 15,
+   "page_b": 16,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 3,
+   "blocks_a": [
+    {
+     "id": "4FY9-4HEJ-RDA",
+     "coords_px": [
+      647.0,
+      471.0,
+      9804.0,
+      5563.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.06523,
+      0.06727,
+      0.98711,
+      0.79304
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_152a549dda50446b8c38ec60a4a2d3ff",
+     "coords_px": [
+      6863.0,
+      347.0,
+      9499.0,
+      5792.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.69092,
+      0.04943,
+      0.95634,
+      0.82553
+     ]
+    },
+    {
+     "id": "blk_9c8413d6e78e45fcb85891a9516311ce",
+     "coords_px": [
+      3984.0,
+      636.0,
+      6481.0,
+      5468.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.40105,
+      0.09063,
+      0.6525,
+      0.77939
+     ]
+    },
+    {
+     "id": "blk_a267cb33fd674dc6a6a473e13e18ea12",
+     "coords_px": [
+      619.0,
+      647.0,
+      3625.0,
+      4925.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.06228,
+      0.09227,
+      0.36496,
+      0.70195
+     ]
+    }
+   ],
+   "union_iou": 0.903,
+   "union_contain": 0.9666,
+   "union_area_ratio": 0.9643,
+   "sum_area_a": 0.669076,
+   "sum_area_b": 0.563723,
+   "task_id": "T0040",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КМ-К4",
+   "discipline": "KM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v002/02_work/document.pdf",
+   "page_a": 8,
+   "page_b": 10,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 5,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7X7P-UTC9-TYW",
+     "coords_px": [
+      3015.0,
+      2423.0,
+      3783.0,
+      3111.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.42987,
+      0.48851,
+      0.53934,
+      0.62717
+     ]
+    },
+    {
+     "id": "6QYE-6UGQ-34U",
+     "coords_px": [
+      2199.0,
+      2429.0,
+      2959.0,
+      3231.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.31357,
+      0.48972,
+      0.42189,
+      0.65135
+     ]
+    },
+    {
+     "id": "9KUV-YA7U-GYH",
+     "coords_px": [
+      2151.0,
+      3257.0,
+      3151.0,
+      4025.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.30673,
+      0.65659,
+      0.44926,
+      0.81137
+     ]
+    },
+    {
+     "id": "6X4H-9XXJ-X4W",
+     "coords_px": [
+      2211.0,
+      4111.0,
+      2969.0,
+      4797.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.31528,
+      0.8287,
+      0.42332,
+      0.96695
+     ]
+    },
+    {
+     "id": "6RX9-QLMQ-GYA",
+     "coords_px": [
+      2973.0,
+      4035.0,
+      3793.0,
+      4813.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.42389,
+      0.81338,
+      0.54076,
+      0.97017
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9GKW-KG7A-7FF",
+     "coords_px": [
+      2127.0,
+      2511.0,
+      3961.0,
+      4883.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.30331,
+      0.50625,
+      0.56471,
+      0.98428
+     ]
+    }
+   ],
+   "union_iou": 0.841,
+   "union_contain": 0.9632,
+   "union_area_ratio": 0.9021,
+   "sum_area_a": 0.088008,
+   "sum_area_b": 0.124959,
+   "task_id": "T0041",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ТХ2-К4",
+   "discipline": "TX",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К4/versions/v002/02_work/document.pdf",
+   "page_a": 13,
+   "page_b": 15,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4LEC-QGMQ-JCC",
+     "coords_px": [
+      1756.0,
+      993.0,
+      2694.0,
+      1965.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.50085,
+      0.40081,
+      0.76809,
+      0.79274
+     ]
+    },
+    {
+     "id": "7H79-XDTE-69J",
+     "coords_px": [
+      1699.0,
+      993.0,
+      2698.0,
+      1975.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.48433,
+      0.40081,
+      0.76923,
+      0.79677
+     ]
+    },
+    {
+     "id": "4EJR-NLHA-EGL",
+     "coords_px": [
+      165.0,
+      1015.0,
+      1253.0,
+      1979.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.04729,
+      0.40968,
+      0.35726,
+      0.79839
+     ]
+    },
+    {
+     "id": "PU7K-PHW9-ACT",
+     "coords_px": [
+      551.0,
+      983.0,
+      1774.0,
+      1951.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.15726,
+      0.39677,
+      0.50598,
+      0.7871
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "7L3P-QAT6-4K7",
+     "coords_px": [
+      133.0,
+      971.0,
+      2684.0,
+      2375.0
+     ],
+     "page_px": [
+      3508,
+      2479
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.03818,
+      0.39194,
+      0.76524,
+      0.95806
+     ]
+    }
+   ],
+   "union_iou": 0.6978,
+   "union_contain": 0.9945,
+   "union_area_ratio": 0.7044,
+   "sum_area_a": 0.474152,
+   "sum_area_b": 0.411613,
+   "task_id": "T0042",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.22-28.1-К1",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v002/02_work/document.pdf",
+   "page_a": 19,
+   "page_b": 20,
+   "kind": "1:N",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "Q97U-JXUC-AEX",
+     "coords_px": [
+      247.0,
+      3699.0,
+      7384.0,
+      5489.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 18,
+     "cat": null,
+     "norm": [
+      0.02496,
+      0.52737,
+      0.74351,
+      0.7825
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9GAN-TQXG-7RD",
+     "coords_px": [
+      211.0,
+      3701.0,
+      4315.0,
+      5489.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 19,
+     "cat": null,
+     "norm": [
+      0.02134,
+      0.52765,
+      0.43447,
+      0.7825
+     ]
+    },
+    {
+     "id": "H7HW-V444-U7R",
+     "coords_px": [
+      4315.0,
+      3751.0,
+      7604.0,
+      5427.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 19,
+     "cat": null,
+     "norm": [
+      0.43447,
+      0.53478,
+      0.76565,
+      0.77366
+     ]
+    }
+   ],
+   "union_iou": 0.9643,
+   "union_contain": 0.9989,
+   "union_area_ratio": 0.9665,
+   "sum_area_a": 0.183323,
+   "sum_area_b": 0.184398,
+   "task_id": "T0043",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР0.3-ПА",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.3-ПА/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.3-ПА/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 11,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 4,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "93D7-N6F4-NX9",
+     "coords_px": [
+      250.0,
+      49.0,
+      2474.0,
+      1601.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.02376,
+      0.01008,
+      0.23508,
+      0.32285
+     ]
+    },
+    {
+     "id": "6ARG-HUPJ-RWF",
+     "coords_px": [
+      2450.0,
+      63.0,
+      4196.0,
+      1625.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.2328,
+      0.0129,
+      0.39871,
+      0.32769
+     ]
+    },
+    {
+     "id": "A99A-ETEW-Y44",
+     "coords_px": [
+      3863.0,
+      89.0,
+      5516.0,
+      1551.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.36716,
+      0.01814,
+      0.52414,
+      0.31278
+     ]
+    },
+    {
+     "id": "CL94-9W4G-HAP",
+     "coords_px": [
+      5550.0,
+      67.0,
+      7049.0,
+      1497.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.52737,
+      0.0137,
+      0.6699,
+      0.30189
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6TV9-FQ7T-T9G",
+     "coords_px": [
+      198.0,
+      25.0,
+      7195.0,
+      1721.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.01881,
+      0.00524,
+      0.68377,
+      0.34704
+     ]
+    }
+   ],
+   "union_iou": 0.903,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.903,
+   "sum_area_a": 0.205651,
+   "sum_area_b": 0.227281,
+   "task_id": "T0044",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К5 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 1)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_a": 12,
+   "page_b": 12,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 3,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6QEC-JHA4-HPU",
+     "coords_px": [
+      4317.0,
+      169.0,
+      5497.0,
+      1601.0
+     ],
+     "page_px": [
+      7441,
+      3508
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.58022,
+      0.04843,
+      0.73878,
+      0.45641
+     ]
+    },
+    {
+     "id": "4AYT-7A3H-QWP",
+     "coords_px": [
+      3149.0,
+      217.0,
+      4309.0,
+      1591.0
+     ],
+     "page_px": [
+      7441,
+      3508
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.42327,
+      0.06211,
+      0.57915,
+      0.45356
+     ]
+    },
+    {
+     "id": "9W7L-6664-Y4Y",
+     "coords_px": [
+      249.0,
+      73.0,
+      3143.0,
+      1563.0
+     ],
+     "page_px": [
+      7441,
+      3508
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.03359,
+      0.02108,
+      0.42247,
+      0.44558
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_d4fdd55c9e29498ca2230ecc429f8962",
+     "coords_px": [
+      254.0,
+      71.0,
+      5498.0,
+      1619.0
+     ],
+     "page_px": [
+      7442,
+      3509
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.03412,
+      0.02035,
+      0.73881,
+      0.46126
+     ]
+    }
+   ],
+   "union_iou": 0.9866,
+   "union_contain": 0.9993,
+   "union_area_ratio": 0.988,
+   "sum_area_a": 0.290783,
+   "sum_area_b": 0.310705,
+   "task_id": "T0045",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ЭМ-К6",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v002/02_work/document.pdf",
+   "page_a": 24,
+   "page_b": 25,
+   "kind": "N:1",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4L9H-E46U-GU7",
+     "coords_px": [
+      4937.0,
+      1403.0,
+      6801.0,
+      2401.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 23,
+     "cat": null,
+     "norm": [
+      0.70382,
+      0.28295,
+      0.9695,
+      0.48408
+     ]
+    },
+    {
+     "id": "7349-WDKX-WLX",
+     "coords_px": [
+      4955.0,
+      43.0,
+      6501.0,
+      803.0
+     ],
+     "page_px": [
+      7015,
+      4961
+     ],
+     "page_index": 23,
+     "cat": null,
+     "norm": [
+      0.70639,
+      0.00887,
+      0.92674,
+      0.16203
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_e91694fbcc0f44be8026ce96d7fb688a",
+     "coords_px": [
+      4735.0,
+      106.0,
+      6934.0,
+      2413.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 24,
+     "cat": null,
+     "norm": [
+      0.67483,
+      0.02143,
+      0.98834,
+      0.48631
+     ]
+    }
+   ],
+   "union_iou": 0.8245,
+   "union_contain": 0.9736,
+   "union_area_ratio": 0.8662,
+   "sum_area_a": 0.087186,
+   "sum_area_b": 0.14575,
+   "task_id": "T0046",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 27,
+   "page_b": 30,
+   "kind": "N:M",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 4,
+   "blocks_a": [
+    {
+     "id": "blk_6ca7d611fe024bb2ac94d5fb0d004358",
+     "coords_px": [
+      201.0,
+      16.0,
+      4476.0,
+      4489.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 26,
+     "cat": null,
+     "norm": [
+      0.02863,
+      0.00327,
+      0.63791,
+      0.90485
+     ]
+    },
+    {
+     "id": "blk_470df0d5d7e14f98be7796601f9ed6d0",
+     "coords_px": [
+      4430.0,
+      64.0,
+      6983.0,
+      1632.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 26,
+     "cat": null,
+     "norm": [
+      0.63136,
+      0.0129,
+      0.99525,
+      0.32889
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_e0b62c8296e241be9f3d5ace1b4e928d",
+     "coords_px": [
+      221.0,
+      37.0,
+      4164.0,
+      4681.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 29,
+     "cat": null,
+     "norm": [
+      0.02099,
+      0.00742,
+      0.39571,
+      0.94358
+     ]
+    },
+    {
+     "id": "blk_5f6de1bc4f4e4655bc7d8f4c0da284e8",
+     "coords_px": [
+      4196.0,
+      38.0,
+      7165.0,
+      1665.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 29,
+     "cat": null,
+     "norm": [
+      0.39873,
+      0.00767,
+      0.68083,
+      0.33558
+     ]
+    },
+    {
+     "id": "blk_982093c2abcf4a2db8dd75d60abece67",
+     "coords_px": [
+      7368.0,
+      57.0,
+      10480.0,
+      1668.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 29,
+     "cat": null,
+     "norm": [
+      0.70016,
+      0.01146,
+      0.99585,
+      0.33623
+     ]
+    },
+    {
+     "id": "blk_6340a58ba71545f29bd2fcb0795fa65d",
+     "coords_px": [
+      4419.0,
+      1684.0,
+      8388.0,
+      3324.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 29,
+     "cat": null,
+     "norm": [
+      0.41986,
+      0.3394,
+      0.797,
+      0.66994
+     ]
+    }
+   ],
+   "union_iou": 0.9464,
+   "union_contain": 0.9954,
+   "union_area_ratio": 0.9549,
+   "sum_area_a": 0.664295,
+   "sum_area_b": 0.664,
+   "task_id": "T0047",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "discipline": "VK",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+   "page_a": 16,
+   "page_b": 16,
+   "kind": "N:M",
+   "rot_a": 90,
+   "rot_b": 90,
+   "rot_mismatch": false,
+   "n_a": 2,
+   "n_b": 2,
+   "blocks_a": [
+    {
+     "id": "blk_271a34cb33264f41ba573029c94736cb",
+     "coords_px": [
+      6773.0,
+      44.0,
+      12970.0,
+      4912.0
+     ],
+     "page_px": [
+      13031,
+      6140
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.51972,
+      0.00715,
+      0.99528,
+      0.80005
+     ]
+    },
+    {
+     "id": "blk_b384042784334e2186d6fb14b0bcd6bb",
+     "coords_px": [
+      6770.0,
+      4355.0,
+      9727.0,
+      6106.0
+     ],
+     "page_px": [
+      13031,
+      6140
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.51949,
+      0.70926,
+      0.74644,
+      0.99444
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_75ba8c0dc2974524974cfd64cbff65ea",
+     "coords_px": [
+      6750.0,
+      47.0,
+      12972.0,
+      4917.0
+     ],
+     "page_px": [
+      13031,
+      6140
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.51797,
+      0.00773,
+      0.99547,
+      0.80087
+     ]
+    },
+    {
+     "id": "blk_1130860ce9a94c6c9f67535f765f0bd6",
+     "coords_px": [
+      6775.0,
+      4284.0,
+      9745.0,
+      6104.0
+     ],
+     "page_px": [
+      13031,
+      6140
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.51989,
+      0.69779,
+      0.74781,
+      0.99414
+     ]
+    }
+   ],
+   "union_iou": 0.9955,
+   "union_contain": 0.9991,
+   "union_area_ratio": 0.9973,
+   "sum_area_a": 0.441789,
+   "sum_area_b": 0.44627,
+   "task_id": "T0048",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КМ-К3",
+   "discipline": "KM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v002/02_work/document.pdf",
+   "page_a": 7,
+   "page_b": 7,
+   "kind": "N:1",
+   "rot_a": 270,
+   "rot_b": 270,
+   "rot_mismatch": false,
+   "n_a": 3,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "TT3N-AJN7-LU4",
+     "coords_px": [
+      417.0,
+      5952.0,
+      2071.0,
+      6750.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 6,
+     "cat": null,
+     "norm": [
+      0.04208,
+      0.84839,
+      0.20858,
+      0.9621
+     ]
+    },
+    {
+     "id": "7MW3-C4AL-M7A",
+     "coords_px": [
+      377.0,
+      4052.0,
+      1355.0,
+      5756.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 6,
+     "cat": null,
+     "norm": [
+      0.03805,
+      0.57766,
+      0.1365,
+      0.82046
+     ]
+    },
+    {
+     "id": "9TPA-V7YV-LXV",
+     "coords_px": [
+      1419.0,
+      3896.0,
+      2285.0,
+      5862.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 6,
+     "cat": null,
+     "norm": [
+      0.14294,
+      0.55543,
+      0.23012,
+      0.83557
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "64FV-ANYT-VUW",
+     "coords_px": [
+      397.0,
+      3962.0,
+      2283.0,
+      6752.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 6,
+     "cat": null,
+     "norm": [
+      0.04006,
+      0.56483,
+      0.22992,
+      0.96238
+     ]
+    }
+   ],
+   "union_iou": 0.9649,
+   "union_contain": 0.9993,
+   "union_area_ratio": 1.0349,
+   "sum_area_a": 0.067257,
+   "sum_area_b": 0.075476,
+   "task_id": "T0049",
+   "tags": [
+    "multi"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v002/02_work/document.pdf",
+   "page_a": 63,
+   "page_b": 64,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "AQJK-AM9K-D33",
+     "coords_px": [
+      5601.0,
+      59.0,
+      8703.0,
+      3960.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 62,
+     "cat": null,
+     "norm": [
+      0.56392,
+      0.00855,
+      0.87618,
+      0.56455
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "7ALL-67MG-LL6",
+     "coords_px": [
+      5603.0,
+      61.0,
+      8705.0,
+      2551.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 63,
+     "cat": null,
+     "norm": [
+      0.56412,
+      0.00883,
+      0.87638,
+      0.36364
+     ]
+    }
+   ],
+   "union_iou": 0.6375,
+   "union_contain": 0.9994,
+   "union_area_ratio": 1.5671,
+   "sum_area_a": 0.173617,
+   "sum_area_b": 0.110791,
+   "task_id": "T0050",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 22,
+   "page_b": 25,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "blk_3e56b16a06e84f90a973736a51e10c1a",
+     "coords_px": [
+      4731.0,
+      4245.0,
+      6973.0,
+      4905.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 21,
+     "cat": "stamp",
+     "norm": [
+      0.67432,
+      0.85575,
+      0.99386,
+      0.9888
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_a0aa5427d69143eea1e86ebf38a4a4aa",
+     "coords_px": [
+      8240.0,
+      4246.0,
+      10485.0,
+      4904.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 24,
+     "cat": "stamp",
+     "norm": [
+      0.78298,
+      0.85587,
+      0.9963,
+      0.98849
+     ]
+    }
+   ],
+   "union_iou": 0.6529,
+   "union_contain": 0.9886,
+   "union_area_ratio": 1.5027,
+   "sum_area_a": 0.042513,
+   "sum_area_b": 0.028291,
+   "task_id": "T0051",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ЭМ-К3",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 12,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7UDF-FN9X-MYM",
+     "coords_px": [
+      7686.0,
+      2771.0,
+      9884.0,
+      3455.0
+     ],
+     "page_px": [
+      9932,
+      3507
+     ],
+     "page_index": 10,
+     "cat": "stamp",
+     "norm": [
+      0.77391,
+      0.79019,
+      0.99517,
+      0.98518
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "EDU4-JFDK-3QN",
+     "coords_px": [
+      8270.0,
+      4245.0,
+      10470.0,
+      4889.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 11,
+     "cat": "stamp",
+     "norm": [
+      0.78582,
+      0.8557,
+      0.99487,
+      0.98549
+     ]
+    }
+   ],
+   "union_iou": 0.6264,
+   "union_contain": 0.9976,
+   "union_area_ratio": 1.5901,
+   "sum_area_a": 0.043142,
+   "sum_area_b": 0.027131,
+   "task_id": "T0052",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 160,
+   "page_b": 101,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "GL7Y-FCQJ-RTC",
+     "coords_px": [
+      429.0,
+      1843.0,
+      2036.0,
+      2253.0
+     ],
+     "page_px": [
+      2480,
+      3507
+     ],
+     "page_index": 159,
+     "cat": null,
+     "norm": [
+      0.17325,
+      0.52566,
+      0.82111,
+      0.64253
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_ecb0cb93b3ff40daa2f93289fe3d2a0c",
+     "coords_px": [
+      217.0,
+      137.0,
+      2477.0,
+      3323.0
+     ],
+     "page_px": [
+      2481,
+      3508
+     ],
+     "page_index": 100,
+     "cat": null,
+     "norm": [
+      0.08738,
+      0.03915,
+      0.99837,
+      0.94726
+     ]
+    }
+   ],
+   "union_iou": 0.0915,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.0915,
+   "sum_area_a": 0.07572,
+   "sum_area_b": 0.827276,
+   "task_id": "T0053",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.39.2-К2",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.39.2-К2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.39.2-К2/versions/v002/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 10,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "96E4-9WEJ-G63",
+     "coords_px": [
+      9790.0,
+      5411.0,
+      10972.0,
+      5955.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.65731,
+      0.77138,
+      0.73667,
+      0.84892
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "49EE-P49W-LC9",
+     "coords_px": [
+      9790.0,
+      5446.0,
+      10992.0,
+      6432.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.65731,
+      0.77645,
+      0.73802,
+      0.91702
+     ]
+    }
+   ],
+   "union_iou": 0.4896,
+   "union_contain": 0.9346,
+   "union_area_ratio": 0.5424,
+   "sum_area_a": 0.006153,
+   "sum_area_b": 0.011345,
+   "task_id": "T0054",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.29.1-К1",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.29.1-К1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.29.1-К1/versions/v002/02_work/document.pdf",
+   "page_a": 15,
+   "page_b": 15,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9FMD-PGXK-UEN",
+     "coords_px": [
+      11902.0,
+      3606.0,
+      13672.0,
+      4378.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.79911,
+      0.51411,
+      0.91795,
+      0.62418
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "93QR-A3DK-L66",
+     "coords_px": [
+      11852.0,
+      3505.0,
+      14622.0,
+      5687.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 14,
+     "cat": null,
+     "norm": [
+      0.79576,
+      0.49971,
+      0.98174,
+      0.81072
+     ]
+    }
+   ],
+   "union_iou": 0.2261,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.2261,
+   "sum_area_a": 0.01308,
+   "sum_area_b": 0.057841,
+   "task_id": "T0055",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 19,
+   "page_b": 22,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "blk_5f401fdfa39740b6b1dae1a285cea3cf",
+     "coords_px": [
+      4731.0,
+      4246.0,
+      6973.0,
+      4906.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 18,
+     "cat": "stamp",
+     "norm": [
+      0.6743,
+      0.85586,
+      0.9939,
+      0.98886
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_dd4980048321447c9a4761d68d8ab376",
+     "coords_px": [
+      8240.0,
+      4247.0,
+      10488.0,
+      4903.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 21,
+     "cat": "stamp",
+     "norm": [
+      0.783,
+      0.85606,
+      0.99654,
+      0.98836
+     ]
+    }
+   ],
+   "union_iou": 0.6511,
+   "union_contain": 0.9876,
+   "union_area_ratio": 1.5045,
+   "sum_area_a": 0.042507,
+   "sum_area_b": 0.028253,
+   "task_id": "T0056",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К3 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_a": 8,
+   "page_b": 8,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "46RQ-4W4W-GTE",
+     "coords_px": [
+      11787.0,
+      4240.0,
+      13981.0,
+      4910.0
+     ],
+     "page_px": [
+      14041,
+      4962
+     ],
+     "page_index": 7,
+     "cat": "stamp",
+     "norm": [
+      0.83948,
+      0.85455,
+      0.99573,
+      0.98952
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6KRP-TPYC-MG9",
+     "coords_px": [
+      18806.0,
+      9213.0,
+      21004.0,
+      9883.0
+     ],
+     "page_px": [
+      21058,
+      9933
+     ],
+     "page_index": 7,
+     "cat": "stamp",
+     "norm": [
+      0.89307,
+      0.92752,
+      0.99744,
+      0.99497
+     ]
+    }
+   ],
+   "union_iou": 0.2925,
+   "union_contain": 0.9043,
+   "union_area_ratio": 2.9959,
+   "sum_area_a": 0.021089,
+   "sum_area_b": 0.007039,
+   "task_id": "T0057",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 27,
+   "page_b": 30,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "blk_f9ea7036824e44559d39e78c1dc215f4",
+     "coords_px": [
+      4730.0,
+      4246.0,
+      6973.0,
+      4906.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 26,
+     "cat": "stamp",
+     "norm": [
+      0.67423,
+      0.8558,
+      0.99394,
+      0.9889
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_1e3e3d1e29cc456690cfeaee3a5ae882",
+     "coords_px": [
+      8240.0,
+      4246.0,
+      10486.0,
+      4904.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 29,
+     "cat": "stamp",
+     "norm": [
+      0.78293,
+      0.85584,
+      0.99639,
+      0.98848
+     ]
+    }
+   ],
+   "union_iou": 0.6528,
+   "union_contain": 0.9885,
+   "union_area_ratio": 1.5029,
+   "sum_area_a": 0.042553,
+   "sum_area_b": 0.028314,
+   "task_id": "T0058",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-СОУЭ-К3-К6",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v002/02_work/document.pdf",
+   "page_a": 5,
+   "page_b": 5,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4XRR-FNPV-WLN",
+     "coords_px": [
+      4774.0,
+      4246.0,
+      6948.0,
+      4920.0
+     ],
+     "page_px": [
+      7016,
+      4962
+     ],
+     "page_index": 4,
+     "cat": "stamp",
+     "norm": [
+      0.68054,
+      0.85576,
+      0.99031,
+      0.99154
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9WFR-M6XU-K9L",
+     "coords_px": [
+      8271.0,
+      4248.0,
+      10463.0,
+      4910.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 4,
+     "cat": "stamp",
+     "norm": [
+      0.78586,
+      0.85616,
+      0.99411,
+      0.98952
+     ]
+    }
+   ],
+   "union_iou": 0.6405,
+   "union_contain": 0.9818,
+   "union_area_ratio": 1.5145,
+   "sum_area_a": 0.04206,
+   "sum_area_b": 0.027772,
+   "task_id": "T0059",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 32,
+   "page_b": 35,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "blk_138c2c76903841758652984952ba3a55",
+     "coords_px": [
+      4731.0,
+      4246.0,
+      6974.0,
+      4906.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 31,
+     "cat": "stamp",
+     "norm": [
+      0.67436,
+      0.85585,
+      0.99395,
+      0.98899
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_19b5d2fd7b5c4647ad5c7e6bbf4b50ff",
+     "coords_px": [
+      8239.0,
+      4246.0,
+      10486.0,
+      4904.0
+     ],
+     "page_px": [
+      10524,
+      4961
+     ],
+     "page_index": 34,
+     "cat": "stamp",
+     "norm": [
+      0.78284,
+      0.85587,
+      0.9964,
+      0.98854
+     ]
+    }
+   ],
+   "union_iou": 0.6533,
+   "union_contain": 0.9885,
+   "union_area_ratio": 1.5017,
+   "sum_area_a": 0.042548,
+   "sum_area_b": 0.028333,
+   "task_id": "T0060",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 148,
+   "page_b": 115,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4DJA-R9H4-EAU",
+     "coords_px": [
+      399.0,
+      1721.0,
+      2076.0,
+      2047.0
+     ],
+     "page_px": [
+      2480,
+      3507
+     ],
+     "page_index": 147,
+     "cat": null,
+     "norm": [
+      0.16116,
+      0.49088,
+      0.83723,
+      0.58381
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_e777bc4affa84456ab08e55939def7c0",
+     "coords_px": [
+      213.0,
+      151.0,
+      2478.0,
+      3399.0
+     ],
+     "page_px": [
+      2481,
+      3508
+     ],
+     "page_index": 114,
+     "cat": null,
+     "norm": [
+      0.08605,
+      0.04302,
+      0.99879,
+      0.96895
+     ]
+    }
+   ],
+   "union_iou": 0.0743,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.0743,
+   "sum_area_a": 0.062827,
+   "sum_area_b": 0.845131,
+   "task_id": "T0061",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+   "discipline": "SS",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/02_work/document.pdf",
+   "page_a": 36,
+   "page_b": 36,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6ADX-HNYG-VDY",
+     "coords_px": [
+      246.0,
+      2168.0,
+      2320.0,
+      2716.0
+     ],
+     "page_px": [
+      2480,
+      3508
+     ],
+     "page_index": 35,
+     "cat": null,
+     "norm": [
+      0.09919,
+      0.61802,
+      0.93548,
+      0.77423
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "4QK4-RAFL-6TC",
+     "coords_px": [
+      133.0,
+      1146.0,
+      2398.0,
+      3356.0
+     ],
+     "page_px": [
+      2480,
+      3508
+     ],
+     "page_index": 35,
+     "cat": null,
+     "norm": [
+      0.05399,
+      0.32668,
+      0.96696,
+      0.95667
+     ]
+    }
+   ],
+   "union_iou": 0.2271,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.2271,
+   "sum_area_a": 0.130641,
+   "sum_area_b": 0.575163,
+   "task_id": "T0062",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+   "discipline": "SS",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/02_work/document.pdf",
+   "page_a": 14,
+   "page_b": 14,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9WQQ-AXV9-LKW",
+     "coords_px": [
+      6018.0,
+      3028.0,
+      6802.0,
+      4014.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.57184,
+      0.61024,
+      0.64633,
+      0.80895
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6KWQ-6MNG-UFY",
+     "coords_px": [
+      5885.0,
+      3062.0,
+      7011.0,
+      4128.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 13,
+     "cat": null,
+     "norm": [
+      0.55919,
+      0.61724,
+      0.66616,
+      0.83199
+     ]
+    }
+   ],
+   "union_iou": 0.6079,
+   "union_contain": 0.9647,
+   "union_area_ratio": 0.6444,
+   "sum_area_a": 0.014803,
+   "sum_area_b": 0.022972,
+   "task_id": "T0063",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ВК2-К5 V1",
+   "discipline": "VK",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К5 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К5 V1/versions/v002/02_work/document.pdf",
+   "page_a": 10,
+   "page_b": 11,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7XKR-LU7Q-H77",
+     "coords_px": [
+      437.0,
+      3263.0,
+      6341.0,
+      9562.0
+     ],
+     "page_px": [
+      7015,
+      9932
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.06243,
+      0.32857,
+      0.90393,
+      0.96275
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_8f435c6aff814c7fade562db49b750a5",
+     "coords_px": [
+      630.0,
+      3206.0,
+      3851.0,
+      9700.0
+     ],
+     "page_px": [
+      7016,
+      9933
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.08974,
+      0.32278,
+      0.54895,
+      0.97658
+     ]
+    }
+   ],
+   "union_iou": 0.5366,
+   "union_contain": 0.97,
+   "union_area_ratio": 1.7775,
+   "sum_area_a": 0.53367,
+   "sum_area_b": 0.30023,
+   "task_id": "T0064",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.1-К5-К6",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К5-К6/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К5-К6/versions/v002/02_work/document.pdf",
+   "page_a": 6,
+   "page_b": 6,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "PYQY-4QLP-ACE",
+     "coords_px": [
+      990.0,
+      3782.0,
+      2836.0,
+      6566.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.06647,
+      0.53921,
+      0.19041,
+      0.93613
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "4XXU-W7HR-VKM",
+     "coords_px": [
+      907.0,
+      3722.0,
+      4807.0,
+      6538.0
+     ],
+     "page_px": [
+      14893,
+      7016
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.06096,
+      0.53064,
+      0.32281,
+      0.93189
+     ]
+    }
+   ],
+   "union_iou": 0.4609,
+   "union_contain": 0.9893,
+   "union_area_ratio": 0.4682,
+   "sum_area_a": 0.049195,
+   "sum_area_b": 0.105069,
+   "task_id": "T0065",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 157,
+   "page_b": 101,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "46TJ-KEHL-7AA",
+     "coords_px": [
+      379.0,
+      1847.0,
+      2042.0,
+      2293.0
+     ],
+     "page_px": [
+      2480,
+      3507
+     ],
+     "page_index": 156,
+     "cat": null,
+     "norm": [
+      0.1531,
+      0.5268,
+      0.82353,
+      0.65393
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_ecb0cb93b3ff40daa2f93289fe3d2a0c",
+     "coords_px": [
+      217.0,
+      137.0,
+      2477.0,
+      3323.0
+     ],
+     "page_px": [
+      2481,
+      3508
+     ],
+     "page_index": 100,
+     "cat": null,
+     "norm": [
+      0.08738,
+      0.03915,
+      0.99837,
+      0.94726
+     ]
+    }
+   ],
+   "union_iou": 0.103,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.103,
+   "sum_area_a": 0.085237,
+   "sum_area_b": 0.827276,
+   "task_id": "T0066",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К6 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_a": 20,
+   "page_b": 20,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9TL4-PXJN-9RU",
+     "coords_px": [
+      6454.0,
+      1784.0,
+      8548.0,
+      2576.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 19,
+     "cat": null,
+     "norm": [
+      0.61326,
+      0.35953,
+      0.81224,
+      0.51915
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9G3A-TYMJ-K4P",
+     "coords_px": [
+      6485.0,
+      1769.0,
+      8481.0,
+      3240.0
+     ],
+     "page_px": [
+      10525,
+      4962
+     ],
+     "page_index": 19,
+     "cat": null,
+     "norm": [
+      0.61619,
+      0.35657,
+      0.80581,
+      0.6531
+     ]
+    }
+   ],
+   "union_iou": 0.5243,
+   "union_contain": 0.953,
+   "union_area_ratio": 0.5648,
+   "sum_area_a": 0.031759,
+   "sum_area_b": 0.056231,
+   "task_id": "T0067",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/02_work/document.pdf",
+   "page_a": 77,
+   "page_b": 82,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9KXJ-N9KT-6M4",
+     "coords_px": [
+      172.0,
+      1092.0,
+      2378.0,
+      2646.0
+     ],
+     "page_px": [
+      2480,
+      3508
+     ],
+     "page_index": 76,
+     "cat": null,
+     "norm": [
+      0.06935,
+      0.31129,
+      0.95887,
+      0.75428
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6JUX-LXXP-EPY",
+     "coords_px": [
+      33.0,
+      30.0,
+      2480.0,
+      3432.0
+     ],
+     "page_px": [
+      2480,
+      3508
+     ],
+     "page_index": 81,
+     "cat": null,
+     "norm": [
+      0.0137,
+      0.00855,
+      1.0,
+      0.97834
+     ]
+    }
+   ],
+   "union_iou": 0.412,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.412,
+   "sum_area_a": 0.394044,
+   "sum_area_b": 0.956499,
+   "task_id": "T0068",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К3 (Книга 2)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v002/02_work/document.pdf",
+   "page_a": 13,
+   "page_b": 13,
+   "kind": "1:1_nested",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7LPQ-KJUJ-C3Q",
+     "coords_px": [
+      5593.0,
+      49.0,
+      9881.0,
+      2145.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.56312,
+      0.00712,
+      0.99477,
+      0.30579
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "94RQ-TWP4-Y9X",
+     "coords_px": [
+      5557.0,
+      109.0,
+      7905.0,
+      2225.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.55949,
+      0.01567,
+      0.79585,
+      0.31718
+     ]
+    }
+   ],
+   "union_iou": 0.509,
+   "union_contain": 0.9474,
+   "union_area_ratio": 1.809,
+   "sum_area_a": 0.128917,
+   "sum_area_b": 0.071265,
+   "task_id": "T0069",
+   "tags": [
+    "nested"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР0.3-ПА",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.3-ПА/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.3-ПА/versions/v002/02_work/document.pdf",
+   "page_a": 6,
+   "page_b": 6,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9NKF-MF6N-C9V",
+     "coords_px": [
+      5126.0,
+      5902.0,
+      7416.0,
+      7015.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.51611,
+      0.84146,
+      0.74668,
+      1.0
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9TLD-DPG9-AYU",
+     "coords_px": [
+      5226.0,
+      5941.0,
+      7304.0,
+      6967.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 5,
+     "cat": null,
+     "norm": [
+      0.52627,
+      0.84692,
+      0.73545,
+      0.99316
+     ]
+    }
+   ],
+   "union_iou": 0.8368,
+   "union_contain": 1.0,
+   "union_area_ratio": 1.195,
+   "sum_area_a": 0.036554,
+   "sum_area_b": 0.03059,
+   "task_id": "T0070",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К5 (Книга 2)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 13,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4JL7-HFFE-MDY",
+     "coords_px": [
+      949.0,
+      111.0,
+      5341.0,
+      6064.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.09563,
+      0.01596,
+      0.53775,
+      0.86435
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_5031f5a8e704415b80c952e53d14c7bd",
+     "coords_px": [
+      961.0,
+      57.0,
+      5229.0,
+      6437.0
+     ],
+     "page_px": [
+      9934,
+      7017
+     ],
+     "page_index": 12,
+     "cat": null,
+     "norm": [
+      0.09677,
+      0.00814,
+      0.52633,
+      0.9173
+     ]
+    }
+   ],
+   "union_iou": 0.9084,
+   "union_contain": 0.9716,
+   "union_area_ratio": 0.9604,
+   "sum_area_a": 0.375088,
+   "sum_area_b": 0.390546,
+   "task_id": "T0071",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 13,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "blk_f84b121691374febba6429dff604dedc",
+     "coords_px": [
+      1213.0,
+      4247.0,
+      3464.0,
+      4915.0
+     ],
+     "page_px": [
+      3508,
+      4961
+     ],
+     "page_index": 10,
+     "cat": "stamp",
+     "norm": [
+      0.34581,
+      0.85604,
+      0.9876,
+      0.99064
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_f5b0c3e291b14990a5ec90211ba7010c",
+     "coords_px": [
+      1212.0,
+      4244.0,
+      3463.0,
+      4916.0
+     ],
+     "page_px": [
+      3508,
+      4961
+     ],
+     "page_index": 12,
+     "cat": "stamp",
+     "norm": [
+      0.3454,
+      0.85546,
+      0.98721,
+      0.99089
+     ]
+    }
+   ],
+   "union_iou": 0.9927,
+   "union_contain": 0.9994,
+   "union_area_ratio": 0.9939,
+   "sum_area_a": 0.086383,
+   "sum_area_b": 0.086916,
+   "task_id": "T0072",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v002/02_work/document.pdf",
+   "page_a": 19,
+   "page_b": 20,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4FNJ-4DW3-PRW",
+     "coords_px": [
+      7676.0,
+      6307.0,
+      9892.0,
+      6965.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 18,
+     "cat": "stamp",
+     "norm": [
+      0.7729,
+      0.89909,
+      0.99597,
+      0.99287
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_7767a8828421488f87df5949d1d25653",
+     "coords_px": [
+      7637.0,
+      6297.0,
+      9882.0,
+      6966.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 19,
+     "cat": "stamp",
+     "norm": [
+      0.76884,
+      0.89748,
+      0.9949,
+      0.99284
+     ]
+    }
+   ],
+   "union_iou": 0.9607,
+   "union_contain": 0.9948,
+   "union_area_ratio": 0.9705,
+   "sum_area_a": 0.020921,
+   "sum_area_b": 0.021557,
+   "task_id": "T0073",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К2 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v002/02_work/document.pdf",
+   "page_a": 19,
+   "page_b": 19,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "63JG-PLMX-N93",
+     "coords_px": [
+      5652.0,
+      460.0,
+      8992.0,
+      2662.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 18,
+     "cat": null,
+     "norm": [
+      0.56907,
+      0.06558,
+      0.90536,
+      0.37953
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6HYT-GJL6-QF4",
+     "coords_px": [
+      5590.0,
+      411.0,
+      9206.0,
+      2789.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 18,
+     "cat": null,
+     "norm": [
+      0.56292,
+      0.05872,
+      0.92692,
+      0.39766
+     ]
+    }
+   ],
+   "union_iou": 0.8557,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.8557,
+   "sum_area_a": 0.105575,
+   "sum_area_b": 0.123375,
+   "task_id": "T0074",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К6 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v003/02_work/document.pdf",
+   "page_a": 12,
+   "page_b": 12,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4CVJ-6XDP-KXQ",
+     "coords_px": [
+      261.0,
+      0.0,
+      7233.0,
+      2322.0
+     ],
+     "page_px": [
+      7441,
+      3508
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.03521,
+      0.0,
+      0.97205,
+      0.66211
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "6HJQ-LNUN-CKU",
+     "coords_px": [
+      243.0,
+      41.0,
+      7365.0,
+      2518.0
+     ],
+     "page_px": [
+      7441,
+      3508
+     ],
+     "page_index": 11,
+     "cat": null,
+     "norm": [
+      0.03279,
+      0.01197,
+      0.98979,
+      0.71795
+     ]
+    }
+   ],
+   "union_iou": 0.8868,
+   "union_contain": 0.9819,
+   "union_area_ratio": 0.9181,
+   "sum_area_a": 0.620293,
+   "sum_area_b": 0.675626,
+   "task_id": "T0075",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АК-К6 (Книга 1)",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_a": 14,
+   "page_b": 14,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9UEV-WAAP-4EG",
+     "coords_px": [
+      2702.0,
+      2798.0,
+      4898.0,
+      3452.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 13,
+     "cat": "stamp",
+     "norm": [
+      0.54454,
+      0.79761,
+      0.9871,
+      0.98404
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "4U43-RX4D-V6L",
+     "coords_px": [
+      2714.0,
+      2790.0,
+      4890.0,
+      3434.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 13,
+     "cat": "stamp",
+     "norm": [
+      0.54714,
+      0.79544,
+      0.9855,
+      0.97892
+     ]
+    }
+   ],
+   "union_iou": 0.9523,
+   "union_contain": 0.9882,
+   "union_area_ratio": 1.0259,
+   "sum_area_a": 0.082508,
+   "sum_area_b": 0.080428,
+   "task_id": "T0076",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v002/02_work/document.pdf",
+   "page_a": 27,
+   "page_b": 27,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7U6Y-KARJ-VYU",
+     "coords_px": [
+      7677.0,
+      6286.0,
+      9891.0,
+      6958.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 26,
+     "cat": "stamp",
+     "norm": [
+      0.7729,
+      0.89598,
+      0.99577,
+      0.99174
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9KDQ-HQPK-WFP",
+     "coords_px": [
+      7681.0,
+      6324.0,
+      9887.0,
+      6964.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 26,
+     "cat": "stamp",
+     "norm": [
+      0.7733,
+      0.9014,
+      0.99537,
+      0.99259
+     ]
+    }
+   ],
+   "union_iou": 0.9318,
+   "union_contain": 0.9906,
+   "union_area_ratio": 1.0538,
+   "sum_area_a": 0.021341,
+   "sum_area_b": 0.020251,
+   "task_id": "T0077",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ2-К2 V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v002/02_work/document.pdf",
+   "page_a": 19,
+   "page_b": 19,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7Y63-HAA9-7F7",
+     "coords_px": [
+      7686.0,
+      6308.0,
+      9874.0,
+      6964.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 18,
+     "cat": "stamp",
+     "norm": [
+      0.77386,
+      0.89934,
+      0.99416,
+      0.99287
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "TMFK-EAYA-VNT",
+     "coords_px": [
+      7688.0,
+      6295.0,
+      9868.0,
+      6953.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 18,
+     "cat": "stamp",
+     "norm": [
+      0.77411,
+      0.89738,
+      0.99356,
+      0.99116
+     ]
+    }
+   ],
+   "union_iou": 0.9579,
+   "union_contain": 0.979,
+   "union_area_ratio": 1.0011,
+   "sum_area_a": 0.020604,
+   "sum_area_b": 0.020581,
+   "task_id": "T0078",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.33-38.1-К2",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.33-38.1-К2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.33-38.1-К2/versions/v002/02_work/document.pdf",
+   "page_a": 17,
+   "page_b": 19,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4WX4-KXK6-WPY",
+     "coords_px": [
+      7690.0,
+      6305.0,
+      9878.0,
+      6951.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 16,
+     "cat": "stamp",
+     "norm": [
+      0.77431,
+      0.8988,
+      0.99456,
+      0.99088
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_f88cbd589b344934a9b00203a6a31be8",
+     "coords_px": [
+      7689.0,
+      6300.0,
+      9871.0,
+      6952.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 18,
+     "cat": "stamp",
+     "norm": [
+      0.77411,
+      0.89794,
+      0.99371,
+      0.99087
+     ]
+    }
+   ],
+   "union_iou": 0.9859,
+   "union_contain": 0.996,
+   "union_area_ratio": 0.9938,
+   "sum_area_a": 0.02028,
+   "sum_area_b": 0.020406,
+   "task_id": "T0079",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "discipline": "AR",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v002/02_work/document.pdf",
+   "page_a": 38,
+   "page_b": 38,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9673-PLEE-96N",
+     "coords_px": [
+      7696.0,
+      6310.0,
+      9878.0,
+      6968.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 37,
+     "cat": "stamp",
+     "norm": [
+      0.77487,
+      0.89937,
+      0.99456,
+      0.99316
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9L4N-6JG3-DAU",
+     "coords_px": [
+      7679.0,
+      6298.0,
+      9883.0,
+      6962.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 37,
+     "cat": "stamp",
+     "norm": [
+      0.7731,
+      0.89769,
+      0.99497,
+      0.99231
+     ]
+    }
+   ],
+   "union_iou": 0.964,
+   "union_contain": 0.9909,
+   "union_area_ratio": 0.9815,
+   "sum_area_a": 0.020604,
+   "sum_area_b": 0.020991,
+   "task_id": "T0080",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ЭО-К5",
+   "discipline": "EOM",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v002/02_work/document.pdf",
+   "page_a": 10,
+   "page_b": 11,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4K4M-H4AA-3QJ",
+     "coords_px": [
+      246.0,
+      62.0,
+      4428.0,
+      6980.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 9,
+     "cat": null,
+     "norm": [
+      0.01652,
+      0.00884,
+      0.2973,
+      0.99515
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "7MAT-GP7G-A4U",
+     "coords_px": [
+      280.0,
+      73.0,
+      4520.0,
+      6957.0
+     ],
+     "page_px": [
+      14894,
+      7015
+     ],
+     "page_index": 10,
+     "cat": null,
+     "norm": [
+      0.0188,
+      0.01055,
+      0.30348,
+      0.99173
+     ]
+    }
+   ],
+   "union_iou": 0.9656,
+   "union_contain": 0.9867,
+   "union_area_ratio": 0.9915,
+   "sum_area_a": 0.276941,
+   "sum_area_b": 0.279322,
+   "task_id": "T0081",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР0.2-ПА",
+   "discipline": "AR",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.2-ПА/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.2-ПА/versions/v003/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 9,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "4U3M-KXPH-XU7",
+     "coords_px": [
+      4653.0,
+      61.0,
+      9556.0,
+      4251.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.46849,
+      0.00884,
+      0.96215,
+      0.60604
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "7AXW-LKCH-U7A",
+     "coords_px": [
+      4689.0,
+      63.0,
+      9382.0,
+      4171.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": null,
+     "norm": [
+      0.47212,
+      0.00912,
+      0.94463,
+      0.59464
+     ]
+    }
+   ],
+   "union_iou": 0.9384,
+   "union_contain": 1.0,
+   "union_area_ratio": 1.0656,
+   "sum_area_a": 0.294816,
+   "sum_area_b": 0.276669,
+   "task_id": "T0082",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.1-К4",
+   "discipline": "AR",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4/versions/v003/02_work/document.pdf",
+   "page_a": 9,
+   "page_b": 9,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "93AC-WWF3-QAF",
+     "coords_px": [
+      7678.0,
+      6291.0,
+      9882.0,
+      6963.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 8,
+     "cat": "stamp",
+     "norm": [
+      0.7731,
+      0.89681,
+      0.99497,
+      0.99259
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_8a63c2407cca4d568d65ccd64d276626",
+     "coords_px": [
+      7678.0,
+      6299.0,
+      9891.0,
+      6964.0
+     ],
+     "page_px": [
+      9933,
+      7016
+     ],
+     "page_index": 8,
+     "cat": "stamp",
+     "norm": [
+      0.77302,
+      0.89784,
+      0.99573,
+      0.99264
+     ]
+    }
+   ],
+   "union_iou": 0.985,
+   "union_contain": 0.9956,
+   "union_area_ratio": 1.0065,
+   "sum_area_a": 0.02125,
+   "sum_area_b": 0.021114,
+   "task_id": "T0083",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ВК2.1-ПА V1",
+   "discipline": "VK",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.1-ПА V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.1-ПА V1/versions/v002/02_work/document.pdf",
+   "page_a": 40,
+   "page_b": 41,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "7K6E-LUH3-TNJ",
+     "coords_px": [
+      2710.0,
+      2798.0,
+      4896.0,
+      3448.0
+     ],
+     "page_px": [
+      4961,
+      3507
+     ],
+     "page_index": 39,
+     "cat": "stamp",
+     "norm": [
+      0.54637,
+      0.79806,
+      0.9871,
+      0.98346
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_137149053e454b73b6016f265467567b",
+     "coords_px": [
+      2706.0,
+      2787.0,
+      4909.0,
+      3464.0
+     ],
+     "page_px": [
+      4961,
+      3508
+     ],
+     "page_index": 40,
+     "cat": "stamp",
+     "norm": [
+      0.54545,
+      0.79458,
+      0.98951,
+      0.98746
+     ]
+    }
+   ],
+   "union_iou": 0.954,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.954,
+   "sum_area_a": 0.081709,
+   "sum_area_b": 0.085648,
+   "task_id": "T0084",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-СОУЭ-К3-К6",
+   "discipline": "SS",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-СОУЭ-К3-К6/versions/v002/02_work/document.pdf",
+   "page_a": 39,
+   "page_b": 33,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6TT7-3KK3-RFR",
+     "coords_px": [
+      2722.0,
+      2804.0,
+      4898.0,
+      3442.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 38,
+     "cat": "stamp",
+     "norm": [
+      0.54875,
+      0.79943,
+      0.98711,
+      0.9812
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9MTE-JJYT-JRP",
+     "coords_px": [
+      2720.0,
+      2790.0,
+      4898.0,
+      3446.0
+     ],
+     "page_px": [
+      4962,
+      3508
+     ],
+     "page_index": 32,
+     "cat": "stamp",
+     "norm": [
+      0.54835,
+      0.79544,
+      0.98711,
+      0.98234
+     ]
+    }
+   ],
+   "union_iou": 0.9717,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.9717,
+   "sum_area_a": 0.079678,
+   "sum_area_b": 0.082002,
+   "task_id": "T0085",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-ОВ1.2-К1_V1",
+   "discipline": "OV",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К1_V1/versions/v002/02_work/document.pdf",
+   "page_a": 41,
+   "page_b": 48,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "blk_d0e6ce6ad3db4c31810d4dc774bb4dad",
+     "coords_px": [
+      4732.0,
+      4244.0,
+      6972.0,
+      4906.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 40,
+     "cat": "stamp",
+     "norm": [
+      0.67445,
+      0.85544,
+      0.99378,
+      0.98883
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_1a445d8c1db9473794ac7939456c5fc1",
+     "coords_px": [
+      4736.0,
+      4244.0,
+      6974.0,
+      4905.0
+     ],
+     "page_px": [
+      7016,
+      4961
+     ],
+     "page_index": 47,
+     "cat": "stamp",
+     "norm": [
+      0.67497,
+      0.85552,
+      0.99408,
+      0.98875
+     ]
+    }
+   ],
+   "union_iou": 0.9963,
+   "union_contain": 0.999,
+   "union_area_ratio": 1.0018,
+   "sum_area_a": 0.042594,
+   "sum_area_b": 0.042518,
+   "task_id": "T0086",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-КЖ5.1-К1К2",
+   "discipline": "KJ",
+   "ver_a": "v001",
+   "ver_b": "v002",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.1-К1К2/versions/v001/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.1-К1К2/versions/v002/02_work/document.pdf",
+   "page_a": 11,
+   "page_b": 11,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "6N4X-WUNF-E6X",
+     "coords_px": [
+      7678.0,
+      6309.0,
+      9882.0,
+      6967.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 10,
+     "cat": "stamp",
+     "norm": [
+      0.7731,
+      0.89937,
+      0.99497,
+      0.99316
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "44UU-V6NP-WTE",
+     "coords_px": [
+      7682.0,
+      6306.0,
+      9878.0,
+      6952.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 10,
+     "cat": "stamp",
+     "norm": [
+      0.77346,
+      0.89906,
+      0.99456,
+      0.99116
+     ]
+    }
+   ],
+   "union_iou": 0.9721,
+   "union_contain": 0.9966,
+   "union_area_ratio": 1.0218,
+   "sum_area_a": 0.020808,
+   "sum_area_b": 0.020364,
+   "task_id": "T0087",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "discipline": "AR",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v003/02_work/document.pdf",
+   "page_a": 8,
+   "page_b": 8,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "9LM7-CHWQ-N66",
+     "coords_px": [
+      239.0,
+      49.0,
+      6836.0,
+      4239.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.02416,
+      0.00713,
+      0.68834,
+      0.60433
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "9N3C-MK4N-RVE",
+     "coords_px": [
+      199.0,
+      23.0,
+      6878.0,
+      4251.0
+     ],
+     "page_px": [
+      9932,
+      7015
+     ],
+     "page_index": 7,
+     "cat": null,
+     "norm": [
+      0.02013,
+      0.00342,
+      0.69257,
+      0.60604
+     ]
+    }
+   ],
+   "union_iou": 0.9788,
+   "union_contain": 1.0,
+   "union_area_ratio": 0.9788,
+   "sum_area_a": 0.396655,
+   "sum_area_b": 0.405226,
+   "task_id": "T0088",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  },
+  {
+   "doc_id": "13AB-РД-СОТ-К7 V1",
+   "discipline": "SS",
+   "ver_a": "v002",
+   "ver_b": "v003",
+   "pdf_a": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v002/02_work/document.pdf",
+   "pdf_b": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v003/02_work/document.pdf",
+   "page_a": 16,
+   "page_b": 16,
+   "kind": "1:1_aligned",
+   "rot_a": 0,
+   "rot_b": 0,
+   "rot_mismatch": false,
+   "n_a": 1,
+   "n_b": 1,
+   "blocks_a": [
+    {
+     "id": "blk_17e54c2231764e31a50c9d0562062595",
+     "coords_px": [
+      230.0,
+      419.0,
+      4230.0,
+      2478.0
+     ],
+     "page_px": [
+      4961,
+      3508
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.04637,
+      0.11941,
+      0.85256,
+      0.70637
+     ]
+    }
+   ],
+   "blocks_b": [
+    {
+     "id": "blk_d3ec638f07c74c30a7c1e377d31c3cb2",
+     "coords_px": [
+      240.0,
+      359.0,
+      4166.0,
+      2539.0
+     ],
+     "page_px": [
+      4961,
+      3508
+     ],
+     "page_index": 15,
+     "cat": null,
+     "norm": [
+      0.04837,
+      0.10221,
+      0.83974,
+      0.7237
+     ]
+    }
+   ],
+   "union_iou": 0.928,
+   "union_contain": 0.9816,
+   "union_area_ratio": 0.9621,
+   "sum_area_a": 0.473199,
+   "sum_area_b": 0.491832,
+   "task_id": "T0089",
+   "tags": [
+    "control_aligned"
+   ],
+   "forced_pair": null
+  }
+ ]
+}

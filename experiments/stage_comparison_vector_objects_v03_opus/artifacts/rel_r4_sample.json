@@ -1,0 +1,5135 @@
+{
+ "seed": 20260823,
+ "blocks_used": 110,
+ "n": {
+  "CONNECTED_TO": 30,
+  "PART_OF": 30,
+  "INSIDE": 30,
+  "CONTAINS": 30,
+  "ADJACENT": 30,
+  "ALIGNED": 30,
+  "LEADER_TO": 30,
+  "LABEL_ANCHOR": 30,
+  "REPEATED_WITH": 30
+ },
+ "items": {
+  "CONNECTED_TO": [
+   {
+    "id": "CONNECTED_TO_00",
+    "type": "CONNECTED_TO",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 17,
+    "detail": {
+     "d_pt": 0.48,
+     "tol_pt": 0.8065
+    }
+   },
+   {
+    "id": "CONNECTED_TO_01",
+    "type": "CONNECTED_TO",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.48,
+     "tol_pt": 0.8065
+    }
+   },
+   {
+    "id": "CONNECTED_TO_02",
+    "type": "CONNECTED_TO",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 9,
+    "b_nseg": 14,
+    "detail": {
+     "d_pt": 0.0001,
+     "tol_pt": 0.8065
+    }
+   },
+   {
+    "id": "CONNECTED_TO_03",
+    "type": "CONNECTED_TO",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 5,
+    "detail": {
+     "d_pt": 0.0864,
+     "tol_pt": 0.8213
+    }
+   },
+   {
+    "id": "CONNECTED_TO_04",
+    "type": "CONNECTED_TO",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 25,
+    "b_nseg": 34,
+    "detail": {
+     "d_pt": 0.24,
+     "tol_pt": 0.8213
+    }
+   },
+   {
+    "id": "CONNECTED_TO_05",
+    "type": "CONNECTED_TO",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 25,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.69,
+     "tol_pt": 0.8213
+    }
+   },
+   {
+    "id": "CONNECTED_TO_06",
+    "type": "CONNECTED_TO",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 40,
+    "b_nseg": 3,
+    "detail": {
+     "d_pt": 0.8658,
+     "tol_pt": 0.94
+    }
+   },
+   {
+    "id": "CONNECTED_TO_07",
+    "type": "CONNECTED_TO",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 10,
+    "b_nseg": 90,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.94
+    }
+   },
+   {
+    "id": "CONNECTED_TO_08",
+    "type": "CONNECTED_TO",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "composite",
+    "a_nseg": 3,
+    "b_nseg": 2842,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.94
+    }
+   },
+   {
+    "id": "CONNECTED_TO_09",
+    "type": "CONNECTED_TO",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 20,
+    "b_nseg": 8,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.95
+    }
+   },
+   {
+    "id": "CONNECTED_TO_10",
+    "type": "CONNECTED_TO",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 5,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.95
+    }
+   },
+   {
+    "id": "CONNECTED_TO_11",
+    "type": "CONNECTED_TO",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 21,
+    "b_nseg": 8,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.95
+    }
+   },
+   {
+    "id": "CONNECTED_TO_12",
+    "type": "CONNECTED_TO",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.7802
+    }
+   },
+   {
+    "id": "CONNECTED_TO_13",
+    "type": "CONNECTED_TO",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.7802
+    }
+   },
+   {
+    "id": "CONNECTED_TO_14",
+    "type": "CONNECTED_TO",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.7802
+    }
+   },
+   {
+    "id": "CONNECTED_TO_15",
+    "type": "CONNECTED_TO",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.8424
+    }
+   },
+   {
+    "id": "CONNECTED_TO_16",
+    "type": "CONNECTED_TO",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.8424
+    }
+   },
+   {
+    "id": "CONNECTED_TO_17",
+    "type": "CONNECTED_TO",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.8424
+    }
+   },
+   {
+    "id": "CONNECTED_TO_18",
+    "type": "CONNECTED_TO",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 7,
+    "detail": {
+     "d_pt": 0.6274,
+     "tol_pt": 0.7802
+    }
+   },
+   {
+    "id": "CONNECTED_TO_19",
+    "type": "CONNECTED_TO",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 7,
+    "b_nseg": 4,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.7802
+    }
+   },
+   {
+    "id": "CONNECTED_TO_20",
+    "type": "CONNECTED_TO",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "stray",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.7802
+    }
+   },
+   {
+    "id": "CONNECTED_TO_21",
+    "type": "CONNECTED_TO",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 7,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.54,
+     "tol_pt": 0.8209
+    }
+   },
+   {
+    "id": "CONNECTED_TO_22",
+    "type": "CONNECTED_TO",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 3,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.8209
+    }
+   },
+   {
+    "id": "CONNECTED_TO_23",
+    "type": "CONNECTED_TO",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 3,
+    "b_nseg": 3,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.8209
+    }
+   },
+   {
+    "id": "CONNECTED_TO_24",
+    "type": "CONNECTED_TO",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "composite",
+    "b_cls": "linear",
+    "a_nseg": 475,
+    "b_nseg": 1,
+    "detail": {
+     "d_pt": 0.1961,
+     "tol_pt": 0.783
+    }
+   },
+   {
+    "id": "CONNECTED_TO_25",
+    "type": "CONNECTED_TO",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "composite",
+    "a_nseg": 1,
+    "b_nseg": 13,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.783
+    }
+   },
+   {
+    "id": "CONNECTED_TO_26",
+    "type": "CONNECTED_TO",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "composite",
+    "a_nseg": 3,
+    "b_nseg": 475,
+    "detail": {
+     "d_pt": 0.6282,
+     "tol_pt": 0.783
+    }
+   },
+   {
+    "id": "CONNECTED_TO_27",
+    "type": "CONNECTED_TO",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 38,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.902
+    }
+   },
+   {
+    "id": "CONNECTED_TO_28",
+    "type": "CONNECTED_TO",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 38,
+    "b_nseg": 2,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.902
+    }
+   },
+   {
+    "id": "CONNECTED_TO_29",
+    "type": "CONNECTED_TO",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 38,
+    "b_nseg": 2,
+    "detail": {
+     "d_pt": 0.0,
+     "tol_pt": 0.902
+    }
+   }
+  ],
+  "PART_OF": [
+   {
+    "id": "PART_OF_00",
+    "type": "PART_OF",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_01",
+    "type": "PART_OF",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_02",
+    "type": "PART_OF",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 6,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_03",
+    "type": "PART_OF",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 1034,
+    "S": 9.13,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 19,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_04",
+    "type": "PART_OF",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_05",
+    "type": "PART_OF",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_06",
+    "type": "PART_OF",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "stray",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_07",
+    "type": "PART_OF",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 292,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_08",
+    "type": "PART_OF",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_09",
+    "type": "PART_OF",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 311,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_10",
+    "type": "PART_OF",
+    "block": "49RP-M9LN-JMF",
+    "doc": "13АВ-РД-КМ-К3",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 20379,
+    "S": 9.126,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_11",
+    "type": "PART_OF",
+    "block": "7MFK-GCJM-AVT",
+    "doc": "13АВ-РД-ГП2 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "vector_raster_mix",
+    "n_seg": 19811,
+    "S": 10.996,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 7,
+    "b_nseg": 68,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_12",
+    "type": "PART_OF",
+    "block": "blk_9a8c86a7e64543069b1424ad220a2dca",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 9790,
+    "S": 10.995,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 224,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_13",
+    "type": "PART_OF",
+    "block": "blk_9a8c86a7e64543069b1424ad220a2dca",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 9790,
+    "S": 10.995,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 224,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_14",
+    "type": "PART_OF",
+    "block": "blk_9a8c86a7e64543069b1424ad220a2dca",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 9790,
+    "S": 10.995,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 224,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_15",
+    "type": "PART_OF",
+    "block": "9TP6-RNQ3-QLN",
+    "doc": "13АВ-РД-НВ V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "vector_raster_mix",
+    "n_seg": 13025,
+    "S": 9.819,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 171,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_16",
+    "type": "PART_OF",
+    "block": "9TP6-RNQ3-QLN",
+    "doc": "13АВ-РД-НВ V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "vector_raster_mix",
+    "n_seg": 13025,
+    "S": 9.819,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 43,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_17",
+    "type": "PART_OF",
+    "block": "9TP6-RNQ3-QLN",
+    "doc": "13АВ-РД-НВ V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "vector_raster_mix",
+    "n_seg": 13025,
+    "S": 9.819,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 43,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_18",
+    "type": "PART_OF",
+    "block": "7YMA-E7V4-9E3",
+    "doc": "13АВ-РД-КМ-К6",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 22657,
+    "S": 8.858,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 7,
+    "b_nseg": 8920,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_19",
+    "type": "PART_OF",
+    "block": "7YMA-E7V4-9E3",
+    "doc": "13АВ-РД-КМ-К6",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 22657,
+    "S": 8.858,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 1864,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_20",
+    "type": "PART_OF",
+    "block": "7YMA-E7V4-9E3",
+    "doc": "13АВ-РД-КМ-К6",
+    "version": "v002",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 22657,
+    "S": 8.858,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 5,
+    "b_nseg": 8920,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_21",
+    "type": "PART_OF",
+    "block": "blk_362a88d5b0ca42b8b6946530dcabdc29",
+    "doc": "ПД-00542664-СОУЭ-5_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 609,
+    "S": 10.995,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 232,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_22",
+    "type": "PART_OF",
+    "block": "blk_362a88d5b0ca42b8b6946530dcabdc29",
+    "doc": "ПД-00542664-СОУЭ-5_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 609,
+    "S": 10.995,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 232,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_23",
+    "type": "PART_OF",
+    "block": "TGM7-X43L-FMM",
+    "doc": "13АВ-РД-ЭО-К3",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "stamp",
+    "n_seg": 850,
+    "S": 9.42,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 657,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_24",
+    "type": "PART_OF",
+    "block": "blk_19c1eb4374fe4eacb2e25431f89e3148",
+    "doc": "13АВ-РД-КЖ5.30-31.2-К2_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 896,
+    "S": 8.895,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_25",
+    "type": "PART_OF",
+    "block": "blk_19c1eb4374fe4eacb2e25431f89e3148",
+    "doc": "13АВ-РД-КЖ5.30-31.2-К2_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 896,
+    "S": 8.895,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_26",
+    "type": "PART_OF",
+    "block": "4M67-VM6C-L47",
+    "doc": "Mockup 4",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 2000,
+    "S": 12.44,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 6,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_27",
+    "type": "PART_OF",
+    "block": "4M67-VM6C-L47",
+    "doc": "Mockup 4",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 2000,
+    "S": 12.44,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 6,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_28",
+    "type": "PART_OF",
+    "block": "4M67-VM6C-L47",
+    "doc": "Mockup 4",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 2000,
+    "S": 12.44,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 6,
+    "detail": {}
+   },
+   {
+    "id": "PART_OF_29",
+    "type": "PART_OF",
+    "block": "blk_fc686f67d4bb4747a9d4b5f7477d022d",
+    "doc": "СТ26_01-14-АР2-1-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 22109,
+    "S": 6.981,
+    "a_cls": "stray",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {}
+   }
+  ],
+  "INSIDE": [
+   {
+    "id": "INSIDE_00",
+    "type": "INSIDE",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 5,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_01",
+    "type": "INSIDE",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_02",
+    "type": "INSIDE",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_03",
+    "type": "INSIDE",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 5,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_04",
+    "type": "INSIDE",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_05",
+    "type": "INSIDE",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_06",
+    "type": "INSIDE",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 1034,
+    "S": 9.13,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 19,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_07",
+    "type": "INSIDE",
+    "block": "649U-MYCA-4R7",
+    "doc": "13АВ-РД-ОВ1.1-ПА V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "table",
+    "n_seg": 110,
+    "S": 9.426,
+    "a_cls": "stray",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_08",
+    "type": "INSIDE",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "stray",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_09",
+    "type": "INSIDE",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_10",
+    "type": "INSIDE",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 8,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_11",
+    "type": "INSIDE",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "n_seg": 316,
+    "S": 6.96,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_12",
+    "type": "INSIDE",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "n_seg": 316,
+    "S": 6.96,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 8,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_13",
+    "type": "INSIDE",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "n_seg": 316,
+    "S": 6.96,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 8,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_14",
+    "type": "INSIDE",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 15504,
+    "S": 8.602,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 73,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_15",
+    "type": "INSIDE",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 15504,
+    "S": 8.602,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 24,
+    "b_nseg": 3,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_16",
+    "type": "INSIDE",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 15504,
+    "S": 8.602,
+    "a_cls": "stray",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 7,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_17",
+    "type": "INSIDE",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 110,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_18",
+    "type": "INSIDE",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 7,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_19",
+    "type": "INSIDE",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 19,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_20",
+    "type": "INSIDE",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 1250,
+    "S": 9.905,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_21",
+    "type": "INSIDE",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 1250,
+    "S": 9.905,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_22",
+    "type": "INSIDE",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 1250,
+    "S": 9.905,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 7,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_23",
+    "type": "INSIDE",
+    "block": "AAQ4-4V47-9M7",
+    "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 7727,
+    "S": 8.876,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 10,
+    "b_nseg": 3,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_24",
+    "type": "INSIDE",
+    "block": "AAQ4-4V47-9M7",
+    "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 7727,
+    "S": 8.876,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 23,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_25",
+    "type": "INSIDE",
+    "block": "AAQ4-4V47-9M7",
+    "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 7727,
+    "S": 8.876,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 10,
+    "b_nseg": 3,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_26",
+    "type": "INSIDE",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 14132,
+    "S": 8.597,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_27",
+    "type": "INSIDE",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 14132,
+    "S": 8.597,
+    "a_cls": "symbol",
+    "b_cls": "area",
+    "a_nseg": 40,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_28",
+    "type": "INSIDE",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 14132,
+    "S": 8.597,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 36,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "INSIDE_29",
+    "type": "INSIDE",
+    "block": "blk_e76eb44d4942483f99a1965ee93c238d",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "legend_notes",
+    "n_seg": 330,
+    "S": 10.995,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 1,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   }
+  ],
+  "CONTAINS": [
+   {
+    "id": "CONTAINS_00",
+    "type": "CONTAINS",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "area",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_01",
+    "type": "CONTAINS",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 5,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_02",
+    "type": "CONTAINS",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "area",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_03",
+    "type": "CONTAINS",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_04",
+    "type": "CONTAINS",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_05",
+    "type": "CONTAINS",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_06",
+    "type": "CONTAINS",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 1034,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 19,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_07",
+    "type": "CONTAINS",
+    "block": "649U-MYCA-4R7",
+    "doc": "13АВ-РД-ОВ1.1-ПА V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "table",
+    "n_seg": 110,
+    "S": 9.426,
+    "a_cls": "area",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_08",
+    "type": "CONTAINS",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 12,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_09",
+    "type": "CONTAINS",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "area",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_10",
+    "type": "CONTAINS",
+    "block": "blk_5126c169c8d34173b17372479bbed9f5",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502,
+    "S": 9.782,
+    "a_cls": "area",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_11",
+    "type": "CONTAINS",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "n_seg": 316,
+    "S": 6.96,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_12",
+    "type": "CONTAINS",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "n_seg": 316,
+    "S": 6.96,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 8,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_13",
+    "type": "CONTAINS",
+    "block": "blk_c5e26ece8d04463ca317d35fd23ad753",
+    "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "vector_raster_mix",
+    "n_seg": 316,
+    "S": 6.96,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_14",
+    "type": "CONTAINS",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 15504,
+    "S": 8.602,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_15",
+    "type": "CONTAINS",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 15504,
+    "S": 8.602,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_16",
+    "type": "CONTAINS",
+    "block": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "doc": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 15504,
+    "S": 8.602,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 7,
+    "b_nseg": 24,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_17",
+    "type": "CONTAINS",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "area",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 5,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_18",
+    "type": "CONTAINS",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "area",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 18,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_19",
+    "type": "CONTAINS",
+    "block": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+    "doc": "СТ26_01-14-ЭОМ-6-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "vector_raster_mix",
+    "n_seg": 8657,
+    "S": 10.645,
+    "a_cls": "area",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 40,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_20",
+    "type": "CONTAINS",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 1250,
+    "S": 9.905,
+    "a_cls": "area",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_21",
+    "type": "CONTAINS",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 1250,
+    "S": 9.905,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 10,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_22",
+    "type": "CONTAINS",
+    "block": "blk_6c5bf1b8c5af4c0796fa3337d4a2e1c7",
+    "doc": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 1250,
+    "S": 9.905,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 5,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_23",
+    "type": "CONTAINS",
+    "block": "AAQ4-4V47-9M7",
+    "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 7727,
+    "S": 8.876,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 10,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_24",
+    "type": "CONTAINS",
+    "block": "AAQ4-4V47-9M7",
+    "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 7727,
+    "S": 8.876,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 23,
+    "b_nseg": 2,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_25",
+    "type": "CONTAINS",
+    "block": "AAQ4-4V47-9M7",
+    "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 7727,
+    "S": 8.876,
+    "a_cls": "linear",
+    "b_cls": "stray",
+    "a_nseg": 3,
+    "b_nseg": 1,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_26",
+    "type": "CONTAINS",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 14132,
+    "S": 8.597,
+    "a_cls": "area",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_27",
+    "type": "CONTAINS",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 14132,
+    "S": 8.597,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 5,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_28",
+    "type": "CONTAINS",
+    "block": "blk_fecf6875457d4d92a3ac740bef0efdda",
+    "doc": "СТ26_01-14-ПТ5-5-РД_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 14132,
+    "S": 8.597,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 40,
+    "detail": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "id": "CONTAINS_29",
+    "type": "CONTAINS",
+    "block": "blk_e76eb44d4942483f99a1965ee93c238d",
+    "doc": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "legend_notes",
+    "n_seg": 330,
+    "S": 10.995,
+    "a_cls": "area",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 6,
+    "detail": {
+     "mode": "polygon"
+    }
+   }
+  ],
+  "ADJACENT": [
+   {
+    "id": "ADJACENT_00",
+    "type": "ADJACENT",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 15,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.1304
+    }
+   },
+   {
+    "id": "ADJACENT_01",
+    "type": "ADJACENT",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 14,
+    "b_nseg": 4,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.1304
+    }
+   },
+   {
+    "id": "ADJACENT_02",
+    "type": "ADJACENT",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 10,
+    "b_nseg": 17,
+    "detail": {
+     "gap_pt": 4.28,
+     "tol_pt": 9.1304
+    }
+   },
+   {
+    "id": "ADJACENT_03",
+    "type": "ADJACENT",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 5.52,
+     "tol_pt": 9.4265
+    }
+   },
+   {
+    "id": "ADJACENT_04",
+    "type": "ADJACENT",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 9,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 2.88,
+     "tol_pt": 9.4265
+    }
+   },
+   {
+    "id": "ADJACENT_05",
+    "type": "ADJACENT",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 5.52,
+     "tol_pt": 9.4265
+    }
+   },
+   {
+    "id": "ADJACENT_06",
+    "type": "ADJACENT",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 5,
+    "b_nseg": 4,
+    "detail": {
+     "gap_pt": 1.8,
+     "tol_pt": 11.7997
+    }
+   },
+   {
+    "id": "ADJACENT_07",
+    "type": "ADJACENT",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 2,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 11.7997
+    }
+   },
+   {
+    "id": "ADJACENT_08",
+    "type": "ADJACENT",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 491,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 11.7997
+    }
+   },
+   {
+    "id": "ADJACENT_09",
+    "type": "ADJACENT",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 6,
+    "detail": {
+     "gap_pt": 3.0,
+     "tol_pt": 12.0
+    }
+   },
+   {
+    "id": "ADJACENT_10",
+    "type": "ADJACENT",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 8,
+    "b_nseg": 8,
+    "detail": {
+     "gap_pt": 1.44,
+     "tol_pt": 12.0
+    }
+   },
+   {
+    "id": "ADJACENT_11",
+    "type": "ADJACENT",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "gap_pt": 1.74,
+     "tol_pt": 12.0
+    }
+   },
+   {
+    "id": "ADJACENT_12",
+    "type": "ADJACENT",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.6038
+    }
+   },
+   {
+    "id": "ADJACENT_13",
+    "type": "ADJACENT",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.6038
+    }
+   },
+   {
+    "id": "ADJACENT_14",
+    "type": "ADJACENT",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.6038
+    }
+   },
+   {
+    "id": "ADJACENT_15",
+    "type": "ADJACENT",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.8487
+    }
+   },
+   {
+    "id": "ADJACENT_16",
+    "type": "ADJACENT",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 2,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.8487
+    }
+   },
+   {
+    "id": "ADJACENT_17",
+    "type": "ADJACENT",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.8487
+    }
+   },
+   {
+    "id": "ADJACENT_18",
+    "type": "ADJACENT",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 11,
+    "detail": {
+     "gap_pt": 2.82,
+     "tol_pt": 8.6044
+    }
+   },
+   {
+    "id": "ADJACENT_19",
+    "type": "ADJACENT",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 7,
+    "detail": {
+     "gap_pt": 8.211,
+     "tol_pt": 8.6044
+    }
+   },
+   {
+    "id": "ADJACENT_20",
+    "type": "ADJACENT",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 50,
+    "b_nseg": 2,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.6044
+    }
+   },
+   {
+    "id": "ADJACENT_21",
+    "type": "ADJACENT",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 3,
+    "detail": {
+     "gap_pt": 2.76,
+     "tol_pt": 9.4183
+    }
+   },
+   {
+    "id": "ADJACENT_22",
+    "type": "ADJACENT",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "area",
+    "b_cls": "stray",
+    "a_nseg": 8,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.4183
+    }
+   },
+   {
+    "id": "ADJACENT_23",
+    "type": "ADJACENT",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 9.4183
+    }
+   },
+   {
+    "id": "ADJACENT_24",
+    "type": "ADJACENT",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 3.231,
+     "tol_pt": 8.66
+    }
+   },
+   {
+    "id": "ADJACENT_25",
+    "type": "ADJACENT",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "stray",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "gap_pt": 7.086,
+     "tol_pt": 8.66
+    }
+   },
+   {
+    "id": "ADJACENT_26",
+    "type": "ADJACENT",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 4,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 8.66
+    }
+   },
+   {
+    "id": "ADJACENT_27",
+    "type": "ADJACENT",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 22,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 11.0407
+    }
+   },
+   {
+    "id": "ADJACENT_28",
+    "type": "ADJACENT",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 6,
+    "detail": {
+     "gap_pt": 9.84,
+     "tol_pt": 11.0407
+    }
+   },
+   {
+    "id": "ADJACENT_29",
+    "type": "ADJACENT",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 22,
+    "b_nseg": 2,
+    "detail": {
+     "gap_pt": 0.0,
+     "tol_pt": 11.0407
+    }
+   }
+  ],
+  "ALIGNED": [
+   {
+    "id": "ALIGNED_00",
+    "type": "ALIGNED",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "stray",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.48,
+     "gap_pt": 14.4,
+     "tol_pt": 0.913
+    }
+   },
+   {
+    "id": "ALIGNED_01",
+    "type": "ALIGNED",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 37.8,
+     "tol_pt": 0.913
+    }
+   },
+   {
+    "id": "ALIGNED_02",
+    "type": "ALIGNED",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 17,
+    "b_nseg": 15,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 67.08,
+     "tol_pt": 0.913
+    }
+   },
+   {
+    "id": "ALIGNED_03",
+    "type": "ALIGNED",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 6,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.06,
+     "gap_pt": 56.52,
+     "tol_pt": 0.9427
+    }
+   },
+   {
+    "id": "ALIGNED_04",
+    "type": "ALIGNED",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 5,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 76.44,
+     "tol_pt": 0.9427
+    }
+   },
+   {
+    "id": "ALIGNED_05",
+    "type": "ALIGNED",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 15,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.0,
+     "gap_pt": 127.44,
+     "tol_pt": 0.9427
+    }
+   },
+   {
+    "id": "ALIGNED_06",
+    "type": "ALIGNED",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 8,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.66,
+     "gap_pt": 37.02,
+     "tol_pt": 1.18
+    }
+   },
+   {
+    "id": "ALIGNED_07",
+    "type": "ALIGNED",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 40,
+    "b_nseg": 21,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 1.172,
+     "gap_pt": 50.686,
+     "tol_pt": 1.18
+    }
+   },
+   {
+    "id": "ALIGNED_08",
+    "type": "ALIGNED",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 6,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.0,
+     "gap_pt": 60.12,
+     "tol_pt": 1.18
+    }
+   },
+   {
+    "id": "ALIGNED_09",
+    "type": "ALIGNED",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "symbol",
+    "b_cls": "linear",
+    "a_nseg": 40,
+    "b_nseg": 5,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.99,
+     "gap_pt": 223.8,
+     "tol_pt": 1.2
+    }
+   },
+   {
+    "id": "ALIGNED_10",
+    "type": "ALIGNED",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 5,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.0,
+     "gap_pt": 111.66,
+     "tol_pt": 1.2
+    }
+   },
+   {
+    "id": "ALIGNED_11",
+    "type": "ALIGNED",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 5,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.0,
+     "gap_pt": 111.42,
+     "tol_pt": 1.2
+    }
+   },
+   {
+    "id": "ALIGNED_12",
+    "type": "ALIGNED",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 56.7,
+     "tol_pt": 0.8604
+    }
+   },
+   {
+    "id": "ALIGNED_13",
+    "type": "ALIGNED",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 110,
+    "b_nseg": 5,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.132,
+     "gap_pt": 18.767,
+     "tol_pt": 0.8604
+    }
+   },
+   {
+    "id": "ALIGNED_14",
+    "type": "ALIGNED",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "stray",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.837,
+     "gap_pt": 120.009,
+     "tol_pt": 0.8604
+    }
+   },
+   {
+    "id": "ALIGNED_15",
+    "type": "ALIGNED",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 2,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.701,
+     "gap_pt": 120.42,
+     "tol_pt": 0.9849
+    }
+   },
+   {
+    "id": "ALIGNED_16",
+    "type": "ALIGNED",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "stray",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 56.64,
+     "tol_pt": 0.9849
+    }
+   },
+   {
+    "id": "ALIGNED_17",
+    "type": "ALIGNED",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 361.32,
+     "tol_pt": 0.9849
+    }
+   },
+   {
+    "id": "ALIGNED_18",
+    "type": "ALIGNED",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 2,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.63,
+     "gap_pt": 189.75,
+     "tol_pt": 0.8604
+    }
+   },
+   {
+    "id": "ALIGNED_19",
+    "type": "ALIGNED",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 3,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.03,
+     "gap_pt": 33.87,
+     "tol_pt": 0.8604
+    }
+   },
+   {
+    "id": "ALIGNED_20",
+    "type": "ALIGNED",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 7,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 11.55,
+     "tol_pt": 0.8604
+    }
+   },
+   {
+    "id": "ALIGNED_21",
+    "type": "ALIGNED",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.0,
+     "gap_pt": 122.22,
+     "tol_pt": 0.9418
+    }
+   },
+   {
+    "id": "ALIGNED_22",
+    "type": "ALIGNED",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "stray",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.0,
+     "gap_pt": 119.58,
+     "tol_pt": 0.9418
+    }
+   },
+   {
+    "id": "ALIGNED_23",
+    "type": "ALIGNED",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "stray",
+    "a_nseg": 4,
+    "b_nseg": 1,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.06,
+     "gap_pt": 68.73,
+     "tol_pt": 0.9418
+    }
+   },
+   {
+    "id": "ALIGNED_24",
+    "type": "ALIGNED",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "stray",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 3,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.185,
+     "gap_pt": 12.436,
+     "tol_pt": 0.866
+    }
+   },
+   {
+    "id": "ALIGNED_25",
+    "type": "ALIGNED",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 6,
+    "detail": {
+     "axis": "y",
+     "delta_pt": 0.223,
+     "gap_pt": 19.842,
+     "tol_pt": 0.866
+    }
+   },
+   {
+    "id": "ALIGNED_26",
+    "type": "ALIGNED",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 21.887,
+     "tol_pt": 0.866
+    }
+   },
+   {
+    "id": "ALIGNED_27",
+    "type": "ALIGNED",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 22,
+    "b_nseg": 22,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 160.56,
+     "tol_pt": 1.1041
+    }
+   },
+   {
+    "id": "ALIGNED_28",
+    "type": "ALIGNED",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 226.8,
+     "tol_pt": 1.1041
+    }
+   },
+   {
+    "id": "ALIGNED_29",
+    "type": "ALIGNED",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 22,
+    "b_nseg": 22,
+    "detail": {
+     "axis": "x",
+     "delta_pt": 0.0,
+     "gap_pt": 160.56,
+     "tol_pt": 1.1041
+    }
+   }
+  ],
+  "LEADER_TO": [
+   {
+    "id": "LEADER_TO_00",
+    "type": "LEADER_TO",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 17,
+    "detail": {
+     "text": "20",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_01",
+    "type": "LEADER_TO",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 9,
+    "b_nseg": 10,
+    "detail": {
+     "text": null,
+     "d_pt": 0.0001,
+     "shelf": true,
+     "resolved": "object_only"
+    }
+   },
+   {
+    "id": "LEADER_TO_02",
+    "type": "LEADER_TO",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 15,
+    "detail": {
+     "text": "20",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_03",
+    "type": "LEADER_TO",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 6,
+    "detail": {
+     "text": null,
+     "d_pt": 5.52,
+     "shelf": false,
+     "resolved": "object_only"
+    }
+   },
+   {
+    "id": "LEADER_TO_04",
+    "type": "LEADER_TO",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 15,
+    "detail": {
+     "text": "ППГнг(А)-FRHF 3x2,5",
+     "d_pt": 3.84,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_05",
+    "type": "LEADER_TO",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 15,
+    "detail": {
+     "text": "ППГнг(А)-FRHF 3x2,5",
+     "d_pt": 3.84,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_06",
+    "type": "LEADER_TO",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 20,
+    "detail": {
+     "text": "на дно лотка в зоне контакта",
+     "d_pt": 1.8668,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_07",
+    "type": "LEADER_TO",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 1,
+    "b_nseg": 338,
+    "detail": {
+     "text": null,
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object_only"
+    }
+   },
+   {
+    "id": "LEADER_TO_08",
+    "type": "LEADER_TO",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 21,
+    "detail": {
+     "text": "Каскадный переходник",
+     "d_pt": 1.1031,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_09",
+    "type": "LEADER_TO",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "text": "Разработал",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_10",
+    "type": "LEADER_TO",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "text": "Степанов",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_11",
+    "type": "LEADER_TO",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "text": "Н. контр.",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_12",
+    "type": "LEADER_TO",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "text": "Разраб.",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_13",
+    "type": "LEADER_TO",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "text": "Провер.",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_14",
+    "type": "LEADER_TO",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 1,
+    "b_nseg": 1,
+    "detail": {
+     "text": "Утв.",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_15",
+    "type": "LEADER_TO",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 7,
+    "detail": {
+     "text": "Шаровой кран",
+     "d_pt": 1.8864,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_16",
+    "type": "LEADER_TO",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {
+     "text": "Комплектация заводского",
+     "d_pt": 4.057,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_17",
+    "type": "LEADER_TO",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {
+     "text": "Шаровой кран",
+     "d_pt": 0.6728,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_18",
+    "type": "LEADER_TO",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {
+     "text": null,
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object_only"
+    }
+   },
+   {
+    "id": "LEADER_TO_19",
+    "type": "LEADER_TO",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 4,
+    "detail": {
+     "text": "320",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_20",
+    "type": "LEADER_TO",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "linear",
+    "b_cls": "area",
+    "a_nseg": 3,
+    "b_nseg": 30,
+    "detail": {
+     "text": "1640",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_21",
+    "type": "LEADER_TO",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "composite",
+    "a_nseg": 4,
+    "b_nseg": 475,
+    "detail": {
+     "text": "280",
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_22",
+    "type": "LEADER_TO",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 3,
+    "b_nseg": 1,
+    "detail": {
+     "text": "В2.1 Ø57х3.5",
+     "d_pt": 0.2306,
+     "shelf": false,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_23",
+    "type": "LEADER_TO",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 92,
+    "detail": {
+     "text": null,
+     "d_pt": 0.0,
+     "shelf": false,
+     "resolved": "object_only"
+    }
+   },
+   {
+    "id": "LEADER_TO_24",
+    "type": "LEADER_TO",
+    "block": "blk_4937ffd14ab44233a144ebcefac2b83e",
+    "doc": "13АВ-РД-ТХ2-К1 V1",
+    "version": "v002",
+    "discipline": "TX",
+    "cls": "table",
+    "n_seg": 16866,
+    "S": 6.078,
+    "a_cls": "linear",
+    "b_cls": "linear",
+    "a_nseg": 4,
+    "b_nseg": 3,
+    "detail": {
+     "text": "Вентиляционное",
+     "d_pt": 1.9157,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_25",
+    "type": "LEADER_TO",
+    "block": "blk_4937ffd14ab44233a144ebcefac2b83e",
+    "doc": "13АВ-РД-ТХ2-К1 V1",
+    "version": "v002",
+    "discipline": "TX",
+    "cls": "table",
+    "n_seg": 16866,
+    "S": 6.078,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 84,
+    "detail": {
+     "text": "Вентиляционное",
+     "d_pt": 0.0,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_26",
+    "type": "LEADER_TO",
+    "block": "blk_4937ffd14ab44233a144ebcefac2b83e",
+    "doc": "13АВ-РД-ТХ2-К1 V1",
+    "version": "v002",
+    "discipline": "TX",
+    "cls": "table",
+    "n_seg": 16866,
+    "S": 6.078,
+    "a_cls": "linear",
+    "b_cls": "composite",
+    "a_nseg": 4,
+    "b_nseg": 4362,
+    "detail": {
+     "text": "+95,180",
+     "d_pt": 0.0,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_27",
+    "type": "LEADER_TO",
+    "block": "blk_3e88a4d45f3c4986bb5a276719f2fa06",
+    "doc": "13АВ-РД-НС_V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "legend_notes",
+    "n_seg": 132,
+    "S": 9.0,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 10,
+    "detail": {
+     "text": "ANTARUS",
+     "d_pt": 0.0,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_28",
+    "type": "LEADER_TO",
+    "block": "blk_3e88a4d45f3c4986bb5a276719f2fa06",
+    "doc": "13АВ-РД-НС_V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "legend_notes",
+    "n_seg": 132,
+    "S": 9.0,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 10,
+    "detail": {
+     "text": "Запрашиваемые параметры:",
+     "d_pt": 0.0,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   },
+   {
+    "id": "LEADER_TO_29",
+    "type": "LEADER_TO",
+    "block": "blk_3e88a4d45f3c4986bb5a276719f2fa06",
+    "doc": "13АВ-РД-НС_V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "legend_notes",
+    "n_seg": 132,
+    "S": 9.0,
+    "a_cls": "linear",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 10,
+    "detail": {
+     "text": "ANTARUS",
+     "d_pt": 0.0,
+     "shelf": true,
+     "resolved": "object+text"
+    }
+   }
+  ],
+  "LABEL_ANCHOR": [
+   {
+    "id": "LABEL_ANCHOR_00",
+    "type": "LABEL_ANCHOR",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "stray",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "min 900",
+     "gap_pt": 1.0093,
+     "tol_pt": 14.6086
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_01",
+    "type": "LABEL_ANCHOR",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 17,
+    "b_nseg": null,
+    "detail": {
+     "text": "20",
+     "gap_pt": 1.1113,
+     "tol_pt": 14.6086
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_02",
+    "type": "LABEL_ANCHOR",
+    "block": "7G77-QJ6Y-X3Q",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 94,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 10,
+    "b_nseg": null,
+    "detail": {
+     "text": "min 900",
+     "gap_pt": 12.0435,
+     "tol_pt": 14.6086
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_03",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 5,
+    "b_nseg": null,
+    "detail": {
+     "text": "Ip, А",
+     "gap_pt": 7.9012,
+     "tol_pt": 15.0824
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_04",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 4,
+    "b_nseg": null,
+    "detail": {
+     "text": "ППГнг(А)-FRHF 3x2,5",
+     "gap_pt": 0.0,
+     "tol_pt": 15.0824
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_05",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "A,B,C",
+     "gap_pt": 1.4174,
+     "tol_pt": 15.0824
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_06",
+    "type": "LABEL_ANCHOR",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 3,
+    "b_nseg": null,
+    "detail": {
+     "text": "Нанести герметик",
+     "gap_pt": 0.0,
+     "tol_pt": 18.8796
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_07",
+    "type": "LABEL_ANCHOR",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 3,
+    "b_nseg": null,
+    "detail": {
+     "text": "Каскадный переходник",
+     "gap_pt": 0.0,
+     "tol_pt": 18.8796
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_08",
+    "type": "LABEL_ANCHOR",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 3,
+    "b_nseg": null,
+    "detail": {
+     "text": "Нанести герметик",
+     "gap_pt": 0.0,
+     "tol_pt": 18.8796
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_09",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 8,
+    "b_nseg": null,
+    "detail": {
+     "text": "3.8.2.1 Нижний слой: назначение –",
+     "gap_pt": 0.0,
+     "tol_pt": 19.2
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_10",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 10,
+    "b_nseg": null,
+    "detail": {
+     "text": "3.8 Кровля (учитывать совместно с требованиями Приложения к ТЗ №1.1)",
+     "gap_pt": 1.5531,
+     "tol_pt": 19.2
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_11",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_0b6e13a113da435999fa7a077b945321",
+    "doc": "ПД-00542664-ИТП.ТМ_V2",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "table",
+    "n_seg": 608,
+    "S": 12.0,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 20,
+    "b_nseg": null,
+    "detail": {
+     "text": "коммуникаций, занижающих потолок.",
+     "gap_pt": 0.72,
+     "tol_pt": 19.2
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_12",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "Дата",
+     "gap_pt": 6.073,
+     "tol_pt": 13.7661
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_13",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "Пахомова",
+     "gap_pt": 2.14,
+     "tol_pt": 13.7661
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_14",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_c1bac2a327b241ac87e14c4607f54387",
+    "doc": "СТ26_01-14-КЖ4-02.1-РД_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 1426,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "СТ26/01-14-КЖ4-02.1-РД",
+     "gap_pt": 10.1648,
+     "tol_pt": 13.7661
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_15",
+    "type": "LABEL_ANCHOR",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "№ док.",
+     "gap_pt": 1.8943,
+     "tol_pt": 15.758
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_16",
+    "type": "LABEL_ANCHOR",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "Нефедов",
+     "gap_pt": 1.3278,
+     "tol_pt": 15.758
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_17",
+    "type": "LABEL_ANCHOR",
+    "block": "6PNJ-DDFU-KXC",
+    "doc": "1232-ЧМ-КМ-1",
+    "version": "v001",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 201,
+    "S": 9.849,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "помещениями и подземной автостоянкой, Блоки13A и 13B по адресу:",
+     "gap_pt": 5.9995,
+     "tol_pt": 15.758
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_18",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "stray",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "9",
+     "gap_pt": 6.3704,
+     "tol_pt": 13.767
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_19",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 29,
+    "b_nseg": null,
+    "detail": {
+     "text": "6",
+     "gap_pt": 0.0,
+     "tol_pt": 13.767
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_20",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 2,
+    "b_nseg": null,
+    "detail": {
+     "text": "Шаровой кран",
+     "gap_pt": 0.0,
+     "tol_pt": 13.767
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_21",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 6,
+    "b_nseg": null,
+    "detail": {
+     "text": "970",
+     "gap_pt": 0.0,
+     "tol_pt": 15.0693
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_22",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 6,
+    "b_nseg": null,
+    "detail": {
+     "text": "320",
+     "gap_pt": 0.0,
+     "tol_pt": 15.0693
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_23",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "stray",
+    "b_cls": "TEXT",
+    "a_nseg": 1,
+    "b_nseg": null,
+    "detail": {
+     "text": "1630",
+     "gap_pt": 6.5405,
+     "tol_pt": 15.0693
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_24",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 4,
+    "b_nseg": null,
+    "detail": {
+     "text": "280",
+     "gap_pt": 0.2027,
+     "tol_pt": 13.8559
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_25",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 271,
+    "b_nseg": null,
+    "detail": {
+     "text": "350",
+     "gap_pt": 0.0,
+     "tol_pt": 13.8559
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_26",
+    "type": "LABEL_ANCHOR",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 2,
+    "b_nseg": null,
+    "detail": {
+     "text": "+ 5.900",
+     "gap_pt": 13.1961,
+     "tol_pt": 13.8559
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_27",
+    "type": "LABEL_ANCHOR",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 2,
+    "b_nseg": null,
+    "detail": {
+     "text": "1",
+     "gap_pt": 0.0,
+     "tol_pt": 17.6652
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_28",
+    "type": "LABEL_ANCHOR",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "symbol",
+    "b_cls": "TEXT",
+    "a_nseg": 22,
+    "b_nseg": null,
+    "detail": {
+     "text": "Коробка распределительная огнестойкая",
+     "gap_pt": 13.4906,
+     "tol_pt": 17.6652
+    }
+   },
+   {
+    "id": "LABEL_ANCHOR_29",
+    "type": "LABEL_ANCHOR",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "linear",
+    "b_cls": "TEXT",
+    "a_nseg": 6,
+    "b_nseg": null,
+    "detail": {
+     "text": "4",
+     "gap_pt": 0.1252,
+     "tol_pt": 17.6652
+    }
+   }
+  ],
+  "REPEATED_WITH": [
+   {
+    "id": "REPEATED_WITH_00",
+    "type": "REPEATED_WITH",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 8,
+    "b_nseg": 8,
+    "detail": {
+     "group_size": 2
+    }
+   },
+   {
+    "id": "REPEATED_WITH_01",
+    "type": "REPEATED_WITH",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 24,
+    "b_nseg": 24,
+    "detail": {
+     "group_size": 4
+    }
+   },
+   {
+    "id": "REPEATED_WITH_02",
+    "type": "REPEATED_WITH",
+    "block": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "doc": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748,
+    "S": 9.427,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 5,
+    "b_nseg": 5,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_03",
+    "type": "REPEATED_WITH",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "group_size": 4
+    }
+   },
+   {
+    "id": "REPEATED_WITH_04",
+    "type": "REPEATED_WITH",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "group_size": 4
+    }
+   },
+   {
+    "id": "REPEATED_WITH_05",
+    "type": "REPEATED_WITH",
+    "block": "A3QG-4DHP-P7P",
+    "doc": "13АВ-РД-ГП2",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 10806,
+    "S": 11.8,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "group_size": 4
+    }
+   },
+   {
+    "id": "REPEATED_WITH_06",
+    "type": "REPEATED_WITH",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_07",
+    "type": "REPEATED_WITH",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_08",
+    "type": "REPEATED_WITH",
+    "block": "blk_192442361ada46c182f2d08378901ec1",
+    "doc": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 399,
+    "S": 8.604,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_09",
+    "type": "REPEATED_WITH",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_10",
+    "type": "REPEATED_WITH",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 12
+    }
+   },
+   {
+    "id": "REPEATED_WITH_11",
+    "type": "REPEATED_WITH",
+    "block": "blk_84ce9bb61ee94b35a01cf805491137a2",
+    "doc": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 9857,
+    "S": 9.418,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_12",
+    "type": "REPEATED_WITH",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_13",
+    "type": "REPEATED_WITH",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 3,
+    "b_nseg": 3,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_14",
+    "type": "REPEATED_WITH",
+    "block": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "doc": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200,
+    "S": 8.66,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_15",
+    "type": "REPEATED_WITH",
+    "block": "6YY3-YUXD-Y66",
+    "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "cls": "vector_raster_mix",
+    "n_seg": 136,
+    "S": 11.041,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 22,
+    "b_nseg": 22,
+    "detail": {
+     "group_size": 2
+    }
+   },
+   {
+    "id": "REPEATED_WITH_16",
+    "type": "REPEATED_WITH",
+    "block": "blk_4937ffd14ab44233a144ebcefac2b83e",
+    "doc": "13АВ-РД-ТХ2-К1 V1",
+    "version": "v002",
+    "discipline": "TX",
+    "cls": "table",
+    "n_seg": 16866,
+    "S": 6.078,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 5
+    }
+   },
+   {
+    "id": "REPEATED_WITH_17",
+    "type": "REPEATED_WITH",
+    "block": "blk_4937ffd14ab44233a144ebcefac2b83e",
+    "doc": "13АВ-РД-ТХ2-К1 V1",
+    "version": "v002",
+    "discipline": "TX",
+    "cls": "table",
+    "n_seg": 16866,
+    "S": 6.078,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "group_size": 11
+    }
+   },
+   {
+    "id": "REPEATED_WITH_18",
+    "type": "REPEATED_WITH",
+    "block": "blk_4937ffd14ab44233a144ebcefac2b83e",
+    "doc": "13АВ-РД-ТХ2-К1 V1",
+    "version": "v002",
+    "discipline": "TX",
+    "cls": "table",
+    "n_seg": 16866,
+    "S": 6.078,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "group_size": 10
+    }
+   },
+   {
+    "id": "REPEATED_WITH_19",
+    "type": "REPEATED_WITH",
+    "block": "blk_3e88a4d45f3c4986bb5a276719f2fa06",
+    "doc": "13АВ-РД-НС_V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "legend_notes",
+    "n_seg": 132,
+    "S": 9.0,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 10,
+    "b_nseg": 10,
+    "detail": {
+     "group_size": 4
+    }
+   },
+   {
+    "id": "REPEATED_WITH_20",
+    "type": "REPEATED_WITH",
+    "block": "blk_3e88a4d45f3c4986bb5a276719f2fa06",
+    "doc": "13АВ-РД-НС_V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "legend_notes",
+    "n_seg": 132,
+    "S": 9.0,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 10,
+    "b_nseg": 10,
+    "detail": {
+     "group_size": 4
+    }
+   },
+   {
+    "id": "REPEATED_WITH_21",
+    "type": "REPEATED_WITH",
+    "block": "blk_3e88a4d45f3c4986bb5a276719f2fa06",
+    "doc": "13АВ-РД-НС_V1",
+    "version": "v001",
+    "discipline": "VK",
+    "cls": "legend_notes",
+    "n_seg": 132,
+    "S": 9.0,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 10,
+    "b_nseg": 10,
+    "detail": {
+     "group_size": 4
+    }
+   },
+   {
+    "id": "REPEATED_WITH_22",
+    "type": "REPEATED_WITH",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 1034,
+    "S": 9.13,
+    "a_cls": "area",
+    "b_cls": "area",
+    "a_nseg": 25,
+    "b_nseg": 25,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_23",
+    "type": "REPEATED_WITH",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 1034,
+    "S": 9.13,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 4,
+    "b_nseg": 4,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_24",
+    "type": "REPEATED_WITH",
+    "block": "6WNV-DWDA-4CQ",
+    "doc": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 1034,
+    "S": 9.13,
+    "a_cls": "area",
+    "b_cls": "area",
+    "a_nseg": 25,
+    "b_nseg": 25,
+    "detail": {
+     "group_size": 3
+    }
+   },
+   {
+    "id": "REPEATED_WITH_25",
+    "type": "REPEATED_WITH",
+    "block": "43CL-VVJR-QPF",
+    "doc": "13АВ-РД-ГП1 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 1357,
+    "S": 8.945,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 17,
+    "b_nseg": 17,
+    "detail": {
+     "group_size": 21
+    }
+   },
+   {
+    "id": "REPEATED_WITH_26",
+    "type": "REPEATED_WITH",
+    "block": "43CL-VVJR-QPF",
+    "doc": "13АВ-РД-ГП1 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 1357,
+    "S": 8.945,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 17,
+    "b_nseg": 17,
+    "detail": {
+     "group_size": 21
+    }
+   },
+   {
+    "id": "REPEATED_WITH_27",
+    "type": "REPEATED_WITH",
+    "block": "43CL-VVJR-QPF",
+    "doc": "13АВ-РД-ГП1 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 1357,
+    "S": 8.945,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 17,
+    "b_nseg": 17,
+    "detail": {
+     "group_size": 21
+    }
+   },
+   {
+    "id": "REPEATED_WITH_28",
+    "type": "REPEATED_WITH",
+    "block": "blk_2d0c258f773043e8b7f6481feec6fc4b",
+    "doc": "ПД-00542664-АИТ.ГСВ_V1",
+    "version": "v001",
+    "discipline": "ITP",
+    "cls": "stamp",
+    "n_seg": 1724,
+    "S": 10.936,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 10,
+    "b_nseg": 10,
+    "detail": {
+     "group_size": 2
+    }
+   },
+   {
+    "id": "REPEATED_WITH_29",
+    "type": "REPEATED_WITH",
+    "block": "7J9G-4UTQ-HVL",
+    "doc": "13АВ-РД-КЖ7.2-К2",
+    "version": "v001",
+    "discipline": "KJ",
+    "cls": "table",
+    "n_seg": 827,
+    "S": 14.296,
+    "a_cls": "symbol",
+    "b_cls": "symbol",
+    "a_nseg": 2,
+    "b_nseg": 2,
+    "detail": {
+     "group_size": 20
+    }
+   }
+  ]
+ }
+}

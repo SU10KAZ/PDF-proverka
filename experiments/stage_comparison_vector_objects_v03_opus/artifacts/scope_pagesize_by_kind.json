@@ -1,0 +1,33 @@
+{
+ "schema_version": "scope_pagesize_by_kind/1",
+ "not_equal": {
+  "1:1_partial": 56,
+  "N:M": 43,
+  "1:N": 25,
+  "1:1_nested": 37,
+  "1:0_orphan_a": 131,
+  "N:1": 13,
+  "0:1_orphan_b": 22,
+  "1:1_aligned": 71
+ },
+ "total": {
+  "1:1_aligned": 2833,
+  "1:0_orphan_a": 684,
+  "1:1_partial": 328,
+  "N:1": 553,
+  "N:M": 172,
+  "1:N": 115,
+  "1:1_nested": 124,
+  "0:1_orphan_b": 282
+ },
+ "share": {
+  "1:1_aligned": 0.0251,
+  "1:0_orphan_a": 0.1915,
+  "1:1_partial": 0.1707,
+  "N:1": 0.0235,
+  "N:M": 0.25,
+  "1:N": 0.2174,
+  "1:1_nested": 0.2984,
+  "0:1_orphan_b": 0.078
+ }
+}

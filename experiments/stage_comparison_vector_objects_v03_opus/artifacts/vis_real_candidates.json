@@ -1,0 +1,1496 @@
+{
+ "n": 24,
+ "candidates": [
+  {
+   "cand_id": "R_SS-6fc75e05_0",
+   "pair_id": "SS-6fc75e05",
+   "family": "R2",
+   "discipline": "SS",
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "different_packaging",
+    "with_labels",
+    "table_like"
+   ],
+   "pair_human": "Штамп тот же самый; видимое отличие — только полоска рамки на границе кропа (0.08 % площади). Число сегментов различается вдвое из-за другой упаковки путей.",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 16.294,
+   "len_lost": 0.0,
+   "len_new": 16.294,
+   "n_seg_lost": 0,
+   "n_seg_new": 162,
+   "objects_a": [],
+   "rect_a_pt": [
+    1355.614,
+    736.014,
+    1408.0059999999999,
+    807.006
+   ],
+   "rect_b_pt": [
+    1355.664,
+    736.064,
+    1408.0559999999998,
+    807.0559999999999
+   ],
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "px": [
+    [
+     421,
+     569
+    ],
+    [
+     420,
+     569
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_SS-392b7bd3_0",
+   "pair_id": "SS-392b7bd3",
+   "family": "R2",
+   "discipline": "SS",
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "pair_human": "Схема (EZ1, У1.1, «Входные двери помещения», ПУ-У1) идентична; в версии B сверху добавилась линия рамки листа.",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 0.06,
+   "len_lost": 0.0,
+   "len_new": 0.06,
+   "n_seg_lost": 0,
+   "n_seg_new": 1,
+   "objects_a": [],
+   "rect_a_pt": [
+    158.67,
+    163.25,
+    184.67,
+    189.25
+   ],
+   "rect_b_pt": [
+    158.75,
+    163.3,
+    184.75,
+    189.3
+   ],
+   "reg_offset": [
+    -0.08,
+    -0.05
+   ],
+   "px": [
+    [
+     209,
+     208
+    ],
+    [
+     208,
+     209
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_SS-982f7f30_0",
+   "pair_id": "SS-982f7f30",
+   "family": "R2",
+   "discipline": "SS",
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "block_moved",
+    "with_labels",
+    "table_like"
+   ],
+   "pair_human": "Штамп («Книга 2. Автоматизация и диспетчеризация… Корпус 5») тот же; отличается только масштаб/положение блока.",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 0.24,
+   "len_lost": 0.24,
+   "len_new": 0.0,
+   "n_seg_lost": 4,
+   "n_seg_new": 0,
+   "objects_a": [
+    [
+     "3f7bc71fd20f",
+     "symbol",
+     "е"
+    ]
+   ],
+   "rect_a_pt": [
+    1125.0500000000002,
+    786.49,
+    1151.0500000000002,
+    812.49
+   ],
+   "rect_b_pt": [
+    1125.0500000000002,
+    786.54,
+    1151.0500000000002,
+    812.54
+   ],
+   "reg_offset": [
+    0.0,
+    -0.05
+   ],
+   "px": [
+    [
+     209,
+     209
+    ],
+    [
+     209,
+     209
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_SS-982f7f30_1",
+   "pair_id": "SS-982f7f30",
+   "family": "R2",
+   "discipline": "SS",
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "block_moved",
+    "with_labels",
+    "table_like"
+   ],
+   "pair_human": "Штамп («Книга 2. Автоматизация и диспетчеризация… Корпус 5») тот же; отличается только масштаб/положение блока.",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 0.06,
+   "len_lost": 0.06,
+   "len_new": 0.0,
+   "n_seg_lost": 1,
+   "n_seg_new": 0,
+   "objects_a": [
+    [
+     "13405fcd1d4f",
+     "symbol",
+     "Архитетуа."
+    ]
+   ],
+   "rect_a_pt": [
+    1057.34,
+    786.25,
+    1083.34,
+    812.25
+   ],
+   "rect_b_pt": [
+    1057.34,
+    786.3,
+    1083.34,
+    812.3
+   ],
+   "reg_offset": [
+    0.0,
+    -0.05
+   ],
+   "px": [
+    [
+     209,
+     208
+    ],
+    [
+     209,
+     209
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_EOM-0c86dfde_0",
+   "pair_id": "EOM-0c86dfde",
+   "family": "R2",
+   "discipline": "EOM",
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "text_only_change",
+    "object_moved_label",
+    "dense_block"
+   ],
+   "pair_human": "Столбец марок кабелей (K1.2.3n-12, K1.2.15, K1.2.21, K1.2.3n-6, K1.2.24, K1.2.20, …) сдвинут влево относительно плана; сам план тот же.",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 41.115,
+   "len_lost": 0.735,
+   "len_new": 40.38,
+   "n_seg_lost": 11,
+   "n_seg_new": 1,
+   "objects_a": [
+    [
+     "554f1f6d07d9",
+     "symbol",
+     "К1.2.3п-12"
+    ]
+   ],
+   "rect_a_pt": [
+    596.178,
+    923.338,
+    687.162,
+    965.0020000000001
+   ],
+   "rect_b_pt": [
+    596.178,
+    923.288,
+    687.162,
+    964.9520000000001
+   ],
+   "reg_offset": [
+    0.0,
+    0.05
+   ],
+   "px": [
+    [
+     701,
+     322
+    ],
+    [
+     701,
+     322
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_EOM-0c86dfde_1",
+   "pair_id": "EOM-0c86dfde",
+   "family": "R2",
+   "discipline": "EOM",
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "text_only_change",
+    "object_moved_label",
+    "dense_block"
+   ],
+   "pair_human": "Столбец марок кабелей (K1.2.3n-12, K1.2.15, K1.2.21, K1.2.3n-6, K1.2.24, K1.2.20, …) сдвинут влево относительно плана; сам план тот же.",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 17.017,
+   "len_lost": 17.017,
+   "len_new": 0.0,
+   "n_seg_lost": 112,
+   "n_seg_new": 0,
+   "objects_a": [
+    [
+     "41b89589e745",
+     "linear",
+     "+123,230"
+    ],
+    [
+     "5aa62850ed5e",
+     "symbol",
+     "+123,230"
+    ],
+    [
+     "194eca2b6668",
+     "linear",
+     "+123,230"
+    ],
+    [
+     "14d1b0bd5b14",
+     "linear",
+     "+123,230"
+    ]
+   ],
+   "rect_a_pt": [
+    723.02,
+    674.16,
+    749.02,
+    700.16
+   ],
+   "rect_b_pt": [
+    723.02,
+    674.11,
+    749.02,
+    700.11
+   ],
+   "reg_offset": [
+    0.0,
+    0.05
+   ],
+   "px": [
+    [
+     209,
+     209
+    ],
+    [
+     209,
+     209
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_EOM-0c86dfde_2",
+   "pair_id": "EOM-0c86dfde",
+   "family": "R2",
+   "discipline": "EOM",
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "text_only_change",
+    "object_moved_label",
+    "dense_block"
+   ],
+   "pair_human": "Столбец марок кабелей (K1.2.3n-12, K1.2.15, K1.2.21, K1.2.3n-6, K1.2.24, K1.2.20, …) сдвинут влево относительно плана; сам план тот же.",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 3.512,
+   "len_lost": 3.512,
+   "len_new": 0.0,
+   "n_seg_lost": 49,
+   "n_seg_new": 0,
+   "objects_a": [
+    [
+     "da86fbdd7fde",
+     "symbol",
+     "см. прим. п. 19"
+    ]
+   ],
+   "rect_a_pt": [
+    983.0912000000001,
+    780.8836,
+    1015.2688,
+    877.4164
+   ],
+   "rect_b_pt": [
+    983.0912000000001,
+    780.8336,
+    1015.2688,
+    877.3664
+   ],
+   "reg_offset": [
+    0.0,
+    0.05
+   ],
+   "px": [
+    [
+     235,
+     701
+    ],
+    [
+     235,
+     701
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_EOM-c50e2170_0",
+   "pair_id": "EOM-c50e2170",
+   "family": "R1",
+   "discipline": "EOM",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "pair_human": "В версии B исчезли координационные оси: штрихпунктирные линии и кружки с марками осей по всему периметру плана. Сегментов 8 027 → 4 502.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 151.564,
+   "len_lost": 62.4,
+   "len_new": 89.164,
+   "n_seg_lost": 2,
+   "n_seg_new": 11,
+   "objects_a": [
+    [
+     "3c136e3b9afc",
+     "composite",
+     "П.АА"
+    ]
+   ],
+   "rect_a_pt": [
+    654.58434,
+    350.26434,
+    700.94266,
+    393.73566
+   ],
+   "rect_b_pt": [
+    654.57734,
+    350.29434,
+    700.9356600000001,
+    393.76565999999997
+   ],
+   "reg_offset": [
+    0.007,
+    -0.03
+   ],
+   "px": [
+    [
+     372,
+     348
+    ],
+    [
+     372,
+     349
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_EOM-c50e2170_1",
+   "pair_id": "EOM-c50e2170",
+   "family": "R1",
+   "discipline": "EOM",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "pair_human": "В версии B исчезли координационные оси: штрихпунктирные линии и кружки с марками осей по всему периметру плана. Сегментов 8 027 → 4 502.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 113.15,
+   "len_lost": 19.12,
+   "len_new": 94.03,
+   "n_seg_lost": 8,
+   "n_seg_new": 17,
+   "objects_a": [
+    [
+     "219fa2742c38",
+     "symbol",
+     "СПА ИВЭПР"
+    ]
+   ],
+   "rect_a_pt": [
+    559.0266,
+    167.5566,
+    642.4204,
+    254.09339999999997
+   ],
+   "rect_b_pt": [
+    559.0196000000001,
+    167.5866,
+    642.4134,
+    254.12339999999998
+   ],
+   "reg_offset": [
+    0.007,
+    -0.03
+   ],
+   "px": [
+    [
+     668,
+     693
+    ],
+    [
+     668,
+     693
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_EOM-c50e2170_2",
+   "pair_id": "EOM-c50e2170",
+   "family": "R1",
+   "discipline": "EOM",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "pair_human": "В версии B исчезли координационные оси: штрихпунктирные линии и кружки с марками осей по всему периметру плана. Сегментов 8 027 → 4 502.",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 89.337,
+   "len_lost": 0.0,
+   "len_new": 89.337,
+   "n_seg_lost": 0,
+   "n_seg_new": 11,
+   "objects_a": [],
+   "rect_a_pt": [
+    660.247,
+    253.17000000000002,
+    700.807,
+    293.73
+   ],
+   "rect_b_pt": [
+    660.24,
+    253.20000000000002,
+    700.8000000000001,
+    293.76
+   ],
+   "reg_offset": [
+    0.007,
+    -0.03
+   ],
+   "px": [
+    [
+     326,
+     325
+    ],
+    [
+     326,
+     326
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-dbfd82b8_0",
+   "pair_id": "AR-dbfd82b8",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "object_removed",
+    "with_labels",
+    "table_like"
+   ],
+   "pair_human": "В версии B удалён блок «Условные обозначения» целиком (около 25 строк с образцами штриховок и подписями). Таблица «Ведомость полов 2-го этажа» не изменилась.",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 4477.318,
+   "len_lost": 4477.318,
+   "len_new": 0.0,
+   "n_seg_lost": 338,
+   "n_seg_new": 0,
+   "objects_a": [
+    [
+     "7e763200868b",
+     "symbol",
+     "300"
+    ],
+    [
+     "56173ba9c15b",
+     "symbol",
+     "250"
+    ],
+    [
+     "ad216d963807",
+     "symbol",
+     "250"
+    ],
+    [
+     "b6ec9750bff2",
+     "symbol",
+     "225"
+    ],
+    [
+     "2f0b5032ef1a",
+     "symbol",
+     "150"
+    ],
+    [
+     "053900eb61b7",
+     "symbol",
+     "-Монолитные"
+    ]
+   ],
+   "rect_a_pt": [
+    1383.9504,
+    626.5504,
+    1517.8896000000002,
+    921.2896
+   ],
+   "rect_b_pt": [
+    1384.0203999999999,
+    626.6003999999999,
+    1517.9596000000001,
+    921.3395999999999
+   ],
+   "reg_offset": [
+    -0.07,
+    -0.05
+   ],
+   "px": [
+    [
+     319,
+     701
+    ],
+    [
+     319,
+     701
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_VK-56115717_1",
+   "pair_id": "VK-56115717",
+   "family": "R1",
+   "discipline": "VK",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "pair_human": "В версии B удалена правая схема «Схема системы В2.3 (2 зона)» целиком; левая схема В2.2 осталась. Заодно исчез текст в штампе.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 611.255,
+   "len_lost": 292.1,
+   "len_new": 319.155,
+   "n_seg_lost": 101,
+   "n_seg_new": 102,
+   "objects_a": [
+    [
+     "f6f206a0b121",
+     "stray",
+     "ШПК-320-21 НЗ"
+    ],
+    [
+     "2b1a0d089ba7",
+     "stray",
+     "ШПК-320-21 НЗ"
+    ],
+    [
+     "66024ab3d4b4",
+     "symbol",
+     "Этаж 14"
+    ],
+    [
+     "bfb883660f1a",
+     "stray",
+     "ШПК-320-21 НЗ"
+    ]
+   ],
+   "rect_a_pt": [
+    1353.997,
+    365.777,
+    1646.193,
+    484.593
+   ],
+   "rect_b_pt": [
+    1354.047,
+    365.727,
+    1646.243,
+    484.543
+   ],
+   "reg_offset": [
+    -0.05,
+    0.05
+   ],
+   "px": [
+    [
+     701,
+     285
+    ],
+    [
+     701,
+     285
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_VK-56115717_2",
+   "pair_id": "VK-56115717",
+   "family": "R1",
+   "discipline": "VK",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "pair_human": "В версии B удалена правая схема «Схема системы В2.3 (2 зона)» целиком; левая схема В2.2 осталась. Заодно исчез текст в штампе.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 600.518,
+   "len_lost": 289.508,
+   "len_new": 311.01,
+   "n_seg_lost": 113,
+   "n_seg_new": 106,
+   "objects_a": [
+    [
+     "cb910671d00f",
+     "stray",
+     "ШПК-320-21 НЗ"
+    ],
+    [
+     "543ec19c941b",
+     "stray",
+     "ШПК-320-21 НЗ"
+    ],
+    [
+     "48645ba61ae7",
+     "symbol",
+     "Этаж 6"
+    ],
+    [
+     "523f9db9ff4e",
+     "stray",
+     "ШПК-320-21 НЗ"
+    ]
+   ],
+   "rect_a_pt": [
+    1354.1266,
+    949.1066,
+    1645.3434,
+    1068.3834
+   ],
+   "rect_b_pt": [
+    1354.1766,
+    949.0566,
+    1645.3934,
+    1068.3334
+   ],
+   "reg_offset": [
+    -0.05,
+    0.05
+   ],
+   "px": [
+    [
+     701,
+     288
+    ],
+    [
+     701,
+     287
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-441907a2_0",
+   "pair_id": "AR-441907a2",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "pair_human": "В версии B удалены разрез «Сеч. а–а» в правом верхнем углу и всё содержимое штампа (остались только линии таблицы).",
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 15582.105,
+   "len_lost": 15582.105,
+   "len_new": 0.0,
+   "n_seg_lost": 2537,
+   "n_seg_new": 0,
+   "objects_a": [
+    [
+     "ea367f85f297",
+     "linear",
+     "200"
+    ],
+    [
+     "04ce23da017d",
+     "linear",
+     "100"
+    ],
+    [
+     "8b9161464574",
+     "symbol",
+     null
+    ],
+    [
+     "99582b5903c5",
+     "symbol",
+     null
+    ],
+    [
+     "0c0bc403395e",
+     "symbol",
+     "100"
+    ],
+    [
+     "828fe750a005",
+     "symbol",
+     null
+    ]
+   ],
+   "rect_a_pt": [
+    677.4432,
+    12.643200000000022,
+    1207.5167999999999,
+    468.3168
+   ],
+   "rect_b_pt": [
+    677.4932,
+    12.693200000000022,
+    1207.5667999999998,
+    468.3668
+   ],
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "px": [
+    [
+     679,
+     603
+    ],
+    [
+     679,
+     603
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_VK-148ffe6c_0",
+   "pair_id": "VK-148ffe6c",
+   "family": "R1",
+   "discipline": "VK",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "object_added",
+    "object_moved",
+    "rotated_page",
+    "dense_block"
+   ],
+   "pair_human": "В версии B добавлены спецификация оборудования справа и узел «Узел кранов с эл. приводом»; узел «Узел гиг. душа» сдвинут вправо. Сегментов 106 552 → 115 081.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 28508.182,
+   "len_lost": 14255.01,
+   "len_new": 14253.171,
+   "n_seg_lost": 9271,
+   "n_seg_new": 9225,
+   "objects_a": [
+    [
+     "5dc694d6924d",
+     "composite",
+     "%&. '#"
+    ],
+    [
+     "d6ec5e59ab6f",
+     "linear",
+     "$ \u0018/\u0018("
+    ],
+    [
+     "342ce26ab0ff",
+     "linear",
+     "6\u0013\u0011+(0\u0017/%&."
+    ],
+    [
+     "b3f4fafb9478",
+     "linear",
+     "ø16\u001a2,2"
+    ],
+    [
+     "9913ed9def23",
+     "linear",
+     "%&. '#"
+    ],
+    [
+     "1e6669b4a4dd",
+     "area",
+     "$ \u0018/\u0018("
+    ]
+   ],
+   "rect_a_pt": [
+    1056.0942,
+    1134.4042,
+    1527.0758,
+    1709.4258
+   ],
+   "rect_b_pt": [
+    1056.0442,
+    1134.4542,
+    1527.0258000000001,
+    1709.4758
+   ],
+   "reg_offset": [
+    0.05,
+    -0.05
+   ],
+   "px": [
+    [
+     574,
+     671
+    ],
+    [
+     574,
+     670
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_VK-148ffe6c_1",
+   "pair_id": "VK-148ffe6c",
+   "family": "R1",
+   "discipline": "VK",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "object_added",
+    "object_moved",
+    "rotated_page",
+    "dense_block"
+   ],
+   "pair_human": "В версии B добавлены спецификация оборудования справа и узел «Узел кранов с эл. приводом»; узел «Узел гиг. душа» сдвинут вправо. Сегментов 106 552 → 115 081.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 1451.589,
+   "len_lost": 216.343,
+   "len_new": 1235.246,
+   "n_seg_lost": 18,
+   "n_seg_new": 1766,
+   "objects_a": [
+    [
+     "4b6eac7aa37c",
+     "symbol",
+     "2%"
+    ],
+    [
+     "9740cd42d5f9",
+     "stray",
+     null
+    ],
+    [
+     "5c860abc5131",
+     "stray",
+     null
+    ],
+    [
+     "d48aa747f4ca",
+     "stray",
+     "ø50\u001a1,8"
+    ],
+    [
+     "0fcc87477bf2",
+     "stray",
+     null
+    ],
+    [
+     "35036efcdcc6",
+     "stray",
+     "-0,050"
+    ]
+   ],
+   "rect_a_pt": [
+    1140.2779999999998,
+    785.938,
+    1514.8220000000001,
+    1064.482
+   ],
+   "rect_b_pt": [
+    1140.2279999999998,
+    785.9879999999999,
+    1514.7720000000002,
+    1064.532
+   ],
+   "reg_offset": [
+    0.05,
+    -0.05
+   ],
+   "px": [
+    [
+     701,
+     522
+    ],
+    [
+     701,
+     522
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_VK-148ffe6c_2",
+   "pair_id": "VK-148ffe6c",
+   "family": "R1",
+   "discipline": "VK",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "object_added",
+    "object_moved",
+    "rotated_page",
+    "dense_block"
+   ],
+   "pair_human": "В версии B добавлены спецификация оборудования справа и узел «Узел кранов с эл. приводом»; узел «Узел гиг. душа» сдвинут вправо. Сегментов 106 552 → 115 081.",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 5.154,
+   "len_lost": 0.0,
+   "len_new": 5.154,
+   "n_seg_lost": 0,
+   "n_seg_new": 5,
+   "objects_a": [],
+   "rect_a_pt": [
+    1329.9099999999999,
+    1042.47,
+    1355.9099999999999,
+    1068.47
+   ],
+   "rect_b_pt": [
+    1329.86,
+    1042.52,
+    1355.86,
+    1068.52
+   ],
+   "reg_offset": [
+    0.05,
+    -0.05
+   ],
+   "px": [
+    [
+     209,
+     209
+    ],
+    [
+     209,
+     209
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-55eda7fb_0",
+   "pair_id": "AR-55eda7fb",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "pair_human": "В таблице «Перемычки 39 этаж» изменён эскиз строки ПР-14: было L=850 (поз. 10) с размерами 150/550/150, стало L=1000 (поз. 8) со штриховкой стены справа. Остальные строки не изменились.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 1165.939,
+   "len_lost": 506.98,
+   "len_new": 658.96,
+   "n_seg_lost": 141,
+   "n_seg_new": 92,
+   "objects_a": [
+    [
+     "1f652a481da3",
+     "symbol",
+     ".550."
+    ],
+    [
+     "63e23876545c",
+     "symbol",
+     ".550."
+    ],
+    [
+     "b626311b21cf",
+     "symbol",
+     ".550."
+    ]
+   ],
+   "rect_a_pt": [
+    361.0258,
+    1396.8658,
+    601.3242,
+    1529.1142
+   ],
+   "rect_b_pt": [
+    361.0758,
+    1396.9158,
+    601.3742,
+    1529.1642
+   ],
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "px": [
+    [
+     701,
+     386
+    ],
+    [
+     701,
+     386
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-55eda7fb_1",
+   "pair_id": "AR-55eda7fb",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "high",
+   "pair_classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "pair_human": "В таблице «Перемычки 39 этаж» изменён эскиз строки ПР-14: было L=850 (поз. 10) с размерами 150/550/150, стало L=1000 (поз. 8) со штриховкой стены справа. Остальные строки не изменились.",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 350.461,
+   "len_lost": 0.0,
+   "len_new": 350.461,
+   "n_seg_lost": 0,
+   "n_seg_new": 105,
+   "objects_a": [],
+   "rect_a_pt": [
+    248.4028,
+    1458.0028,
+    369.4972,
+    1521.4972
+   ],
+   "rect_b_pt": [
+    248.45280000000002,
+    1458.0528,
+    369.54720000000003,
+    1521.5472
+   ],
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "px": [
+    [
+     701,
+     368
+    ],
+    [
+     701,
+     368
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-577a293f_0",
+   "pair_id": "AR-577a293f",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "pair_human": "В «Ведомости полов 17-го этажа» изменены эскизы и составы строк 2.1, 2.4 и 2.7 (число слоёв и толщины). Сетка таблицы и остальные строки не изменились.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 16488.296,
+   "len_lost": 9010.926,
+   "len_new": 7477.37,
+   "n_seg_lost": 1778,
+   "n_seg_new": 1803,
+   "objects_a": [
+    [
+     "0f4e384cb6bc",
+     "linear",
+     "290-300 мм"
+    ],
+    [
+     "cc78e8f789a7",
+     "linear",
+     null
+    ],
+    [
+     "f2d9e78cde65",
+     "area",
+     "290-300 мм"
+    ],
+    [
+     "5cc700ec9178",
+     "symbol",
+     null
+    ],
+    [
+     "da21e4dfc975",
+     "linear",
+     "290-300 мм"
+    ],
+    [
+     "c8d894e58bb4",
+     "symbol",
+     "2"
+    ]
+   ],
+   "rect_a_pt": [
+    205.8258,
+    1470.0658,
+    514.8042,
+    1700.5242
+   ],
+   "rect_b_pt": [
+    205.9158,
+    1470.0758,
+    514.8942000000001,
+    1700.5342
+   ],
+   "reg_offset": [
+    -0.09,
+    -0.01
+   ],
+   "px": [
+    [
+     701,
+     486
+    ],
+    [
+     701,
+     486
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-577a293f_1",
+   "pair_id": "AR-577a293f",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "pair_human": "В «Ведомости полов 17-го этажа» изменены эскизы и составы строк 2.1, 2.4 и 2.7 (число слоёв и толщины). Сетка таблицы и остальные строки не изменились.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 12944.234,
+   "len_lost": 7209.578,
+   "len_new": 5734.656,
+   "n_seg_lost": 1904,
+   "n_seg_new": 1751,
+   "objects_a": [
+    [
+     "a63b2d82d0dd",
+     "linear",
+     "60"
+    ],
+    [
+     "67e20a738949",
+     "linear",
+     "60"
+    ],
+    [
+     "d319a38fa020",
+     "composite",
+     "60"
+    ],
+    [
+     "4ff073059dfb",
+     "area",
+     "1"
+    ],
+    [
+     "775b6bfd6caf",
+     "symbol",
+     "3"
+    ],
+    [
+     "c7bbbf106288",
+     "symbol",
+     "60"
+    ]
+   ],
+   "rect_a_pt": [
+    216.3786,
+    1154.3286,
+    511.8114,
+    1331.3014
+   ],
+   "rect_b_pt": [
+    216.4686,
+    1154.3386,
+    511.90139999999997,
+    1331.3114
+   ],
+   "reg_offset": [
+    -0.09,
+    -0.01
+   ],
+   "px": [
+    [
+     701,
+     420
+    ],
+    [
+     701,
+     420
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-577a293f_2",
+   "pair_id": "AR-577a293f",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "pair_human": "В «Ведомости полов 17-го этажа» изменены эскизы и составы строк 2.1, 2.4 и 2.7 (число слоёв и толщины). Сетка таблицы и остальные строки не изменились.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 11990.778,
+   "len_lost": 6824.306,
+   "len_new": 5166.472,
+   "n_seg_lost": 1337,
+   "n_seg_new": 989,
+   "objects_a": [
+    [
+     "950ccfd62fe2",
+     "linear",
+     "100"
+    ],
+    [
+     "55e5f10b0bd0",
+     "linear",
+     null
+    ],
+    [
+     "269ea3cd0210",
+     "area",
+     "12"
+    ],
+    [
+     "8a79ccd17263",
+     "symbol",
+     "2"
+    ],
+    [
+     "b9524be5b0fc",
+     "symbol",
+     null
+    ],
+    [
+     "fb3331e3bc7c",
+     "symbol",
+     "100"
+    ]
+   ],
+   "rect_a_pt": [
+    216.78420000000003,
+    1316.2242,
+    507.56579999999997,
+    1499.7567999999999
+   ],
+   "rect_b_pt": [
+    216.87420000000003,
+    1316.2342,
+    507.65579999999994,
+    1499.7667999999999
+   ],
+   "reg_offset": [
+    -0.09,
+    -0.01
+   ],
+   "px": [
+    [
+     701,
+     443
+    ],
+    [
+     701,
+     443
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_EOM-14558cda_0",
+   "pair_id": "EOM-14558cda",
+   "family": "R1",
+   "discipline": "EOM",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "object_added",
+    "occluding_fill",
+    "with_labels"
+   ],
+   "pair_human": "В версии A вид «Внешний вид УЭРМ» полностью закрыт сплошной чёрной заливкой; в версии B тот же вид виден нормально. Подписи и отметки вокруг совпадают.",
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 9222.909,
+   "len_lost": 8577.164,
+   "len_new": 645.745,
+   "n_seg_lost": 41,
+   "n_seg_new": 11,
+   "objects_a": [
+    [
+     "bce7b0c7655c",
+     "linear",
+     null
+    ],
+    [
+     "7cfa44ed96b2",
+     "linear",
+     null
+    ],
+    [
+     "6b24c99cbbe4",
+     "linear",
+     null
+    ],
+    [
+     "ef662ee475ab",
+     "linear",
+     "Лоток 200х100"
+    ],
+    [
+     "026adda5b91a",
+     "linear",
+     "ОДН"
+    ],
+    [
+     "70934b3a54f0",
+     "stray",
+     "Лоток 200х100"
+    ]
+   ],
+   "rect_a_pt": [
+    1257.7176,
+    33.447599999999994,
+    1759.5324,
+    755.8524
+   ],
+   "rect_b_pt": [
+    1257.7476,
+    33.5076,
+    1759.5624,
+    755.9123999999999
+   ],
+   "reg_offset": [
+    -0.03,
+    -0.06
+   ],
+   "px": [
+    [
+     487,
+     701
+    ],
+    [
+     487,
+     701
+    ]
+   ]
+  },
+  {
+   "cand_id": "R_AR-5acaab0e_1",
+   "pair_id": "AR-5acaab0e",
+   "family": "R1",
+   "discipline": "AR",
+   "pair_expected": "GRAPHIC_CHANGE",
+   "pair_label_confidence": "medium",
+   "pair_classes": [
+    "object_added",
+    "dense_block",
+    "hatch_noise",
+    "with_labels"
+   ],
+   "pair_human": "В версии B достроен объём стен в правой верхней части (штриховка расширена вправо) и добавлен заголовок сверху; остальная штриховка совпадает по смыслу, но сдвинута по фазе.",
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 50.141,
+   "len_lost": 0.0,
+   "len_new": 50.141,
+   "n_seg_lost": 0,
+   "n_seg_new": 3,
+   "objects_a": [],
+   "rect_a_pt": [
+    1478.32352,
+    2765.4094999999998,
+    1528.42048,
+    2791.4094999999998
+   ],
+   "rect_b_pt": [
+    1478.3735199999999,
+    2751.5595,
+    1528.47048,
+    2777.5595
+   ],
+   "reg_offset": [
+    -0.05,
+    13.85
+   ],
+   "px": [
+    [
+     402,
+     209
+    ],
+    [
+     402,
+     209
+    ]
+   ]
+  }
+ ]
+}

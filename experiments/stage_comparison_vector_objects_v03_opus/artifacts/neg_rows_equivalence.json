@@ -1,0 +1,189 @@
+{
+ "n_checks": 26,
+ "checks_with_any_difference": 0,
+ "max_abs_diff_overall": 0.0,
+ "rows": [
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К3-v001-TVWH-NLRM-GNJ",
+   "cf": "D1_text_edit",
+   "rows": 8,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К3-v001-TVWH-NLRM-GNJ",
+   "cf": "D2_text_move",
+   "rows": 8,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К3-v001-TVWH-NLRM-GNJ",
+   "cf": "C1_remove_object",
+   "rows": 8,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К3-v001-TVWH-NLRM-GNJ",
+   "cf": "C3_move_object",
+   "rows": 8,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К3-v001-6WNV-DWDA-4",
+   "cf": "D1_text_edit",
+   "rows": 75,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К3-v001-6WNV-DWDA-4",
+   "cf": "D2_text_move",
+   "rows": 75,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К3-v001-6WNV-DWDA-4",
+   "cf": "C1_remove_object",
+   "rows": 75,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К3-v001-6WNV-DWDA-4",
+   "cf": "C3_move_object",
+   "rows": 75,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "EOM-СТ26_01-14-ЭОМ-3-РД_V1-v001-blk_",
+   "cf": "D1_text_edit",
+   "rows": 161,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "EOM-СТ26_01-14-ЭОМ-3-РД_V1-v001-blk_",
+   "cf": "D2_text_move",
+   "rows": 161,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "EOM-СТ26_01-14-ЭОМ-3-РД_V1-v001-blk_",
+   "cf": "C1_remove_object",
+   "rows": 161,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "EOM-СТ26_01-14-ЭОМ-3-РД_V1-v001-blk_",
+   "cf": "C3_move_object",
+   "rows": 161,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1-v001-7DTQ-7FJA-Y6G",
+   "cf": "D1_text_edit",
+   "rows": 32,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1-v001-7DTQ-7FJA-Y6G",
+   "cf": "D2_text_move",
+   "rows": 32,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1-v001-7DTQ-7FJA-Y6G",
+   "cf": "C1_remove_object",
+   "rows": 32,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1-v001-7DTQ-7FJA-Y6G",
+   "cf": "C3_move_object",
+   "rows": 32,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К5-v004-blk_ede531d",
+   "cf": "D1_text_edit",
+   "rows": 80,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К5-v004-blk_ede531d",
+   "cf": "D2_text_move",
+   "rows": 80,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ОВ_V1-v001-blk_2",
+   "cf": "D1_text_edit",
+   "rows": 43,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ОВ_V1-v001-blk_2",
+   "cf": "D2_text_move",
+   "rows": 43,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ОВ_V1-v001-blk_2",
+   "cf": "C1_remove_object",
+   "rows": 43,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ОВ_V1-v001-blk_2",
+   "cf": "C3_move_object",
+   "rows": 43,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-43CL-VVJR-QPF",
+   "cf": "D1_text_edit",
+   "rows": 177,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-43CL-VVJR-QPF",
+   "cf": "D2_text_move",
+   "rows": 177,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-43CL-VVJR-QPF",
+   "cf": "C1_remove_object",
+   "rows": 177,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-43CL-VVJR-QPF",
+   "cf": "C3_move_object",
+   "rows": 177,
+   "rows_differing_unmatched_share": 0,
+   "max_abs_diff": 0.0
+  }
+ ]
+}

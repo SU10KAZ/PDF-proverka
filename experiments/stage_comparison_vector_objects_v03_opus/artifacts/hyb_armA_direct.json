@@ -1,0 +1,637 @@
+{
+ "note": "ledger on in-memory extracts (no PDF materialisation)",
+ "rows": [
+  {
+   "case_id": "GP_7EHD-V69_C2_add_object",
+   "cf_id": "C2_add_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 2227,
+   "n_seg_b": 2230,
+   "sim": 0.985438,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 788.04,
+   "verdict": "GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    1867.518,
+    1022.812,
+    2260.398,
+    1025.092
+   ],
+   "records": [
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1867.42,
+      1022.81,
+      2260.3,
+      1025.09
+     ],
+     "change_len": 788.04,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 9.8
+  },
+  {
+   "case_id": "GP_7EHD-V69_C6_reshape_object",
+   "cf_id": "C6_reshape_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 2227,
+   "n_seg_b": 2227,
+   "sim": 0.991947,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 428.99,
+   "verdict": "GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    2222.578,
+    1304.44,
+    2240.642,
+    1369.48
+   ],
+   "records": [
+    {
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      2222.48,
+      1304.44,
+      2240.54,
+      1369.48
+     ],
+     "change_len": 428.99,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 9.8
+  },
+  {
+   "case_id": "GP_7EHD-V69_C9_add_branch",
+   "cf_id": "C9_add_branch",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 2227,
+   "n_seg_b": 2228,
+   "sim": 0.998674,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 70.8,
+   "verdict": "GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    2127.768,
+    1236.76,
+    2127.768,
+    1307.558
+   ],
+   "records": [
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2127.67,
+      1236.76,
+      2127.67,
+      1307.56
+     ],
+     "change_len": 70.8,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 9.8
+  },
+  {
+   "case_id": "KJ_blk_a5f5_C2_add_object",
+   "cf_id": "C2_add_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 223,
+   "n_seg_b": 226,
+   "sim": 0.988441,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 166.3,
+   "verdict": "GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    299.559,
+    811.32,
+    410.409,
+    812.02
+   ],
+   "records": [
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      299.51,
+      811.27,
+      410.36,
+      811.97
+     ],
+     "change_len": 166.3,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 0.3
+  },
+  {
+   "case_id": "KJ_blk_a5f5_D1_text_edit",
+   "cf_id": "D1_text_edit",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 223,
+   "n_seg_b": 223,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 0.3
+  },
+  {
+   "case_id": "KJ_blk_a5f5_D3_label_rename",
+   "cf_id": "D3_label_rename",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 223,
+   "n_seg_b": 223,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 0.3
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+   "cf_id": "D7_dim_geometry",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 1034,
+   "n_seg_b": 1036,
+   "sim": 0.999281,
+   "n_records": 2,
+   "n_interior": 2,
+   "max_interior_len": 10.96,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    922.602,
+    1203.028,
+    933.558,
+    1225.44
+   ],
+   "records": [
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      922.55,
+      1225.39,
+      933.51,
+      1225.39
+     ],
+     "change_len": 10.96,
+     "at_boundary": false
+    },
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      922.55,
+      1202.98,
+      933.51,
+      1202.98
+     ],
+     "change_len": 10.96,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 2.5
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D1_text_edit",
+   "cf_id": "D1_text_edit",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1034,
+   "n_seg_b": 1034,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 2.5
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D2_text_move",
+   "cf_id": "D2_text_move",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1034,
+   "n_seg_b": 1034,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 2.4
+  },
+  {
+   "case_id": "SS_4YRN-VTF_C9_add_branch",
+   "cf_id": "C9_add_branch",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 1085,
+   "n_seg_b": 1086,
+   "sim": 0.998388,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 56.36,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    1398.879,
+    317.568,
+    1455.24,
+    317.568
+   ],
+   "records": [
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      1398.78,
+      317.57,
+      1455.14,
+      317.57
+     ],
+     "change_len": 56.36,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 3.2
+  },
+  {
+   "case_id": "SS_4YRN-VTF_D3_label_rename",
+   "cf_id": "D3_label_rename",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1085,
+   "n_seg_b": 1085,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 2.6
+  },
+  {
+   "case_id": "SS_4YRN-VTF_D4_table_values",
+   "cf_id": "D4_table_values",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1085,
+   "n_seg_b": 1085,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 2.6
+  },
+  {
+   "case_id": "VK_blk_f35e_C1_remove_object",
+   "cf_id": "C1_remove_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 722,
+   "n_seg_b": 552,
+   "sim": 0.987945,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 47.56,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    777.12,
+    787.68,
+    786.48,
+    796.08
+   ],
+   "records": [
+    {
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      777.12,
+      787.68,
+      786.48,
+      796.08
+     ],
+     "change_len": 47.56,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 11.5
+  },
+  {
+   "case_id": "VK_blk_f35e_C3_move_object",
+   "cf_id": "C3_move_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 722,
+   "n_seg_b": 722,
+   "sim": 0.98168,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 73.15,
+   "verdict": "GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    777.12,
+    787.68,
+    796.856,
+    796.612
+   ],
+   "records": [
+    {
+     "type": "MOVED_OBJECT",
+     "bbox_pt": [
+      777.12,
+      787.68,
+      796.81,
+      796.56
+     ],
+     "change_len": 73.15,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 16.0
+  },
+  {
+   "case_id": "VK_blk_f35e_C6_reshape_object",
+   "cf_id": "C6_reshape_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 722,
+   "n_seg_b": 722,
+   "sim": 0.995583,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 17.65,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    775.482,
+    787.68,
+    788.118,
+    796.08
+   ],
+   "records": [
+    {
+     "type": "CHANGED_OBJECT",
+     "bbox_pt": [
+      775.48,
+      787.68,
+      788.12,
+      796.08
+     ],
+     "change_len": 17.65,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 15.8
+  },
+  {
+   "case_id": "AR_7WT4-934_D7_dim_geometry",
+   "cf_id": "D7_dim_geometry",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 1723,
+   "n_seg_b": 1725,
+   "sim": 0.998217,
+   "n_records": 2,
+   "n_interior": 2,
+   "max_interior_len": 10.63,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    2246.753,
+    1593.324,
+    2341.199,
+    1603.956
+   ],
+   "records": [
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2341.1,
+      1593.32,
+      2341.1,
+      1603.96
+     ],
+     "change_len": 10.63,
+     "at_boundary": false
+    },
+    {
+     "type": "ADDED_OBJECT",
+     "bbox_pt": [
+      2246.65,
+      1593.32,
+      2246.65,
+      1603.96
+     ],
+     "change_len": 10.63,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 18.1
+  },
+  {
+   "case_id": "AR_7WT4-934_D5_table_row_text",
+   "cf_id": "D5_table_row_text",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1723,
+   "n_seg_b": 1723,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 17.8
+  },
+  {
+   "case_id": "AR_7WT4-934_D6_dim_value_only",
+   "cf_id": "D6_dim_value_only",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1723,
+   "n_seg_b": 1723,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 18.2
+  },
+  {
+   "case_id": "EOM_blk_9dee_A6_round_0.5_14",
+   "cf_id": "A6_round_0.5",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1226,
+   "n_seg_b": 851,
+   "sim": 0.999965,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 0.48,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [
+    {
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      4364.4,
+      3280.8,
+      4368.24,
+      3281.04
+     ],
+     "change_len": 0.48,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 16.7
+  },
+  {
+   "case_id": "EOM_blk_9dee_A1_path_split_20",
+   "cf_id": "A1_path_split",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1226,
+   "n_seg_b": 1226,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 25.7
+  },
+  {
+   "case_id": "EOM_blk_9dee_A2_path_merge_20",
+   "cf_id": "A2_path_merge",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 1226,
+   "n_seg_b": 1226,
+   "sim": 1.0,
+   "n_records": 0,
+   "n_interior": 0,
+   "max_interior_len": 0.0,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [],
+   "t_sec": 25.9
+  },
+  {
+   "case_id": "EOM_blk_2ab0_C1_remove_object",
+   "cf_id": "C1_remove_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 379,
+   "n_seg_b": 375,
+   "sim": 0.977718,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 85.08,
+   "verdict": "GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    1447.159,
+    693.889,
+    1478.861,
+    725.591
+   ],
+   "records": [
+    {
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1448.76,
+      702.72,
+      1477.26,
+      716.76
+     ],
+     "change_len": 85.08,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 2.1
+  },
+  {
+   "case_id": "EOM_blk_2ab0_A6_round_0.5_5",
+   "cf_id": "A6_round_0.5",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "n_seg_a": 379,
+   "n_seg_b": 323,
+   "sim": 0.999569,
+   "n_records": 3,
+   "n_interior": 2,
+   "max_interior_len": 1.51,
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "change_bbox_pt": null,
+   "records": [
+    {
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1541.94,
+      38.34,
+      1564.98,
+      56.34
+     ],
+     "change_len": 1.51,
+     "at_boundary": false
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1541.94,
+      481.02,
+      1542.06,
+      481.02
+     ],
+     "change_len": 0.12,
+     "at_boundary": false
+    },
+    {
+     "type": "REMOVED_OBJECT",
+     "bbox_pt": [
+      1568.34,
+      469.56,
+      1568.34,
+      469.62
+     ],
+     "change_len": 0.06,
+     "at_boundary": true
+    }
+   ],
+   "t_sec": 0.9
+  },
+  {
+   "case_id": "OV_blk_1924_C3_move_object",
+   "cf_id": "C3_move_object",
+   "truth": "GRAPHIC_CHANGE",
+   "n_seg_a": 399,
+   "n_seg_b": 399,
+   "sim": 0.985333,
+   "n_records": 1,
+   "n_interior": 1,
+   "max_interior_len": 153.05,
+   "verdict": "GRAPHIC_CHANGE",
+   "change_bbox_pt": [
+    898.444,
+    994.054,
+    951.3,
+    1023.0
+   ],
+   "records": [
+    {
+     "type": "MOVED_OBJECT",
+     "bbox_pt": [
+      898.39,
+      994.0,
+      951.3,
+      1023.0
+     ],
+     "change_len": 153.05,
+     "at_boundary": false
+    }
+   ],
+   "t_sec": 1.8
+  }
+ ]
+}

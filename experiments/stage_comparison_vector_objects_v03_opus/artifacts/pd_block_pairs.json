@@ -1,0 +1,269 @@
+{
+ "question": "Найти пары ПОДГОТОВЛЕННЫХ ГРАФИЧЕСКИХ БЛОКОВ, изображающих одно и то же, на оси П ↔ РД",
+ "summary": {
+  "n_cross_stage_block_pairs_CONFIRMED": 0,
+  "n_cross_stage_candidates_examined_visually": 124,
+  "n_cross_stage_candidate_montages": 6,
+  "reason_no_pairs": "единственный документ корпуса со стадией П (том 133/23-ГК.ЭС о встроенной ТП 10/0,4 кВ) не имеет РД-двойника среди ЧИТАЕМЫХ документов объекта: РД-альбомы того же предмета (133/23-ГК-ГРЩ, -ЭМ1, -НС.ЭМ, -ЭО1, -ЭО2 v001) не имеют ни document.pdf, ни живых облачных кропов (404)",
+  "n_fallback_pairs_CONFIRMED": 7,
+  "fallback_axis": "cross_document_same_stage (Р↔Р): два корпуса одного проекта, одинаковые листы поставщика",
+  "sheet_name_as_anchor_precision": "0 из 10 совпадений sheet_name между К1↔К5 и К1↔К7 оказались одним и тем же чертежом"
+ },
+ "cross_stage_candidates": [
+  {
+   "axis": "П↔РД",
+   "a": {
+    "doc": "213/EOM/СК-4324-ЭРА-ЭР(том 133/23-ГК.ЭС, Стадия П)",
+    "page": 118,
+    "block_id": "6TLC-NDVG-REX"
+   },
+   "b": {
+    "doc": "213/EOM/133_23-ГК-ЭО3 (Р)",
+    "page": 12,
+    "block_id": "7XXP-J7EP-94M"
+   },
+   "anchor_score": 0.643,
+   "montage": "pd_crops/M00_6TLC-NDV__7XXP-J7E.png",
+   "visual_verdict": "REJECT",
+   "why": "разные помещения и разные разрезы"
+  },
+  {
+   "axis": "П↔РД",
+   "a": {
+    "doc": "213/EOM/СК-4324-ЭРА-ЭР(том 133/23-ГК.ЭС, Стадия П)",
+    "page": 123,
+    "block_id": "A9CV-G96E-F7M"
+   },
+   "b": {
+    "doc": "213/EOM/133_23-ГК-ЭО3 (Р)",
+    "page": 69,
+    "block_id": "6W9H-FNVF-QKW"
+   },
+   "anchor_score": 0.615,
+   "montage": "pd_crops/M01_A9CV-G96__6W9H-FNV.png",
+   "visual_verdict": "REJECT",
+   "why": "П — светильник на поворотном кронштейне, РД — установка на шпильке; разные узлы"
+  },
+  {
+   "axis": "П↔РД",
+   "a": {
+    "doc": "213/EOM/СК-4324-ЭРА-ЭР(том 133/23-ГК.ЭС, Стадия П)",
+    "page": 110,
+    "block_id": "6Y7P-A4M3-NH4"
+   },
+   "b": {
+    "doc": "213/EOM/133_23-ГК-ЭО3 (Р)",
+    "page": 63,
+    "block_id": "6M93-6KET-JEE"
+   },
+   "anchor_score": 0.452,
+   "montage": "pd_crops/M08_6Y7P-A4M__6M93-6KE.png",
+   "visual_verdict": "REJECT",
+   "why": "П — однолинейная схема ТП (РУ-10кВ, Т-А/Т-Б, ГРЩ), РД — щит ЩАХП; разное оборудование"
+  },
+  {
+   "axis": "П↔РД",
+   "a": {
+    "doc": "213/EOM/СК-4324-ЭРА-ЭР(том 133/23-ГК.ЭС, Стадия П)",
+    "page": 27,
+    "block_id": "9YEK-VCC9-GC9"
+   },
+   "b": {
+    "doc": "213/EOM/133_23-ГК-ЭГ (Р)",
+    "page": 10,
+    "block_id": "4G4L-K9UR-AGX"
+   },
+   "anchor_score": 0.483,
+   "montage": "pd_crops/M07_9YEK-VCC__4G4L-K9U.png",
+   "visual_verdict": "REJECT",
+   "why": "П — узел присоединения клеммы, РД — лист условных обозначений"
+  },
+  {
+   "axis": "П↔РД",
+   "a": {
+    "doc": "213/EOM/СК-4324-ЭРА-ЭР(том 133/23-ГК.ЭС, Стадия П)",
+    "page": 122,
+    "block_id": "весь лист (8 узлов заземления)"
+   },
+   "b": {
+    "doc": "213/EOM/133_23-ГК-ЭГ (Р)",
+    "page": 22,
+    "block_id": "весь лист (15 узлов заземления/молниезащиты)"
+   },
+   "anchor_score": null,
+   "montage": [
+    "pd_crops/CS_P_p122.png",
+    "pd_crops/CS_EG_p22.png"
+   ],
+   "visual_verdict": "REJECT (все 8×15)",
+   "why": "П — плоские 2D-виды присоединения полосы заземления; РД — аксонометрия молниезащиты и СУП. Ни одного совпадающего узла"
+  }
+ ],
+ "fallback_confirmed_pairs": [
+  {
+   "axis": "cross_document_same_stage (Р↔Р, разные корпуса, один проект 13АВ-РД-ОВ1.1)",
+   "a": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1 v001",
+    "page": 72,
+    "block_id": "9PHE-EHAF-UTC"
+   },
+   "b": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 v002",
+    "page": 65,
+    "block_id": "FUYH-WWXV-6PU"
+   },
+   "visual_verdict": "CONFIRMED",
+   "evidence": "Пульсар, коллекторный узел 550/530 мм, T1 слева — совпадает попозиционно (19 позиций)",
+   "montage": "pd_crops/CD02_9PHE-EHA__FUYH-WWX.png"
+  },
+  {
+   "axis": "cross_document_same_stage (Р↔Р, разные корпуса, один проект 13АВ-РД-ОВ1.1)",
+   "a": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1 v001",
+    "page": 73,
+    "block_id": "6NU3-6E3K-GRR"
+   },
+   "b": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 v002",
+    "page": 66,
+    "block_id": "A9RM-M7CU-GHP"
+   },
+   "visual_verdict": "CONFIRMED",
+   "evidence": "коллекторный узел 650/630 мм, T1 слева",
+   "montage": "pd_crops/CD03_6NU3-6E3__A9RM-M7C.png"
+  },
+  {
+   "axis": "cross_document_same_stage (Р↔Р, разные корпуса, один проект 13АВ-РД-ОВ1.1)",
+   "a": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1 v001",
+    "page": 74,
+    "block_id": "6LVU-H4JQ-…"
+   },
+   "b": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 v002",
+    "page": 67,
+    "block_id": "9CGT-HRPQ-…"
+   },
+   "visual_verdict": "CONFIRMED",
+   "evidence": "коллекторный узел 750/730 мм, T1 слева (контактные листы CS_K1/CS_K2)",
+   "montage": null
+  },
+  {
+   "axis": "cross_document_same_stage (Р↔Р, разные корпуса, один проект 13АВ-РД-ОВ1.1)",
+   "a": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1 v001",
+    "page": 75,
+    "block_id": "7EV6-WCNQ-…"
+   },
+   "b": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 v002",
+    "page": 68,
+    "block_id": "4UQK-QE6…"
+   },
+   "visual_verdict": "CONFIRMED",
+   "evidence": "коллекторный узел 550/530 мм, зеркальный (T1 справа)",
+   "montage": null
+  },
+  {
+   "axis": "cross_document_same_stage (Р↔Р, разные корпуса, один проект 13АВ-РД-ОВ1.1)",
+   "a": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1 v001",
+    "page": 77,
+    "block_id": "ACTJ-LEH…"
+   },
+   "b": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 v002",
+    "page": 69,
+    "block_id": "9UMV-A9Y…"
+   },
+   "visual_verdict": "CONFIRMED",
+   "evidence": "коллекторный узел 750/730 мм, зеркальный",
+   "montage": null
+  },
+  {
+   "axis": "cross_document_same_stage (Р↔Р, разные корпуса, один проект 13АВ-РД-ОВ1.1)",
+   "a": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1 v001",
+    "page": 80,
+    "block_id": "6VUV-W4Q…"
+   },
+   "b": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 v002",
+    "page": 71,
+    "block_id": "9KRY-FKE…"
+   },
+   "visual_verdict": "CONFIRMED",
+   "evidence": "коллекторный узел 570/550 мм «на 2 отвода»",
+   "montage": null
+  },
+  {
+   "axis": "cross_document_same_stage (Р↔Р, разные корпуса, один проект 13АВ-РД-ОВ1.1)",
+   "a": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К1 V1 v001",
+    "page": 95,
+    "block_id": "7FVP-3C3X-7YR"
+   },
+   "b": {
+    "doc": "214/OV/13АВ-РД-ОВ1.1-К2 V1 v002",
+    "page": 85,
+    "block_id": "UNG3-J3TG-HUL"
+   },
+   "visual_verdict": "CONFIRMED",
+   "evidence": "БТП, схема гидравлическая принципиальная: те же ветви CB1/CB2/CB3 и те же Q=178,01/169,26/114,1 кВт; компоновка перекомпонована",
+   "montage": "pd_crops/CD00_7FVP-3C3__UNG3-J3T.png"
+  }
+ ],
+ "sheet_name_anchor_false_positives": [
+  {
+   "pair": "214/OV К1 p72..80 ↔ К5 p39..42",
+   "sheet_name": "Чертеж общего вида",
+   "n_name_matches": 4,
+   "n_visually_same": 0,
+   "why": "К5 — другое семейство типоразмеров (950/1150/1050 мм) и другой бланк («Печать»)",
+   "sheets": [
+    "pd_crops/CS_K5_ov39_42.png",
+    "pd_crops/CS_K1_ov72_80.png"
+   ]
+  },
+  {
+   "pair": "214/OV К1 p72..80 ↔ К7 p22..27",
+   "sheet_name": "Чертеж общего вида",
+   "n_name_matches": 6,
+   "n_visually_same": 0,
+   "why": "К7 — третий бланк («Приложение 1», артикулы, «Корпус 3.1/5.1/3»)",
+   "sheets": [
+    "pd_crops/CS_K7_ov22_27.png"
+   ]
+  }
+ ],
+ "blocks_per_page": {
+  "П|133/23-ГК.ЭС": {
+   "pages": 70,
+   "graphic_blocks": 100,
+   "median_blocks_per_page": 1.0,
+   "mean": 1.43,
+   "max": 8
+  },
+  "ЭГ": {
+   "pages": 22,
+   "graphic_blocks": 49,
+   "median_blocks_per_page": 2.0,
+   "mean": 2.23,
+   "max": 15
+  },
+  "ЭО3": {
+   "pages": 68,
+   "graphic_blocks": 165,
+   "median_blocks_per_page": 1.0,
+   "mean": 2.43,
+   "max": 11
+  },
+  "ЭО2v2": {
+   "pages": 25,
+   "graphic_blocks": 23,
+   "median_blocks_per_page": 1,
+   "mean": 0.92,
+   "max": 4
+  }
+ }
+}

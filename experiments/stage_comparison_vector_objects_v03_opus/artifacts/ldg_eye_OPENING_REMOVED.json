@@ -1,0 +1,218 @@
+[
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "7WHK-V9XQ-LGL",
+  "doc_id": "13АВ-РД-ОВ2-К4 V1",
+  "discipline": "OV",
+  "cls": "drawing",
+  "n_seg": 13633,
+  "bbox": [
+   1770.48,
+   611.52,
+   1794.96,
+   612.48
+  ],
+  "params": {
+   "opening_pt": 24.499,
+   "opening_over_S": 2.6,
+   "same_object": false
+  },
+  "objects": [
+   "f8709c5fc5db",
+   "12d1bcac4845"
+  ],
+  "obj_cls": [
+   "area",
+   "area"
+  ]
+ },
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "7YVM-HUM4-FWF",
+  "doc_id": "13АВ-РД-ТХ2-К5",
+  "discipline": "TX",
+  "cls": "drawing",
+  "n_seg": 743,
+  "bbox": [
+   860.4,
+   359.6,
+   930.0,
+   359.6
+  ],
+  "params": {
+   "opening_pt": 69.6,
+   "opening_over_S": 7.08,
+   "same_object": false
+  },
+  "objects": [
+   "80090be873c9",
+   "3263feeda101"
+  ],
+  "obj_cls": [
+   "linear",
+   "linear"
+  ]
+ },
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "9QAA-FAAH-GDU",
+  "doc_id": "13АВ-РД-НВФ-К5",
+  "discipline": "KM",
+  "cls": "drawing",
+  "n_seg": 27522,
+  "bbox": [
+   167.76,
+   493.28,
+   304.32,
+   493.28
+  ],
+  "params": {
+   "opening_pt": 136.56,
+   "opening_over_S": 12.42,
+   "same_object": false
+  },
+  "objects": [
+   "b9e4ba88d22e",
+   "bc92a0494ea2"
+  ],
+  "obj_cls": [
+   "linear",
+   "linear"
+  ]
+ },
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+  "doc_id": "ПД-00542664-ИТП.АТМ_V1",
+  "discipline": "ITP",
+  "cls": "drawing",
+  "n_seg": 1955,
+  "bbox": [
+   817.92,
+   505.28,
+   840.0,
+   505.28
+  ],
+  "params": {
+   "opening_pt": 22.08,
+   "opening_over_S": 2.23,
+   "same_object": false
+  },
+  "objects": [
+   "fedc6c89f4d4",
+   "5f6b04470210"
+  ],
+  "obj_cls": [
+   "linear",
+   "symbol"
+  ]
+ },
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "blk_5126c169c8d34173b17372479bbed9f5",
+  "doc_id": "СТ26_01-14-КР0.1-РД_V1",
+  "discipline": "POS",
+  "cls": "drawing",
+  "n_seg": 10502,
+  "bbox": [
+   1115.58,
+   243.96,
+   1187.88,
+   243.96
+  ],
+  "params": {
+   "opening_pt": 72.3,
+   "opening_over_S": 7.39,
+   "same_object": false
+  },
+  "objects": [
+   "a5f6b4518a0b",
+   "86d17d410dd6"
+  ],
+  "obj_cls": [
+   "symbol",
+   "symbol"
+  ]
+ },
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "blk_9a8c86a7e64543069b1424ad220a2dca",
+  "doc_id": "ПД-00542664-СОУЭ-3_V1",
+  "discipline": "SS",
+  "cls": "drawing",
+  "n_seg": 9790,
+  "bbox": [
+   466.32,
+   145.3,
+   466.44,
+   177.58
+  ],
+  "params": {
+   "opening_pt": 32.28,
+   "opening_over_S": 2.94,
+   "same_object": false
+  },
+  "objects": [
+   "72bda59aaab8",
+   "53783548c32a"
+  ],
+  "obj_cls": [
+   "area",
+   "area"
+  ]
+ },
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "blk_db83119078e04029b349b5bf1a535280",
+  "doc_id": "СТ26_01-14-ПТ7-7-РД_V1",
+  "discipline": "PT",
+  "cls": "drawing",
+  "n_seg": 322,
+  "bbox": [
+   896.52,
+   529.8,
+   992.34,
+   529.8
+  ],
+  "params": {
+   "opening_pt": 95.82,
+   "opening_over_S": 11.14,
+   "same_object": false
+  },
+  "objects": [
+   "ff5da546007e",
+   "b61fa2f10127"
+  ],
+  "obj_cls": [
+   "linear",
+   "linear"
+  ]
+ },
+ {
+  "phrase": "OPENING_REMOVED",
+  "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+  "doc_id": "13АВ-РД-КЖ5.42.1-К2_V1",
+  "discipline": "KJ",
+  "cls": "drawing",
+  "n_seg": 723,
+  "bbox": [
+   2524.8,
+   1776.959,
+   2542.32,
+   1776.959
+  ],
+  "params": {
+   "opening_pt": 17.52,
+   "opening_over_S": 2.06,
+   "same_object": false
+  },
+  "objects": [
+   "f1a938cf682c",
+   "eb5d42d8e8b0"
+  ],
+  "obj_cls": [
+   "composite",
+   "symbol"
+  ]
+ }
+]

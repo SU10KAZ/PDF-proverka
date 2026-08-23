@@ -1,0 +1,366 @@
+[
+ {
+  "block_id": "7HJD-7KUY-PPF",
+  "n_seg": 302513,
+  "S": 0.24,
+  "n_obj": 23385,
+  "bytes_full": 7042646,
+  "ink_total": 359759.3,
+  "variants": {
+   "full": {
+    "n_obj": 23385,
+    "bytes": 7042646,
+    "tokens": 1760658,
+    "ink_kept": 1.0
+   },
+   "no_desc": {
+    "n_obj": 23385,
+    "bytes": 3437720,
+    "tokens": 859426,
+    "ink_kept": 1.0
+   },
+   "no_desc_no_fam": {
+    "n_obj": 23385,
+    "bytes": 3122296,
+    "tokens": 780570,
+    "ink_kept": 1.0
+   },
+   "ink>=3pt": {
+    "n_obj": 11845,
+    "bytes": 3724505,
+    "tokens": 931122,
+    "ink_kept": 0.9714
+   },
+   "ink>=2S": {
+    "n_obj": 19342,
+    "bytes": 5904101,
+    "tokens": 1476021,
+    "ink_kept": 0.9972
+   },
+   "ink>=60pt": {
+    "n_obj": 758,
+    "bytes": 275523,
+    "tokens": 68877,
+    "ink_kept": 0.5074
+   },
+   "ink>=2S+no_desc": {
+    "n_obj": 19342,
+    "bytes": 2593267,
+    "tokens": 648313,
+    "ink_kept": 0.9972
+   }
+  }
+ },
+ {
+  "block_id": "9F3V-QCMT-NKU",
+  "n_seg": 305660,
+  "S": 0.24,
+  "n_obj": 22803,
+  "bytes_full": 6867680,
+  "ink_total": 366906.6,
+  "variants": {
+   "full": {
+    "n_obj": 22803,
+    "bytes": 6867680,
+    "tokens": 1716916,
+    "ink_kept": 1.0
+   },
+   "no_desc": {
+    "n_obj": 22803,
+    "bytes": 3346223,
+    "tokens": 836552,
+    "ink_kept": 1.0
+   },
+   "no_desc_no_fam": {
+    "n_obj": 22803,
+    "bytes": 3038475,
+    "tokens": 759615,
+    "ink_kept": 1.0
+   },
+   "ink>=3pt": {
+    "n_obj": 11978,
+    "bytes": 3759698,
+    "tokens": 939921,
+    "ink_kept": 0.973
+   },
+   "ink>=2S": {
+    "n_obj": 19204,
+    "bytes": 5854108,
+    "tokens": 1463523,
+    "ink_kept": 0.9976
+   },
+   "ink>=60pt": {
+    "n_obj": 732,
+    "bytes": 267594,
+    "tokens": 66895,
+    "ink_kept": 0.51
+   },
+   "ink>=2S+no_desc": {
+    "n_obj": 19204,
+    "bytes": 2567772,
+    "tokens": 641939,
+    "ink_kept": 0.9976
+   }
+  }
+ },
+ {
+  "block_id": "69J7-79CR-4DF",
+  "n_seg": 606949,
+  "S": 0.123,
+  "n_obj": 15800,
+  "bytes_full": 5136273,
+  "ink_total": 283119.6,
+  "variants": {
+   "full": {
+    "n_obj": 15800,
+    "bytes": 5136273,
+    "tokens": 1284064,
+    "ink_kept": 1.0
+   },
+   "no_desc": {
+    "n_obj": 15800,
+    "bytes": 2346285,
+    "tokens": 586567,
+    "ink_kept": 1.0
+   },
+   "no_desc_no_fam": {
+    "n_obj": 15800,
+    "bytes": 2152963,
+    "tokens": 538236,
+    "ink_kept": 1.0
+   },
+   "ink>=3pt": {
+    "n_obj": 14102,
+    "bytes": 4613908,
+    "tokens": 1153473,
+    "ink_kept": 0.9951
+   },
+   "ink>=2S": {
+    "n_obj": 14606,
+    "bytes": 4775388,
+    "tokens": 1193843,
+    "ink_kept": 0.9997
+   },
+   "ink>=60pt": {
+    "n_obj": 133,
+    "bytes": 60209,
+    "tokens": 15048,
+    "ink_kept": 0.1977
+   },
+   "ink>=2S+no_desc": {
+    "n_obj": 14606,
+    "bytes": 1988349,
+    "tokens": 497083,
+    "ink_kept": 0.9997
+   }
+  }
+ },
+ {
+  "block_id": "9YVP-DUNF-PUA",
+  "n_seg": 1348413,
+  "S": 5.9179,
+  "n_obj": 15779,
+  "bytes_full": 4678848,
+  "ink_total": 639513.0,
+  "variants": {
+   "full": {
+    "n_obj": 15779,
+    "bytes": 4678848,
+    "tokens": 1166932,
+    "ink_kept": 1.0
+   },
+   "no_desc": {
+    "n_obj": 15779,
+    "bytes": 2339148,
+    "tokens": 582007,
+    "ink_kept": 1.0
+   },
+   "no_desc_no_fam": {
+    "n_obj": 15779,
+    "bytes": 2138376,
+    "tokens": 531814,
+    "ink_kept": 1.0
+   },
+   "ink>=3pt": {
+    "n_obj": 4582,
+    "bytes": 1450508,
+    "tokens": 361786,
+    "ink_kept": 0.9824
+   },
+   "ink>=2S": {
+    "n_obj": 2248,
+    "bytes": 760575,
+    "tokens": 189737,
+    "ink_kept": 0.9627
+   },
+   "ink>=60pt": {
+    "n_obj": 1310,
+    "bytes": 460790,
+    "tokens": 114889,
+    "ink_kept": 0.9164
+   },
+   "ink>=2S+no_desc": {
+    "n_obj": 2248,
+    "bytes": 308287,
+    "tokens": 76665,
+    "ink_kept": 0.9627
+   }
+  }
+ },
+ {
+  "block_id": "blk_e7817fd8a5ec4a829ef5eacefc93d88a",
+  "n_seg": 471366,
+  "S": 7.0796,
+  "n_obj": 11021,
+  "bytes_full": 3414720,
+  "ink_total": 1139292.0,
+  "variants": {
+   "full": {
+    "n_obj": 11021,
+    "bytes": 3414720,
+    "tokens": 852566,
+    "ink_kept": 1.0
+   },
+   "no_desc": {
+    "n_obj": 11021,
+    "bytes": 1690590,
+    "tokens": 421534,
+    "ink_kept": 1.0
+   },
+   "no_desc_no_fam": {
+    "n_obj": 11021,
+    "bytes": 1538963,
+    "tokens": 383627,
+    "ink_kept": 1.0
+   },
+   "ink>=3pt": {
+    "n_obj": 9022,
+    "bytes": 2805950,
+    "tokens": 700453,
+    "ink_kept": 0.9988
+   },
+   "ink>=2S": {
+    "n_obj": 6202,
+    "bytes": 1990773,
+    "tokens": 496769,
+    "ink_kept": 0.9815
+   },
+   "ink>=60pt": {
+    "n_obj": 3324,
+    "bytes": 1128148,
+    "tokens": 281254,
+    "ink_kept": 0.8848
+   },
+   "ink>=2S+no_desc": {
+    "n_obj": 6202,
+    "bytes": 878071,
+    "tokens": 218594,
+    "ink_kept": 0.9815
+   }
+  }
+ },
+ {
+  "block_id": "4UHA-TD34-LLE",
+  "n_seg": 84134,
+  "S": 0.1835,
+  "n_obj": 6061,
+  "bytes_full": 1832461,
+  "ink_total": 106892.1,
+  "variants": {
+   "full": {
+    "n_obj": 6061,
+    "bytes": 1832461,
+    "tokens": 458111,
+    "ink_kept": 1.0
+   },
+   "no_desc": {
+    "n_obj": 6061,
+    "bytes": 885146,
+    "tokens": 221282,
+    "ink_kept": 1.0
+   },
+   "no_desc_no_fam": {
+    "n_obj": 6061,
+    "bytes": 801746,
+    "tokens": 200432,
+    "ink_kept": 1.0
+   },
+   "ink>=3pt": {
+    "n_obj": 3132,
+    "bytes": 988697,
+    "tokens": 247170,
+    "ink_kept": 0.9818
+   },
+   "ink>=2S": {
+    "n_obj": 4365,
+    "bytes": 1355372,
+    "tokens": 338839,
+    "ink_kept": 0.9958
+   },
+   "ink>=60pt": {
+    "n_obj": 382,
+    "bytes": 127510,
+    "tokens": 31873,
+    "ink_kept": 0.5366
+   },
+   "ink>=2S+no_desc": {
+    "n_obj": 4365,
+    "bytes": 580234,
+    "tokens": 145054,
+    "ink_kept": 0.9958
+   }
+  }
+ },
+ {
+  "block_id": "79RM-T3AL-6MA",
+  "n_seg": 98457,
+  "S": 6.0546,
+  "n_obj": 2835,
+  "bytes_full": 866416,
+  "ink_total": 285715.9,
+  "variants": {
+   "full": {
+    "n_obj": 2835,
+    "bytes": 866416,
+    "tokens": 216576,
+    "ink_kept": 1.0
+   },
+   "no_desc": {
+    "n_obj": 2835,
+    "bytes": 426046,
+    "tokens": 106483,
+    "ink_kept": 1.0
+   },
+   "no_desc_no_fam": {
+    "n_obj": 2835,
+    "bytes": 383799,
+    "tokens": 95921,
+    "ink_kept": 1.0
+   },
+   "ink>=3pt": {
+    "n_obj": 2426,
+    "bytes": 748541,
+    "tokens": 187107,
+    "ink_kept": 0.9982
+   },
+   "ink>=2S": {
+    "n_obj": 1725,
+    "bytes": 543673,
+    "tokens": 135890,
+    "ink_kept": 0.9794
+   },
+   "ink>=60pt": {
+    "n_obj": 805,
+    "bytes": 269299,
+    "tokens": 67299,
+    "ink_kept": 0.8515
+   },
+   "ink>=2S+no_desc": {
+    "n_obj": 1725,
+    "bytes": 235401,
+    "tokens": 58822,
+    "ink_kept": 0.9794
+   }
+  }
+ }
+]

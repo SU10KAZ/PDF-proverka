@@ -1,0 +1,29 @@
+{
+ "n_blocks": 43261,
+ "routes": {
+  "TABLE_PIPELINE": {
+   "n": 15140,
+   "share": 0.34997
+  },
+  "VECTOR": {
+   "n": 23782,
+   "share": 0.54973
+  },
+  "VISION_ONLY:too_thin": {
+   "n": 324,
+   "share": 0.00749
+  },
+  "VECTOR:tile": {
+   "n": 2970,
+   "share": 0.06865
+  },
+  "VISION_ONLY": {
+   "n": 1012,
+   "share": 0.02339
+  },
+  "VISION_ONLY:text_in_curves": {
+   "n": 33,
+   "share": 0.00076
+  }
+ }
+}

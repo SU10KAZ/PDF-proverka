@@ -1,0 +1,37 @@
+{
+ "method": "The probe author (Claude Opus 5) opened every contact sheet in artifacts/rel_visual/ and graded each tile by eye. T = the relation is really there, F = it is not, U = the tile does not let one decide (usually one endpoint is invisible because it is a single tiny segment, or the frame is dominated by a large object). The false rate is reported over the RESOLVABLE tiles (T+F) and, as a worst case, with every U counted as F.",
+ "criteria": {
+  "CONNECTED_TO": "a free endpoint of the red object physically lands on the blue object's ink",
+  "PART_OF": "the red object lies inside the blue one AND touches it",
+  "INSIDE": "the red object lies inside the blue object's real outline",
+  "CONTAINS": "mirror of INSIDE (blue inside red)",
+  "ADJACENT": "the two objects are neighbours at the stated gap and neither contains the other",
+  "ALIGNED": "the two centres share the stated axis within the stated tolerance",
+  "LEADER_TO": "the red object is a LEADER (callout) whose free end points at the blue object and whose other end carries the text - a dimension line, a table rule or a door swing is NOT a leader",
+  "LABEL_ANCHOR": "the text really names the red object (not a neighbouring one)",
+  "REPEATED_WITH": "red and blue are the same motif"
+ },
+ "layer": "default v03_objects parameters (the defective arc closure is IN)",
+ "grades": {
+  "CONNECTED_TO": {"00":"T","01":"T","02":"T","03":"T","04":"T","05":"T","06":"U","07":"U","08":"T","09":"U","10":"U","11":"U","12":"T","13":"T","14":"T","15":"T","16":"T","17":"T","18":"T","19":"T","20":"T","21":"T","22":"T","23":"T","24":"T","25":"T","26":"T","27":"T","28":"T","29":"T"},
+  "PART_OF": {"00":"F","01":"F","02":"F","03":"T","04":"F","05":"F","06":"F","07":"U","08":"F","18":"U","19":"U","20":"U","21":"T","22":"T","23":"U","24":"F","25":"F","26":"T"},
+  "INSIDE": {"00":"F","01":"F","02":"F","03":"F","04":"F","05":"T","06":"T","07":"T","08":"T","09":"F","10":"T","11":"F","12":"F","13":"F","14":"T","15":"U","16":"U","17":"T","18":"U","19":"U","20":"F","21":"F","22":"F","23":"F","24":"F","25":"F","26":"U","27":"F","28":"U","29":"T"},
+  "CONTAINS": {"09":"U","10":"T","11":"F","12":"F","13":"F","14":"U","15":"F","16":"T","17":"U"},
+  "ADJACENT": {"00":"T","01":"T","02":"T","03":"T","04":"T","05":"T","06":"U","07":"T","08":"T","09":"T","10":"T","11":"T","12":"T","13":"T","14":"T","15":"F","16":"T","17":"T","18":"T","19":"T","20":"T","21":"T","22":"F","23":"F","24":"T","25":"T","26":"T","27":"T","28":"T","29":"T"},
+  "ALIGNED": {"00":"T","01":"T","02":"T","03":"U","04":"T","05":"T","06":"U","07":"T","08":"T","09":"U","10":"T","11":"T","12":"T","13":"T","14":"U","15":"T","16":"T","17":"T","18":"T","19":"T","20":"T","21":"T","22":"T","23":"T","24":"T","25":"T","26":"T"},
+  "LEADER_TO": {"00":"F","01":"F","02":"F","03":"F","04":"T","05":"T","06":"T","07":"F","08":"T","09":"F","10":"F","11":"F","12":"F","13":"F","14":"F","15":"T","16":"T","17":"T","18":"F","19":"F","20":"F","21":"F","22":"T","23":"F","24":"F","25":"T","26":"T","27":"F","28":"F","29":"F"},
+  "LABEL_ANCHOR": {"00":"T","01":"U","02":"F","03":"U","04":"T","05":"T","06":"T","07":"T","08":"T","09":"T","10":"U","11":"U","12":"F","13":"F","14":"F","15":"F","16":"F","17":"F","18":"T","19":"T","20":"T","21":"F","22":"F","23":"F","24":"T","25":"T","26":"T"},
+  "REPEATED_WITH": {"00":"T","01":"T","02":"T","03":"U","04":"U","05":"U","06":"T","07":"T","08":"T","18":"U","19":"T","20":"T","21":"T","22":"T","23":"T","24":"T","25":"T","26":"T"}
+ },
+ "guarded_grades": {
+  "layer": "arc_min_pts=6 (rectangles no longer become circumscribed circles); same sampling rule, artifacts/rel_visual_guarded/",
+  "INSIDE": {"00":"T","01":"T","02":"T","03":"T","04":"T","05":"T","06":"T","07":"T","08":"T","09":"U","10":"T","11":"T","12":"T","13":"T","14":"T","15":"T","16":"T","17":"T"},
+  "PART_OF": {"00":"T","01":"T","02":"F","03":"T","04":"T","05":"T","06":"T","07":"T","08":"T"}
+ },
+ "notes": {
+  "CONTAINS": "CONTAINS is emitted by the builder as the mirror of every INSIDE pair, so its population is identical; one sheet was graded as a consistency check and it reproduces the INSIDE failure mode.",
+  "LEADER_TO": "every F on a stamp/table block is a table rule line taken for a leader; several F on drawings are DIMENSION lines (a leader-shaped polyline whose text is a number).",
+  "LABEL_ANCHOR": "every F in tiles 12-17 is a stamp/table block, where each text sits next to some rule line and the nearest-text rule pairs them meaninglessly.",
+  "ALIGNED": "no F was found - alignment is true by construction; the informative number is not the false rate but the distance between 'aligned' objects (see rel_gapcensus)."
+ }
+}

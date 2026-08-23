@@ -1,0 +1,3317 @@
+{
+ "seed": 90210773,
+ "n": 56,
+ "note": "SECRET until hyb_armB.json is closed",
+ "views": [
+  {
+   "view_id": "h01",
+   "case_id": "AR-55eda7fb",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1352,
+     1501
+    ],
+    [
+     1483,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 5179.3,
+   "meta": {
+    "classes": [
+     "small_local_change",
+     "table_only_change",
+     "with_labels"
+    ],
+    "discipline": "AR",
+    "label_confidence": "high",
+    "expected_changed_objects": 1,
+    "human": "В таблице «Перемычки 39 этаж» изменён эскиз строки ПР-14: было L=850 (поз. 10) с размерами 150/550/150, стало L=1000 (поз. 8) со штриховкой стены справа. Остальные строки не изменились."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К2/versions/v002/02_work/document.pdf",
+    "page_index": 20,
+    "coords_px": [
+     697.0,
+     4399.0,
+     2759.0,
+     6689.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К2/versions/v003/02_work/document.pdf",
+    "page_index": 20,
+    "coords_px": [
+     571.0,
+     4493.0,
+     2775.0,
+     6723.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h02",
+   "case_id": "EOM-36de2ce2",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     1100
+    ],
+    [
+     1501,
+     918
+    ]
+   ],
+   "tokens_pair_1500px": 3711.2,
+   "meta": {
+    "classes": [
+     "block_moved",
+     "rotated_page",
+     "few_labels"
+    ],
+    "discipline": "EOM",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "«Схема размещения фрагмента» та же самая, в версии B крупнее (масштаб блока другой). Сегментов 2 207 и 2 207, текст совпадает."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v001/02_work/document.pdf",
+    "page_index": 27,
+    "coords_px": [
+     3042.0,
+     1366.0,
+     4194.0,
+     2210.0
+    ],
+    "page_px": [
+     4962,
+     3508
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v002/02_work/document.pdf",
+    "page_index": 28,
+    "coords_px": [
+     2860.0,
+     1379.0,
+     4248.0,
+     2228.0
+    ],
+    "page_px": [
+     4962,
+     3508
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h03",
+   "case_id": "KJ-548814a7",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1073,
+     1501
+    ],
+    [
+     1164,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4106.4,
+   "meta": {
+    "classes": [
+     "block_moved",
+     "few_labels"
+    ],
+    "discipline": "KJ",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "«Схема отгиба стержня» одна и та же, в версии B вычерчена примерно в 1.25 раза крупнее."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.30-31.1-К2/versions/v001/02_work/document.pdf",
+    "page_index": 8,
+    "coords_px": [
+     10915.0,
+     281.0,
+     11557.0,
+     1109.0
+    ],
+    "page_px": [
+     14043,
+     9932
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.30-31.1-К2/versions/v002/02_work/document.pdf",
+    "page_index": 9,
+    "coords_px": [
+     10445.0,
+     149.0,
+     11031.0,
+     969.0
+    ],
+    "page_px": [
+     14043,
+     9932
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h04",
+   "case_id": "OV-93cc012f",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1352
+    ],
+    [
+     1501,
+     1351
+    ]
+   ],
+   "tokens_pair_1500px": 4953.4,
+   "meta": {
+    "classes": [
+     "object_added",
+     "object_moved",
+     "with_labels"
+    ],
+    "discipline": "OV",
+    "label_confidence": "medium",
+    "expected_changed_objects": 4,
+    "human": "В версии B добавлены выноски-«шарики» 5 (33) и 1 (33) (три штуки), а верхняя часть трассы теплоснабжения сдвинута относительно нижней."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К2 V1/versions/v001/02_work/document.pdf",
+    "page_index": 27,
+    "coords_px": [
+     6328.0,
+     1737.0,
+     9430.0,
+     4527.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К2 V1/versions/v002/02_work/document.pdf",
+    "page_index": 28,
+    "coords_px": [
+     6116.0,
+     1587.0,
+     9394.0,
+     4539.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h05",
+   "case_id": "KJ_7J9G-4UT_B3_crop_jitter",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1077
+    ],
+    [
+     1501,
+     1076
+    ]
+   ],
+   "tokens_pair_1500px": 3937.0,
+   "meta": {
+    "cf_id": "B3_crop_jitter_0.02",
+    "cf_class": "B",
+    "mode": "frame",
+    "discipline": "KJ",
+    "n_seg_carrier": 827,
+    "change_bbox_pt": null,
+    "redraw_fidelity_diff": null
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_B3_crop_jitter_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_B3_crop_jitter_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8156.08,
+     1808.68,
+     9852.08,
+     3024.68
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h06",
+   "case_id": "AR-a32b30a6",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     444
+    ],
+    [
+     1501,
+     975
+    ]
+   ],
+   "tokens_pair_1500px": 2638.3,
+   "meta": {
+    "classes": [
+     "object_added",
+     "raster_graphics",
+     "no_labels"
+    ],
+    "discipline": "AR",
+    "label_confidence": "high",
+    "expected_changed_objects": 1,
+    "human": "В версии B рядом с «Фундамент под оборудование Фпк-3, Фпк-4. Опалубка» добавлен второй чертёж «Фундамент под оборудование Фпк-2. Армирование»."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К3/versions/v001/02_work/document.pdf",
+    "page_index": 9,
+    "coords_px": [
+     212.0,
+     2002.0,
+     2206.0,
+     3296.0
+    ],
+    "page_px": [
+     7015,
+     4961
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К3/versions/v002/02_work/document.pdf",
+    "page_index": 10,
+    "coords_px": [
+     285.0,
+     1977.0,
+     4549.0,
+     3237.0
+    ],
+    "page_px": [
+     7015,
+     4961
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h07",
+   "case_id": "SS-76640e11",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1302,
+     1501
+    ],
+    [
+     1501,
+     1420
+    ]
+   ],
+   "tokens_pair_1500px": 4953.4,
+   "meta": {
+    "classes": [
+     "text_only_change",
+     "with_labels"
+    ],
+    "discipline": "SS",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "С плана удалён текстовый блок «Примечание:» из трёх пунктов внизу листа. Сам план (стены, оси, оборудование) не изменился."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v001/02_work/document.pdf",
+    "page_index": 19,
+    "coords_px": [
+     210.0,
+     58.0,
+     4372.0,
+     4858.0
+    ],
+    "page_px": [
+     7016,
+     4962
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v002/02_work/document.pdf",
+    "page_index": 19,
+    "coords_px": [
+     229.0,
+     57.0,
+     4498.0,
+     4096.0
+    ],
+    "page_px": [
+     7017,
+     4963
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h08",
+   "case_id": "AR-dbfd82b8",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1213
+    ],
+    [
+     1204,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4388.7,
+   "meta": {
+    "classes": [
+     "object_removed",
+     "with_labels",
+     "table_like"
+    ],
+    "discipline": "AR",
+    "label_confidence": "high",
+    "expected_changed_objects": 1,
+    "human": "В версии B удалён блок «Условные обозначения» целиком (около 25 строк с образцами штриховок и подписями). Таблица «Ведомость полов 2-го этажа» не изменилась."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v001/02_work/document.pdf",
+    "page_index": 6,
+    "coords_px": [
+     5649.0,
+     55.0,
+     8739.0,
+     3906.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v002/02_work/document.pdf",
+    "page_index": 6,
+    "coords_px": [
+     5667.0,
+     75.0,
+     8723.0,
+     2543.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h09",
+   "case_id": "TX-95031dbd",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     669,
+     1230
+    ],
+    [
+     746,
+     1326
+    ]
+   ],
+   "tokens_pair_1500px": 2292.3,
+   "meta": {
+    "classes": [
+     "unchanged_control",
+     "no_labels",
+     "rotated_page"
+    ],
+    "discipline": "TX",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Изменений нет: две схемы («Цепь освещения 220 В» и «Силовая цепь 380 В») совпадают попиксельно (diff=0.0)."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К1 V1/versions/v001/02_work/document.pdf",
+    "page_index": 12,
+    "coords_px": [
+     2126.0,
+     1681.0,
+     2474.0,
+     2321.0
+    ],
+    "page_px": [
+     3508,
+     2479
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/TX/documents/13АВ-РД-ТХ2-К1 V1/versions/v002/02_work/document.pdf",
+    "page_index": 12,
+    "coords_px": [
+     2130.0,
+     1662.0,
+     2518.0,
+     2352.0
+    ],
+    "page_px": [
+     3509,
+     2480
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h10",
+   "case_id": "AR-5acaab0e",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1274,
+     1501
+    ],
+    [
+     1190,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4501.7,
+   "meta": {
+    "classes": [
+     "object_added",
+     "dense_block",
+     "hatch_noise",
+     "with_labels"
+    ],
+    "discipline": "AR",
+    "label_confidence": "medium",
+    "expected_changed_objects": 3,
+    "human": "В версии B достроен объём стен в правой верхней части (штриховка расширена вправо) и добавлен заголовок сверху; остальная штриховка совпадает по смыслу, но сдвинута по фазе."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3.2-ПА/versions/v001/02_work/document.pdf",
+    "page_index": 6,
+    "coords_px": [
+     239.0,
+     39.0,
+     9908.0,
+     12237.0
+    ],
+    "page_px": [
+     9932,
+     14043
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3.2-ПА/versions/v002/02_work/document.pdf",
+    "page_index": 7,
+    "coords_px": [
+     239.0,
+     119.0,
+     9928.0,
+     11535.0
+    ],
+    "page_px": [
+     9932,
+     14043
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h11",
+   "case_id": "EOM_blk_2ab0_C1_remove_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     433,
+     1501
+    ],
+    [
+     433,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 1678.4,
+   "meta": {
+    "cf_id": "C1_remove_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "EOM",
+    "n_seg_carrier": 379,
+    "change_bbox_pt": [
+     1448.76,
+     702.72,
+     1477.26,
+     716.76
+    ],
+    "redraw_fidelity_diff": 0.0
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_C1_remove_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_C1_remove_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h12",
+   "case_id": "GP_7EHD-V69_C6_reshape_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1242,
+     1501
+    ],
+    [
+     1242,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4501.7,
+   "meta": {
+    "cf_id": "C6_reshape_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "GP",
+    "n_seg_carrier": 2227,
+    "change_bbox_pt": [
+     2222.58,
+     1304.44,
+     2240.64,
+     1369.48
+    ],
+    "redraw_fidelity_diff": 4e-05
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C6_reshape_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C6_reshape_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h13",
+   "case_id": "SS-392b7bd3",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     905
+    ],
+    [
+     1501,
+     898
+    ]
+   ],
+   "tokens_pair_1500px": 3372.4,
+   "meta": {
+    "classes": [
+     "bbox_boundary_artifact",
+     "with_labels"
+    ],
+    "discipline": "SS",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Схема (EZ1, У1.1, «Входные двери помещения», ПУ-У1) идентична; в версии B сверху добавилась линия рамки листа."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v001/02_work/document.pdf",
+    "page_index": 11,
+    "coords_px": [
+     249.0,
+     79.0,
+     2467.0,
+     1405.0
+    ],
+    "page_px": [
+     4962,
+     3508
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v002/02_work/document.pdf",
+    "page_index": 11,
+    "coords_px": [
+     249.0,
+     55.0,
+     2572.0,
+     1455.0
+    ],
+    "page_px": [
+     4962,
+     3508
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h14",
+   "case_id": "EOM-14558cda",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1457,
+     1501
+    ],
+    [
+     1412,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 5235.7,
+   "meta": {
+    "classes": [
+     "object_added",
+     "occluding_fill",
+     "with_labels"
+    ],
+    "discipline": "EOM",
+    "label_confidence": "medium",
+    "expected_changed_objects": 1,
+    "human": "В версии A вид «Внешний вид УЭРМ» полностью закрыт сплошной чёрной заливкой; в версии B тот же вид виден нормально. Подписи и отметки вокруг совпадают."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v001/02_work/document.pdf",
+    "page_index": 9,
+    "coords_px": [
+     4902.0,
+     88.0,
+     7858.0,
+     3134.0
+    ],
+    "page_px": [
+     10524,
+     4961
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/02_work/document.pdf",
+    "page_index": 10,
+    "coords_px": [
+     4896.0,
+     79.0,
+     7834.0,
+     3201.0
+    ],
+    "page_px": [
+     10524,
+     4961
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h15",
+   "case_id": "VK-56115717",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1047,
+     1500
+    ],
+    [
+     761,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 3315.9,
+   "meta": {
+    "classes": [
+     "object_removed",
+     "with_labels"
+    ],
+    "discipline": "VK",
+    "label_confidence": "high",
+    "expected_changed_objects": 1,
+    "human": "В версии B удалена правая схема «Схема системы В2.3 (2 зона)» целиком; левая схема В2.2 осталась. Заодно исчез текст в штампе."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К3 V1/versions/v001/02_work/document.pdf",
+    "page_index": 15,
+    "coords_px": [
+     4815.0,
+     0.0,
+     9368.0,
+     6529.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К3 V1/versions/v002/02_work/document.pdf",
+    "page_index": 16,
+    "coords_px": [
+     4812.0,
+     81.0,
+     8004.0,
+     6382.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h16",
+   "case_id": "AR_7WT4-934_D7_dim_geometry",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     450
+    ],
+    [
+     1501,
+     450
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "cf_id": "D7_dim_geometry",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "AR",
+    "n_seg_carrier": 1723,
+    "change_bbox_pt": [
+     2246.75,
+     1593.32,
+     2341.2,
+     1621.07
+    ],
+    "redraw_fidelity_diff": 0.06644
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D7_dim_geometry_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D7_dim_geometry_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h17",
+   "case_id": "KJ-b5c82f7c",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     386
+    ],
+    [
+     1501,
+     429
+    ]
+   ],
+   "tokens_pair_1500px": 1621.9,
+   "meta": {
+    "classes": [
+     "bbox_boundary_artifact",
+     "with_labels"
+    ],
+    "discipline": "KJ",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Узлы армирования совпадают полностью; в версии B в кроп дополнительно попала линия рамки листа слева."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v001/02_work/document.pdf",
+    "page_index": 31,
+    "coords_px": [
+     532.0,
+     2558.0,
+     8926.0,
+     4954.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v002/02_work/document.pdf",
+    "page_index": 32,
+    "coords_px": [
+     223.0,
+     2563.0,
+     9556.0,
+     4957.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h18",
+   "case_id": "KJ-25717577",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     449
+    ],
+    [
+     1500,
+     466
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "classes": [
+     "text_only_change",
+     "table_only_change",
+     "with_labels"
+    ],
+    "discipline": "KJ",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Изменились только даты во всех строках штампа: 25.03.26 → 22.05.26. Линии таблицы, подписи и логотип те же."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v001/02_work/document.pdf",
+    "page_index": 13,
+    "coords_px": [
+     7686.0,
+     6284.0,
+     9882.0,
+     6964.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v002/02_work/document.pdf",
+    "page_index": 14,
+    "coords_px": [
+     7696.0,
+     6309.0,
+     9870.0,
+     6959.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h19",
+   "case_id": "EOM-7fef43a3",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1350,
+     1501
+    ],
+    [
+     1195,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4671.1,
+   "meta": {
+    "classes": [
+     "object_added",
+     "with_labels"
+    ],
+    "discipline": "EOM",
+    "label_confidence": "high",
+    "expected_changed_objects": 2,
+    "human": "В версии B добавлены выноска с подписью «Закладная гильза для кабеля обогрева» и сноска «* Зазор между трубой и гильзой необходимо заделать мягким водонепроницаемым материалом»."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/document.pdf",
+    "page_index": 13,
+    "coords_px": [
+     8478.0,
+     228.0,
+     10442.0,
+     2412.0
+    ],
+    "page_px": [
+     10524,
+     4961
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v002/02_work/document.pdf",
+    "page_index": 15,
+    "coords_px": [
+     8471.0,
+     86.0,
+     10398.0,
+     2507.0
+    ],
+    "page_px": [
+     10524,
+     4961
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h20",
+   "case_id": "AR_6WNV-DWD_D2_text_move",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     953
+    ],
+    [
+     1501,
+     953
+    ]
+   ],
+   "tokens_pair_1500px": 3485.3,
+   "meta": {
+    "cf_id": "D2_text_move",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "AR",
+    "n_seg_carrier": 1034,
+    "change_bbox_pt": [
+     928.68,
+     1039.04,
+     994.9,
+     1098.43
+    ],
+    "redraw_fidelity_diff": 0.44902
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D2_text_move_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D2_text_move_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h21",
+   "case_id": "KJ_7J9G-4UT_D9_text_to_curves",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1076
+    ],
+    [
+     1501,
+     1076
+    ]
+   ],
+   "tokens_pair_1500px": 3937.0,
+   "meta": {
+    "cf_id": "D9_text_to_curves",
+    "cf_class": "D",
+    "mode": "page",
+    "discipline": "KJ",
+    "n_seg_carrier": 827,
+    "change_bbox_pt": null,
+    "redraw_fidelity_diff": null
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_D9_text_to_curves_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_D9_text_to_curves_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h22",
+   "case_id": "AR-577a293f",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     1338
+    ],
+    [
+     1501,
+     1361
+    ]
+   ],
+   "tokens_pair_1500px": 4896.9,
+   "meta": {
+    "classes": [
+     "small_local_change",
+     "table_only_change",
+     "with_labels"
+    ],
+    "discipline": "AR",
+    "label_confidence": "medium",
+    "expected_changed_objects": 3,
+    "human": "В «Ведомости полов 17-го этажа» изменены эскизы и составы строк 2.1, 2.4 и 2.7 (число слоёв и толщины). Сетка таблицы и остальные строки не изменились."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v001/02_work/document.pdf",
+    "page_index": 21,
+    "coords_px": [
+     222.0,
+     3800.0,
+     3800.0,
+     6990.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v002/02_work/document.pdf",
+    "page_index": 21,
+    "coords_px": [
+     239.0,
+     3780.0,
+     3781.0,
+     6990.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h23",
+   "case_id": "EOM_blk_9dee_A2_path_merge_20",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     462
+    ],
+    [
+     1501,
+     462
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "cf_id": "A2_path_merge",
+    "cf_class": "A",
+    "mode": "patch",
+    "discipline": "EOM",
+    "n_seg_carrier": 1226,
+    "change_bbox_pt": [
+     4351.68,
+     3289.2,
+     4374.48,
+     3307.2
+    ],
+    "redraw_fidelity_diff": 0.00041
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A2_path_merge_20_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A2_path_merge_20_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h24",
+   "case_id": "EOM_blk_2ab0_A6_round_0.5_5",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     433,
+     1501
+    ],
+    [
+     433,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 1678.4,
+   "meta": {
+    "cf_id": "A6_round_0.5",
+    "cf_class": "A",
+    "mode": "patch",
+    "discipline": "EOM",
+    "n_seg_carrier": 379,
+    "change_bbox_pt": [
+     1541.94,
+     410.34,
+     1570.26,
+     427.91
+    ],
+    "redraw_fidelity_diff": 0.0
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_A6_round_0.5_5_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_A6_round_0.5_5_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h25",
+   "case_id": "VK_blk_f35e_C6_reshape_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     125
+    ],
+    [
+     1501,
+     125
+    ]
+   ],
+   "tokens_pair_1500px": 549.1,
+   "meta": {
+    "cf_id": "C6_reshape_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "VK",
+    "n_seg_carrier": 722,
+    "change_bbox_pt": [
+     775.48,
+     787.68,
+     788.12,
+     796.08
+    ],
+    "redraw_fidelity_diff": 0.00011
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C6_reshape_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C6_reshape_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h26",
+   "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     953
+    ],
+    [
+     1501,
+     953
+    ]
+   ],
+   "tokens_pair_1500px": 3485.3,
+   "meta": {
+    "cf_id": "D7_dim_geometry",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "AR",
+    "n_seg_carrier": 1034,
+    "change_bbox_pt": [
+     906.42,
+     1195.3,
+     933.56,
+     1225.44
+    ],
+    "redraw_fidelity_diff": 0.09361
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D7_dim_geometry_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D7_dim_geometry_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h27",
+   "case_id": "AR_6WNV-DWD_D1_text_edit",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     953
+    ],
+    [
+     1501,
+     953
+    ]
+   ],
+   "tokens_pair_1500px": 3485.3,
+   "meta": {
+    "cf_id": "D1_text_edit",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "AR",
+    "n_seg_carrier": 1034,
+    "change_bbox_pt": [
+     821.76,
+     1089.3,
+     1007.23,
+     1279.72
+    ],
+    "redraw_fidelity_diff": 0.00856
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D1_text_edit_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D1_text_edit_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h28",
+   "case_id": "VK-148ffe6c",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     852,
+     1501
+    ],
+    [
+     1276,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 3880.5,
+   "meta": {
+    "classes": [
+     "object_added",
+     "object_moved",
+     "rotated_page",
+     "dense_block"
+    ],
+    "discipline": "VK",
+    "label_confidence": "medium",
+    "expected_changed_objects": 3,
+    "human": "В версии B добавлены спецификация оборудования справа и узел «Узел кранов с эл. приводом»; узел «Узел гиг. душа» сдвинут вправо. Сегментов 106 552 → 115 081."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+    "page_index": 8,
+    "coords_px": [
+     4500.0,
+     35.0,
+     8434.0,
+     6968.0
+    ],
+    "page_px": [
+     9934,
+     7017
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+    "page_index": 8,
+    "coords_px": [
+     4284.0,
+     24.0,
+     9875.0,
+     6601.0
+    ],
+    "page_px": [
+     9934,
+     7017
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h29",
+   "case_id": "SS-982f7f30",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     452
+    ],
+    [
+     1501,
+     466
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "classes": [
+     "block_moved",
+     "with_labels",
+     "table_like"
+    ],
+    "discipline": "SS",
+    "label_confidence": "medium",
+    "expected_changed_objects": 0,
+    "human": "Штамп («Книга 2. Автоматизация и диспетчеризация… Корпус 5») тот же; отличается только масштаб/положение блока."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v001/02_work/document.pdf",
+    "page_index": 5,
+    "coords_px": [
+     2714.0,
+     2772.0,
+     4890.0,
+     3446.0
+    ],
+    "page_px": [
+     4962,
+     3508
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v002/02_work/document.pdf",
+    "page_index": 5,
+    "coords_px": [
+     2710.0,
+     2792.0,
+     4910.0,
+     3453.0
+    ],
+    "page_px": [
+     4963,
+     3509
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h30",
+   "case_id": "VK_blk_f35e_C1_remove_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     125
+    ],
+    [
+     1501,
+     125
+    ]
+   ],
+   "tokens_pair_1500px": 549.1,
+   "meta": {
+    "cf_id": "C1_remove_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "VK",
+    "n_seg_carrier": 722,
+    "change_bbox_pt": [
+     777.12,
+     787.68,
+     786.48,
+     796.08
+    ],
+    "redraw_fidelity_diff": 0.00012
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C1_remove_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C1_remove_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h31",
+   "case_id": "AR-46f62636",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     769,
+     1501
+    ],
+    [
+     768,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 2864.2,
+   "meta": {
+    "classes": [
+     "bbox_boundary_artifact",
+     "dense_block",
+     "with_labels"
+    ],
+    "discipline": "AR",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "План этажа не изменился; в A в кроп попала горизонтальная линия рамки сверху, в B — вертикальная слева."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v003/02_work/document.pdf",
+    "page_index": 6,
+    "coords_px": [
+     261.0,
+     61.0,
+     3701.0,
+     6777.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v004/02_work/document.pdf",
+    "page_index": 6,
+    "coords_px": [
+     207.0,
+     77.0,
+     3715.0,
+     6934.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h32",
+   "case_id": "SS-c7aa8d26",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1088
+    ],
+    [
+     938,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 3711.2,
+   "meta": {
+    "classes": [
+     "object_added",
+     "with_labels",
+     "sparse_block"
+    ],
+    "discipline": "SS",
+    "label_confidence": "high",
+    "expected_changed_objects": 2,
+    "human": "В версии B добавлены два узла: «Крепление горизонтальных кабельных трасс…» и «Крепление кабельных трасс в месте изгиба…». Первый узел («вертикальных трасс») не изменился."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v001/02_work/document.pdf",
+    "page_index": 9,
+    "coords_px": [
+     6901.0,
+     4332.0,
+     8059.0,
+     6184.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v002/02_work/document.pdf",
+    "page_index": 10,
+    "coords_px": [
+     7104.0,
+     4446.0,
+     9420.0,
+     6124.0
+    ],
+    "page_px": [
+     9934,
+     7017
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h33",
+   "case_id": "SS_4YRN-VTF_D3_label_rename",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     1080
+    ],
+    [
+     1501,
+     1080
+    ]
+   ],
+   "tokens_pair_1500px": 3937.0,
+   "meta": {
+    "cf_id": "D3_label_rename",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "SS",
+    "n_seg_carrier": 1085,
+    "change_bbox_pt": [
+     1320.0,
+     216.06,
+     1667.11,
+     415.79
+    ],
+    "redraw_fidelity_diff": 0.0215
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D3_label_rename_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D3_label_rename_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h34",
+   "case_id": "AR_7WT4-934_D5_table_row_text",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     450
+    ],
+    [
+     1501,
+     450
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "cf_id": "D5_table_row_text",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "AR",
+    "n_seg_carrier": 1723,
+    "change_bbox_pt": [
+     1852.32,
+     1574.09,
+     2025.37,
+     1583.23
+    ],
+    "redraw_fidelity_diff": 0.12407
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D5_table_row_text_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D5_table_row_text_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h35",
+   "case_id": "KJ_blk_a5f5_D1_text_edit",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     336
+    ],
+    [
+     1501,
+     336
+    ]
+   ],
+   "tokens_pair_1500px": 1339.6,
+   "meta": {
+    "cf_id": "D1_text_edit",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "KJ",
+    "n_seg_carrier": 223,
+    "change_bbox_pt": [
+     76.46,
+     749.03,
+     483.6,
+     800.9
+    ],
+    "redraw_fidelity_diff": 0.0053
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D1_text_edit_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D1_text_edit_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h36",
+   "case_id": "KJ_blk_a5f5_C2_add_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     336
+    ],
+    [
+     1501,
+     336
+    ]
+   ],
+   "tokens_pair_1500px": 1339.6,
+   "meta": {
+    "cf_id": "C2_add_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "KJ",
+    "n_seg_carrier": 223,
+    "change_bbox_pt": [
+     299.56,
+     811.32,
+     410.41,
+     812.02
+    ],
+    "redraw_fidelity_diff": 0.0
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_C2_add_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_C2_add_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h37",
+   "case_id": "VK_blk_f35e_C3_move_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     125
+    ],
+    [
+     1501,
+     125
+    ]
+   ],
+   "tokens_pair_1500px": 549.1,
+   "meta": {
+    "cf_id": "C3_move_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "VK",
+    "n_seg_carrier": 722,
+    "change_bbox_pt": [
+     777.12,
+     787.68,
+     796.86,
+     796.61
+    ],
+    "redraw_fidelity_diff": 8e-05
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C3_move_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C3_move_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h38",
+   "case_id": "SS_4YRN-VTF_D4_table_values",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1080
+    ],
+    [
+     1501,
+     1080
+    ]
+   ],
+   "tokens_pair_1500px": 3937.0,
+   "meta": {
+    "cf_id": "D4_table_values",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "SS",
+    "n_seg_carrier": 1085,
+    "change_bbox_pt": [
+     1272.12,
+     154.9,
+     1667.77,
+     396.11
+    ],
+    "redraw_fidelity_diff": 0.03329
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D4_table_values_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D4_table_values_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h39",
+   "case_id": "EOM-c50e2170",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     1369
+    ],
+    [
+     1501,
+     1412
+    ]
+   ],
+   "tokens_pair_1500px": 5066.3,
+   "meta": {
+    "classes": [
+     "object_removed",
+     "dense_block",
+     "with_labels"
+    ],
+    "discipline": "EOM",
+    "label_confidence": "high",
+    "expected_changed_objects": 30,
+    "human": "В версии B исчезли координационные оси: штрихпунктирные линии и кружки с марками осей по всему периметру плана. Сегментов 8 027 → 4 502."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/document.pdf",
+    "page_index": 20,
+    "coords_px": [
+     211.0,
+     51.0,
+     4619.0,
+     4071.0
+    ],
+    "page_px": [
+     7015,
+     4961
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v002/02_work/document.pdf",
+    "page_index": 21,
+    "coords_px": [
+     237.0,
+     41.0,
+     4522.0,
+     4073.0
+    ],
+    "page_px": [
+     7016,
+     4961
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h40",
+   "case_id": "EOM-46355862",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1223,
+     1574
+    ],
+    [
+     1226,
+     1553
+    ]
+   ],
+   "tokens_pair_1500px": 4735.9,
+   "meta": {
+    "classes": [
+     "object_added",
+     "dense_block",
+     "with_labels"
+    ],
+    "discipline": "EOM",
+    "label_confidence": "medium",
+    "expected_changed_objects": 15,
+    "human": "В версии B появилась штриховка (заливка) примерно в 15 помещениях плюс новые выноски с марками; контуры стен и осей те же."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v002/02_work/document.pdf",
+    "page_index": 8,
+    "coords_px": [
+     947.0,
+     821.0,
+     11155.0,
+     13757.0
+    ],
+    "page_px": [
+     19865,
+     14043
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v003/02_work/document.pdf",
+    "page_index": 8,
+    "coords_px": [
+     515.0,
+     291.0,
+     5968.0,
+     7312.0
+    ],
+    "page_px": [
+     10628,
+     7528
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h41",
+   "case_id": "GP_7EHD-V69_C9_add_branch",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1242,
+     1501
+    ],
+    [
+     1242,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4501.7,
+   "meta": {
+    "cf_id": "C9_add_branch",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "GP",
+    "n_seg_carrier": 2227,
+    "change_bbox_pt": [
+     2127.77,
+     1236.76,
+     2127.77,
+     1307.56
+    ],
+    "redraw_fidelity_diff": 0.0
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C9_add_branch_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C9_add_branch_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h42",
+   "case_id": "GP_7EHD-V69_C2_add_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1242,
+     1501
+    ],
+    [
+     1242,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4501.7,
+   "meta": {
+    "cf_id": "C2_add_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "GP",
+    "n_seg_carrier": 2227,
+    "change_bbox_pt": [
+     1867.52,
+     1022.81,
+     2260.4,
+     1025.09
+    ],
+    "redraw_fidelity_diff": 0.0
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C2_add_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C2_add_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h43",
+   "case_id": "EOM_blk_9dee_A6_round_0.5_14",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     462
+    ],
+    [
+     1501,
+     462
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "cf_id": "A6_round_0.5",
+    "cf_class": "A",
+    "mode": "patch",
+    "discipline": "EOM",
+    "n_seg_carrier": 1226,
+    "change_bbox_pt": [
+     4354.8,
+     3273.36,
+     4369.44,
+     3291.8
+    ],
+    "redraw_fidelity_diff": 6e-05
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A6_round_0.5_14_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A6_round_0.5_14_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h44",
+   "case_id": "EOM_blk_9dee_A1_path_split_20",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     462
+    ],
+    [
+     1501,
+     462
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "cf_id": "A1_path_split",
+    "cf_class": "A",
+    "mode": "patch",
+    "discipline": "EOM",
+    "n_seg_carrier": 1226,
+    "change_bbox_pt": [
+     4351.68,
+     3289.2,
+     4374.48,
+     3307.2
+    ],
+    "redraw_fidelity_diff": 0.00041
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A1_path_split_20_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A1_path_split_20_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h45",
+   "case_id": "AR_7WT4-934_D6_dim_value_only",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     450
+    ],
+    [
+     1501,
+     450
+    ]
+   ],
+   "tokens_pair_1500px": 1791.3,
+   "meta": {
+    "cf_id": "D6_dim_value_only",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "AR",
+    "n_seg_carrier": 1723,
+    "change_bbox_pt": [
+     2286.96,
+     1608.13,
+     2296.78,
+     1621.07
+    ],
+    "redraw_fidelity_diff": 0.43774
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D6_dim_value_only_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D6_dim_value_only_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h46",
+   "case_id": "SS_4YRN-VTF_C9_add_branch",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     1080
+    ],
+    [
+     1501,
+     1080
+    ]
+   ],
+   "tokens_pair_1500px": 3937.0,
+   "meta": {
+    "cf_id": "C9_add_branch",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "SS",
+    "n_seg_carrier": 1085,
+    "change_bbox_pt": [
+     1398.88,
+     317.57,
+     1455.24,
+     317.57
+    ],
+    "redraw_fidelity_diff": 0.0
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_C9_add_branch_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_C9_add_branch_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h47",
+   "case_id": "AR-b38a7dbc",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     917,
+     1501
+    ],
+    [
+     896,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 3315.9,
+   "meta": {
+    "classes": [
+     "unchanged_control",
+     "dense_block",
+     "with_labels"
+    ],
+    "discipline": "AR",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Изменений нет: наложение даёт 0 пикселей несовпадения (diff=0.0), число сегментов и текстовых строк совпадает точно."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v003/02_work/document.pdf",
+    "page_index": 10,
+    "coords_px": [
+     311.0,
+     109.0,
+     4377.0,
+     6767.0
+    ],
+    "page_px": [
+     9932,
+     7015
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v004/02_work/document.pdf",
+    "page_index": 10,
+    "coords_px": [
+     306.0,
+     98.0,
+     4307.0,
+     6802.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h48",
+   "case_id": "KJ_7J9G-4UT_A7_reexport_cairo",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     1076
+    ],
+    [
+     1501,
+     1076
+    ]
+   ],
+   "tokens_pair_1500px": 3937.0,
+   "meta": {
+    "cf_id": "A7_reexport_cairo",
+    "cf_class": "A",
+    "mode": "page",
+    "discipline": "KJ",
+    "n_seg_carrier": 827,
+    "change_bbox_pt": null,
+    "redraw_fidelity_diff": null
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_A7_reexport_cairo_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_A7_reexport_cairo_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h49",
+   "case_id": "SS-a369f492",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     1187
+    ],
+    [
+     1090,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 4219.3,
+   "meta": {
+    "classes": [
+     "object_added",
+     "object_moved",
+     "raster_graphics",
+     "with_labels"
+    ],
+    "discipline": "SS",
+    "label_confidence": "high",
+    "expected_changed_objects": 2,
+    "human": "В версии B добавлен «Узел А прохода группы кабелей в лотке через строительные конструкции», а существующий «Узел В прохода кабеля в гильзе…» сдвинут вниз."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 1)/versions/v001/02_work/document.pdf",
+    "page_index": 23,
+    "coords_px": [
+     4983.0,
+     1471.0,
+     7273.0,
+     3281.0
+    ],
+    "page_px": [
+     9933,
+     7016
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 1)/versions/v002/02_work/document.pdf",
+    "page_index": 23,
+    "coords_px": [
+     4863.0,
+     35.0,
+     7222.0,
+     3284.0
+    ],
+    "page_px": [
+     9934,
+     7017
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h50",
+   "case_id": "SS-6fc75e05",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": false,
+   "px": [
+    [
+     1501,
+     446
+    ],
+    [
+     1501,
+     451
+    ]
+   ],
+   "tokens_pair_1500px": 1734.8,
+   "meta": {
+    "classes": [
+     "different_packaging",
+     "with_labels",
+     "table_like"
+    ],
+    "discipline": "SS",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Штамп тот же самый; видимое отличие — только полоска рамки на границе кропа (0.08 % площади). Число сегментов различается вдвое из-за другой упаковки путей."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+    "page_index": 12,
+    "coords_px": [
+     5186.0,
+     2794.0,
+     7386.0,
+     3448.0
+    ],
+    "page_px": [
+     7441,
+     3508
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+    "page_index": 12,
+    "coords_px": [
+     5197.0,
+     2792.0,
+     7389.0,
+     3450.0
+    ],
+    "page_px": [
+     7441,
+     3508
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h51",
+   "case_id": "AR-441907a2",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1253,
+     1501
+    ],
+    [
+     1501,
+     1086
+    ]
+   ],
+   "tokens_pair_1500px": 4275.8,
+   "meta": {
+    "classes": [
+     "object_removed",
+     "with_labels"
+    ],
+    "discipline": "AR",
+    "label_confidence": "high",
+    "expected_changed_objects": 2,
+    "human": "В версии B удалены разрез «Сеч. а–а» в правом верхнем углу и всё содержимое штампа (остались только линии таблицы)."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4/versions/v002/02_work/document.pdf",
+    "page_index": 19,
+    "coords_px": [
+     229.0,
+     47.0,
+     4911.0,
+     3435.0
+    ],
+    "page_px": [
+     4961,
+     3507
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4/versions/v003/02_work/document.pdf",
+    "page_index": 19,
+    "coords_px": [
+     206.0,
+     42.0,
+     3041.0,
+     3441.0
+    ],
+    "page_px": [
+     4961,
+     3508
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h52",
+   "case_id": "EOM-0c86dfde",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1501
+    ],
+    [
+     1501,
+     1395
+    ]
+   ],
+   "tokens_pair_1500px": 5235.7,
+   "meta": {
+    "classes": [
+     "text_only_change",
+     "object_moved_label",
+     "dense_block"
+    ],
+    "discipline": "EOM",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Столбец марок кабелей (K1.2.3n-12, K1.2.15, K1.2.21, K1.2.3n-6, K1.2.24, K1.2.20, …) сдвинут влево относительно плана; сам план тот же."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/document.pdf",
+    "page_index": 43,
+    "coords_px": [
+     599.0,
+     0.0,
+     6487.0,
+     5474.0
+    ],
+    "page_px": [
+     14891,
+     7016
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/document.pdf",
+    "page_index": 43,
+    "coords_px": [
+     561.0,
+     429.0,
+     6131.0,
+     5998.0
+    ],
+    "page_px": [
+     14891,
+     7016
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h53",
+   "case_id": "OV_blk_1924_C3_move_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1078,
+     1501
+    ],
+    [
+     1078,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 3937.0,
+   "meta": {
+    "cf_id": "C3_move_object",
+    "cf_class": "C",
+    "mode": "patch",
+    "discipline": "OV",
+    "n_seg_carrier": 399,
+    "change_bbox_pt": [
+     898.44,
+     994.05,
+     951.3,
+     1023.0
+    ],
+    "redraw_fidelity_diff": 0.0
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/OV_blk_1924_C3_move_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3165.0,
+     3834.0,
+     4917.0,
+     6273.0
+    ],
+    "page_px": [
+     4961.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/OV_blk_1924_C3_move_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3165.0,
+     3834.0,
+     4917.0,
+     6273.0
+    ],
+    "page_px": [
+     4961.0,
+     7016.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h54",
+   "case_id": "KJ_blk_a5f5_D3_label_rename",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     336
+    ],
+    [
+     1501,
+     336
+    ]
+   ],
+   "tokens_pair_1500px": 1339.6,
+   "meta": {
+    "cf_id": "D3_label_rename",
+    "cf_class": "D",
+    "mode": "patch",
+    "discipline": "KJ",
+    "n_seg_carrier": 223,
+    "change_bbox_pt": [
+     357.19,
+     718.51,
+     481.65,
+     734.05
+    ],
+    "redraw_fidelity_diff": 0.45179
+   },
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D3_label_rename_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D3_label_rename_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h55",
+   "case_id": "VK-b71afe81",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     711,
+     1501
+    ],
+    [
+     763,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 2751.2,
+   "meta": {
+    "classes": [
+     "different_packaging",
+     "rotated_page",
+     "dense_block",
+     "garbled_text_layer"
+    ],
+    "discipline": "VK",
+    "label_confidence": "high",
+    "expected_changed_objects": 0,
+    "human": "Графика идентична: узлы «Узел гиг. душа» и «Узел кранов с эл. приводом» совпадают попиксельно (diff=0.0, 16 205 сегментов с обеих сторон). Отличается только извлекаемый текст: «Ø161/2\"» против «Ø16*1/2\"» — дефект кодировки шрифта, не чертежа."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v001/02_work/document.pdf",
+    "page_index": 13,
+    "coords_px": [
+     10028.0,
+     208.0,
+     11539.0,
+     3182.0
+    ],
+    "page_px": [
+     13031,
+     6140
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК.КВ-К4_V1/versions/v002/02_work/document.pdf",
+    "page_index": 13,
+    "coords_px": [
+     10057.0,
+     154.0,
+     11516.0,
+     3238.0
+    ],
+    "page_px": [
+     13031,
+     6140
+    ]
+   },
+   "render_ok": true
+  },
+  {
+   "view_id": "h56",
+   "case_id": "EOM-3306e907",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "swapped": true,
+   "px": [
+    [
+     1501,
+     1336
+    ],
+    [
+     1424,
+     1501
+    ]
+   ],
+   "tokens_pair_1500px": 5009.9,
+   "meta": {
+    "classes": [
+     "block_moved",
+     "rotated_page"
+    ],
+    "discipline": "EOM",
+    "label_confidence": "medium",
+    "expected_changed_objects": 0,
+    "human": "«Схема размещения фрагмента»: то же изображение, в версии B крупнее; после корректной дерotation обе стороны стоят вертикально."
+   },
+   "left": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v001/02_work/document.pdf",
+    "page_index": 33,
+    "coords_px": [
+     3748.0,
+     1004.0,
+     4898.0,
+     2216.0
+    ],
+    "page_px": [
+     4962,
+     3508
+    ]
+   },
+   "right": {
+    "pdf": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v002/02_work/document.pdf",
+    "page_index": 34,
+    "coords_px": [
+     3770.0,
+     1157.0,
+     4890.0,
+     2154.0
+    ],
+    "page_px": [
+     4962,
+     3508
+    ]
+   },
+   "render_ok": true
+  }
+ ]
+}

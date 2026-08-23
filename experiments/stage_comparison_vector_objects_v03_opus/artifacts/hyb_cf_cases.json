@@ -1,0 +1,4425 @@
+{
+ "seed": 20260823,
+ "want": {
+  "C1_remove_object": 2,
+  "C2_add_object": 2,
+  "C3_move_object": 2,
+  "C6_reshape_object": 2,
+  "C9_add_branch": 2,
+  "D7_dim_geometry": 2,
+  "D1_text_edit": 2,
+  "D2_text_move": 1,
+  "D3_label_rename": 2,
+  "D4_table_values": 1,
+  "D5_table_row_text": 1,
+  "D6_dim_value_only": 1,
+  "A6_round_0.5": 2,
+  "A1_path_split": 1,
+  "A2_path_merge": 1,
+  "D9_text_to_curves": 1,
+  "A7_reexport_cairo": 1,
+  "B3_crop_jitter": 1
+ },
+ "got": {
+  "C1_remove_object": 2,
+  "C2_add_object": 2,
+  "C3_move_object": 2,
+  "C6_reshape_object": 2,
+  "C9_add_branch": 2,
+  "D7_dim_geometry": 2,
+  "D1_text_edit": 2,
+  "D2_text_move": 1,
+  "D3_label_rename": 2,
+  "D4_table_values": 1,
+  "D5_table_row_text": 1,
+  "D6_dim_value_only": 1,
+  "A6_round_0.5": 2,
+  "A1_path_split": 1,
+  "A2_path_merge": 1,
+  "D9_text_to_curves": 1,
+  "A7_reexport_cairo": 1,
+  "B3_crop_jitter": 1
+ },
+ "n_cases": 27,
+ "disciplines": {
+  "GP": 3,
+  "KJ": 6,
+  "AR": 6,
+  "SS": 3,
+  "VK": 3,
+  "EOM": 5,
+  "OV": 1
+ },
+ "n_attempts": 78,
+ "attempts": [
+  {
+   "cid": "GP_7EHD-V69_C1_remove_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "GP_7EHD-V69_C2_add_object",
+   "reject": null
+  },
+  {
+   "cid": "GP_7EHD-V69_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "GP_7EHD-V69_C6_reshape_object",
+   "reject": null
+  },
+  {
+   "cid": "GP_7EHD-V69_C9_add_branch",
+   "reject": null
+  },
+  {
+   "cid": "KJ_blk_a5f5_C1_remove_object",
+   "reject": "raster_in_patch"
+  },
+  {
+   "cid": "KJ_blk_a5f5_C2_add_object",
+   "reject": null
+  },
+  {
+   "cid": "KJ_blk_a5f5_C3_move_object",
+   "reject": "raster_in_patch"
+  },
+  {
+   "cid": "KJ_blk_a5f5_C6_reshape_object",
+   "reject": "raster_in_patch"
+  },
+  {
+   "cid": "KJ_blk_a5f5_C9_add_branch",
+   "reject": "text_in_patch"
+  },
+  {
+   "cid": "KJ_blk_a5f5_D7_dim_geometry",
+   "reject": "not_applicable:no dimension-like (number over a line) candidate"
+  },
+  {
+   "cid": "KJ_blk_a5f5_D1_text_edit",
+   "reject": null
+  },
+  {
+   "cid": "KJ_blk_a5f5_D2_text_move",
+   "reject": "raster_in_patch"
+  },
+  {
+   "cid": "KJ_blk_a5f5_D3_label_rename",
+   "reject": null
+  },
+  {
+   "cid": "AR_6WNV-DWD_C1_remove_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "AR_6WNV-DWD_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "AR_6WNV-DWD_C6_reshape_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "AR_6WNV-DWD_C9_add_branch",
+   "reject": "text_in_patch"
+  },
+  {
+   "cid": "AR_6WNV-DWD_D7_dim_geometry",
+   "reject": null
+  },
+  {
+   "cid": "AR_6WNV-DWD_D1_text_edit",
+   "reject": null
+  },
+  {
+   "cid": "AR_6WNV-DWD_D2_text_move",
+   "reject": null
+  },
+  {
+   "cid": "SS_4YRN-VTF_C1_remove_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "SS_4YRN-VTF_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "SS_4YRN-VTF_C6_reshape_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "SS_4YRN-VTF_C9_add_branch",
+   "reject": null
+  },
+  {
+   "cid": "SS_4YRN-VTF_D7_dim_geometry",
+   "reject": "not_applicable:no dimension-like (number over a line) candidate"
+  },
+  {
+   "cid": "SS_4YRN-VTF_D3_label_rename",
+   "reject": null
+  },
+  {
+   "cid": "SS_4YRN-VTF_D4_table_values",
+   "reject": null
+  },
+  {
+   "cid": "KJ_7J9G-4UT_C1_remove_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_C6_reshape_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_D7_dim_geometry",
+   "reject": "not_applicable:no dimension-like (number over a line) candidate"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_D5_table_row_text",
+   "reject": "not_applicable:no table row with >=3 cells"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_D6_dim_value_only",
+   "reject": "not_applicable:no dimension-like (number over a line) candidate"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A6_round_0.5_61",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A6_round_0.5_25",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A6_round_0.5_43",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A6_round_0.5_29",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A6_round_0.5_11",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A6_round_0.5_30",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A1_path_split_25",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A1_path_split_26",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A1_path_split_29",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A1_path_split_60",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A1_path_split_30",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A1_path_split_44",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A2_path_merge_11",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A2_path_merge_46",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A2_path_merge_26",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A2_path_merge_29",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A2_path_merge_43",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KJ_7J9G-4UT_A2_path_merge_25",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "VK_blk_f35e_C1_remove_object",
+   "reject": null
+  },
+  {
+   "cid": "VK_blk_f35e_C3_move_object",
+   "reject": null
+  },
+  {
+   "cid": "VK_blk_f35e_C6_reshape_object",
+   "reject": null
+  },
+  {
+   "cid": "AR_7WT4-934_C1_remove_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "AR_7WT4-934_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "AR_7WT4-934_D7_dim_geometry",
+   "reject": null
+  },
+  {
+   "cid": "AR_7WT4-934_D5_table_row_text",
+   "reject": null
+  },
+  {
+   "cid": "AR_7WT4-934_D6_dim_value_only",
+   "reject": null
+  },
+  {
+   "cid": "EOM_blk_9dee_C1_remove_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "EOM_blk_9dee_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "EOM_blk_9dee_A6_round_0.5_14",
+   "reject": null
+  },
+  {
+   "cid": "EOM_blk_9dee_A1_path_split_20",
+   "reject": null
+  },
+  {
+   "cid": "EOM_blk_9dee_A2_path_merge_20",
+   "reject": null
+  },
+  {
+   "cid": "EOM_blk_2ab0_C1_remove_object",
+   "reject": null
+  },
+  {
+   "cid": "EOM_blk_2ab0_C3_move_object",
+   "reject": "text_in_patch"
+  },
+  {
+   "cid": "EOM_blk_2ab0_A6_round_0.5_14",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "EOM_blk_2ab0_A6_round_0.5_9",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "EOM_blk_2ab0_A6_round_0.5_11",
+   "reject": "text_in_patch"
+  },
+  {
+   "cid": "EOM_blk_2ab0_A6_round_0.5_5",
+   "reject": null
+  },
+  {
+   "cid": "EOM_blk_e026_C3_move_object",
+   "reject": "text_in_patch"
+  },
+  {
+   "cid": "TX_4QL6-YMC_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "SS_blk_9d6f_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "KM_6KJ9-EHK_C3_move_object",
+   "reject": "text_in_patch"
+  },
+  {
+   "cid": "OV_blk_7c11_C3_move_object",
+   "reject": "text_in_patch"
+  },
+  {
+   "cid": "SS_4LQW-JFP_C3_move_object",
+   "reject": "fill_in_patch"
+  },
+  {
+   "cid": "OV_blk_1924_C3_move_object",
+   "reject": null
+  }
+ ],
+ "cases": [
+  {
+   "cand_id": "GP_7EHD-V69_C2_add_object",
+   "mode": "patch",
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C2_add_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C2_add_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "patches_pt": [
+    [
+     1867.52,
+     1022.81,
+     2260.4,
+     1025.09
+    ]
+   ],
+   "change_bbox_pt": [
+    1867.52,
+    1022.81,
+    2260.4,
+    1025.09
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "n_redrawn": [
+    [
+     0,
+     0
+    ],
+    [
+     3,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C2_add_object",
+    "seed": 716623575,
+    "params": {
+     "size_bucket": "small",
+     "placed_at_pt": [
+      24.198,
+      -294.468
+     ]
+    },
+    "touched_objects": [
+     {
+      "object_id": "c3f195fa65e6",
+      "cls": "linear",
+      "bbox_pt": [
+       1843.32,
+       1317.28,
+       2236.2,
+       1319.56
+      ],
+      "n_seg": 3,
+      "n_prim": 2,
+      "diag_pt": 392.887,
+      "area_frac_of_block": 0.002244,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 2227,
+     "n_after": 2230,
+     "added_segment_ix": [
+      2227,
+      2228,
+      2229
+     ],
+     "segments_touched": 3
+    },
+    "delta": {
+     "dx_pt": 24.198,
+     "dy_pt": -294.468
+    },
+    "expected_ledger": [
+     {
+      "type": "ADDED_OBJECT",
+      "copy_of": "c3f195fa65e6",
+      "bbox_pt": [
+       1867.518,
+       1022.812,
+       2260.398,
+       1025.092
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "7EHD-V699-FTC",
+    "doc_id": "13АВ-РД-ГП2 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "page_number": 17,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 2227,
+    "n_text": 15,
+    "dup": true,
+    "dup_scope": "cross_document",
+    "geom_sha": "565b213fb69e6ca8c3f6",
+    "bucket": "medium"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "GP_7EHD-V69_C6_reshape_object",
+   "mode": "patch",
+   "cf_id": "C6_reshape_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C6_reshape_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C6_reshape_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "patches_pt": [
+    [
+     2222.58,
+     1304.44,
+     2240.64,
+     1369.48
+    ]
+   ],
+   "change_bbox_pt": [
+    2222.58,
+    1304.44,
+    2240.64,
+    1369.48
+   ],
+   "redraw_fidelity_diff": 4e-05,
+   "n_redrawn": [
+    [
+     98,
+     0
+    ],
+    [
+     98,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C6_reshape_object",
+    "seed": 1516656034,
+    "params": {
+     "size_bucket": "small",
+     "kx": 1.35,
+     "ky": 0.7407
+    },
+    "touched_objects": [
+     {
+      "object_id": "2b163d0f60fe",
+      "cls": "symbol",
+      "bbox_pt": [
+       2224.92,
+       1304.44,
+       2238.301,
+       1369.48
+      ],
+      "n_seg": 66,
+      "n_prim": 66,
+      "diag_pt": 66.402,
+      "area_frac_of_block": 0.002181,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 2227,
+     "n_after": 2227,
+     "moved_segment_ix": [
+      3,
+      4,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      20,
+      21,
+      24,
+      28,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      45,
+      46,
+      336,
+      346,
+      347,
+      348,
+      349,
+      350,
+      351,
+      352,
+      363,
+      365,
+      366,
+      367,
+      368,
+      369,
+      370,
+      371,
+      374,
+      375,
+      376,
+      377,
+      382,
+      383,
+      384,
+      389,
+      390,
+      391,
+      392,
+      393,
+      418,
+      419,
+      420,
+      421,
+      422,
+      423,
+      425,
+      426,
+      427,
+      428,
+      429,
+      430,
+      433,
+      901,
+      903,
+      927
+     ],
+     "segments_touched": 66
+    },
+    "delta": {
+     "scale_x": 1.35,
+     "scale_y": 0.7407
+    },
+    "expected_ledger": [
+     {
+      "type": "RESHAPED_OBJECT",
+      "object_id": "2b163d0f60fe",
+      "bbox_pt": [
+       2224.92,
+       1304.44,
+       2238.301,
+       1369.48
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true,
+     "segment_count": true
+    }
+   },
+   "carrier": {
+    "block_id": "7EHD-V699-FTC",
+    "doc_id": "13АВ-РД-ГП2 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "page_number": 17,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 2227,
+    "n_text": 15,
+    "dup": true,
+    "dup_scope": "cross_document",
+    "geom_sha": "565b213fb69e6ca8c3f6",
+    "bucket": "medium"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "GP_7EHD-V69_C9_add_branch",
+   "mode": "patch",
+   "cf_id": "C9_add_branch",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C9_add_branch_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/GP_7EHD-V69_C9_add_branch_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7407.0,
+     3990.0,
+     9801.0,
+     6884.0
+    ],
+    "page_px": [
+     9933.0,
+     7016.0
+    ]
+   },
+   "patches_pt": [
+    [
+     2127.77,
+     1236.76,
+     2127.77,
+     1307.56
+    ]
+   ],
+   "change_bbox_pt": [
+    2127.77,
+    1236.76,
+    2127.77,
+    1307.56
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "n_redrawn": [
+    [
+     7,
+     0
+    ],
+    [
+     8,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C9_add_branch",
+    "seed": 1119899956,
+    "params": {
+     "branch_len_pt": 70.798,
+     "branch_over_S": 6.0
+    },
+    "touched_objects": [
+     {
+      "object_id": "475638f4215b",
+      "cls": "linear",
+      "bbox_pt": [
+       2085.72,
+       1236.76,
+       2190.84,
+       1236.76
+      ],
+      "n_seg": 1,
+      "n_prim": 1,
+      "diag_pt": 105.12,
+      "area_frac_of_block": 0.0,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 2227,
+     "n_after": 2228,
+     "added_segment_ix": [
+      2227
+     ],
+     "segments_touched": 1
+    },
+    "delta": {
+     "branch_len_pt": 70.798
+    },
+    "expected_ledger": [
+     {
+      "type": "ADDED_BRANCH",
+      "object_id": "475638f4215b",
+      "bbox_pt": [
+       2127.768,
+       1236.76,
+       2127.768,
+       1307.558
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "7EHD-V699-FTC",
+    "doc_id": "13АВ-РД-ГП2 V1",
+    "version": "v001",
+    "discipline": "GP",
+    "page_number": 17,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 2227,
+    "n_text": 15,
+    "dup": true,
+    "dup_scope": "cross_document",
+    "geom_sha": "565b213fb69e6ca8c3f6",
+    "bucket": "medium"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "KJ_blk_a5f5_C2_add_object",
+   "mode": "patch",
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_C2_add_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_C2_add_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "patches_pt": [
+    [
+     299.56,
+     811.32,
+     410.41,
+     812.02
+    ]
+   ],
+   "change_bbox_pt": [
+    299.56,
+    811.32,
+    410.41,
+    812.02
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "n_redrawn": [
+    [
+     0,
+     0
+    ],
+    [
+     3,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C2_add_object",
+    "seed": 618055384,
+    "params": {
+     "size_bucket": "small",
+     "placed_at_pt": [
+      229.259,
+      63.92
+     ]
+    },
+    "touched_objects": [
+     {
+      "object_id": "b77df90fce88",
+      "cls": "linear",
+      "bbox_pt": [
+       70.3,
+       747.4,
+       181.15,
+       748.1
+      ],
+      "n_seg": 3,
+      "n_prim": 3,
+      "diag_pt": 110.852,
+      "area_frac_of_block": 0.001318,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 223,
+     "n_after": 226,
+     "added_segment_ix": [
+      223,
+      224,
+      225
+     ],
+     "segments_touched": 3
+    },
+    "delta": {
+     "dx_pt": 229.259,
+     "dy_pt": 63.92
+    },
+    "expected_ledger": [
+     {
+      "type": "ADDED_OBJECT",
+      "copy_of": "b77df90fce88",
+      "bbox_pt": [
+       299.559,
+       811.32,
+       410.409,
+       812.02
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_a5f5d979bba34d029b25e1ac7d0b5f70",
+    "doc_id": "13АВ-РД-КЖ3_1-ПА_(Книга_1)_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "page_number": 14,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 223,
+    "n_text": 30,
+    "dup": true,
+    "dup_scope": "within_version",
+    "geom_sha": "d37c824a3af79adafa90",
+    "bucket": "sparse"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "KJ_blk_a5f5_D1_text_edit",
+   "mode": "patch",
+   "cf_id": "D1_text_edit",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D1_text_edit_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D1_text_edit_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "patches_pt": [
+    [
+     446.98,
+     749.03,
+     483.6,
+     762.31
+    ],
+    [
+     132.14,
+     779.06,
+     169.79,
+     789.02
+    ],
+    [
+     76.46,
+     790.94,
+     120.3,
+     800.9
+    ]
+   ],
+   "change_bbox_pt": [
+    76.46,
+    749.03,
+    483.6,
+    800.9
+   ],
+   "redraw_fidelity_diff": 0.0053,
+   "n_redrawn": [
+    [
+     10,
+     4
+    ],
+    [
+     10,
+     4
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D1_text_edit",
+    "seed": 2086983898,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 0,
+      "before": "Стадия",
+      "after": "яидатС",
+      "bbox_pt": [
+       446.98,
+       749.028,
+       483.604,
+       762.312
+      ]
+     },
+     {
+      "text_ix": 6,
+      "before": "Бырканов",
+      "after": "вонакрыБ",
+      "bbox_pt": [
+       132.14,
+       779.061,
+       169.787,
+       789.024
+      ]
+     },
+     {
+      "text_ix": 21,
+      "before": "Рук. отдела",
+      "after": "аледто .куР",
+      "bbox_pt": [
+       76.464,
+       790.941,
+       120.298,
+       800.904
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 223,
+     "n_after": 223,
+     "segments_touched": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "blk_a5f5d979bba34d029b25e1ac7d0b5f70",
+    "doc_id": "13АВ-РД-КЖ3_1-ПА_(Книга_1)_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "page_number": 14,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 223,
+    "n_text": 30,
+    "dup": true,
+    "dup_scope": "within_version",
+    "geom_sha": "d37c824a3af79adafa90",
+    "bucket": "sparse"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "KJ_blk_a5f5_D3_label_rename",
+   "mode": "patch",
+   "cf_id": "D3_label_rename",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D3_label_rename_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_blk_a5f5_D3_label_rename_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     290.0,
+     2928.0,
+     2430.0,
+     3406.0
+    ],
+    "page_px": [
+     2482.0,
+     3510.0
+    ]
+   },
+   "patches_pt": [
+    [
+     357.19,
+     718.51,
+     481.65,
+     734.05
+    ]
+   ],
+   "change_bbox_pt": [
+    357.19,
+    718.51,
+    481.65,
+    734.05
+   ],
+   "redraw_fidelity_diff": 0.45179,
+   "n_redrawn": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D3_label_rename",
+    "seed": 1765748776,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 13,
+      "before": "13АВ-РД-КЖ3.1-ПА",
+      "after": "13АВ-РД-КЖ4.1-ПА",
+      "bbox_pt": [
+       357.19,
+       718.51,
+       481.654,
+       734.053
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 223,
+     "n_after": 223,
+     "segments_touched": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "blk_a5f5d979bba34d029b25e1ac7d0b5f70",
+    "doc_id": "13АВ-РД-КЖ3_1-ПА_(Книга_1)_V1",
+    "version": "v001",
+    "discipline": "KJ",
+    "page_number": 14,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 223,
+    "n_text": 30,
+    "dup": true,
+    "dup_scope": "within_version",
+    "geom_sha": "d37c824a3af79adafa90",
+    "bucket": "sparse"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "AR_6WNV-DWD_D7_dim_geometry",
+   "mode": "patch",
+   "cf_id": "D7_dim_geometry",
+   "cf_class": "D",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D7_dim_geometry_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D7_dim_geometry_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [
+    [
+     922.6,
+     1225.44,
+     933.56,
+     1225.44
+    ],
+    [
+     922.6,
+     1203.03,
+     933.56,
+     1203.03
+    ],
+    [
+     906.42,
+     1195.3,
+     915.55,
+     1208.16
+    ]
+   ],
+   "change_bbox_pt": [
+    906.42,
+    1195.3,
+    933.56,
+    1225.44
+   ],
+   "redraw_fidelity_diff": 0.09361,
+   "n_redrawn": [
+    [
+     17,
+     2
+    ],
+    [
+     19,
+     3
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D7_dim_geometry",
+    "seed": 409796032,
+    "params": {
+     "value_before": 500,
+     "values_after": [
+      100,
+      334,
+      66
+     ],
+     "dim_line_len_pt": 33.6,
+     "tick_len_pt": 10.956
+    },
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 10,
+      "before": "500",
+      "after": "100+334+66",
+      "bbox_pt": [
+       906.421,
+       1195.299,
+       915.551,
+       1208.159
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1034,
+     "n_after": 1036,
+     "added_segment_ix": [
+      1034,
+      1035
+     ],
+     "segments_touched": 2
+    },
+    "delta": {
+     "n_ticks_added": 2
+    },
+    "expected_ledger": [
+     {
+      "type": "DIMENSION_CHAIN_CHANGED",
+      "bbox_pt": [
+       922.602,
+       1203.028,
+       933.558,
+       1225.44
+      ]
+     }
+    ],
+    "invariants": {
+     "geometry_exact": false,
+     "picture": false,
+     "text": false,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "6WNV-DWDA-4CQ",
+    "doc_id": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "page_number": 12,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 1034,
+    "n_text": 18,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "aa4eb05ca6e70dc5cc06",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "AR_6WNV-DWD_D1_text_edit",
+   "mode": "patch",
+   "cf_id": "D1_text_edit",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D1_text_edit_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D1_text_edit_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [
+    [
+     998.1,
+     1192.18,
+     1007.23,
+     1203.84
+    ],
+    [
+     821.76,
+     1267.1,
+     835.36,
+     1279.72
+    ],
+    [
+     906.0,
+     1089.3,
+     917.65,
+     1098.43
+    ]
+   ],
+   "change_bbox_pt": [
+    821.76,
+    1089.3,
+    1007.23,
+    1279.72
+   ],
+   "redraw_fidelity_diff": 0.00856,
+   "n_redrawn": [
+    [
+     11,
+     3
+    ],
+    [
+     11,
+     3
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D1_text_edit",
+    "seed": 1616144446,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 14,
+      "before": "150",
+      "after": "150X",
+      "bbox_pt": [
+       998.101,
+       1192.182,
+       1007.231,
+       1203.839
+      ]
+     },
+     {
+      "text_ix": 2,
+      "before": "3.Г",
+      "after": "3.ГX",
+      "bbox_pt": [
+       821.76,
+       1267.1,
+       835.358,
+       1279.716
+      ]
+     },
+     {
+      "text_ix": 3,
+      "before": "871",
+      "after": "871X",
+      "bbox_pt": [
+       906.0,
+       1089.3,
+       917.649,
+       1098.43
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1034,
+     "n_after": 1034,
+     "segments_touched": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "6WNV-DWDA-4CQ",
+    "doc_id": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "page_number": 12,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 1034,
+    "n_text": 18,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "aa4eb05ca6e70dc5cc06",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "AR_6WNV-DWD_D2_text_move",
+   "mode": "patch",
+   "cf_id": "D2_text_move",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D2_text_move_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_6WNV-DWD_D2_text_move_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3051.0,
+     4215.0,
+     5040.0,
+     5477.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [
+    [
+     929.76,
+     1039.04,
+     959.13,
+     1052.36
+    ],
+    [
+     928.68,
+     1089.3,
+     941.54,
+     1098.43
+    ],
+    [
+     977.52,
+     1089.3,
+     994.9,
+     1098.43
+    ]
+   ],
+   "change_bbox_pt": [
+    928.68,
+    1039.04,
+    994.9,
+    1098.43
+   ],
+   "redraw_fidelity_diff": 0.44902,
+   "n_redrawn": [
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D2_text_move",
+    "seed": 136763009,
+    "params": {
+     "dx_over_S": 1.5
+    },
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 17,
+      "before": "Вид 2",
+      "after": "Вид 2",
+      "bbox_pt": [
+       929.76,
+       1039.035,
+       959.134,
+       1052.36
+      ]
+     },
+     {
+      "text_ix": 4,
+      "before": "900",
+      "after": "900",
+      "bbox_pt": [
+       928.68,
+       1089.3,
+       941.54,
+       1098.43
+      ]
+     },
+     {
+      "text_ix": 5,
+      "before": "2579",
+      "after": "2579",
+      "bbox_pt": [
+       977.52,
+       1089.3,
+       994.905,
+       1098.43
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1034,
+     "n_after": 1034,
+     "segments_touched": 0
+    },
+    "delta": {
+     "dx_pt": 13.695570945739746,
+     "dy_pt": 0.0
+    },
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "6WNV-DWDA-4CQ",
+    "doc_id": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "discipline": "AR",
+    "page_number": 12,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 1034,
+    "n_text": 18,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "aa4eb05ca6e70dc5cc06",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "SS_4YRN-VTF_C9_add_branch",
+   "mode": "patch",
+   "cf_id": "C9_add_branch",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_C9_add_branch_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_C9_add_branch_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "patches_pt": [
+    [
+     1398.88,
+     317.57,
+     1455.24,
+     317.57
+    ]
+   ],
+   "change_bbox_pt": [
+    1398.88,
+    317.57,
+    1455.24,
+    317.57
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "n_redrawn": [
+    [
+     7,
+     0
+    ],
+    [
+     8,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C9_add_branch",
+    "seed": 864135299,
+    "params": {
+     "branch_len_pt": 56.361,
+     "branch_over_S": 6.0
+    },
+    "touched_objects": [
+     {
+      "object_id": "075618badd2e",
+      "cls": "linear",
+      "bbox_pt": [
+       1455.12,
+       255.6,
+       1455.24,
+       410.52
+      ],
+      "n_seg": 2,
+      "n_prim": 2,
+      "diag_pt": 154.92,
+      "area_frac_of_block": 8.7e-05,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 1085,
+     "n_after": 1086,
+     "added_segment_ix": [
+      1085
+     ],
+     "segments_touched": 1
+    },
+    "delta": {
+     "branch_len_pt": 56.361
+    },
+    "expected_ledger": [
+     {
+      "type": "ADDED_BRANCH",
+      "object_id": "075618badd2e",
+      "bbox_pt": [
+       1398.879,
+       317.568,
+       1455.24,
+       317.568
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "4YRN-VTFD-MAM",
+    "doc_id": "13АВ-РД-КК-К1 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "page_number": 13,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 1085,
+    "n_text": 21,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "09bec34243505f95b375",
+    "bucket": "medium"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "SS_4YRN-VTF_D3_label_rename",
+   "mode": "patch",
+   "cf_id": "D3_label_rename",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D3_label_rename_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D3_label_rename_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "patches_pt": [
+    [
+     1632.96,
+     216.06,
+     1667.11,
+     228.47
+    ],
+    [
+     1632.96,
+     403.38,
+     1667.11,
+     415.79
+    ],
+    [
+     1320.0,
+     403.38,
+     1354.15,
+     415.79
+    ],
+    [
+     1320.24,
+     216.06,
+     1354.39,
+     228.47
+    ]
+   ],
+   "change_bbox_pt": [
+    1320.0,
+    216.06,
+    1667.11,
+    415.79
+   ],
+   "redraw_fidelity_diff": 0.0215,
+   "n_redrawn": [
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     4
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D3_label_rename",
+    "seed": 1770979655,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 7,
+      "before": "L30_K1",
+      "after": "L31_K2",
+      "bbox_pt": [
+       1632.96,
+       216.058,
+       1667.113,
+       228.469
+      ]
+     },
+     {
+      "text_ix": 3,
+      "before": "L29_K1",
+      "after": "L30_K2",
+      "bbox_pt": [
+       1632.96,
+       403.378,
+       1667.113,
+       415.789
+      ]
+     },
+     {
+      "text_ix": 1,
+      "before": "L29_K1",
+      "after": "L30_K2",
+      "bbox_pt": [
+       1320.0,
+       403.378,
+       1354.153,
+       415.789
+      ]
+     },
+     {
+      "text_ix": 5,
+      "before": "L30_K1",
+      "after": "L31_K2",
+      "bbox_pt": [
+       1320.24,
+       216.058,
+       1354.393,
+       228.469
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1085,
+     "n_after": 1085,
+     "segments_touched": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "4YRN-VTFD-MAM",
+    "doc_id": "13АВ-РД-КК-К1 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "page_number": 13,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 1085,
+    "n_text": 21,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "09bec34243505f95b375",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "SS_4YRN-VTF_D4_table_values",
+   "mode": "patch",
+   "cf_id": "D4_table_values",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D4_table_values_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/SS_4YRN-VTF_D4_table_values_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5155.0,
+     369.0,
+     7421.0,
+     1999.0
+    ],
+    "page_px": [
+     10525.0,
+     4962.0
+    ]
+   },
+   "patches_pt": [
+    [
+     1430.04,
+     154.9,
+     1557.57,
+     164.29
+    ],
+    [
+     1272.12,
+     269.86,
+     1340.26,
+     279.25
+    ],
+    [
+     1272.12,
+     355.06,
+     1340.26,
+     364.45
+    ],
+    [
+     1319.88,
+     383.7,
+     1356.81,
+     396.11
+    ],
+    [
+     1629.24,
+     196.5,
+     1667.77,
+     208.91
+    ]
+   ],
+   "change_bbox_pt": [
+    1272.12,
+    154.9,
+    1667.77,
+    396.11
+   ],
+   "redraw_fidelity_diff": 0.03329,
+   "n_redrawn": [
+    [
+     7,
+     5
+    ],
+    [
+     7,
+     5
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D4_table_values",
+    "seed": 674442931,
+    "params": {
+     "scope": "numeric cells"
+    },
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 8,
+      "before": "Узел 7.1. Разрез плана 22 этажа",
+      "after": "Узел 14.8. Разрез плана 29 этажа",
+      "bbox_pt": [
+       1430.04,
+       154.898,
+       1557.569,
+       164.292
+      ]
+     },
+     {
+      "text_ix": 18,
+      "before": "200х100, L = 2,730",
+      "after": "207х107, L = 9,737",
+      "bbox_pt": [
+       1272.12,
+       269.858,
+       1340.257,
+       279.252
+      ]
+     },
+     {
+      "text_ix": 15,
+      "before": "300х100, L = 2,730",
+      "after": "307х107, L = 9,737",
+      "bbox_pt": [
+       1272.12,
+       355.058,
+       1340.257,
+       364.452
+      ]
+     },
+     {
+      "text_ix": 0,
+      "before": "+98,480",
+      "after": "+105,487",
+      "bbox_pt": [
+       1319.88,
+       383.698,
+       1356.807,
+       396.109
+      ]
+     },
+     {
+      "text_ix": 6,
+      "before": "+101,780",
+      "after": "+108,787",
+      "bbox_pt": [
+       1629.24,
+       196.498,
+       1667.766,
+       208.909
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1085,
+     "n_after": 1085,
+     "segments_touched": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "4YRN-VTFD-MAM",
+    "doc_id": "13АВ-РД-КК-К1 V1",
+    "version": "v001",
+    "discipline": "SS",
+    "page_number": 13,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 1085,
+    "n_text": 21,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "09bec34243505f95b375",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "KJ_7J9G-4UT_D9_text_to_curves",
+   "mode": "page",
+   "cf_id": "D9_text_to_curves",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_D9_text_to_curves_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_D9_text_to_curves_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [],
+   "change_bbox_pt": null,
+   "redraw_fidelity_diff": null,
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D9_text_to_curves",
+    "seed": 313144929,
+    "params": {
+     "tool": "gs -dNoOutputFonts",
+     "page_rect_preserved": true
+    },
+    "touched_objects": [],
+    "changed_primitives": {
+     "n_before": 827,
+     "n_after": 9885,
+     "segments_touched": null,
+     "text_lines_before": 8,
+     "text_lines_after": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": false,
+     "picture": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "7J9G-4UTQ-HVL",
+    "doc_id": "13АВ-РД-КЖ7.2-К2",
+    "version": "v001",
+    "discipline": "KJ",
+    "page_number": 14,
+    "cls": "table",
+    "rule": "R7_table_v2",
+    "elig": "eligible",
+    "n_seg": 827,
+    "n_text": 8,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "8a9f933a894941d5b7fd",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "KJ_7J9G-4UT_A7_reexport_cairo",
+   "mode": "page",
+   "cf_id": "A7_reexport_cairo",
+   "cf_class": "A",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_A7_reexport_cairo_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_A7_reexport_cairo_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [],
+   "change_bbox_pt": null,
+   "redraw_fidelity_diff": null,
+   "manifest": {
+    "cf_class": "A",
+    "cf_id": "A7_reexport_cairo",
+    "seed": 2057829512,
+    "params": {
+     "tool": "cairo",
+     "page_rect_preserved": true,
+     "rotation_before": 0,
+     "rotation_after": 0
+    },
+    "touched_objects": [],
+    "changed_primitives": {
+     "n_before": 827,
+     "n_after": 827,
+     "segments_touched": null
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "picture": true,
+     "geometry_exact": false,
+     "text": null
+    }
+   },
+   "carrier": {
+    "block_id": "7J9G-4UTQ-HVL",
+    "doc_id": "13АВ-РД-КЖ7.2-К2",
+    "version": "v001",
+    "discipline": "KJ",
+    "page_number": 14,
+    "cls": "table",
+    "rule": "R7_table_v2",
+    "elig": "eligible",
+    "n_seg": 827,
+    "n_text": 8,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "8a9f933a894941d5b7fd",
+    "bucket": "medium"
+   },
+   "group": "A"
+  },
+  {
+   "cand_id": "KJ_7J9G-4UT_B3_crop_jitter",
+   "mode": "frame",
+   "cf_id": "B3_crop_jitter_0.02",
+   "cf_class": "B",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_B3_crop_jitter_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8190.0,
+     1833.0,
+     9886.0,
+     3049.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/KJ_7J9G-4UT_B3_crop_jitter_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     8156.08,
+     1808.68,
+     9852.08,
+     3024.68
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [],
+   "change_bbox_pt": null,
+   "redraw_fidelity_diff": null,
+   "manifest": {
+    "cf_class": "B",
+    "cf_id": "B3_crop_jitter",
+    "seed": 793521496,
+    "params": {
+     "frac_of_side": 0.02
+    },
+    "changed_primitives": {
+     "n_before": 827,
+     "n_after": 826,
+     "segments_touched": 0
+    },
+    "delta": {
+     "dx_px": -33.92,
+     "dy_px": -24.32
+    },
+    "expected_ledger": [
+     {
+      "type": "BLOCK_TRANSFORMED",
+      "kind": "crop_jitter",
+      "dx_px": -33.92,
+      "dy_px": -24.32
+     }
+    ],
+    "invariants": {
+     "picture_on_intersection": true,
+     "geometry_exact": false,
+     "text": true
+    }
+   },
+   "carrier": {
+    "block_id": "7J9G-4UTQ-HVL",
+    "doc_id": "13АВ-РД-КЖ7.2-К2",
+    "version": "v001",
+    "discipline": "KJ",
+    "page_number": 14,
+    "cls": "table",
+    "rule": "R7_table_v2",
+    "elig": "eligible",
+    "n_seg": 827,
+    "n_text": 8,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "8a9f933a894941d5b7fd",
+    "bucket": "medium"
+   },
+   "group": "B"
+  },
+  {
+   "cand_id": "VK_blk_f35e_C1_remove_object",
+   "mode": "patch",
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C1_remove_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C1_remove_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "patches_pt": [
+    [
+     777.12,
+     787.68,
+     786.48,
+     796.08
+    ]
+   ],
+   "change_bbox_pt": [
+    777.12,
+    787.68,
+    786.48,
+    796.08
+   ],
+   "redraw_fidelity_diff": 0.00012,
+   "n_redrawn": [
+    [
+     253,
+     0
+    ],
+    [
+     83,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C1_remove_object",
+    "seed": 538315913,
+    "params": {
+     "size_bucket": "small"
+    },
+    "touched_objects": [
+     {
+      "object_id": "804e43d0d96b",
+      "cls": "symbol",
+      "bbox_pt": [
+       777.12,
+       787.68,
+       786.48,
+       796.08
+      ],
+      "n_seg": 170,
+      "n_prim": 167,
+      "diag_pt": 12.577,
+      "area_frac_of_block": 0.003535,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 722,
+     "n_after": 552,
+     "removed_segment_ix": [
+      239,
+      240,
+      241,
+      242,
+      243,
+      244,
+      245,
+      246,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      273,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284,
+      285,
+      286,
+      287,
+      288,
+      289,
+      290,
+      291,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      321,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328,
+      329,
+      330,
+      331,
+      332,
+      333,
+      334,
+      335,
+      336,
+      337,
+      338,
+      339,
+      340,
+      341,
+      342,
+      343,
+      344,
+      345,
+      346,
+      347,
+      348,
+      349,
+      350,
+      351,
+      352,
+      353,
+      354,
+      355,
+      356,
+      357,
+      358,
+      359,
+      360,
+      361,
+      362,
+      363,
+      364,
+      365,
+      366,
+      367,
+      368,
+      369,
+      370,
+      371,
+      372,
+      373,
+      374,
+      375,
+      376,
+      377,
+      378,
+      379,
+      380,
+      381,
+      382,
+      383,
+      384,
+      385,
+      386,
+      387,
+      388,
+      389,
+      390,
+      391,
+      392,
+      393,
+      394,
+      395,
+      396,
+      397,
+      398,
+      399,
+      400,
+      401,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407,
+      408
+     ],
+     "segments_touched": 170
+    },
+    "delta": null,
+    "expected_ledger": [
+     {
+      "type": "REMOVED_OBJECT",
+      "object_id": "804e43d0d96b",
+      "bbox_pt": [
+       777.12,
+       787.68,
+       786.48,
+       796.08
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_f35e275fa7104c5ea70486931d895656",
+    "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+    "version": "v002",
+    "discipline": "VK",
+    "page_number": 51,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 722,
+    "n_text": 18,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "6e667e859f8ad2d2ed30",
+    "bucket": "medium"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "VK_blk_f35e_C3_move_object",
+   "mode": "patch",
+   "cf_id": "C3_move_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C3_move_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C3_move_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "patches_pt": [
+    [
+     777.12,
+     787.68,
+     796.86,
+     796.61
+    ]
+   ],
+   "change_bbox_pt": [
+    777.12,
+    787.68,
+    796.86,
+    796.61
+   ],
+   "redraw_fidelity_diff": 8e-05,
+   "n_redrawn": [
+    [
+     422,
+     0
+    ],
+    [
+     422,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C3_move_object",
+    "seed": 1616436165,
+    "params": {
+     "size_bucket": "small",
+     "frac_of_diag": 0.02
+    },
+    "touched_objects": [
+     {
+      "object_id": "804e43d0d96b",
+      "cls": "symbol",
+      "bbox_pt": [
+       777.12,
+       787.68,
+       786.48,
+       796.08
+      ],
+      "n_seg": 170,
+      "n_prim": 167,
+      "diag_pt": 12.577,
+      "area_frac_of_block": 0.003535,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 722,
+     "n_after": 722,
+     "moved_segment_ix": [
+      239,
+      240,
+      241,
+      242,
+      243,
+      244,
+      245,
+      246,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      273,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284,
+      285,
+      286,
+      287,
+      288,
+      289,
+      290,
+      291,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      321,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328,
+      329,
+      330,
+      331,
+      332,
+      333,
+      334,
+      335,
+      336,
+      337,
+      338,
+      339,
+      340,
+      341,
+      342,
+      343,
+      344,
+      345,
+      346,
+      347,
+      348,
+      349,
+      350,
+      351,
+      352,
+      353,
+      354,
+      355,
+      356,
+      357,
+      358,
+      359,
+      360,
+      361,
+      362,
+      363,
+      364,
+      365,
+      366,
+      367,
+      368,
+      369,
+      370,
+      371,
+      372,
+      373,
+      374,
+      375,
+      376,
+      377,
+      378,
+      379,
+      380,
+      381,
+      382,
+      383,
+      384,
+      385,
+      386,
+      387,
+      388,
+      389,
+      390,
+      391,
+      392,
+      393,
+      394,
+      395,
+      396,
+      397,
+      398,
+      399,
+      400,
+      401,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407,
+      408
+     ],
+     "segments_touched": 170
+    },
+    "delta": {
+     "dx_pt": 10.3756,
+     "dy_pt": 0.5317,
+     "d_pt": 10.3892,
+     "d_over_S": 1.17
+    },
+    "expected_ledger": [
+     {
+      "type": "MOVED_OBJECT",
+      "object_id": "804e43d0d96b",
+      "bbox_pt": [
+       777.12,
+       787.68,
+       786.48,
+       796.08
+      ],
+      "bbox_after_pt": [
+       787.496,
+       788.212,
+       796.856,
+       796.612
+      ],
+      "dx_pt": 10.3756,
+      "dy_pt": 0.5317
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_f35e275fa7104c5ea70486931d895656",
+    "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+    "version": "v002",
+    "discipline": "VK",
+    "page_number": 51,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 722,
+    "n_text": 18,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "6e667e859f8ad2d2ed30",
+    "bucket": "medium"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "VK_blk_f35e_C6_reshape_object",
+   "mode": "patch",
+   "cf_id": "C6_reshape_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C6_reshape_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/VK_blk_f35e_C6_reshape_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     2735.0,
+     3273.0,
+     4892.0,
+     3452.0
+    ],
+    "page_px": [
+     4961.0,
+     3508.0
+    ]
+   },
+   "patches_pt": [
+    [
+     775.48,
+     787.68,
+     788.12,
+     796.08
+    ]
+   ],
+   "change_bbox_pt": [
+    775.48,
+    787.68,
+    788.12,
+    796.08
+   ],
+   "redraw_fidelity_diff": 0.00011,
+   "n_redrawn": [
+    [
+     293,
+     0
+    ],
+    [
+     293,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C6_reshape_object",
+    "seed": 181693253,
+    "params": {
+     "size_bucket": "small",
+     "kx": 1.35,
+     "ky": 0.7407
+    },
+    "touched_objects": [
+     {
+      "object_id": "804e43d0d96b",
+      "cls": "symbol",
+      "bbox_pt": [
+       777.12,
+       787.68,
+       786.48,
+       796.08
+      ],
+      "n_seg": 170,
+      "n_prim": 167,
+      "diag_pt": 12.577,
+      "area_frac_of_block": 0.003535,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 722,
+     "n_after": 722,
+     "moved_segment_ix": [
+      239,
+      240,
+      241,
+      242,
+      243,
+      244,
+      245,
+      246,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258,
+      259,
+      260,
+      261,
+      262,
+      263,
+      264,
+      265,
+      266,
+      267,
+      268,
+      269,
+      270,
+      271,
+      272,
+      273,
+      274,
+      275,
+      276,
+      277,
+      278,
+      279,
+      280,
+      281,
+      282,
+      283,
+      284,
+      285,
+      286,
+      287,
+      288,
+      289,
+      290,
+      291,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310,
+      311,
+      312,
+      313,
+      314,
+      315,
+      316,
+      317,
+      318,
+      319,
+      320,
+      321,
+      322,
+      323,
+      324,
+      325,
+      326,
+      327,
+      328,
+      329,
+      330,
+      331,
+      332,
+      333,
+      334,
+      335,
+      336,
+      337,
+      338,
+      339,
+      340,
+      341,
+      342,
+      343,
+      344,
+      345,
+      346,
+      347,
+      348,
+      349,
+      350,
+      351,
+      352,
+      353,
+      354,
+      355,
+      356,
+      357,
+      358,
+      359,
+      360,
+      361,
+      362,
+      363,
+      364,
+      365,
+      366,
+      367,
+      368,
+      369,
+      370,
+      371,
+      372,
+      373,
+      374,
+      375,
+      376,
+      377,
+      378,
+      379,
+      380,
+      381,
+      382,
+      383,
+      384,
+      385,
+      386,
+      387,
+      388,
+      389,
+      390,
+      391,
+      392,
+      393,
+      394,
+      395,
+      396,
+      397,
+      398,
+      399,
+      400,
+      401,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407,
+      408
+     ],
+     "segments_touched": 170
+    },
+    "delta": {
+     "scale_x": 1.35,
+     "scale_y": 0.7407
+    },
+    "expected_ledger": [
+     {
+      "type": "RESHAPED_OBJECT",
+      "object_id": "804e43d0d96b",
+      "bbox_pt": [
+       777.12,
+       787.68,
+       786.48,
+       796.08
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true,
+     "segment_count": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_f35e275fa7104c5ea70486931d895656",
+    "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+    "version": "v002",
+    "discipline": "VK",
+    "page_number": 51,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 722,
+    "n_text": 18,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "6e667e859f8ad2d2ed30",
+    "bucket": "medium"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "AR_7WT4-934_D7_dim_geometry",
+   "mode": "patch",
+   "cf_id": "D7_dim_geometry",
+   "cf_class": "D",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D7_dim_geometry_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D7_dim_geometry_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [
+    [
+     2341.2,
+     1593.32,
+     2341.2,
+     1603.96
+    ],
+    [
+     2246.75,
+     1593.32,
+     2246.75,
+     1603.96
+    ],
+    [
+     2286.96,
+     1608.13,
+     2296.78,
+     1621.07
+    ]
+   ],
+   "change_bbox_pt": [
+    2246.75,
+    1593.32,
+    2341.2,
+    1621.07
+   ],
+   "redraw_fidelity_diff": 0.06644,
+   "n_redrawn": [
+    [
+     1,
+     3
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D7_dim_geometry",
+    "seed": 680037527,
+    "params": {
+     "value_before": 13,
+     "values_after": [
+      3,
+      9,
+      1
+     ],
+     "dim_line_len_pt": 141.599,
+     "tick_len_pt": 10.632
+    },
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 34,
+      "before": "13",
+      "after": "3+9+1",
+      "bbox_pt": [
+       2286.96,
+       1608.131,
+       2296.775,
+       1621.072
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1723,
+     "n_after": 1725,
+     "added_segment_ix": [
+      1723,
+      1724
+     ],
+     "segments_touched": 2
+    },
+    "delta": {
+     "n_ticks_added": 2
+    },
+    "expected_ledger": [
+     {
+      "type": "DIMENSION_CHAIN_CHANGED",
+      "bbox_pt": [
+       2246.753,
+       1593.324,
+       2341.199,
+       1603.956
+      ]
+     }
+    ],
+    "invariants": {
+     "geometry_exact": false,
+     "picture": false,
+     "text": false,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "7WT4-9343-3GC",
+    "doc_id": "13АВ-РД-АР1.1-К5 V1",
+    "version": "v001",
+    "discipline": "AR",
+    "page_number": 18,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 1723,
+    "n_text": 56,
+    "dup": true,
+    "dup_scope": "within_version",
+    "geom_sha": "e18c5182eba04b2586eb",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "AR_7WT4-934_D5_table_row_text",
+   "mode": "patch",
+   "cf_id": "D5_table_row_text",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D5_table_row_text_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D5_table_row_text_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [
+    [
+     1852.32,
+     1574.09,
+     1866.85,
+     1583.23
+    ],
+    [
+     1965.84,
+     1574.09,
+     1994.29,
+     1583.23
+    ],
+    [
+     1933.2,
+     1574.09,
+     1955.89,
+     1583.23
+    ],
+    [
+     2005.92,
+     1574.09,
+     2025.37,
+     1583.23
+    ],
+    [
+     1875.84,
+     1574.09,
+     1899.97,
+     1583.23
+    ],
+    [
+     1907.52,
+     1574.09,
+     1925.19,
+     1583.23
+    ]
+   ],
+   "change_bbox_pt": [
+    1852.32,
+    1574.09,
+    2025.37,
+    1583.23
+   ],
+   "redraw_fidelity_diff": 0.12407,
+   "n_redrawn": [
+    [
+     18,
+     6
+    ],
+    [
+     18,
+     6
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D5_table_row_text",
+    "seed": 1449737769,
+    "params": {
+     "row_cells": 6
+    },
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 24,
+      "before": "Изм.",
+      "after": "ЗАМЕНА Изм.",
+      "bbox_pt": [
+       1852.32,
+       1574.089,
+       1866.849,
+       1583.235
+      ]
+     },
+     {
+      "text_ix": 29,
+      "before": "Подпись",
+      "after": "ЗАМЕНА Подпись",
+      "bbox_pt": [
+       1965.84,
+       1574.091,
+       1994.293,
+       1583.234
+      ]
+     },
+     {
+      "text_ix": 28,
+      "before": "№док.",
+      "after": "ЗАМЕНА №док.",
+      "bbox_pt": [
+       1933.199,
+       1574.089,
+       1955.89,
+       1583.235
+      ]
+     },
+     {
+      "text_ix": 30,
+      "before": "Дата",
+      "after": "ЗАМЕНА Дата",
+      "bbox_pt": [
+       2005.92,
+       1574.089,
+       2025.374,
+       1583.235
+      ]
+     },
+     {
+      "text_ix": 26,
+      "before": "Кол.уч.",
+      "after": "ЗАМЕНА Кол.уч.",
+      "bbox_pt": [
+       1875.84,
+       1574.089,
+       1899.97,
+       1583.235
+      ]
+     },
+     {
+      "text_ix": 27,
+      "before": "Лист",
+      "after": "ЗАМЕНА Лист",
+      "bbox_pt": [
+       1907.52,
+       1574.089,
+       1925.186,
+       1583.235
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1723,
+     "n_after": 1723,
+     "segments_touched": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "7WT4-9343-3GC",
+    "doc_id": "13АВ-РД-АР1.1-К5 V1",
+    "version": "v001",
+    "discipline": "AR",
+    "page_number": 18,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 1723,
+    "n_text": 56,
+    "dup": true,
+    "dup_scope": "within_version",
+    "geom_sha": "e18c5182eba04b2586eb",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "AR_7WT4-934_D6_dim_value_only",
+   "mode": "patch",
+   "cf_id": "D6_dim_value_only",
+   "cf_class": "D",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D6_dim_value_only_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/AR_7WT4-934_D6_dim_value_only_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     7690.0,
+     6309.0,
+     9872.0,
+     6963.0
+    ],
+    "page_px": [
+     9932.0,
+     7015.0
+    ]
+   },
+   "patches_pt": [
+    [
+     2286.96,
+     1608.13,
+     2296.78,
+     1621.07
+    ]
+   ],
+   "change_bbox_pt": [
+    2286.96,
+    1608.13,
+    2296.78,
+    1621.07
+   ],
+   "redraw_fidelity_diff": 0.43774,
+   "n_redrawn": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "manifest": {
+    "cf_class": "D",
+    "cf_id": "D6_dim_value_only",
+    "seed": 150217920,
+    "params": {
+     "value_before": 13,
+     "value_after": 14,
+     "dim_line_len_pt": 141.599
+    },
+    "touched_objects": [],
+    "touched_texts": [
+     {
+      "text_ix": 34,
+      "before": "13",
+      "after": "14",
+      "bbox_pt": [
+       2286.96,
+       1608.131,
+       2296.775,
+       1621.072
+      ]
+     }
+    ],
+    "changed_primitives": {
+     "n_before": 1723,
+     "n_after": 1723,
+     "segments_touched": 0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "geometry_exact": true,
+     "picture_geometry": true,
+     "text": false
+    }
+   },
+   "carrier": {
+    "block_id": "7WT4-9343-3GC",
+    "doc_id": "13АВ-РД-АР1.1-К5 V1",
+    "version": "v001",
+    "discipline": "AR",
+    "page_number": 18,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 1723,
+    "n_text": 56,
+    "dup": true,
+    "dup_scope": "within_version",
+    "geom_sha": "e18c5182eba04b2586eb",
+    "bucket": "medium"
+   },
+   "group": "D"
+  },
+  {
+   "cand_id": "EOM_blk_9dee_A6_round_0.5_14",
+   "mode": "patch",
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A6_round_0.5_14_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A6_round_0.5_14_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "patches_pt": [
+    [
+     4354.8,
+     3273.36,
+     4369.44,
+     3291.8
+    ]
+   ],
+   "change_bbox_pt": [
+    4354.8,
+    3273.36,
+    4369.44,
+    3291.8
+   ],
+   "redraw_fidelity_diff": 6e-05,
+   "n_redrawn": [
+    [
+     183,
+     0
+    ],
+    [
+     168,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "A",
+    "cf_id": "A6_round_0.5",
+    "seed": 771836859,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 1226,
+     "n_after": 851,
+     "segments_touched": 1226,
+     "share_touched": 1.0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "picture": true,
+     "geometry_exact": false,
+     "text": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_9deea62d8729406ba862660702617d19",
+    "doc_id": "13АВ-РД-ЭМ2-ПА V1",
+    "version": "v003",
+    "discipline": "EOM",
+    "page_number": 9,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 1226,
+    "n_text": 56,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "f8f90ad55cf5f5ee0ca1",
+    "bucket": "medium"
+   },
+   "group": "A"
+  },
+  {
+   "cand_id": "EOM_blk_9dee_A1_path_split_20",
+   "mode": "patch",
+   "cf_id": "A1_path_split",
+   "cf_class": "A",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A1_path_split_20_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A1_path_split_20_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "patches_pt": [
+    [
+     4351.68,
+     3289.2,
+     4374.48,
+     3307.2
+    ]
+   ],
+   "change_bbox_pt": [
+    4351.68,
+    3289.2,
+    4374.48,
+    3307.2
+   ],
+   "redraw_fidelity_diff": 0.00041,
+   "n_redrawn": [
+    [
+     160,
+     0
+    ],
+    [
+     160,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "A",
+    "cf_id": "A1_path_split",
+    "seed": 593274942,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 1226,
+     "n_after": 1226,
+     "segments_touched": 1226,
+     "share_touched": 1.0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "picture": true,
+     "geometry_exact": true,
+     "text": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_9deea62d8729406ba862660702617d19",
+    "doc_id": "13АВ-РД-ЭМ2-ПА V1",
+    "version": "v003",
+    "discipline": "EOM",
+    "page_number": 9,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 1226,
+    "n_text": 56,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "f8f90ad55cf5f5ee0ca1",
+    "bucket": "medium"
+   },
+   "group": "A"
+  },
+  {
+   "cand_id": "EOM_blk_9dee_A2_path_merge_20",
+   "mode": "patch",
+   "cf_id": "A2_path_merge",
+   "cf_class": "A",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A2_path_merge_20_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_9dee_A2_path_merge_20_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     9432.0,
+     7135.0,
+     10614.0,
+     7498.0
+    ],
+    "page_px": [
+     10628.0,
+     7528.0
+    ]
+   },
+   "patches_pt": [
+    [
+     4351.68,
+     3289.2,
+     4374.48,
+     3307.2
+    ]
+   ],
+   "change_bbox_pt": [
+    4351.68,
+    3289.2,
+    4374.48,
+    3307.2
+   ],
+   "redraw_fidelity_diff": 0.00041,
+   "n_redrawn": [
+    [
+     160,
+     0
+    ],
+    [
+     160,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "A",
+    "cf_id": "A2_path_merge",
+    "seed": 982940501,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 1226,
+     "n_after": 1226,
+     "segments_touched": 1226,
+     "share_touched": 1.0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "picture": true,
+     "geometry_exact": true,
+     "text": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_9deea62d8729406ba862660702617d19",
+    "doc_id": "13АВ-РД-ЭМ2-ПА V1",
+    "version": "v003",
+    "discipline": "EOM",
+    "page_number": 9,
+    "cls": "stamp",
+    "rule": "R2_stamp_upstream",
+    "elig": "eligible",
+    "n_seg": 1226,
+    "n_text": 56,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "f8f90ad55cf5f5ee0ca1",
+    "bucket": "medium"
+   },
+   "group": "A"
+  },
+  {
+   "cand_id": "EOM_blk_2ab0_C1_remove_object",
+   "mode": "patch",
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_C1_remove_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_C1_remove_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "patches_pt": [
+    [
+     1448.76,
+     702.72,
+     1477.26,
+     716.76
+    ]
+   ],
+   "change_bbox_pt": [
+    1448.76,
+    702.72,
+    1477.26,
+    716.76
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "n_redrawn": [
+    [
+     4,
+     0
+    ],
+    [
+     0,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C1_remove_object",
+    "seed": 1470252755,
+    "params": {
+     "size_bucket": "small"
+    },
+    "touched_objects": [
+     {
+      "object_id": "6529d904cefc",
+      "cls": "symbol",
+      "bbox_pt": [
+       1447.159,
+       693.889,
+       1478.861,
+       725.591
+      ],
+      "n_seg": 4,
+      "n_prim": 1,
+      "diag_pt": 44.833,
+      "area_frac_of_block": 0.005194,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 379,
+     "n_after": 375,
+     "removed_segment_ix": [
+      190,
+      191,
+      192,
+      193
+     ],
+     "segments_touched": 4
+    },
+    "delta": null,
+    "expected_ledger": [
+     {
+      "type": "REMOVED_OBJECT",
+      "object_id": "6529d904cefc",
+      "bbox_pt": [
+       1447.159,
+       693.889,
+       1478.861,
+       725.591
+      ]
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_2ab07b7510a44c7688a59ee145873f93",
+    "doc_id": "СТ26_01-14-ЭОМ-1-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "page_number": 13,
+    "cls": "legend_notes",
+    "rule": "R8_legend_notes",
+    "elig": "eligible",
+    "n_seg": 379,
+    "n_text": 100,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "63682a7ca51f697e557c",
+    "bucket": "sparse"
+   },
+   "group": "C"
+  },
+  {
+   "cand_id": "EOM_blk_2ab0_A6_round_0.5_5",
+   "mode": "patch",
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_A6_round_0.5_5_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/EOM_blk_2ab0_A6_round_0.5_5_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     5559.0,
+     65.0,
+     6543.0,
+     3479.0
+    ],
+    "page_px": [
+     10524.0,
+     4961.0
+    ]
+   },
+   "patches_pt": [
+    [
+     1541.94,
+     410.34,
+     1570.26,
+     427.91
+    ]
+   ],
+   "change_bbox_pt": [
+    1541.94,
+    410.34,
+    1570.26,
+    427.91
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "n_redrawn": [
+    [
+     6,
+     0
+    ],
+    [
+     6,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "A",
+    "cf_id": "A6_round_0.5",
+    "seed": 568246451,
+    "params": {},
+    "touched_objects": [],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 379,
+     "n_after": 323,
+     "segments_touched": 379,
+     "share_touched": 1.0
+    },
+    "delta": null,
+    "expected_ledger": [],
+    "invariants": {
+     "picture": true,
+     "geometry_exact": false,
+     "text": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_2ab07b7510a44c7688a59ee145873f93",
+    "doc_id": "СТ26_01-14-ЭОМ-1-РД_V1",
+    "version": "v001",
+    "discipline": "EOM",
+    "page_number": 13,
+    "cls": "legend_notes",
+    "rule": "R8_legend_notes",
+    "elig": "eligible",
+    "n_seg": 379,
+    "n_text": 100,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "63682a7ca51f697e557c",
+    "bucket": "sparse"
+   },
+   "group": "A"
+  },
+  {
+   "cand_id": "OV_blk_1924_C3_move_object",
+   "mode": "patch",
+   "cf_id": "C3_move_object",
+   "cf_class": "C",
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "left": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/OV_blk_1924_C3_move_object_L.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3165.0,
+     3834.0,
+     4917.0,
+     6273.0
+    ],
+    "page_px": [
+     4961.0,
+     7016.0
+    ]
+   },
+   "right": {
+    "pdf": "/home/coder/projects/PDF-proverka/experiments/stage_comparison_vector_objects_v03_opus/artifacts/hyb_cf/OV_blk_1924_C3_move_object_R.pdf",
+    "page_index": 0,
+    "coords_px": [
+     3165.0,
+     3834.0,
+     4917.0,
+     6273.0
+    ],
+    "page_px": [
+     4961.0,
+     7016.0
+    ]
+   },
+   "patches_pt": [
+    [
+     898.44,
+     994.05,
+     951.3,
+     1023.0
+    ]
+   ],
+   "change_bbox_pt": [
+    898.44,
+    994.05,
+    951.3,
+    1023.0
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "n_redrawn": [
+    [
+     21,
+     0
+    ],
+    [
+     21,
+     0
+    ]
+   ],
+   "manifest": {
+    "cf_class": "C",
+    "cf_id": "C3_move_object",
+    "seed": 898530504,
+    "params": {
+     "size_bucket": "small",
+     "frac_of_diag": 0.02
+    },
+    "touched_objects": [
+     {
+      "object_id": "f5f90b775aaf",
+      "cls": "symbol",
+      "bbox_pt": [
+       902.52,
+       1007.88,
+       951.3,
+       1023.0
+      ],
+      "n_seg": 7,
+      "n_prim": 5,
+      "diag_pt": 51.07,
+      "area_frac_of_block": 0.002997,
+      "len_frac_of_block": null
+     }
+    ],
+    "touched_texts": null,
+    "changed_primitives": {
+     "n_before": 399,
+     "n_after": 399,
+     "moved_segment_ix": [
+      19,
+      21,
+      58,
+      59,
+      73,
+      74,
+      75
+     ],
+     "segments_touched": 7
+    },
+    "delta": {
+     "dx_pt": -4.0755,
+     "dy_pt": -13.8257,
+     "d_pt": 14.4139,
+     "d_over_S": 1.675
+    },
+    "expected_ledger": [
+     {
+      "type": "MOVED_OBJECT",
+      "object_id": "f5f90b775aaf",
+      "bbox_pt": [
+       902.52,
+       1007.88,
+       951.3,
+       1023.0
+      ],
+      "bbox_after_pt": [
+       898.444,
+       994.054,
+       947.224,
+       1009.174
+      ],
+      "dx_pt": -4.0755,
+      "dy_pt": -13.8257
+     }
+    ],
+    "invariants": {
+     "picture": false,
+     "text": true,
+     "local": true
+    }
+   },
+   "carrier": {
+    "block_id": "blk_192442361ada46c182f2d08378901ec1",
+    "doc_id": "СТ26_01-14-ОВ1-6-РД_V1",
+    "version": "v001",
+    "discipline": "OV",
+    "page_number": 20,
+    "cls": "drawing",
+    "rule": "R9_drawing",
+    "elig": "eligible",
+    "n_seg": 399,
+    "n_text": 42,
+    "dup": false,
+    "dup_scope": null,
+    "geom_sha": "343a551bda0bb6d59cb7",
+    "bucket": "sparse"
+   },
+   "group": "C"
+  }
+ ]
+}

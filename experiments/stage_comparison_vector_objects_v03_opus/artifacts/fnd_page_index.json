@@ -1,0 +1,1722 @@
+{
+ "summary": {
+  "docs_no_pdf": 96,
+  "pn_aspect_true": 17571,
+  "pages_total": 17683,
+  "blocks_total": 44448,
+  "pages_agree": 10381,
+  "blocks_agree": 22791,
+  "pages_agree_aspect_ok": 10372,
+  "pages_conflict": 7302,
+  "blocks_conflict": 21657,
+  "conflict_page_number_wins": 1485,
+  "blocks_conflict_page_number_wins": 5023,
+  "conflict_ambiguous_both_match": 5714,
+  "blocks_conflict_ambiguous": 15556,
+  "docs_error": 1,
+  "pn_aspect_none": 112,
+  "blocks_pn_aspect_not_true": 1187,
+  "conflict_neither_matches": 103,
+  "blocks_conflict_neither": 1078,
+  "share_pages_conflict": 0.4129389809421478,
+  "share_blocks_conflict": 0.4872435205183585,
+  "n_docs_with_conflict": 252,
+  "aspect_tolerance": 0.01
+ },
+ "conflicting_documents": [
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.1-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 14,
+   "pages": 10,
+   "shift": {
+    "1": 10
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.1-ПА/versions/v002/02_work/result.json",
+   "n_pdf_pages": 19,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.2-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 15,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.2-ПА/versions/v002/02_work/result.json",
+   "n_pdf_pages": 15,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.2-ПА/versions/v003/02_work/result.json",
+   "n_pdf_pages": 15,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.3-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 14,
+   "pages": 10,
+   "shift": {
+    "1": 10
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.3-ПА/versions/v002/02_work/result.json",
+   "n_pdf_pages": 17,
+   "pages": 13,
+   "shift": {
+    "1": 13
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.4-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 14,
+   "pages": 10,
+   "shift": {
+    "1": 10
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.4-ПА/versions/v002/02_work/result.json",
+   "n_pdf_pages": 16,
+   "pages": 12,
+   "shift": {
+    "1": 12
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 10,
+   "pages": 6,
+   "shift": {
+    "1": 6
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 33,
+   "pages": 29,
+   "shift": {
+    "1": 29
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 28,
+   "pages": 24,
+   "shift": {
+    "1": 24
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 28,
+   "pages": 24,
+   "shift": {
+    "1": 24
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К2/versions/v003/02_work/result.json",
+   "n_pdf_pages": 37,
+   "pages": 33,
+   "shift": {
+    "1": 33
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К3-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 9,
+   "pages": 5,
+   "shift": {
+    "1": 5
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К3-К4/versions/v002/02_work/result.json",
+   "n_pdf_pages": 9,
+   "pages": 5,
+   "shift": {
+    "1": 5
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 40,
+   "pages": 36,
+   "shift": {
+    "1": 36
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4-К5/versions/v002/02_work/result.json",
+   "n_pdf_pages": 8,
+   "pages": 4,
+   "shift": {
+    "1": 4
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К4/versions/v002/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К5 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 22,
+   "pages": 18,
+   "shift": {
+    "1": 18
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К5-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К5-К6/versions/v002/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К6 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 43,
+   "pages": 39,
+   "shift": {
+    "1": 39
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-К7/versions/v001/02_work/result.json",
+   "n_pdf_pages": 6,
+   "pages": 2,
+   "shift": {
+    "1": 2
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.1-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 16,
+   "pages": 12,
+   "shift": {
+    "1": 12
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 24,
+   "pages": 20,
+   "shift": {
+    "1": 20
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К3/versions/v002/02_work/result.json",
+   "n_pdf_pages": 25,
+   "pages": 21,
+   "shift": {
+    "1": 21
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К3К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К3К4/versions/v002/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 14,
+   "pages": 10,
+   "shift": {
+    "1": 10
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v002/02_work/result.json",
+   "n_pdf_pages": 15,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К4/versions/v003/02_work/result.json",
+   "n_pdf_pages": 15,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 13,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v002/02_work/result.json",
+   "n_pdf_pages": 16,
+   "pages": 12,
+   "shift": {
+    "1": 12
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5/versions/v003/02_work/result.json",
+   "n_pdf_pages": 17,
+   "pages": 13,
+   "shift": {
+    "1": 13
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К5К6/versions/v002/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 24,
+   "pages": 20,
+   "shift": {
+    "1": 20
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР1.2-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 13,
+   "pages": 9,
+   "shift": {
+    "1": 9
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР2-К3-К4 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 10,
+   "pages": 6,
+   "shift": {
+    "1": 6
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР2-К4-К5 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 8,
+   "pages": 4,
+   "shift": {
+    "1": 4
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР2-К5-К6 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 10,
+   "pages": 6,
+   "shift": {
+    "1": 6
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 9,
+   "pages": 5,
+   "shift": {
+    "1": 5
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К3-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 10,
+   "pages": 6,
+   "shift": {
+    "1": 6
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 12,
+   "pages": 8,
+   "shift": {
+    "1": 8
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К3/versions/v002/02_work/result.json",
+   "n_pdf_pages": 14,
+   "pages": 9,
+   "shift": {
+    "1": 9
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К4-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 8,
+   "pages": 4,
+   "shift": {
+    "1": 4
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К5-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 8,
+   "pages": 4,
+   "shift": {
+    "1": 4
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 10,
+   "pages": 6,
+   "shift": {
+    "1": 6
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К6/versions/v002/02_work/result.json",
+   "n_pdf_pages": 12,
+   "pages": 8,
+   "shift": {
+    "1": 8
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3-К7/versions/v001/02_work/result.json",
+   "n_pdf_pages": 8,
+   "pages": 4,
+   "shift": {
+    "1": 4
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3.1-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 12,
+   "pages": 8,
+   "shift": {
+    "1": 8
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3.2-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 12,
+   "pages": 8,
+   "shift": {
+    "1": 8
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР3.2-ПА/versions/v002/02_work/result.json",
+   "n_pdf_pages": 14,
+   "pages": 10,
+   "shift": {
+    "1": 10
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 83,
+   "pages": 79,
+   "shift": {
+    "1": 79
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 30,
+   "pages": 27,
+   "shift": {
+    "1": 27
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 41,
+   "pages": 38,
+   "shift": {
+    "1": 38
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v002/02_work/result.json",
+   "n_pdf_pages": 41,
+   "pages": 38,
+   "shift": {
+    "1": 38
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v003/02_work/result.json",
+   "n_pdf_pages": 64,
+   "pages": 60,
+   "shift": {
+    "1": 60
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 88,
+   "pages": 84,
+   "shift": {
+    "1": 84
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К6/versions/v002/02_work/result.json",
+   "n_pdf_pages": 88,
+   "pages": 84,
+   "shift": {
+    "1": 84
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 48,
+   "pages": 44,
+   "shift": {
+    "1": 44
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К4/versions/v002/02_work/result.json",
+   "n_pdf_pages": 49,
+   "pages": 45,
+   "shift": {
+    "1": 45
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 176,
+   "pages": 172,
+   "shift": {
+    "1": 172
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.2-К6/versions/v002/02_work/result.json",
+   "n_pdf_pages": 145,
+   "pages": 141,
+   "shift": {
+    "1": 141
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-МЗ/versions/v001/02_work/result.json",
+   "n_pdf_pages": 26,
+   "pages": 22,
+   "shift": {
+    "1": 22
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ОЗДС/versions/v001/02_work/result.json",
+   "n_pdf_pages": 24,
+   "pages": 20,
+   "shift": {
+    "1": 20
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 71,
+   "pages": 67,
+   "shift": {
+    "1": 67
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+   "n_pdf_pages": 79,
+   "pages": 75,
+   "shift": {
+    "1": 75
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 54,
+   "pages": 50,
+   "shift": {
+    "1": 50
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 48,
+   "pages": 44,
+   "shift": {
+    "1": 44
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/result.json",
+   "n_pdf_pages": 55,
+   "pages": 51,
+   "shift": {
+    "1": 51
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 40,
+   "pages": 36,
+   "shift": {
+    "1": 36
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 43,
+   "pages": 12,
+   "shift": {
+    "1": 12
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/02_work/result.json",
+   "n_pdf_pages": 44,
+   "pages": 40,
+   "shift": {
+    "1": 40
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 54,
+   "pages": 50,
+   "shift": {
+    "1": 50
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К7 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 40,
+   "pages": 36,
+   "shift": {
+    "1": 36
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ1-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 15,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v002/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 36,
+   "pages": 32,
+   "shift": {
+    "1": 32
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 36,
+   "pages": 32,
+   "shift": {
+    "1": 32
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v002/02_work/result.json",
+   "n_pdf_pages": 37,
+   "pages": 33,
+   "shift": {
+    "1": 33
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 34,
+   "pages": 30,
+   "shift": {
+    "1": 30
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 30,
+   "pages": 26,
+   "shift": {
+    "1": 26
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v002/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 19,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v002/02_work/result.json",
+   "n_pdf_pages": 28,
+   "pages": 24,
+   "shift": {
+    "1": 24
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО2-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 53,
+   "pages": 27,
+   "shift": {
+    "1": 27
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭОМ-НС V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП1 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 7,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП2 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 17,
+   "pages": 13,
+   "shift": {
+    "1": 13
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/GP/documents/13АВ-РД-ГП2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 17,
+   "pages": 13,
+   "shift": {
+    "1": 13
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.1-К1К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 13,
+   "pages": 9,
+   "shift": {
+    "1": 9
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.1-К1К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 13,
+   "pages": 9,
+   "shift": {
+    "1": 9
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.1-К7/versions/v001/02_work/result.json",
+   "n_pdf_pages": 24,
+   "pages": 20,
+   "shift": {
+    "1": 20
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.17-23.1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.17-23.1-К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 17,
+   "shift": {
+    "1": 17
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.17-23.2-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 24,
+   "pages": 20,
+   "shift": {
+    "1": 20
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 42,
+   "pages": 38,
+   "shift": {
+    "1": 38
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.22-28.1-К1/versions/v002/02_work/result.json",
+   "n_pdf_pages": 43,
+   "pages": 39,
+   "shift": {
+    "1": 39
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.24.1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 22,
+   "pages": 18,
+   "shift": {
+    "1": 18
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.24.2-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.24.2-К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 19,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.25-29.1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 17,
+   "shift": {
+    "1": 17
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.25-29.2-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.25-29.2-К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.29.1-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 17,
+   "shift": {
+    "1": 17
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.29.1-К1/versions/v002/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 17,
+   "shift": {
+    "1": 17
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.29.2-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.30-31.1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 17,
+   "shift": {
+    "1": 17
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.30-31.1-К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 22,
+   "pages": 18,
+   "shift": {
+    "1": 18
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.30-31.2-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 19,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.32-34.1-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.33-38.1-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.35.1-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.39.2-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ5.39.2-К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ6-К1К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 17,
+   "shift": {
+    "1": 17
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ6-К1К2/versions/v002/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 17,
+   "shift": {
+    "1": 17
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ6-К7/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ7.2-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 15,
+   "pages": 11,
+   "shift": {
+    "1": 11
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KJ/documents/13АВ-РД-КЖ7.2-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 16,
+   "pages": 12,
+   "shift": {
+    "1": 12
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/1232-ЧМ-КМ-1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 27,
+   "pages": 27,
+   "shift": {
+    "1": 27
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 6,
+   "pages": 2,
+   "shift": {
+    "1": 2
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 6,
+   "pages": 2,
+   "shift": {
+    "1": 2
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 13,
+   "pages": 9,
+   "shift": {
+    "1": 9
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions/v002/02_work/result.json",
+   "n_pdf_pages": 13,
+   "pages": 9,
+   "shift": {
+    "1": 9
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 8,
+   "pages": 6,
+   "shift": {
+    "1": 6
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions/v002/02_work/result.json",
+   "n_pdf_pages": 10,
+   "pages": 6,
+   "shift": {
+    "1": 6
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 12,
+   "pages": 8,
+   "shift": {
+    "1": 8
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К6/versions/v001/02_work/result.json",
+   "n_pdf_pages": 5,
+   "pages": 3,
+   "shift": {
+    "1": 3
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К6/versions/v002/02_work/result.json",
+   "n_pdf_pages": 12,
+   "pages": 8,
+   "shift": {
+    "1": 8
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-ПА/versions/v001/02_work/result.json",
+   "n_pdf_pages": 14,
+   "pages": 10,
+   "shift": {
+    "1": 10
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 38,
+   "pages": 36,
+   "shift": {
+    "1": 36
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-НВФ-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 59,
+   "pages": 57,
+   "shift": {
+    "1": 57
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 2/versions/v001/02_work/result.json",
+   "n_pdf_pages": 29,
+   "pages": 28,
+   "shift": {
+    "1": 28
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 3/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 19,
+   "shift": {
+    "1": 19
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 38,
+   "pages": 37,
+   "shift": {
+    "1": 37
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/KM/documents/Mockup 5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 24,
+   "pages": 23,
+   "shift": {
+    "1": 23
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К1 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 97,
+   "pages": 91,
+   "shift": {
+    "1": 91
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К2 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 85,
+   "pages": 79,
+   "shift": {
+    "1": 79
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К2 V1/versions/v002/02_work/result.json",
+   "n_pdf_pages": 87,
+   "pages": 81,
+   "shift": {
+    "1": 81
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К3 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 62,
+   "pages": 58,
+   "shift": {
+    "1": 58
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К4 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 28,
+   "pages": 26,
+   "shift": {
+    "1": 26
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К5 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 44,
+   "pages": 41,
+   "shift": {
+    "1": 41
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-К6 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 47,
+   "pages": 43,
+   "shift": {
+    "1": 43
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.1-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 31,
+   "pages": 27,
+   "shift": {
+    "1": 27
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К3 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 27,
+   "pages": 18,
+   "shift": {
+    "1": 18
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К4 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 19,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-К6 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 12,
+   "shift": {
+    "1": 12
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ1.2-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 34,
+   "pages": 30,
+   "shift": {
+    "1": 30
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К1 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 202,
+   "pages": 137,
+   "shift": {
+    "1": 137
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 172,
+   "pages": 140,
+   "shift": {
+    "1": 140
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К2 V1/versions/v002/02_work/result.json",
+   "n_pdf_pages": 153,
+   "pages": 102,
+   "shift": {
+    "1": 102
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К3 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 103,
+   "pages": 73,
+   "shift": {
+    "1": 73
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К4 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 90,
+   "pages": 71,
+   "shift": {
+    "1": 71
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К4 V1/versions/v002/02_work/result.json",
+   "n_pdf_pages": 76,
+   "pages": 46,
+   "shift": {
+    "1": 46
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К5 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 120,
+   "pages": 92,
+   "shift": {
+    "1": 92
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-К6 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 164,
+   "pages": 113,
+   "shift": {
+    "1": 113
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2-ТП1-ТП2 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 9,
+   "pages": 5,
+   "shift": {
+    "1": 5
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2.1-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 334,
+   "pages": 195,
+   "shift": {
+    "1": 195
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/OV/documents/13АВ-РД-ОВ2.2-ПА V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 254,
+   "pages": 173,
+   "shift": {
+    "1": 173
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — АР/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 21,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "-7": 1,
+    "-8": 1,
+    "-9": 1,
+    "-10": 1,
+    "-11": 1,
+    "-12": 1,
+    "-13": 1,
+    "-14": 1,
+    "-15": 1,
+    "-16": 1,
+    "-17": 1,
+    "-18": 1,
+    "-19": 1,
+    "-20": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — ВК/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 11,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "-7": 1,
+    "-8": 1,
+    "-9": 1,
+    "-10": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — ГП/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 13,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "-7": 1,
+    "-8": 1,
+    "-9": 1,
+    "-10": 1,
+    "-11": 1,
+    "-12": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — КЖ/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 6,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — КМ/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 7,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — ОВ/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 9,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "-7": 1,
+    "-8": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — СС/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 26,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "-7": 1,
+    "-8": 1,
+    "-9": 1,
+    "-10": 1,
+    "-11": 1,
+    "-12": 1,
+    "-13": 1,
+    "-14": 1,
+    "-15": 1,
+    "-16": 1,
+    "-17": 1,
+    "-18": 1,
+    "-19": 1,
+    "-20": 1,
+    "-21": 1,
+    "-22": 1,
+    "-23": 1,
+    "-24": 1,
+    "-25": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — ТХ/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 7,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/POS/documents/ВЕКТОГРАФ — ЭОМ/versions/v001/02_work/result.json",
+   "n_pdf_pages": 1,
+   "pages": 12,
+   "shift": {
+    "-1": 1,
+    "-2": 1,
+    "-3": 1,
+    "-4": 1,
+    "-5": 1,
+    "-6": 1,
+    "-7": 1,
+    "-8": 1,
+    "-9": 1,
+    "-10": 1,
+    "-11": 1
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13AB-РД-СОТ-К7 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К2 (Книга 1) V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 52,
+   "pages": 46,
+   "shift": {
+    "1": 46
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К2 (Книга 2) V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 25,
+   "pages": 20,
+   "shift": {
+    "1": 20
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 31,
+   "pages": 26,
+   "shift": {
+    "1": 26
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 1)/versions/v002/02_work/result.json",
+   "n_pdf_pages": 31,
+   "pages": 27,
+   "shift": {
+    "1": 27
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v002/02_work/result.json",
+   "n_pdf_pages": 19,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 1)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 28,
+   "pages": 24,
+   "shift": {
+    "1": 24
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 1)/versions/v002/02_work/result.json",
+   "n_pdf_pages": 30,
+   "pages": 25,
+   "shift": {
+    "1": 25
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 2)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 17,
+   "pages": 13,
+   "shift": {
+    "1": 13
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К4 (Книга 2)/versions/v002/02_work/result.json",
+   "n_pdf_pages": 21,
+   "pages": 16,
+   "shift": {
+    "1": 16
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 1)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 36,
+   "pages": 32,
+   "shift": {
+    "1": 32
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К5 (Книга 2)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 16,
+   "pages": 12,
+   "shift": {
+    "1": 12
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 45,
+   "pages": 40,
+   "shift": {
+    "1": 40
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/result.json",
+   "n_pdf_pages": 32,
+   "pages": 27,
+   "shift": {
+    "1": 27
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v003/02_work/result.json",
+   "n_pdf_pages": 32,
+   "pages": 27,
+   "shift": {
+    "1": 27
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 2)/versions/v001/02_work/result.json",
+   "n_pdf_pages": 18,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 2)/versions/v002/02_work/result.json",
+   "n_pdf_pages": 19,
+   "pages": 14,
+   "shift": {
+    "1": 14
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 2)/versions/v003/02_work/result.json",
+   "n_pdf_pages": 20,
+   "pages": 15,
+   "shift": {
+    "1": 15
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v001/02_work/result.json",
+   "n_pdf_pages": 97,
+   "pages": 52,
+   "shift": {
+    "1": 52
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v001/02_work/result.json",
+   "n_pdf_pages": 194,
+   "pages": 86,
+   "shift": {
+    "1": 86
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v002/02_work/result.json",
+   "n_pdf_pages": 85,
+   "pages": 39,
+   "shift": {
+    "1": 39
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/02_work/result.json",
+   "n_pdf_pages": 85,
+   "pages": 40,
+   "shift": {
+    "1": 40
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v001/02_work/result.json",
+   "n_pdf_pages": 196,
+   "pages": 86,
+   "shift": {
+    "1": 86
+   }
+  },
+  {
+   "result_json": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/02_work/result.json",
+   "n_pdf_pages": 88,
+   "pages": 44,
+   "shift": {
+    "1": 44
+   }
+  }
+ ]
+}

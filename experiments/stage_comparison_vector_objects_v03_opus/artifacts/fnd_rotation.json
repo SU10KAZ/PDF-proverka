@@ -1,0 +1,3858 @@
+{
+ "summary": {
+  "n_sampled": 70,
+  "n_ok": 70,
+  "n_error": 0,
+  "dpi": 100,
+  "min_long_side": 800,
+  "seed": 20260823,
+  "by_rotation": {
+   "0": {
+    "n": 30,
+    "n_with_geometry": 26,
+    "median_seg_on_ink_correct": 1.0,
+    "median_seg_on_ink_naive": 1.0,
+    "mean_seg_on_ink_correct": 0.9998345294087339,
+    "mean_seg_on_ink_naive": 0.9998345294087339,
+    "median_jaccard_correct": 0.18187830687830686,
+    "median_jaccard_naive": 0.18187830687830686,
+    "mean_jaccard_correct": 0.20361351764748017,
+    "mean_jaccard_naive": 0.20361351764748017,
+    "n_naive_zero_segments": 4,
+    "n_correct_zero_segments": 4,
+    "median_seg_inside_clip_correct": 1.0,
+    "median_seg_inside_clip_naive": 1.0,
+    "n_sha_equal": 30
+   },
+   "90": {
+    "n": 20,
+    "n_with_geometry": 17,
+    "median_seg_on_ink_correct": 1.0,
+    "median_seg_on_ink_naive": 0.13129380790114065,
+    "mean_seg_on_ink_correct": 0.9995338241878648,
+    "mean_seg_on_ink_naive": 0.29406490920356754,
+    "median_jaccard_correct": 0.11086800573888092,
+    "median_jaccard_naive": 0.003703703703703704,
+    "mean_jaccard_correct": 0.1541214254961225,
+    "mean_jaccard_naive": 0.02469046734708294,
+    "n_naive_zero_segments": 8,
+    "n_correct_zero_segments": 2,
+    "median_seg_inside_clip_correct": 1.0,
+    "median_seg_inside_clip_naive": 1.0,
+    "n_sha_equal": 20
+   },
+   "270": {
+    "n": 20,
+    "n_with_geometry": 20,
+    "median_seg_on_ink_correct": 1.0,
+    "median_seg_on_ink_naive": 0.1533818072398061,
+    "mean_seg_on_ink_correct": 0.9990347262324795,
+    "mean_seg_on_ink_naive": 0.25277004332888725,
+    "median_jaccard_correct": 0.16232981993851558,
+    "median_jaccard_naive": 0.013060330299966297,
+    "mean_jaccard_correct": 0.19083845457214443,
+    "mean_jaccard_naive": 0.049318397638733594,
+    "n_naive_zero_segments": 4,
+    "n_correct_zero_segments": 0,
+    "median_seg_inside_clip_correct": 1.0,
+    "median_seg_inside_clip_naive": 1.0,
+    "n_sha_equal": 20
+   }
+  },
+  "render_sha_equal_all": 70,
+  "render_pixel_equal_share_min": 1.0,
+  "vs_stage02_png": {
+   "n": 9,
+   "median_share_within_8": 0.9356792239666524,
+   "median_ink_iou": 0.6426855251824652,
+   "n_share_within_8_ge_0995": 0,
+   "threshold_note": "совпадением считаем share_pixels_within_8 >= 0.995 после приведения к одному размеру (разный dpi/ресемплинг даёт ±8 уровней серого на антиалиасинге штрихов)"
+  }
+ },
+ "rows": [
+  {
+   "block_id": "blk_35251a95b0d1483e97328a42fc1ae3b4",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "AR",
+   "doc_id": "СТ26_01-14-АР2-7-1-РД_V1",
+   "version": "v001",
+   "page_index": 4,
+   "coords_px": [
+    4476.0,
+    497.0,
+    6916.0,
+    6879.0
+   ],
+   "page_px": [
+    9934,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1074.140869140625,
+    119.27574920654297,
+    1659.686767578125,
+    1650.9012451171875
+   ],
+   "clip_page": [
+    1074.140869140625,
+    119.27574920654297,
+    1659.686767578125,
+    1650.9012451171875
+   ],
+   "render_size": [
+    815,
+    2128
+   ],
+   "sha_mine": "3e547d2638a55654194f2c83b4ada75b616469458e49091ebd239ae2f0345c1f",
+   "sha_prod": "3e547d2638a55654194f2c83b4ada75b616469458e49091ebd239ae2f0345c1f",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР2-7-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_35251a95b0d1483e97328a42fc1ae3b4.png",
+   "vs_stage02_png": {
+    "size_a": [
+     814,
+     2128
+    ],
+    "size_b": [
+     815,
+     2128
+    ],
+    "mean_abs_diff": 3.2614277170198225,
+    "share_pixels_within_8": 0.9416669745617114,
+    "share_pixels_exact": 0.9216917062311799,
+    "ink_iou": 0.5789708467816002
+   },
+   "n_seg_correct": 20991,
+   "n_seg_naive": 20991,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.047108376770146225,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 129,
+   "text_correct": 76,
+   "text_naive": 76,
+   "jaccard_correct": 0.29770992366412213,
+   "jaccard_naive": 0.29770992366412213,
+   "overlay": "rot0_0_blk_35251a95"
+  },
+  {
+   "block_id": "blk_dc3b644010ce49ed9b4562bb386e1426",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "СТ26_01-14-ВК-3_1-РД_V1",
+   "version": "v001",
+   "page_index": 9,
+   "coords_px": [
+    7662.0,
+    6300.0,
+    9876.0,
+    6957.0
+   ],
+   "page_px": [
+    9922,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1838.8800048828125,
+    1511.8922119140625,
+    2370.239990234375,
+    1669.56103515625
+   ],
+   "clip_page": [
+    1838.8800048828125,
+    1511.8922119140625,
+    2370.239990234375,
+    1669.56103515625
+   ],
+   "render_size": [
+    801,
+    238
+   ],
+   "sha_mine": "238dfe3c4058f69592b2f7e156a8415678251480da3003a24d9b9598e03d12aa",
+   "sha_prod": "238dfe3c4058f69592b2f7e156a8415678251480da3003a24d9b9598e03d12aa",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 974,
+   "n_seg_naive": 974,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.20141839507338516,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 26,
+   "text_correct": 32,
+   "text_naive": 32,
+   "jaccard_correct": 0.18518518518518517,
+   "jaccard_naive": 0.18518518518518517,
+   "overlay": "rot0_1_blk_dc3b6440"
+  },
+  {
+   "block_id": "LAAJ-C6VQ-CWD",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "version": "v001",
+   "page_index": 142,
+   "coords_px": [
+    895.0,
+    1797.0,
+    1626.0,
+    2309.0
+   ],
+   "page_px": [
+    2480,
+    3507
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    214.82742309570312,
+    431.3876037597656,
+    390.2898254394531,
+    554.2982788085938
+   ],
+   "clip_page": [
+    214.82742309570312,
+    431.3876037597656,
+    390.2898254394531,
+    554.2982788085938
+   ],
+   "render_size": [
+    801,
+    562
+   ],
+   "sha_mine": "0be85db20e7b83d51f0a08a41c5f8b514e0caa346c85cf56f01f5fa24b344102",
+   "sha_prod": "0be85db20e7b83d51f0a08a41c5f8b514e0caa346c85cf56f01f5fa24b344102",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 0,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": NaN,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.06327277735570751,
+   "seg_inside_clip_correct": NaN,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 57,
+   "text_correct": 0,
+   "text_naive": 0,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "7ATK-XMKX-KTV",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "version": "v001",
+   "page_index": 8,
+   "coords_px": [
+    6418.0,
+    5837.0,
+    7438.0,
+    6951.0
+   ],
+   "page_px": [
+    9932,
+    7015
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1540.4749755859375,
+    1401.0797119140625,
+    1785.2996826171875,
+    1668.477783203125
+   ],
+   "clip_page": [
+    1540.4749755859375,
+    1401.0797119140625,
+    1785.2996826171875,
+    1668.477783203125
+   ],
+   "render_size": [
+    734,
+    801
+   ],
+   "sha_mine": "a80fdae256939b4806abdc13eca0d768e128951d6a39e07b976ac53383a98808",
+   "sha_prod": "a80fdae256939b4806abdc13eca0d768e128951d6a39e07b976ac53383a98808",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 1050,
+   "n_seg_naive": 1050,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.1352498749859678,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 57,
+   "text_correct": 7,
+   "text_naive": 7,
+   "jaccard_correct": 0.08771929824561403,
+   "jaccard_naive": 0.08771929824561403,
+   "overlay": "rot0_2_7ATK-XMKX-KT"
+  },
+  {
+   "block_id": "blk_bc32bc0bc83740f7b58a4034656988fc",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "OV",
+   "doc_id": "ПД-00542664-ОВ1-2.2_V1",
+   "version": "v001",
+   "page_index": 4,
+   "coords_px": [
+    8286.0,
+    4249.0,
+    10472.0,
+    4897.0
+   ],
+   "page_px": [
+    10524,
+    4967
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1988.54541015625,
+    1019.6572875976562,
+    2513.160400390625,
+    1175.16162109375
+   ],
+   "clip_page": [
+    1988.54541015625,
+    1019.6572875976562,
+    2513.160400390625,
+    1175.16162109375
+   ],
+   "render_size": [
+    801,
+    239
+   ],
+   "sha_mine": "8a01732a2a711d4cdfe689860a1077d0392efb5f25157964a2ab444920b97f6c",
+   "sha_prod": "8a01732a2a711d4cdfe689860a1077d0392efb5f25157964a2ab444920b97f6c",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 240,
+   "n_seg_naive": 240,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.1542162255339821,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 19,
+   "text_correct": 27,
+   "text_naive": 27,
+   "jaccard_correct": 0.13333333333333333,
+   "jaccard_naive": 0.13333333333333333
+  },
+  {
+   "block_id": "A9QU-33GC-JDP",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.17-23.1-К2",
+   "version": "v001",
+   "page_index": 8,
+   "coords_px": [
+    5682.0,
+    209.0,
+    7238.0,
+    1989.0
+   ],
+   "page_px": [
+    9932,
+    7015
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1363.8172607421875,
+    50.16714859008789,
+    1737.2947998046875,
+    477.42803955078125
+   ],
+   "clip_page": [
+    1363.8172607421875,
+    50.16714859008789,
+    1737.2947998046875,
+    477.42803955078125
+   ],
+   "render_size": [
+    700,
+    801
+   ],
+   "sha_mine": "c9a8edb54d2c450412ee0b2882ced9e9be2b7b96bcb91a59c014d7bca031bd16",
+   "sha_prod": "c9a8edb54d2c450412ee0b2882ced9e9be2b7b96bcb91a59c014d7bca031bd16",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 1096,
+   "n_seg_naive": 1096,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.05529338327091136,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 69,
+   "text_correct": 30,
+   "text_naive": 30,
+   "jaccard_correct": 0.19718309859154928,
+   "jaccard_naive": 0.19718309859154928
+  },
+  {
+   "block_id": "blk_2a9e6b7f1dba46a8b0ba695453b3639d",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "ПД-ОО542664-ВК1-1.1.2_V1",
+   "version": "v001",
+   "page_index": 29,
+   "coords_px": [
+    5796.0,
+    2021.0,
+    6830.0,
+    3461.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1390.9407958984375,
+    484.9911193847656,
+    1639.0831298828125,
+    830.5563354492188
+   ],
+   "clip_page": [
+    1390.9407958984375,
+    484.9911193847656,
+    1639.0831298828125,
+    830.5563354492188
+   ],
+   "render_size": [
+    575,
+    801
+   ],
+   "sha_mine": "e722a487f6f66c7cfb40cc77f48e076c178d31517a6d078f57740e70879454f8",
+   "sha_prod": "e722a487f6f66c7cfb40cc77f48e076c178d31517a6d078f57740e70879454f8",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_2a9e6b7f1dba46a8b0ba695453b3639d.png",
+   "vs_stage02_png": {
+    "size_a": [
+     575,
+     800
+    ],
+    "size_b": [
+     575,
+     801
+    ],
+    "mean_abs_diff": 0.8121369565217391,
+    "share_pixels_within_8": 0.98165,
+    "share_pixels_exact": 0.96555,
+    "ink_iou": 0.8856674775356204
+   },
+   "n_seg_correct": 453,
+   "n_seg_naive": 453,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.04000217119904467,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 122,
+   "text_correct": 1,
+   "text_naive": 1,
+   "jaccard_correct": 0.00819672131147541,
+   "jaccard_naive": 0.00819672131147541
+  },
+  {
+   "block_id": "JWXF-H7DP-6JJ",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3-К3",
+   "version": "v001",
+   "page_index": 6,
+   "coords_px": [
+    238.0,
+    4008.0,
+    3726.0,
+    5226.0
+   ],
+   "page_px": [
+    9932,
+    7015
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    57.12574768066406,
+    962.05712890625,
+    894.3300170898438,
+    1254.4188232421875
+   ],
+   "clip_page": [
+    57.12574768066406,
+    962.05712890625,
+    894.3300170898438,
+    1254.4188232421875
+   ],
+   "render_size": [
+    1164,
+    407
+   ],
+   "sha_mine": "7c1aa5bfad0417a9e23fae0229a42da658d23e2a48ac490a7847eeb9c6049527",
+   "sha_prod": "7c1aa5bfad0417a9e23fae0229a42da658d23e2a48ac490a7847eeb9c6049527",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 4602,
+   "n_seg_naive": 4602,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.12795199135405322,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 92,
+   "text_correct": 49,
+   "text_naive": 49,
+   "jaccard_correct": 0.31521739130434784,
+   "jaccard_naive": 0.31521739130434784
+  },
+  {
+   "block_id": "blk_9b4c4ff7b74644818f9be25975497a14",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.3-9.1-К4_V1",
+   "version": "v001",
+   "page_index": 8,
+   "coords_px": [
+    197.0,
+    37.0,
+    8765.0,
+    2446.0
+   ],
+   "page_px": [
+    9933,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    47.279998779296875,
+    8.880000114440918,
+    2103.599853515625,
+    587.0399780273438
+   ],
+   "clip_page": [
+    47.279998779296875,
+    8.880000114440918,
+    2103.599853515625,
+    587.0399780273438
+   ],
+   "render_size": [
+    2857,
+    804
+   ],
+   "sha_mine": "36c07e834a3c19bc297d76888eef96e2e80b080418506c4af1b9ada661925572",
+   "sha_prod": "36c07e834a3c19bc297d76888eef96e2e80b080418506c4af1b9ada661925572",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 8332,
+   "n_seg_naive": 8332,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.060933519312781556,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 126,
+   "text_correct": 214,
+   "text_naive": 214,
+   "jaccard_correct": 0.2366412213740458,
+   "jaccard_naive": 0.2366412213740458
+  },
+  {
+   "block_id": "7L7L-HUF3-WV3",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К6 V1",
+   "version": "v001",
+   "page_index": 100,
+   "coords_px": [
+    716.0,
+    1390.0,
+    1780.0,
+    2186.0
+   ],
+   "page_px": [
+    2480,
+    3507
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    171.86309814453125,
+    333.6832275390625,
+    427.2574462890625,
+    524.7709350585938
+   ],
+   "clip_page": [
+    171.86309814453125,
+    333.6832275390625,
+    427.2574462890625,
+    524.7709350585938
+   ],
+   "render_size": [
+    801,
+    599
+   ],
+   "sha_mine": "b0800e0bfe9c3fe1c7a6eb5041c94fe009b94772cf7a3152ff20121bf02d3655",
+   "sha_prod": "b0800e0bfe9c3fe1c7a6eb5041c94fe009b94772cf7a3152ff20121bf02d3655",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 1109,
+   "n_seg_naive": 1109,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.12017740762277537,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 70,
+   "text_correct": 0,
+   "text_naive": 0,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "blk_fc3814593b6e4b28a983cf25ece4a553",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "OV",
+   "doc_id": "ПД-00260568-ОВ1-1.2-3_V1",
+   "version": "v001",
+   "page_index": 171,
+   "coords_px": [
+    14.0,
+    414.0,
+    2463.0,
+    2362.0
+   ],
+   "page_px": [
+    2481,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    3.359074592590332,
+    99.35646057128906,
+    590.9572143554688,
+    566.8598022460938
+   ],
+   "clip_page": [
+    3.359074592590332,
+    99.35646057128906,
+    590.9572143554688,
+    566.8598022460938
+   ],
+   "render_size": [
+    817,
+    651
+   ],
+   "sha_mine": "08a7d5100ce4197c1c5cc9e2314a5f4c7389685806accf21790260f7003a9fae",
+   "sha_prod": "08a7d5100ce4197c1c5cc9e2314a5f4c7389685806accf21790260f7003a9fae",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00260568-ОВ1-1.2-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_fc3814593b6e4b28a983cf25ece4a553.png",
+   "vs_stage02_png": {
+    "size_a": [
+     817,
+     650
+    ],
+    "size_b": [
+     817,
+     651
+    ],
+    "mean_abs_diff": 1.785347895678373,
+    "share_pixels_within_8": 0.9565351661802091,
+    "share_pixels_exact": 0.9171942378307127,
+    "ink_iou": 0.7165653260903114
+   },
+   "n_seg_correct": 0,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": NaN,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.05074012864118285,
+   "seg_inside_clip_correct": NaN,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 105,
+   "text_correct": 13,
+   "text_naive": 13,
+   "jaccard_correct": 0.13333333333333333,
+   "jaccard_naive": 0.13333333333333333
+  },
+  {
+   "block_id": "97RL-MNPW-DKU",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К5",
+   "version": "v003",
+   "page_index": 47,
+   "coords_px": [
+    227.0,
+    37.0,
+    2473.0,
+    5910.0
+   ],
+   "page_px": [
+    4962,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    54.48548889160156,
+    8.880844116210938,
+    593.579833984375,
+    1418.5347900390625
+   ],
+   "clip_page": [
+    54.48548889160156,
+    8.880844116210938,
+    593.579833984375,
+    1418.5347900390625
+   ],
+   "render_size": [
+    750,
+    1959
+   ],
+   "sha_mine": "2a3a8e726b30a2e8aa3b4f16e4940c93fefc0259b775ceb9fb679613795f82e8",
+   "sha_prod": "2a3a8e726b30a2e8aa3b4f16e4940c93fefc0259b775ceb9fb679613795f82e8",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 6228,
+   "n_seg_naive": 6228,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.1290781010719755,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 64,
+   "text_correct": 126,
+   "text_naive": 126,
+   "jaccard_correct": 0.20270270270270271,
+   "jaccard_naive": 0.20270270270270271
+  },
+  {
+   "block_id": "AAW6-E9EC-FQC",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР0.2-ПА",
+   "version": "v003",
+   "page_index": 12,
+   "coords_px": [
+    261.0,
+    0.0,
+    2551.0,
+    5015.0
+   ],
+   "page_px": [
+    9932,
+    7015
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    62.646305084228516,
+    0.0,
+    612.3016357421875,
+    1203.7716064453125
+   ],
+   "clip_page": [
+    62.646305084228516,
+    0.0,
+    612.3016357421875,
+    1203.7716064453125
+   ],
+   "render_size": [
+    764,
+    1672
+   ],
+   "sha_mine": "46c732423fd09bf3e102e24178f048b94bda45ac38702c04667b4faa8f661f16",
+   "sha_prod": "46c732423fd09bf3e102e24178f048b94bda45ac38702c04667b4faa8f661f16",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 4198,
+   "n_seg_naive": 4198,
+   "seg_on_ink_correct": 0.9997617913292044,
+   "seg_on_ink_naive": 0.9997617913292044,
+   "ink_share_of_crop": 0.12431267065808262,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 78,
+   "text_correct": 90,
+   "text_naive": 90,
+   "jaccard_correct": 0.2857142857142857,
+   "jaccard_naive": 0.2857142857142857
+  },
+  {
+   "block_id": "blk_8ed848a8731045b3b3b30b4a0454e2cd",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.40-41.1-К2_V1",
+   "version": "v001",
+   "page_index": 32,
+   "coords_px": [
+    210.0,
+    4840.0,
+    3020.0,
+    6892.0
+   ],
+   "page_px": [
+    9933,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    50.39999771118164,
+    1161.5999755859375,
+    724.7999877929688,
+    1654.0799560546875
+   ],
+   "clip_page": [
+    50.39999771118164,
+    1161.5999755859375,
+    724.7999877929688,
+    1654.0799560546875
+   ],
+   "render_size": [
+    937,
+    685
+   ],
+   "sha_mine": "ac42805bc254e59a6d75812d7adbe75c308742172db0782f5785b5d4882f3c09",
+   "sha_prod": "ac42805bc254e59a6d75812d7adbe75c308742172db0782f5785b5d4882f3c09",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 578,
+   "n_seg_naive": 578,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.09260958642662948,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 85,
+   "text_correct": 70,
+   "text_naive": 70,
+   "jaccard_correct": 0.37209302325581395,
+   "jaccard_naive": 0.37209302325581395
+  },
+  {
+   "block_id": "9NVG-Y3XJ-F7R",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1-К7 V1",
+   "version": "v001",
+   "page_index": 16,
+   "coords_px": [
+    2721.0,
+    3267.0,
+    4921.0,
+    3453.0
+   ],
+   "page_px": [
+    4961,
+    3507
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    653.0399780273438,
+    784.3035888671875,
+    1181.0400390625,
+    828.956298828125
+   ],
+   "clip_page": [
+    653.0399780273438,
+    784.3035888671875,
+    1181.0400390625,
+    828.956298828125
+   ],
+   "render_size": [
+    801,
+    68
+   ],
+   "sha_mine": "cd7d895974c4289783feed11f13cd87c39cad6c40c26f8f0abc4691401d6b90b",
+   "sha_prod": "cd7d895974c4289783feed11f13cd87c39cad6c40c26f8f0abc4691401d6b90b",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 13,
+   "n_seg_naive": 13,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.1765256664463538,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 18,
+   "text_correct": 9,
+   "text_naive": 9,
+   "jaccard_correct": 0.2,
+   "jaccard_naive": 0.2
+  },
+  {
+   "block_id": "blk_6e80238be2a2419484d5766a98ba02a7",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К5 (Книга 1)",
+   "version": "v002",
+   "page_index": 21,
+   "coords_px": [
+    249.0,
+    62.0,
+    5762.0,
+    6759.0
+   ],
+   "page_px": [
+    14569,
+    6865
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    61.083534240722656,
+    15.208740234375,
+    1413.50732421875,
+    1657.9979248046875
+   ],
+   "clip_page": [
+    61.083534240722656,
+    15.208740234375,
+    1413.50732421875,
+    1657.9979248046875
+   ],
+   "render_size": [
+    1880,
+    2282
+   ],
+   "sha_mine": "172abb62d67af9a6a8195eb0ae13c403a9e862a98333d228fae1bd23cb380234",
+   "sha_prod": "172abb62d67af9a6a8195eb0ae13c403a9e862a98333d228fae1bd23cb380234",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 30351,
+   "n_seg_naive": 30351,
+   "seg_on_ink_correct": 0.9995387301901091,
+   "seg_on_ink_naive": 0.9995387301901091,
+   "ink_share_of_crop": 0.09323521733455163,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 158,
+   "text_correct": 443,
+   "text_naive": 443,
+   "jaccard_correct": 0.16964285714285715,
+   "jaccard_naive": 0.16964285714285715
+  },
+  {
+   "block_id": "blk_82483f4d6e0a4bd2bfa44f591a403e61",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "OV",
+   "doc_id": "СТ26_01-14-ОВ2-5-РД_V1",
+   "version": "v001",
+   "page_index": 31,
+   "coords_px": [
+    2704.0,
+    3273.0,
+    4910.0,
+    3454.0
+   ],
+   "page_px": [
+    4961,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    648.9109497070312,
+    785.4920043945312,
+    1178.3109130859375,
+    828.9304809570312
+   ],
+   "clip_page": [
+    648.9109497070312,
+    785.4920043945312,
+    1178.3109130859375,
+    828.9304809570312
+   ],
+   "render_size": [
+    801,
+    67
+   ],
+   "sha_mine": "2e9860fd9372cb62ada94dcb0a260fd800be9c353baa8ac9213dcbfacff25d47",
+   "sha_prod": "2e9860fd9372cb62ada94dcb0a260fd800be9c353baa8ac9213dcbfacff25d47",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 0,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": NaN,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.1649244414630965,
+   "seg_inside_clip_correct": NaN,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 20,
+   "text_correct": 9,
+   "text_naive": 9,
+   "jaccard_correct": 0.17857142857142858,
+   "jaccard_naive": 0.17857142857142858
+  },
+  {
+   "block_id": "9K97-3CGM-736",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ6-К7",
+   "version": "v001",
+   "page_index": 17,
+   "coords_px": [
+    2702.0,
+    2776.0,
+    4896.0,
+    3422.0
+   ],
+   "page_px": [
+    4961,
+    3507
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    648.47998046875,
+    666.429931640625,
+    1175.0400390625,
+    821.51416015625
+   ],
+   "clip_page": [
+    648.47998046875,
+    666.429931640625,
+    1175.0400390625,
+    821.51416015625
+   ],
+   "render_size": [
+    801,
+    237
+   ],
+   "sha_mine": "93ea0b6e8c7d33595ee62276b620e9ba92d88809e9aeec40ba9d338ce732b05b",
+   "sha_prod": "93ea0b6e8c7d33595ee62276b620e9ba92d88809e9aeec40ba9d338ce732b05b",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 2359,
+   "n_seg_naive": 2359,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.18461100839140948,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 68,
+   "text_correct": 56,
+   "text_naive": 56,
+   "jaccard_correct": 0.5903614457831325,
+   "jaccard_naive": 0.5903614457831325
+  },
+  {
+   "block_id": "blk_0e0e3b9ac1a1403897e101d204ae042b",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.2-К2_V1",
+   "version": "v001",
+   "page_index": 17,
+   "coords_px": [
+    4485.0,
+    55.0,
+    7302.0,
+    1675.0
+   ],
+   "page_px": [
+    10524,
+    4961
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1076.4000244140625,
+    13.199999809265137,
+    1752.47998046875,
+    402.0
+   ],
+   "clip_page": [
+    1076.4000244140625,
+    13.199999809265137,
+    1752.47998046875,
+    402.0
+   ],
+   "render_size": [
+    939,
+    541
+   ],
+   "sha_mine": "07dccc55a34346a389051e120fecd052c3f4edec13775432914c25a091329a5d",
+   "sha_prod": "07dccc55a34346a389051e120fecd052c3f4edec13775432914c25a091329a5d",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 11268,
+   "n_seg_naive": 11268,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.09690373406246863,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 162,
+   "text_correct": 30,
+   "text_naive": 30,
+   "jaccard_correct": 0.16049382716049382,
+   "jaccard_naive": 0.16049382716049382
+  },
+  {
+   "block_id": "4QJH-46MX-C4D",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-АПТ1-ПА V1",
+   "version": "v001",
+   "page_index": 35,
+   "coords_px": [
+    2709.0,
+    3261.0,
+    4905.0,
+    3455.0
+   ],
+   "page_px": [
+    4961,
+    3507
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    650.1600341796875,
+    782.8631591796875,
+    1177.2000732421875,
+    829.4364013671875
+   ],
+   "clip_page": [
+    650.1600341796875,
+    782.8631591796875,
+    1177.2000732421875,
+    829.4364013671875
+   ],
+   "render_size": [
+    801,
+    72
+   ],
+   "sha_mine": "c6095cade7fbd37b0981ee160b6b98833f34fc07fc97c0f5fb84c3492b447550",
+   "sha_prod": "c6095cade7fbd37b0981ee160b6b98833f34fc07fc97c0f5fb84c3492b447550",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 14,
+   "n_seg_naive": 14,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.15865584685809406,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 30,
+   "text_correct": 9,
+   "text_naive": 9,
+   "jaccard_correct": 0.16216216216216217,
+   "jaccard_naive": 0.16216216216216217
+  },
+  {
+   "block_id": "4TAX-JJCY-4E3",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.1-К1К2",
+   "version": "v001",
+   "page_index": 11,
+   "coords_px": [
+    4747.0,
+    4247.0,
+    6967.0,
+    4915.0
+   ],
+   "page_px": [
+    7015,
+    4961
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1139.4423828125,
+    1019.280029296875,
+    1672.318359375,
+    1179.5999755859375
+   ],
+   "clip_page": [
+    1139.4423828125,
+    1019.280029296875,
+    1672.318359375,
+    1179.5999755859375
+   ],
+   "render_size": [
+    801,
+    241
+   ],
+   "sha_mine": "ffd0ddcf26bde673e0ea73fb1d224800fb2e7d8a405e91413f09bd2e518c1482",
+   "sha_prod": "ffd0ddcf26bde673e0ea73fb1d224800fb2e7d8a405e91413f09bd2e518c1482",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 1221,
+   "n_seg_naive": 1221,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.19070042115405536,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 68,
+   "text_correct": 58,
+   "text_naive": 58,
+   "jaccard_correct": 0.5903614457831325,
+   "jaccard_naive": 0.5903614457831325
+  },
+  {
+   "block_id": "4KEQ-WJ9G-HXC",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+   "version": "v001",
+   "page_index": 44,
+   "coords_px": [
+    2725.0,
+    3265.0,
+    4921.0,
+    3455.0
+   ],
+   "page_px": [
+    4961,
+    3507
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    654.0,
+    783.8234252929688,
+    1181.0400390625,
+    829.4364013671875
+   ],
+   "clip_page": [
+    654.0,
+    783.8234252929688,
+    1181.0400390625,
+    829.4364013671875
+   ],
+   "render_size": [
+    801,
+    71
+   ],
+   "sha_mine": "4af9e079127b8408abcd5b22d23c16be607b58fcedcbe400e50f8be1eca2488d",
+   "sha_prod": "4af9e079127b8408abcd5b22d23c16be607b58fcedcbe400e50f8be1eca2488d",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 240,
+   "n_seg_naive": 240,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.1765047212111621,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 29,
+   "text_correct": 15,
+   "text_naive": 15,
+   "jaccard_correct": 0.2702702702702703,
+   "jaccard_naive": 0.2702702702702703
+  },
+  {
+   "block_id": "4VG6-CWAC-WN3",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К3",
+   "version": "v001",
+   "page_index": 7,
+   "coords_px": [
+    4970.0,
+    1601.0,
+    6931.0,
+    3219.0
+   ],
+   "page_px": [
+    10524,
+    4961
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1192.800048828125,
+    384.239990234375,
+    1663.4400634765625,
+    772.5599975585938
+   ],
+   "clip_page": [
+    1192.800048828125,
+    384.239990234375,
+    1663.4400634765625,
+    772.5599975585938
+   ],
+   "render_size": [
+    801,
+    661
+   ],
+   "sha_mine": "029f83b189135947f64ec09b4b62180cc4bfd02333ef3400bccb5253cab7ff1c",
+   "sha_prod": "029f83b189135947f64ec09b4b62180cc4bfd02333ef3400bccb5253cab7ff1c",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 823,
+   "n_seg_naive": 823,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.06443345213339603,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 62,
+   "text_correct": 13,
+   "text_naive": 13,
+   "jaccard_correct": 0.24193548387096775,
+   "jaccard_naive": 0.24193548387096775
+  },
+  {
+   "block_id": "blk_37ca5b84a2924456b787a00e8fe951db",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "СТ26_01-14-ВК-6-1-РД_V1",
+   "version": "v001",
+   "page_index": 17,
+   "coords_px": [
+    5272.0,
+    1393.0,
+    6972.0,
+    2306.0
+   ],
+   "page_px": [
+    7016,
+    4961
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1265.2349853515625,
+    334.29473876953125,
+    1673.220458984375,
+    553.398193359375
+   ],
+   "clip_page": [
+    1265.2349853515625,
+    334.29473876953125,
+    1673.220458984375,
+    553.398193359375
+   ],
+   "render_size": [
+    801,
+    431
+   ],
+   "sha_mine": "a873347b9c09ee105ba3bc5e4260ceae4fc4625aa72eadf2a9332cf48aea9024",
+   "sha_prod": "a873347b9c09ee105ba3bc5e4260ceae4fc4625aa72eadf2a9332cf48aea9024",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-6-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_37ca5b84a2924456b787a00e8fe951db.png",
+   "vs_stage02_png": {
+    "size_a": [
+     800,
+     430
+    ],
+    "size_b": [
+     801,
+     431
+    ],
+    "mean_abs_diff": 6.084372093023256,
+    "share_pixels_within_8": 0.9063255813953488,
+    "share_pixels_exact": 0.8125581395348838,
+    "ink_iou": 0.6426855251824652
+   },
+   "n_seg_correct": 0,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": NaN,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.10058772242353671,
+   "seg_inside_clip_correct": NaN,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 78,
+   "text_correct": 0,
+   "text_naive": 0,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "blk_378dbe5eb3ae4c108672c94d2f77e4a9",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К4",
+   "version": "v003",
+   "page_index": 4,
+   "coords_px": [
+    212.0,
+    3170.0,
+    2434.0,
+    3420.0
+   ],
+   "page_px": [
+    2481,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    50.869747161865234,
+    760.800048828125,
+    584.0422973632812,
+    820.800048828125
+   ],
+   "clip_page": [
+    50.869747161865234,
+    760.800048828125,
+    584.0422973632812,
+    820.800048828125
+   ],
+   "render_size": [
+    801,
+    91
+   ],
+   "sha_mine": "cc5b572093408cdc0b85f56898bb7ac885f3c1c4b1bbb814d2af8455c69e9f00",
+   "sha_prod": "cc5b572093408cdc0b85f56898bb7ac885f3c1c4b1bbb814d2af8455c69e9f00",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 382,
+   "n_seg_naive": 382,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.21083535690277264,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 16,
+   "text_correct": 14,
+   "text_naive": 14,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "6ND6-HGHR-3P4",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-СОТ-К3-6",
+   "version": "v001",
+   "page_index": 13,
+   "coords_px": [
+    261.0,
+    2986.0,
+    1199.0,
+    3398.0
+   ],
+   "page_px": [
+    4962,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    62.64631271362305,
+    716.7080688476562,
+    287.78900146484375,
+    815.5974731445312
+   ],
+   "clip_page": [
+    62.64631271362305,
+    716.7080688476562,
+    287.78900146484375,
+    815.5974731445312
+   ],
+   "render_size": [
+    801,
+    353
+   ],
+   "sha_mine": "3903a35396c3fa0515203f878f75c5725185f180facd674537e4803253614ffb",
+   "sha_prod": "3903a35396c3fa0515203f878f75c5725185f180facd674537e4803253614ffb",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 912,
+   "n_seg_naive": 912,
+   "seg_on_ink_correct": 0.9989035087719298,
+   "seg_on_ink_naive": 0.9989035087719298,
+   "ink_share_of_crop": 0.12928244793158694,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 67,
+   "text_correct": 50,
+   "text_naive": 50,
+   "jaccard_correct": 0.31343283582089554,
+   "jaccard_naive": 0.31343283582089554
+  },
+  {
+   "block_id": "blk_8c8b4cf3f7994d35a9e7f517c94151ac",
+   "rotation": 0,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "ПД-ОО542664-ВК1-1.1.2_V1",
+   "version": "v001",
+   "page_index": 18,
+   "coords_px": [
+    2719.0,
+    6292.0,
+    4920.0,
+    6958.0
+   ],
+   "page_px": [
+    4962,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    652.4942626953125,
+    1509.972412109375,
+    1180.6810302734375,
+    1669.8009033203125
+   ],
+   "clip_page": [
+    652.4942626953125,
+    1509.972412109375,
+    1180.6810302734375,
+    1669.8009033203125
+   ],
+   "render_size": [
+    801,
+    243
+   ],
+   "sha_mine": "2201ccd5381a26cdcc0e64e16d3e9d36cd1bf202806f7b9fa09c6d17f63a9257",
+   "sha_prod": "2201ccd5381a26cdcc0e64e16d3e9d36cd1bf202806f7b9fa09c6d17f63a9257",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 995,
+   "n_seg_naive": 995,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.21230149555853536,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 23,
+   "text_correct": 31,
+   "text_naive": 31,
+   "jaccard_correct": 0.13793103448275862,
+   "jaccard_naive": 0.13793103448275862
+  },
+  {
+   "block_id": "7VRL-37WN-VPF",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-КК-ПА",
+   "version": "v002",
+   "page_index": 18,
+   "coords_px": [
+    4315.0,
+    4786.0,
+    5945.0,
+    6810.0
+   ],
+   "page_px": [
+    9933,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1035.634765625,
+    1148.7491455078125,
+    1426.847900390625,
+    1634.5552978515625
+   ],
+   "clip_page": [
+    1035.634765625,
+    1148.7491455078125,
+    1426.847900390625,
+    1634.5552978515625
+   ],
+   "render_size": [
+    645,
+    801
+   ],
+   "sha_mine": "49628c9b734a88dc4240e681da90ae68b3eb4e5da1117a85ce68f63382bcd99d",
+   "sha_prod": "49628c9b734a88dc4240e681da90ae68b3eb4e5da1117a85ce68f63382bcd99d",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_7VRL-37WN-VPF.png",
+   "vs_stage02_png": {
+    "size_a": [
+     646,
+     800
+    ],
+    "size_b": [
+     645,
+     801
+    ],
+    "mean_abs_diff": 14.893676470588236,
+    "share_pixels_within_8": 0.789640092879257,
+    "share_pixels_exact": 0.7119775541795665,
+    "ink_iou": 0.4163761225567882
+   },
+   "n_seg_correct": 16945,
+   "n_seg_naive": 16945,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.15304319213386366,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 101,
+   "text_correct": 25,
+   "text_naive": 25,
+   "jaccard_correct": 0.13861386138613863,
+   "jaccard_naive": 0.13861386138613863
+  },
+  {
+   "block_id": "9EFH-AKR6-RPY",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ6-К1К2",
+   "version": "v001",
+   "page_index": 13,
+   "coords_px": [
+    5223.0,
+    2363.0,
+    6673.0,
+    3145.0
+   ],
+   "page_px": [
+    7015,
+    4961
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1253.6986083984375,
+    567.1199951171875,
+    1601.748291015625,
+    754.7999877929688
+   ],
+   "clip_page": [
+    1253.6986083984375,
+    567.1199951171875,
+    1601.748291015625,
+    754.7999877929688
+   ],
+   "render_size": [
+    801,
+    432
+   ],
+   "sha_mine": "db4b0056fe2b365e9bafa184e765dea7776332d6da7567763ead64f3dc376d20",
+   "sha_prod": "db4b0056fe2b365e9bafa184e765dea7776332d6da7567763ead64f3dc376d20",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 201,
+   "n_seg_naive": 201,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.04229377629814584,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 63,
+   "text_correct": 7,
+   "text_naive": 7,
+   "jaccard_correct": 0.140625,
+   "jaccard_naive": 0.140625
+  },
+  {
+   "block_id": "93LT-R9VP-VDW",
+   "rotation": 0,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К4",
+   "version": "v001",
+   "page_index": 12,
+   "coords_px": [
+    2596.0,
+    84.0,
+    4286.0,
+    1658.0
+   ],
+   "page_px": [
+    9932,
+    7015
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    623.1027221679688,
+    20.162874221801758,
+    1028.7435302734375,
+    397.9767150878906
+   ],
+   "clip_page": [
+    623.1027221679688,
+    20.162874221801758,
+    1028.7435302734375,
+    397.9767150878906
+   ],
+   "render_size": [
+    801,
+    746
+   ],
+   "sha_mine": "0d65d65304d0a41dbd4baaaf4e0bd15d2c040f8ab019f9788dea0ac20fb64e3d",
+   "sha_prod": "0d65d65304d0a41dbd4baaaf4e0bd15d2c040f8ab019f9788dea0ac20fb64e3d",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 798,
+   "n_seg_naive": 798,
+   "seg_on_ink_correct": 0.9974937343358395,
+   "seg_on_ink_naive": 0.9974937343358395,
+   "ink_share_of_crop": 0.07365625407918386,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 110,
+   "text_correct": 21,
+   "text_naive": 21,
+   "jaccard_correct": 0.358974358974359,
+   "jaccard_naive": 0.358974358974359
+  },
+  {
+   "block_id": "9C6P-FF3N-H4W",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К5",
+   "version": "v001",
+   "page_index": 26,
+   "coords_px": [
+    234.0,
+    60.0,
+    3010.0,
+    2654.0
+   ],
+   "page_px": [
+    4962,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    56.1656608581543,
+    14.401368141174316,
+    722.4727783203125,
+    637.0205078125
+   ],
+   "clip_page": [
+    14.401368141174316,
+    468.5272216796875,
+    637.0205078125,
+    1134.8343505859375
+   ],
+   "render_size": [
+    926,
+    865
+   ],
+   "sha_mine": "5adbd332d6d55ee14d30e08991daba5533e073575dca4426b82f64b186c3431a",
+   "sha_prod": "5adbd332d6d55ee14d30e08991daba5533e073575dca4426b82f64b186c3431a",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 2998,
+   "n_seg_naive": 1874,
+   "seg_on_ink_correct": 0.9993328885923949,
+   "seg_on_ink_naive": 0.41889007470651013,
+   "ink_share_of_crop": 0.17017940298880135,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 67,
+   "text_correct": 73,
+   "text_naive": 41,
+   "jaccard_correct": 0.1935483870967742,
+   "jaccard_naive": 0.047619047619047616,
+   "overlay": "rot90_0_9C6P-FF3N-H4"
+  },
+  {
+   "block_id": "blk_fa7b4bd449694f9d839ad2bd2e9215c2",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "version": "v002",
+   "page_index": 14,
+   "coords_px": [
+    3569.0,
+    39.0,
+    8960.0,
+    4901.0
+   ],
+   "page_px": [
+    10525,
+    4963
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    856.5599975585938,
+    9.359057426452637,
+    2150.39990234375,
+    1176.1214599609375
+   ],
+   "clip_page": [
+    9.359057426452637,
+    375.60009765625,
+    1176.1214599609375,
+    1669.43994140625
+   ],
+   "render_size": [
+    1798,
+    1622
+   ],
+   "sha_mine": "9fde6c759a1ecb0eac0f08d0d95770ef31c9dfa762000f21609c13216a290324",
+   "sha_prod": "9fde6c759a1ecb0eac0f08d0d95770ef31c9dfa762000f21609c13216a290324",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 45729,
+   "n_seg_naive": 2828,
+   "seg_on_ink_correct": 0.9978350718362528,
+   "seg_on_ink_naive": 0.015558698727015558,
+   "ink_share_of_crop": 0.0504928067766761,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 100,
+   "text_correct": 118,
+   "text_naive": 41,
+   "jaccard_correct": 0.14782608695652175,
+   "jaccard_naive": 0.03278688524590164,
+   "overlay": "rot90_1_blk_fa7b4bd4"
+  },
+  {
+   "block_id": "9H6V-VD6F-4VJ",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "KM",
+   "doc_id": "1232-ЧМ-КМ-1",
+   "version": "v001",
+   "page_index": 18,
+   "coords_px": [
+    429.0,
+    2152.0,
+    5097.0,
+    3436.0
+   ],
+   "page_px": [
+    7441,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    102.96922302246094,
+    516.529052734375,
+    1223.3896484375,
+    824.7183837890625
+   ],
+   "clip_page": [
+    516.529052734375,
+    562.6103515625,
+    824.7183837890625,
+    1683.03076171875
+   ],
+   "render_size": [
+    1557,
+    429
+   ],
+   "sha_mine": "3d624efbebbcaf76780c459eb5e763457320dbc8ebe462aa0505227e6def930b",
+   "sha_prod": "3d624efbebbcaf76780c459eb5e763457320dbc8ebe462aa0505227e6def930b",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 2578,
+   "n_seg_naive": 2145,
+   "seg_on_ink_correct": 0.9976726144297905,
+   "seg_on_ink_naive": 0.16876456876456877,
+   "ink_share_of_crop": 0.06380688461613317,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 72,
+   "text_correct": 0,
+   "text_naive": 5,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0,
+   "overlay": "rot90_2_9H6V-VD6F-4V"
+  },
+  {
+   "block_id": "6WNG-LW7M-6U7",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К4",
+   "version": "v001",
+   "page_index": 21,
+   "coords_px": [
+    3278.0,
+    630.0,
+    4914.0,
+    1024.0
+   ],
+   "page_px": [
+    4962,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    786.7992553710938,
+    151.21437072753906,
+    1179.4788818359375,
+    245.78335571289062
+   ],
+   "clip_page": [
+    151.21437072753906,
+    11.5211181640625,
+    245.78335571289062,
+    404.20074462890625
+   ],
+   "render_size": [
+    801,
+    193
+   ],
+   "sha_mine": "55fdd5eecb48cf093e220f767db39cd186cb500169dfd1b03920b9e957e4445c",
+   "sha_prod": "55fdd5eecb48cf093e220f767db39cd186cb500169dfd1b03920b9e957e4445c",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 0,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": NaN,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.10937752679616801,
+   "seg_inside_clip_correct": NaN,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 44,
+   "text_correct": 11,
+   "text_naive": 2,
+   "jaccard_correct": 0.05172413793103448,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "A6QE-C4PU-363",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-НВ V1",
+   "version": "v001",
+   "page_index": 28,
+   "coords_px": [
+    263.0,
+    161.0,
+    3424.0,
+    2371.0
+   ],
+   "page_px": [
+    3508,
+    2479
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    63.125999450683594,
+    38.64259719848633,
+    821.8380737304688,
+    569.0782470703125
+   ],
+   "clip_page": [
+    38.64259719848633,
+    20.16192626953125,
+    569.0782470703125,
+    778.8740234375
+   ],
+   "render_size": [
+    1055,
+    738
+   ],
+   "sha_mine": "f3c9985f90cb11c533b43660a318c3722316e023d6cc6dfe06d1ba33c723905f",
+   "sha_prod": "f3c9985f90cb11c533b43660a318c3722316e023d6cc6dfe06d1ba33c723905f",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 0,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": NaN,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.16675271965989802,
+   "seg_inside_clip_correct": NaN,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 126,
+   "text_correct": 0,
+   "text_naive": 0,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "93VP-WKRK-DGC",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К4",
+   "version": "v001",
+   "page_index": 24,
+   "coords_px": [
+    4100.0,
+    2464.0,
+    4886.0,
+    2790.0
+   ],
+   "page_px": [
+    4962,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    984.0991821289062,
+    591.4161987304688,
+    1172.7581787109375,
+    669.6636352539062
+   ],
+   "clip_page": [
+    591.4161987304688,
+    18.2418212890625,
+    669.6636352539062,
+    206.90081787109375
+   ],
+   "render_size": [
+    801,
+    333
+   ],
+   "sha_mine": "c63c55381b4c04ee86c8e962a915a7629a36ee4f823abc5bdf33f79dde409e1c",
+   "sha_prod": "c63c55381b4c04ee86c8e962a915a7629a36ee4f823abc5bdf33f79dde409e1c",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 3,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.07322678483727173,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 43,
+   "text_correct": 2,
+   "text_naive": 0,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "blk_8d21b6cd7a2e43968fafbed420c3d731",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "version": "v002",
+   "page_index": 13,
+   "coords_px": [
+    10057.0,
+    154.0,
+    11516.0,
+    3238.0
+   ],
+   "page_px": [
+    13031,
+    6140
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    2758.32373046875,
+    42.23713302612305,
+    3158.482421875,
+    888.0768432617188
+   ],
+   "clip_page": [
+    42.23713302612305,
+    415.517578125,
+    888.0768432617188,
+    815.67626953125
+   ],
+   "render_size": [
+    556,
+    1176
+   ],
+   "sha_mine": "5bcfdbc0d52eabfd1c6aed0ac7027fabcf221b997f5bdf36421f8553f158c7a3",
+   "sha_prod": "5bcfdbc0d52eabfd1c6aed0ac7027fabcf221b997f5bdf36421f8553f158c7a3",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 3289,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.06097214065482308,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 86,
+   "text_correct": 36,
+   "text_naive": 0,
+   "jaccard_correct": 0.06666666666666667,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "46UP-RFXN-ARK",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "KM",
+   "doc_id": "1232-ЧМ-КМ-1",
+   "version": "v001",
+   "page_index": 1,
+   "coords_px": [
+    7685.0,
+    6308.0,
+    9877.0,
+    6960.0
+   ],
+   "page_px": [
+    9933,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1844.4619140625,
+    1514.0638427734375,
+    2370.5595703125,
+    1670.5587158203125
+   ],
+   "clip_page": [
+    1514.0638427734375,
+    13.4404296875,
+    1670.5587158203125,
+    539.5380859375
+   ],
+   "render_size": [
+    801,
+    239
+   ],
+   "sha_mine": "0d5de28069a51eb5272f1bef45e6bb5d88818e4ad6aec343bb440d0c8b455569",
+   "sha_prod": "0d5de28069a51eb5272f1bef45e6bb5d88818e4ad6aec343bb440d0c8b455569",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 177,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.22871515208499835,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 61,
+   "text_correct": 31,
+   "text_naive": 0,
+   "jaccard_correct": 0.6285714285714286,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "77UW-X7DF-MHA",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К4",
+   "version": "v001",
+   "page_index": 26,
+   "coords_px": [
+    232.0,
+    48.0,
+    3992.0,
+    2020.0
+   ],
+   "page_px": [
+    4962,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    55.685611724853516,
+    11.52109432220459,
+    958.176513671875,
+    484.8460693359375
+   ],
+   "clip_page": [
+    11.52109432220459,
+    232.823486328125,
+    484.8460693359375,
+    1135.3143310546875
+   ],
+   "render_size": [
+    1254,
+    658
+   ],
+   "sha_mine": "05cc369abfbf2e481d18499d6bf12c5183bf9ea3ea697947ce4e2efc8cb3f318",
+   "sha_prod": "05cc369abfbf2e481d18499d6bf12c5183bf9ea3ea697947ce4e2efc8cb3f318",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 2144,
+   "n_seg_naive": 926,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.8218142548596112,
+   "ink_share_of_crop": 0.21935035848809645,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 70,
+   "text_correct": 24,
+   "text_naive": 30,
+   "jaccard_correct": 0.19230769230769232,
+   "jaccard_naive": 0.06474820143884892
+  },
+  {
+   "block_id": "4N4C-HPWQ-MCT",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-НВ V1",
+   "version": "v001",
+   "page_index": 9,
+   "coords_px": [
+    2019.0,
+    4267.0,
+    3995.0,
+    6031.0
+   ],
+   "page_px": [
+    14024,
+    6605
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    484.5772705078125,
+    1024.2349853515625,
+    958.8341674804688,
+    1447.6590576171875
+   ],
+   "clip_page": [
+    1024.2349853515625,
+    2407.045654296875,
+    1447.6590576171875,
+    2881.302734375
+   ],
+   "render_size": [
+    801,
+    715
+   ],
+   "sha_mine": "7370a611ea1bd26a458f460d012d3e6fdee8c1817b0cddba0a45613f92ecf85c",
+   "sha_prod": "7370a611ea1bd26a458f460d012d3e6fdee8c1817b0cddba0a45613f92ecf85c",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 6267,
+   "n_seg_naive": 58,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.034482758620689655,
+   "ink_share_of_crop": 0.08943191639820854,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 122,
+   "text_correct": 26,
+   "text_naive": 10,
+   "jaccard_correct": 0.04918032786885246,
+   "jaccard_naive": 0.007407407407407408
+  },
+  {
+   "block_id": "6NYJ-QWKL-R6G",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "KM",
+   "doc_id": "1232-ЧМ-КМ-1",
+   "version": "v001",
+   "page_index": 22,
+   "coords_px": [
+    5191.0,
+    2800.0,
+    7389.0,
+    3450.0
+   ],
+   "page_px": [
+    7441,
+    3508
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1245.95166015625,
+    672.0638427734375,
+    1773.5189208984375,
+    828.0786743164062
+   ],
+   "clip_page": [
+    672.0638427734375,
+    12.4810791015625,
+    828.0786743164062,
+    540.04833984375
+   ],
+   "render_size": [
+    801,
+    237
+   ],
+   "sha_mine": "fc04b2fdf7472e22586fb4a9714a05cabf7a25bdac5a4193b1d9f1c206684a14",
+   "sha_prod": "fc04b2fdf7472e22586fb4a9714a05cabf7a25bdac5a4193b1d9f1c206684a14",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 178,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.21742336846873897,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 58,
+   "text_correct": 30,
+   "text_naive": 0,
+   "jaccard_correct": 0.6119402985074627,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "blk_67633b17aa9d46dea652c99bad9743a6",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "version": "v001",
+   "page_index": 7,
+   "coords_px": [
+    578.0,
+    47.0,
+    7149.0,
+    4111.0
+   ],
+   "page_px": [
+    10525,
+    4963
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    138.72000122070312,
+    11.278863906860352,
+    1715.760009765625,
+    986.5405883789062
+   ],
+   "clip_page": [
+    11.278863906860352,
+    810.239990234375,
+    986.5405883789062,
+    2387.280029296875
+   ],
+   "render_size": [
+    2191,
+    1356
+   ],
+   "sha_mine": "fcfca24e2aa4d4bed2a0981735f3d8fe286f1df2fe84d068b8f5e4ddb84656c0",
+   "sha_prod": "fcfca24e2aa4d4bed2a0981735f3d8fe286f1df2fe84d068b8f5e4ddb84656c0",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 71858,
+   "n_seg_naive": 1285,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.11750972762645914,
+   "ink_share_of_crop": 0.14401433054773552,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 137,
+   "text_correct": 128,
+   "text_naive": 202,
+   "jaccard_correct": 0.20567375886524822,
+   "jaccard_naive": 0.04918032786885246
+  },
+  {
+   "block_id": "blk_b8b77c25d6304badaa26c7c64f05f8a5",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "version": "v002",
+   "page_index": 14,
+   "coords_px": [
+    8266.0,
+    4248.0,
+    10479.0,
+    4909.0
+   ],
+   "page_px": [
+    10525,
+    4963
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1983.8399658203125,
+    1019.4172973632812,
+    2514.9599609375,
+    1178.041259765625
+   ],
+   "clip_page": [
+    1019.4172973632812,
+    11.0400390625,
+    1178.041259765625,
+    542.1600341796875
+   ],
+   "render_size": [
+    801,
+    240
+   ],
+   "sha_mine": "1baa90f2bcf16734a23ff8c4d3c1b4674c8408577e2db29fa6e82d12b38ef609",
+   "sha_prod": "1baa90f2bcf16734a23ff8c4d3c1b4674c8408577e2db29fa6e82d12b38ef609",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 238,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.19053266749895964,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 23,
+   "text_correct": 22,
+   "text_naive": 0,
+   "jaccard_correct": 0.03125,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "blk_b513cf5382224266986ff5791d18a7b4",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "AR",
+   "doc_id": "ПД-00542664-АР1.2-2_V1",
+   "version": "v001",
+   "page_index": 25,
+   "coords_px": [
+    7690.0,
+    6305.0,
+    9878.0,
+    6977.0
+   ],
+   "page_px": [
+    9922,
+    7017
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1845.5146484375,
+    1513.1280517578125,
+    2370.6103515625,
+    1674.400390625
+   ],
+   "clip_page": [
+    1513.1280517578125,
+    10.5595703125,
+    1674.400390625,
+    535.6552734375
+   ],
+   "render_size": [
+    801,
+    247
+   ],
+   "sha_mine": "0d7ad299a2219ed2c49326ca43118ce4c1b0c33a642bf7e478e155b7d7801197",
+   "sha_prod": "0d7ad299a2219ed2c49326ca43118ce4c1b0c33a642bf7e478e155b7d7801197",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 2425,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.16700278498031307,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 21,
+   "text_correct": 35,
+   "text_naive": 0,
+   "jaccard_correct": 0.10588235294117647,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "44WA-LLNT-N93",
+   "rotation": 90,
+   "rotation_source": "pdf",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К5",
+   "version": "v001",
+   "page_index": 27,
+   "coords_px": [
+    231.0,
+    3424.0,
+    1863.0,
+    4748.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    55.44526672363281,
+    821.8428344726562,
+    447.1624755859375,
+    1139.634765625
+   ],
+   "clip_page": [
+    821.8428344726562,
+    1236.8375244140625,
+    1139.634765625,
+    1628.5546875
+   ],
+   "render_size": [
+    801,
+    650
+   ],
+   "sha_mine": "89c8b9f3fd4d2d728c3a929cab4770f7d66bce234c3e59fa199c23a6da8da673",
+   "sha_prod": "89c8b9f3fd4d2d728c3a929cab4770f7d66bce234c3e59fa199c23a6da8da673",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 211,
+   "n_seg_naive": 392,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.5969387755102041,
+   "ink_share_of_crop": 0.4167847882454624,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 83,
+   "text_correct": 31,
+   "text_naive": 60,
+   "jaccard_correct": 0.18823529411764706,
+   "jaccard_naive": 0.09523809523809523
+  },
+  {
+   "block_id": "blk_097b59dcf7ab4760beef7db1a82606d7",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "AR",
+   "doc_id": "ПД-00542664-АР1.2-2_V1",
+   "version": "v001",
+   "page_index": 27,
+   "coords_px": [
+    256.0,
+    114.0,
+    4307.0,
+    6953.0
+   ],
+   "page_px": [
+    9922,
+    7017
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    61.43716049194336,
+    27.35869789123535,
+    1033.6322021484375,
+    1668.640625
+   ],
+   "clip_page": [
+    27.35869789123535,
+    1347.5377197265625,
+    1668.640625,
+    2319.732666015625
+   ],
+   "render_size": [
+    1351,
+    2281
+   ],
+   "sha_mine": "b3832ff71e252a1f489b91f0ba2c7373ee0400024c75170364a8765ccf7a3b2d",
+   "sha_prod": "b3832ff71e252a1f489b91f0ba2c7373ee0400024c75170364a8765ccf7a3b2d",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_097b59dcf7ab4760beef7db1a82606d7.png",
+   "vs_stage02_png": {
+    "size_a": [
+     1351,
+     2280
+    ],
+    "size_b": [
+     1351,
+     2281
+    ],
+    "mean_abs_diff": 2.6119170984455957,
+    "share_pixels_within_8": 0.9356792239666524,
+    "share_pixels_exact": 0.893823288791928,
+    "ink_iou": 0.8348917063892646
+   },
+   "n_seg_correct": 11142,
+   "n_seg_naive": 2409,
+   "seg_on_ink_correct": 0.9998204990127446,
+   "seg_on_ink_naive": 0.026151930261519303,
+   "ink_share_of_crop": 0.062120675707117434,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 145,
+   "text_correct": 390,
+   "text_naive": 132,
+   "jaccard_correct": 0.18045112781954886,
+   "jaccard_naive": 0.07633587786259542
+  },
+  {
+   "block_id": "blk_18bda713d99d499a9de2636866006a16",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "AR",
+   "doc_id": "ПД-00542664-АР1.2-2_V1",
+   "version": "v001",
+   "page_index": 8,
+   "coords_px": [
+    256.0,
+    43.0,
+    4350.0,
+    6996.0
+   ],
+   "page_px": [
+    9922,
+    7017
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    61.43716049194336,
+    10.31950855255127,
+    1043.9517822265625,
+    1678.9600830078125
+   ],
+   "clip_page": [
+    10.31950855255127,
+    1337.2181396484375,
+    1678.9600830078125,
+    2319.732666015625
+   ],
+   "render_size": [
+    1365,
+    2318
+   ],
+   "sha_mine": "53b0087d85e10551dd35633fbb8977a294df271092da68dbaf5000efd68a82bb",
+   "sha_prod": "53b0087d85e10551dd35633fbb8977a294df271092da68dbaf5000efd68a82bb",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_18bda713d99d499a9de2636866006a16.png",
+   "vs_stage02_png": {
+    "size_a": [
+     1365,
+     2318
+    ],
+    "size_b": [
+     1365,
+     2318
+    ],
+    "mean_abs_diff": 2.6019478077286533,
+    "share_pixels_within_8": 0.9208310814868191,
+    "share_pixels_exact": 0.8726491512513945,
+    "ink_iou": 0.7487655120884695
+   },
+   "n_seg_correct": 15166,
+   "n_seg_naive": 3040,
+   "seg_on_ink_correct": 0.9999340630357378,
+   "seg_on_ink_naive": 0.13486842105263158,
+   "ink_share_of_crop": 0.0859462654113215,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 146,
+   "text_correct": 750,
+   "text_naive": 180,
+   "jaccard_correct": 0.10434782608695652,
+   "jaccard_naive": 0.039711191335740074
+  },
+  {
+   "block_id": "blk_10bd42c3a2134a758fc7e5d9c99b9db4",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "version": "v001",
+   "page_index": 10,
+   "coords_px": [
+    3972.0,
+    14.0,
+    8322.0,
+    6132.0
+   ],
+   "page_px": [
+    9934,
+    7017
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    953.2160034179688,
+    3.3598403930664062,
+    1997.14599609375,
+    1471.610107421875
+   ],
+   "clip_page": [
+    3.3598403930664062,
+    386.85400390625,
+    1471.610107421875,
+    1430.783935546875
+   ],
+   "render_size": [
+    1451,
+    2040
+   ],
+   "sha_mine": "de9e6b842bbce4a4b4cbf1afdfa9b8324faa076d9b3e9d35e23c58eb9cd6a81c",
+   "sha_prod": "de9e6b842bbce4a4b4cbf1afdfa9b8324faa076d9b3e9d35e23c58eb9cd6a81c",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 41105,
+   "n_seg_naive": 14558,
+   "seg_on_ink_correct": 0.9982240603332928,
+   "seg_on_ink_naive": 0.06608050556395109,
+   "ink_share_of_crop": 0.0346569640950798,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 115,
+   "text_correct": 106,
+   "text_naive": 59,
+   "jaccard_correct": 0.08396946564885496,
+   "jaccard_naive": 0.027210884353741496
+  },
+  {
+   "block_id": "blk_767f40a0574b449094b5ce6e8c69fbe7",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "version": "v001",
+   "page_index": 18,
+   "coords_px": [
+    310.0,
+    62.0,
+    5253.0,
+    5937.0
+   ],
+   "page_px": [
+    13031,
+    6140
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    85.02340698242188,
+    17.004560470581055,
+    1440.7353515625,
+    1628.32373046875
+   ],
+   "clip_page": [
+    17.004560470581055,
+    2133.2646484375,
+    1628.32373046875,
+    3488.9765625
+   ],
+   "render_size": [
+    1884,
+    2239
+   ],
+   "sha_mine": "84a3b135c3be2ac717daaa0bbc645c587503ed3fdf818e4be6f1402ded7152b7",
+   "sha_prod": "84a3b135c3be2ac717daaa0bbc645c587503ed3fdf818e4be6f1402ded7152b7",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 48375,
+   "n_seg_naive": 27122,
+   "seg_on_ink_correct": 0.9992558139534884,
+   "seg_on_ink_naive": 0.12771919474964974,
+   "ink_share_of_crop": 0.08659248470228122,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 137,
+   "text_correct": 155,
+   "text_naive": 300,
+   "jaccard_correct": 0.11585365853658537,
+   "jaccard_naive": 0.05357142857142857
+  },
+  {
+   "block_id": "blk_0a56222fa70644a0add7cbd9007d46e6",
+   "rotation": 90,
+   "rotation_source": "result_json",
+   "discipline": "EOM",
+   "doc_id": "ПД-00260568-ЭМ_2-1.1",
+   "version": "v001",
+   "page_index": 44,
+   "coords_px": [
+    2662.0,
+    3241.0,
+    4884.0,
+    3419.0
+   ],
+   "page_px": [
+    4963,
+    3509
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    638.8156127929688,
+    777.6921997070312,
+    1172.0418701171875,
+    820.4041137695312
+   ],
+   "clip_page": [
+    777.6921997070312,
+    18.9581298828125,
+    820.4041137695312,
+    552.1843872070312
+   ],
+   "render_size": [
+    801,
+    65
+   ],
+   "sha_mine": "05f0e0abc048322a6dcdcd79b334ca19981fb476577c3f485d998802ae29a39d",
+   "sha_prod": "05f0e0abc048322a6dcdcd79b334ca19981fb476577c3f485d998802ae29a39d",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 132,
+   "n_seg_naive": 11,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.15524824738307885,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 17,
+   "text_correct": 5,
+   "text_naive": 1,
+   "jaccard_correct": 0.125,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "7UFM-U4YY-N3L",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+   "version": "v001",
+   "page_index": 13,
+   "coords_px": [
+    3534.0,
+    3470.0,
+    4870.0,
+    4790.0
+   ],
+   "page_px": [
+    4962,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    848.2454833984375,
+    832.879150390625,
+    1168.917724609375,
+    1149.709228515625
+   ],
+   "clip_page": [
+    534.290771484375,
+    848.2454833984375,
+    851.120849609375,
+    1168.917724609375
+   ],
+   "render_size": [
+    801,
+    792
+   ],
+   "sha_mine": "60d3c696e73bf71e58ec434333d5853aee97a9763d20740c91aaf5ff3c176ac7",
+   "sha_prod": "60d3c696e73bf71e58ec434333d5853aee97a9763d20740c91aaf5ff3c176ac7",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 531,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.13390458896076873,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 109,
+   "text_correct": 69,
+   "text_naive": 53,
+   "jaccard_correct": 0.38181818181818183,
+   "jaccard_naive": 0.00684931506849315,
+   "overlay": "rot270_0_7UFM-U4YY-N3"
+  },
+  {
+   "block_id": "6LHK-9TFX-R6E",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "KM",
+   "doc_id": "Mockup 4",
+   "version": "v001",
+   "page_index": 18,
+   "coords_px": [
+    227.0,
+    49.0,
+    4860.0,
+    3490.0
+   ],
+   "page_px": [
+    4962,
+    3508
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    54.48548889160156,
+    11.761116981506348,
+    1166.517578125,
+    837.6795654296875
+   ],
+   "clip_page": [
+    4.3204345703125,
+    54.48548889160156,
+    830.2388916015625,
+    1166.517578125
+   ],
+   "render_size": [
+    1546,
+    1148
+   ],
+   "sha_mine": "e785627e7ec2df45681019672ec2d864369789693eb644c09dccfe4a1afa58eb",
+   "sha_prod": "e785627e7ec2df45681019672ec2d864369789693eb644c09dccfe4a1afa58eb",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 18033,
+   "n_seg_naive": 16838,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.2093479035514907,
+   "ink_share_of_crop": 0.048002375468219664,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 113,
+   "text_correct": 48,
+   "text_naive": 20,
+   "jaccard_correct": 0.25268817204301075,
+   "jaccard_naive": 0.22556390977443608,
+   "overlay": "rot270_1_6LHK-9TFX-R6"
+  },
+  {
+   "block_id": "6DAV-94TV-A7W",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К5",
+   "version": "v002",
+   "page_index": 17,
+   "coords_px": [
+    199.0,
+    39.0,
+    3516.0,
+    5892.0
+   ],
+   "page_px": [
+    4962,
+    7016
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    47.76481246948242,
+    9.360889434814453,
+    843.925048828125,
+    1414.21435546875
+   ],
+   "clip_page": [
+    269.78564453125,
+    47.76481246948242,
+    1674.63916015625,
+    843.925048828125
+   ],
+   "render_size": [
+    1107,
+    1952
+   ],
+   "sha_mine": "134165eb3be091a9f3824a5c086c253162130a68a9c3b7a2b717f0d31632d952",
+   "sha_prod": "134165eb3be091a9f3824a5c086c253162130a68a9c3b7a2b717f0d31632d952",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/03_analysis/latest/blocks_stage02_100/block_6DAV-94TV-A7W.png",
+   "vs_stage02_png": {
+    "size_a": [
+     1112,
+     1957
+    ],
+    "size_b": [
+     1107,
+     1952
+    ],
+    "mean_abs_diff": 20.080848862044753,
+    "share_pixels_within_8": 0.8209016333177709,
+    "share_pixels_exact": 0.7731065020237259,
+    "ink_iou": 0.10426790072679179
+   },
+   "n_seg_correct": 18337,
+   "n_seg_naive": 19109,
+   "seg_on_ink_correct": 0.9982003599280144,
+   "seg_on_ink_naive": 0.16630906902506673,
+   "ink_share_of_crop": 0.09766695173782339,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 85,
+   "text_correct": 196,
+   "text_naive": 207,
+   "jaccard_correct": 0.20279720279720279,
+   "jaccard_naive": 0.1,
+   "overlay": "rot270_2_6DAV-94TV-A7"
+  },
+  {
+   "block_id": "6QXJ-93CK-4LJ",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "version": "v002",
+   "page_index": 31,
+   "coords_px": [
+    4792.0,
+    4252.0,
+    6952.0,
+    4896.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1150.1893310546875,
+    1020.5828247070312,
+    1668.6385498046875,
+    1175.158447265625
+   ],
+   "clip_page": [
+    15.841552734375,
+    1150.1893310546875,
+    170.41717529296875,
+    1668.6385498046875
+   ],
+   "render_size": [
+    801,
+    240
+   ],
+   "sha_mine": "bf07297a7015229be17b35ffa91c78ac27d23e29f5fb4b80cf3a76f834233fce",
+   "sha_prod": "bf07297a7015229be17b35ffa91c78ac27d23e29f5fb4b80cf3a76f834233fce",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 980,
+   "n_seg_naive": 2,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.14611423220973782,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 63,
+   "text_correct": 31,
+   "text_naive": 0,
+   "jaccard_correct": 0.55,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "6WQ7-NPGV-DGQ",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "version": "v002",
+   "page_index": 126,
+   "coords_px": [
+    245.0,
+    3028.0,
+    2235.0,
+    4894.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    58.80558776855469,
+    726.793212890625,
+    536.4509887695312,
+    1174.6783447265625
+   ],
+   "clip_page": [
+    16.3216552734375,
+    58.80558776855469,
+    464.206787109375,
+    536.4509887695312
+   ],
+   "render_size": [
+    801,
+    751
+   ],
+   "sha_mine": "3370b1602e622b4f9e3638b02cc80fc9927ffc6f5e8b1d6ad1ecee629ad11e53",
+   "sha_prod": "3370b1602e622b4f9e3638b02cc80fc9927ffc6f5e8b1d6ad1ecee629ad11e53",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 840,
+   "n_seg_naive": 1763,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.07203630175836642,
+   "ink_share_of_crop": 0.07390894537620252,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 87,
+   "text_correct": 94,
+   "text_naive": 40,
+   "jaccard_correct": 0.3707865168539326,
+   "jaccard_naive": 0.04929577464788732
+  },
+  {
+   "block_id": "WDA3-RGHU-QTL",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "version": "v001",
+   "page_index": 29,
+   "coords_px": [
+    828.0,
+    28.0,
+    1272.0,
+    882.0
+   ],
+   "page_px": [
+    3508,
+    2479
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    198.73887634277344,
+    6.720451831817627,
+    305.30902099609375,
+    211.69422912597656
+   ],
+   "clip_page": [
+    383.3057861328125,
+    198.73887634277344,
+    588.279541015625,
+    305.30902099609375
+   ],
+   "render_size": [
+    417,
+    801
+   ],
+   "sha_mine": "ca324b496e124b30da38456ddc49bf7a02ed6b39f40f25cb6afd0da56f6488e2",
+   "sha_prod": "ca324b496e124b30da38456ddc49bf7a02ed6b39f40f25cb6afd0da56f6488e2",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 335,
+   "n_seg_naive": 2200,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.14045454545454544,
+   "ink_share_of_crop": 0.07997796519338836,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 77,
+   "text_correct": 26,
+   "text_naive": 13,
+   "jaccard_correct": 0.3116883116883117,
+   "jaccard_naive": 0.034482758620689655
+  },
+  {
+   "block_id": "4DWV-4YAJ-Q3V",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ2-К1 V1",
+   "version": "v001",
+   "page_index": 11,
+   "coords_px": [
+    563.0,
+    4623.0,
+    6254.0,
+    9133.0
+   ],
+   "page_px": [
+    7016,
+    9933
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    135.13284301757812,
+    1109.5572509765625,
+    1501.1026611328125,
+    2191.99365234375
+   ],
+   "clip_page": [
+    192.00634765625,
+    135.13284301757812,
+    1274.4427490234375,
+    1501.1026611328125
+   ],
+   "render_size": [
+    1898,
+    1504
+   ],
+   "sha_mine": "7d7d74a96c3c824c7c2afa334121c32e40e84af20c57c642671e51f134e3234f",
+   "sha_prod": "7d7d74a96c3c824c7c2afa334121c32e40e84af20c57c642671e51f134e3234f",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 18438,
+   "n_seg_naive": 4296,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.052839851024208566,
+   "ink_share_of_crop": 0.08828827377082259,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 70,
+   "text_correct": 210,
+   "text_naive": 23,
+   "jaccard_correct": 0.08152173913043478,
+   "jaccard_naive": 0.20833333333333334
+  },
+  {
+   "block_id": "6WGQ-K739-UUU",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "version": "v002",
+   "page_index": 130,
+   "coords_px": [
+    245.0,
+    43.0,
+    3003.0,
+    2586.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    58.80558776855469,
+    10.321040153503418,
+    720.7885131835938,
+    620.7025146484375
+   ],
+   "clip_page": [
+    570.2974853515625,
+    58.80558776855469,
+    1180.678955078125,
+    720.7885131835938
+   ],
+   "render_size": [
+    921,
+    849
+   ],
+   "sha_mine": "cb384eaf9c18ae98e0f246b415901a989791365f6dd6a096533fe3bfdf024784",
+   "sha_prod": "cb384eaf9c18ae98e0f246b415901a989791365f6dd6a096533fe3bfdf024784",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 5998,
+   "n_seg_naive": 5636,
+   "seg_on_ink_correct": 0.9824941647215738,
+   "seg_on_ink_naive": 0.045067423704755145,
+   "ink_share_of_crop": 0.11728942141805714,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 86,
+   "text_correct": 57,
+   "text_naive": 137,
+   "jaccard_correct": 0.16304347826086957,
+   "jaccard_naive": 0.034482758620689655
+  },
+  {
+   "block_id": "blk_d222a920606f4cd3a1fec702329d1747",
+   "rotation": 270,
+   "rotation_source": "result_json",
+   "discipline": "SS",
+   "doc_id": "ПД-00542664-СОУЭ-4_V1",
+   "version": "v001",
+   "page_index": 24,
+   "coords_px": [
+    223.0,
+    57.0,
+    6970.0,
+    8226.0
+   ],
+   "page_px": [
+    7017,
+    9934
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    53.5174560546875,
+    13.679081916809082,
+    1672.7205810546875,
+    1974.1075439453125
+   ],
+   "clip_page": [
+    409.8924560546875,
+    53.5174560546875,
+    2370.32080078125,
+    1672.7205810546875
+   ],
+   "render_size": [
+    2250,
+    2724
+   ],
+   "sha_mine": "0263ce93f03adb671ef0af56e25fe859059644137fddf5235b1acc8cd166c659",
+   "sha_prod": "0263ce93f03adb671ef0af56e25fe859059644137fddf5235b1acc8cd166c659",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "stage02_png": "projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d222a920606f4cd3a1fec702329d1747.png",
+   "vs_stage02_png": {
+    "size_a": [
+     2249,
+     2724
+    ],
+    "size_b": [
+     2250,
+     2724
+    ],
+    "mean_abs_diff": 2.411799925435942,
+    "share_pixels_within_8": 0.960810776399888,
+    "share_pixels_exact": 0.9425156489847992,
+    "ink_iou": 0.5923437448788962
+   },
+   "n_seg_correct": 5887,
+   "n_seg_naive": 49880,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.010184442662389735,
+   "ink_share_of_crop": 0.0336436612824278,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 154,
+   "text_correct": 288,
+   "text_naive": 197,
+   "jaccard_correct": 0.22440944881889763,
+   "jaccard_naive": 0.16776315789473684
+  },
+  {
+   "block_id": "76C6-4WPX-3R4",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "version": "v002",
+   "page_index": 127,
+   "coords_px": [
+    4046.0,
+    59.0,
+    6820.0,
+    1695.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    971.1322631835938,
+    14.161426544189453,
+    1636.95556640625,
+    406.84100341796875
+   ],
+   "clip_page": [
+    784.1589965820312,
+    971.1322631835938,
+    1176.838623046875,
+    1636.95556640625
+   ],
+   "render_size": [
+    926,
+    547
+   ],
+   "sha_mine": "dd296d1b23b0c1f751926dbf484f8022c79b1899e7613f3e6e2db118b5438d83",
+   "sha_prod": "dd296d1b23b0c1f751926dbf484f8022c79b1899e7613f3e6e2db118b5438d83",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 1839,
+   "n_seg_naive": 899,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.12013348164627363,
+   "ink_share_of_crop": 0.07464828773478743,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 67,
+   "text_correct": 58,
+   "text_naive": 4,
+   "jaccard_correct": 0.13725490196078433,
+   "jaccard_naive": 0.014492753623188406
+  },
+  {
+   "block_id": "A3GR-YE9L-DVE",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "version": "v001",
+   "page_index": 15,
+   "coords_px": [
+    1446.0,
+    1608.0,
+    1868.0,
+    2364.0
+   ],
+   "page_px": [
+    3508,
+    2479
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    347.0729675292969,
+    385.9459533691406,
+    448.36260986328125,
+    567.3981323242188
+   ],
+   "clip_page": [
+    27.60186767578125,
+    347.0729675292969,
+    209.05404663085938,
+    448.36260986328125
+   ],
+   "render_size": [
+    447,
+    801
+   ],
+   "sha_mine": "2522fbd8009d5cd2e6a201af36302005a51335b93452a287c9adfd097c39aecc",
+   "sha_prod": "2522fbd8009d5cd2e6a201af36302005a51335b93452a287c9adfd097c39aecc",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 50,
+   "n_seg_naive": 243,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.43621399176954734,
+   "ink_share_of_crop": 0.05521621463104006,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 62,
+   "text_correct": 5,
+   "text_naive": 5,
+   "jaccard_correct": 0.08064516129032258,
+   "jaccard_naive": 0.02857142857142857
+  },
+  {
+   "block_id": "4WYD-LL7L-WMF",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К5",
+   "version": "v001",
+   "page_index": 13,
+   "coords_px": [
+    3292.0,
+    234.0,
+    4002.0,
+    1364.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    790.1550903320312,
+    56.1656608581543,
+    960.5712890625,
+    327.3929748535156
+   ],
+   "clip_page": [
+    863.6070556640625,
+    790.1550903320312,
+    1134.8343505859375,
+    960.5712890625
+   ],
+   "render_size": [
+    504,
+    801
+   ],
+   "sha_mine": "4311e77491f2c286645528bdedf202bedab3ed385ba3ebaf2787b4e98f79a40e",
+   "sha_prod": "4311e77491f2c286645528bdedf202bedab3ed385ba3ebaf2787b4e98f79a40e",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 227,
+   "n_seg_naive": 1,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.0,
+   "ink_share_of_crop": 0.09905772546221984,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 66,
+   "text_correct": 15,
+   "text_naive": 0,
+   "jaccard_correct": 0.1,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "6GXD-W3WG-U3N",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К6",
+   "version": "v002",
+   "page_index": 64,
+   "coords_px": [
+    248.0,
+    60.0,
+    4276.0,
+    6002.0
+   ],
+   "page_px": [
+    9933,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    59.521995544433594,
+    14.401368141174316,
+    1026.2744140625,
+    1440.6168212890625
+   ],
+   "clip_page": [
+    243.3831787109375,
+    59.521995544433594,
+    1669.5986328125,
+    1026.2744140625
+   ],
+   "render_size": [
+    1344,
+    1981
+   ],
+   "sha_mine": "4d2397925fb1340737c6e19f5879366dba3fdb26681c88fb8461944b5c105bfd",
+   "sha_prod": "4d2397925fb1340737c6e19f5879366dba3fdb26681c88fb8461944b5c105bfd",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 8791,
+   "n_seg_naive": 10081,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.2468009126078762,
+   "ink_share_of_crop": 0.12568057258238985,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 75,
+   "text_correct": 118,
+   "text_naive": 118,
+   "jaccard_correct": 0.19444444444444445,
+   "jaccard_naive": 0.09448818897637795
+  },
+  {
+   "block_id": "74R7-H9CC-4HY",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К4",
+   "version": "v001",
+   "page_index": 12,
+   "coords_px": [
+    518.0,
+    484.0,
+    2914.0,
+    1588.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    124.3318099975586,
+    116.17170715332031,
+    699.4264526367188,
+    381.1584167480469
+   ],
+   "clip_page": [
+    809.841552734375,
+    124.3318099975586,
+    1074.8282470703125,
+    699.4264526367188
+   ],
+   "render_size": [
+    801,
+    370
+   ],
+   "sha_mine": "cce4308e8ff10582b8e063ade2300aeb2677a9acfb0b5b84a17c1b394c5b783f",
+   "sha_prod": "cce4308e8ff10582b8e063ade2300aeb2677a9acfb0b5b84a17c1b394c5b783f",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 276,
+   "n_seg_naive": 48,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.1875,
+   "ink_share_of_crop": 0.04860815872051827,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 92,
+   "text_correct": 21,
+   "text_naive": 5,
+   "jaccard_correct": 0.16161616161616163,
+   "jaccard_naive": 0.010416666666666666
+  },
+  {
+   "block_id": "blk_e1f55d21973b4bc8a3a2e2d37ff63559",
+   "rotation": 270,
+   "rotation_source": "result_json",
+   "discipline": "EOM",
+   "doc_id": "ПД-00542664-ЭН_(АХП)_2-3_V1",
+   "version": "v001",
+   "page_index": 8,
+   "coords_px": [
+    5175.0,
+    2790.0,
+    7388.0,
+    3455.0
+   ],
+   "page_px": [
+    7442,
+    3509
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1241.9443359375,
+    669.4727783203125,
+    1773.04052734375,
+    829.04248046875
+   ],
+   "clip_page": [
+    12.95751953125,
+    1241.9443359375,
+    172.5272216796875,
+    1773.04052734375
+   ],
+   "render_size": [
+    801,
+    241
+   ],
+   "sha_mine": "a32dad521506a6f61e79374b18805a66d4585c6c6895266371915c42ea3f87d2",
+   "sha_prod": "a32dad521506a6f61e79374b18805a66d4585c6c6895266371915c42ea3f87d2",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 31419,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.19947575903564527,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 25,
+   "text_correct": 34,
+   "text_naive": 0,
+   "jaccard_correct": 0.15294117647058825,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "7CKK-7FJR-3U7",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ1.2-ПА V1",
+   "version": "v001",
+   "page_index": 5,
+   "coords_px": [
+    5003.0,
+    6665.0,
+    10981.0,
+    9777.0
+   ],
+   "page_px": [
+    14041,
+    9933
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1200.7769775390625,
+    1599.6536865234375,
+    2635.565185546875,
+    2346.558837890625
+   ],
+   "clip_page": [
+    37.441162109375,
+    1200.7769775390625,
+    784.3463134765625,
+    2635.565185546875
+   ],
+   "render_size": [
+    1994,
+    1039
+   ],
+   "sha_mine": "2eef6893d5b032e0236f0fc0427a2b22e89dc0cc0e89e60dc02b9d6a23669f3f",
+   "sha_prod": "2eef6893d5b032e0236f0fc0427a2b22e89dc0cc0e89e60dc02b9d6a23669f3f",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 2182,
+   "n_seg_naive": 30455,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.054769331801017895,
+   "ink_share_of_crop": 0.030571020086245262,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 102,
+   "text_correct": 60,
+   "text_naive": 497,
+   "jaccard_correct": 0.25196850393700787,
+   "jaccard_naive": 0.011627906976744186
+  },
+  {
+   "block_id": "6UVE-XWYG-AMP",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К4",
+   "version": "v001",
+   "page_index": 4,
+   "coords_px": [
+    4766.0,
+    4242.0,
+    6958.0,
+    4910.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1143.94873046875,
+    1018.1826171875,
+    1670.0787353515625,
+    1178.518798828125
+   ],
+   "clip_page": [
+    12.481201171875,
+    1143.94873046875,
+    172.8173828125,
+    1670.0787353515625
+   ],
+   "render_size": [
+    801,
+    244
+   ],
+   "sha_mine": "c24a4d6284256ec79027389365071c0677427e526b3a328857055783fbdc0821",
+   "sha_prod": "c24a4d6284256ec79027389365071c0677427e526b3a328857055783fbdc0821",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 1016,
+   "n_seg_naive": 2,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 1.0,
+   "ink_share_of_crop": 0.12532490125048606,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 19,
+   "text_correct": 26,
+   "text_naive": 1,
+   "jaccard_correct": 0.03508771929824561,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "WQGD-J3YF-3E6",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "version": "v001",
+   "page_index": 13,
+   "coords_px": [
+    7996.0,
+    220.0,
+    9806.0,
+    2118.0
+   ],
+   "page_px": [
+    9933,
+    7016
+   ],
+   "shape_type": "polygon",
+   "clip_display": [
+    1919.1043701171875,
+    52.805015563964844,
+    2353.51904296875,
+    508.3682861328125
+   ],
+   "clip_page": [
+    1175.6317138671875,
+    1919.1043701171875,
+    1631.1949462890625,
+    2353.51904296875
+   ],
+   "render_size": [
+    763,
+    801
+   ],
+   "sha_mine": "739a1d4365141fd3718576b36367890781196c3c43f65d542fc2fe51d4987da3",
+   "sha_prod": "739a1d4365141fd3718576b36367890781196c3c43f65d542fc2fe51d4987da3",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 3648,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.05530930373730085,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 52,
+   "text_correct": 22,
+   "text_naive": 0,
+   "jaccard_correct": 0.0,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "6P7G-WQ4Y-UHA",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К4",
+   "version": "v001",
+   "page_index": 16,
+   "coords_px": [
+    2162.0,
+    3226.0,
+    3372.0,
+    3854.0
+   ],
+   "page_px": [
+    7016,
+    4962
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    518.9293212890625,
+    774.3179931640625,
+    809.3568725585938,
+    925.05322265625
+   ],
+   "clip_page": [
+    265.94677734375,
+    518.9293212890625,
+    416.6820068359375,
+    809.3568725585938
+   ],
+   "render_size": [
+    801,
+    417
+   ],
+   "sha_mine": "e4263cda52b8285a1da8418f2b21a7e5db31cd388a19b24c33e4921ddcb221c4",
+   "sha_prod": "e4263cda52b8285a1da8418f2b21a7e5db31cd388a19b24c33e4921ddcb221c4",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 12,
+   "n_seg_naive": 413,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": 0.3026634382566586,
+   "ink_share_of_crop": 0.06973297766281357,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": 1.0,
+   "ocr_tokens": 75,
+   "text_correct": 9,
+   "text_naive": 12,
+   "jaccard_correct": 0.14666666666666667,
+   "jaccard_naive": 0.0
+  },
+  {
+   "block_id": "6VTV-9LQJ-GTN",
+   "rotation": 270,
+   "rotation_source": "pdf",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.1-К3",
+   "version": "v001",
+   "page_index": 50,
+   "coords_px": [
+    7436.0,
+    830.0,
+    9688.0,
+    5040.0
+   ],
+   "page_px": [
+    9933,
+    7016
+   ],
+   "shape_type": "rectangle",
+   "clip_display": [
+    1784.6998291015625,
+    199.21893310546875,
+    2325.197998046875,
+    1209.7149658203125
+   ],
+   "clip_page": [
+    474.2850341796875,
+    1784.6998291015625,
+    1484.781005859375,
+    2325.197998046875
+   ],
+   "render_size": [
+    752,
+    1405
+   ],
+   "sha_mine": "33da255a5854559fdfcf6a50730f640a24105a75ede84af715041a5443a20d4f",
+   "sha_prod": "33da255a5854559fdfcf6a50730f640a24105a75ede84af715041a5443a20d4f",
+   "sha_equal": true,
+   "pixel_equal_share_vs_prod": 1.0,
+   "n_seg_correct": 3012,
+   "n_seg_naive": 0,
+   "seg_on_ink_correct": 1.0,
+   "seg_on_ink_naive": NaN,
+   "ink_share_of_crop": 0.12506530627697432,
+   "seg_inside_clip_correct": 1.0,
+   "seg_inside_clip_naive": NaN,
+   "ocr_tokens": 46,
+   "text_correct": 140,
+   "text_naive": 0,
+   "jaccard_correct": 0.017391304347826087,
+   "jaccard_naive": 0.0
+  }
+ ]
+}

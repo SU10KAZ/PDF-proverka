@@ -1,0 +1,1064 @@
+{
+ "corpus": {
+  "rows": 1156,
+  "carriers": 45,
+  "disciplines": [
+   "AR",
+   "EOM",
+   "GP",
+   "ITP",
+   "KJ",
+   "KM",
+   "OV",
+   "POS",
+   "PT",
+   "SS",
+   "TX",
+   "VK"
+  ],
+  "instances": [
+   "A1_path_split",
+   "C10_remove_opening",
+   "C1_remove_object@small",
+   "C2_add_object@small",
+   "C2x2_same_object",
+   "C3_move_object@small",
+   "C6_reshape_object@small",
+   "C7_split_object",
+   "C8_merge_objects",
+   "C9_add_branch",
+   "C9x2_add_two_branches",
+   "D1_text_edit",
+   "D3_label_rename",
+   "NEG"
+  ],
+  "noises": [
+   "none",
+   "round025"
+  ],
+  "skips": {
+   "C10_remove_opening": 18,
+   "D3_label_rename": 7,
+   "C1_remove_object@small": 2,
+   "C2_add_object@small": 4,
+   "C2x2_same_object": 2,
+   "C3_move_object@small": 2,
+   "C6_reshape_object@small": 3,
+   "C7_split_object": 6,
+   "C9_add_branch": 4,
+   "C9x2_add_two_branches": 4
+  },
+  "errors": {}
+ },
+ "L1_types": {
+  "total": {
+   "REMOVED_OBJECT": 98,
+   "ADDED_OBJECT": 514,
+   "MOVED_OBJECT": 60,
+   "CHANGED_OBJECT": 84
+  },
+  "on_target": {
+   "REMOVED_OBJECT": 98,
+   "ADDED_OBJECT": 514,
+   "MOVED_OBJECT": 60,
+   "CHANGED_OBJECT": 84
+  },
+  "off_target": {},
+  "per_instance_on_target": {
+   "C1_remove_object@small": {
+    "REMOVED_OBJECT": 88
+   },
+   "C2_add_object@small": {
+    "ADDED_OBJECT": 76
+   },
+   "C2x2_same_object": {
+    "ADDED_OBJECT": 150
+   },
+   "C3_move_object@small": {
+    "MOVED_OBJECT": 58,
+    "CHANGED_OBJECT": 16,
+    "ADDED_OBJECT": 2
+   },
+   "C6_reshape_object@small": {
+    "CHANGED_OBJECT": 66,
+    "MOVED_OBJECT": 2
+   },
+   "C8_merge_objects": {
+    "ADDED_OBJECT": 58
+   },
+   "C9_add_branch": {
+    "ADDED_OBJECT": 71,
+    "CHANGED_OBJECT": 1
+   },
+   "C9x2_add_two_branches": {
+    "ADDED_OBJECT": 123,
+    "CHANGED_OBJECT": 1
+   },
+   "C7_split_object": {
+    "REMOVED_OBJECT": 10
+   },
+   "C10_remove_opening": {
+    "ADDED_OBJECT": 34
+   }
+  },
+  "per_instance_off_target": {},
+  "shapes_total": {
+   "BRANCH_ADDED": 125,
+   "BRANCH_REMOVED": 10,
+   "GAP_CLOSED": 22,
+   "GAP_OPENED": 2
+  },
+  "shapes_on_target": {
+   "BRANCH_ADDED": 125,
+   "BRANCH_REMOVED": 10,
+   "GAP_CLOSED": 22,
+   "GAP_OPENED": 2
+  },
+  "shapes_per_instance": {
+   "C9_add_branch": {
+    "BRANCH_ADDED": 36
+   },
+   "C9x2_add_two_branches": {
+    "BRANCH_ADDED": 68
+   },
+   "C2_add_object@small": {
+    "BRANCH_ADDED": 7,
+    "GAP_CLOSED": 2
+   },
+   "C1_remove_object@small": {
+    "BRANCH_REMOVED": 10,
+    "GAP_OPENED": 2
+   },
+   "C10_remove_opening": {
+    "GAP_CLOSED": 18
+   },
+   "C2x2_same_object": {
+    "BRANCH_ADDED": 14,
+    "GAP_CLOSED": 2
+   }
+  }
+ },
+ "L2_evidence": {
+  "records": 756,
+  "with_ink_evidence": 756,
+  "with_attachment_evidence": 504,
+  "validator_violations": 0,
+  "text_only_instances_rows": 166,
+  "text_only_records_prod": 0,
+  "text_only_records_no_floor": 0,
+  "records_on_negative_controls": {
+   "A1_path_split|none": 0,
+   "A1_path_split|round025": 0,
+   "D1_text_edit|none": 0,
+   "D1_text_edit|round025": 0,
+   "D3_label_rename|none": 0,
+   "D3_label_rename|round025": 0,
+   "NEG|none": 0,
+   "NEG|round025": 0
+  }
+ },
+ "L3_phrases": {
+  "phrases:ADDED_SAME_KIND": {
+   "fires": 52,
+   "precision_localised": 1.0,
+   "precision_wording": 1.0,
+   "precision_wording_and_count": 1.0,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C2x2_same_object": 52
+   },
+   "false_examples": []
+  },
+  "phrases:BRANCH_ADDED": {
+   "fires": 103,
+   "precision_localised": 1.0,
+   "precision_wording": 0.835,
+   "precision_wording_and_count": 0.5243,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C9_add_branch": 36,
+    "C9x2_add_two_branches": 50,
+    "C2_add_object@small": 7,
+    "C2x2_same_object": 10
+   },
+   "false_examples": [
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C2_add_object@small",
+     "none",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C2_add_object@small",
+     "round025",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "blk_2d0c258f773043e8b7f6481feec6fc4b",
+     "C2x2_same_object",
+     "none",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "blk_2d0c258f773043e8b7f6481feec6fc4b",
+     "C2x2_same_object",
+     "round025",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "9R9P-HVPN-CVQ",
+     "C2_add_object@small",
+     "none",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "7UKU-WHNK-P4P",
+     "C2x2_same_object",
+     "none",
+     "Добавлено два ответвления.",
+     1.0
+    ]
+   ]
+  },
+  "phrases:CONFIG_CHANGED": {
+   "fires": 356,
+   "precision_localised": 1.0,
+   "precision_wording": 0.5815,
+   "precision_wording_and_count": 0.5815,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C3_move_object@small": 74,
+    "C6_reshape_object@small": 68,
+    "C1_remove_object@small": 41,
+    "C8_merge_objects": 55,
+    "C9x2_add_two_branches": 39,
+    "C9_add_branch": 35,
+    "C7_split_object": 10,
+    "C10_remove_opening": 15,
+    "C2x2_same_object": 12,
+    "C2_add_object@small": 7
+   },
+   "false_examples": []
+  },
+  "phrases:OBJECT_ADDED": {
+   "fires": 90,
+   "precision_localised": 1.0,
+   "precision_wording": 0.6667,
+   "precision_wording_and_count": 0.6667,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C2_add_object@small": 60,
+    "C2x2_same_object": 16,
+    "C9x2_add_two_branches": 7,
+    "C8_merge_objects": 3,
+    "C10_remove_opening": 1,
+    "C9_add_branch": 1,
+    "C3_move_object@small": 2
+   },
+   "false_examples": [
+    [
+     "43CL-VVJR-QPF",
+     "C2x2_same_object",
+     "none",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "43CL-VVJR-QPF",
+     "C2x2_same_object",
+     "round025",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C9x2_add_two_branches",
+     "none",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C9x2_add_two_branches",
+     "round025",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "6WNV-DWDA-4CQ",
+     "C8_merge_objects",
+     "round025",
+     "Добавлен графический объект.",
+     0.99
+    ],
+    [
+     "6WNV-DWDA-4CQ",
+     "C10_remove_opening",
+     "round025",
+     "Добавлен графический объект.",
+     1.0
+    ]
+   ]
+  },
+  "phrases:OBJECT_REMOVED": {
+   "fires": 29,
+   "precision_localised": 1.0,
+   "precision_wording": 1.0,
+   "precision_wording_and_count": 1.0,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C1_remove_object@small": 29
+   },
+   "false_examples": []
+  },
+  "phrases:OPENING_REMOVED": {
+   "fires": 22,
+   "precision_localised": 1.0,
+   "precision_wording": 0.8182,
+   "precision_wording_and_count": 0.8182,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C10_remove_opening": 18,
+    "C2x2_same_object": 2,
+    "C2_add_object@small": 2
+   },
+   "false_examples": [
+    [
+     "9R9P-HVPN-CVQ",
+     "C2x2_same_object",
+     "none",
+     "Удалён проём.",
+     1.0
+    ],
+    [
+     "9R9P-HVPN-CVQ",
+     "C2x2_same_object",
+     "round025",
+     "Удалён проём.",
+     0.98
+    ],
+    [
+     "blk_fbe22186597d415f87713df53768eae4",
+     "C2_add_object@small",
+     "none",
+     "Удалён проём.",
+     1.0
+    ],
+    [
+     "blk_fbe22186597d415f87713df53768eae4",
+     "C2_add_object@small",
+     "round025",
+     "Удалён проём.",
+     0.99
+    ]
+   ]
+  },
+  "phrases_low:ADDED_SAME_KIND": {
+   "fires": 52,
+   "precision_localised": 1.0,
+   "precision_wording": 1.0,
+   "precision_wording_and_count": 1.0,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C2x2_same_object": 52
+   },
+   "false_examples": []
+  },
+  "phrases_low:BRANCH_ADDED": {
+   "fires": 107,
+   "precision_localised": 1.0,
+   "precision_wording": 0.8411,
+   "precision_wording_and_count": 0.5421,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C9_add_branch": 38,
+    "C9x2_add_two_branches": 52,
+    "C2_add_object@small": 7,
+    "C2x2_same_object": 10
+   },
+   "false_examples": [
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C2_add_object@small",
+     "none",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C2_add_object@small",
+     "round025",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "blk_2d0c258f773043e8b7f6481feec6fc4b",
+     "C2x2_same_object",
+     "none",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "blk_2d0c258f773043e8b7f6481feec6fc4b",
+     "C2x2_same_object",
+     "round025",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "9R9P-HVPN-CVQ",
+     "C2_add_object@small",
+     "none",
+     "Добавлено одно ответвление.",
+     1.0
+    ],
+    [
+     "7UKU-WHNK-P4P",
+     "C2x2_same_object",
+     "none",
+     "Добавлено два ответвления.",
+     1.0
+    ]
+   ]
+  },
+  "phrases_low:CONFIG_CHANGED": {
+   "fires": 359,
+   "precision_localised": 1.0,
+   "precision_wording": 0.585,
+   "precision_wording_and_count": 0.585,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C3_move_object@small": 74,
+    "C6_reshape_object@small": 68,
+    "C7_split_object": 11,
+    "C8_merge_objects": 57,
+    "C1_remove_object@small": 41,
+    "C9x2_add_two_branches": 39,
+    "C9_add_branch": 35,
+    "C10_remove_opening": 15,
+    "C2x2_same_object": 12,
+    "C2_add_object@small": 7
+   },
+   "false_examples": []
+  },
+  "phrases_low:OBJECT_ADDED": {
+   "fires": 90,
+   "precision_localised": 1.0,
+   "precision_wording": 0.6667,
+   "precision_wording_and_count": 0.6667,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C2_add_object@small": 60,
+    "C2x2_same_object": 16,
+    "C9x2_add_two_branches": 7,
+    "C8_merge_objects": 3,
+    "C10_remove_opening": 1,
+    "C9_add_branch": 1,
+    "C3_move_object@small": 2
+   },
+   "false_examples": [
+    [
+     "43CL-VVJR-QPF",
+     "C2x2_same_object",
+     "none",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "43CL-VVJR-QPF",
+     "C2x2_same_object",
+     "round025",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C9x2_add_two_branches",
+     "none",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+     "C9x2_add_two_branches",
+     "round025",
+     "Добавлен графический объект.",
+     1.0
+    ],
+    [
+     "6WNV-DWDA-4CQ",
+     "C8_merge_objects",
+     "round025",
+     "Добавлен графический объект.",
+     0.99
+    ],
+    [
+     "6WNV-DWDA-4CQ",
+     "C10_remove_opening",
+     "round025",
+     "Добавлен графический объект.",
+     1.0
+    ]
+   ]
+  },
+  "phrases_low:OBJECT_REMOVED": {
+   "fires": 29,
+   "precision_localised": 1.0,
+   "precision_wording": 1.0,
+   "precision_wording_and_count": 1.0,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C1_remove_object@small": 29
+   },
+   "false_examples": []
+  },
+  "phrases_low:OPENING_REMOVED": {
+   "fires": 22,
+   "precision_localised": 1.0,
+   "precision_wording": 0.8182,
+   "precision_wording_and_count": 0.8182,
+   "fires_on_negative_control": 0,
+   "fires_by_instance": {
+    "C10_remove_opening": 18,
+    "C2x2_same_object": 2,
+    "C2_add_object@small": 2
+   },
+   "false_examples": [
+    [
+     "9R9P-HVPN-CVQ",
+     "C2x2_same_object",
+     "none",
+     "Удалён проём.",
+     1.0
+    ],
+    [
+     "9R9P-HVPN-CVQ",
+     "C2x2_same_object",
+     "round025",
+     "Удалён проём.",
+     0.98
+    ],
+    [
+     "blk_fbe22186597d415f87713df53768eae4",
+     "C2_add_object@small",
+     "none",
+     "Удалён проём.",
+     1.0
+    ],
+    [
+     "blk_fbe22186597d415f87713df53768eae4",
+     "C2_add_object@small",
+     "round025",
+     "Удалён проём.",
+     0.99
+    ]
+   ]
+  }
+ },
+ "L3_recall": {
+  "phrases:C1_remove_object@small": {
+   "n": 86,
+   "phrase_exact": 29,
+   "recall_phrase": 0.3372,
+   "any_phrase_on_target": 70,
+   "recall_any": 0.814
+  },
+  "phrases:C2_add_object@small": {
+   "n": 82,
+   "phrase_exact": 60,
+   "recall_phrase": 0.7317,
+   "any_phrase_on_target": 76,
+   "recall_any": 0.9268
+  },
+  "phrases:C2x2_same_object": {
+   "n": 86,
+   "phrase_exact": 52,
+   "recall_phrase": 0.6047,
+   "any_phrase_on_target": 82,
+   "recall_any": 0.9535
+  },
+  "phrases:C9_add_branch": {
+   "n": 82,
+   "phrase_exact": 36,
+   "recall_phrase": 0.439,
+   "any_phrase_on_target": 72,
+   "recall_any": 0.878
+  },
+  "phrases:C9x2_add_two_branches": {
+   "n": 82,
+   "phrase_exact": 18,
+   "recall_phrase": 0.2195,
+   "any_phrase_on_target": 76,
+   "recall_any": 0.9268
+  },
+  "phrases:C10_remove_opening": {
+   "n": 54,
+   "phrase_exact": 18,
+   "recall_phrase": 0.3333,
+   "any_phrase_on_target": 34,
+   "recall_any": 0.6296
+  },
+  "phrases:C3_move_object@small": {
+   "n": 86,
+   "phrase_exact": 74,
+   "recall_phrase": 0.8605,
+   "any_phrase_on_target": 76,
+   "recall_any": 0.8837
+  },
+  "phrases:C6_reshape_object@small": {
+   "n": 84,
+   "phrase_exact": 68,
+   "recall_phrase": 0.8095,
+   "any_phrase_on_target": 68,
+   "recall_any": 0.8095
+  },
+  "phrases:C7_split_object": {
+   "n": 78,
+   "phrase_exact": 10,
+   "recall_phrase": 0.1282,
+   "any_phrase_on_target": 10,
+   "recall_any": 0.1282
+  },
+  "phrases:C8_merge_objects": {
+   "n": 90,
+   "phrase_exact": 55,
+   "recall_phrase": 0.6111,
+   "any_phrase_on_target": 58,
+   "recall_any": 0.6444
+  },
+  "phrases_low:C1_remove_object@small": {
+   "n": 86,
+   "phrase_exact": 29,
+   "recall_phrase": 0.3372,
+   "any_phrase_on_target": 70,
+   "recall_any": 0.814
+  },
+  "phrases_low:C2_add_object@small": {
+   "n": 82,
+   "phrase_exact": 60,
+   "recall_phrase": 0.7317,
+   "any_phrase_on_target": 76,
+   "recall_any": 0.9268
+  },
+  "phrases_low:C2x2_same_object": {
+   "n": 86,
+   "phrase_exact": 52,
+   "recall_phrase": 0.6047,
+   "any_phrase_on_target": 82,
+   "recall_any": 0.9535
+  },
+  "phrases_low:C9_add_branch": {
+   "n": 82,
+   "phrase_exact": 38,
+   "recall_phrase": 0.4634,
+   "any_phrase_on_target": 74,
+   "recall_any": 0.9024
+  },
+  "phrases_low:C9x2_add_two_branches": {
+   "n": 82,
+   "phrase_exact": 20,
+   "recall_phrase": 0.2439,
+   "any_phrase_on_target": 78,
+   "recall_any": 0.9512
+  },
+  "phrases_low:C10_remove_opening": {
+   "n": 54,
+   "phrase_exact": 18,
+   "recall_phrase": 0.3333,
+   "any_phrase_on_target": 34,
+   "recall_any": 0.6296
+  },
+  "phrases_low:C3_move_object@small": {
+   "n": 86,
+   "phrase_exact": 74,
+   "recall_phrase": 0.8605,
+   "any_phrase_on_target": 76,
+   "recall_any": 0.8837
+  },
+  "phrases_low:C6_reshape_object@small": {
+   "n": 84,
+   "phrase_exact": 68,
+   "recall_phrase": 0.8095,
+   "any_phrase_on_target": 68,
+   "recall_any": 0.8095
+  },
+  "phrases_low:C7_split_object": {
+   "n": 78,
+   "phrase_exact": 11,
+   "recall_phrase": 0.141,
+   "any_phrase_on_target": 11,
+   "recall_any": 0.141
+  },
+  "phrases_low:C8_merge_objects": {
+   "n": 90,
+   "phrase_exact": 57,
+   "recall_phrase": 0.6333,
+   "any_phrase_on_target": 60,
+   "recall_any": 0.6667
+  }
+ },
+ "L3_sentence_verdicts": {
+  "phrases:ADDED_SAME_KIND": {
+   "fires": 52,
+   "correct": 52,
+   "undercount": 0,
+   "weaker_true": 0,
+   "false": 0,
+   "precision_strict": 1.0,
+   "share_false": 0.0,
+   "share_not_false": 1.0,
+   "fires_off_target": 0
+  },
+  "phrases:BRANCH_ADDED": {
+   "fires": 103,
+   "correct": 54,
+   "undercount": 32,
+   "weaker_true": 0,
+   "false": 17,
+   "precision_strict": 0.5243,
+   "share_false": 0.165,
+   "share_not_false": 0.835,
+   "fires_off_target": 0
+  },
+  "phrases:CONFIG_CHANGED": {
+   "fires": 356,
+   "correct": 207,
+   "undercount": 0,
+   "weaker_true": 149,
+   "false": 0,
+   "precision_strict": 0.5815,
+   "share_false": 0.0,
+   "share_not_false": 1.0,
+   "fires_off_target": 0
+  },
+  "phrases:OBJECT_ADDED": {
+   "fires": 90,
+   "correct": 60,
+   "undercount": 16,
+   "weaker_true": 0,
+   "false": 14,
+   "precision_strict": 0.6667,
+   "share_false": 0.1556,
+   "share_not_false": 0.8444,
+   "fires_off_target": 0
+  },
+  "phrases:OBJECT_REMOVED": {
+   "fires": 29,
+   "correct": 29,
+   "undercount": 0,
+   "weaker_true": 0,
+   "false": 0,
+   "precision_strict": 1.0,
+   "share_false": 0.0,
+   "share_not_false": 1.0,
+   "fires_off_target": 0
+  },
+  "phrases:OPENING_REMOVED": {
+   "fires": 22,
+   "correct": 18,
+   "undercount": 0,
+   "weaker_true": 0,
+   "false": 4,
+   "precision_strict": 0.8182,
+   "share_false": 0.1818,
+   "share_not_false": 0.8182,
+   "fires_off_target": 0
+  },
+  "phrases_low:ADDED_SAME_KIND": {
+   "fires": 52,
+   "correct": 52,
+   "undercount": 0,
+   "weaker_true": 0,
+   "false": 0,
+   "precision_strict": 1.0,
+   "share_false": 0.0,
+   "share_not_false": 1.0,
+   "fires_off_target": 0
+  },
+  "phrases_low:BRANCH_ADDED": {
+   "fires": 107,
+   "correct": 58,
+   "undercount": 32,
+   "weaker_true": 0,
+   "false": 17,
+   "precision_strict": 0.5421,
+   "share_false": 0.1589,
+   "share_not_false": 0.8411,
+   "fires_off_target": 0
+  },
+  "phrases_low:CONFIG_CHANGED": {
+   "fires": 359,
+   "correct": 210,
+   "undercount": 0,
+   "weaker_true": 149,
+   "false": 0,
+   "precision_strict": 0.585,
+   "share_false": 0.0,
+   "share_not_false": 1.0,
+   "fires_off_target": 0
+  },
+  "phrases_low:OBJECT_ADDED": {
+   "fires": 90,
+   "correct": 60,
+   "undercount": 16,
+   "weaker_true": 0,
+   "false": 14,
+   "precision_strict": 0.6667,
+   "share_false": 0.1556,
+   "share_not_false": 0.8444,
+   "fires_off_target": 0
+  },
+  "phrases_low:OBJECT_REMOVED": {
+   "fires": 29,
+   "correct": 29,
+   "undercount": 0,
+   "weaker_true": 0,
+   "false": 0,
+   "precision_strict": 1.0,
+   "share_false": 0.0,
+   "share_not_false": 1.0,
+   "fires_off_target": 0
+  },
+  "phrases_low:OPENING_REMOVED": {
+   "fires": 22,
+   "correct": 18,
+   "undercount": 0,
+   "weaker_true": 0,
+   "false": 4,
+   "precision_strict": 0.8182,
+   "share_false": 0.1818,
+   "share_not_false": 0.8182,
+   "fires_off_target": 0
+  }
+ },
+ "L3_count_distribution": {
+  "phrases:ADDED_SAME_KIND|C2x2_same_object": {
+   "2": 52
+  },
+  "phrases:BRANCH_ADDED|C2_add_object@small": {
+   "1": 7
+  },
+  "phrases:BRANCH_ADDED|C2x2_same_object": {
+   "1": 6,
+   "2": 4
+  },
+  "phrases:BRANCH_ADDED|C9_add_branch": {
+   "1": 36
+  },
+  "phrases:BRANCH_ADDED|C9x2_add_two_branches": {
+   "1": 32,
+   "2": 18
+  },
+  "phrases:CONFIG_CHANGED|C10_remove_opening": {
+   "1": 15
+  },
+  "phrases:CONFIG_CHANGED|C1_remove_object@small": {
+   "1": 39,
+   "10": 2
+  },
+  "phrases:CONFIG_CHANGED|C2_add_object@small": {
+   "1": 7
+  },
+  "phrases:CONFIG_CHANGED|C2x2_same_object": {
+   "1": 10,
+   "2": 2
+  },
+  "phrases:CONFIG_CHANGED|C3_move_object@small": {
+   "1": 74
+  },
+  "phrases:CONFIG_CHANGED|C6_reshape_object@small": {
+   "1": 68
+  },
+  "phrases:CONFIG_CHANGED|C7_split_object": {
+   "1": 10
+  },
+  "phrases:CONFIG_CHANGED|C8_merge_objects": {
+   "1": 55
+  },
+  "phrases:CONFIG_CHANGED|C9_add_branch": {
+   "1": 35
+  },
+  "phrases:CONFIG_CHANGED|C9x2_add_two_branches": {
+   "1": 29,
+   "2": 10
+  },
+  "phrases:OBJECT_ADDED|C10_remove_opening": {
+   "1": 1
+  },
+  "phrases:OBJECT_ADDED|C2_add_object@small": {
+   "1": 60
+  },
+  "phrases:OBJECT_ADDED|C2x2_same_object": {
+   "1": 16
+  },
+  "phrases:OBJECT_ADDED|C3_move_object@small": {
+   "1": 2
+  },
+  "phrases:OBJECT_ADDED|C8_merge_objects": {
+   "1": 3
+  },
+  "phrases:OBJECT_ADDED|C9_add_branch": {
+   "1": 1
+  },
+  "phrases:OBJECT_ADDED|C9x2_add_two_branches": {
+   "1": 7
+  },
+  "phrases:OBJECT_REMOVED|C1_remove_object@small": {
+   "1": 29
+  },
+  "phrases:OPENING_REMOVED|C10_remove_opening": {
+   "1": 18
+  },
+  "phrases:OPENING_REMOVED|C2_add_object@small": {
+   "1": 2
+  },
+  "phrases:OPENING_REMOVED|C2x2_same_object": {
+   "1": 2
+  },
+  "phrases_low:ADDED_SAME_KIND|C2x2_same_object": {
+   "2": 52
+  },
+  "phrases_low:BRANCH_ADDED|C2_add_object@small": {
+   "1": 7
+  },
+  "phrases_low:BRANCH_ADDED|C2x2_same_object": {
+   "1": 6,
+   "2": 4
+  },
+  "phrases_low:BRANCH_ADDED|C9_add_branch": {
+   "1": 38
+  },
+  "phrases_low:BRANCH_ADDED|C9x2_add_two_branches": {
+   "1": 32,
+   "2": 20
+  },
+  "phrases_low:CONFIG_CHANGED|C10_remove_opening": {
+   "1": 15
+  },
+  "phrases_low:CONFIG_CHANGED|C1_remove_object@small": {
+   "1": 39,
+   "10": 2
+  },
+  "phrases_low:CONFIG_CHANGED|C2_add_object@small": {
+   "1": 7
+  },
+  "phrases_low:CONFIG_CHANGED|C2x2_same_object": {
+   "1": 10,
+   "2": 2
+  },
+  "phrases_low:CONFIG_CHANGED|C3_move_object@small": {
+   "1": 74
+  },
+  "phrases_low:CONFIG_CHANGED|C6_reshape_object@small": {
+   "1": 68
+  },
+  "phrases_low:CONFIG_CHANGED|C7_split_object": {
+   "1": 11
+  },
+  "phrases_low:CONFIG_CHANGED|C8_merge_objects": {
+   "1": 57
+  },
+  "phrases_low:CONFIG_CHANGED|C9_add_branch": {
+   "1": 35
+  },
+  "phrases_low:CONFIG_CHANGED|C9x2_add_two_branches": {
+   "1": 29,
+   "2": 10
+  },
+  "phrases_low:OBJECT_ADDED|C10_remove_opening": {
+   "1": 1
+  },
+  "phrases_low:OBJECT_ADDED|C2_add_object@small": {
+   "1": 60
+  },
+  "phrases_low:OBJECT_ADDED|C2x2_same_object": {
+   "1": 16
+  },
+  "phrases_low:OBJECT_ADDED|C3_move_object@small": {
+   "1": 2
+  },
+  "phrases_low:OBJECT_ADDED|C8_merge_objects": {
+   "1": 3
+  },
+  "phrases_low:OBJECT_ADDED|C9_add_branch": {
+   "1": 1
+  },
+  "phrases_low:OBJECT_ADDED|C9x2_add_two_branches": {
+   "1": 7
+  },
+  "phrases_low:OBJECT_REMOVED|C1_remove_object@small": {
+   "1": 29
+  },
+  "phrases_low:OPENING_REMOVED|C10_remove_opening": {
+   "1": 18
+  },
+  "phrases_low:OPENING_REMOVED|C2_add_object@small": {
+   "1": 2
+  },
+  "phrases_low:OPENING_REMOVED|C2x2_same_object": {
+   "1": 2
+  }
+ },
+ "L1b_welded_census": {
+  "C1_remove_object@small": {
+   "REMOVED_OBJECT|free": 31,
+   "REMOVED_OBJECT|welded": 57
+  },
+  "C2_add_object@small": {
+   "ADDED_OBJECT|free": 63,
+   "ADDED_OBJECT|welded": 13
+  },
+  "C2x2_same_object": {
+   "ADDED_OBJECT|free": 126,
+   "ADDED_OBJECT|welded": 24
+  },
+  "C3_move_object@small": {
+   "MOVED_OBJECT|free": 58,
+   "CHANGED_OBJECT|free": 16,
+   "ADDED_OBJECT|free": 2
+  },
+  "C6_reshape_object@small": {
+   "CHANGED_OBJECT|free": 66,
+   "MOVED_OBJECT|free": 2
+  },
+  "C8_merge_objects": {
+   "ADDED_OBJECT|welded": 55,
+   "ADDED_OBJECT|free": 3
+  },
+  "C9_add_branch": {
+   "ADDED_OBJECT|welded": 70,
+   "ADDED_OBJECT|free": 1,
+   "CHANGED_OBJECT|free": 1
+  },
+  "C9x2_add_two_branches": {
+   "ADDED_OBJECT|welded": 116,
+   "ADDED_OBJECT|free": 7,
+   "CHANGED_OBJECT|free": 1
+  },
+  "C7_split_object": {
+   "REMOVED_OBJECT|welded": 10
+  },
+  "C10_remove_opening": {
+   "ADDED_OBJECT|welded": 33,
+   "ADDED_OBJECT|free": 1
+  }
+ },
+ "L3c_geometric_claim": {
+  "BRANCH_ADDED": {
+   "fires": 103,
+   "on_connector_cf": 86,
+   "on_other_cf": 17
+  },
+  "OPENING_REMOVED": {
+   "fires": 22,
+   "on_connector_cf": 18,
+   "on_other_cf": 4
+  }
+ }
+}

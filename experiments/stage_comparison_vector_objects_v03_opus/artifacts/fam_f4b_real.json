@@ -1,0 +1,5749 @@
+{
+ "config": "S=shared, scope=interior|all, mode=twopass",
+ "pad_frac": 0.02,
+ "pairs": [
+  {
+   "pair_id": "TX-95031dbd",
+   "classes": [
+    "unchanged_control",
+    "no_labels",
+    "rotated_page"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "TX",
+   "doc_id": "13АВ-РД-ТХ2-К1 V1",
+   "human_expected_ru": "Изменений нет: две схемы («Цепь освещения 220 В» и «Силовая цепь 380 В») совпадают попиксельно (diff=0.0).",
+   "n_seg_a": 814,
+   "n_seg_b": 814,
+   "S_a": 0.48,
+   "S_b": 0.48,
+   "S": 0.48,
+   "reg_offset": [
+    -0.064,
+    -0.029
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 120,
+     "n_obj_b": 120,
+     "n_families": 65,
+     "n_repeated": 65,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 120,
+     "n_obj_b": 120,
+     "n_families": 65,
+     "n_repeated": 65,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 19.1
+  },
+  {
+   "pair_id": "AR-b38a7dbc",
+   "classes": [
+    "unchanged_control",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К5",
+   "human_expected_ru": "Изменений нет: наложение даёт 0 пикселей несовпадения (diff=0.0), число сегментов и текстовых строк совпадает точно.",
+   "n_seg_a": 32312,
+   "n_seg_b": 32312,
+   "S_a": 6.429,
+   "S_b": 6.429,
+   "S": 6.429,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 2019,
+     "n_obj_b": 2019,
+     "n_families": 854,
+     "n_repeated": 854,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 2019,
+     "n_obj_b": 2019,
+     "n_families": 854,
+     "n_repeated": 854,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 56.4
+  },
+  {
+   "pair_id": "KJ-b5c82f7c",
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.22-28.1-К1",
+   "human_expected_ru": "Узлы армирования совпадают полностью; в версии B в кроп дополнительно попала линия рамки листа слева.",
+   "n_seg_a": 7253,
+   "n_seg_b": 7254,
+   "S_a": 8.876,
+   "S_b": 8.876,
+   "S": 8.876,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 574,
+     "n_obj_b": 574,
+     "n_families": 175,
+     "n_repeated": 175,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 578,
+     "n_obj_b": 579,
+     "n_families": 177,
+     "n_repeated": 176,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 41.6
+  },
+  {
+   "pair_id": "SS-392b7bd3",
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К3 (Книга 1)",
+   "human_expected_ru": "Схема (EZ1, У1.1, «Входные двери помещения», ПУ-У1) идентична; в версии B сверху добавилась линия рамки листа.",
+   "n_seg_a": 860,
+   "n_seg_b": 862,
+   "S_a": 10.988,
+   "S_b": 10.988,
+   "S": 10.988,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 18,
+     "n_obj_b": 18,
+     "n_families": 18,
+     "n_repeated": 17,
+     "rows_min2": 1,
+     "rows_min3": 0,
+     "delta_sum": 1,
+     "delta_max": 1,
+     "ledger": [
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 3.089,
+       "n_seg_med": 4,
+       "bbox": [
+        273.36,
+        175.76,
+        276.24,
+        177.26
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 18,
+     "n_obj_b": 19,
+     "n_families": 19,
+     "n_repeated": 17,
+     "rows_min2": 1,
+     "rows_min3": 0,
+     "delta_sum": 1,
+     "delta_max": 1,
+     "ledger": [
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 3.089,
+       "n_seg_med": 4,
+       "bbox": [
+        273.36,
+        175.76,
+        276.24,
+        177.26
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 8.7
+  },
+  {
+   "pair_id": "EOM-36de2ce2",
+   "classes": [
+    "block_moved",
+    "rotated_page",
+    "few_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К3",
+   "human_expected_ru": "«Схема размещения фрагмента» та же самая, в версии B крупнее (масштаб блока другой). Сегментов 2 207 и 2 207, текст совпадает.",
+   "n_seg_a": 2207,
+   "n_seg_b": 2207,
+   "S_a": 1.92,
+   "S_b": 1.92,
+   "S": 1.92,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 388,
+     "n_obj_b": 388,
+     "n_families": 165,
+     "n_repeated": 165,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 388,
+     "n_obj_b": 388,
+     "n_families": 165,
+     "n_repeated": 165,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 30.2
+  },
+  {
+   "pair_id": "KJ-548814a7",
+   "classes": [
+    "block_moved",
+    "few_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.30-31.1-К2",
+   "human_expected_ru": "«Схема отгиба стержня» одна и та же, в версии B вычерчена примерно в 1.25 раза крупнее.",
+   "n_seg_a": 63,
+   "n_seg_b": 63,
+   "S_a": 0.365,
+   "S_b": 0.387,
+   "S": 0.387,
+   "reg_offset": [
+    137.45,
+    46.833
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 15,
+     "n_obj_b": 15,
+     "n_families": 15,
+     "n_repeated": 7,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 15,
+     "n_obj_b": 15,
+     "n_families": 15,
+     "n_repeated": 7,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 0.6
+  },
+  {
+   "pair_id": "AR-46f62636",
+   "classes": [
+    "bbox_boundary_artifact",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К5",
+   "human_expected_ru": "План этажа не изменился; в A в кроп попала горизонтальная линия рамки сверху, в B — вертикальная слева.",
+   "n_seg_a": 30876,
+   "n_seg_b": 30877,
+   "S_a": 6.429,
+   "S_b": 6.429,
+   "S": 6.429,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 1918,
+     "n_obj_b": 1918,
+     "n_families": 863,
+     "n_repeated": 863,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 1936,
+     "n_obj_b": 1937,
+     "n_families": 868,
+     "n_repeated": 867,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 52.1
+  },
+  {
+   "pair_id": "EOM-3306e907",
+   "classes": [
+    "block_moved",
+    "rotated_page"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "medium",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К3",
+   "human_expected_ru": "«Схема размещения фрагмента»: то же изображение, в версии B крупнее; после корректной дерotation обе стороны стоят вертикально.",
+   "n_seg_a": 2784,
+   "n_seg_b": 2784,
+   "S_a": 0.84,
+   "S_b": 0.84,
+   "S": 0.84,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 468,
+     "n_obj_b": 468,
+     "n_families": 190,
+     "n_repeated": 190,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 468,
+     "n_obj_b": 468,
+     "n_families": 190,
+     "n_repeated": 190,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 45.7
+  },
+  {
+   "pair_id": "VK-b71afe81",
+   "classes": [
+    "different_packaging",
+    "rotated_page",
+    "dense_block",
+    "garbled_text_layer"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "human_expected_ru": "Графика идентична: узлы «Узел гиг. душа» и «Узел кранов с эл. приводом» совпадают попиксельно (diff=0.0, 16 205 сегментов с обеих сторон). Отличается только извлекаемый текст: «Ø161/2\"» против «Ø16*1/2\"» — дефект кодировки шрифта, не чертежа.",
+   "n_seg_a": 16205,
+   "n_seg_b": 16205,
+   "S_a": 9.426,
+   "S_b": 9.426,
+   "S": 9.426,
+   "reg_offset": [
+    -0.054,
+    -0.04
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 242,
+     "n_obj_b": 242,
+     "n_families": 118,
+     "n_repeated": 118,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 242,
+     "n_obj_b": 242,
+     "n_families": 118,
+     "n_repeated": 118,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 197.2
+  },
+  {
+   "pair_id": "SS-6fc75e05",
+   "classes": [
+    "different_packaging",
+    "with_labels",
+    "table_like"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К6 (Книга 1)",
+   "human_expected_ru": "Штамп тот же самый; видимое отличие — только полоска рамки на границе кропа (0.08 % площади). Число сегментов различается вдвое из-за другой упаковки путей.",
+   "n_seg_a": 5845,
+   "n_seg_b": 12921,
+   "S_a": 10.995,
+   "S_b": 10.995,
+   "S": 10.995,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9977,
+   "variants": {
+    "interior": {
+     "n_obj_a": 38,
+     "n_obj_b": 37,
+     "n_families": 52,
+     "n_repeated": 18,
+     "rows_min2": 2,
+     "rows_min3": 0,
+     "delta_sum": 4,
+     "delta_max": 2,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 10.8,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1640.34,
+        793.46,
+        1651.2,
+        816.5
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 10.83,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1640.28,
+        793.46,
+        1651.14,
+        816.5
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 57,
+     "n_obj_b": 57,
+     "n_families": 62,
+     "n_repeated": 25,
+     "rows_min2": 2,
+     "rows_min3": 0,
+     "delta_sum": 4,
+     "delta_max": 2,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 10.8,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1640.34,
+        793.46,
+        1651.2,
+        816.5
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 10.83,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1640.28,
+        793.46,
+        1651.14,
+        816.5
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 207.3
+  },
+  {
+   "pair_id": "SS-982f7f30",
+   "classes": [
+    "block_moved",
+    "with_labels",
+    "table_like"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "medium",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К5 (Книга 2)",
+   "human_expected_ru": "Штамп («Книга 2. Автоматизация и диспетчеризация… Корпус 5») тот же; отличается только масштаб/положение блока.",
+   "n_seg_a": 5848,
+   "n_seg_b": 4700,
+   "S_a": 10.988,
+   "S_b": 10.987,
+   "S": 10.988,
+   "reg_offset": [
+    0.0,
+    -0.05
+   ],
+   "reg_score": 0.9928,
+   "variants": {
+    "interior": {
+     "n_obj_a": 34,
+     "n_obj_b": 32,
+     "n_families": 43,
+     "n_repeated": 17,
+     "rows_min2": 3,
+     "rows_min3": 0,
+     "delta_sum": 5,
+     "delta_max": 2,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.212,
+       "n_seg_med": 4.0,
+       "bbox": [
+        804.12,
+        794.24,
+        805.68,
+        795.68
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.224,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1071.12,
+        806.96,
+        1138.08,
+        807.2
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 3.565,
+       "n_seg_med": 4,
+       "bbox": [
+        1128.72,
+        801.2,
+        1131.36,
+        803.84
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 54,
+     "n_obj_b": 52,
+     "n_families": 53,
+     "n_repeated": 25,
+     "rows_min2": 3,
+     "rows_min3": 0,
+     "delta_sum": 5,
+     "delta_max": 2,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.212,
+       "n_seg_med": 4.0,
+       "bbox": [
+        804.12,
+        794.24,
+        805.68,
+        795.68
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.224,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1071.12,
+        806.96,
+        1138.08,
+        807.2
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 3.565,
+       "n_seg_med": 4,
+       "bbox": [
+        1128.72,
+        801.2,
+        1131.36,
+        803.84
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 98.1
+  },
+  {
+   "pair_id": "SS-76640e11",
+   "classes": [
+    "text_only_change",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АПЗ.АПС-К3 V1",
+   "human_expected_ru": "С плана удалён текстовый блок «Примечание:» из трёх пунктов внизу листа. Сам план (стены, оси, оборудование) не изменился.",
+   "n_seg_a": 6726,
+   "n_seg_b": 6155,
+   "S_a": 8.856,
+   "S_b": 12.401,
+   "S": 12.401,
+   "reg_offset": [
+    -0.053,
+    -0.057
+   ],
+   "reg_score": 0.9974,
+   "variants": {
+    "interior": {
+     "n_obj_a": 293,
+     "n_obj_b": 293,
+     "n_families": 162,
+     "n_repeated": 162,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 313,
+     "n_obj_b": 311,
+     "n_families": 172,
+     "n_repeated": 165,
+     "rows_min2": 2,
+     "rows_min3": 2,
+     "delta_sum": 17,
+     "delta_max": 9,
+     "ledger": [
+      {
+       "n_a": 9,
+       "n_b": 0,
+       "delta": -9,
+       "cls": "stray",
+       "diag": 6.235,
+       "n_seg_med": 1,
+       "bbox": [
+        50.41,
+        567.48,
+        56.64,
+        1106.04
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 8,
+       "delta": 8,
+       "cls": "stray",
+       "diag": 1.683,
+       "n_seg_med": 1.0,
+       "bbox": [
+        54.96,
+        567.48,
+        56.64,
+        936.0
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 14.2
+  },
+  {
+   "pair_id": "EOM-c50e2170",
+   "classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 30,
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К6",
+   "human_expected_ru": "В версии B исчезли координационные оси: штрихпунктирные линии и кружки с марками осей по всему периметру плана. Сегментов 8 027 → 4 502.",
+   "n_seg_a": 8027,
+   "n_seg_b": 4502,
+   "S_a": 12.537,
+   "S_b": 10.508,
+   "S": 12.537,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.988,
+   "variants": {
+    "interior": {
+     "n_obj_a": 707,
+     "n_obj_b": 665,
+     "n_families": 380,
+     "n_repeated": 169,
+     "rows_min2": 75,
+     "rows_min3": 57,
+     "delta_sum": 475,
+     "delta_max": 30,
+     "ledger": [
+      {
+       "n_a": 6,
+       "n_b": 36,
+       "delta": 30,
+       "cls": "stray",
+       "diag": 1.518,
+       "n_seg_med": 1.0,
+       "bbox": [
+        99.36,
+        83.52,
+        994.8,
+        907.68
+       ]
+      },
+      {
+       "n_a": 30,
+       "n_b": 0,
+       "delta": -30,
+       "cls": "symbol",
+       "diag": 1.518,
+       "n_seg_med": 2.0,
+       "bbox": [
+        99.36,
+        83.52,
+        994.8,
+        907.68
+       ]
+      },
+      {
+       "n_a": 28,
+       "n_b": 0,
+       "delta": -28,
+       "cls": "symbol",
+       "diag": 56.716,
+       "n_seg_med": 2.0,
+       "bbox": [
+        102.24,
+        91.44,
+        1016.64,
+        899.76
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 28,
+       "delta": 26,
+       "cls": "stray",
+       "diag": 56.716,
+       "n_seg_med": 1.0,
+       "bbox": [
+        102.24,
+        91.44,
+        1016.64,
+        899.76
+       ]
+      },
+      {
+       "n_a": 36,
+       "n_b": 57,
+       "delta": 21,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        122.88,
+        121.2,
+        910.8,
+        852.48
+       ]
+      },
+      {
+       "n_a": 45,
+       "n_b": 64,
+       "delta": 19,
+       "cls": "symbol",
+       "diag": 56.64,
+       "n_seg_med": 1,
+       "bbox": [
+        131.28,
+        121.2,
+        1036.32,
+        852.48
+       ]
+      },
+      {
+       "n_a": 18,
+       "n_b": 0,
+       "delta": -18,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 2.0,
+       "bbox": [
+        258.0,
+        320.4,
+        910.8,
+        702.96
+       ]
+      },
+      {
+       "n_a": 17,
+       "n_b": 0,
+       "delta": -17,
+       "cls": "symbol",
+       "diag": 32.075,
+       "n_seg_med": 48,
+       "bbox": [
+        108.24,
+        121.92,
+        951.6,
+        929.28
+       ]
+      },
+      {
+       "n_a": 17,
+       "n_b": 0,
+       "delta": -17,
+       "cls": "symbol",
+       "diag": 56.64,
+       "n_seg_med": 2,
+       "bbox": [
+        266.64,
+        320.4,
+        902.4,
+        702.96
+       ]
+      },
+      {
+       "n_a": 40,
+       "n_b": 51,
+       "delta": 11,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        216.96,
+        86.4,
+        922.8,
+        890.64
+       ]
+      },
+      {
+       "n_a": 11,
+       "n_b": 0,
+       "delta": -11,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 2,
+       "bbox": [
+        216.96,
+        86.4,
+        922.8,
+        890.64
+       ]
+      },
+      {
+       "n_a": 10,
+       "n_b": 0,
+       "delta": -10,
+       "cls": "symbol",
+       "diag": 56.64,
+       "n_seg_med": 2.5,
+       "bbox": [
+        151.68,
+        121.2,
+        787.44,
+        852.48
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 743,
+     "n_obj_b": 685,
+     "n_families": 413,
+     "n_repeated": 174,
+     "rows_min2": 80,
+     "rows_min3": 58,
+     "delta_sum": 499,
+     "delta_max": 30,
+     "ledger": [
+      {
+       "n_a": 6,
+       "n_b": 36,
+       "delta": 30,
+       "cls": "stray",
+       "diag": 1.518,
+       "n_seg_med": 1.0,
+       "bbox": [
+        99.36,
+        83.52,
+        994.8,
+        907.68
+       ]
+      },
+      {
+       "n_a": 30,
+       "n_b": 0,
+       "delta": -30,
+       "cls": "symbol",
+       "diag": 1.518,
+       "n_seg_med": 2.0,
+       "bbox": [
+        99.36,
+        83.52,
+        994.8,
+        907.68
+       ]
+      },
+      {
+       "n_a": 28,
+       "n_b": 0,
+       "delta": -28,
+       "cls": "symbol",
+       "diag": 56.716,
+       "n_seg_med": 2.0,
+       "bbox": [
+        102.24,
+        91.44,
+        1016.64,
+        899.76
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 28,
+       "delta": 26,
+       "cls": "stray",
+       "diag": 56.716,
+       "n_seg_med": 1.0,
+       "bbox": [
+        102.24,
+        91.44,
+        1016.64,
+        899.76
+       ]
+      },
+      {
+       "n_a": 23,
+       "n_b": 0,
+       "delta": -23,
+       "cls": "symbol",
+       "diag": 32.075,
+       "n_seg_med": 48,
+       "bbox": [
+        60.48,
+        14.4,
+        951.6,
+        969.36
+       ]
+      },
+      {
+       "n_a": 36,
+       "n_b": 57,
+       "delta": 21,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        122.88,
+        121.2,
+        910.8,
+        852.48
+       ]
+      },
+      {
+       "n_a": 45,
+       "n_b": 64,
+       "delta": 19,
+       "cls": "symbol",
+       "diag": 56.64,
+       "n_seg_med": 1,
+       "bbox": [
+        131.28,
+        121.2,
+        1036.32,
+        852.48
+       ]
+      },
+      {
+       "n_a": 18,
+       "n_b": 0,
+       "delta": -18,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 2.0,
+       "bbox": [
+        258.0,
+        320.4,
+        910.8,
+        702.96
+       ]
+      },
+      {
+       "n_a": 17,
+       "n_b": 0,
+       "delta": -17,
+       "cls": "symbol",
+       "diag": 56.64,
+       "n_seg_med": 2,
+       "bbox": [
+        266.64,
+        320.4,
+        902.4,
+        702.96
+       ]
+      },
+      {
+       "n_a": 40,
+       "n_b": 51,
+       "delta": 11,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        216.96,
+        86.4,
+        922.8,
+        890.64
+       ]
+      },
+      {
+       "n_a": 11,
+       "n_b": 0,
+       "delta": -11,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 2,
+       "bbox": [
+        216.96,
+        86.4,
+        922.8,
+        890.64
+       ]
+      },
+      {
+       "n_a": 11,
+       "n_b": 0,
+       "delta": -11,
+       "cls": "stray",
+       "diag": 5.993,
+       "n_seg_med": 1,
+       "bbox": [
+        50.65,
+        382.56,
+        56.64,
+        878.64
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 9.4
+  },
+  {
+   "pair_id": "KJ-25717577",
+   "classes": [
+    "text_only_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "KJ",
+   "doc_id": "13АВ-РД-КЖ5.22-28.1-К1",
+   "human_expected_ru": "Изменились только даты во всех строках штампа: 25.03.26 → 22.05.26. Линии таблицы, подписи и логотип те же.",
+   "n_seg_a": 1958,
+   "n_seg_b": 1952,
+   "S_a": 8.874,
+   "S_b": 8.874,
+   "S": 8.874,
+   "reg_offset": [
+    -0.1,
+    -0.0
+   ],
+   "reg_score": 0.9409,
+   "variants": {
+    "interior": {
+     "n_obj_a": 12,
+     "n_obj_b": 12,
+     "n_families": 11,
+     "n_repeated": 11,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 33,
+     "n_obj_b": 32,
+     "n_families": 21,
+     "n_repeated": 18,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 80.8
+  },
+  {
+   "pair_id": "VK-56115717",
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 1,
+   "label_confidence": "high",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК2-К3 V1",
+   "human_expected_ru": "В версии B удалена правая схема «Схема системы В2.3 (2 зона)» целиком; левая схема В2.2 осталась. Заодно исчез текст в штампе.",
+   "n_seg_a": 27227,
+   "n_seg_b": 12395,
+   "S_a": 9.424,
+   "S_b": 9.423,
+   "S": 9.424,
+   "reg_offset": [
+    -0.05,
+    0.05
+   ],
+   "reg_score": 0.48,
+   "variants": {
+    "interior": {
+     "n_obj_a": 536,
+     "n_obj_b": 532,
+     "n_families": 277,
+     "n_repeated": 207,
+     "rows_min2": 48,
+     "rows_min3": 22,
+     "delta_sum": 74,
+     "delta_max": 4,
+     "ledger": [
+      {
+       "n_a": 9,
+       "n_b": 13,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 0.679,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1395.6,
+        292.56,
+        1525.68,
+        1427.52
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 5,
+       "delta": 4,
+       "cls": "symbol",
+       "diag": 29.618,
+       "n_seg_med": 77.0,
+       "bbox": [
+        1408.8,
+        334.08,
+        1424.36,
+        1088.4
+       ]
+      },
+      {
+       "n_a": 11,
+       "n_b": 14,
+       "delta": 3,
+       "cls": "symbol",
+       "diag": 53.45,
+       "n_seg_med": 316,
+       "bbox": [
+        1516.56,
+        331.44,
+        1546.56,
+        1445.97
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 1,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 1.018,
+       "n_seg_med": 6,
+       "bbox": [
+        1397.76,
+        583.92,
+        1517.28,
+        1241.76
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 20.213,
+       "n_seg_med": 4,
+       "bbox": [
+        1408.8,
+        553.68,
+        1418.88,
+        1227.36
+       ]
+      },
+      {
+       "n_a": 9,
+       "n_b": 11,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.697,
+       "n_seg_med": 52.0,
+       "bbox": [
+        1523.52,
+        358.08,
+        1523.76,
+        1429.2
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 1.018,
+       "n_seg_med": 8.0,
+       "bbox": [
+        1530.48,
+        858.24,
+        1531.2,
+        1417.92
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 1.697,
+       "n_seg_med": 52.0,
+       "bbox": [
+        1523.52,
+        504.0,
+        1523.76,
+        1088.88
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 3.369,
+       "n_seg_med": 5.0,
+       "bbox": [
+        1514.4,
+        434.64,
+        1514.64,
+        1094.16
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 20.33,
+       "n_seg_med": 78.0,
+       "bbox": [
+        1408.8,
+        565.8,
+        1424.37,
+        1235.04
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 22.003,
+       "n_seg_med": 116.0,
+       "bbox": [
+        1530.24,
+        773.28,
+        1540.08,
+        865.92
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 72.166,
+       "n_seg_med": 87.0,
+       "bbox": [
+        1405.68,
+        547.92,
+        1425.12,
+        1273.68
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 1001,
+     "n_obj_b": 552,
+     "n_families": 430,
+     "n_repeated": 259,
+     "rows_min2": 118,
+     "rows_min3": 63,
+     "delta_sum": 399,
+     "delta_max": 35,
+     "ledger": [
+      {
+       "n_a": 87,
+       "n_b": 52,
+       "delta": -35,
+       "cls": "stray",
+       "diag": 56.64,
+       "n_seg_med": 1,
+       "bbox": [
+        1229.76,
+        138.0,
+        2170.08,
+        1416.48
+       ]
+      },
+      {
+       "n_a": 33,
+       "n_b": 13,
+       "delta": -20,
+       "cls": "linear",
+       "diag": 0.679,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1395.6,
+        230.4,
+        2076.48,
+        1427.52
+       ]
+      },
+      {
+       "n_a": 28,
+       "n_b": 10,
+       "delta": -18,
+       "cls": "linear",
+       "diag": 0.96,
+       "n_seg_med": 8.0,
+       "bbox": [
+        1513.2,
+        230.88,
+        2076.48,
+        1429.44
+       ]
+      },
+      {
+       "n_a": 39,
+       "n_b": 23,
+       "delta": -16,
+       "cls": "stray",
+       "diag": 28.32,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1166.16,
+        258.24,
+        2045.76,
+        1492.32
+       ]
+      },
+      {
+       "n_a": 12,
+       "n_b": 0,
+       "delta": -12,
+       "cls": "symbol",
+       "diag": 69.047,
+       "n_seg_med": 66.0,
+       "bbox": [
+        2059.92,
+        414.72,
+        2064.72,
+        1285.68
+       ]
+      },
+      {
+       "n_a": 22,
+       "n_b": 12,
+       "delta": -10,
+       "cls": "stray",
+       "diag": 8.414,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1492.8,
+        1260.96,
+        2043.84,
+        1310.16
+       ]
+      },
+      {
+       "n_a": 10,
+       "n_b": 0,
+       "delta": -10,
+       "cls": "symbol",
+       "diag": 75.254,
+       "n_seg_med": 393.5,
+       "bbox": [
+        2064.72,
+        417.36,
+        2094.96,
+        1288.32
+       ]
+      },
+      {
+       "n_a": 9,
+       "n_b": 0,
+       "delta": -9,
+       "cls": "linear",
+       "diag": 0.72,
+       "n_seg_med": 6,
+       "bbox": [
+        1513.2,
+        460.56,
+        2067.84,
+        1190.4
+       ]
+      },
+      {
+       "n_a": 8,
+       "n_b": 0,
+       "delta": -8,
+       "cls": "stray",
+       "diag": 2.799,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1948.56,
+        189.6,
+        1950.96,
+        1145.76
+       ]
+      },
+      {
+       "n_a": 10,
+       "n_b": 3,
+       "delta": -7,
+       "cls": "linear",
+       "diag": 1.224,
+       "n_seg_med": 10,
+       "bbox": [
+        1522.32,
+        318.96,
+        2076.48,
+        1306.08
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 0,
+       "delta": -7,
+       "cls": "symbol",
+       "diag": 69.286,
+       "n_seg_med": 53,
+       "bbox": [
+        1946.16,
+        348.96,
+        1950.96,
+        1220.16
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 0,
+       "delta": -7,
+       "cls": "composite",
+       "diag": 85.834,
+       "n_seg_med": 196,
+       "bbox": [
+        1942.32,
+        342.24,
+        1977.1,
+        1149.84
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 29.8
+  },
+  {
+   "pair_id": "SS-c7aa8d26",
+   "classes": [
+    "object_added",
+    "with_labels",
+    "sparse_block"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 2,
+   "label_confidence": "high",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К5 (Книга 2)",
+   "human_expected_ru": "В версии B добавлены два узла: «Крепление горизонтальных кабельных трасс…» и «Крепление кабельных трасс в месте изгиба…». Первый узел («вертикальных трасс») не изменился.",
+   "n_seg_a": 540,
+   "n_seg_b": 726,
+   "S_a": 10.995,
+   "S_b": 10.995,
+   "S": 10.995,
+   "reg_offset": [
+    -0.0,
+    -0.05
+   ],
+   "reg_score": 0.9352,
+   "variants": {
+    "interior": {
+     "n_obj_a": 11,
+     "n_obj_b": 11,
+     "n_families": 13,
+     "n_repeated": 5,
+     "rows_min2": 2,
+     "rows_min3": 0,
+     "delta_sum": 4,
+     "delta_max": 2,
+     "ledger": [
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "area",
+       "diag": 196.39,
+       "n_seg_med": 3.0,
+       "bbox": [
+        1731.04,
+        1149.04,
+        1869.89,
+        1429.65
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 196.483,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1734.9,
+        1149.03,
+        1873.84,
+        1429.68
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 16,
+     "n_obj_b": 29,
+     "n_families": 29,
+     "n_repeated": 8,
+     "rows_min2": 6,
+     "rows_min3": 2,
+     "delta_sum": 14,
+     "delta_max": 4,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "stray",
+       "diag": 10.013,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1975.08,
+        1131.4,
+        2180.64,
+        1254.76
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 5,
+       "delta": 2,
+       "cls": "stray",
+       "diag": 10.013,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1775.28,
+        1144.12,
+        2121.72,
+        1434.64
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "area",
+       "diag": 136.092,
+       "n_seg_med": 3.0,
+       "bbox": [
+        1980.26,
+        1105.75,
+        2175.78,
+        1201.93
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "area",
+       "diag": 196.39,
+       "n_seg_med": 3.0,
+       "bbox": [
+        1731.04,
+        1149.04,
+        1869.89,
+        1429.65
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 7.935,
+       "n_seg_med": 5.0,
+       "bbox": [
+        1977.0,
+        1148.68,
+        2076.72,
+        1156.6
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 196.483,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1734.9,
+        1149.03,
+        1873.84,
+        1429.68
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 10.9
+  },
+  {
+   "pair_id": "AR-dbfd82b8",
+   "classes": [
+    "object_removed",
+    "with_labels",
+    "table_like"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 1,
+   "label_confidence": "high",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К6",
+   "human_expected_ru": "В версии B удалён блок «Условные обозначения» целиком (около 25 строк с образцами штриховок и подписями). Таблица «Ведомость полов 2-го этажа» не изменилась.",
+   "n_seg_a": 8895,
+   "n_seg_b": 7829,
+   "S_a": 9.393,
+   "S_b": 9.393,
+   "S": 9.393,
+   "reg_offset": [
+    -0.07,
+    -0.05
+   ],
+   "reg_score": 0.8407,
+   "variants": {
+    "interior": {
+     "n_obj_a": 175,
+     "n_obj_b": 175,
+     "n_families": 101,
+     "n_repeated": 101,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 215,
+     "n_obj_b": 179,
+     "n_families": 134,
+     "n_repeated": 106,
+     "rows_min2": 4,
+     "rows_min3": 2,
+     "delta_sum": 8,
+     "delta_max": 3,
+     "ledger": [
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 6.36,
+       "n_seg_med": 4,
+       "bbox": [
+        1436.28,
+        718.72,
+        1478.88,
+        881.8
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "stray",
+       "diag": 28.32,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1781.52,
+        845.8,
+        1809.84,
+        857.08
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 56.917,
+       "n_seg_med": 60.5,
+       "bbox": [
+        1757.88,
+        737.8,
+        1813.68,
+        774.16
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 3,
+       "delta": -1,
+       "cls": "stray",
+       "diag": 35.64,
+       "n_seg_med": 1,
+       "bbox": [
+        1650.12,
+        145.0,
+        1781.52,
+        868.48
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 50.1
+  },
+  {
+   "pair_id": "AR-441907a2",
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 2,
+   "label_confidence": "high",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К4",
+   "human_expected_ru": "В версии B удалены разрез «Сеч. а–а» в правом верхнем углу и всё содержимое штампа (остались только линии таблицы).",
+   "n_seg_a": 16388,
+   "n_seg_b": 10793,
+   "S_a": 9.145,
+   "S_b": 9.159,
+   "S": 9.159,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.5579,
+   "variants": {
+    "interior": {
+     "n_obj_a": 178,
+     "n_obj_b": 178,
+     "n_families": 151,
+     "n_repeated": 151,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 282,
+     "n_obj_b": 191,
+     "n_families": 231,
+     "n_repeated": 154,
+     "rows_min2": 11,
+     "rows_min3": 8,
+     "delta_sum": 38,
+     "delta_max": 10,
+     "ledger": [
+      {
+       "n_a": 1,
+       "n_b": 11,
+       "delta": 10,
+       "cls": "linear",
+       "diag": 78.0,
+       "n_seg_med": 1.0,
+       "bbox": [
+        412.8,
+        302.4,
+        729.84,
+        813.36
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 0,
+       "delta": -7,
+       "cls": "linear",
+       "diag": 184.32,
+       "n_seg_med": 1,
+       "bbox": [
+        651.84,
+        685.92,
+        836.16,
+        813.36
+       ]
+      },
+      {
+       "n_a": 9,
+       "n_b": 5,
+       "delta": -4,
+       "cls": "stray",
+       "diag": 56.64,
+       "n_seg_med": 1.0,
+       "bbox": [
+        404.64,
+        177.12,
+        855.12,
+        564.72
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "linear",
+       "diag": 43.021,
+       "n_seg_med": 4.0,
+       "bbox": [
+        930.0,
+        90.0,
+        965.52,
+        321.12
+       ]
+      },
+      {
+       "n_a": 6,
+       "n_b": 3,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 155.76,
+       "n_seg_med": 1,
+       "bbox": [
+        337.44,
+        99.84,
+        1176.24,
+        756.72
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 2,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 152.875,
+       "n_seg_med": 1,
+       "bbox": [
+        217.68,
+        213.12,
+        836.16,
+        825.84
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 75.12,
+       "n_seg_med": 1.0,
+       "bbox": [
+        506.16,
+        154.56,
+        1133.04,
+        824.63
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 524.4,
+       "n_seg_med": 2.0,
+       "bbox": [
+        651.84,
+        700.08,
+        1176.24,
+        742.56
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 2,
+       "delta": -1,
+       "cls": "stray",
+       "diag": 70.8,
+       "n_seg_med": 1,
+       "bbox": [
+        486.24,
+        241.44,
+        736.8,
+        742.56
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 1,
+       "delta": -1,
+       "cls": "symbol",
+       "diag": 14.16,
+       "n_seg_med": 2,
+       "bbox": [
+        259.92,
+        258.0,
+        1133.04,
+        302.88
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 1,
+       "delta": -1,
+       "cls": "linear",
+       "diag": 127.44,
+       "n_seg_med": 1,
+       "bbox": [
+        333.36,
+        102.24,
+        1083.12,
+        132.72
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 38.5
+  },
+  {
+   "pair_id": "AR-a32b30a6",
+   "classes": [
+    "object_added",
+    "raster_graphics",
+    "no_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 1,
+   "label_confidence": "high",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3-К3",
+   "human_expected_ru": "В версии B рядом с «Фундамент под оборудование Фпк-3, Фпк-4. Опалубка» добавлен второй чертёж «Фундамент под оборудование Фпк-2. Армирование».",
+   "error": "no vector geometry"
+  },
+  {
+   "pair_id": "EOM-0c86dfde",
+   "classes": [
+    "text_only_change",
+    "object_moved_label",
+    "dense_block"
+   ],
+   "expected_verdict": "NO_GRAPHIC_CHANGE",
+   "expected_changed_objects": 0,
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К1",
+   "human_expected_ru": "Столбец марок кабелей (K1.2.3n-12, K1.2.15, K1.2.21, K1.2.3n-6, K1.2.24, K1.2.20, …) сдвинут влево относительно плана; сам план тот же.",
+   "n_seg_a": 53517,
+   "n_seg_b": 50063,
+   "S_a": 8.859,
+   "S_b": 8.859,
+   "S": 8.859,
+   "reg_offset": [
+    0.0,
+    0.05
+   ],
+   "reg_score": 0.999,
+   "variants": {
+    "interior": {
+     "n_obj_a": 1983,
+     "n_obj_b": 1922,
+     "n_families": 770,
+     "n_repeated": 594,
+     "rows_min2": 26,
+     "rows_min3": 9,
+     "delta_sum": 44,
+     "delta_max": 3,
+     "ledger": [
+      {
+       "n_a": 3,
+       "n_b": 6,
+       "delta": 3,
+       "cls": "stray",
+       "diag": 5.64,
+       "n_seg_med": 1,
+       "bbox": [
+        639.78,
+        398.44,
+        1079.58,
+        892.42
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 1.994,
+       "n_seg_med": 7,
+       "bbox": [
+        628.68,
+        301.66,
+        1207.56,
+        627.22
+       ]
+      },
+      {
+       "n_a": 67,
+       "n_b": 69,
+       "delta": 2,
+       "cls": "stray",
+       "diag": 56.7,
+       "n_seg_med": 1.0,
+       "bbox": [
+        367.44,
+        291.46,
+        1300.2,
+        1104.58
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 18.172,
+       "n_seg_med": 85.0,
+       "bbox": [
+        741.84,
+        299.86,
+        1039.2,
+        307.06
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 18.199,
+       "n_seg_med": 85.0,
+       "bbox": [
+        445.38,
+        734.08,
+        452.52,
+        859.96
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.66,
+       "n_seg_med": 4.0,
+       "bbox": [
+        620.4,
+        302.26,
+        1026.84,
+        303.52
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.749,
+       "n_seg_med": 7.0,
+       "bbox": [
+        661.02,
+        1022.8,
+        771.06,
+        1024.3
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.749,
+       "n_seg_med": 7.0,
+       "bbox": [
+        445.38,
+        520.78,
+        446.88,
+        739.96
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.749,
+       "n_seg_med": 7.0,
+       "bbox": [
+        1210.8,
+        520.78,
+        1212.3,
+        739.96
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.897,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1209.3,
+        745.66,
+        1210.86,
+        855.88
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.897,
+       "n_seg_med": 6.0,
+       "bbox": [
+        446.82,
+        745.66,
+        448.38,
+        855.88
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.994,
+       "n_seg_med": 7.0,
+       "bbox": [
+        450.12,
+        516.64,
+        451.5,
+        627.22
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 1985,
+     "n_obj_b": 1922,
+     "n_families": 771,
+     "n_repeated": 595,
+     "rows_min2": 27,
+     "rows_min3": 9,
+     "delta_sum": 46,
+     "delta_max": 3,
+     "ledger": [
+      {
+       "n_a": 3,
+       "n_b": 6,
+       "delta": 3,
+       "cls": "stray",
+       "diag": 5.64,
+       "n_seg_med": 1,
+       "bbox": [
+        639.78,
+        398.44,
+        1079.58,
+        892.42
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 1.994,
+       "n_seg_med": 7,
+       "bbox": [
+        628.68,
+        301.66,
+        1207.56,
+        627.22
+       ]
+      },
+      {
+       "n_a": 67,
+       "n_b": 69,
+       "delta": 2,
+       "cls": "stray",
+       "diag": 56.7,
+       "n_seg_med": 1.0,
+       "bbox": [
+        367.44,
+        291.46,
+        1300.2,
+        1104.58
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 18.172,
+       "n_seg_med": 85.0,
+       "bbox": [
+        741.84,
+        299.86,
+        1039.2,
+        307.06
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 18.199,
+       "n_seg_med": 85.0,
+       "bbox": [
+        445.38,
+        734.08,
+        452.52,
+        859.96
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.66,
+       "n_seg_med": 4.0,
+       "bbox": [
+        620.4,
+        302.26,
+        1026.84,
+        303.52
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.749,
+       "n_seg_med": 7.0,
+       "bbox": [
+        661.02,
+        1022.8,
+        771.06,
+        1024.3
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.749,
+       "n_seg_med": 7.0,
+       "bbox": [
+        445.38,
+        520.78,
+        446.88,
+        739.96
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.749,
+       "n_seg_med": 7.0,
+       "bbox": [
+        1210.8,
+        520.78,
+        1212.3,
+        739.96
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.897,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1209.3,
+        745.66,
+        1210.86,
+        855.88
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.897,
+       "n_seg_med": 6.0,
+       "bbox": [
+        446.82,
+        745.66,
+        448.38,
+        855.88
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 1.994,
+       "n_seg_med": 7.0,
+       "bbox": [
+        450.12,
+        516.64,
+        451.5,
+        627.22
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 75.8
+  },
+  {
+   "pair_id": "EOM-46355862",
+   "classes": [
+    "object_added",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 15,
+   "label_confidence": "medium",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ2-ПА V1",
+   "human_expected_ru": "В версии B появилась штриховка (заливка) примерно в 15 помещениях плюс новые выноски с марками; контуры стен и осей те же.",
+   "n_seg_a": 27845,
+   "n_seg_b": 60524,
+   "S_a": 9.424,
+   "S_b": 9.445,
+   "S": 9.445,
+   "reg_offset": [
+    -0.076,
+    76.497
+   ],
+   "reg_score": 0.4109,
+   "variants": {
+    "interior": {
+     "n_obj_a": 3635,
+     "n_obj_b": 4764,
+     "n_families": 1250,
+     "n_repeated": 612,
+     "rows_min2": 257,
+     "rows_min3": 166,
+     "delta_sum": 1666,
+     "delta_max": 105,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 105,
+       "delta": 105,
+       "cls": "linear",
+       "diag": 324.817,
+       "n_seg_med": 1,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 69,
+       "delta": 69,
+       "cls": "linear",
+       "diag": 388.796,
+       "n_seg_med": 1,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 46,
+       "delta": 46,
+       "cls": "linear",
+       "diag": 483.322,
+       "n_seg_med": 1.0,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 46,
+       "delta": 45,
+       "cls": "linear",
+       "diag": 297.664,
+       "n_seg_med": 1,
+       "bbox": [
+        521.28,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 44,
+       "delta": 44,
+       "cls": "linear",
+       "diag": 210.18,
+       "n_seg_med": 1.0,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 434,
+       "n_b": 391,
+       "delta": -43,
+       "cls": "stray",
+       "diag": 56.64,
+       "n_seg_med": 1,
+       "bbox": [
+        544.32,
+        439.68,
+        2378.88,
+        2940.72
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 43,
+       "delta": 43,
+       "cls": "linear",
+       "diag": 729.565,
+       "n_seg_med": 1,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 38,
+       "delta": 38,
+       "cls": "linear",
+       "diag": 85.106,
+       "n_seg_med": 99.5,
+       "bbox": [
+        587.04,
+        510.0,
+        2348.16,
+        2667.12
+       ]
+      },
+      {
+       "n_a": 356,
+       "n_b": 319,
+       "delta": -37,
+       "cls": "stray",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        544.32,
+        449.28,
+        2378.88,
+        3003.6
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 36,
+       "delta": 36,
+       "cls": "symbol",
+       "diag": 26.031,
+       "n_seg_med": 13.0,
+       "bbox": [
+        546.24,
+        546.48,
+        2263.2,
+        2662.56
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 34,
+       "delta": 34,
+       "cls": "symbol",
+       "diag": 26.031,
+       "n_seg_med": 13.0,
+       "bbox": [
+        546.24,
+        515.04,
+        2263.2,
+        2631.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 33,
+       "delta": 33,
+       "cls": "symbol",
+       "diag": 47.322,
+       "n_seg_med": 14,
+       "bbox": [
+        569.05,
+        512.9,
+        2274.88,
+        2664.72
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 3636,
+     "n_obj_b": 4765,
+     "n_families": 1251,
+     "n_repeated": 613,
+     "rows_min2": 257,
+     "rows_min3": 166,
+     "delta_sum": 1666,
+     "delta_max": 105,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 105,
+       "delta": 105,
+       "cls": "linear",
+       "diag": 324.817,
+       "n_seg_med": 1,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 69,
+       "delta": 69,
+       "cls": "linear",
+       "diag": 388.796,
+       "n_seg_med": 1,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 46,
+       "delta": 46,
+       "cls": "linear",
+       "diag": 483.322,
+       "n_seg_med": 1.0,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 46,
+       "delta": 45,
+       "cls": "linear",
+       "diag": 297.664,
+       "n_seg_med": 1,
+       "bbox": [
+        521.28,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 44,
+       "delta": 44,
+       "cls": "linear",
+       "diag": 210.18,
+       "n_seg_med": 1.0,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 434,
+       "n_b": 391,
+       "delta": -43,
+       "cls": "stray",
+       "diag": 56.64,
+       "n_seg_med": 1,
+       "bbox": [
+        544.32,
+        439.68,
+        2378.88,
+        2940.72
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 43,
+       "delta": 43,
+       "cls": "linear",
+       "diag": 729.565,
+       "n_seg_med": 1,
+       "bbox": [
+        689.52,
+        657.12,
+        2380.32,
+        2739.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 38,
+       "delta": 38,
+       "cls": "linear",
+       "diag": 85.106,
+       "n_seg_med": 99.5,
+       "bbox": [
+        587.04,
+        510.0,
+        2348.16,
+        2667.12
+       ]
+      },
+      {
+       "n_a": 356,
+       "n_b": 319,
+       "delta": -37,
+       "cls": "stray",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        544.32,
+        449.28,
+        2378.88,
+        3003.6
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 36,
+       "delta": 36,
+       "cls": "symbol",
+       "diag": 26.031,
+       "n_seg_med": 13.0,
+       "bbox": [
+        546.24,
+        546.48,
+        2263.2,
+        2662.56
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 34,
+       "delta": 34,
+       "cls": "symbol",
+       "diag": 26.031,
+       "n_seg_med": 13.0,
+       "bbox": [
+        546.24,
+        515.04,
+        2263.2,
+        2631.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 33,
+       "delta": 33,
+       "cls": "symbol",
+       "diag": 47.322,
+       "n_seg_med": 14,
+       "bbox": [
+        569.05,
+        512.9,
+        2274.88,
+        2664.72
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 45.1
+  },
+  {
+   "pair_id": "EOM-7fef43a3",
+   "classes": [
+    "object_added",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 2,
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К4",
+   "human_expected_ru": "В версии B добавлены выноска с подписью «Закладная гильза для кабеля обогрева» и сноска «* Зазор между трубой и гильзой необходимо заделать мягким водонепроницаемым материалом».",
+   "n_seg_a": 10972,
+   "n_seg_b": 10972,
+   "S_a": 1.537,
+   "S_b": 13.964,
+   "S": 13.964,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 192,
+     "n_obj_b": 192,
+     "n_families": 111,
+     "n_repeated": 111,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 200,
+     "n_obj_b": 200,
+     "n_families": 117,
+     "n_repeated": 117,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    }
+   },
+   "t_sec": 65.5
+  },
+  {
+   "pair_id": "AR-55eda7fb",
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 1,
+   "label_confidence": "high",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.1-К2",
+   "human_expected_ru": "В таблице «Перемычки 39 этаж» изменён эскиз строки ПР-14: было L=850 (поз. 10) с размерами 150/550/150, стало L=1000 (поз. 8) со штриховкой стены справа. Остальные строки не изменились.",
+   "n_seg_a": 4315,
+   "n_seg_b": 4412,
+   "S_a": 9.13,
+   "S_b": 9.13,
+   "S": 9.13,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9763,
+   "variants": {
+    "interior": {
+     "n_obj_a": 123,
+     "n_obj_b": 136,
+     "n_families": 100,
+     "n_repeated": 85,
+     "rows_min2": 7,
+     "rows_min3": 6,
+     "delta_sum": 10,
+     "delta_max": 3,
+     "ledger": [
+      {
+       "n_a": 2,
+       "n_b": 5,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 69.6,
+       "n_seg_med": 2,
+       "bbox": [
+        477.12,
+        1447.2,
+        556.8,
+        1538.64
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 7,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 13.102,
+       "n_seg_med": 40.0,
+       "bbox": [
+        281.48,
+        1298.84,
+        328.6,
+        1581.36
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 6,
+       "delta": 1,
+       "cls": "stray",
+       "diag": 69.6,
+       "n_seg_med": 1,
+       "bbox": [
+        388.32,
+        1260.24,
+        550.8,
+        1536.72
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 3,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 31.725,
+       "n_seg_med": 11,
+       "bbox": [
+        259.92,
+        1313.04,
+        294.48,
+        1505.52
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 3,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 85.254,
+       "n_seg_med": 2,
+       "bbox": [
+        466.8,
+        1370.64,
+        548.88,
+        1587.6
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 3,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 87.511,
+       "n_seg_med": 4,
+       "bbox": [
+        463.92,
+        1337.28,
+        551.76,
+        1545.84
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 35.149,
+       "n_seg_med": 11,
+       "bbox": [
+        315.36,
+        1403.76,
+        353.52,
+        1505.52
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 128,
+     "n_obj_b": 141,
+     "n_families": 102,
+     "n_repeated": 87,
+     "rows_min2": 7,
+     "rows_min3": 6,
+     "delta_sum": 10,
+     "delta_max": 3,
+     "ledger": [
+      {
+       "n_a": 2,
+       "n_b": 5,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 69.6,
+       "n_seg_med": 2,
+       "bbox": [
+        477.12,
+        1447.2,
+        556.8,
+        1538.64
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 7,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 13.102,
+       "n_seg_med": 40.0,
+       "bbox": [
+        281.48,
+        1298.84,
+        328.6,
+        1581.36
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 6,
+       "delta": 1,
+       "cls": "stray",
+       "diag": 69.6,
+       "n_seg_med": 1,
+       "bbox": [
+        388.32,
+        1260.24,
+        550.8,
+        1536.72
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 4,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 31.725,
+       "n_seg_med": 11,
+       "bbox": [
+        259.92,
+        1313.04,
+        294.48,
+        1595.76
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 3,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 85.254,
+       "n_seg_med": 2,
+       "bbox": [
+        466.8,
+        1370.64,
+        548.88,
+        1587.6
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 3,
+       "delta": 1,
+       "cls": "linear",
+       "diag": 87.511,
+       "n_seg_med": 4,
+       "bbox": [
+        463.92,
+        1337.28,
+        551.76,
+        1545.84
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 35.149,
+       "n_seg_med": 11,
+       "bbox": [
+        315.36,
+        1403.76,
+        353.52,
+        1505.52
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 17.3
+  },
+  {
+   "pair_id": "SS-a369f492",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "raster_graphics",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 2,
+   "label_confidence": "high",
+   "discipline": "SS",
+   "doc_id": "13АВ-РД-АК-К5 (Книга 1)",
+   "human_expected_ru": "В версии B добавлен «Узел А прохода группы кабелей в лотке через строительные конструкции», а существующий «Узел В прохода кабеля в гильзе…» сдвинут вниз.",
+   "n_seg_a": 4876,
+   "n_seg_b": 6678,
+   "S_a": 15.244,
+   "S_b": 13.194,
+   "S": 15.244,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "variants": {
+    "interior": {
+     "n_obj_a": 151,
+     "n_obj_b": 151,
+     "n_families": 141,
+     "n_repeated": 141,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 151,
+     "n_obj_b": 202,
+     "n_families": 186,
+     "n_repeated": 144,
+     "rows_min2": 3,
+     "rows_min3": 2,
+     "delta_sum": 9,
+     "delta_max": 4,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 3.253,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1437.3,
+        159.76,
+        1485.78,
+        238.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 3.242,
+       "n_seg_med": 4,
+       "bbox": [
+        1466.28,
+        202.54,
+        1485.72,
+        238.18
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 5.667,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1523.46,
+        214.36,
+        1547.04,
+        236.56
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 79.3
+  },
+  {
+   "pair_id": "OV-93cc012f",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 4,
+   "label_confidence": "medium",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ1.1-К2 V1",
+   "human_expected_ru": "В версии B добавлены выноски-«шарики» 5 (33) и 1 (33) (три штуки), а верхняя часть трассы теплоснабжения сдвинута относительно нижней.",
+   "n_seg_a": 9880,
+   "n_seg_b": 9620,
+   "S_a": 9.427,
+   "S_b": 9.767,
+   "S": 9.767,
+   "reg_offset": [
+    -6.3,
+    -0.3
+   ],
+   "reg_score": 0.4534,
+   "variants": {
+    "interior": {
+     "n_obj_a": 183,
+     "n_obj_b": 165,
+     "n_families": 204,
+     "n_repeated": 70,
+     "rows_min2": 23,
+     "rows_min3": 10,
+     "delta_sum": 54,
+     "delta_max": 6,
+     "ledger": [
+      {
+       "n_a": 10,
+       "n_b": 4,
+       "delta": -6,
+       "cls": "linear",
+       "diag": 143.664,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1641.36,
+        567.36,
+        2101.68,
+        952.56
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 0,
+       "delta": -5,
+       "cls": "linear",
+       "diag": 113.865,
+       "n_seg_med": 1,
+       "bbox": [
+        1712.88,
+        558.24,
+        2088.0,
+        759.36
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "linear",
+       "diag": 67.08,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1654.08,
+        797.52,
+        1661.04,
+        866.88
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 135.477,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1705.92,
+        549.36,
+        1831.44,
+        623.04
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "linear",
+       "diag": 138.543,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1834.8,
+        561.6,
+        2088.0,
+        702.48
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "symbol",
+       "diag": 1.2,
+       "n_seg_med": 2,
+       "bbox": [
+        1659.84,
+        693.6,
+        2084.16,
+        890.16
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 31.255,
+       "n_seg_med": 8,
+       "bbox": [
+        1855.44,
+        574.32,
+        1934.88,
+        630.96
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 7,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 66.027,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1578.96,
+        620.64,
+        1759.68,
+        1030.56
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 24.203,
+       "n_seg_med": 8.0,
+       "bbox": [
+        1912.56,
+        595.68,
+        2079.12,
+        691.92
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 24.411,
+       "n_seg_med": 8.0,
+       "bbox": [
+        1854.24,
+        562.08,
+        1904.4,
+        591.12
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 1.399,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1826.4,
+        648.24,
+        2101.92,
+        706.08
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 96.192,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1692.96,
+        585.84,
+        1764.48,
+        658.56
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 185,
+     "n_obj_b": 167,
+     "n_families": 207,
+     "n_repeated": 71,
+     "rows_min2": 23,
+     "rows_min3": 10,
+     "delta_sum": 54,
+     "delta_max": 6,
+     "ledger": [
+      {
+       "n_a": 10,
+       "n_b": 4,
+       "delta": -6,
+       "cls": "linear",
+       "diag": 143.664,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1641.36,
+        567.36,
+        2101.68,
+        952.56
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 0,
+       "delta": -5,
+       "cls": "linear",
+       "diag": 113.865,
+       "n_seg_med": 1,
+       "bbox": [
+        1712.88,
+        558.24,
+        2088.0,
+        759.36
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "linear",
+       "diag": 67.08,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1654.08,
+        797.52,
+        1661.04,
+        866.88
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 135.477,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1705.92,
+        549.36,
+        1831.44,
+        623.04
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "linear",
+       "diag": 138.543,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1834.8,
+        561.6,
+        2088.0,
+        702.48
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "symbol",
+       "diag": 1.2,
+       "n_seg_med": 2,
+       "bbox": [
+        1659.84,
+        693.6,
+        2084.16,
+        890.16
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 31.255,
+       "n_seg_med": 8,
+       "bbox": [
+        1855.44,
+        574.32,
+        1934.88,
+        630.96
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 7,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 66.027,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1578.96,
+        620.64,
+        1759.68,
+        1030.56
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 24.203,
+       "n_seg_med": 8.0,
+       "bbox": [
+        1912.56,
+        595.68,
+        2079.12,
+        691.92
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 24.411,
+       "n_seg_med": 8.0,
+       "bbox": [
+        1854.24,
+        562.08,
+        1904.4,
+        591.12
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 1.399,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1826.4,
+        648.24,
+        2101.92,
+        706.08
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 96.192,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1692.96,
+        585.84,
+        1764.48,
+        658.56
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 40.8
+  },
+  {
+   "pair_id": "EOM-14558cda",
+   "classes": [
+    "object_added",
+    "occluding_fill",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 1,
+   "label_confidence": "medium",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭМ-К5",
+   "human_expected_ru": "В версии A вид «Внешний вид УЭРМ» полностью закрыт сплошной чёрной заливкой; в версии B тот же вид виден нормально. Подписи и отметки вокруг совпадают.",
+   "n_seg_a": 7932,
+   "n_seg_b": 7767,
+   "S_a": 12.579,
+   "S_b": 12.977,
+   "S": 12.977,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.89,
+   "variants": {
+    "interior": {
+     "n_obj_a": 238,
+     "n_obj_b": 224,
+     "n_families": 155,
+     "n_repeated": 115,
+     "rows_min2": 10,
+     "rows_min3": 4,
+     "delta_sum": 20,
+     "delta_max": 5,
+     "ledger": [
+      {
+       "n_a": 5,
+       "n_b": 0,
+       "delta": -5,
+       "cls": "symbol",
+       "diag": 51.12,
+       "n_seg_med": 2,
+       "bbox": [
+        1228.8,
+        239.28,
+        1804.8,
+        619.2
+       ]
+      },
+      {
+       "n_a": 6,
+       "n_b": 4,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 63.6,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1363.44,
+        155.52,
+        1439.28,
+        732.48
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 28.949,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1739.52,
+        255.84,
+        1767.84,
+        619.2
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 53.089,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1705.68,
+        239.28,
+        1753.68,
+        619.2
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 101.682,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1705.68,
+        239.28,
+        1804.8,
+        619.2
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 101.682,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1228.8,
+        239.28,
+        1327.92,
+        619.2
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 425.28,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1403.04,
+        227.76,
+        1408.8,
+        653.04
+       ]
+      },
+      {
+       "n_a": 6,
+       "n_b": 7,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        1396.32,
+        443.28,
+        1644.0,
+        589.44
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 3,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 32.928,
+       "n_seg_med": 9,
+       "bbox": [
+        1387.68,
+        553.44,
+        1567.92,
+        581.76
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 33.135,
+       "n_seg_med": 9,
+       "bbox": [
+        1387.68,
+        594.48,
+        1539.6,
+        623.04
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 240,
+     "n_obj_b": 226,
+     "n_families": 158,
+     "n_repeated": 116,
+     "rows_min2": 11,
+     "rows_min3": 4,
+     "delta_sum": 22,
+     "delta_max": 5,
+     "ledger": [
+      {
+       "n_a": 5,
+       "n_b": 0,
+       "delta": -5,
+       "cls": "symbol",
+       "diag": 51.12,
+       "n_seg_med": 2,
+       "bbox": [
+        1228.8,
+        239.28,
+        1804.8,
+        619.2
+       ]
+      },
+      {
+       "n_a": 6,
+       "n_b": 4,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 63.6,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1363.44,
+        155.52,
+        1439.28,
+        732.48
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 28.949,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1739.52,
+        255.84,
+        1767.84,
+        619.2
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 30.028,
+       "n_seg_med": 40.0,
+       "bbox": [
+        1352.16,
+        732.48,
+        1450.8,
+        752.16
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 53.089,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1705.68,
+        239.28,
+        1753.68,
+        619.2
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 101.682,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1705.68,
+        239.28,
+        1804.8,
+        619.2
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 101.682,
+       "n_seg_med": 6.0,
+       "bbox": [
+        1228.8,
+        239.28,
+        1327.92,
+        619.2
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 425.28,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1403.04,
+        227.76,
+        1408.8,
+        653.04
+       ]
+      },
+      {
+       "n_a": 6,
+       "n_b": 7,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 1,
+       "bbox": [
+        1396.32,
+        443.28,
+        1644.0,
+        589.44
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 3,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 32.928,
+       "n_seg_med": 9,
+       "bbox": [
+        1387.68,
+        553.44,
+        1567.92,
+        581.76
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 2,
+       "delta": 1,
+       "cls": "symbol",
+       "diag": 33.135,
+       "n_seg_med": 9,
+       "bbox": [
+        1387.68,
+        594.48,
+        1539.6,
+        623.04
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 25.1
+  },
+  {
+   "pair_id": "AR-490254e9",
+   "classes": [
+    "block_scope_change",
+    "with_labels"
+   ],
+   "expected_verdict": "NOT_COMPARABLE",
+   "expected_changed_objects": null,
+   "label_confidence": "high",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР1.2-К4",
+   "human_expected_ru": "Содержимое стороны A целиком присутствует в стороне B («Вид 1»), но блок B охватывает ещё три вида. Это разница нарезки блоков, а не доказанная правка листа.",
+   "n_seg_a": 466,
+   "n_seg_b": 4398,
+   "S_a": 9.13,
+   "S_b": 9.13,
+   "S": 9.13,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9968,
+   "variants": {
+    "interior": {
+     "n_obj_a": 22,
+     "n_obj_b": 25,
+     "n_families": 25,
+     "n_repeated": 18,
+     "rows_min2": 0,
+     "rows_min3": 0,
+     "delta_sum": 0,
+     "delta_max": 0,
+     "ledger": []
+    },
+    "all": {
+     "n_obj_a": 28,
+     "n_obj_b": 242,
+     "n_families": 182,
+     "n_repeated": 38,
+     "rows_min2": 23,
+     "rows_min3": 12,
+     "delta_sum": 84,
+     "delta_max": 25,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 25,
+       "delta": 25,
+       "cls": "linear",
+       "diag": 75.36,
+       "n_seg_med": 1,
+       "bbox": [
+        1248.48,
+        1339.68,
+        1798.56,
+        1440.72
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 5,
+       "delta": 5,
+       "cls": "linear",
+       "diag": 119.28,
+       "n_seg_med": 2,
+       "bbox": [
+        1268.4,
+        1309.2,
+        1435.92,
+        1439.76
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "stray",
+       "diag": 8.068,
+       "n_seg_med": 1.0,
+       "bbox": [
+        910.41,
+        1248.96,
+        1541.28,
+        1510.32
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "stray",
+       "diag": 8.429,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1271.76,
+        1322.88,
+        1295.04,
+        1367.76
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "stray",
+       "diag": 17.04,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1189.92,
+        1260.96,
+        1691.28,
+        1439.76
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "stray",
+       "diag": 57.12,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1136.4,
+        1207.92,
+        1440.48,
+        1433.04
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 181.44,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1403.52,
+        1282.08,
+        1584.96,
+        1440.72
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 4,
+       "delta": 3,
+       "cls": "area",
+       "diag": 161.52,
+       "n_seg_med": 2,
+       "bbox": [
+        1024.8,
+        1268.16,
+        1565.28,
+        1439.76
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "stray",
+       "diag": 8.485,
+       "n_seg_med": 1,
+       "bbox": [
+        1271.76,
+        1392.48,
+        1295.04,
+        1437.36
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 141.84,
+       "n_seg_med": 1,
+       "bbox": [
+        984.72,
+        1430.88,
+        1841.28,
+        1499.28
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 4,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 161.52,
+       "n_seg_med": 1.0,
+       "bbox": [
+        937.44,
+        1263.84,
+        1579.2,
+        1443.84
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 3,
+       "delta": 2,
+       "cls": "area",
+       "diag": 85.138,
+       "n_seg_med": 25.0,
+       "bbox": [
+        977.69,
+        1416.48,
+        1451.89,
+        1530.7
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 9.3
+  },
+  {
+   "pair_id": "OV-2cc2a382",
+   "classes": [
+    "block_scope_change",
+    "raster_graphics",
+    "no_labels"
+   ],
+   "expected_verdict": "NOT_COMPARABLE",
+   "expected_changed_objects": null,
+   "label_confidence": "high",
+   "discipline": "OV",
+   "doc_id": "13АВ-РД-ОВ2-К1 V1",
+   "human_expected_ru": "Эскиз установки из A присутствует в B; сторона B дополнительно содержит весь бланк «ТЕХНИЧЕСКИЕ ДАННЫЕ № РА26-005271-05» с таблицами. Разница нарезки блоков, а не правка.",
+   "error": "no vector geometry"
+  },
+  {
+   "pair_id": "AR-577a293f",
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 3,
+   "label_confidence": "medium",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР4.2-К4",
+   "human_expected_ru": "В «Ведомости полов 17-го этажа» изменены эскизы и составы строк 2.1, 2.4 и 2.7 (число слоёв и толщины). Сетка таблицы и остальные строки не изменились.",
+   "n_seg_a": 11378,
+   "n_seg_b": 10642,
+   "S_a": 9.393,
+   "S_b": 9.393,
+   "S": 9.393,
+   "reg_offset": [
+    -24.03,
+    5.25
+   ],
+   "reg_score": 0.3717,
+   "variants": {
+    "interior": {
+     "n_obj_a": 207,
+     "n_obj_b": 194,
+     "n_families": 237,
+     "n_repeated": 68,
+     "rows_min2": 33,
+     "rows_min3": 17,
+     "delta_sum": 64,
+     "delta_max": 5,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 5,
+       "delta": 5,
+       "cls": "linear",
+       "diag": 3.01,
+       "n_seg_med": 22,
+       "bbox": [
+        327.24,
+        1067.44,
+        402.96,
+        1623.76
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 14.84,
+       "n_seg_med": 4.0,
+       "bbox": [
+        320.4,
+        1402.72,
+        420.48,
+        1565.68
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 2,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 2.902,
+       "n_seg_med": 6,
+       "bbox": [
+        333.24,
+        1061.8,
+        383.88,
+        1567.24
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 9.504,
+       "n_seg_med": 2,
+       "bbox": [
+        268.44,
+        1060.0,
+        471.6,
+        1627.84
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 22.066,
+       "n_seg_med": 4,
+       "bbox": [
+        311.64,
+        1403.44,
+        403.92,
+        1423.24
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 22.066,
+       "n_seg_med": 5,
+       "bbox": [
+        328.68,
+        1067.08,
+        420.96,
+        1432.36
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 24.962,
+       "n_seg_med": 5,
+       "bbox": [
+        327.36,
+        1067.44,
+        363.0,
+        1432.36
+       ]
+      },
+      {
+       "n_a": 9,
+       "n_b": 7,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 14.884,
+       "n_seg_med": 4.0,
+       "bbox": [
+        280.92,
+        1071.64,
+        425.64,
+        1567.84
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 4,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 13.49,
+       "n_seg_med": 4.0,
+       "bbox": [
+        335.16,
+        1069.48,
+        429.6,
+        1425.64
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 3,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 17.814,
+       "n_seg_med": 2.0,
+       "bbox": [
+        449.16,
+        1258.72,
+        471.48,
+        1426.84
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 2.922,
+       "n_seg_med": 10.0,
+       "bbox": [
+        333.36,
+        1061.56,
+        404.16,
+        1405.0
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "symbol",
+       "diag": 31.737,
+       "n_seg_med": 7.0,
+       "bbox": [
+        376.56,
+        1428.52,
+        438.6,
+        1439.8
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 244,
+     "n_obj_b": 199,
+     "n_families": 257,
+     "n_repeated": 76,
+     "rows_min2": 41,
+     "rows_min3": 22,
+     "delta_sum": 89,
+     "delta_max": 9,
+     "ledger": [
+      {
+       "n_a": 9,
+       "n_b": 0,
+       "delta": -9,
+       "cls": "stray",
+       "diag": 3.358,
+       "n_seg_med": 1,
+       "bbox": [
+        53.28,
+        1060.48,
+        56.64,
+        1669.84
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 5,
+       "delta": 5,
+       "cls": "linear",
+       "diag": 3.01,
+       "n_seg_med": 22,
+       "bbox": [
+        327.24,
+        1067.44,
+        402.96,
+        1623.76
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 14.84,
+       "n_seg_med": 4.0,
+       "bbox": [
+        320.4,
+        1402.72,
+        420.48,
+        1565.68
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 2,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 2.902,
+       "n_seg_med": 6,
+       "bbox": [
+        333.24,
+        1061.8,
+        383.88,
+        1567.24
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 0.679,
+       "n_seg_med": 8,
+       "bbox": [
+        907.92,
+        1158.28,
+        908.4,
+        1499.68
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 9.504,
+       "n_seg_med": 2,
+       "bbox": [
+        268.44,
+        1060.0,
+        471.6,
+        1627.84
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 0.73,
+       "n_seg_med": 4,
+       "bbox": [
+        53.28,
+        1276.48,
+        55.2,
+        1310.67
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 1.325,
+       "n_seg_med": 4,
+       "bbox": [
+        53.64,
+        1276.72,
+        55.08,
+        1279.0
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 22.066,
+       "n_seg_med": 4,
+       "bbox": [
+        311.64,
+        1403.44,
+        403.92,
+        1423.24
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 22.066,
+       "n_seg_med": 5,
+       "bbox": [
+        328.68,
+        1067.08,
+        420.96,
+        1432.36
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 24.962,
+       "n_seg_med": 5,
+       "bbox": [
+        327.36,
+        1067.44,
+        363.0,
+        1432.36
+       ]
+      },
+      {
+       "n_a": 9,
+       "n_b": 7,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 14.884,
+       "n_seg_med": 4.0,
+       "bbox": [
+        280.92,
+        1071.64,
+        425.64,
+        1567.84
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 37.6
+  },
+  {
+   "pair_id": "EOM-1db297d2",
+   "classes": [
+    "uncertain",
+    "block_match_failure"
+   ],
+   "expected_verdict": "UNCERTAIN",
+   "expected_changed_objects": null,
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "doc_id": "13АВ-РД-ЭО-К3",
+   "human_expected_ru": "Содержимое сторон не соответствует друг другу — сравнивать нечего; как эталон не использовать.",
+   "n_seg_a": 713,
+   "n_seg_b": 894,
+   "S_a": 10.517,
+   "S_b": 10.119,
+   "S": 10.517,
+   "reg_offset": [
+    -848.635,
+    -202.946
+   ],
+   "reg_score": 0.0181,
+   "variants": {
+    "interior": {
+     "n_obj_a": 25,
+     "n_obj_b": 54,
+     "n_families": 62,
+     "n_repeated": 9,
+     "rows_min2": 9,
+     "rows_min3": 4,
+     "delta_sum": 24,
+     "delta_max": 5,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 5,
+       "delta": 5,
+       "cls": "stray",
+       "diag": 31.68,
+       "n_seg_med": 1,
+       "bbox": [
+        1915.92,
+        1567.92,
+        2115.36,
+        1599.84
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "symbol",
+       "diag": 32.076,
+       "n_seg_med": 18.0,
+       "bbox": [
+        1091.32,
+        1271.65,
+        1153.73,
+        1326.13
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "stray",
+       "diag": 17.04,
+       "n_seg_med": 1,
+       "bbox": [
+        2049.6,
+        1567.92,
+        2066.64,
+        1599.84
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "stray",
+       "diag": 4.32,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1078.8,
+        1367.28,
+        1959.36,
+        1577.76
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 30.168,
+       "n_seg_med": 9.0,
+       "bbox": [
+        1104.45,
+        1219.44,
+        1146.72,
+        1261.47
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 50.196,
+       "n_seg_med": 4.5,
+       "bbox": [
+        1071.49,
+        1351.69,
+        1148.99,
+        1387.19
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 33.954,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1938.72,
+        1538.4,
+        2088.72,
+        1567.92
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 84.48,
+       "n_seg_med": 7.0,
+       "bbox": [
+        2047.64,
+        1552.9,
+        2107.35,
+        1628.81
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 161.401,
+       "n_seg_med": 5.0,
+       "bbox": [
+        1951.92,
+        1329.6,
+        2115.12,
+        1448.64
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 46,
+     "n_obj_b": 54,
+     "n_families": 76,
+     "n_repeated": 14,
+     "rows_min2": 14,
+     "rows_min3": 6,
+     "delta_sum": 36,
+     "delta_max": 5,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 5,
+       "delta": 5,
+       "cls": "stray",
+       "diag": 31.68,
+       "n_seg_med": 1,
+       "bbox": [
+        1915.92,
+        1567.92,
+        2115.36,
+        1599.84
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "symbol",
+       "diag": 32.076,
+       "n_seg_med": 18.0,
+       "bbox": [
+        1091.32,
+        1271.65,
+        1153.73,
+        1326.13
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 1.44,
+       "n_seg_med": 2,
+       "bbox": [
+        1044.24,
+        1077.36,
+        1467.6,
+        1078.8
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "symbol",
+       "diag": 6.328,
+       "n_seg_med": 2,
+       "bbox": [
+        1044.24,
+        1064.07,
+        1467.6,
+        1070.4
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 3,
+       "delta": 3,
+       "cls": "stray",
+       "diag": 17.04,
+       "n_seg_med": 1,
+       "bbox": [
+        2049.6,
+        1567.92,
+        2066.64,
+        1599.84
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 1,
+       "delta": -2,
+       "cls": "stray",
+       "diag": 4.32,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1078.8,
+        1367.28,
+        1959.36,
+        1577.76
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 27.658,
+       "n_seg_med": 48.0,
+       "bbox": [
+        1127.76,
+        1523.76,
+        1161.6,
+        1539.6
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 30.168,
+       "n_seg_med": 9.0,
+       "bbox": [
+        1104.45,
+        1219.44,
+        1146.72,
+        1261.47
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 31.289,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1125.46,
+        1572.94,
+        1147.58,
+        1620.74
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 50.196,
+       "n_seg_med": 4.5,
+       "bbox": [
+        1071.49,
+        1351.69,
+        1148.99,
+        1387.19
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 0,
+       "delta": -2,
+       "cls": "symbol",
+       "diag": 83.967,
+       "n_seg_med": 50.0,
+       "bbox": [
+        1437.84,
+        1086.0,
+        1478.88,
+        1166.88
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 2,
+       "delta": 2,
+       "cls": "linear",
+       "diag": 33.954,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1938.72,
+        1538.4,
+        2088.72,
+        1567.92
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 4.2
+  },
+  {
+   "pair_id": "GP-6bc1c029",
+   "classes": [
+    "uncertain",
+    "dense_block"
+   ],
+   "expected_verdict": "UNCERTAIN",
+   "expected_changed_objects": null,
+   "label_confidence": "medium",
+   "discipline": "GP",
+   "doc_id": "13АВ-РД-ГП2",
+   "human_expected_ru": "Что именно изменилось — по картинке блока определить не удалось; нужна поэлементная сверка. Как эталон не использовать.",
+   "error": "too big 378441/314651"
+  },
+  {
+   "pair_id": "AR-5acaab0e",
+   "classes": [
+    "object_added",
+    "dense_block",
+    "hatch_noise",
+    "with_labels"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 3,
+   "label_confidence": "medium",
+   "discipline": "AR",
+   "doc_id": "13АВ-РД-АР3.2-ПА",
+   "human_expected_ru": "В версии B достроен объём стен в правой верхней части (штриховка расширена вправо) и добавлен заголовок сверху; остальная штриховка совпадает по смыслу, но сдвинута по фазе.",
+   "n_seg_a": 111161,
+   "n_seg_b": 111000,
+   "S_a": 9.13,
+   "S_b": 9.13,
+   "S": 9.13,
+   "reg_offset": [
+    -0.05,
+    13.85
+   ],
+   "reg_score": 0.1769,
+   "variants": {
+    "interior": {
+     "n_obj_a": 6118,
+     "n_obj_b": 6107,
+     "n_families": 5495,
+     "n_repeated": 885,
+     "rows_min2": 484,
+     "rows_min3": 228,
+     "delta_sum": 1383,
+     "delta_max": 50,
+     "ledger": [
+      {
+       "n_a": 54,
+       "n_b": 4,
+       "delta": -50,
+       "cls": "stray",
+       "diag": 8.4,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1202.16,
+        627.84,
+        1795.92,
+        2070.72
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 33,
+       "delta": 33,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 5,
+       "bbox": [
+        2070.96,
+        435.6,
+        2099.76,
+        2536.8
+       ]
+      },
+      {
+       "n_a": 38,
+       "n_b": 9,
+       "delta": -29,
+       "cls": "stray",
+       "diag": 8.4,
+       "n_seg_med": 1,
+       "bbox": [
+        266.88,
+        562.08,
+        1778.88,
+        2631.6
+       ]
+      },
+      {
+       "n_a": 30,
+       "n_b": 1,
+       "delta": -29,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 5,
+       "bbox": [
+        2070.72,
+        397.92,
+        2099.76,
+        2342.4
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 24,
+       "delta": 24,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 5.0,
+       "bbox": [
+        2071.44,
+        370.8,
+        2099.76,
+        2580.0
+       ]
+      },
+      {
+       "n_a": 113,
+       "n_b": 133,
+       "delta": 20,
+       "cls": "stray",
+       "diag": 0.96,
+       "n_seg_med": 1.0,
+       "bbox": [
+        217.68,
+        359.76,
+        2068.56,
+        2601.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 18,
+       "delta": 18,
+       "cls": "symbol",
+       "diag": 8.906,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1786.56,
+        856.8,
+        1788.72,
+        1388.4
+       ]
+      },
+      {
+       "n_a": 18,
+       "n_b": 0,
+       "delta": -18,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 4.5,
+       "bbox": [
+        2070.0,
+        376.32,
+        2099.76,
+        2097.12
+       ]
+      },
+      {
+       "n_a": 91,
+       "n_b": 74,
+       "delta": -17,
+       "cls": "stray",
+       "diag": 1.073,
+       "n_seg_med": 1,
+       "bbox": [
+        215.04,
+        355.44,
+        2071.2,
+        2584.08
+       ]
+      },
+      {
+       "n_a": 20,
+       "n_b": 4,
+       "delta": -16,
+       "cls": "area",
+       "diag": 91.981,
+       "n_seg_med": 4.0,
+       "bbox": [
+        263.76,
+        470.04,
+        1915.68,
+        2583.12
+       ]
+      },
+      {
+       "n_a": 83,
+       "n_b": 70,
+       "delta": -13,
+       "cls": "stray",
+       "diag": 1.073,
+       "n_seg_med": 1,
+       "bbox": [
+        216.72,
+        356.16,
+        2070.96,
+        2565.12
+       ]
+      },
+      {
+       "n_a": 11,
+       "n_b": 0,
+       "delta": -11,
+       "cls": "symbol",
+       "diag": 63.97,
+       "n_seg_med": 5,
+       "bbox": [
+        2071.2,
+        2082.72,
+        2099.76,
+        2572.08
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 6130,
+     "n_obj_b": 6122,
+     "n_families": 5504,
+     "n_repeated": 889,
+     "rows_min2": 484,
+     "rows_min3": 228,
+     "delta_sum": 1383,
+     "delta_max": 50,
+     "ledger": [
+      {
+       "n_a": 54,
+       "n_b": 4,
+       "delta": -50,
+       "cls": "stray",
+       "diag": 8.4,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1202.16,
+        627.84,
+        1795.92,
+        2070.72
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 33,
+       "delta": 33,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 5,
+       "bbox": [
+        2070.96,
+        435.6,
+        2099.76,
+        2536.8
+       ]
+      },
+      {
+       "n_a": 38,
+       "n_b": 9,
+       "delta": -29,
+       "cls": "stray",
+       "diag": 8.4,
+       "n_seg_med": 1,
+       "bbox": [
+        266.88,
+        562.08,
+        1778.88,
+        2631.6
+       ]
+      },
+      {
+       "n_a": 30,
+       "n_b": 1,
+       "delta": -29,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 5,
+       "bbox": [
+        2070.72,
+        397.92,
+        2099.76,
+        2342.4
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 24,
+       "delta": 24,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 5.0,
+       "bbox": [
+        2071.44,
+        370.8,
+        2099.76,
+        2580.0
+       ]
+      },
+      {
+       "n_a": 113,
+       "n_b": 133,
+       "delta": 20,
+       "cls": "stray",
+       "diag": 0.96,
+       "n_seg_med": 1.0,
+       "bbox": [
+        217.68,
+        359.76,
+        2068.56,
+        2601.12
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 18,
+       "delta": 18,
+       "cls": "symbol",
+       "diag": 8.906,
+       "n_seg_med": 2.0,
+       "bbox": [
+        1786.56,
+        856.8,
+        1788.72,
+        1388.4
+       ]
+      },
+      {
+       "n_a": 18,
+       "n_b": 0,
+       "delta": -18,
+       "cls": "symbol",
+       "diag": 64.186,
+       "n_seg_med": 4.5,
+       "bbox": [
+        2070.0,
+        376.32,
+        2099.76,
+        2097.12
+       ]
+      },
+      {
+       "n_a": 91,
+       "n_b": 74,
+       "delta": -17,
+       "cls": "stray",
+       "diag": 1.073,
+       "n_seg_med": 1,
+       "bbox": [
+        215.04,
+        355.44,
+        2071.2,
+        2584.08
+       ]
+      },
+      {
+       "n_a": 20,
+       "n_b": 4,
+       "delta": -16,
+       "cls": "area",
+       "diag": 91.981,
+       "n_seg_med": 4.0,
+       "bbox": [
+        263.76,
+        470.04,
+        1915.68,
+        2583.12
+       ]
+      },
+      {
+       "n_a": 83,
+       "n_b": 70,
+       "delta": -13,
+       "cls": "stray",
+       "diag": 1.073,
+       "n_seg_med": 1,
+       "bbox": [
+        216.72,
+        356.16,
+        2070.96,
+        2565.12
+       ]
+      },
+      {
+       "n_a": 11,
+       "n_b": 0,
+       "delta": -11,
+       "cls": "symbol",
+       "diag": 63.97,
+       "n_seg_med": 5,
+       "bbox": [
+        2071.2,
+        2082.72,
+        2099.76,
+        2572.08
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 170.3
+  },
+  {
+   "pair_id": "VK-148ffe6c",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "rotated_page",
+    "dense_block"
+   ],
+   "expected_verdict": "GRAPHIC_CHANGE",
+   "expected_changed_objects": 3,
+   "label_confidence": "medium",
+   "discipline": "VK",
+   "doc_id": "13АВ-РД-ВК.КВ-К4_V1",
+   "human_expected_ru": "В версии B добавлены спецификация оборудования справа и узел «Узел кранов с эл. приводом»; узел «Узел гиг. душа» сдвинут вправо. Сегментов 106 552 → 115 081.",
+   "n_seg_a": 106552,
+   "n_seg_b": 115081,
+   "S_a": 9.428,
+   "S_b": 9.327,
+   "S": 9.428,
+   "reg_offset": [
+    0.05,
+    -0.05
+   ],
+   "reg_score": 0.6335,
+   "variants": {
+    "interior": {
+     "n_obj_a": 861,
+     "n_obj_b": 898,
+     "n_families": 532,
+     "n_repeated": 382,
+     "rows_min2": 49,
+     "rows_min3": 26,
+     "delta_sum": 102,
+     "delta_max": 13,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 13,
+       "delta": 13,
+       "cls": "stray",
+       "diag": 32.074,
+       "n_seg_med": 1,
+       "bbox": [
+        1216.44,
+        1476.96,
+        1407.48,
+        1499.64
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 10,
+       "delta": 10,
+       "cls": "stray",
+       "diag": 45.057,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1215.0,
+        1505.4,
+        1403.16,
+        1537.2
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 1.46,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1344.12,
+        1404.72,
+        1367.88,
+        1420.32
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 4,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 0.6,
+       "n_seg_med": 4,
+       "bbox": [
+        1297.44,
+        1404.48,
+        1329.72,
+        1486.08
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 4,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 0.805,
+       "n_seg_med": 8,
+       "bbox": [
+        1297.92,
+        1403.28,
+        1329.24,
+        1487.04
+       ]
+      },
+      {
+       "n_a": 5,
+       "n_b": 2,
+       "delta": -3,
+       "cls": "stray",
+       "diag": 23.358,
+       "n_seg_med": 1,
+       "bbox": [
+        1246.8,
+        360.0,
+        1383.36,
+        1523.04
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 1,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 1.073,
+       "n_seg_med": 4,
+       "bbox": [
+        1297.44,
+        405.12,
+        1785.36,
+        1485.6
+       ]
+      },
+      {
+       "n_a": 1,
+       "n_b": 4,
+       "delta": 3,
+       "cls": "linear",
+       "diag": 1.2,
+       "n_seg_med": 4,
+       "bbox": [
+        1242.84,
+        408.48,
+        1361.76,
+        1423.08
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 0.99,
+       "n_seg_med": 4,
+       "bbox": [
+        1423.68,
+        838.92,
+        1424.52,
+        841.8
+       ]
+      },
+      {
+       "n_a": 3,
+       "n_b": 0,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 1.018,
+       "n_seg_med": 4,
+       "bbox": [
+        1425.12,
+        837.24,
+        1427.28,
+        844.08
+       ]
+      },
+      {
+       "n_a": 9,
+       "n_b": 7,
+       "delta": -2,
+       "cls": "stray",
+       "diag": 1.235,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1241.76,
+        357.12,
+        1843.8,
+        1334.52
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 5,
+       "delta": -2,
+       "cls": "linear",
+       "diag": 0.6,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1297.44,
+        1404.12,
+        1329.72,
+        1486.08
+       ]
+      }
+     ]
+    },
+    "all": {
+     "n_obj_a": 946,
+     "n_obj_b": 1097,
+     "n_families": 591,
+     "n_repeated": 411,
+     "rows_min2": 64,
+     "rows_min3": 36,
+     "delta_sum": 249,
+     "delta_max": 65,
+     "ledger": [
+      {
+       "n_a": 0,
+       "n_b": 65,
+       "delta": 65,
+       "cls": "linear",
+       "diag": 41.16,
+       "n_seg_med": 2,
+       "bbox": [
+        2311.56,
+        56.76,
+        2352.72,
+        966.0
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 64,
+       "delta": 64,
+       "cls": "linear",
+       "diag": 283.56,
+       "n_seg_med": 1.0,
+       "bbox": [
+        2028.0,
+        56.76,
+        2311.56,
+        966.0
+       ]
+      },
+      {
+       "n_a": 10,
+       "n_b": 3,
+       "delta": -7,
+       "cls": "linear",
+       "diag": 178.664,
+       "n_seg_med": 1,
+       "bbox": [
+        1845.36,
+        1527.96,
+        2029.68,
+        1655.52
+       ]
+      },
+      {
+       "n_a": 6,
+       "n_b": 2,
+       "delta": -4,
+       "cls": "stray",
+       "diag": 23.358,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1246.8,
+        360.0,
+        1383.36,
+        1601.04
+       ]
+      },
+      {
+       "n_a": 2,
+       "n_b": 6,
+       "delta": 4,
+       "cls": "stray",
+       "diag": 70.365,
+       "n_seg_med": 1.0,
+       "bbox": [
+        1873.68,
+        1513.8,
+        2029.68,
+        1584.72
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "symbol",
+       "diag": 13.634,
+       "n_seg_med": 8.0,
+       "bbox": [
+        1628.49,
+        1628.41,
+        1687.44,
+        1657.32
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 1.46,
+       "n_seg_med": 4.0,
+       "bbox": [
+        1344.12,
+        1404.72,
+        1367.88,
+        1420.32
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 0,
+       "delta": -4,
+       "cls": "linear",
+       "diag": 55.62,
+       "n_seg_med": 7.0,
+       "bbox": [
+        1628.88,
+        1633.32,
+        1687.32,
+        1653.24
+       ]
+      },
+      {
+       "n_a": 0,
+       "n_b": 4,
+       "delta": 4,
+       "cls": "linear",
+       "diag": 944.7,
+       "n_seg_med": 66.5,
+       "bbox": [
+        2028.0,
+        42.6,
+        2352.72,
+        994.44
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 4,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 0.6,
+       "n_seg_med": 4,
+       "bbox": [
+        1297.44,
+        1404.48,
+        1329.72,
+        1486.08
+       ]
+      },
+      {
+       "n_a": 7,
+       "n_b": 4,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 0.805,
+       "n_seg_med": 8,
+       "bbox": [
+        1297.92,
+        1403.28,
+        1329.24,
+        1487.04
+       ]
+      },
+      {
+       "n_a": 4,
+       "n_b": 1,
+       "delta": -3,
+       "cls": "linear",
+       "diag": 1.073,
+       "n_seg_med": 4,
+       "bbox": [
+        1297.44,
+        405.12,
+        1785.36,
+        1485.6
+       ]
+      }
+     ]
+    }
+   },
+   "t_sec": 382.4
+  }
+ ]
+}

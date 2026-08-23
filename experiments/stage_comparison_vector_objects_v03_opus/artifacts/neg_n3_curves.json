@@ -1,0 +1,8711 @@
+{
+ "schema": "merged:neg_n3_curves.json",
+ "shards": [
+  "neg_n3_curves_0of6.json",
+  "neg_n3_curves_1of6.json",
+  "neg_n3_curves_2of6.json",
+  "neg_n3_curves_3of6.json",
+  "neg_n3_curves_4of6.json",
+  "neg_n3_curves_5of6.json"
+ ],
+ "cf": [
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К3-v001-TVWH-NLRM-GNJ",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg_before": 397,
+   "n_seg_after": 2783,
+   "seg_ratio": 7.01,
+   "n_text_before": 5,
+   "n_text_after": 0,
+   "n_obj_before": 8,
+   "n_obj_after": 109,
+   "obj_ratio": 13.625,
+   "gt_glyph_objects": 48,
+   "gt_share_of_objects": 0.4404,
+   "gt_contamination_before": 2,
+   "gt_contamination_share": 0.25,
+   "run_detector": {
+    "tp": 15,
+    "fp": 20,
+    "fn": 33,
+    "precision": 0.4286,
+    "recall": 0.3125,
+    "n_det": 35,
+    "n_gt": 48
+   },
+   "run_closed_detector": {
+    "tp": 29,
+    "fp": 19,
+    "fn": 19,
+    "precision": 0.6042,
+    "recall": 0.6042,
+    "n_det": 48,
+    "n_gt": 48
+   },
+   "size_only_detector": {
+    "tp": 8,
+    "fp": 40,
+    "fn": 40,
+    "precision": 0.1667,
+    "recall": 0.1667,
+    "n_det": 48,
+    "n_gt": 48
+   },
+   "diag": {
+    "n_candidates": 95,
+    "n_runs_h": 5,
+    "n_runs_v": 1,
+    "n_flagged": 35,
+    "n_objects": 109,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 6,
+    "n_entries_filtered": 6,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 0,
+    "n_flagged_b": 0,
+    "n_obj_a": 8,
+    "n_obj_b": 7,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 6,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 13,
+     "churn": 7,
+     "label": 8
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 8,
+    "n_entries_filtered": 5,
+    "n_entries_raw_with_border": 8,
+    "n_flagged_a": 35,
+    "n_flagged_b": 38,
+    "n_obj_a": 109,
+    "n_obj_b": 112,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 8,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 13,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 1,
+     "line_source": 2,
+     "n_seg_removed": 57,
+     "n_seg_added": 422,
+     "bbox_pt": [
+      503.3,
+      205.9,
+      513.7,
+      210.9
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ОВ_V1-v001-blk_25757de0ca0445ea9234217679795df3",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg_before": 231,
+   "n_seg_after": 10042,
+   "seg_ratio": 43.472,
+   "n_text_before": 12,
+   "n_text_after": 0,
+   "n_obj_before": 43,
+   "n_obj_after": 306,
+   "obj_ratio": 7.116,
+   "gt_glyph_objects": 188,
+   "gt_share_of_objects": 0.6144,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 147,
+    "fp": 25,
+    "fn": 41,
+    "precision": 0.8547,
+    "recall": 0.7819,
+    "n_det": 172,
+    "n_gt": 188
+   },
+   "run_closed_detector": {
+    "tp": 147,
+    "fp": 0,
+    "fn": 41,
+    "precision": 1.0,
+    "recall": 0.7819,
+    "n_det": 147,
+    "n_gt": 188
+   },
+   "size_only_detector": {
+    "tp": 188,
+    "fp": 51,
+    "fn": 0,
+    "precision": 0.7866,
+    "recall": 1.0,
+    "n_det": 239,
+    "n_gt": 188
+   },
+   "diag": {
+    "n_candidates": 290,
+    "n_runs_h": 14,
+    "n_runs_v": 1,
+    "n_flagged": 172,
+    "n_objects": 306,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 21,
+    "n_entries_filtered": 17,
+    "n_entries_raw_with_border": 22,
+    "n_flagged_a": 0,
+    "n_flagged_b": 10,
+    "n_obj_a": 43,
+    "n_obj_b": 69,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 21,
+     "ink_border": 1,
+     "count": 26,
+     "object_id": 38,
+     "churn": 3,
+     "label": 24
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 42,
+    "n_entries_filtered": 6,
+    "n_entries_raw_with_border": 42,
+    "n_flagged_a": 172,
+    "n_flagged_b": 141,
+    "n_obj_a": 306,
+    "n_obj_b": 269,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 42,
+     "ink_border": 0,
+     "count": 37,
+     "object_id": 43,
+     "churn": 43,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 9,
+     "line_source": 4,
+     "n_seg_removed": 2145,
+     "n_seg_added": 145,
+     "bbox_pt": [
+      826.4,
+      444.945,
+      983.952,
+      453.853
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KJ-13АВ-РД-КЖ5.25-29.1-К2-v001-6GNF-QWEX-CVE",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg_before": 121,
+   "n_seg_after": 12312,
+   "seg_ratio": 101.752,
+   "n_text_before": 12,
+   "n_text_after": 0,
+   "n_obj_before": 58,
+   "n_obj_after": 343,
+   "obj_ratio": 5.914,
+   "gt_glyph_objects": 247,
+   "gt_share_of_objects": 0.7201,
+   "gt_contamination_before": 10,
+   "gt_contamination_share": 0.1724,
+   "run_detector": {
+    "tp": 201,
+    "fp": 3,
+    "fn": 46,
+    "precision": 0.9853,
+    "recall": 0.8138,
+    "n_det": 204,
+    "n_gt": 247
+   },
+   "run_closed_detector": {
+    "tp": 193,
+    "fp": 0,
+    "fn": 54,
+    "precision": 1.0,
+    "recall": 0.7814,
+    "n_det": 193,
+    "n_gt": 247
+   },
+   "size_only_detector": {
+    "tp": 208,
+    "fp": 77,
+    "fn": 39,
+    "precision": 0.7298,
+    "recall": 0.8421,
+    "n_det": 285,
+    "n_gt": 247
+   },
+   "diag": {
+    "n_candidates": 329,
+    "n_runs_h": 26,
+    "n_runs_v": 5,
+    "n_flagged": 204,
+    "n_objects": 343,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 15,
+    "n_entries_filtered": 15,
+    "n_entries_raw_with_border": 15,
+    "n_flagged_a": 3,
+    "n_flagged_b": 20,
+    "n_obj_a": 58,
+    "n_obj_b": 104,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 15,
+     "ink_border": 0,
+     "count": 46,
+     "object_id": 56,
+     "churn": 4,
+     "label": 21
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 61,
+    "n_entries_filtered": 16,
+    "n_entries_raw_with_border": 61,
+    "n_flagged_a": 204,
+    "n_flagged_b": 236,
+    "n_obj_a": 343,
+    "n_obj_b": 392,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 61,
+     "ink_border": 0,
+     "count": 49,
+     "object_id": 69,
+     "churn": 21,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 11,
+     "line_source": 6,
+     "n_seg_removed": 585,
+     "n_seg_added": 2726,
+     "bbox_pt": [
+      510.7,
+      1471.873,
+      557.1,
+      1480.392
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KM-13АВ-РД-НВФ-К4-v001-9R9P-HVPN-CVQ",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg_before": 620,
+   "n_seg_after": 43146,
+   "seg_ratio": 69.59,
+   "n_text_before": 31,
+   "n_text_after": 0,
+   "n_obj_before": 33,
+   "n_obj_after": 687,
+   "obj_ratio": 20.818,
+   "gt_glyph_objects": 653,
+   "gt_share_of_objects": 0.9505,
+   "gt_contamination_before": 1,
+   "gt_contamination_share": 0.0303,
+   "run_detector": {
+    "tp": 489,
+    "fp": 0,
+    "fn": 164,
+    "precision": 1.0,
+    "recall": 0.7489,
+    "n_det": 489,
+    "n_gt": 653
+   },
+   "run_closed_detector": {
+    "tp": 469,
+    "fp": 0,
+    "fn": 184,
+    "precision": 1.0,
+    "recall": 0.7182,
+    "n_det": 469,
+    "n_gt": 653
+   },
+   "size_only_detector": {
+    "tp": 653,
+    "fp": 3,
+    "fn": 0,
+    "precision": 0.9954,
+    "recall": 1.0,
+    "n_det": 656,
+    "n_gt": 653
+   },
+   "diag": {
+    "n_candidates": 659,
+    "n_runs_h": 52,
+    "n_runs_v": 0,
+    "n_flagged": 489,
+    "n_objects": 687,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 29,
+    "n_entries_filtered": 29,
+    "n_entries_raw_with_border": 38,
+    "n_flagged_a": 0,
+    "n_flagged_b": 28,
+    "n_obj_a": 33,
+    "n_obj_b": 141,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 29,
+     "ink_border": 9,
+     "count": 108,
+     "object_id": 120,
+     "churn": 6,
+     "label": 30
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 11,
+    "n_entries_filtered": 4,
+    "n_entries_raw_with_border": 11,
+    "n_flagged_a": 489,
+    "n_flagged_b": 489,
+    "n_obj_a": 687,
+    "n_obj_b": 681,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 11,
+     "ink_border": 0,
+     "count": 6,
+     "object_id": 18,
+     "churn": 12,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 7,
+     "line_source": 21,
+     "n_seg_removed": 832,
+     "n_seg_added": 485,
+     "bbox_pt": [
+      655.0,
+      745.402,
+      681.367,
+      754.475
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "OV-СТ26_01-14-ОВ2-3-РД_V1-v001-blk_eeb669a5928f4c7ca97ad7b1c212988e",
+   "discipline": "OV",
+   "cls": "table",
+   "n_seg_before": 1096,
+   "n_seg_after": 64008,
+   "seg_ratio": 58.401,
+   "n_text_before": 107,
+   "n_text_after": 0,
+   "n_obj_before": 142,
+   "n_obj_after": 1778,
+   "obj_ratio": 12.521,
+   "gt_glyph_objects": 1504,
+   "gt_share_of_objects": 0.8459,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 259,
+    "fp": 0,
+    "fn": 1245,
+    "precision": 1.0,
+    "recall": 0.1722,
+    "n_det": 259,
+    "n_gt": 1504
+   },
+   "run_closed_detector": {
+    "tp": 259,
+    "fp": 0,
+    "fn": 1245,
+    "precision": 1.0,
+    "recall": 0.1722,
+    "n_det": 259,
+    "n_gt": 1504
+   },
+   "size_only_detector": {
+    "tp": 1502,
+    "fp": 168,
+    "fn": 2,
+    "precision": 0.8994,
+    "recall": 0.9987,
+    "n_det": 1670,
+    "n_gt": 1504
+   },
+   "diag": {
+    "n_candidates": 1716,
+    "n_runs_h": 52,
+    "n_runs_v": 0,
+    "n_flagged": 259,
+    "n_objects": 1778,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 144,
+    "n_entries_filtered": 90,
+    "n_entries_raw_with_border": 144,
+    "n_flagged_a": 44,
+    "n_flagged_b": 73,
+    "n_obj_a": 142,
+    "n_obj_b": 261,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 144,
+     "ink_border": 0,
+     "count": 119,
+     "object_id": 289,
+     "churn": 45,
+     "label": 124
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 12,
+    "n_entries_filtered": 7,
+    "n_entries_raw_with_border": 12,
+    "n_flagged_a": 259,
+    "n_flagged_b": 265,
+    "n_obj_a": 1778,
+    "n_obj_b": 1776,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 12,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 14,
+     "churn": 8,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 86,
+     "line_source": 31,
+     "n_seg_removed": 86,
+     "n_seg_added": 200,
+     "bbox_pt": [
+      409.606,
+      383.8,
+      426.708,
+      392.445
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "PT-СТ26_01-14-ПТ1-1-РД_V1-v001-blk_aaf24626fbb04f93a8e65f4d72d1f06c",
+   "discipline": "PT",
+   "cls": "stamp",
+   "n_seg_before": 1221,
+   "n_seg_after": 40558,
+   "seg_ratio": 33.217,
+   "n_text_before": 30,
+   "n_text_after": 0,
+   "n_obj_before": 36,
+   "n_obj_after": 1034,
+   "obj_ratio": 28.722,
+   "gt_glyph_objects": 1000,
+   "gt_share_of_objects": 0.9671,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 677,
+    "fp": 4,
+    "fn": 323,
+    "precision": 0.9941,
+    "recall": 0.677,
+    "n_det": 681,
+    "n_gt": 1000
+   },
+   "run_closed_detector": {
+    "tp": 686,
+    "fp": 0,
+    "fn": 314,
+    "precision": 1.0,
+    "recall": 0.686,
+    "n_det": 686,
+    "n_gt": 1000
+   },
+   "size_only_detector": {
+    "tp": 1000,
+    "fp": 3,
+    "fn": 0,
+    "precision": 0.997,
+    "recall": 1.0,
+    "n_det": 1003,
+    "n_gt": 1000
+   },
+   "diag": {
+    "n_candidates": 1010,
+    "n_runs_h": 94,
+    "n_runs_v": 0,
+    "n_flagged": 681,
+    "n_objects": 1034,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 42,
+    "n_entries_filtered": 38,
+    "n_entries_raw_with_border": 49,
+    "n_flagged_a": 3,
+    "n_flagged_b": 29,
+    "n_obj_a": 36,
+    "n_obj_b": 144,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 42,
+     "ink_border": 7,
+     "count": 108,
+     "object_id": 118,
+     "churn": 2,
+     "label": 28
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 8,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 8,
+    "n_flagged_a": 681,
+    "n_flagged_b": 679,
+    "n_obj_a": 1034,
+    "n_obj_b": 1029,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 8,
+     "ink_border": 0,
+     "count": 5,
+     "object_id": 29,
+     "churn": 17,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 9,
+     "line_source": 27,
+     "n_seg_removed": 907,
+     "n_seg_added": 626,
+     "bbox_pt": [
+      655.7,
+      745.759,
+      693.4,
+      755.09
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "SS-13АВ-РД-АПЗ.АПС-К4-v001-7393-HGCY-DVN",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg_before": 240,
+   "n_seg_after": 16909,
+   "seg_ratio": 70.454,
+   "n_text_before": 39,
+   "n_text_after": 0,
+   "n_obj_before": 21,
+   "n_obj_after": 322,
+   "obj_ratio": 15.333,
+   "gt_glyph_objects": 320,
+   "gt_share_of_objects": 0.9938,
+   "gt_contamination_before": 19,
+   "gt_contamination_share": 0.9048,
+   "run_detector": {
+    "tp": 30,
+    "fp": 0,
+    "fn": 290,
+    "precision": 1.0,
+    "recall": 0.0938,
+    "n_det": 30,
+    "n_gt": 320
+   },
+   "run_closed_detector": {
+    "tp": 30,
+    "fp": 0,
+    "fn": 290,
+    "precision": 1.0,
+    "recall": 0.0938,
+    "n_det": 30,
+    "n_gt": 320
+   },
+   "size_only_detector": {
+    "tp": 282,
+    "fp": 0,
+    "fn": 38,
+    "precision": 1.0,
+    "recall": 0.8812,
+    "n_det": 282,
+    "n_gt": 320
+   },
+   "diag": {
+    "n_candidates": 301,
+    "n_runs_h": 7,
+    "n_runs_v": 0,
+    "n_flagged": 30,
+    "n_objects": 322,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 52,
+    "n_entries_filtered": 50,
+    "n_entries_raw_with_border": 52,
+    "n_flagged_a": 0,
+    "n_flagged_b": 3,
+    "n_obj_a": 21,
+    "n_obj_b": 65,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 52,
+     "ink_border": 0,
+     "count": 44,
+     "object_id": 84,
+     "churn": 19,
+     "label": 21
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 11,
+    "n_entries_filtered": 11,
+    "n_entries_raw_with_border": 11,
+    "n_flagged_a": 30,
+    "n_flagged_b": 42,
+    "n_obj_a": 322,
+    "n_obj_b": 323,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 11,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 15,
+     "churn": 7,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 18,
+     "line_source": 27,
+     "n_seg_removed": 389,
+     "n_seg_added": 395,
+     "bbox_pt": [
+      1618.598,
+      938.573,
+      1643.1,
+      945.825
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К5-v001-7UKU-WHNK-P4P",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg_before": 2806,
+   "n_seg_after": 44925,
+   "seg_ratio": 16.01,
+   "n_text_before": 40,
+   "n_text_after": 0,
+   "n_obj_before": 67,
+   "n_obj_after": 1103,
+   "obj_ratio": 16.463,
+   "gt_glyph_objects": 958,
+   "gt_share_of_objects": 0.8685,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 533,
+    "fp": 54,
+    "fn": 425,
+    "precision": 0.908,
+    "recall": 0.5564,
+    "n_det": 587,
+    "n_gt": 958
+   },
+   "run_closed_detector": {
+    "tp": 471,
+    "fp": 3,
+    "fn": 487,
+    "precision": 0.9937,
+    "recall": 0.4916,
+    "n_det": 474,
+    "n_gt": 958
+   },
+   "size_only_detector": {
+    "tp": 957,
+    "fp": 108,
+    "fn": 1,
+    "precision": 0.8986,
+    "recall": 0.999,
+    "n_det": 1065,
+    "n_gt": 958
+   },
+   "diag": {
+    "n_candidates": 1079,
+    "n_runs_h": 73,
+    "n_runs_v": 5,
+    "n_flagged": 587,
+    "n_objects": 1103,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 49,
+    "n_entries_filtered": 30,
+    "n_entries_raw_with_border": 60,
+    "n_flagged_a": 5,
+    "n_flagged_b": 33,
+    "n_obj_a": 67,
+    "n_obj_b": 163,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 49,
+     "ink_border": 11,
+     "count": 96,
+     "object_id": 122,
+     "churn": 8,
+     "label": 50
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 60,
+    "n_entries_filtered": 29,
+    "n_entries_raw_with_border": 81,
+    "n_flagged_a": 587,
+    "n_flagged_b": 601,
+    "n_obj_a": 1103,
+    "n_obj_b": 1157,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 60,
+     "ink_border": 21,
+     "count": 54,
+     "object_id": 146,
+     "churn": 80,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 16,
+     "line_source": 14,
+     "n_seg_removed": 2086,
+     "n_seg_added": 3887,
+     "bbox_pt": [
+      946.9,
+      728.773,
+      1066.7,
+      738.112
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "SS-ПД-00542664-СОУЭ-5_V1-v001-blk_c2c0175cde49410ca2ac848fec579b41",
+   "discipline": "SS",
+   "cls": "stamp",
+   "n_seg_before": 59575,
+   "n_seg_after": 78044,
+   "seg_ratio": 1.31,
+   "n_text_before": 45,
+   "n_text_after": 0,
+   "n_obj_before": 65,
+   "n_obj_after": 1288,
+   "obj_ratio": 19.815,
+   "gt_glyph_objects": 959,
+   "gt_share_of_objects": 0.7446,
+   "gt_contamination_before": 16,
+   "gt_contamination_share": 0.2462,
+   "run_detector": {
+    "tp": 306,
+    "fp": 63,
+    "fn": 653,
+    "precision": 0.8293,
+    "recall": 0.3191,
+    "n_det": 369,
+    "n_gt": 959
+   },
+   "run_closed_detector": {
+    "tp": 302,
+    "fp": 63,
+    "fn": 657,
+    "precision": 0.8274,
+    "recall": 0.3149,
+    "n_det": 365,
+    "n_gt": 959
+   },
+   "size_only_detector": {
+    "tp": 944,
+    "fp": 293,
+    "fn": 15,
+    "precision": 0.7631,
+    "recall": 0.9844,
+    "n_det": 1237,
+    "n_gt": 959
+   },
+   "diag": {
+    "n_candidates": 1265,
+    "n_runs_h": 43,
+    "n_runs_v": 0,
+    "n_flagged": 369,
+    "n_objects": 1288,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 16,
+    "n_entries_filtered": 10,
+    "n_entries_raw_with_border": 29,
+    "n_flagged_a": 0,
+    "n_flagged_b": 20,
+    "n_obj_a": 65,
+    "n_obj_b": 113,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 16,
+     "ink_border": 13,
+     "count": 48,
+     "object_id": 122,
+     "churn": 26,
+     "label": 52
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 12,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 12,
+    "n_flagged_a": 369,
+    "n_flagged_b": 357,
+    "n_obj_a": 1288,
+    "n_obj_b": 1276,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 12,
+     "ink_border": 0,
+     "count": 12,
+     "object_id": 18,
+     "churn": 13,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 33,
+     "line_source": 41,
+     "n_seg_removed": 722,
+     "n_seg_added": 177,
+     "bbox_pt": [
+      1204.9,
+      2358.502,
+      1243.9,
+      2365.6
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР4.1-К3-v001-7PJD-33QQ-W44",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg_before": 250,
+   "n_seg_after": 1178,
+   "seg_ratio": 4.712,
+   "n_text_before": 1,
+   "n_text_after": 0,
+   "n_obj_before": 31,
+   "n_obj_after": 44,
+   "obj_ratio": 1.419,
+   "gt_glyph_objects": 13,
+   "gt_share_of_objects": 0.2955,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 8,
+    "fp": 0,
+    "fn": 5,
+    "precision": 1.0,
+    "recall": 0.6154,
+    "n_det": 8,
+    "n_gt": 13
+   },
+   "run_closed_detector": {
+    "tp": 8,
+    "fp": 0,
+    "fn": 5,
+    "precision": 1.0,
+    "recall": 0.6154,
+    "n_det": 8,
+    "n_gt": 13
+   },
+   "size_only_detector": {
+    "tp": 3,
+    "fp": 6,
+    "fn": 10,
+    "precision": 0.3333,
+    "recall": 0.2308,
+    "n_det": 9,
+    "n_gt": 13
+   },
+   "diag": {
+    "n_candidates": 40,
+    "n_runs_h": 1,
+    "n_runs_v": 0,
+    "n_flagged": 8,
+    "n_by_run": 8,
+    "n_absorbed": 0,
+    "n_objects": 44,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 13,
+    "n_entries_filtered": 5,
+    "n_entries_raw_with_border": 13,
+    "n_flagged_a": 0,
+    "n_flagged_b": 8,
+    "n_obj_a": 31,
+    "n_obj_b": 44,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 13,
+     "ink_border": 0,
+     "count": 13,
+     "object_id": 13,
+     "churn": 0,
+     "label": 0
+    }
+   },
+   "curve_text_edit_skip": "fewer than 2 curve-drawn text lines with >=3 marks"
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-43CL-VVJR-QPF",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg_before": 1357,
+   "n_seg_after": 15896,
+   "seg_ratio": 11.714,
+   "n_text_before": 50,
+   "n_text_after": 0,
+   "n_obj_before": 177,
+   "n_obj_after": 601,
+   "obj_ratio": 3.395,
+   "gt_glyph_objects": 349,
+   "gt_share_of_objects": 0.5807,
+   "gt_contamination_before": 22,
+   "gt_contamination_share": 0.1243,
+   "run_detector": {
+    "tp": 144,
+    "fp": 18,
+    "fn": 205,
+    "precision": 0.8889,
+    "recall": 0.4126,
+    "n_det": 162,
+    "n_gt": 349
+   },
+   "run_closed_detector": {
+    "tp": 113,
+    "fp": 7,
+    "fn": 236,
+    "precision": 0.9417,
+    "recall": 0.3238,
+    "n_det": 120,
+    "n_gt": 349
+   },
+   "size_only_detector": {
+    "tp": 322,
+    "fp": 70,
+    "fn": 27,
+    "precision": 0.8214,
+    "recall": 0.9226,
+    "n_det": 392,
+    "n_gt": 349
+   },
+   "diag": {
+    "n_candidates": 526,
+    "n_runs_h": 31,
+    "n_runs_v": 1,
+    "n_flagged": 162,
+    "n_by_run": 162,
+    "n_absorbed": 0,
+    "n_objects": 601,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 44,
+    "n_entries_filtered": 40,
+    "n_entries_raw_with_border": 44,
+    "n_flagged_a": 12,
+    "n_flagged_b": 9,
+    "n_obj_a": 177,
+    "n_obj_b": 190,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 44,
+     "ink_border": 0,
+     "count": 13,
+     "object_id": 119,
+     "churn": 45,
+     "label": 160
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 3,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 3,
+    "n_flagged_a": 162,
+    "n_flagged_b": 166,
+    "n_obj_a": 601,
+    "n_obj_b": 604,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 3,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 9,
+     "churn": 2,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 27,
+     "line_source": 36,
+     "n_seg_removed": 178,
+     "n_seg_added": 225,
+     "bbox_pt": [
+      4551.35,
+      1866.61,
+      4568.22,
+      1883.547
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.СС.ПС_V1-v001-blk_fbe22186597d415f87713df53768eae4",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg_before": 5274,
+   "n_seg_after": 5172,
+   "seg_ratio": 0.981,
+   "n_text_before": 6,
+   "n_text_after": 0,
+   "n_obj_before": 26,
+   "n_obj_after": 85,
+   "obj_ratio": 3.269,
+   "gt_glyph_objects": 74,
+   "gt_share_of_objects": 0.8706,
+   "gt_contamination_before": 14,
+   "gt_contamination_share": 0.5385,
+   "run_detector": {
+    "tp": 60,
+    "fp": 0,
+    "fn": 14,
+    "precision": 1.0,
+    "recall": 0.8108,
+    "n_det": 60,
+    "n_gt": 74
+   },
+   "run_closed_detector": {
+    "tp": 60,
+    "fp": 0,
+    "fn": 14,
+    "precision": 1.0,
+    "recall": 0.8108,
+    "n_det": 60,
+    "n_gt": 74
+   },
+   "size_only_detector": {
+    "tp": 73,
+    "fp": 0,
+    "fn": 1,
+    "precision": 1.0,
+    "recall": 0.9865,
+    "n_det": 73,
+    "n_gt": 74
+   },
+   "diag": {
+    "n_candidates": 74,
+    "n_runs_h": 7,
+    "n_runs_v": 0,
+    "n_flagged": 60,
+    "n_by_run": 60,
+    "n_absorbed": 0,
+    "n_objects": 85,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 4,
+    "n_flagged_b": 4,
+    "n_obj_a": 26,
+    "n_obj_b": 34,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 8,
+     "object_id": 38,
+     "churn": 3,
+     "label": 26
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 24,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 24,
+    "n_flagged_a": 60,
+    "n_flagged_b": 73,
+    "n_obj_a": 85,
+    "n_obj_b": 104,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 24,
+     "ink_border": 0,
+     "count": 19,
+     "object_id": 33,
+     "churn": 7,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 5,
+     "line_source": 3,
+     "n_seg_removed": 385,
+     "n_seg_added": 1680,
+     "bbox_pt": [
+      812.94,
+      816.68,
+      831.06,
+      824.84
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "AR-СТ26_01-14-АР3-2-РД_V1-v001-blk_06499dafb2ed46398b6fbc571e25e4b0",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg_before": 15504,
+   "n_seg_after": 104365,
+   "seg_ratio": 6.731,
+   "n_text_before": 94,
+   "n_text_after": 0,
+   "n_obj_before": 363,
+   "n_obj_after": 6031,
+   "obj_ratio": 16.614,
+   "gt_glyph_objects": 1947,
+   "gt_share_of_objects": 0.3228,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 165,
+    "fp": 552,
+    "fn": 1782,
+    "precision": 0.2301,
+    "recall": 0.0847,
+    "n_det": 717,
+    "n_gt": 1947
+   },
+   "run_closed_detector": {
+    "tp": 352,
+    "fp": 28,
+    "fn": 1595,
+    "precision": 0.9263,
+    "recall": 0.1808,
+    "n_det": 380,
+    "n_gt": 1947
+   },
+   "size_only_detector": {
+    "tp": 1947,
+    "fp": 3897,
+    "fn": 0,
+    "precision": 0.3332,
+    "recall": 1.0,
+    "n_det": 5844,
+    "n_gt": 1947
+   },
+   "diag": {
+    "n_candidates": 5960,
+    "n_runs_h": 95,
+    "n_runs_v": 37,
+    "n_flagged": 717,
+    "n_by_run": 717,
+    "n_absorbed": 0,
+    "n_objects": 6031,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 188,
+    "n_entries_filtered": 146,
+    "n_entries_raw_with_border": 188,
+    "n_flagged_a": 82,
+    "n_flagged_b": 113,
+    "n_obj_a": 363,
+    "n_obj_b": 587,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 188,
+     "ink_border": 0,
+     "count": 224,
+     "object_id": 330,
+     "churn": 27,
+     "label": 111
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 31,
+    "n_entries_filtered": 26,
+    "n_entries_raw_with_border": 31,
+    "n_flagged_a": 717,
+    "n_flagged_b": 724,
+    "n_obj_a": 6031,
+    "n_obj_b": 6007,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 31,
+     "ink_border": 0,
+     "count": 24,
+     "object_id": 34,
+     "churn": 29,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 74,
+     "line_source": 42,
+     "n_seg_removed": 1147,
+     "n_seg_added": 241,
+     "bbox_pt": [
+      1354.6,
+      366.76,
+      1438.1,
+      376.47
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ВК_V1-v001-blk_7bb4fad7511c467894373f9d1b26c3d5",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg_before": 26787,
+   "n_seg_after": 58783,
+   "seg_ratio": 2.194,
+   "n_text_before": 115,
+   "n_text_after": 0,
+   "n_obj_before": 809,
+   "n_obj_after": 5367,
+   "obj_ratio": 6.634,
+   "gt_glyph_objects": 752,
+   "gt_share_of_objects": 0.1401,
+   "gt_contamination_before": 2,
+   "gt_contamination_share": 0.0025,
+   "run_detector": {
+    "tp": 233,
+    "fp": 237,
+    "fn": 519,
+    "precision": 0.4957,
+    "recall": 0.3098,
+    "n_det": 470,
+    "n_gt": 752
+   },
+   "run_closed_detector": {
+    "tp": 314,
+    "fp": 12,
+    "fn": 438,
+    "precision": 0.9632,
+    "recall": 0.4176,
+    "n_det": 326,
+    "n_gt": 752
+   },
+   "size_only_detector": {
+    "tp": 752,
+    "fp": 4314,
+    "fn": 0,
+    "precision": 0.1484,
+    "recall": 1.0,
+    "n_det": 5066,
+    "n_gt": 752
+   },
+   "diag": {
+    "n_candidates": 5320,
+    "n_runs_h": 60,
+    "n_runs_v": 54,
+    "n_flagged": 470,
+    "n_by_run": 470,
+    "n_absorbed": 0,
+    "n_objects": 5367,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 111,
+    "n_entries_filtered": 102,
+    "n_entries_raw_with_border": 114,
+    "n_flagged_a": 58,
+    "n_flagged_b": 53,
+    "n_obj_a": 809,
+    "n_obj_b": 875,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 111,
+     "ink_border": 3,
+     "count": 66,
+     "object_id": 558,
+     "churn": 182,
+     "label": 231
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 5,
+    "n_entries_filtered": 5,
+    "n_entries_raw_with_border": 5,
+    "n_flagged_a": 470,
+    "n_flagged_b": 470,
+    "n_obj_a": 5371,
+    "n_obj_b": 5364,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 5,
+     "ink_border": 0,
+     "count": 7,
+     "object_id": 13,
+     "churn": 10,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 69,
+     "line_source": 51,
+     "n_seg_removed": 226,
+     "n_seg_added": 190,
+     "bbox_pt": [
+      377.741,
+      1094.508,
+      390.6,
+      1101.62
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "PT-ПД-ОО542664-АПТ1.2_V1-v001-blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg_before": 1200,
+   "n_seg_after": 14139,
+   "seg_ratio": 11.783,
+   "n_text_before": 25,
+   "n_text_after": 0,
+   "n_obj_before": 78,
+   "n_obj_after": 585,
+   "obj_ratio": 7.5,
+   "gt_glyph_objects": 248,
+   "gt_share_of_objects": 0.4239,
+   "gt_contamination_before": 2,
+   "gt_contamination_share": 0.0256,
+   "run_detector": {
+    "tp": 145,
+    "fp": 5,
+    "fn": 103,
+    "precision": 0.9667,
+    "recall": 0.5847,
+    "n_det": 150,
+    "n_gt": 248
+   },
+   "run_closed_detector": {
+    "tp": 167,
+    "fp": 0,
+    "fn": 81,
+    "precision": 1.0,
+    "recall": 0.6734,
+    "n_det": 167,
+    "n_gt": 248
+   },
+   "size_only_detector": {
+    "tp": 246,
+    "fp": 262,
+    "fn": 2,
+    "precision": 0.4843,
+    "recall": 0.9919,
+    "n_det": 508,
+    "n_gt": 248
+   },
+   "diag": {
+    "n_candidates": 552,
+    "n_runs_h": 20,
+    "n_runs_v": 4,
+    "n_flagged": 150,
+    "n_by_run": 150,
+    "n_absorbed": 0,
+    "n_objects": 585,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 29,
+    "n_entries_filtered": 26,
+    "n_entries_raw_with_border": 30,
+    "n_flagged_a": 9,
+    "n_flagged_b": 11,
+    "n_obj_a": 78,
+    "n_obj_b": 117,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 29,
+     "ink_border": 1,
+     "count": 39,
+     "object_id": 81,
+     "churn": 12,
+     "label": 48
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 150,
+    "n_flagged_b": 150,
+    "n_obj_a": 585,
+    "n_obj_b": 587,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 4,
+     "churn": 1,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 12,
+     "line_source": 10,
+     "n_seg_removed": 352,
+     "n_seg_added": 438,
+     "bbox_pt": [
+      936.7,
+      138.72,
+      948.7,
+      146.05
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.СС.ПС_V1-v001-blk_f3d7c94dc2674824aabd7f52598636b9",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg_before": 50896,
+   "n_seg_after": 49749,
+   "seg_ratio": 0.977,
+   "n_text_before": 28,
+   "n_text_after": 0,
+   "n_obj_before": 89,
+   "n_obj_after": 750,
+   "obj_ratio": 8.427,
+   "gt_glyph_objects": 689,
+   "gt_share_of_objects": 0.9187,
+   "gt_contamination_before": 45,
+   "gt_contamination_share": 0.5056,
+   "run_detector": {
+    "tp": 563,
+    "fp": 21,
+    "fn": 126,
+    "precision": 0.964,
+    "recall": 0.8171,
+    "n_det": 584,
+    "n_gt": 689
+   },
+   "run_closed_detector": {
+    "tp": 563,
+    "fp": 0,
+    "fn": 126,
+    "precision": 1.0,
+    "recall": 0.8171,
+    "n_det": 563,
+    "n_gt": 689
+   },
+   "size_only_detector": {
+    "tp": 689,
+    "fp": 32,
+    "fn": 0,
+    "precision": 0.9556,
+    "recall": 1.0,
+    "n_det": 721,
+    "n_gt": 689
+   },
+   "diag": {
+    "n_candidates": 729,
+    "n_runs_h": 54,
+    "n_runs_v": 1,
+    "n_flagged": 584,
+    "n_by_run": 584,
+    "n_absorbed": 0,
+    "n_objects": 750,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 15,
+    "n_flagged_b": 15,
+    "n_obj_a": 89,
+    "n_obj_b": 84,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 5,
+     "object_id": 99,
+     "churn": 27,
+     "label": 78
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 9,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 9,
+    "n_flagged_a": 584,
+    "n_flagged_b": 582,
+    "n_obj_a": 750,
+    "n_obj_b": 749,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 9,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 19,
+     "churn": 10,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 19,
+     "line_source": 8,
+     "n_seg_removed": 550,
+     "n_seg_added": 467,
+     "bbox_pt": [
+      656.16,
+      801.98,
+      690.9,
+      811.22
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "SS-ПД-00542664-СУС_V1-v001-blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+   "discipline": "SS",
+   "cls": "stamp",
+   "n_seg_before": 2179,
+   "n_seg_after": 49855,
+   "seg_ratio": 22.88,
+   "n_text_before": 31,
+   "n_text_after": 0,
+   "n_obj_before": 35,
+   "n_obj_after": 1778,
+   "obj_ratio": 50.8,
+   "gt_glyph_objects": 1516,
+   "gt_share_of_objects": 0.8526,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 357,
+    "fp": 0,
+    "fn": 1159,
+    "precision": 1.0,
+    "recall": 0.2355,
+    "n_det": 357,
+    "n_gt": 1516
+   },
+   "run_closed_detector": {
+    "tp": 157,
+    "fp": 0,
+    "fn": 1359,
+    "precision": 1.0,
+    "recall": 0.1036,
+    "n_det": 157,
+    "n_gt": 1516
+   },
+   "size_only_detector": {
+    "tp": 1506,
+    "fp": 225,
+    "fn": 10,
+    "precision": 0.87,
+    "recall": 0.9934,
+    "n_det": 1731,
+    "n_gt": 1516
+   },
+   "diag": {
+    "n_candidates": 1755,
+    "n_runs_h": 77,
+    "n_runs_v": 0,
+    "n_flagged": 357,
+    "n_by_run": 357,
+    "n_absorbed": 0,
+    "n_objects": 1778,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 43,
+    "n_entries_filtered": 32,
+    "n_entries_raw_with_border": 50,
+    "n_flagged_a": 0,
+    "n_flagged_b": 30,
+    "n_obj_a": 35,
+    "n_obj_b": 152,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 43,
+     "ink_border": 7,
+     "count": 117,
+     "object_id": 139,
+     "churn": 9,
+     "label": 29
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 19,
+    "n_entries_filtered": 13,
+    "n_entries_raw_with_border": 19,
+    "n_flagged_a": 357,
+    "n_flagged_b": 354,
+    "n_obj_a": 1778,
+    "n_obj_b": 1767,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 19,
+     "ink_border": 0,
+     "count": 11,
+     "object_id": 41,
+     "churn": 26,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 20,
+     "line_source": 28,
+     "n_seg_removed": 881,
+     "n_seg_added": 536,
+     "bbox_pt": [
+      715.848,
+      1602.484,
+      753.788,
+      1609.6
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К1 V1-v002-blk_6c327ffec0f8441abfade5471bd1127c",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg_before": 48153,
+   "n_seg_after": 168980,
+   "seg_ratio": 3.509,
+   "n_text_before": 330,
+   "n_text_after": 0,
+   "n_obj_before": 1400,
+   "n_obj_after": 12426,
+   "obj_ratio": 8.876,
+   "gt_glyph_objects": 2590,
+   "gt_share_of_objects": 0.2084,
+   "gt_contamination_before": 42,
+   "gt_contamination_share": 0.03,
+   "run_detector": {
+    "tp": 88,
+    "fp": 134,
+    "fn": 2502,
+    "precision": 0.3964,
+    "recall": 0.034,
+    "n_det": 222,
+    "n_gt": 2590
+   },
+   "run_closed_detector": {
+    "tp": 180,
+    "fp": 10,
+    "fn": 2410,
+    "precision": 0.9474,
+    "recall": 0.0695,
+    "n_det": 190,
+    "n_gt": 2590
+   },
+   "size_only_detector": {
+    "tp": 2590,
+    "fp": 9515,
+    "fn": 0,
+    "precision": 0.214,
+    "recall": 1.0,
+    "n_det": 12105,
+    "n_gt": 2590
+   },
+   "diag": {
+    "n_candidates": 12337,
+    "n_runs_h": 23,
+    "n_runs_v": 40,
+    "n_flagged": 222,
+    "n_by_run": 222,
+    "n_absorbed": 0,
+    "n_objects": 12426,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 250,
+    "n_entries_filtered": 240,
+    "n_entries_raw_with_border": 257,
+    "n_flagged_a": 33,
+    "n_flagged_b": 38,
+    "n_obj_a": 1400,
+    "n_obj_b": 1360,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 250,
+     "ink_border": 7,
+     "count": 40,
+     "object_id": 1378,
+     "churn": 525,
+     "label": 834
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 7,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 222,
+    "n_flagged_b": 222,
+    "n_obj_a": 12426,
+    "n_obj_b": 12424,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 8,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 31,
+     "line_source": 239,
+     "n_seg_removed": 330,
+     "n_seg_added": 114,
+     "bbox_pt": [
+      146.284,
+      580.0,
+      153.4,
+      595.373
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К3-v001-6WNV-DWDA-4CQ",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg_before": 1034,
+   "n_seg_after": 5077,
+   "seg_ratio": 4.91,
+   "n_text_before": 18,
+   "n_text_after": 0,
+   "n_obj_before": 75,
+   "n_obj_after": 508,
+   "obj_ratio": 6.773,
+   "gt_glyph_objects": 128,
+   "gt_share_of_objects": 0.252,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 81,
+    "fp": 127,
+    "fn": 47,
+    "precision": 0.3894,
+    "recall": 0.6328,
+    "n_det": 208,
+    "n_gt": 128
+   },
+   "run_closed_detector": {
+    "tp": 99,
+    "fp": 21,
+    "fn": 29,
+    "precision": 0.825,
+    "recall": 0.7734,
+    "n_det": 120,
+    "n_gt": 128
+   },
+   "size_only_detector": {
+    "tp": 127,
+    "fp": 309,
+    "fn": 1,
+    "precision": 0.2913,
+    "recall": 0.9922,
+    "n_det": 436,
+    "n_gt": 128
+   },
+   "diag": {
+    "n_candidates": 478,
+    "n_runs_h": 22,
+    "n_runs_v": 10,
+    "n_flagged": 208,
+    "n_by_run": 208,
+    "n_absorbed": 0,
+    "n_objects": 508,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 16,
+    "n_entries_filtered": 15,
+    "n_entries_raw_with_border": 16,
+    "n_flagged_a": 0,
+    "n_flagged_b": 3,
+    "n_obj_a": 75,
+    "n_obj_b": 87,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 16,
+     "ink_border": 0,
+     "count": 12,
+     "object_id": 44,
+     "churn": 9,
+     "label": 36
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 8,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 8,
+    "n_flagged_a": 208,
+    "n_flagged_b": 211,
+    "n_obj_a": 508,
+    "n_obj_b": 515,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 8,
+     "ink_border": 0,
+     "count": 7,
+     "object_id": 15,
+     "churn": 4,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 14,
+     "line_source": 10,
+     "n_seg_removed": 133,
+     "n_seg_added": 191,
+     "bbox_pt": [
+      997.984,
+      1192.149,
+      1005.33,
+      1202.977
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ГСВ_V1-v001-blk_2d0c258f773043e8b7f6481feec6fc4b",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg_before": 1724,
+   "n_seg_after": 39242,
+   "seg_ratio": 22.762,
+   "n_text_before": 29,
+   "n_text_after": 0,
+   "n_obj_before": 33,
+   "n_obj_after": 779,
+   "obj_ratio": 23.606,
+   "gt_glyph_objects": 725,
+   "gt_share_of_objects": 0.9307,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 551,
+    "fp": 4,
+    "fn": 174,
+    "precision": 0.9928,
+    "recall": 0.76,
+    "n_det": 555,
+    "n_gt": 725
+   },
+   "run_closed_detector": {
+    "tp": 531,
+    "fp": 0,
+    "fn": 194,
+    "precision": 1.0,
+    "recall": 0.7324,
+    "n_det": 531,
+    "n_gt": 725
+   },
+   "size_only_detector": {
+    "tp": 724,
+    "fp": 26,
+    "fn": 1,
+    "precision": 0.9653,
+    "recall": 0.9986,
+    "n_det": 750,
+    "n_gt": 725
+   },
+   "diag": {
+    "n_candidates": 757,
+    "n_runs_h": 60,
+    "n_runs_v": 0,
+    "n_flagged": 555,
+    "n_by_run": 555,
+    "n_absorbed": 0,
+    "n_objects": 779,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 27,
+    "n_entries_filtered": 27,
+    "n_entries_raw_with_border": 34,
+    "n_flagged_a": 0,
+    "n_flagged_b": 51,
+    "n_obj_a": 33,
+    "n_obj_b": 199,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 27,
+     "ink_border": 7,
+     "count": 166,
+     "object_id": 176,
+     "churn": 4,
+     "label": 33
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 34,
+    "n_entries_filtered": 8,
+    "n_entries_raw_with_border": 34,
+    "n_flagged_a": 555,
+    "n_flagged_b": 564,
+    "n_obj_a": 779,
+    "n_obj_b": 806,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 34,
+     "ink_border": 0,
+     "count": 27,
+     "object_id": 43,
+     "churn": 8,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 23,
+     "line_source": 8,
+     "n_seg_removed": 456,
+     "n_seg_added": 2061,
+     "bbox_pt": [
+      811.1,
+      744.602,
+      831.5,
+      751.6
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KJ-13АВ-РД-КЖ5.42.1-К2_V1-v001-blk_fafeb59601b84a839e0616f5fcda4f18",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg_before": 723,
+   "n_seg_after": 19331,
+   "seg_ratio": 26.737,
+   "n_text_before": 41,
+   "n_text_after": 0,
+   "n_obj_before": 115,
+   "n_obj_after": 625,
+   "obj_ratio": 5.435,
+   "gt_glyph_objects": 347,
+   "gt_share_of_objects": 0.5552,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 207,
+    "fp": 9,
+    "fn": 140,
+    "precision": 0.9583,
+    "recall": 0.5965,
+    "n_det": 216,
+    "n_gt": 347
+   },
+   "run_closed_detector": {
+    "tp": 184,
+    "fp": 0,
+    "fn": 163,
+    "precision": 1.0,
+    "recall": 0.5303,
+    "n_det": 184,
+    "n_gt": 347
+   },
+   "size_only_detector": {
+    "tp": 347,
+    "fp": 199,
+    "fn": 0,
+    "precision": 0.6355,
+    "recall": 1.0,
+    "n_det": 546,
+    "n_gt": 347
+   },
+   "diag": {
+    "n_candidates": 607,
+    "n_runs_h": 22,
+    "n_runs_v": 4,
+    "n_flagged": 216,
+    "n_by_run": 216,
+    "n_absorbed": 0,
+    "n_objects": 625,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 55,
+    "n_entries_filtered": 46,
+    "n_entries_raw_with_border": 56,
+    "n_flagged_a": 6,
+    "n_flagged_b": 13,
+    "n_obj_a": 115,
+    "n_obj_b": 167,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 55,
+     "ink_border": 1,
+     "count": 52,
+     "object_id": 92,
+     "churn": 15,
+     "label": 64
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 4,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 4,
+    "n_flagged_a": 216,
+    "n_flagged_b": 211,
+    "n_obj_a": 625,
+    "n_obj_b": 625,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 4,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 10,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 23,
+     "line_source": 4,
+     "n_seg_removed": 286,
+     "n_seg_added": 286,
+     "bbox_pt": [
+      2645.517,
+      1816.051,
+      2655.9,
+      1823.02
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К6-v001-7FP3-FT7J-UCN",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg_before": 21909,
+   "n_seg_after": 153757,
+   "seg_ratio": 7.018,
+   "n_text_before": 129,
+   "n_text_after": 0,
+   "n_obj_before": 303,
+   "n_obj_after": 7751,
+   "obj_ratio": 25.581,
+   "gt_glyph_objects": 2984,
+   "gt_share_of_objects": 0.385,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 7,
+    "fp": 610,
+    "fn": 2977,
+    "precision": 0.0113,
+    "recall": 0.0023,
+    "n_det": 617,
+    "n_gt": 2984
+   },
+   "run_closed_detector": {
+    "tp": 16,
+    "fp": 62,
+    "fn": 2968,
+    "precision": 0.2051,
+    "recall": 0.0054,
+    "n_det": 78,
+    "n_gt": 2984
+   },
+   "size_only_detector": {
+    "tp": 2984,
+    "fp": 4586,
+    "fn": 0,
+    "precision": 0.3942,
+    "recall": 1.0,
+    "n_det": 7570,
+    "n_gt": 2984
+   },
+   "diag": {
+    "n_candidates": 7690,
+    "n_runs_h": 14,
+    "n_runs_v": 107,
+    "n_flagged": 617,
+    "n_by_run": 617,
+    "n_absorbed": 0,
+    "n_objects": 7751,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 147,
+    "n_entries_filtered": 120,
+    "n_entries_raw_with_border": 147,
+    "n_flagged_a": 79,
+    "n_flagged_b": 58,
+    "n_obj_a": 303,
+    "n_obj_b": 1155,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 147,
+     "ink_border": 0,
+     "count": 852,
+     "object_id": 1112,
+     "churn": 91,
+     "label": 195
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 4,
+    "n_entries_filtered": 4,
+    "n_entries_raw_with_border": 4,
+    "n_flagged_a": 625,
+    "n_flagged_b": 625,
+    "n_obj_a": 7748,
+    "n_obj_b": 7750,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 4,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 10,
+     "churn": 1,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 106,
+     "line_source": 107,
+     "n_seg_removed": 1611,
+     "n_seg_added": 1773,
+     "bbox_pt": [
+      2394.945,
+      478.418,
+      2451.85,
+      486.525
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "OV-13АВ-РД-ОВ1.1-К2 V1-v002-4UXN-R3AK-UKH",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg_before": 1117,
+   "n_seg_after": 15156,
+   "seg_ratio": 13.568,
+   "n_text_before": 50,
+   "n_text_after": 0,
+   "n_obj_before": 91,
+   "n_obj_after": 499,
+   "obj_ratio": 5.484,
+   "gt_glyph_objects": 359,
+   "gt_share_of_objects": 0.7194,
+   "gt_contamination_before": 1,
+   "gt_contamination_share": 0.011,
+   "run_detector": {
+    "tp": 183,
+    "fp": 6,
+    "fn": 176,
+    "precision": 0.9683,
+    "recall": 0.5097,
+    "n_det": 189,
+    "n_gt": 359
+   },
+   "run_closed_detector": {
+    "tp": 177,
+    "fp": 1,
+    "fn": 182,
+    "precision": 0.9944,
+    "recall": 0.493,
+    "n_det": 178,
+    "n_gt": 359
+   },
+   "size_only_detector": {
+    "tp": 352,
+    "fp": 41,
+    "fn": 7,
+    "precision": 0.8957,
+    "recall": 0.9805,
+    "n_det": 393,
+    "n_gt": 359
+   },
+   "diag": {
+    "n_candidates": 455,
+    "n_runs_h": 24,
+    "n_runs_v": 0,
+    "n_flagged": 189,
+    "n_by_run": 189,
+    "n_absorbed": 0,
+    "n_objects": 499,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 50,
+    "n_entries_filtered": 48,
+    "n_entries_raw_with_border": 50,
+    "n_flagged_a": 3,
+    "n_flagged_b": 3,
+    "n_obj_a": 91,
+    "n_obj_b": 128,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 50,
+     "ink_border": 0,
+     "count": 37,
+     "object_id": 81,
+     "churn": 20,
+     "label": 80
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 7,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 189,
+    "n_flagged_b": 189,
+    "n_obj_a": 499,
+    "n_obj_b": 497,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 8,
+     "churn": 8,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 45,
+     "line_source": 19,
+     "n_seg_removed": 225,
+     "n_seg_added": 159,
+     "bbox_pt": [
+      2235.6,
+      1328.161,
+      2252.64,
+      1345.201
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KM-13АВ-РД-НВФ-К5-v001-9QAA-FAAH-GDU",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg_before": 27522,
+   "n_seg_after": 61635,
+   "seg_ratio": 2.239,
+   "n_text_before": 36,
+   "n_text_after": 0,
+   "n_obj_before": 428,
+   "n_obj_after": 7248,
+   "obj_ratio": 16.935,
+   "gt_glyph_objects": 1275,
+   "gt_share_of_objects": 0.1759,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 309,
+    "fp": 1585,
+    "fn": 966,
+    "precision": 0.1631,
+    "recall": 0.2424,
+    "n_det": 1894,
+    "n_gt": 1275
+   },
+   "run_closed_detector": {
+    "tp": 109,
+    "fp": 3,
+    "fn": 1166,
+    "precision": 0.9732,
+    "recall": 0.0855,
+    "n_det": 112,
+    "n_gt": 1275
+   },
+   "size_only_detector": {
+    "tp": 1275,
+    "fp": 5867,
+    "fn": 0,
+    "precision": 0.1785,
+    "recall": 1.0,
+    "n_det": 7142,
+    "n_gt": 1275
+   },
+   "diag": {
+    "n_candidates": 7198,
+    "n_runs_h": 249,
+    "n_runs_v": 287,
+    "n_flagged": 1894,
+    "n_by_run": 1894,
+    "n_absorbed": 0,
+    "n_objects": 7248,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 40,
+    "n_entries_filtered": 37,
+    "n_entries_raw_with_border": 40,
+    "n_flagged_a": 112,
+    "n_flagged_b": 54,
+    "n_obj_a": 428,
+    "n_obj_b": 428,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 40,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 464,
+     "churn": 205,
+     "label": 58
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 13,
+    "n_entries_filtered": 13,
+    "n_entries_raw_with_border": 13,
+    "n_flagged_a": 1894,
+    "n_flagged_b": 1903,
+    "n_obj_a": 7248,
+    "n_obj_b": 7245,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 13,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 19,
+     "churn": 11,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 28,
+     "line_source": 30,
+     "n_seg_removed": 540,
+     "n_seg_added": 260,
+     "bbox_pt": [
+      80.234,
+      428.102,
+      120.2,
+      435.2
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "SS-ПД-00542664-СОУЭ-5_V1-v001-blk_362a88d5b0ca42b8b6946530dcabdc29",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg_before": 609,
+   "n_seg_after": 31603,
+   "seg_ratio": 51.893,
+   "n_text_before": 32,
+   "n_text_after": 0,
+   "n_obj_before": 24,
+   "n_obj_after": 626,
+   "obj_ratio": 26.083,
+   "gt_glyph_objects": 561,
+   "gt_share_of_objects": 0.8962,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 241,
+    "fp": 22,
+    "fn": 320,
+    "precision": 0.9163,
+    "recall": 0.4296,
+    "n_det": 263,
+    "n_gt": 561
+   },
+   "run_closed_detector": {
+    "tp": 250,
+    "fp": 12,
+    "fn": 311,
+    "precision": 0.9542,
+    "recall": 0.4456,
+    "n_det": 262,
+    "n_gt": 561
+   },
+   "size_only_detector": {
+    "tp": 524,
+    "fp": 40,
+    "fn": 37,
+    "precision": 0.9291,
+    "recall": 0.934,
+    "n_det": 564,
+    "n_gt": 561
+   },
+   "diag": {
+    "n_candidates": 607,
+    "n_runs_h": 51,
+    "n_runs_v": 5,
+    "n_flagged": 263,
+    "n_by_run": 263,
+    "n_absorbed": 0,
+    "n_objects": 626,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 85,
+    "n_entries_filtered": 20,
+    "n_entries_raw_with_border": 105,
+    "n_flagged_a": 0,
+    "n_flagged_b": 96,
+    "n_obj_a": 24,
+    "n_obj_b": 153,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 85,
+     "ink_border": 20,
+     "count": 129,
+     "object_id": 151,
+     "churn": 9,
+     "label": 20
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 25,
+    "n_entries_filtered": 9,
+    "n_entries_raw_with_border": 25,
+    "n_flagged_a": 263,
+    "n_flagged_b": 293,
+    "n_obj_a": 626,
+    "n_obj_b": 604,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 25,
+     "ink_border": 0,
+     "count": 22,
+     "object_id": 30,
+     "churn": 35,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 21,
+     "line_source": 4,
+     "n_seg_removed": 1404,
+     "n_seg_added": 246,
+     "bbox_pt": [
+      1882.2,
+      621.8,
+      1979.0,
+      631.0
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "SS-ПД-00542664-СОУЭ-3_V1-v001-blk_9a8c86a7e64543069b1424ad220a2dca",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg_before": 9790,
+   "n_seg_after": 462570,
+   "seg_ratio": 47.249,
+   "n_text_before": 511,
+   "n_text_after": 0,
+   "n_obj_before": 702,
+   "n_obj_after": 10788,
+   "obj_ratio": 15.368,
+   "gt_glyph_objects": 9776,
+   "gt_share_of_objects": 0.9062,
+   "gt_contamination_before": 39,
+   "gt_contamination_share": 0.0556,
+   "run_detector": {
+    "tp": 460,
+    "fp": 6,
+    "fn": 9316,
+    "precision": 0.9871,
+    "recall": 0.0471,
+    "n_det": 466,
+    "n_gt": 9776
+   },
+   "run_closed_detector": {
+    "tp": 486,
+    "fp": 3,
+    "fn": 9290,
+    "precision": 0.9939,
+    "recall": 0.0497,
+    "n_det": 489,
+    "n_gt": 9776
+   },
+   "size_only_detector": {
+    "tp": 9760,
+    "fp": 808,
+    "fn": 16,
+    "precision": 0.9235,
+    "recall": 0.9984,
+    "n_det": 10568,
+    "n_gt": 9776
+   },
+   "diag": {
+    "n_candidates": 10721,
+    "n_runs_h": 91,
+    "n_runs_v": 18,
+    "n_flagged": 466,
+    "n_by_run": 466,
+    "n_absorbed": 0,
+    "n_objects": 10788,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 556,
+    "n_entries_filtered": 440,
+    "n_entries_raw_with_border": 570,
+    "n_flagged_a": 92,
+    "n_flagged_b": 327,
+    "n_obj_a": 702,
+    "n_obj_b": 1778,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 556,
+     "ink_border": 14,
+     "count": 1076,
+     "object_id": 1794,
+     "churn": 211,
+     "label": 643
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 28,
+    "n_entries_filtered": 25,
+    "n_entries_raw_with_border": 28,
+    "n_flagged_a": 466,
+    "n_flagged_b": 470,
+    "n_obj_a": 10788,
+    "n_obj_b": 10781,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 28,
+     "ink_border": 0,
+     "count": 7,
+     "object_id": 55,
+     "churn": 31,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 393,
+     "line_source": 351,
+     "n_seg_removed": 1183,
+     "n_seg_added": 1421,
+     "bbox_pt": [
+      774.409,
+      203.7,
+      852.3,
+      210.8
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "SS-ПД-00542664-ПС-4_V1-v001-blk_1c39cf0ae52548caaa6fdd64d5e0569f",
+   "discipline": "SS",
+   "cls": "stamp",
+   "n_seg_before": 43262,
+   "n_seg_after": 63741,
+   "seg_ratio": 1.473,
+   "n_text_before": 45,
+   "n_text_after": 0,
+   "n_obj_before": 56,
+   "n_obj_after": 1109,
+   "obj_ratio": 19.804,
+   "gt_glyph_objects": 783,
+   "gt_share_of_objects": 0.706,
+   "gt_contamination_before": 8,
+   "gt_contamination_share": 0.1429,
+   "run_detector": {
+    "tp": 491,
+    "fp": 68,
+    "fn": 292,
+    "precision": 0.8784,
+    "recall": 0.6271,
+    "n_det": 559,
+    "n_gt": 783
+   },
+   "run_closed_detector": {
+    "tp": 494,
+    "fp": 68,
+    "fn": 289,
+    "precision": 0.879,
+    "recall": 0.6309,
+    "n_det": 562,
+    "n_gt": 783
+   },
+   "size_only_detector": {
+    "tp": 767,
+    "fp": 292,
+    "fn": 16,
+    "precision": 0.7243,
+    "recall": 0.9796,
+    "n_det": 1059,
+    "n_gt": 783
+   },
+   "diag": {
+    "n_candidates": 1088,
+    "n_runs_h": 79,
+    "n_runs_v": 0,
+    "n_flagged": 559,
+    "n_by_run": 559,
+    "n_absorbed": 0,
+    "n_objects": 1109,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 26,
+    "n_entries_filtered": 14,
+    "n_entries_raw_with_border": 32,
+    "n_flagged_a": 0,
+    "n_flagged_b": 21,
+    "n_obj_a": 56,
+    "n_obj_b": 111,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 26,
+     "ink_border": 6,
+     "count": 55,
+     "object_id": 109,
+     "churn": 22,
+     "label": 45
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 35,
+    "n_entries_filtered": 12,
+    "n_entries_raw_with_border": 35,
+    "n_flagged_a": 559,
+    "n_flagged_b": 543,
+    "n_obj_a": 1109,
+    "n_obj_b": 1140,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 35,
+     "ink_border": 0,
+     "count": 31,
+     "object_id": 49,
+     "churn": 9,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 36,
+     "line_source": 12,
+     "n_seg_removed": 456,
+     "n_seg_added": 2952,
+     "bbox_pt": [
+      811.7,
+      803.002,
+      832.3,
+      810.1
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "VK-ПД-ОО542664-ВК1-1.1.1_V1-v001-blk_6cf6246193de4e0fb2d3ea33ff2ecf28",
+   "discipline": "VK",
+   "cls": "drawing",
+   "n_seg_before": 43291,
+   "n_seg_after": 108966,
+   "seg_ratio": 2.517,
+   "n_text_before": 54,
+   "n_text_after": 0,
+   "n_obj_before": 788,
+   "n_obj_after": 8785,
+   "obj_ratio": 11.148,
+   "gt_glyph_objects": 1343,
+   "gt_share_of_objects": 0.1529,
+   "gt_contamination_before": 6,
+   "gt_contamination_share": 0.0076,
+   "run_detector": {
+    "tp": 463,
+    "fp": 1918,
+    "fn": 880,
+    "precision": 0.1945,
+    "recall": 0.3448,
+    "n_det": 2381,
+    "n_gt": 1343
+   },
+   "run_closed_detector": {
+    "tp": 587,
+    "fp": 89,
+    "fn": 756,
+    "precision": 0.8683,
+    "recall": 0.4371,
+    "n_det": 676,
+    "n_gt": 1343
+   },
+   "size_only_detector": {
+    "tp": 1343,
+    "fp": 7377,
+    "fn": 0,
+    "precision": 0.154,
+    "recall": 1.0,
+    "n_det": 8720,
+    "n_gt": 1343
+   },
+   "diag": {
+    "n_candidates": 8773,
+    "n_runs_h": 157,
+    "n_runs_v": 276,
+    "n_flagged": 2381,
+    "n_by_run": 2381,
+    "n_absorbed": 0,
+    "n_objects": 8785,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 136,
+    "n_entries_filtered": 87,
+    "n_entries_raw_with_border": 137,
+    "n_flagged_a": 61,
+    "n_flagged_b": 116,
+    "n_obj_a": 788,
+    "n_obj_b": 898,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 136,
+     "ink_border": 1,
+     "count": 110,
+     "object_id": 626,
+     "churn": 135,
+     "label": 130
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 13,
+    "n_entries_filtered": 13,
+    "n_entries_raw_with_border": 13,
+    "n_flagged_a": 2379,
+    "n_flagged_b": 2379,
+    "n_obj_a": 8802,
+    "n_obj_b": 8798,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 13,
+     "ink_border": 0,
+     "count": 4,
+     "object_id": 22,
+     "churn": 13,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 12,
+     "line_source": 23,
+     "n_seg_removed": 709,
+     "n_seg_added": 485,
+     "bbox_pt": [
+      373.4,
+      811.51,
+      410.4,
+      820.61
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "EOM-СТ26_01-14-ЭОМ-3-РД_V1-v001-blk_4f3fadc77c584364a5ee052c44eb0016",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg_before": 922,
+   "n_seg_after": 43427,
+   "seg_ratio": 47.101,
+   "n_text_before": 34,
+   "n_text_after": 0,
+   "n_obj_before": 161,
+   "n_obj_after": 1442,
+   "obj_ratio": 8.957,
+   "gt_glyph_objects": 988,
+   "gt_share_of_objects": 0.6852,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 158,
+    "fp": 14,
+    "fn": 830,
+    "precision": 0.9186,
+    "recall": 0.1599,
+    "n_det": 172,
+    "n_gt": 988
+   },
+   "run_closed_detector": {
+    "tp": 339,
+    "fp": 0,
+    "fn": 649,
+    "precision": 1.0,
+    "recall": 0.3431,
+    "n_det": 339,
+    "n_gt": 988
+   },
+   "size_only_detector": {
+    "tp": 988,
+    "fp": 297,
+    "fn": 0,
+    "precision": 0.7689,
+    "recall": 1.0,
+    "n_det": 1285,
+    "n_gt": 988
+   },
+   "diag": {
+    "n_candidates": 1402,
+    "n_runs_h": 25,
+    "n_runs_v": 4,
+    "n_flagged": 172,
+    "n_objects": 1442,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 62,
+    "n_entries_filtered": 55,
+    "n_entries_raw_with_border": 62,
+    "n_flagged_a": 37,
+    "n_flagged_b": 44,
+    "n_obj_a": 161,
+    "n_obj_b": 250,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 62,
+     "ink_border": 0,
+     "count": 89,
+     "object_id": 105,
+     "churn": 3,
+     "label": 43
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 23,
+    "n_entries_filtered": 10,
+    "n_entries_raw_with_border": 23,
+    "n_flagged_a": 172,
+    "n_flagged_b": 165,
+    "n_obj_a": 1442,
+    "n_obj_b": 1462,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 23,
+     "ink_border": 0,
+     "count": 20,
+     "object_id": 26,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 26,
+     "line_source": 8,
+     "n_seg_removed": 64,
+     "n_seg_added": 935,
+     "bbox_pt": [
+      1222.5,
+      639.88,
+      1226.9,
+      644.15
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "ITP-ПД-00542664-ИТП.АТМ_V1-v001-blk_2e7b36c0b47544e5907a4aa88179a92b",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg_before": 1955,
+   "n_seg_after": 58721,
+   "seg_ratio": 30.036,
+   "n_text_before": 165,
+   "n_text_after": 0,
+   "n_obj_before": 278,
+   "n_obj_after": 1604,
+   "obj_ratio": 5.77,
+   "gt_glyph_objects": 1206,
+   "gt_share_of_objects": 0.7519,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 286,
+    "fp": 10,
+    "fn": 920,
+    "precision": 0.9662,
+    "recall": 0.2371,
+    "n_det": 296,
+    "n_gt": 1206
+   },
+   "run_closed_detector": {
+    "tp": 187,
+    "fp": 1,
+    "fn": 1019,
+    "precision": 0.9947,
+    "recall": 0.1551,
+    "n_det": 188,
+    "n_gt": 1206
+   },
+   "size_only_detector": {
+    "tp": 1206,
+    "fp": 297,
+    "fn": 0,
+    "precision": 0.8024,
+    "recall": 1.0,
+    "n_det": 1503,
+    "n_gt": 1206
+   },
+   "diag": {
+    "n_candidates": 1551,
+    "n_runs_h": 61,
+    "n_runs_v": 10,
+    "n_flagged": 296,
+    "n_objects": 1604,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 138,
+    "n_entries_filtered": 125,
+    "n_entries_raw_with_border": 143,
+    "n_flagged_a": 89,
+    "n_flagged_b": 92,
+    "n_obj_a": 278,
+    "n_obj_b": 479,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 138,
+     "ink_border": 5,
+     "count": 201,
+     "object_id": 309,
+     "churn": 39,
+     "label": 227
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 16,
+    "n_entries_filtered": 3,
+    "n_entries_raw_with_border": 16,
+    "n_flagged_a": 296,
+    "n_flagged_b": 303,
+    "n_obj_a": 1604,
+    "n_obj_b": 1613,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 16,
+     "ink_border": 0,
+     "count": 9,
+     "object_id": 17,
+     "churn": 4,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 154,
+     "line_source": 1,
+     "n_seg_removed": 294,
+     "n_seg_added": 623,
+     "bbox_pt": [
+      893.676,
+      475.3,
+      905.8,
+      482.4
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KJ-13АВ-РД-КЖ5.30-31.1-К2-v002-AD4H-APGD-H7H",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg_before": 2702,
+   "n_seg_after": 48605,
+   "seg_ratio": 17.989,
+   "n_text_before": 61,
+   "n_text_after": 0,
+   "n_obj_before": 35,
+   "n_obj_after": 1279,
+   "obj_ratio": 36.543,
+   "gt_glyph_objects": 928,
+   "gt_share_of_objects": 0.7256,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 547,
+    "fp": 34,
+    "fn": 381,
+    "precision": 0.9415,
+    "recall": 0.5894,
+    "n_det": 581,
+    "n_gt": 928
+   },
+   "run_closed_detector": {
+    "tp": 500,
+    "fp": 0,
+    "fn": 428,
+    "precision": 1.0,
+    "recall": 0.5388,
+    "n_det": 500,
+    "n_gt": 928
+   },
+   "size_only_detector": {
+    "tp": 927,
+    "fp": 321,
+    "fn": 1,
+    "precision": 0.7428,
+    "recall": 0.9989,
+    "n_det": 1248,
+    "n_gt": 928
+   },
+   "diag": {
+    "n_candidates": 1256,
+    "n_runs_h": 59,
+    "n_runs_v": 2,
+    "n_flagged": 581,
+    "n_objects": 1279,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 50,
+    "n_entries_filtered": 39,
+    "n_entries_raw_with_border": 59,
+    "n_flagged_a": 0,
+    "n_flagged_b": 17,
+    "n_obj_a": 35,
+    "n_obj_b": 161,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 50,
+     "ink_border": 9,
+     "count": 126,
+     "object_id": 140,
+     "churn": 4,
+     "label": 29
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 10,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 10,
+    "n_flagged_a": 580,
+    "n_flagged_b": 583,
+    "n_obj_a": 1275,
+    "n_obj_b": 1281,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 10,
+     "ink_border": 0,
+     "count": 6,
+     "object_id": 32,
+     "churn": 15,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 16,
+     "line_source": 39,
+     "n_seg_removed": 483,
+     "n_seg_added": 765,
+     "bbox_pt": [
+      2308.0,
+      1655.151,
+      2312.32,
+      1657.684
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К2 V1-v002-blk_a4a3ff36fe9b471ba802b57c55c36776",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg_before": 33913,
+   "n_seg_after": 60149,
+   "seg_ratio": 1.774,
+   "n_text_before": 57,
+   "n_text_after": 0,
+   "n_obj_before": 110,
+   "n_obj_after": 1250,
+   "obj_ratio": 11.364,
+   "gt_glyph_objects": 785,
+   "gt_share_of_objects": 0.628,
+   "gt_contamination_before": 23,
+   "gt_contamination_share": 0.2091,
+   "run_detector": {
+    "tp": 481,
+    "fp": 63,
+    "fn": 304,
+    "precision": 0.8842,
+    "recall": 0.6127,
+    "n_det": 544,
+    "n_gt": 785
+   },
+   "run_closed_detector": {
+    "tp": 411,
+    "fp": 29,
+    "fn": 374,
+    "precision": 0.9341,
+    "recall": 0.5236,
+    "n_det": 440,
+    "n_gt": 785
+   },
+   "size_only_detector": {
+    "tp": 785,
+    "fp": 436,
+    "fn": 0,
+    "precision": 0.6429,
+    "recall": 1.0,
+    "n_det": 1221,
+    "n_gt": 785
+   },
+   "diag": {
+    "n_candidates": 1229,
+    "n_runs_h": 60,
+    "n_runs_v": 4,
+    "n_flagged": 544,
+    "n_objects": 1250,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 25,
+    "n_entries_filtered": 19,
+    "n_entries_raw_with_border": 32,
+    "n_flagged_a": 24,
+    "n_flagged_b": 29,
+    "n_obj_a": 110,
+    "n_obj_b": 147,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 25,
+     "ink_border": 7,
+     "count": 37,
+     "object_id": 179,
+     "churn": 49,
+     "label": 91
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 47,
+    "n_entries_filtered": 17,
+    "n_entries_raw_with_border": 47,
+    "n_flagged_a": 544,
+    "n_flagged_b": 566,
+    "n_obj_a": 1250,
+    "n_obj_b": 1292,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 47,
+     "ink_border": 0,
+     "count": 42,
+     "object_id": 78,
+     "churn": 18,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 39,
+     "line_source": 6,
+     "n_seg_removed": 713,
+     "n_seg_added": 3966,
+     "bbox_pt": [
+      1148.2,
+      1139.684,
+      1193.5,
+      1148.912
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "POS-СТ26_01-14-КР0.1-РД_V1-v001-blk_5126c169c8d34173b17372479bbed9f5",
+   "discipline": "POS",
+   "cls": "drawing",
+   "n_seg_before": 10502,
+   "n_seg_after": 182006,
+   "seg_ratio": 17.331,
+   "n_text_before": 567,
+   "n_text_after": 0,
+   "n_obj_before": 2762,
+   "n_obj_after": 7441,
+   "obj_ratio": 2.694,
+   "gt_glyph_objects": 3839,
+   "gt_share_of_objects": 0.5159,
+   "gt_contamination_before": 31,
+   "gt_contamination_share": 0.0112,
+   "run_detector": {
+    "tp": 750,
+    "fp": 4,
+    "fn": 3089,
+    "precision": 0.9947,
+    "recall": 0.1954,
+    "n_det": 754,
+    "n_gt": 3839
+   },
+   "run_closed_detector": {
+    "tp": 1532,
+    "fp": 0,
+    "fn": 2307,
+    "precision": 1.0,
+    "recall": 0.3991,
+    "n_det": 1532,
+    "n_gt": 3839
+   },
+   "size_only_detector": {
+    "tp": 3839,
+    "fp": 3423,
+    "fn": 0,
+    "precision": 0.5286,
+    "recall": 1.0,
+    "n_det": 7262,
+    "n_gt": 3839
+   },
+   "diag": {
+    "n_candidates": 7414,
+    "n_runs_h": 152,
+    "n_runs_v": 37,
+    "n_flagged": 754,
+    "n_objects": 7441,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 553,
+    "n_entries_filtered": 549,
+    "n_entries_raw_with_border": 571,
+    "n_flagged_a": 11,
+    "n_flagged_b": 14,
+    "n_obj_a": 2762,
+    "n_obj_b": 2881,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 553,
+     "ink_border": 18,
+     "count": 119,
+     "object_id": 1243,
+     "churn": 485,
+     "label": 1598
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 6,
+    "n_entries_filtered": 4,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 754,
+    "n_flagged_b": 752,
+    "n_obj_a": 7441,
+    "n_obj_b": 7441,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 6,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 10,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 190,
+     "line_source": 266,
+     "n_seg_removed": 205,
+     "n_seg_added": 293,
+     "bbox_pt": [
+      1665.0,
+      181.22,
+      1676.3,
+      189.01
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "OV-13АВ-РД-ОВ2-К4 V1-v002-7WHK-V9XQ-LGL",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg_before": 13633,
+   "n_seg_after": 308516,
+   "seg_ratio": 22.63,
+   "n_text_before": 432,
+   "n_text_after": 0,
+   "n_obj_before": 824,
+   "n_obj_after": 12439,
+   "obj_ratio": 15.096,
+   "gt_glyph_objects": 8221,
+   "gt_share_of_objects": 0.6609,
+   "gt_contamination_before": 15,
+   "gt_contamination_share": 0.0182,
+   "run_detector": {
+    "tp": 421,
+    "fp": 169,
+    "fn": 7800,
+    "precision": 0.7136,
+    "recall": 0.0512,
+    "n_det": 590,
+    "n_gt": 8221
+   },
+   "run_closed_detector": {
+    "tp": 538,
+    "fp": 27,
+    "fn": 7683,
+    "precision": 0.9522,
+    "recall": 0.0654,
+    "n_det": 565,
+    "n_gt": 8221
+   },
+   "size_only_detector": {
+    "tp": 8218,
+    "fp": 3852,
+    "fn": 3,
+    "precision": 0.6809,
+    "recall": 0.9996,
+    "n_det": 12070,
+    "n_gt": 8221
+   },
+   "diag": {
+    "n_candidates": 12345,
+    "n_runs_h": 84,
+    "n_runs_v": 35,
+    "n_flagged": 590,
+    "n_objects": 12439,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 682,
+    "n_entries_filtered": 633,
+    "n_entries_raw_with_border": 723,
+    "n_flagged_a": 53,
+    "n_flagged_b": 144,
+    "n_obj_a": 824,
+    "n_obj_b": 1650,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 682,
+     "ink_border": 41,
+     "count": 826,
+     "object_id": 1196,
+     "churn": 101,
+     "label": 536
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 50,
+    "n_entries_filtered": 50,
+    "n_entries_raw_with_border": 50,
+    "n_flagged_a": 590,
+    "n_flagged_b": 590,
+    "n_obj_a": 12439,
+    "n_obj_b": 12480,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 50,
+     "ink_border": 0,
+     "count": 41,
+     "object_id": 57,
+     "churn": 9,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 159,
+     "line_source": 209,
+     "n_seg_removed": 211,
+     "n_seg_added": 1975,
+     "bbox_pt": [
+      1941.31,
+      324.9,
+      1965.02,
+      332.37
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К4-v001-LQKU-D9VL-FVV",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg_before": 5225,
+   "n_seg_after": 43209,
+   "seg_ratio": 8.27,
+   "n_text_before": 39,
+   "n_text_after": 0,
+   "n_obj_before": 82,
+   "n_obj_after": 1023,
+   "obj_ratio": 12.476,
+   "gt_glyph_objects": 886,
+   "gt_share_of_objects": 0.8661,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 526,
+    "fp": 37,
+    "fn": 360,
+    "precision": 0.9343,
+    "recall": 0.5937,
+    "n_det": 563,
+    "n_gt": 886
+   },
+   "run_closed_detector": {
+    "tp": 461,
+    "fp": 4,
+    "fn": 425,
+    "precision": 0.9914,
+    "recall": 0.5203,
+    "n_det": 465,
+    "n_gt": 886
+   },
+   "size_only_detector": {
+    "tp": 885,
+    "fp": 99,
+    "fn": 1,
+    "precision": 0.8994,
+    "recall": 0.9989,
+    "n_det": 984,
+    "n_gt": 886
+   },
+   "diag": {
+    "n_candidates": 998,
+    "n_runs_h": 55,
+    "n_runs_v": 2,
+    "n_flagged": 563,
+    "n_objects": 1023,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 54,
+    "n_entries_filtered": 34,
+    "n_entries_raw_with_border": 65,
+    "n_flagged_a": 7,
+    "n_flagged_b": 41,
+    "n_obj_a": 82,
+    "n_obj_b": 169,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 54,
+     "ink_border": 11,
+     "count": 87,
+     "object_id": 137,
+     "churn": 17,
+     "label": 57
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 60,
+    "n_entries_filtered": 9,
+    "n_entries_raw_with_border": 60,
+    "n_flagged_a": 563,
+    "n_flagged_b": 551,
+    "n_obj_a": 1023,
+    "n_obj_b": 1188,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 60,
+     "ink_border": 0,
+     "count": 165,
+     "object_id": 263,
+     "churn": 81,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 0,
+     "line_source": 11,
+     "n_seg_removed": 2631,
+     "n_seg_added": 8398,
+     "bbox_pt": [
+      1342.7,
+      1144.484,
+      1516.9,
+      1153.713
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "PT-ПД-ОО542664-АПТ1.2_V1-v001-blk_7e4dc02b3f7548628a3b9f44e92c4f4d",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg_before": 48114,
+   "n_seg_after": 143693,
+   "seg_ratio": 2.987,
+   "n_text_before": 288,
+   "n_text_after": 0,
+   "n_obj_before": 2584,
+   "n_obj_after": 8015,
+   "obj_ratio": 3.102,
+   "gt_glyph_objects": 2277,
+   "gt_share_of_objects": 0.2841,
+   "gt_contamination_before": 150,
+   "gt_contamination_share": 0.058,
+   "run_detector": {
+    "tp": 221,
+    "fp": 502,
+    "fn": 2056,
+    "precision": 0.3057,
+    "recall": 0.0971,
+    "n_det": 723,
+    "n_gt": 2277
+   },
+   "run_closed_detector": {
+    "tp": 431,
+    "fp": 51,
+    "fn": 1846,
+    "precision": 0.8942,
+    "recall": 0.1893,
+    "n_det": 482,
+    "n_gt": 2277
+   },
+   "size_only_detector": {
+    "tp": 2277,
+    "fp": 5181,
+    "fn": 0,
+    "precision": 0.3053,
+    "recall": 1.0,
+    "n_det": 7458,
+    "n_gt": 2277
+   },
+   "diag": {
+    "n_candidates": 7997,
+    "n_runs_h": 107,
+    "n_runs_v": 66,
+    "n_flagged": 723,
+    "n_objects": 8015,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 248,
+    "n_entries_filtered": 245,
+    "n_entries_raw_with_border": 253,
+    "n_flagged_a": 183,
+    "n_flagged_b": 160,
+    "n_obj_a": 2584,
+    "n_obj_b": 2616,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 248,
+     "ink_border": 5,
+     "count": 32,
+     "object_id": 1672,
+     "churn": 651,
+     "label": 1095
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 4,
+    "n_entries_filtered": 4,
+    "n_entries_raw_with_border": 4,
+    "n_flagged_a": 723,
+    "n_flagged_b": 723,
+    "n_obj_a": 8015,
+    "n_obj_b": 8013,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 4,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 8,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 35,
+     "line_source": 64,
+     "n_seg_removed": 179,
+     "n_seg_added": 334,
+     "bbox_pt": [
+      1804.1,
+      674.369,
+      1808.82,
+      678.62
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1-v001-7DTQ-7FJA-Y6G",
+   "discipline": "GP",
+   "cls": "stamp",
+   "n_seg_before": 274,
+   "n_seg_after": 38367,
+   "seg_ratio": 140.026,
+   "n_text_before": 48,
+   "n_text_after": 0,
+   "n_obj_before": 32,
+   "n_obj_after": 852,
+   "obj_ratio": 26.625,
+   "gt_glyph_objects": 782,
+   "gt_share_of_objects": 0.9178,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 493,
+    "fp": 19,
+    "fn": 289,
+    "precision": 0.9629,
+    "recall": 0.6304,
+    "n_det": 512,
+    "n_gt": 782
+   },
+   "run_closed_detector": {
+    "tp": 428,
+    "fp": 0,
+    "fn": 354,
+    "precision": 1.0,
+    "recall": 0.5473,
+    "n_det": 428,
+    "n_gt": 782
+   },
+   "size_only_detector": {
+    "tp": 781,
+    "fp": 46,
+    "fn": 1,
+    "precision": 0.9444,
+    "recall": 0.9987,
+    "n_det": 827,
+    "n_gt": 782
+   },
+   "diag": {
+    "n_candidates": 831,
+    "n_runs_h": 40,
+    "n_runs_v": 0,
+    "n_flagged": 512,
+    "n_by_run": 512,
+    "n_absorbed": 0,
+    "n_objects": 852,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 32,
+    "n_entries_filtered": 25,
+    "n_entries_raw_with_border": 40,
+    "n_flagged_a": 10,
+    "n_flagged_b": 24,
+    "n_obj_a": 32,
+    "n_obj_b": 90,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 32,
+     "ink_border": 8,
+     "count": 58,
+     "object_id": 66,
+     "churn": 0,
+     "label": 30
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 19,
+    "n_entries_filtered": 7,
+    "n_entries_raw_with_border": 102,
+    "n_flagged_a": 512,
+    "n_flagged_b": 591,
+    "n_obj_a": 852,
+    "n_obj_b": 951,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 19,
+     "ink_border": 83,
+     "count": 99,
+     "object_id": 129,
+     "churn": 13,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 3,
+     "line_source": 35,
+     "n_seg_removed": 383,
+     "n_seg_added": 5603,
+     "bbox_pt": [
+      4985.347,
+      2355.799,
+      4989.596,
+      2358.375
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭО1-ПА_V1-v001-blk_241bfaeef1d54b4d8bf69337c3903760",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg_before": 748,
+   "n_seg_after": 95531,
+   "seg_ratio": 127.715,
+   "n_text_before": 121,
+   "n_text_after": 0,
+   "n_obj_before": 112,
+   "n_obj_after": 2448,
+   "obj_ratio": 21.857,
+   "gt_glyph_objects": 2253,
+   "gt_share_of_objects": 0.9203,
+   "gt_contamination_before": 8,
+   "gt_contamination_share": 0.0714,
+   "run_detector": {
+    "tp": 186,
+    "fp": 9,
+    "fn": 2067,
+    "precision": 0.9538,
+    "recall": 0.0826,
+    "n_det": 195,
+    "n_gt": 2253
+   },
+   "run_closed_detector": {
+    "tp": 196,
+    "fp": 1,
+    "fn": 2057,
+    "precision": 0.9949,
+    "recall": 0.087,
+    "n_det": 197,
+    "n_gt": 2253
+   },
+   "size_only_detector": {
+    "tp": 2248,
+    "fp": 166,
+    "fn": 5,
+    "precision": 0.9312,
+    "recall": 0.9978,
+    "n_det": 2414,
+    "n_gt": 2253
+   },
+   "diag": {
+    "n_candidates": 2422,
+    "n_runs_h": 28,
+    "n_runs_v": 9,
+    "n_flagged": 195,
+    "n_by_run": 195,
+    "n_absorbed": 0,
+    "n_objects": 2448,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 164,
+    "n_entries_filtered": 123,
+    "n_entries_raw_with_border": 164,
+    "n_flagged_a": 3,
+    "n_flagged_b": 100,
+    "n_obj_a": 112,
+    "n_obj_b": 390,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 164,
+     "ink_border": 0,
+     "count": 278,
+     "object_id": 330,
+     "churn": 20,
+     "label": 76
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 26,
+    "n_entries_filtered": 8,
+    "n_entries_raw_with_border": 26,
+    "n_flagged_a": 195,
+    "n_flagged_b": 207,
+    "n_obj_a": 2448,
+    "n_obj_b": 2466,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 26,
+     "ink_border": 0,
+     "count": 18,
+     "object_id": 34,
+     "churn": 8,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 2,
+     "line_source": 27,
+     "n_seg_removed": 215,
+     "n_seg_added": 1068,
+     "bbox_pt": [
+      589.823,
+      207.028,
+      607.994,
+      214.547
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К4-v001-669G-L37Y-E47",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg_before": 317,
+   "n_seg_after": 3702,
+   "seg_ratio": 11.678,
+   "n_text_before": 13,
+   "n_text_after": 0,
+   "n_obj_before": 38,
+   "n_obj_after": 163,
+   "obj_ratio": 4.289,
+   "gt_glyph_objects": 68,
+   "gt_share_of_objects": 0.4172,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 58,
+    "fp": 48,
+    "fn": 10,
+    "precision": 0.5472,
+    "recall": 0.8529,
+    "n_det": 106,
+    "n_gt": 68
+   },
+   "run_closed_detector": {
+    "tp": 54,
+    "fp": 26,
+    "fn": 14,
+    "precision": 0.675,
+    "recall": 0.7941,
+    "n_det": 80,
+    "n_gt": 68
+   },
+   "size_only_detector": {
+    "tp": 67,
+    "fp": 56,
+    "fn": 1,
+    "precision": 0.5447,
+    "recall": 0.9853,
+    "n_det": 123,
+    "n_gt": 68
+   },
+   "diag": {
+    "n_candidates": 135,
+    "n_runs_h": 14,
+    "n_runs_v": 5,
+    "n_flagged": 106,
+    "n_by_run": 106,
+    "n_absorbed": 0,
+    "n_objects": 163,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 11,
+    "n_entries_filtered": 9,
+    "n_entries_raw_with_border": 11,
+    "n_flagged_a": 3,
+    "n_flagged_b": 6,
+    "n_obj_a": 38,
+    "n_obj_b": 49,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 11,
+     "ink_border": 0,
+     "count": 11,
+     "object_id": 31,
+     "churn": 3,
+     "label": 19
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 106,
+    "n_flagged_b": 106,
+    "n_obj_a": 163,
+    "n_obj_b": 163,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 0,
+     "churn": 0,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 7,
+     "line_source": 9,
+     "n_seg_removed": 190,
+     "n_seg_added": 190,
+     "bbox_pt": [
+      2053.0,
+      956.871,
+      2059.5,
+      963.84
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "OV-13АВ-РД-ОВ2-К7_V1-v001-blk_40b62e9a14a848a3a508be58ef4c5ba7",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg_before": 144,
+   "n_seg_after": 30313,
+   "seg_ratio": 210.507,
+   "n_text_before": 68,
+   "n_text_after": 0,
+   "n_obj_before": 20,
+   "n_obj_after": 1195,
+   "obj_ratio": 59.75,
+   "gt_glyph_objects": 1177,
+   "gt_share_of_objects": 0.9849,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 269,
+    "fp": 0,
+    "fn": 908,
+    "precision": 1.0,
+    "recall": 0.2285,
+    "n_det": 269,
+    "n_gt": 1177
+   },
+   "run_closed_detector": {
+    "tp": 272,
+    "fp": 0,
+    "fn": 905,
+    "precision": 1.0,
+    "recall": 0.2311,
+    "n_det": 272,
+    "n_gt": 1177
+   },
+   "size_only_detector": {
+    "tp": 1177,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "n_det": 1177,
+    "n_gt": 1177
+   },
+   "diag": {
+    "n_candidates": 1177,
+    "n_runs_h": 41,
+    "n_runs_v": 1,
+    "n_flagged": 269,
+    "n_by_run": 269,
+    "n_absorbed": 0,
+    "n_objects": 1195,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 89,
+    "n_entries_filtered": 54,
+    "n_entries_raw_with_border": 104,
+    "n_flagged_a": 0,
+    "n_flagged_b": 49,
+    "n_obj_a": 20,
+    "n_obj_b": 129,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 89,
+     "ink_border": 15,
+     "count": 109,
+     "object_id": 131,
+     "churn": 0,
+     "label": 20
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 28,
+    "n_entries_filtered": 28,
+    "n_entries_raw_with_border": 28,
+    "n_flagged_a": 269,
+    "n_flagged_b": 274,
+    "n_obj_a": 1195,
+    "n_obj_b": 1180,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 28,
+     "ink_border": 0,
+     "count": 15,
+     "object_id": 31,
+     "churn": 27,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 11,
+     "line_source": 61,
+     "n_seg_removed": 552,
+     "n_seg_added": 233,
+     "bbox_pt": [
+      83.198,
+      249.556,
+      167.764,
+      258.056
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "PT-СТ26_01-14-ПТ7-7-РД_V1-v001-blk_db83119078e04029b349b5bf1a535280",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg_before": 322,
+   "n_seg_after": 10439,
+   "seg_ratio": 32.419,
+   "n_text_before": 25,
+   "n_text_after": 0,
+   "n_obj_before": 61,
+   "n_obj_after": 327,
+   "obj_ratio": 5.361,
+   "gt_glyph_objects": 249,
+   "gt_share_of_objects": 0.7615,
+   "gt_contamination_before": 2,
+   "gt_contamination_share": 0.0328,
+   "run_detector": {
+    "tp": 208,
+    "fp": 16,
+    "fn": 41,
+    "precision": 0.9286,
+    "recall": 0.8353,
+    "n_det": 224,
+    "n_gt": 249
+   },
+   "run_closed_detector": {
+    "tp": 212,
+    "fp": 0,
+    "fn": 37,
+    "precision": 1.0,
+    "recall": 0.8514,
+    "n_det": 212,
+    "n_gt": 249
+   },
+   "size_only_detector": {
+    "tp": 247,
+    "fp": 22,
+    "fn": 2,
+    "precision": 0.9182,
+    "recall": 0.992,
+    "n_det": 269,
+    "n_gt": 249
+   },
+   "diag": {
+    "n_candidates": 300,
+    "n_runs_h": 22,
+    "n_runs_v": 10,
+    "n_flagged": 224,
+    "n_by_run": 224,
+    "n_absorbed": 0,
+    "n_objects": 327,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 41,
+    "n_entries_filtered": 30,
+    "n_entries_raw_with_border": 41,
+    "n_flagged_a": 12,
+    "n_flagged_b": 25,
+    "n_obj_a": 61,
+    "n_obj_b": 97,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 41,
+     "ink_border": 0,
+     "count": 36,
+     "object_id": 48,
+     "churn": 6,
+     "label": 46
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 10,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 10,
+    "n_flagged_a": 224,
+    "n_flagged_b": 224,
+    "n_obj_a": 327,
+    "n_obj_b": 327,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 10,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 12,
+     "churn": 6,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 23,
+     "line_source": 8,
+     "n_seg_removed": 218,
+     "n_seg_added": 218,
+     "bbox_pt": [
+      791.2,
+      358.371,
+      807.7,
+      365.823
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К6-v002-7YMA-E7V4-9E3",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg_before": 22657,
+   "n_seg_after": 65618,
+   "seg_ratio": 2.896,
+   "n_text_before": 64,
+   "n_text_after": 0,
+   "n_obj_before": 90,
+   "n_obj_after": 1590,
+   "obj_ratio": 17.667,
+   "gt_glyph_objects": 872,
+   "gt_share_of_objects": 0.5484,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 470,
+    "fp": 105,
+    "fn": 402,
+    "precision": 0.8174,
+    "recall": 0.539,
+    "n_det": 575,
+    "n_gt": 872
+   },
+   "run_closed_detector": {
+    "tp": 400,
+    "fp": 12,
+    "fn": 472,
+    "precision": 0.9709,
+    "recall": 0.4587,
+    "n_det": 412,
+    "n_gt": 872
+   },
+   "size_only_detector": {
+    "tp": 871,
+    "fp": 673,
+    "fn": 1,
+    "precision": 0.5641,
+    "recall": 0.9989,
+    "n_det": 1544,
+    "n_gt": 872
+   },
+   "diag": {
+    "n_candidates": 1566,
+    "n_runs_h": 39,
+    "n_runs_v": 19,
+    "n_flagged": 575,
+    "n_by_run": 575,
+    "n_absorbed": 0,
+    "n_objects": 1590,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 43,
+    "n_entries_filtered": 31,
+    "n_entries_raw_with_border": 58,
+    "n_flagged_a": 21,
+    "n_flagged_b": 46,
+    "n_obj_a": 90,
+    "n_obj_b": 208,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 43,
+     "ink_border": 15,
+     "count": 118,
+     "object_id": 218,
+     "churn": 40,
+     "label": 67
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 6,
+    "n_entries_filtered": 6,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 574,
+    "n_flagged_b": 569,
+    "n_obj_a": 1584,
+    "n_obj_b": 1588,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 6,
+     "ink_border": 0,
+     "count": 4,
+     "object_id": 30,
+     "churn": 11,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 9,
+     "line_source": 47,
+     "n_seg_removed": 145,
+     "n_seg_added": 604,
+     "bbox_pt": [
+      2294.351,
+      1654.831,
+      2296.76,
+      1658.216
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К2 V1-v001-7MC4-EMVG-6DF",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg_before": 235,
+   "n_seg_after": 13628,
+   "seg_ratio": 57.991,
+   "n_text_before": 25,
+   "n_text_after": 0,
+   "n_obj_before": 29,
+   "n_obj_after": 368,
+   "obj_ratio": 12.69,
+   "gt_glyph_objects": 275,
+   "gt_share_of_objects": 0.7473,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 141,
+    "fp": 2,
+    "fn": 134,
+    "precision": 0.986,
+    "recall": 0.5127,
+    "n_det": 143,
+    "n_gt": 275
+   },
+   "run_closed_detector": {
+    "tp": 144,
+    "fp": 0,
+    "fn": 131,
+    "precision": 1.0,
+    "recall": 0.5236,
+    "n_det": 144,
+    "n_gt": 275
+   },
+   "size_only_detector": {
+    "tp": 255,
+    "fp": 69,
+    "fn": 20,
+    "precision": 0.787,
+    "recall": 0.9273,
+    "n_det": 324,
+    "n_gt": 275
+   },
+   "diag": {
+    "n_candidates": 350,
+    "n_runs_h": 25,
+    "n_runs_v": 5,
+    "n_flagged": 143,
+    "n_by_run": 143,
+    "n_absorbed": 0,
+    "n_objects": 368,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 22,
+    "n_entries_filtered": 22,
+    "n_entries_raw_with_border": 23,
+    "n_flagged_a": 0,
+    "n_flagged_b": 0,
+    "n_obj_a": 29,
+    "n_obj_b": 58,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 22,
+     "ink_border": 1,
+     "count": 29,
+     "object_id": 51,
+     "churn": 8,
+     "label": 23
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 5,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 5,
+    "n_flagged_a": 143,
+    "n_flagged_b": 152,
+    "n_obj_a": 368,
+    "n_obj_b": 373,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 5,
+     "ink_border": 0,
+     "count": 5,
+     "object_id": 25,
+     "churn": 13,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 16,
+     "line_source": 23,
+     "n_seg_removed": 536,
+     "n_seg_added": 696,
+     "bbox_pt": [
+      140.9,
+      483.3,
+      158.8,
+      488.2
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "VK-СТ26_01-14-ВК-АС-1-РД_V1-v001-blk_e81ac5d1440644c599965a62bf624a4f",
+   "discipline": "VK",
+   "cls": "drawing",
+   "n_seg_before": 2598,
+   "n_seg_after": 44367,
+   "seg_ratio": 17.077,
+   "n_text_before": 49,
+   "n_text_after": 0,
+   "n_obj_before": 34,
+   "n_obj_after": 1428,
+   "obj_ratio": 42.0,
+   "gt_glyph_objects": 1063,
+   "gt_share_of_objects": 0.7444,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 72,
+    "fp": 87,
+    "fn": 991,
+    "precision": 0.4528,
+    "recall": 0.0677,
+    "n_det": 159,
+    "n_gt": 1063
+   },
+   "run_closed_detector": {
+    "tp": 72,
+    "fp": 0,
+    "fn": 991,
+    "precision": 1.0,
+    "recall": 0.0677,
+    "n_det": 72,
+    "n_gt": 1063
+   },
+   "size_only_detector": {
+    "tp": 1063,
+    "fp": 339,
+    "fn": 0,
+    "precision": 0.7582,
+    "recall": 1.0,
+    "n_det": 1402,
+    "n_gt": 1063
+   },
+   "diag": {
+    "n_candidates": 1428,
+    "n_runs_h": 24,
+    "n_runs_v": 12,
+    "n_flagged": 159,
+    "n_by_run": 159,
+    "n_absorbed": 0,
+    "n_objects": 1428,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 81,
+    "n_entries_filtered": 59,
+    "n_entries_raw_with_border": 81,
+    "n_flagged_a": 19,
+    "n_flagged_b": 29,
+    "n_obj_a": 34,
+    "n_obj_b": 156,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 81,
+     "ink_border": 0,
+     "count": 122,
+     "object_id": 142,
+     "churn": 8,
+     "label": 29
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 35,
+    "n_entries_filtered": 18,
+    "n_entries_raw_with_border": 35,
+    "n_flagged_a": 159,
+    "n_flagged_b": 172,
+    "n_obj_a": 1428,
+    "n_obj_b": 1458,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 35,
+     "ink_border": 0,
+     "count": 30,
+     "object_id": 42,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 46,
+     "line_source": 11,
+     "n_seg_removed": 458,
+     "n_seg_added": 1329,
+     "bbox_pt": [
+      2976.85,
+      1497.242,
+      3012.27,
+      1508.74
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KJ-СТ26_01-14-КЖ-АС-01.1а_V1-v001-blk_64bd6ac9504b43138e250d559c6eeff3",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg_before": 58621,
+   "n_seg_after": 414196,
+   "seg_ratio": 7.066,
+   "n_text_before": 758,
+   "n_text_after": 0,
+   "n_obj_before": 4600,
+   "n_obj_after": 17253,
+   "obj_ratio": 3.751,
+   "gt_glyph_objects": 8902,
+   "gt_share_of_objects": 0.516,
+   "gt_contamination_before": 34,
+   "gt_contamination_share": 0.0074,
+   "run_detector": {
+    "tp": 510,
+    "fp": 11,
+    "fn": 8392,
+    "precision": 0.9789,
+    "recall": 0.0573,
+    "n_det": 521,
+    "n_gt": 8902
+   },
+   "run_closed_detector": {
+    "tp": 1252,
+    "fp": 3,
+    "fn": 7650,
+    "precision": 0.9976,
+    "recall": 0.1406,
+    "n_det": 1255,
+    "n_gt": 8902
+   },
+   "size_only_detector": {
+    "tp": 8902,
+    "fp": 7809,
+    "fn": 0,
+    "precision": 0.5327,
+    "recall": 1.0,
+    "n_det": 16711,
+    "n_gt": 8902
+   },
+   "diag": {
+    "n_candidates": 17205,
+    "n_runs_h": 108,
+    "n_runs_v": 6,
+    "n_flagged": 521,
+    "n_by_run": 521,
+    "n_absorbed": 0,
+    "n_objects": 17253,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 722,
+    "n_entries_filtered": 697,
+    "n_entries_raw_with_border": 723,
+    "n_flagged_a": 15,
+    "n_flagged_b": 58,
+    "n_obj_a": 4600,
+    "n_obj_b": 4895,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 722,
+     "ink_border": 1,
+     "count": 295,
+     "object_id": 2809,
+     "churn": 754,
+     "label": 2030
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 7,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 521,
+    "n_flagged_b": 521,
+    "n_obj_a": 17253,
+    "n_obj_b": 17255,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 16,
+     "churn": 7,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 532,
+     "line_source": 547,
+     "n_seg_removed": 325,
+     "n_seg_added": 419,
+     "bbox_pt": [
+      1230.8,
+      1170.266,
+      1242.7,
+      1176.614
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ1.2-ПА V1-v001-7F3E-DRLK-U96",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg_before": 56355,
+   "n_seg_after": 98572,
+   "seg_ratio": 1.749,
+   "n_text_before": 50,
+   "n_text_after": 0,
+   "n_obj_before": 357,
+   "n_obj_after": 5833,
+   "obj_ratio": 16.339,
+   "gt_glyph_objects": 1167,
+   "gt_share_of_objects": 0.2001,
+   "gt_contamination_before": 23,
+   "gt_contamination_share": 0.0644,
+   "run_detector": {
+    "tp": 39,
+    "fp": 731,
+    "fn": 1128,
+    "precision": 0.0506,
+    "recall": 0.0334,
+    "n_det": 770,
+    "n_gt": 1167
+   },
+   "run_closed_detector": {
+    "tp": 126,
+    "fp": 73,
+    "fn": 1041,
+    "precision": 0.6332,
+    "recall": 0.108,
+    "n_det": 199,
+    "n_gt": 1167
+   },
+   "size_only_detector": {
+    "tp": 1167,
+    "fp": 4432,
+    "fn": 0,
+    "precision": 0.2084,
+    "recall": 1.0,
+    "n_det": 5599,
+    "n_gt": 1167
+   },
+   "diag": {
+    "n_candidates": 5811,
+    "n_runs_h": 102,
+    "n_runs_v": 84,
+    "n_flagged": 770,
+    "n_by_run": 770,
+    "n_absorbed": 0,
+    "n_objects": 5833,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 150,
+    "n_entries_filtered": 135,
+    "n_entries_raw_with_border": 158,
+    "n_flagged_a": 52,
+    "n_flagged_b": 58,
+    "n_obj_a": 357,
+    "n_obj_b": 409,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 150,
+     "ink_border": 8,
+     "count": 52,
+     "object_id": 536,
+     "churn": 175,
+     "label": 92
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 73,
+    "n_entries_filtered": 69,
+    "n_entries_raw_with_border": 73,
+    "n_flagged_a": 770,
+    "n_flagged_b": 791,
+    "n_obj_a": 5833,
+    "n_obj_b": 5786,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 73,
+     "ink_border": 0,
+     "count": 47,
+     "object_id": 93,
+     "churn": 694,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 19,
+     "line_source": 31,
+     "n_seg_removed": 2983,
+     "n_seg_added": 857,
+     "bbox_pt": [
+      49.0,
+      27.5,
+      304.8,
+      38.8
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К5-v004-blk_ede531d29f3d48bc98ae16f81ef82652",
+   "discipline": "AR",
+   "cls": "table",
+   "n_seg_before": 1010,
+   "n_seg_after": 297248,
+   "seg_ratio": 294.305,
+   "n_text_before": 137,
+   "n_text_after": 0,
+   "n_obj_before": 80,
+   "n_obj_after": 6831,
+   "obj_ratio": 85.388,
+   "gt_glyph_objects": 6703,
+   "gt_share_of_objects": 0.9813,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 50,
+    "fp": 12,
+    "fn": 6653,
+    "precision": 0.8065,
+    "recall": 0.0075,
+    "n_det": 62,
+    "n_gt": 6703
+   },
+   "run_closed_detector": {
+    "tp": 35,
+    "fp": 0,
+    "fn": 6668,
+    "precision": 1.0,
+    "recall": 0.0052,
+    "n_det": 35,
+    "n_gt": 6703
+   },
+   "size_only_detector": {
+    "tp": 6703,
+    "fp": 127,
+    "fn": 0,
+    "precision": 0.9814,
+    "recall": 1.0,
+    "n_det": 6830,
+    "n_gt": 6703
+   },
+   "diag": {
+    "n_candidates": 6830,
+    "n_runs_h": 11,
+    "n_runs_v": 4,
+    "n_flagged": 62,
+    "n_by_run": 62,
+    "n_absorbed": 0,
+    "n_objects": 6831,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 352,
+    "n_entries_filtered": 183,
+    "n_entries_raw_with_border": 357,
+    "n_flagged_a": 0,
+    "n_flagged_b": 329,
+    "n_obj_a": 80,
+    "n_obj_b": 916,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 352,
+     "ink_border": 5,
+     "count": 836,
+     "object_id": 846,
+     "churn": 4,
+     "label": 64
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 40,
+    "n_entries_filtered": 37,
+    "n_entries_raw_with_border": 40,
+    "n_flagged_a": 62,
+    "n_flagged_b": 65,
+    "n_obj_a": 6831,
+    "n_obj_b": 6855,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 40,
+     "ink_border": 0,
+     "count": 24,
+     "object_id": 88,
+     "churn": 34,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 106,
+     "line_source": 116,
+     "n_seg_removed": 3100,
+     "n_seg_added": 4496,
+     "bbox_pt": [
+      229.034,
+      353.978,
+      419.4,
+      363.21
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП2-v001-A7VL-W7KW-6Y7",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg_before": 8108,
+   "n_seg_after": 283334,
+   "seg_ratio": 34.945,
+   "n_text_before": 966,
+   "n_text_after": 0,
+   "n_obj_before": 962,
+   "n_obj_after": 7124,
+   "obj_ratio": 7.405,
+   "gt_glyph_objects": 6070,
+   "gt_share_of_objects": 0.852,
+   "gt_contamination_before": 72,
+   "gt_contamination_share": 0.0748,
+   "run_detector": {
+    "tp": 629,
+    "fp": 35,
+    "fn": 5441,
+    "precision": 0.9473,
+    "recall": 0.1036,
+    "n_det": 664,
+    "n_gt": 6070
+   },
+   "run_closed_detector": {
+    "tp": 725,
+    "fp": 44,
+    "fn": 5345,
+    "precision": 0.9428,
+    "recall": 0.1194,
+    "n_det": 769,
+    "n_gt": 6070
+   },
+   "size_only_detector": {
+    "tp": 6070,
+    "fp": 1028,
+    "fn": 0,
+    "precision": 0.8552,
+    "recall": 1.0,
+    "n_det": 7098,
+    "n_gt": 6070
+   },
+   "diag": {
+    "n_candidates": 7119,
+    "n_runs_h": 180,
+    "n_runs_v": 2,
+    "n_flagged": 664,
+    "n_by_run": 664,
+    "n_absorbed": 0,
+    "n_objects": 7124,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 590,
+    "n_entries_filtered": 585,
+    "n_entries_raw_with_border": 590,
+    "n_flagged_a": 197,
+    "n_flagged_b": 50,
+    "n_obj_a": 962,
+    "n_obj_b": 1311,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 590,
+     "ink_border": 0,
+     "count": 349,
+     "object_id": 1223,
+     "churn": 404,
+     "label": 823
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 6,
+    "n_entries_filtered": 6,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 664,
+    "n_flagged_b": 664,
+    "n_obj_a": 7124,
+    "n_obj_b": 7121,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 6,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 9,
+     "churn": 6,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 526,
+     "line_source": 531,
+     "n_seg_removed": 305,
+     "n_seg_added": 139,
+     "bbox_pt": [
+      978.4,
+      95.53,
+      995.4,
+      102.73
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К4-v001-PVGW-ALT6-FXV",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg_before": 1367,
+   "n_seg_after": 15626,
+   "seg_ratio": 11.431,
+   "n_text_before": 43,
+   "n_text_after": 0,
+   "n_obj_before": 157,
+   "n_obj_after": 875,
+   "obj_ratio": 5.573,
+   "gt_glyph_objects": 274,
+   "gt_share_of_objects": 0.3131,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 146,
+    "fp": 15,
+    "fn": 128,
+    "precision": 0.9068,
+    "recall": 0.5328,
+    "n_det": 161,
+    "n_gt": 274
+   },
+   "run_closed_detector": {
+    "tp": 185,
+    "fp": 1,
+    "fn": 89,
+    "precision": 0.9946,
+    "recall": 0.6752,
+    "n_det": 186,
+    "n_gt": 274
+   },
+   "size_only_detector": {
+    "tp": 274,
+    "fp": 328,
+    "fn": 0,
+    "precision": 0.4551,
+    "recall": 1.0,
+    "n_det": 602,
+    "n_gt": 274
+   },
+   "diag": {
+    "n_candidates": 831,
+    "n_runs_h": 32,
+    "n_runs_v": 5,
+    "n_flagged": 161,
+    "n_by_run": 161,
+    "n_absorbed": 0,
+    "n_objects": 875,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 78,
+    "n_entries_filtered": 38,
+    "n_entries_raw_with_border": 78,
+    "n_flagged_a": 33,
+    "n_flagged_b": 68,
+    "n_obj_a": 157,
+    "n_obj_b": 224,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 78,
+     "ink_border": 0,
+     "count": 67,
+     "object_id": 147,
+     "churn": 19,
+     "label": 96
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 10,
+    "n_entries_filtered": 6,
+    "n_entries_raw_with_border": 10,
+    "n_flagged_a": 161,
+    "n_flagged_b": 161,
+    "n_obj_a": 875,
+    "n_obj_b": 868,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 10,
+     "ink_border": 0,
+     "count": 7,
+     "object_id": 13,
+     "churn": 10,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 19,
+     "line_source": 1,
+     "n_seg_removed": 313,
+     "n_seg_added": 196,
+     "bbox_pt": [
+      437.9,
+      340.96,
+      459.578,
+      348.04
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-9LLL-F43F-KRF",
+   "discipline": "GP",
+   "cls": "stamp",
+   "n_seg_before": 37852,
+   "n_seg_after": 36804,
+   "seg_ratio": 0.972,
+   "n_text_before": 52,
+   "n_text_after": 0,
+   "n_obj_before": 96,
+   "n_obj_after": 768,
+   "obj_ratio": 8.0,
+   "gt_glyph_objects": 601,
+   "gt_share_of_objects": 0.7826,
+   "gt_contamination_before": 47,
+   "gt_contamination_share": 0.4896,
+   "run_detector": {
+    "tp": 434,
+    "fp": 0,
+    "fn": 167,
+    "precision": 1.0,
+    "recall": 0.7221,
+    "n_det": 434,
+    "n_gt": 601
+   },
+   "run_closed_detector": {
+    "tp": 458,
+    "fp": 0,
+    "fn": 143,
+    "precision": 1.0,
+    "recall": 0.7621,
+    "n_det": 458,
+    "n_gt": 601
+   },
+   "size_only_detector": {
+    "tp": 592,
+    "fp": 130,
+    "fn": 9,
+    "precision": 0.8199,
+    "recall": 0.985,
+    "n_det": 722,
+    "n_gt": 601
+   },
+   "diag": {
+    "n_candidates": 745,
+    "n_runs_h": 38,
+    "n_runs_v": 0,
+    "n_flagged": 434,
+    "n_by_run": 434,
+    "n_absorbed": 0,
+    "n_objects": 768,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 15,
+    "n_flagged_b": 14,
+    "n_obj_a": 96,
+    "n_obj_b": 93,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 101,
+     "churn": 17,
+     "label": 88
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 434,
+    "n_flagged_b": 430,
+    "n_obj_a": 768,
+    "n_obj_b": 760,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 8,
+     "object_id": 20,
+     "churn": 14,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 33,
+     "line_source": 31,
+     "n_seg_removed": 810,
+     "n_seg_added": 374,
+     "bbox_pt": [
+      710.64,
+      774.68,
+      738.96,
+      782.84
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "KJ-СТ26_01-14-КЖ3-01.1-РД_V1-v001-blk_77c2d0171dd8491ca629efed80858d30",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg_before": 23897,
+   "n_seg_after": 127423,
+   "seg_ratio": 5.332,
+   "n_text_before": 418,
+   "n_text_after": 0,
+   "n_obj_before": 1952,
+   "n_obj_after": 6895,
+   "obj_ratio": 3.532,
+   "gt_glyph_objects": 2275,
+   "gt_share_of_objects": 0.3299,
+   "gt_contamination_before": 1,
+   "gt_contamination_share": 0.0005,
+   "run_detector": {
+    "tp": 518,
+    "fp": 259,
+    "fn": 1757,
+    "precision": 0.6667,
+    "recall": 0.2277,
+    "n_det": 777,
+    "n_gt": 2275
+   },
+   "run_closed_detector": {
+    "tp": 1333,
+    "fp": 0,
+    "fn": 942,
+    "precision": 1.0,
+    "recall": 0.5859,
+    "n_det": 1333,
+    "n_gt": 2275
+   },
+   "size_only_detector": {
+    "tp": 2275,
+    "fp": 4492,
+    "fn": 0,
+    "precision": 0.3362,
+    "recall": 1.0,
+    "n_det": 6767,
+    "n_gt": 2275
+   },
+   "diag": {
+    "n_candidates": 6876,
+    "n_runs_h": 74,
+    "n_runs_v": 115,
+    "n_flagged": 777,
+    "n_by_run": 777,
+    "n_absorbed": 0,
+    "n_objects": 6895,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 417,
+    "n_entries_filtered": 412,
+    "n_entries_raw_with_border": 418,
+    "n_flagged_a": 15,
+    "n_flagged_b": 15,
+    "n_obj_a": 1952,
+    "n_obj_b": 2150,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 417,
+     "ink_border": 1,
+     "count": 198,
+     "object_id": 842,
+     "churn": 242,
+     "label": 834
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 9,
+    "n_entries_filtered": 9,
+    "n_entries_raw_with_border": 9,
+    "n_flagged_a": 777,
+    "n_flagged_b": 777,
+    "n_obj_a": 6895,
+    "n_obj_b": 6894,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 9,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 11,
+     "churn": 6,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 196,
+     "line_source": 18,
+     "n_seg_removed": 277,
+     "n_seg_added": 317,
+     "bbox_pt": [
+      878.189,
+      171.34,
+      886.119,
+      183.24
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "PT-ПД-00542664-НВД_V1-v001-blk_8402c3a033df40c0a81bf3aaec3cfd34",
+   "discipline": "PT",
+   "cls": "stamp",
+   "n_seg_before": 7248,
+   "n_seg_after": 30646,
+   "seg_ratio": 4.228,
+   "n_text_before": 21,
+   "n_text_after": 0,
+   "n_obj_before": 64,
+   "n_obj_after": 741,
+   "obj_ratio": 11.578,
+   "gt_glyph_objects": 513,
+   "gt_share_of_objects": 0.6923,
+   "gt_contamination_before": 5,
+   "gt_contamination_share": 0.0781,
+   "run_detector": {
+    "tp": 379,
+    "fp": 83,
+    "fn": 134,
+    "precision": 0.8203,
+    "recall": 0.7388,
+    "n_det": 462,
+    "n_gt": 513
+   },
+   "run_closed_detector": {
+    "tp": 364,
+    "fp": 15,
+    "fn": 149,
+    "precision": 0.9604,
+    "recall": 0.7096,
+    "n_det": 379,
+    "n_gt": 513
+   },
+   "size_only_detector": {
+    "tp": 489,
+    "fp": 186,
+    "fn": 24,
+    "precision": 0.7244,
+    "recall": 0.9532,
+    "n_det": 675,
+    "n_gt": 513
+   },
+   "diag": {
+    "n_candidates": 702,
+    "n_runs_h": 46,
+    "n_runs_v": 0,
+    "n_flagged": 462,
+    "n_by_run": 462,
+    "n_absorbed": 0,
+    "n_objects": 741,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 23,
+    "n_entries_filtered": 15,
+    "n_entries_raw_with_border": 33,
+    "n_flagged_a": 6,
+    "n_flagged_b": 37,
+    "n_obj_a": 64,
+    "n_obj_b": 150,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 23,
+     "ink_border": 10,
+     "count": 86,
+     "object_id": 120,
+     "churn": 6,
+     "label": 47
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 14,
+    "n_entries_filtered": 3,
+    "n_entries_raw_with_border": 33,
+    "n_flagged_a": 462,
+    "n_flagged_b": 476,
+    "n_obj_a": 741,
+    "n_obj_b": 759,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 14,
+     "ink_border": 19,
+     "count": 18,
+     "object_id": 36,
+     "churn": 9,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 1,
+     "line_source": 13,
+     "n_seg_removed": 522,
+     "n_seg_added": 1375,
+     "bbox_pt": [
+      1133.747,
+      745.902,
+      1163.5,
+      753.0
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К5-v001-7YVM-HUM4-FWF",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg_before": 743,
+   "n_seg_after": 23856,
+   "seg_ratio": 32.108,
+   "n_text_before": 40,
+   "n_text_after": 0,
+   "n_obj_before": 50,
+   "n_obj_after": 764,
+   "obj_ratio": 15.28,
+   "gt_glyph_objects": 473,
+   "gt_share_of_objects": 0.6191,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 221,
+    "fp": 36,
+    "fn": 252,
+    "precision": 0.8599,
+    "recall": 0.4672,
+    "n_det": 257,
+    "n_gt": 473
+   },
+   "run_closed_detector": {
+    "tp": 257,
+    "fp": 4,
+    "fn": 216,
+    "precision": 0.9847,
+    "recall": 0.5433,
+    "n_det": 261,
+    "n_gt": 473
+   },
+   "size_only_detector": {
+    "tp": 461,
+    "fp": 217,
+    "fn": 12,
+    "precision": 0.6799,
+    "recall": 0.9746,
+    "n_det": 678,
+    "n_gt": 473
+   },
+   "diag": {
+    "n_candidates": 736,
+    "n_runs_h": 48,
+    "n_runs_v": 5,
+    "n_flagged": 257,
+    "n_by_run": 257,
+    "n_absorbed": 0,
+    "n_objects": 764,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 22,
+    "n_entries_filtered": 22,
+    "n_entries_raw_with_border": 23,
+    "n_flagged_a": 0,
+    "n_flagged_b": 14,
+    "n_obj_a": 50,
+    "n_obj_b": 89,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 22,
+     "ink_border": 1,
+     "count": 39,
+     "object_id": 111,
+     "churn": 34,
+     "label": 43
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 5,
+    "n_entries_filtered": 3,
+    "n_entries_raw_with_border": 5,
+    "n_flagged_a": 257,
+    "n_flagged_b": 257,
+    "n_obj_a": 764,
+    "n_obj_b": 766,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 5,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 12,
+     "churn": 18,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 10,
+     "line_source": 29,
+     "n_seg_removed": 242,
+     "n_seg_added": 339,
+     "bbox_pt": [
+      1018.08,
+      362.073,
+      1031.2,
+      372.92
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "VK-13АВ-РД-ВК1.1-ПА V1-v002-blk_f35e275fa7104c5ea70486931d895656",
+   "discipline": "VK",
+   "cls": "stamp",
+   "n_seg_before": 722,
+   "n_seg_after": 6802,
+   "seg_ratio": 9.421,
+   "n_text_before": 18,
+   "n_text_after": 0,
+   "n_obj_before": 14,
+   "n_obj_after": 168,
+   "obj_ratio": 12.0,
+   "gt_glyph_objects": 141,
+   "gt_share_of_objects": 0.8393,
+   "gt_contamination_before": 0,
+   "gt_contamination_share": 0.0,
+   "run_detector": {
+    "tp": 105,
+    "fp": 7,
+    "fn": 36,
+    "precision": 0.9375,
+    "recall": 0.7447,
+    "n_det": 112,
+    "n_gt": 141
+   },
+   "run_closed_detector": {
+    "tp": 100,
+    "fp": 1,
+    "fn": 41,
+    "precision": 0.9901,
+    "recall": 0.7092,
+    "n_det": 101,
+    "n_gt": 141
+   },
+   "size_only_detector": {
+    "tp": 139,
+    "fp": 12,
+    "fn": 2,
+    "precision": 0.9205,
+    "recall": 0.9858,
+    "n_det": 151,
+    "n_gt": 141
+   },
+   "diag": {
+    "n_candidates": 158,
+    "n_runs_h": 15,
+    "n_runs_v": 0,
+    "n_flagged": 112,
+    "n_by_run": 112,
+    "n_absorbed": 0,
+    "n_objects": 168,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 4,
+    "n_entries_filtered": 3,
+    "n_entries_raw_with_border": 18,
+    "n_flagged_a": 0,
+    "n_flagged_b": 14,
+    "n_obj_a": 14,
+    "n_obj_b": 32,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 4,
+     "ink_border": 14,
+     "count": 18,
+     "object_id": 32,
+     "churn": 4,
+     "label": 14
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 6,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 112,
+    "n_flagged_b": 107,
+    "n_obj_a": 168,
+    "n_obj_b": 167,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 6,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 19,
+     "churn": 9,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 4,
+     "line_source": 9,
+     "n_seg_removed": 532,
+     "n_seg_added": 384,
+     "bbox_pt": [
+      774.1,
+      816.975,
+      801.161,
+      824.12
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "carrier": "VK-ПД-ОО542664-ВК0-2_V1-v001-blk_09bd668bfaa84c729cfc335bbb5d13d1",
+   "discipline": "VK",
+   "cls": "drawing",
+   "n_seg_before": 376,
+   "n_seg_after": 5053,
+   "seg_ratio": 13.439,
+   "n_text_before": 14,
+   "n_text_after": 0,
+   "n_obj_before": 101,
+   "n_obj_after": 229,
+   "obj_ratio": 2.267,
+   "gt_glyph_objects": 119,
+   "gt_share_of_objects": 0.5197,
+   "gt_contamination_before": 9,
+   "gt_contamination_share": 0.0891,
+   "run_detector": {
+    "tp": 81,
+    "fp": 2,
+    "fn": 38,
+    "precision": 0.9759,
+    "recall": 0.6807,
+    "n_det": 83,
+    "n_gt": 119
+   },
+   "run_closed_detector": {
+    "tp": 63,
+    "fp": 0,
+    "fn": 56,
+    "precision": 1.0,
+    "recall": 0.5294,
+    "n_det": 63,
+    "n_gt": 119
+   },
+   "size_only_detector": {
+    "tp": 106,
+    "fp": 45,
+    "fn": 13,
+    "precision": 0.702,
+    "recall": 0.8908,
+    "n_det": 151,
+    "n_gt": 119
+   },
+   "diag": {
+    "n_candidates": 213,
+    "n_runs_h": 16,
+    "n_runs_v": 1,
+    "n_flagged": 83,
+    "n_by_run": 83,
+    "n_absorbed": 0,
+    "n_objects": 229,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "D9_as_control": {
+    "tag": "D9_control",
+    "n_entries_raw": 22,
+    "n_entries_filtered": 12,
+    "n_entries_raw_with_border": 22,
+    "n_flagged_a": 0,
+    "n_flagged_b": 10,
+    "n_obj_a": 101,
+    "n_obj_b": 111,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 22,
+     "ink_border": 0,
+     "count": 10,
+     "object_id": 36,
+     "churn": 13,
+     "label": 41
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1",
+    "n_entries_raw": 14,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 14,
+    "n_flagged_a": 83,
+    "n_flagged_b": 82,
+    "n_obj_a": 229,
+    "n_obj_b": 229,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 14,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 16,
+     "churn": 29,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 4,
+     "line_source": 12,
+     "n_seg_removed": 443,
+     "n_seg_added": 333,
+     "bbox_pt": [
+      4822.0,
+      1842.92,
+      4862.6,
+      1854.42
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  }
+ ],
+ "real": [
+  {
+   "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_12672bfa817948989c9d4464a0c80f84",
+   "discipline": "EOM",
+   "n_seg": 11507,
+   "n_text": 0,
+   "n_obj": 1603,
+   "counts": {
+    "linear": 818,
+    "stray": 312,
+    "area": 127,
+    "symbol": 344,
+    "composite": 2
+   },
+   "n_flagged": 391,
+   "flagged_share": 0.2439,
+   "flagged_ink_share": 0.0904,
+   "diag": {
+    "n_candidates": 1576,
+    "n_runs_h": 84,
+    "n_runs_v": 4,
+    "n_flagged": 391,
+    "n_objects": 1603,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 8,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 8,
+    "n_flagged_a": 391,
+    "n_flagged_b": 392,
+    "n_obj_a": 1603,
+    "n_obj_b": 1606,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 8,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 9,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 14,
+     "line_source": 43,
+     "n_seg_removed": 21,
+     "n_seg_added": 11,
+     "bbox_pt": [
+      867.72,
+      307.76,
+      878.76,
+      312.32
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_d550b6a149a342ada9d42806ebf5fcb9",
+   "discipline": "EOM",
+   "n_seg": 8121,
+   "n_text": 0,
+   "n_obj": 1160,
+   "counts": {
+    "linear": 570,
+    "stray": 244,
+    "area": 108,
+    "symbol": 236,
+    "composite": 2
+   },
+   "n_flagged": 329,
+   "flagged_share": 0.2836,
+   "flagged_ink_share": 0.0979,
+   "diag": {
+    "n_candidates": 1117,
+    "n_runs_h": 66,
+    "n_runs_v": 3,
+    "n_flagged": 329,
+    "n_objects": 1160,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 25,
+    "n_entries_filtered": 7,
+    "n_entries_raw_with_border": 25,
+    "n_flagged_a": 329,
+    "n_flagged_b": 318,
+    "n_obj_a": 1160,
+    "n_obj_b": 1157,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 25,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 25,
+     "churn": 14,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 4,
+     "line_source": 13,
+     "n_seg_removed": 59,
+     "n_seg_added": 167,
+     "bbox_pt": [
+      604.32,
+      54.44,
+      1093.68,
+      82.04
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_304ddb2fc2e94cb1bca392ec21d6a4ec",
+   "discipline": "SS",
+   "n_seg": 23384,
+   "n_text": 0,
+   "n_obj": 2470,
+   "counts": {
+    "linear": 1347,
+    "area": 303,
+    "symbol": 818,
+    "composite": 2
+   },
+   "n_flagged": 133,
+   "flagged_share": 0.0538,
+   "flagged_ink_share": 0.0182,
+   "diag": {
+    "n_candidates": 2458,
+    "n_runs_h": 31,
+    "n_runs_v": 10,
+    "n_flagged": 133,
+    "n_objects": 2470,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 133,
+    "n_flagged_b": 128,
+    "n_obj_a": 2470,
+    "n_obj_b": 2469,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 9,
+     "churn": 7,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 6,
+     "line_source": 7,
+     "n_seg_removed": 18,
+     "n_seg_added": 13,
+     "bbox_pt": [
+      339.74,
+      458.76,
+      346.76,
+      459.48
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-ИТП.ТМ|v001|blk_3a7d101cfaa34fee9b2023383f3d0ece",
+   "discipline": "ITP",
+   "n_seg": 194481,
+   "n_text": 0,
+   "n_obj": 27152,
+   "counts": {
+    "symbol": 7704,
+    "area": 3592,
+    "stray": 4157,
+    "linear": 11643,
+    "composite": 56
+   },
+   "n_flagged": 1365,
+   "flagged_share": 0.0503,
+   "flagged_ink_share": 0.032,
+   "diag": {
+    "n_candidates": 27108,
+    "n_runs_h": 347,
+    "n_runs_v": 20,
+    "n_flagged": 1365,
+    "n_objects": 27152,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 6,
+    "n_entries_filtered": 4,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 1370,
+    "n_flagged_b": 1356,
+    "n_obj_a": 27157,
+    "n_obj_b": 27152,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 6,
+     "ink_border": 0,
+     "count": 5,
+     "object_id": 15,
+     "churn": 8,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 15,
+     "line_source": 31,
+     "n_seg_removed": 73,
+     "n_seg_added": 7,
+     "bbox_pt": [
+      169.244,
+      298.12,
+      2266.857,
+      1238.38
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|PVQW-637W-9L3",
+   "discipline": "EOM",
+   "n_seg": 121944,
+   "n_text": 0,
+   "n_obj": 11769,
+   "counts": {
+    "linear": 7789,
+    "area": 2160,
+    "stray": 970,
+    "symbol": 845,
+    "composite": 5
+   },
+   "n_flagged": 3579,
+   "flagged_share": 0.3041,
+   "flagged_ink_share": 0.033,
+   "diag": {
+    "n_candidates": 11702,
+    "n_runs_h": 233,
+    "n_runs_v": 351,
+    "n_flagged": 3579,
+    "n_objects": 11769,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 3579,
+    "n_flagged_b": 3579,
+    "n_obj_a": 11769,
+    "n_obj_b": 11769,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 6,
+     "churn": 0,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 126,
+     "line_source": 71,
+     "n_seg_removed": 3,
+     "n_seg_added": 3,
+     "bbox_pt": [
+      1567.2,
+      2111.04,
+      1574.4,
+      2118.48
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|A4V9-QETF-FMY",
+   "discipline": "EOM",
+   "n_seg": 19302,
+   "n_text": 0,
+   "n_obj": 522,
+   "counts": {
+    "symbol": 37,
+    "area": 336,
+    "linear": 144,
+    "stray": 5
+   },
+   "n_flagged": 197,
+   "flagged_share": 0.3774,
+   "flagged_ink_share": 0.2616,
+   "diag": {
+    "n_candidates": 474,
+    "n_runs_h": 31,
+    "n_runs_v": 4,
+    "n_flagged": 197,
+    "n_objects": 522,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 6,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 197,
+    "n_flagged_b": 202,
+    "n_obj_a": 522,
+    "n_obj_b": 526,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 6,
+     "ink_border": 0,
+     "count": 4,
+     "object_id": 12,
+     "churn": 4,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 13,
+     "line_source": 6,
+     "n_seg_removed": 130,
+     "n_seg_added": 469,
+     "bbox_pt": [
+      1497.9,
+      888.42,
+      1523.955,
+      892.005
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_077f61546764467f882caf2b8a5bfc5f",
+   "discipline": "EOM",
+   "n_seg": 9450,
+   "n_text": 0,
+   "n_obj": 853,
+   "counts": {
+    "linear": 508,
+    "area": 58,
+    "stray": 93,
+    "composite": 15,
+    "symbol": 179
+   },
+   "n_flagged": 459,
+   "flagged_share": 0.5381,
+   "flagged_ink_share": 0.2283,
+   "diag": {
+    "n_candidates": 817,
+    "n_runs_h": 58,
+    "n_runs_v": 15,
+    "n_flagged": 459,
+    "n_by_run": 459,
+    "n_absorbed": 0,
+    "n_objects": 853,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 35,
+    "n_entries_filtered": 4,
+    "n_entries_raw_with_border": 35,
+    "n_flagged_a": 459,
+    "n_flagged_b": 425,
+    "n_obj_a": 853,
+    "n_obj_b": 828,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 35,
+     "ink_border": 0,
+     "count": 25,
+     "object_id": 35,
+     "churn": 30,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 16,
+     "line_source": 12,
+     "n_seg_removed": 186,
+     "n_seg_added": 34,
+     "bbox_pt": [
+      161.64,
+      491.84,
+      543.72,
+      496.64
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ОВ1.1-К1 V1|v001|7FVP-3C3X-7YF",
+   "discipline": "OV",
+   "n_seg": 11276,
+   "n_text": 0,
+   "n_obj": 1111,
+   "counts": {
+    "linear": 823,
+    "stray": 78,
+    "area": 196,
+    "symbol": 14
+   },
+   "n_flagged": 336,
+   "flagged_share": 0.3024,
+   "flagged_ink_share": 0.2111,
+   "diag": {
+    "n_candidates": 1089,
+    "n_runs_h": 24,
+    "n_runs_v": 10,
+    "n_flagged": 336,
+    "n_by_run": 336,
+    "n_absorbed": 0,
+    "n_objects": 1111,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 10,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 10,
+    "n_flagged_a": 336,
+    "n_flagged_b": 349,
+    "n_obj_a": 1111,
+    "n_obj_b": 1113,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 10,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 10,
+     "churn": 4,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 5,
+     "line_source": 3,
+     "n_seg_removed": 37,
+     "n_seg_added": 145,
+     "bbox_pt": [
+      310.56,
+      86.04,
+      836.76,
+      109.2
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_861e3bcae8224eea8a5b12490ef5f4b3",
+   "discipline": "SS",
+   "n_seg": 9837,
+   "n_text": 0,
+   "n_obj": 366,
+   "counts": {
+    "area": 216,
+    "linear": 145,
+    "symbol": 5
+   },
+   "n_flagged": 159,
+   "flagged_share": 0.4344,
+   "flagged_ink_share": 0.2796,
+   "diag": {
+    "n_candidates": 339,
+    "n_runs_h": 10,
+    "n_runs_v": 2,
+    "n_flagged": 159,
+    "n_by_run": 159,
+    "n_absorbed": 0,
+    "n_objects": 366,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 18,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 18,
+    "n_flagged_a": 159,
+    "n_flagged_b": 159,
+    "n_obj_a": 366,
+    "n_obj_b": 375,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 18,
+     "ink_border": 0,
+     "count": 9,
+     "object_id": 33,
+     "churn": 12,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 13,
+     "line_source": 4,
+     "n_seg_removed": 429,
+     "n_seg_added": 673,
+     "bbox_pt": [
+      92.24,
+      436.62,
+      548.9,
+      441.48
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-ИТП.ТМ_V2|v001|blk_a5749c74936d4f25b06ae64aec057cb8",
+   "discipline": "ITP",
+   "n_seg": 194481,
+   "n_text": 0,
+   "n_obj": 27152,
+   "counts": {
+    "symbol": 7704,
+    "area": 3592,
+    "stray": 4157,
+    "linear": 11643,
+    "composite": 56
+   },
+   "n_flagged": 1365,
+   "flagged_share": 0.0503,
+   "flagged_ink_share": 0.032,
+   "diag": {
+    "n_candidates": 27108,
+    "n_runs_h": 347,
+    "n_runs_v": 20,
+    "n_flagged": 1365,
+    "n_by_run": 1365,
+    "n_absorbed": 0,
+    "n_objects": 27152,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 5,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 6,
+    "n_flagged_a": 1365,
+    "n_flagged_b": 1361,
+    "n_obj_a": 27152,
+    "n_obj_b": 27152,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 5,
+     "ink_border": 1,
+     "count": 0,
+     "object_id": 6,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 40,
+     "line_source": 99,
+     "n_seg_removed": 39,
+     "n_seg_added": 25,
+     "bbox_pt": [
+      1879.14,
+      403.36,
+      2795.88,
+      512.74
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|4RCA-L6JW-9R7",
+   "discipline": "EOM",
+   "n_seg": 19362,
+   "n_text": 0,
+   "n_obj": 552,
+   "counts": {
+    "linear": 176,
+    "symbol": 23,
+    "area": 342,
+    "stray": 11
+   },
+   "n_flagged": 210,
+   "flagged_share": 0.3804,
+   "flagged_ink_share": 0.2417,
+   "diag": {
+    "n_candidates": 490,
+    "n_runs_h": 38,
+    "n_runs_v": 4,
+    "n_flagged": 210,
+    "n_by_run": 210,
+    "n_absorbed": 0,
+    "n_objects": 552,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 210,
+    "n_flagged_b": 205,
+    "n_obj_a": 552,
+    "n_obj_b": 550,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 8,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 24,
+     "line_source": 2,
+     "n_seg_removed": 348,
+     "n_seg_added": 3,
+     "bbox_pt": [
+      4415.46,
+      3161.251,
+      4539.615,
+      3168.422
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|4V34-JPPU-K9T",
+   "discipline": "EOM",
+   "n_seg": 19302,
+   "n_text": 0,
+   "n_obj": 522,
+   "counts": {
+    "symbol": 37,
+    "area": 337,
+    "linear": 143,
+    "stray": 5
+   },
+   "n_flagged": 197,
+   "flagged_share": 0.3774,
+   "flagged_ink_share": 0.2618,
+   "diag": {
+    "n_candidates": 477,
+    "n_runs_h": 31,
+    "n_runs_v": 4,
+    "n_flagged": 197,
+    "n_by_run": 197,
+    "n_absorbed": 0,
+    "n_objects": 522,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 3,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 8,
+    "n_flagged_a": 197,
+    "n_flagged_b": 190,
+    "n_obj_a": 522,
+    "n_obj_b": 525,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 3,
+     "ink_border": 5,
+     "count": 3,
+     "object_id": 9,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 7,
+     "line_source": 19,
+     "n_seg_removed": 153,
+     "n_seg_added": 442,
+     "bbox_pt": [
+      1564.35,
+      866.445,
+      1605.225,
+      948.075
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_6916c4bb3298472a9cdd30d98d48899d",
+   "discipline": "EOM",
+   "n_seg": 69903,
+   "n_text": 0,
+   "n_obj": 3784,
+   "counts": {
+    "symbol": 871,
+    "area": 140,
+    "linear": 2209,
+    "stray": 52,
+    "composite": 512
+   },
+   "n_flagged": 467,
+   "flagged_share": 0.1234,
+   "flagged_ink_share": 0.0894,
+   "diag": {
+    "n_candidates": 3734,
+    "n_runs_h": 2,
+    "n_runs_v": 125,
+    "n_flagged": 467,
+    "n_by_run": 467,
+    "n_absorbed": 0,
+    "n_objects": 3784,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 3,
+    "n_entries_filtered": 3,
+    "n_entries_raw_with_border": 3,
+    "n_flagged_a": 467,
+    "n_flagged_b": 462,
+    "n_obj_a": 3784,
+    "n_obj_b": 3785,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 3,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 7,
+     "churn": 2,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 37,
+     "line_source": 4,
+     "n_seg_removed": 10,
+     "n_seg_added": 70,
+     "bbox_pt": [
+      272.04,
+      363.44,
+      419.52,
+      470.6
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ОВ1.1-К2 V1|v002|UNG3-J3TG-HUF",
+   "discipline": "OV",
+   "n_seg": 11278,
+   "n_text": 0,
+   "n_obj": 1112,
+   "counts": {
+    "linear": 824,
+    "stray": 78,
+    "area": 196,
+    "symbol": 14
+   },
+   "n_flagged": 336,
+   "flagged_share": 0.3022,
+   "flagged_ink_share": 0.1985,
+   "diag": {
+    "n_candidates": 1089,
+    "n_runs_h": 24,
+    "n_runs_v": 10,
+    "n_flagged": 336,
+    "n_by_run": 336,
+    "n_absorbed": 0,
+    "n_objects": 1112,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 336,
+    "n_flagged_b": 342,
+    "n_obj_a": 1112,
+    "n_obj_b": 1111,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 7,
+     "churn": 4,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 5,
+     "line_source": 1,
+     "n_seg_removed": 37,
+     "n_seg_added": 32,
+     "bbox_pt": [
+      310.56,
+      86.04,
+      836.76,
+      109.2
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_de192764fa614f8faa95c618ce17c538",
+   "discipline": "SS",
+   "n_seg": 85595,
+   "n_text": 0,
+   "n_obj": 16781,
+   "counts": {
+    "area": 1707,
+    "linear": 4377,
+    "symbol": 2778,
+    "stray": 7869,
+    "composite": 50
+   },
+   "n_flagged": 519,
+   "flagged_share": 0.0309,
+   "flagged_ink_share": 0.0164,
+   "diag": {
+    "n_candidates": 16715,
+    "n_runs_h": 30,
+    "n_runs_v": 89,
+    "n_flagged": 519,
+    "n_by_run": 519,
+    "n_absorbed": 0,
+    "n_objects": 16781,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 1,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 1,
+    "n_flagged_a": 519,
+    "n_flagged_b": 516,
+    "n_obj_a": 16781,
+    "n_obj_b": 16781,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 1,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 6,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 7,
+     "line_source": 3,
+     "n_seg_removed": 3,
+     "n_seg_added": 3,
+     "bbox_pt": [
+      256.78,
+      378.8,
+      275.86,
+      378.8
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-ОВ1-2.2_V1|v001|blk_6281f64295a040acaeb24ff7f8c368b3",
+   "discipline": "OV",
+   "n_seg": 620343,
+   "n_text": 0,
+   "n_obj": 70398,
+   "counts": {
+    "linear": 29015,
+    "stray": 20607,
+    "area": 4001,
+    "symbol": 16361,
+    "composite": 414
+   },
+   "n_flagged": 3918,
+   "flagged_share": 0.0557,
+   "flagged_ink_share": 0.0404,
+   "diag": {
+    "n_candidates": 70217,
+    "n_runs_h": 305,
+    "n_runs_v": 685,
+    "n_flagged": 3918,
+    "n_by_run": 3918,
+    "n_absorbed": 0,
+    "n_objects": 70398,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 1,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 1,
+    "n_flagged_a": 3918,
+    "n_flagged_b": 3911,
+    "n_obj_a": 70398,
+    "n_obj_b": 70395,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 1,
+     "ink_border": 0,
+     "count": 3,
+     "object_id": 9,
+     "churn": 8,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 146,
+     "line_source": 143,
+     "n_seg_removed": 16,
+     "n_seg_added": 33,
+     "bbox_pt": [
+      823.74,
+      1437.284,
+      824.16,
+      1437.404
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|6T7D-HMQR-PNG",
+   "discipline": "EOM",
+   "n_seg": 19358,
+   "n_text": 0,
+   "n_obj": 538,
+   "counts": {
+    "linear": 163,
+    "symbol": 23,
+    "area": 348,
+    "stray": 4
+   },
+   "n_flagged": 197,
+   "flagged_share": 0.3662,
+   "flagged_ink_share": 0.2356,
+   "diag": {
+    "n_candidates": 487,
+    "n_runs_h": 31,
+    "n_runs_v": 6,
+    "n_flagged": 197,
+    "n_by_run": 197,
+    "n_absorbed": 0,
+    "n_objects": 538,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 9,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 9,
+    "n_flagged_a": 197,
+    "n_flagged_b": 202,
+    "n_obj_a": 538,
+    "n_obj_b": 542,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 9,
+     "ink_border": 0,
+     "count": 4,
+     "object_id": 10,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 5,
+     "line_source": 4,
+     "n_seg_removed": 219,
+     "n_seg_added": 455,
+     "bbox_pt": [
+      4342.005,
+      3042.78,
+      4630.44,
+      3057.481
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|KP9C-JU7X-VCT",
+   "discipline": "EOM",
+   "n_seg": 22261,
+   "n_text": 0,
+   "n_obj": 1356,
+   "counts": {
+    "linear": 909,
+    "area": 387,
+    "symbol": 42,
+    "stray": 15,
+    "composite": 3
+   },
+   "n_flagged": 172,
+   "flagged_share": 0.1268,
+   "flagged_ink_share": 0.0454,
+   "diag": {
+    "n_candidates": 1340,
+    "n_runs_h": 25,
+    "n_runs_v": 11,
+    "n_flagged": 172,
+    "n_by_run": 172,
+    "n_absorbed": 0,
+    "n_objects": 1356,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 18,
+    "n_entries_filtered": 3,
+    "n_entries_raw_with_border": 22,
+    "n_flagged_a": 172,
+    "n_flagged_b": 185,
+    "n_obj_a": 1356,
+    "n_obj_b": 1373,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 18,
+     "ink_border": 4,
+     "count": 17,
+     "object_id": 23,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 4,
+     "line_source": 7,
+     "n_seg_removed": 182,
+     "n_seg_added": 1300,
+     "bbox_pt": [
+      638.16,
+      448.665,
+      651.66,
+      455.76
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_c891ddac9954415a8ff37af1ad3c38e2",
+   "discipline": "EOM",
+   "n_seg": 1840,
+   "n_text": 0,
+   "n_obj": 199,
+   "counts": {
+    "linear": 43,
+    "area": 4,
+    "stray": 69,
+    "symbol": 79,
+    "composite": 4
+   },
+   "n_flagged": 157,
+   "flagged_share": 0.7889,
+   "flagged_ink_share": 0.2962,
+   "diag": {
+    "n_candidates": 183,
+    "n_runs_h": 12,
+    "n_runs_v": 1,
+    "n_flagged": 157,
+    "n_objects": 199,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 15,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 15,
+    "n_flagged_a": 157,
+    "n_flagged_b": 165,
+    "n_obj_a": 199,
+    "n_obj_b": 208,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 15,
+     "ink_border": 0,
+     "count": 9,
+     "object_id": 23,
+     "churn": 7,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 3,
+     "line_source": 1,
+     "n_seg_removed": 47,
+     "n_seg_added": 91,
+     "bbox_pt": [
+      220.2,
+      191.6,
+      343.92,
+      201.08
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ОВ1.1-К2 V1|v001|7C9F-VDXJ-F77",
+   "discipline": "OV",
+   "n_seg": 7331,
+   "n_text": 0,
+   "n_obj": 747,
+   "counts": {
+    "linear": 500,
+    "stray": 70,
+    "area": 163,
+    "symbol": 14
+   },
+   "n_flagged": 196,
+   "flagged_share": 0.2624,
+   "flagged_ink_share": 0.2084,
+   "diag": {
+    "n_candidates": 726,
+    "n_runs_h": 19,
+    "n_runs_v": 10,
+    "n_flagged": 196,
+    "n_objects": 747,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 21,
+    "n_entries_filtered": 5,
+    "n_entries_raw_with_border": 21,
+    "n_flagged_a": 196,
+    "n_flagged_b": 176,
+    "n_obj_a": 747,
+    "n_obj_b": 736,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 21,
+     "ink_border": 0,
+     "count": 11,
+     "object_id": 21,
+     "churn": 16,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 9,
+     "line_source": 4,
+     "n_seg_removed": 256,
+     "n_seg_added": 88,
+     "bbox_pt": [
+      229.44,
+      145.92,
+      869.88,
+      213.0
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_099442a1c1534582a575b57cfe59c821",
+   "discipline": "SS",
+   "n_seg": 63466,
+   "n_text": 0,
+   "n_obj": 12657,
+   "counts": {
+    "linear": 4169,
+    "stray": 5303,
+    "symbol": 1931,
+    "area": 1240,
+    "composite": 14
+   },
+   "n_flagged": 164,
+   "flagged_share": 0.013,
+   "flagged_ink_share": 0.0268,
+   "diag": {
+    "n_candidates": 12595,
+    "n_runs_h": 27,
+    "n_runs_v": 16,
+    "n_flagged": 164,
+    "n_objects": 12657,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 1,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 1,
+    "n_flagged_a": 164,
+    "n_flagged_b": 162,
+    "n_obj_a": 12657,
+    "n_obj_b": 12657,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 1,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 8,
+     "churn": 2,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 1,
+     "line_source": 8,
+     "n_seg_removed": 246,
+     "n_seg_added": 10,
+     "bbox_pt": [
+      389.62,
+      163.7,
+      448.3,
+      170.72
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-СОТС_V1|v001|blk_0b24315acbfa423a960402d0eaa2922a",
+   "discipline": "SS",
+   "n_seg": 20229,
+   "n_text": 0,
+   "n_obj": 1491,
+   "counts": {
+    "area": 617,
+    "symbol": 56,
+    "linear": 665,
+    "stray": 151,
+    "composite": 2
+   },
+   "n_flagged": 227,
+   "flagged_share": 0.1522,
+   "flagged_ink_share": 0.0693,
+   "diag": {
+    "n_candidates": 1432,
+    "n_runs_h": 48,
+    "n_runs_v": 0,
+    "n_flagged": 227,
+    "n_objects": 1491,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 3,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 3,
+    "n_flagged_a": 227,
+    "n_flagged_b": 213,
+    "n_obj_a": 1491,
+    "n_obj_b": 1505,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 3,
+     "ink_border": 0,
+     "count": 14,
+     "object_id": 44,
+     "churn": 11,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 15,
+     "line_source": 0,
+     "n_seg_removed": 154,
+     "n_seg_added": 668,
+     "bbox_pt": [
+      96.2,
+      290.64,
+      317.24,
+      296.4
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|6HY3-XJHF-N9L",
+   "discipline": "EOM",
+   "n_seg": 27667,
+   "n_text": 0,
+   "n_obj": 1154,
+   "counts": {
+    "area": 519,
+    "symbol": 53,
+    "linear": 563,
+    "stray": 19
+   },
+   "n_flagged": 405,
+   "flagged_share": 0.351,
+   "flagged_ink_share": 0.1322,
+   "diag": {
+    "n_candidates": 1135,
+    "n_runs_h": 47,
+    "n_runs_v": 11,
+    "n_flagged": 405,
+    "n_objects": 1154,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 9,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 9,
+    "n_flagged_a": 405,
+    "n_flagged_b": 400,
+    "n_obj_a": 1154,
+    "n_obj_b": 1150,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 9,
+     "ink_border": 0,
+     "count": 4,
+     "object_id": 10,
+     "churn": 4,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 12,
+     "line_source": 17,
+     "n_seg_removed": 430,
+     "n_seg_added": 245,
+     "bbox_pt": [
+      3599.115,
+      630.36,
+      3869.115,
+      733.575
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_ab474f1078234c9fbe8695152eb69f74",
+   "discipline": "EOM",
+   "n_seg": 4393,
+   "n_text": 0,
+   "n_obj": 324,
+   "counts": {
+    "stray": 70,
+    "symbol": 164,
+    "linear": 75,
+    "composite": 11,
+    "area": 4
+   },
+   "n_flagged": 208,
+   "flagged_share": 0.642,
+   "flagged_ink_share": 0.1588,
+   "diag": {
+    "n_candidates": 286,
+    "n_runs_h": 19,
+    "n_runs_v": 2,
+    "n_flagged": 208,
+    "n_by_run": 208,
+    "n_absorbed": 0,
+    "n_objects": 324,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 35,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 36,
+    "n_flagged_a": 208,
+    "n_flagged_b": 225,
+    "n_obj_a": 324,
+    "n_obj_b": 345,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 35,
+     "ink_border": 1,
+     "count": 21,
+     "object_id": 39,
+     "churn": 9,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 6,
+     "line_source": 4,
+     "n_seg_removed": 88,
+     "n_seg_added": 235,
+     "bbox_pt": [
+      166.8,
+      489.92,
+      417.24,
+      503.36
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_e0a34df46a0e43ffa7009336d81a5c40",
+   "discipline": "SS",
+   "n_seg": 397192,
+   "n_text": 0,
+   "n_obj": 13454,
+   "counts": {
+    "linear": 3897,
+    "stray": 203,
+    "symbol": 333,
+    "area": 9016,
+    "composite": 5
+   },
+   "n_flagged": 386,
+   "flagged_share": 0.0287,
+   "flagged_ink_share": 0.0237,
+   "diag": {
+    "n_candidates": 13429,
+    "n_runs_h": 38,
+    "n_runs_v": 67,
+    "n_flagged": 386,
+    "n_by_run": 386,
+    "n_absorbed": 0,
+    "n_objects": 13454,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 5,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 5,
+    "n_flagged_a": 386,
+    "n_flagged_b": 380,
+    "n_obj_a": 13454,
+    "n_obj_b": 13452,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 5,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 12,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 15,
+     "line_source": 6,
+     "n_seg_removed": 446,
+     "n_seg_added": 188,
+     "bbox_pt": [
+      508.68,
+      4291.7,
+      560.52,
+      4299.8
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_0ed312c603444e15a71dc343412a607d",
+   "discipline": "SS",
+   "n_seg": 42708,
+   "n_text": 0,
+   "n_obj": 10204,
+   "counts": {
+    "linear": 3595,
+    "symbol": 1510,
+    "stray": 4154,
+    "area": 941,
+    "composite": 4
+   },
+   "n_flagged": 88,
+   "flagged_share": 0.0086,
+   "flagged_ink_share": 0.0214,
+   "diag": {
+    "n_candidates": 10145,
+    "n_runs_h": 14,
+    "n_runs_v": 8,
+    "n_flagged": 88,
+    "n_by_run": 88,
+    "n_absorbed": 0,
+    "n_objects": 10204,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 3,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 5,
+    "n_flagged_a": 88,
+    "n_flagged_b": 88,
+    "n_obj_a": 10204,
+    "n_obj_b": 10204,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 3,
+     "ink_border": 2,
+     "count": 0,
+     "object_id": 6,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 9,
+     "line_source": 1,
+     "n_seg_removed": 9,
+     "n_seg_added": 10,
+     "bbox_pt": [
+      1135.28,
+      532.36,
+      1168.58,
+      589.96
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-АИТ.ТМ_V1|v001|blk_d32a1162e028423c81b8f8ec2af3cf89",
+   "discipline": "ITP",
+   "n_seg": 37261,
+   "n_text": 0,
+   "n_obj": 2865,
+   "counts": {
+    "linear": 81,
+    "area": 498,
+    "symbol": 2271,
+    "stray": 12,
+    "composite": 3
+   },
+   "n_flagged": 1786,
+   "flagged_share": 0.6234,
+   "flagged_ink_share": 0.1763,
+   "diag": {
+    "n_candidates": 2857,
+    "n_runs_h": 148,
+    "n_runs_v": 124,
+    "n_flagged": 1786,
+    "n_by_run": 1786,
+    "n_absorbed": 0,
+    "n_objects": 2865,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 1786,
+    "n_flagged_b": 1786,
+    "n_obj_a": 2865,
+    "n_obj_b": 2865,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 0,
+     "object_id": 0,
+     "churn": 0,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 64,
+     "line_source": 52,
+     "n_seg_removed": 40,
+     "n_seg_added": 40,
+     "bbox_pt": [
+      64.44,
+      316.8,
+      337.56,
+      317.64
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|9WE7-NQ6E-9VE",
+   "discipline": "EOM",
+   "n_seg": 110518,
+   "n_text": 0,
+   "n_obj": 9807,
+   "counts": {
+    "area": 1843,
+    "symbol": 1040,
+    "linear": 6769,
+    "stray": 153,
+    "composite": 2
+   },
+   "n_flagged": 2303,
+   "flagged_share": 0.2348,
+   "flagged_ink_share": 0.0243,
+   "diag": {
+    "n_candidates": 9759,
+    "n_runs_h": 193,
+    "n_runs_v": 178,
+    "n_flagged": 2303,
+    "n_by_run": 2303,
+    "n_absorbed": 0,
+    "n_objects": 9807,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 104,
+    "n_entries_filtered": 23,
+    "n_entries_raw_with_border": 104,
+    "n_flagged_a": 2303,
+    "n_flagged_b": 2359,
+    "n_obj_a": 9807,
+    "n_obj_b": 9926,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 104,
+     "ink_border": 0,
+     "count": 119,
+     "object_id": 129,
+     "churn": 0,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 5,
+     "line_source": 24,
+     "n_seg_removed": 20,
+     "n_seg_added": 124,
+     "bbox_pt": [
+      1081.68,
+      818.4,
+      1134.96,
+      818.4
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "СТ26_01-14-ЭОМ-5-РД_V1|v001|blk_228613231d0741e695a854a6c3fe35c0",
+   "discipline": "EOM",
+   "n_seg": 8093,
+   "n_text": 0,
+   "n_obj": 1154,
+   "counts": {
+    "linear": 570,
+    "stray": 244,
+    "area": 108,
+    "symbol": 230,
+    "composite": 2
+   },
+   "n_flagged": 329,
+   "flagged_share": 0.2851,
+   "flagged_ink_share": 0.1018,
+   "diag": {
+    "n_candidates": 1111,
+    "n_runs_h": 66,
+    "n_runs_v": 3,
+    "n_flagged": 329,
+    "n_by_run": 329,
+    "n_absorbed": 0,
+    "n_objects": 1154,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 329,
+    "n_flagged_b": 322,
+    "n_obj_a": 1154,
+    "n_obj_b": 1152,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 2,
+     "object_id": 8,
+     "churn": 5,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 9,
+     "line_source": 30,
+     "n_seg_removed": 52,
+     "n_seg_added": 28,
+     "bbox_pt": [
+      331.2,
+      169.28,
+      1026.12,
+      445.52
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_7efc72a2833b4740b8667f7ac294a817",
+   "discipline": "SS",
+   "n_seg": 174713,
+   "n_text": 0,
+   "n_obj": 19097,
+   "counts": {
+    "area": 644,
+    "symbol": 1105,
+    "linear": 17126,
+    "stray": 208,
+    "composite": 14
+   },
+   "n_flagged": 6342,
+   "flagged_share": 0.3321,
+   "flagged_ink_share": 0.2336,
+   "diag": {
+    "n_candidates": 19053,
+    "n_runs_h": 645,
+    "n_runs_v": 290,
+    "n_flagged": 6342,
+    "n_by_run": 6342,
+    "n_absorbed": 0,
+    "n_objects": 19097,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 1,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 1,
+    "n_flagged_a": 6342,
+    "n_flagged_b": 6339,
+    "n_obj_a": 19097,
+    "n_obj_b": 19102,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 1,
+     "ink_border": 0,
+     "count": 5,
+     "object_id": 21,
+     "churn": 8,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 346,
+     "line_source": 173,
+     "n_seg_removed": 15,
+     "n_seg_added": 66,
+     "bbox_pt": [
+      271.64,
+      338.34,
+      315.74,
+      339.24
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "ПД-00542664-РФ_V1|v001|blk_1a7b8b08829341c5a4f3da56d88f2d7a",
+   "discipline": "SS",
+   "n_seg": 85918,
+   "n_text": 0,
+   "n_obj": 14479,
+   "counts": {
+    "area": 1721,
+    "linear": 4030,
+    "symbol": 2062,
+    "stray": 6633,
+    "composite": 33
+   },
+   "n_flagged": 863,
+   "flagged_share": 0.0596,
+   "flagged_ink_share": 0.0226,
+   "diag": {
+    "n_candidates": 14435,
+    "n_runs_h": 119,
+    "n_runs_v": 47,
+    "n_flagged": 863,
+    "n_by_run": 863,
+    "n_absorbed": 0,
+    "n_objects": 14479,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 0,
+    "n_entries_filtered": 0,
+    "n_entries_raw_with_border": 0,
+    "n_flagged_a": 863,
+    "n_flagged_b": 866,
+    "n_obj_a": 14479,
+    "n_obj_b": 14485,
+    "verdict_raw": "NO_GRAPHIC_CHANGE",
+    "verdict_filtered": "NO_GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 0,
+     "ink_border": 0,
+     "count": 6,
+     "object_id": 12,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 6,
+     "line_source": 0,
+     "n_seg_removed": 3,
+     "n_seg_added": 48,
+     "bbox_pt": [
+      619.04,
+      505.34,
+      1735.58,
+      708.74
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|69J7-79CR-4DF",
+   "discipline": "EOM",
+   "n_seg": 606949,
+   "n_text": 0,
+   "n_obj": 15800,
+   "counts": {
+    "linear": 4529,
+    "symbol": 904,
+    "stray": 149,
+    "area": 10218
+   },
+   "n_flagged": 2165,
+   "flagged_share": 0.137,
+   "flagged_ink_share": 0.0943,
+   "diag": {
+    "n_candidates": 15744,
+    "n_runs_h": 259,
+    "n_runs_v": 44,
+    "n_flagged": 2165,
+    "n_by_run": 2165,
+    "n_absorbed": 0,
+    "n_objects": 15800,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 3,
+    "n_entries_filtered": 2,
+    "n_entries_raw_with_border": 3,
+    "n_flagged_a": 2165,
+    "n_flagged_b": 2151,
+    "n_obj_a": 15800,
+    "n_obj_b": 15789,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 3,
+     "ink_border": 0,
+     "count": 11,
+     "object_id": 17,
+     "churn": 9,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 92,
+     "line_source": 64,
+     "n_seg_removed": 14,
+     "n_seg_added": 282,
+     "bbox_pt": [
+      1531.92,
+      405.599,
+      4565.759,
+      409.44
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  },
+  {
+   "block": "13АВ-РД-ЭМ2-ПА V1|v001|XN6M-XWHC-PRD",
+   "discipline": "EOM",
+   "n_seg": 25873,
+   "n_text": 0,
+   "n_obj": 1663,
+   "counts": {
+    "linear": 1070,
+    "area": 472,
+    "symbol": 103,
+    "stray": 18
+   },
+   "n_flagged": 177,
+   "flagged_share": 0.1064,
+   "flagged_ink_share": 0.0441,
+   "diag": {
+    "n_candidates": 1645,
+    "n_runs_h": 23,
+    "n_runs_v": 11,
+    "n_flagged": 177,
+    "n_by_run": 177,
+    "n_absorbed": 0,
+    "n_objects": 1663,
+    "params": {
+     "base_tol": 0.35,
+     "h_ratio": 2.5,
+     "gap_max": 1.2,
+     "gap_min": -0.35,
+     "run_min": 3,
+     "h_max_frac": 0.06,
+     "closed_only": false,
+     "absorb": false,
+     "absorb_pad": 0.3
+    }
+   },
+   "curve_text_edit": {
+    "tag": "NC1_real",
+    "n_entries_raw": 7,
+    "n_entries_filtered": 1,
+    "n_entries_raw_with_border": 7,
+    "n_flagged_a": 177,
+    "n_flagged_b": 175,
+    "n_obj_a": 1663,
+    "n_obj_b": 1664,
+    "verdict_raw": "GRAPHIC_CHANGE",
+    "verdict_filtered": "GRAPHIC_CHANGE",
+    "ledger": {
+     "ink": 7,
+     "ink_border": 0,
+     "count": 1,
+     "object_id": 7,
+     "churn": 3,
+     "label": 0
+    },
+    "manifest": {
+     "cf_id": "NC1_curve_text_edit",
+     "line_replaced": 13,
+     "line_source": 1,
+     "n_seg_removed": 72,
+     "n_seg_added": 206,
+     "bbox_pt": [
+      300.0,
+      1026.48,
+      1039.44,
+      1049.76
+     ],
+     "expected_verdict": "NO_GRAPHIC_CHANGE"
+    }
+   }
+  }
+ ],
+ "skips": [
+  {
+   "carrier": "OV-13АВ-РД-ОВ1.2-К4 V1-v001-7NJU-AWMT-HDF",
+   "reason": "no text layer to convert"
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К6-v001-4XAP-3L7F-UKH",
+   "reason": "no text layer to convert"
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР3-К5-К6-v001-4LHJ-3CTA-PVX",
+   "reason": "no text layer to convert"
+  },
+  {
+   "carrier": "VK-13АВ-РД-ВК1-К6 V1-v001-3TXG-T76E-F6Q",
+   "reason": "no text layer to convert"
+  }
+ ],
+ "n_cf": 55,
+ "n_real": 33,
+ "n_skips": 4
+}

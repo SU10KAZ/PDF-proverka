@@ -1,0 +1,939 @@
+{
+ "n": 40,
+ "bytes_total": 2996827,
+ "field_cost": {
+  "objects[].desc": {
+   "share_median": 0.4258,
+   "share_mean": 0.3891,
+   "bytes_total": 1370930
+  },
+  "objects[].label": {
+   "share_median": 0.0322,
+   "share_mean": 0.0407,
+   "bytes_total": 83582
+  },
+  "objects[].fam": {
+   "share_median": 0.0047,
+   "share_mean": 0.0046,
+   "bytes_total": 19272
+  },
+  "objects[].border": {
+   "share_median": 0.0145,
+   "share_mean": 0.0133,
+   "bytes_total": 47609
+  },
+  "objects[].oid": {
+   "share_median": 0.0408,
+   "share_mean": 0.0379,
+   "bytes_total": 133856
+  },
+  "objects[].bbox": {
+   "share_median": 0.0969,
+   "share_mean": 0.0902,
+   "bytes_total": 312994
+  },
+  "objects[].cls": {
+   "share_median": 0.0225,
+   "share_mean": 0.0211,
+   "bytes_total": 75045
+  },
+  "objects[].ink_pt": {
+   "share_median": 0.0166,
+   "share_mean": 0.0154,
+   "bytes_total": 53601
+  },
+  "families[]": {
+   "share_median": 0.012,
+   "share_mean": 0.0115,
+   "bytes_total": 35802
+  },
+  "provenance.polygon_pt": {
+   "share_median": 0.0003,
+   "share_mean": 0.0006,
+   "bytes_total": 654
+  },
+  "head_total": {
+   "share_median": 0.0686,
+   "share_mean": 0.1461,
+   "bytes_total": 60180
+  }
+ },
+ "derivability": {
+  "provenance.page_index == page_number-1": {
+   "n": 40,
+   "exact": 40,
+   "worst": null
+  },
+  "provenance.page_index_conflict == (page_index_field != page_number-1)": {
+   "n": 40,
+   "exact": 40,
+   "worst": null
+  },
+  "quality.density_band == f(n_seg)": {
+   "n": 40,
+   "exact": 0,
+   "worst": [
+    null,
+    178
+   ]
+  },
+  "quality.route == route_of(block_class, quality, n_seg, page_text)": {
+   "n": 40,
+   "exact": 40,
+   "worst": null
+  },
+  "frame.size_pt == clip_display dims": {
+   "n": 40,
+   "exact": 33,
+   "worst": [
+    [
+     522.773,
+     157.455
+    ],
+    [
+     652.866,
+     669.664,
+     1175.638,
+     827.119
+    ]
+   ]
+  },
+  "frame.px_per_pt == coords_px dims / size_pt": {
+   "n": 40,
+   "exact": 38,
+   "worst": [
+    [
+     4.1671,
+     4.1675
+    ],
+    [
+     371.689,
+     372.922
+    ],
+    [
+     3146.0,
+     40.0,
+     4700.0,
+     1589.0
+    ]
+   ]
+  },
+  "scale.S == s_text if S_source=='text' else s_geom": {
+   "n": 40,
+   "exact": 38,
+   "worst": [
+    "none",
+    1.0,
+    0.0,
+    0.0
+   ]
+  },
+  "provenance.polygon_area_share == area(polygon)/area(clip)": {
+   "n": 4,
+   "exact": 4,
+   "worst": null
+  }
+ },
+ "rows": [
+  {
+   "block_id": "blk_6526993293174296bf1bde2f8b21aa71",
+   "n_seg": 178,
+   "n_obj": 23,
+   "route": "VECTOR",
+   "bytes": 8132,
+   "cost": {
+    "objects[].desc": 2976,
+    "objects[].label": 133,
+    "objects[].fam": 23,
+    "objects[].border": 115,
+    "objects[].oid": 322,
+    "objects[].bbox": 763,
+    "objects[].cls": 163,
+    "objects[].ink_pt": 118,
+    "families[]": 38,
+    "provenance.polygon_pt": 4,
+    "head_total": 1522
+   }
+  },
+  {
+   "block_id": "blk_0b340dca02304c558cf3bbac964a89ce",
+   "n_seg": 1069,
+   "n_obj": 504,
+   "route": "VECTOR",
+   "bytes": 146148,
+   "cost": {
+    "objects[].desc": 65739,
+    "objects[].label": 3256,
+    "objects[].fam": 585,
+    "objects[].border": 2520,
+    "objects[].oid": 7056,
+    "objects[].bbox": 15939,
+    "objects[].cls": 3744,
+    "objects[].ink_pt": 2421,
+    "families[]": 1006,
+    "provenance.polygon_pt": 4,
+    "head_total": 1519
+   }
+  },
+  {
+   "block_id": "9MTE-JJYT-JRP",
+   "n_seg": 14617,
+   "n_obj": 74,
+   "route": "TABLE_PIPELINE",
+   "bytes": 24809,
+   "cost": {
+    "objects[].desc": 10408,
+    "objects[].label": 1350,
+    "objects[].fam": 120,
+    "objects[].border": 353,
+    "objects[].oid": 1036,
+    "objects[].bbox": 2398,
+    "objects[].cls": 587,
+    "objects[].ink_pt": 424,
+    "families[]": 411,
+    "provenance.polygon_pt": 4,
+    "head_total": 1479
+   }
+  },
+  {
+   "block_id": "blk_1d45ec7485e448b4a3eeb31a1321854d",
+   "n_seg": 190,
+   "n_obj": 38,
+   "route": "VECTOR",
+   "bytes": 13328,
+   "cost": {
+    "objects[].desc": 5322,
+    "objects[].label": 551,
+    "objects[].fam": 53,
+    "objects[].border": 189,
+    "objects[].oid": 532,
+    "objects[].bbox": 1292,
+    "objects[].cls": 299,
+    "objects[].ink_pt": 201,
+    "families[]": 152,
+    "provenance.polygon_pt": 4,
+    "head_total": 1518
+   }
+  },
+  {
+   "block_id": "GKDK-M7TG-KC6",
+   "n_seg": 2701,
+   "n_obj": 36,
+   "route": "TABLE_PIPELINE",
+   "bytes": 13136,
+   "cost": {
+    "objects[].desc": 5227,
+    "objects[].label": 538,
+    "objects[].fam": 50,
+    "objects[].border": 174,
+    "objects[].oid": 504,
+    "objects[].bbox": 1386,
+    "objects[].cls": 286,
+    "objects[].ink_pt": 208,
+    "families[]": 227,
+    "provenance.polygon_pt": 4,
+    "head_total": 1485
+   }
+  },
+  {
+   "block_id": "blk_b877ad2647d249938caffff79bf672ee",
+   "n_seg": 4353,
+   "n_obj": 34,
+   "route": "TABLE_PIPELINE",
+   "bytes": 13177,
+   "cost": {
+    "objects[].desc": 4661,
+    "objects[].label": 1384,
+    "objects[].fam": 54,
+    "objects[].border": 168,
+    "objects[].oid": 476,
+    "objects[].bbox": 1347,
+    "objects[].cls": 268,
+    "objects[].ink_pt": 214,
+    "families[]": 190,
+    "provenance.polygon_pt": 4,
+    "head_total": 1532
+   }
+  },
+  {
+   "block_id": "43HA-LJWQ-CRD",
+   "n_seg": 6719,
+   "n_obj": 520,
+   "route": "VECTOR",
+   "bytes": 161082,
+   "cost": {
+    "objects[].desc": 76047,
+    "objects[].label": 3343,
+    "objects[].fam": 1241,
+    "objects[].border": 2599,
+    "objects[].oid": 7280,
+    "objects[].bbox": 16452,
+    "objects[].cls": 4060,
+    "objects[].ink_pt": 3140,
+    "families[]": 1763,
+    "provenance.polygon_pt": 4,
+    "head_total": 1450
+   }
+  },
+  {
+   "block_id": "blk_98b7c3331c084422a9b79db3dc94291e",
+   "n_seg": 18,
+   "n_obj": 3,
+   "route": "TABLE_PIPELINE",
+   "bytes": 2490,
+   "cost": {
+    "objects[].desc": 425,
+    "objects[].label": 53,
+    "objects[].fam": 3,
+    "objects[].border": 15,
+    "objects[].oid": 42,
+    "objects[].bbox": 100,
+    "objects[].cls": 23,
+    "objects[].ink_pt": 16,
+    "families[]": 2,
+    "provenance.polygon_pt": 4,
+    "head_total": 1532
+   }
+  },
+  {
+   "block_id": "blk_ef3ec2a01a5b473b92105512afe8b54f",
+   "n_seg": 51478,
+   "n_obj": 987,
+   "route": "VECTOR:tile",
+   "bytes": 314565,
+   "cost": {
+    "objects[].desc": 153630,
+    "objects[].label": 6655,
+    "objects[].fam": 2149,
+    "objects[].border": 4935,
+    "objects[].oid": 13818,
+    "objects[].bbox": 32381,
+    "objects[].cls": 7759,
+    "objects[].ink_pt": 5892,
+    "families[]": 2892,
+    "provenance.polygon_pt": 4,
+    "head_total": 1519
+   }
+  },
+  {
+   "block_id": "4DJF-N7LC-NYW",
+   "n_seg": 2699,
+   "n_obj": 32,
+   "route": "TABLE_PIPELINE",
+   "bytes": 11761,
+   "cost": {
+    "objects[].desc": 4584,
+    "objects[].label": 521,
+    "objects[].fam": 45,
+    "objects[].border": 158,
+    "objects[].oid": 448,
+    "objects[].bbox": 1185,
+    "objects[].cls": 254,
+    "objects[].ink_pt": 179,
+    "families[]": 189,
+    "provenance.polygon_pt": 4,
+    "head_total": 1483
+   }
+  },
+  {
+   "block_id": "blk_b2191b9ec27a400b9b13c436837a93ed",
+   "n_seg": 808,
+   "n_obj": 91,
+   "route": "VECTOR",
+   "bytes": 33429,
+   "cost": {
+    "objects[].desc": 15701,
+    "objects[].label": 1616,
+    "objects[].fam": 113,
+    "objects[].border": 455,
+    "objects[].oid": 1274,
+    "objects[].bbox": 3195,
+    "objects[].cls": 670,
+    "objects[].ink_pt": 568,
+    "families[]": 649,
+    "provenance.polygon_pt": 4,
+    "head_total": 1517
+   }
+  },
+  {
+   "block_id": "9VAN-LJUJ-6VJ",
+   "n_seg": 16330,
+   "n_obj": 71,
+   "route": "TABLE_PIPELINE",
+   "bytes": 24063,
+   "cost": {
+    "objects[].desc": 10068,
+    "objects[].label": 1358,
+    "objects[].fam": 112,
+    "objects[].border": 350,
+    "objects[].oid": 994,
+    "objects[].bbox": 2273,
+    "objects[].cls": 563,
+    "objects[].ink_pt": 398,
+    "families[]": 484,
+    "provenance.polygon_pt": 4,
+    "head_total": 1472
+   }
+  },
+  {
+   "block_id": "4LT4-4RK7-T7F",
+   "n_seg": 7018,
+   "n_obj": 559,
+   "route": "VECTOR",
+   "bytes": 171964,
+   "cost": {
+    "objects[].desc": 80148,
+    "objects[].label": 3486,
+    "objects[].fam": 1171,
+    "objects[].border": 2775,
+    "objects[].oid": 7826,
+    "objects[].bbox": 17728,
+    "objects[].cls": 4386,
+    "objects[].ink_pt": 3428,
+    "families[]": 2471,
+    "provenance.polygon_pt": 102,
+    "head_total": 1562
+   }
+  },
+  {
+   "block_id": "blk_343f7239aaea4155834b3ba4f4f975e0",
+   "n_seg": 210,
+   "n_obj": 32,
+   "route": "TABLE_PIPELINE",
+   "bytes": 11810,
+   "cost": {
+    "objects[].desc": 4414,
+    "objects[].label": 772,
+    "objects[].fam": 40,
+    "objects[].border": 159,
+    "objects[].oid": 448,
+    "objects[].bbox": 1078,
+    "objects[].cls": 250,
+    "objects[].ink_pt": 178,
+    "families[]": 227,
+    "provenance.polygon_pt": 4,
+    "head_total": 1529
+   }
+  },
+  {
+   "block_id": "blk_f4c4e4e2eb02425aa627a74d3ee929c2",
+   "n_seg": 13,
+   "n_obj": 12,
+   "route": "TABLE_PIPELINE",
+   "bytes": 5080,
+   "cost": {
+    "objects[].desc": 1540,
+    "objects[].label": 128,
+    "objects[].fam": 12,
+    "objects[].border": 51,
+    "objects[].oid": 168,
+    "objects[].bbox": 389,
+    "objects[].cls": 87,
+    "objects[].ink_pt": 72,
+    "families[]": 76,
+    "provenance.polygon_pt": 4,
+    "head_total": 1522
+   }
+  },
+  {
+   "block_id": "blk_eee5038e83e94f63b9c300c5e92b12a6",
+   "n_seg": 1993,
+   "n_obj": 184,
+   "route": "VECTOR",
+   "bytes": 60169,
+   "cost": {
+    "objects[].desc": 26374,
+    "objects[].label": 3395,
+    "objects[].fam": 357,
+    "objects[].border": 920,
+    "objects[].oid": 2578,
+    "objects[].bbox": 6476,
+    "objects[].cls": 1429,
+    "objects[].ink_pt": 998,
+    "families[]": 650,
+    "provenance.polygon_pt": 4,
+    "head_total": 1509
+   }
+  },
+  {
+   "block_id": "43FM-H9PM-T99",
+   "n_seg": 377,
+   "n_obj": 29,
+   "route": "VECTOR",
+   "bytes": 10663,
+   "cost": {
+    "objects[].desc": 4410,
+    "objects[].label": 284,
+    "objects[].fam": 46,
+    "objects[].border": 144,
+    "objects[].oid": 406,
+    "objects[].bbox": 968,
+    "objects[].cls": 226,
+    "objects[].ink_pt": 177,
+    "families[]": 75,
+    "provenance.polygon_pt": 4,
+    "head_total": 1464
+   }
+  },
+  {
+   "block_id": "blk_5969c77ca7cd496791a5ff689c0fcaab",
+   "n_seg": 1797,
+   "n_obj": 64,
+   "route": "VECTOR",
+   "bytes": 21087,
+   "cost": {
+    "objects[].desc": 9528,
+    "objects[].label": 295,
+    "objects[].fam": 96,
+    "objects[].border": 319,
+    "objects[].oid": 896,
+    "objects[].bbox": 2031,
+    "objects[].cls": 504,
+    "objects[].ink_pt": 381,
+    "families[]": 149,
+    "provenance.polygon_pt": 4,
+    "head_total": 1485
+   }
+  },
+  {
+   "block_id": "A7V9-FDVH-AN3",
+   "n_seg": 37,
+   "n_obj": 23,
+   "route": "TABLE_PIPELINE",
+   "bytes": 8526,
+   "cost": {
+    "objects[].desc": 2997,
+    "objects[].label": 386,
+    "objects[].fam": 24,
+    "objects[].border": 101,
+    "objects[].oid": 322,
+    "objects[].bbox": 750,
+    "objects[].cls": 180,
+    "objects[].ink_pt": 143,
+    "families[]": 189,
+    "provenance.polygon_pt": 4,
+    "head_total": 1475
+   }
+  },
+  {
+   "block_id": "blk_5d0612b50e664041bd46c4af8463b354",
+   "n_seg": 29177,
+   "n_obj": 491,
+   "route": "VECTOR",
+   "bytes": 156781,
+   "cost": {
+    "objects[].desc": 74470,
+    "objects[].label": 5051,
+    "objects[].fam": 1099,
+    "objects[].border": 2446,
+    "objects[].oid": 6874,
+    "objects[].bbox": 15676,
+    "objects[].cls": 3829,
+    "objects[].ink_pt": 2987,
+    "families[]": 1567,
+    "provenance.polygon_pt": 4,
+    "head_total": 1511
+   }
+  },
+  {
+   "block_id": "blk_def0d325ebb54844aa7bf767986fc2f0",
+   "n_seg": 2540,
+   "n_obj": 65,
+   "route": "TABLE_PIPELINE",
+   "bytes": 21874,
+   "cost": {
+    "objects[].desc": 9314,
+    "objects[].label": 883,
+    "objects[].fam": 134,
+    "objects[].border": 322,
+    "objects[].oid": 910,
+    "objects[].bbox": 2205,
+    "objects[].cls": 492,
+    "objects[].ink_pt": 364,
+    "families[]": 263,
+    "provenance.polygon_pt": 4,
+    "head_total": 1500
+   }
+  },
+  {
+   "block_id": "blk_3ee9455ea3f34dd484a6d6201cc2cade",
+   "n_seg": 2727,
+   "n_obj": 78,
+   "route": "VECTOR",
+   "bytes": 26755,
+   "cost": {
+    "objects[].desc": 12212,
+    "objects[].label": 949,
+    "objects[].fam": 144,
+    "objects[].border": 389,
+    "objects[].oid": 1092,
+    "objects[].bbox": 2486,
+    "objects[].cls": 602,
+    "objects[].ink_pt": 451,
+    "families[]": 333,
+    "provenance.polygon_pt": 4,
+    "head_total": 1518
+   }
+  },
+  {
+   "block_id": "blk_8fb31be81df24e49afe273eb9d62a47f",
+   "n_seg": 672,
+   "n_obj": 70,
+   "route": "VECTOR",
+   "bytes": 26892,
+   "cost": {
+    "objects[].desc": 9679,
+    "objects[].label": 4879,
+    "objects[].fam": 91,
+    "objects[].border": 350,
+    "objects[].oid": 980,
+    "objects[].bbox": 2171,
+    "objects[].cls": 556,
+    "objects[].ink_pt": 350,
+    "families[]": 416,
+    "provenance.polygon_pt": 4,
+    "head_total": 1513
+   }
+  },
+  {
+   "block_id": "blk_6fd664cb21d944e5acdb50fc5a53cd81",
+   "n_seg": 688,
+   "n_obj": 61,
+   "route": "VECTOR",
+   "bytes": 20355,
+   "cost": {
+    "objects[].desc": 8728,
+    "objects[].label": 416,
+    "objects[].fam": 67,
+    "objects[].border": 302,
+    "objects[].oid": 854,
+    "objects[].bbox": 2060,
+    "objects[].cls": 448,
+    "objects[].ink_pt": 325,
+    "families[]": 379,
+    "provenance.polygon_pt": 148,
+    "head_total": 1625
+   }
+  },
+  {
+   "block_id": "9CGT-HRPQ-4LV",
+   "n_seg": 30830,
+   "n_obj": 260,
+   "route": "VECTOR",
+   "bytes": 82389,
+   "cost": {
+    "objects[].desc": 37658,
+    "objects[].label": 2366,
+    "objects[].fam": 518,
+    "objects[].border": 1269,
+    "objects[].oid": 3640,
+    "objects[].bbox": 8432,
+    "objects[].cls": 2082,
+    "objects[].ink_pt": 1482,
+    "families[]": 1516,
+    "provenance.polygon_pt": 100,
+    "head_total": 1559
+   }
+  },
+  {
+   "block_id": "blk_decfe11722ef437f8e613103623cb651",
+   "n_seg": 2160,
+   "n_obj": 40,
+   "route": "TABLE_PIPELINE",
+   "bytes": 15258,
+   "cost": {
+    "objects[].desc": 6045,
+    "objects[].label": 1102,
+    "objects[].fam": 63,
+    "objects[].border": 197,
+    "objects[].oid": 560,
+    "objects[].bbox": 1580,
+    "objects[].cls": 317,
+    "objects[].ink_pt": 254,
+    "families[]": 225,
+    "provenance.polygon_pt": 4,
+    "head_total": 1528
+   }
+  },
+  {
+   "block_id": "blk_5288894bcc77498abbfd9e497dddb66b",
+   "n_seg": 658,
+   "n_obj": 185,
+   "route": "VECTOR",
+   "bytes": 56429,
+   "cost": {
+    "objects[].desc": 25225,
+    "objects[].label": 913,
+    "objects[].fam": 264,
+    "objects[].border": 924,
+    "objects[].oid": 2590,
+    "objects[].bbox": 6139,
+    "objects[].cls": 1461,
+    "objects[].ink_pt": 1132,
+    "families[]": 692,
+    "provenance.polygon_pt": 4,
+    "head_total": 1522
+   }
+  },
+  {
+   "block_id": "4PT7-WNQD-4EC",
+   "n_seg": 0,
+   "n_obj": 0,
+   "route": "VISION_ONLY",
+   "bytes": 1483,
+   "cost": {
+    "objects[].desc": 0,
+    "objects[].label": 0,
+    "objects[].fam": 0,
+    "objects[].border": 0,
+    "objects[].oid": 0,
+    "objects[].bbox": 0,
+    "objects[].cls": 0,
+    "objects[].ink_pt": 0,
+    "families[]": 2,
+    "provenance.polygon_pt": 4,
+    "head_total": 1452
+   }
+  },
+  {
+   "block_id": "9EUR-QALU-CHH",
+   "n_seg": 53640,
+   "n_obj": 878,
+   "route": "VECTOR:tile",
+   "bytes": 270562,
+   "cost": {
+    "objects[].desc": 124122,
+    "objects[].label": 8976,
+    "objects[].fam": 2151,
+    "objects[].border": 4388,
+    "objects[].oid": 12292,
+    "objects[].bbox": 28203,
+    "objects[].cls": 6959,
+    "objects[].ink_pt": 4935,
+    "families[]": 3291,
+    "provenance.polygon_pt": 4,
+    "head_total": 1466
+   }
+  },
+  {
+   "block_id": "blk_c139b4d8d4e1489e95810938b42f26d7",
+   "n_seg": 35471,
+   "n_obj": 939,
+   "route": "VECTOR",
+   "bytes": 292783,
+   "cost": {
+    "objects[].desc": 138246,
+    "objects[].label": 5168,
+    "objects[].fam": 1928,
+    "objects[].border": 4695,
+    "objects[].oid": 13182,
+    "objects[].bbox": 32003,
+    "objects[].cls": 7407,
+    "objects[].ink_pt": 5111,
+    "families[]": 4608,
+    "provenance.polygon_pt": 4,
+    "head_total": 1532
+   }
+  },
+  {
+   "block_id": "6NE3-F3HK-DJC",
+   "n_seg": 21457,
+   "n_obj": 630,
+   "route": "VECTOR",
+   "bytes": 200126,
+   "cost": {
+    "objects[].desc": 96317,
+    "objects[].label": 5172,
+    "objects[].fam": 1400,
+    "objects[].border": 3121,
+    "objects[].oid": 8820,
+    "objects[].bbox": 20234,
+    "objects[].cls": 4909,
+    "objects[].ink_pt": 3652,
+    "families[]": 1928,
+    "provenance.polygon_pt": 160,
+    "head_total": 1626
+   }
+  },
+  {
+   "block_id": "blk_03a496ae3ee34a0180503d35633c20f1",
+   "n_seg": 13081,
+   "n_obj": 62,
+   "route": "TABLE_PIPELINE",
+   "bytes": 21391,
+   "cost": {
+    "objects[].desc": 8844,
+    "objects[].label": 1443,
+    "objects[].fam": 107,
+    "objects[].border": 309,
+    "objects[].oid": 868,
+    "objects[].bbox": 1983,
+    "objects[].cls": 492,
+    "objects[].ink_pt": 346,
+    "families[]": 227,
+    "provenance.polygon_pt": 4,
+    "head_total": 1537
+   }
+  },
+  {
+   "block_id": "9YUK-LDE9-QMK",
+   "n_seg": 16475,
+   "n_obj": 71,
+   "route": "TABLE_PIPELINE",
+   "bytes": 23832,
+   "cost": {
+    "objects[].desc": 9943,
+    "objects[].label": 1357,
+    "objects[].fam": 116,
+    "objects[].border": 348,
+    "objects[].oid": 994,
+    "objects[].bbox": 2217,
+    "objects[].cls": 559,
+    "objects[].ink_pt": 392,
+    "families[]": 449,
+    "provenance.polygon_pt": 4,
+    "head_total": 1466
+   }
+  },
+  {
+   "block_id": "76T9-UAHC-TRM",
+   "n_seg": 8,
+   "n_obj": 4,
+   "route": "VECTOR",
+   "bytes": 2925,
+   "cost": {
+    "objects[].desc": 521,
+    "objects[].label": 310,
+    "objects[].fam": 13,
+    "objects[].border": 20,
+    "objects[].oid": 56,
+    "objects[].bbox": 121,
+    "objects[].cls": 30,
+    "objects[].ink_pt": 17,
+    "families[]": 2,
+    "provenance.polygon_pt": 4,
+    "head_total": 1472
+   }
+  },
+  {
+   "block_id": "6CDY-3YWG-TTT",
+   "n_seg": 0,
+   "n_obj": 0,
+   "route": "VISION_ONLY",
+   "bytes": 1488,
+   "cost": {
+    "objects[].desc": 0,
+    "objects[].label": 0,
+    "objects[].fam": 0,
+    "objects[].border": 0,
+    "objects[].oid": 0,
+    "objects[].bbox": 0,
+    "objects[].cls": 0,
+    "objects[].ink_pt": 0,
+    "families[]": 2,
+    "provenance.polygon_pt": 4,
+    "head_total": 1457
+   }
+  },
+  {
+   "block_id": "blk_b002d46eec4e435aab87cdd4d280610b",
+   "n_seg": 286,
+   "n_obj": 12,
+   "route": "TABLE_PIPELINE",
+   "bytes": 5201,
+   "cost": {
+    "objects[].desc": 1692,
+    "objects[].label": 144,
+    "objects[].fam": 12,
+    "objects[].border": 50,
+    "objects[].oid": 168,
+    "objects[].bbox": 390,
+    "objects[].cls": 99,
+    "objects[].ink_pt": 67,
+    "families[]": 37,
+    "provenance.polygon_pt": 4,
+    "head_total": 1507
+   }
+  },
+  {
+   "block_id": "A3UE-EMY6-CP4",
+   "n_seg": 2293,
+   "n_obj": 94,
+   "route": "VECTOR",
+   "bytes": 30075,
+   "cost": {
+    "objects[].desc": 13437,
+    "objects[].label": 668,
+    "objects[].fam": 185,
+    "objects[].border": 470,
+    "objects[].oid": 1316,
+    "objects[].bbox": 3116,
+    "objects[].cls": 747,
+    "objects[].ink_pt": 488,
+    "families[]": 262,
+    "provenance.polygon_pt": 4,
+    "head_total": 1463
+   }
+  },
+  {
+   "block_id": "7KCG-X9GW-MUF",
+   "n_seg": 24922,
+   "n_obj": 2199,
+   "route": "VECTOR",
+   "bytes": 648720,
+   "cost": {
+    "objects[].desc": 294475,
+    "objects[].label": 12698,
+    "objects[].fam": 4499,
+    "objects[].border": 10994,
+    "objects[].oid": 30792,
+    "objects[].bbox": 72410,
+    "objects[].cls": 17520,
+    "objects[].ink_pt": 11494,
+    "families[]": 7648,
+    "provenance.polygon_pt": 4,
+    "head_total": 1447
+   }
+  },
+  {
+   "block_id": "7XQ6-MUWM-PAF",
+   "n_seg": 3510,
+   "n_obj": 60,
+   "route": "VECTOR",
+   "bytes": 21283,
+   "cost": {
+    "objects[].desc": 9172,
+    "objects[].label": 1404,
+    "objects[].fam": 107,
+    "objects[].border": 300,
+    "objects[].oid": 840,
+    "objects[].bbox": 2032,
+    "objects[].cls": 461,
+    "objects[].ink_pt": 329,
+    "families[]": 113,
+    "provenance.polygon_pt": 4,
+    "head_total": 1458
+   }
+  },
+  {
+   "block_id": "6YQK-A36N-7R7",
+   "n_seg": 3665,
+   "n_obj": 43,
+   "route": "VECTOR",
+   "bytes": 14806,
+   "cost": {
+    "objects[].desc": 6631,
+    "objects[].label": 179,
+    "objects[].fam": 80,
+    "objects[].border": 215,
+    "objects[].oid": 602,
+    "objects[].bbox": 1405,
+    "objects[].cls": 337,
+    "objects[].ink_pt": 269,
+    "families[]": 2,
+    "provenance.polygon_pt": 4,
+    "head_total": 1447
+   }
+  }
+ ]
+}

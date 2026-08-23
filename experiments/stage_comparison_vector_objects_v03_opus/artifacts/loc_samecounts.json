@@ -1,0 +1,189 @@
+{
+ "n": 1116,
+ "per": {
+  "C4_swap_objects|jitter03": {
+   "n": 55,
+   "counters_identical_measured": 0.0364,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.0364,
+   "counts_verdict_blind": 0.0364,
+   "scalar_999_blind": 0.4364,
+   "ledger_L2": 0.8182,
+   "ledger_L3": 0.6545,
+   "ledger_L4": 0.6545,
+   "median_records": 2,
+   "median_sim": 0.998432
+  },
+  "C4_swap_objects|jitter10": {
+   "n": 55,
+   "counters_identical_measured": 0.0364,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.0364,
+   "counts_verdict_blind": 0.0364,
+   "scalar_999_blind": 0.0,
+   "ledger_L2": 1.0,
+   "ledger_L3": 0.9818,
+   "ledger_L4": 0.5818,
+   "median_records": 8,
+   "median_sim": 0.898897
+  },
+  "C4_swap_objects|none": {
+   "n": 55,
+   "counters_identical_measured": 0.6,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.6,
+   "counts_verdict_blind": 0.6,
+   "scalar_999_blind": 0.4545,
+   "ledger_L2": 0.7636,
+   "ledger_L3": 0.6909,
+   "ledger_L4": 0.6909,
+   "median_records": 2,
+   "median_sim": 0.998456
+  },
+  "C4_swap_objects|round025": {
+   "n": 55,
+   "counters_identical_measured": 0.0909,
+   "d_seg_zero": 0.2182,
+   "d_obj_zero": 0.1091,
+   "counts_verdict_blind": 0.0909,
+   "scalar_999_blind": 0.4364,
+   "ledger_L2": 0.8182,
+   "ledger_L3": 0.6909,
+   "ledger_L4": 0.6909,
+   "median_records": 2,
+   "median_sim": 0.998387
+  },
+  "C5_swap_unlike|jitter03": {
+   "n": 56,
+   "counters_identical_measured": 0.0893,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.0893,
+   "counts_verdict_blind": 0.0893,
+   "scalar_999_blind": 0.2679,
+   "ledger_L2": 0.9821,
+   "ledger_L3": 0.8036,
+   "ledger_L4": 0.8036,
+   "median_records": 2.0,
+   "median_sim": 0.995141
+  },
+  "C5_swap_unlike|jitter10": {
+   "n": 56,
+   "counters_identical_measured": 0.0536,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.0536,
+   "counts_verdict_blind": 0.0536,
+   "scalar_999_blind": 0.0,
+   "ledger_L2": 0.9821,
+   "ledger_L3": 0.9821,
+   "ledger_L4": 0.7143,
+   "median_records": 9.0,
+   "median_sim": 0.900809
+  },
+  "C5_swap_unlike|none": {
+   "n": 56,
+   "counters_identical_measured": 0.375,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.375,
+   "counts_verdict_blind": 0.375,
+   "scalar_999_blind": 0.2679,
+   "ledger_L2": 0.9821,
+   "ledger_L3": 0.8214,
+   "ledger_L4": 0.8214,
+   "median_records": 2.0,
+   "median_sim": 0.995157
+  },
+  "C5_swap_unlike|round025": {
+   "n": 56,
+   "counters_identical_measured": 0.125,
+   "d_seg_zero": 0.2321,
+   "d_obj_zero": 0.1964,
+   "counts_verdict_blind": 0.125,
+   "scalar_999_blind": 0.2679,
+   "ledger_L2": 0.9821,
+   "ledger_L3": 0.8214,
+   "ledger_L4": 0.8214,
+   "median_records": 2.0,
+   "median_sim": 0.995168
+  },
+  "C6_reshape_object|jitter03": {
+   "n": 168,
+   "counters_identical_measured": 0.0714,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.0714,
+   "counts_verdict_blind": 0.0714,
+   "scalar_999_blind": 0.3214,
+   "ledger_L2": 0.8988,
+   "ledger_L3": 0.8988,
+   "ledger_L4": 0.8036,
+   "median_records": 1.0,
+   "median_sim": 0.996916
+  },
+  "C6_reshape_object|jitter10": {
+   "n": 168,
+   "counters_identical_measured": 0.0476,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.0476,
+   "counts_verdict_blind": 0.0476,
+   "scalar_999_blind": 0.0,
+   "ledger_L2": 1.0,
+   "ledger_L3": 1.0,
+   "ledger_L4": 0.6548,
+   "median_records": 8.0,
+   "median_sim": 0.897809
+  },
+  "C6_reshape_object|none": {
+   "n": 168,
+   "counters_identical_measured": 0.625,
+   "d_seg_zero": 1.0,
+   "d_obj_zero": 0.625,
+   "counts_verdict_blind": 0.625,
+   "scalar_999_blind": 0.3274,
+   "ledger_L2": 0.875,
+   "ledger_L3": 0.875,
+   "ledger_L4": 0.8095,
+   "median_records": 1.0,
+   "median_sim": 0.997138
+  },
+  "C6_reshape_object|round025": {
+   "n": 168,
+   "counters_identical_measured": 0.119,
+   "d_seg_zero": 0.2143,
+   "d_obj_zero": 0.1726,
+   "counts_verdict_blind": 0.119,
+   "scalar_999_blind": 0.3274,
+   "ledger_L2": 0.869,
+   "ledger_L3": 0.869,
+   "ledger_L4": 0.7976,
+   "median_records": 1.0,
+   "median_sim": 0.996947
+  }
+ },
+ "strict_counters_identical": {
+  "n": 223,
+  "ledger_L2": 0.9103,
+  "ledger_L4": 0.8655,
+  "by_noise": {
+   "jitter03": {
+    "n": 19,
+    "L2": 1.0
+   },
+   "jitter10": {
+    "n": 13,
+    "L2": 1.0
+   },
+   "none": {
+    "n": 159,
+    "L2": 0.8868
+   },
+   "round025": {
+    "n": 32,
+    "L2": 0.9375
+   }
+  }
+ },
+ "provenance": {
+  "n_rows": 5984,
+  "n_rows_from_replay": 1315,
+  "n_C_rows_still_scored_by_the_defective_scorer": 424
+ }
+}

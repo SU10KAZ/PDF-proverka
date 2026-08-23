@@ -1,0 +1,1995 @@
+{
+ "schema": "merged:neg_n3c_oracle.json",
+ "shards": [
+  "neg_n3c_0of3.json",
+  "neg_n3c_1of3.json",
+  "neg_n3c_2of3.json"
+ ],
+ "rows": [
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К3-v001-TVWH-NLRM-GNJ",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 397,
+   "n_seg9": 2783,
+   "n_text": 5,
+   "n_obj_a": 8,
+   "n_obj_b": 7,
+   "n_gt_b": 48,
+   "n_gt_a": 2,
+   "records_raw": 6,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 6,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "EOM-СТ26_01-14-ЭОМ-3-РД_V1-v001-blk_4f3fadc77c584364a5ee052c44eb0016",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 922,
+   "n_seg9": 43427,
+   "n_text": 34,
+   "n_obj_a": 161,
+   "n_obj_b": 250,
+   "n_gt_b": 988,
+   "n_gt_a": 0,
+   "records_raw": 62,
+   "records_after_oracle": 26,
+   "records_after_heuristic": 55,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 228,
+     "cls": "symbol",
+     "object_id": "b250cd2a37a3",
+     "bbox": [
+      1567.9,
+      605.327,
+      1635.344,
+      614.78
+     ],
+     "n_seg": 835,
+     "unmatched_len_pt": 410.197,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 196,
+     "cls": "symbol",
+     "object_id": "0262e3256e79",
+     "bbox": [
+      1393.2,
+      556.856,
+      1460.637,
+      566.048
+     ],
+     "n_seg": 835,
+     "unmatched_len_pt": 404.9,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 242,
+     "cls": "symbol",
+     "object_id": "cdeaecc134e6",
+     "bbox": [
+      1405.3,
+      646.825,
+      1447.1,
+      666.583
+     ],
+     "n_seg": 1286,
+     "unmatched_len_pt": 394.724,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 246,
+     "cls": "symbol",
+     "object_id": "8107173ec8a6",
+     "bbox": [
+      1466.3,
+      682.618,
+      1533.0,
+      689.681
+     ],
+     "n_seg": 1011,
+     "unmatched_len_pt": 388.555,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 233,
+     "cls": "symbol",
+     "object_id": "ae9e776b0403",
+     "bbox": [
+      1225.2,
+      618.528,
+      1291.4,
+      631.05
+     ],
+     "n_seg": 721,
+     "unmatched_len_pt": 386.152,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ОВ_V1-v001-blk_25757de0ca0445ea9234217679795df3",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 231,
+   "n_seg9": 10042,
+   "n_text": 12,
+   "n_obj_a": 43,
+   "n_obj_b": 69,
+   "n_gt_b": 188,
+   "n_gt_a": 0,
+   "records_raw": 21,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 17,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "ITP-ПД-00542664-ИТП.АТМ_V1-v001-blk_2e7b36c0b47544e5907a4aa88179a92b",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 1955,
+   "n_seg9": 58721,
+   "n_text": 165,
+   "n_obj_a": 278,
+   "n_obj_b": 479,
+   "n_gt_b": 1206,
+   "n_gt_a": 0,
+   "records_raw": 138,
+   "records_after_oracle": 6,
+   "records_after_heuristic": 103,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 425,
+     "cls": "symbol",
+     "object_id": "1f0d4ecc011d",
+     "bbox": [
+      184.4,
+      594.992,
+      204.1,
+      652.372
+     ],
+     "n_seg": 1578,
+     "unmatched_len_pt": 538.694,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 81,
+     "cls": "symbol",
+     "object_id": "0587e6fe6329",
+     "bbox": [
+      589.658,
+      252.68,
+      633.0,
+      271.4
+     ],
+     "n_seg": 501,
+     "unmatched_len_pt": 185.128,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 424,
+     "cls": "symbol",
+     "object_id": "6cddb133dbc4",
+     "bbox": [
+      704.0,
+      615.0,
+      712.2,
+      631.618
+     ],
+     "n_seg": 272,
+     "unmatched_len_pt": 109.512,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 423,
+     "cls": "symbol",
+     "object_id": "4100883ae282",
+     "bbox": [
+      312.6,
+      615.0,
+      320.8,
+      631.618
+     ],
+     "n_seg": 271,
+     "unmatched_len_pt": 109.328,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 80,
+     "cls": "symbol",
+     "object_id": "9f3497554fe5",
+     "bbox": [
+      560.33,
+      247.151,
+      586.8,
+      276.929
+     ],
+     "n_seg": 253,
+     "unmatched_len_pt": 93.877,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "KJ-13АВ-РД-КЖ5.25-29.1-К2-v001-6GNF-QWEX-CVE",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 121,
+   "n_seg9": 12312,
+   "n_text": 12,
+   "n_obj_a": 58,
+   "n_obj_b": 104,
+   "n_gt_b": 247,
+   "n_gt_a": 10,
+   "records_raw": 15,
+   "records_after_oracle": 5,
+   "records_after_heuristic": 15,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 97,
+     "cls": "symbol",
+     "object_id": "b47eec0df110",
+     "bbox": [
+      489.538,
+      1565.44,
+      498.052,
+      1626.14
+     ],
+     "n_seg": 1216,
+     "unmatched_len_pt": 354.625,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 99,
+     "cls": "symbol",
+     "object_id": "270f7c510ee9",
+     "bbox": [
+      568.0,
+      1604.117,
+      607.661,
+      1609.24
+     ],
+     "n_seg": 729,
+     "unmatched_len_pt": 211.344,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 96,
+     "cls": "symbol",
+     "object_id": "ef5b213a59f9",
+     "bbox": [
+      661.2,
+      1591.07,
+      693.9,
+      1599.592
+     ],
+     "n_seg": 629,
+     "unmatched_len_pt": 201.473,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 103,
+     "cls": "symbol",
+     "object_id": "612fe4a9724b",
+     "bbox": [
+      492.291,
+      1629.249,
+      497.3,
+      1641.74
+     ],
+     "n_seg": 325,
+     "unmatched_len_pt": 78.501,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 98,
+     "cls": "symbol",
+     "object_id": "01fc01ad31ac",
+     "bbox": [
+      553.759,
+      1602.102,
+      564.8,
+      1609.24
+     ],
+     "n_seg": 284,
+     "unmatched_len_pt": 74.274,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "KJ-13АВ-РД-КЖ5.30-31.1-К2-v002-AD4H-APGD-H7H",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg": 2702,
+   "n_seg9": 48605,
+   "n_text": 61,
+   "n_obj_a": 35,
+   "n_obj_b": 161,
+   "n_gt_b": 928,
+   "n_gt_a": 0,
+   "records_raw": 50,
+   "records_after_oracle": 3,
+   "records_after_heuristic": 38,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 45,
+     "cls": "symbol",
+     "object_id": "7573b9fdab5c",
+     "bbox": [
+      2269.6,
+      1561.929,
+      2314.2,
+      1569.068
+     ],
+     "n_seg": 738,
+     "unmatched_len_pt": 263.172,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 44,
+     "cls": "symbol",
+     "object_id": "0ccb79b6ff7a",
+     "bbox": [
+      2315.529,
+      1559.806,
+      2345.09,
+      1569.068
+     ],
+     "n_seg": 669,
+     "unmatched_len_pt": 177.1,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 38,
+     "cls": "symbol",
+     "object_id": "74c487ff729d",
+     "bbox": [
+      1858.61,
+      1559.771,
+      1859.9,
+      1566.74
+     ],
+     "n_seg": 46,
+     "unmatched_len_pt": 16.768,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "KM-13АВ-РД-НВФ-К4-v001-9R9P-HVPN-CVQ",
+   "discipline": "KM",
+   "cls": "stamp",
+   "n_seg": 620,
+   "n_seg9": 43146,
+   "n_text": 31,
+   "n_obj_a": 33,
+   "n_obj_b": 141,
+   "n_gt_b": 653,
+   "n_gt_a": 1,
+   "records_raw": 29,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 28,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "OV-СТ26_01-14-ОВ2-3-РД_V1-v001-blk_eeb669a5928f4c7ca97ad7b1c212988e",
+   "discipline": "OV",
+   "cls": "table",
+   "n_seg": 1096,
+   "n_seg9": 64008,
+   "n_text": 107,
+   "n_obj_a": 142,
+   "n_obj_b": 261,
+   "n_gt_b": 1504,
+   "n_gt_a": 0,
+   "records_raw": 144,
+   "records_after_oracle": 20,
+   "records_after_heuristic": 83,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 20,
+     "cls": "symbol",
+     "object_id": "6919b60cc118",
+     "bbox": [
+      311.2,
+      46.562,
+      367.188,
+      52.5
+     ],
+     "n_seg": 776,
+     "unmatched_len_pt": 281.623,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 90,
+     "cls": "symbol",
+     "object_id": "a6ad3fb4dcc7",
+     "bbox": [
+      53.567,
+      138.744,
+      105.317,
+      146.028
+     ],
+     "n_seg": 1075,
+     "unmatched_len_pt": 266.201,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 173,
+     "cls": "symbol",
+     "object_id": "77f764892a12",
+     "bbox": [
+      311.2,
+      294.844,
+      359.063,
+      302.128
+     ],
+     "n_seg": 860,
+     "unmatched_len_pt": 264.345,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 19,
+     "cls": "symbol",
+     "object_id": "5bfea4754aac",
+     "bbox": [
+      367.973,
+      45.744,
+      419.363,
+      53.0
+     ],
+     "n_seg": 726,
+     "unmatched_len_pt": 245.509,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 7,
+     "cls": "symbol",
+     "object_id": "f68d0b5be79b",
+     "bbox": [
+      200.748,
+      29.7,
+      249.267,
+      41.704
+     ],
+     "n_seg": 927,
+     "unmatched_len_pt": 217.899,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "PT-СТ26_01-14-ПТ1-1-РД_V1-v001-blk_aaf24626fbb04f93a8e65f4d72d1f06c",
+   "discipline": "PT",
+   "cls": "stamp",
+   "n_seg": 1221,
+   "n_seg9": 40558,
+   "n_text": 30,
+   "n_obj_a": 36,
+   "n_obj_b": 144,
+   "n_gt_b": 1000,
+   "n_gt_a": 0,
+   "records_raw": 42,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 35,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "SS-13АВ-РД-АПЗ.АПС-К4-v001-7393-HGCY-DVN",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 240,
+   "n_seg9": 16909,
+   "n_text": 39,
+   "n_obj_a": 21,
+   "n_obj_b": 65,
+   "n_gt_b": 320,
+   "n_gt_a": 19,
+   "records_raw": 52,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 48,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К5-v001-7UKU-WHNK-P4P",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg": 2806,
+   "n_seg9": 44925,
+   "n_text": 40,
+   "n_obj_a": 67,
+   "n_obj_b": 163,
+   "n_gt_b": 958,
+   "n_gt_a": 0,
+   "records_raw": 49,
+   "records_after_oracle": 4,
+   "records_after_heuristic": 29,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 23,
+     "cls": "symbol",
+     "object_id": "1e46628c5643",
+     "bbox": [
+      966.2,
+      706.974,
+      1035.5,
+      733.078
+     ],
+     "n_seg": 2085,
+     "unmatched_len_pt": 802.817,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 17,
+     "cls": "symbol",
+     "object_id": "7ddd4ba896dc",
+     "bbox": [
+      1096.7,
+      705.195,
+      1154.1,
+      724.311
+     ],
+     "n_seg": 1056,
+     "unmatched_len_pt": 581.627,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 26,
+     "cls": "symbol",
+     "object_id": "2a213c54eac6",
+     "bbox": [
+      1036.1,
+      718.973,
+      1109.5,
+      732.998
+     ],
+     "n_seg": 994,
+     "unmatched_len_pt": 453.592,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 25,
+     "cls": "symbol",
+     "object_id": "a7ca7bb3cf11",
+     "bbox": [
+      1141.8,
+      718.974,
+      1159.2,
+      726.312
+     ],
+     "n_seg": 359,
+     "unmatched_len_pt": 120.197,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К4-v001-LQKU-D9VL-FVV",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg": 5225,
+   "n_seg9": 43209,
+   "n_text": 39,
+   "n_obj_a": 82,
+   "n_obj_b": 169,
+   "n_gt_b": 886,
+   "n_gt_a": 0,
+   "records_raw": 54,
+   "records_after_oracle": 3,
+   "records_after_heuristic": 33,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 26,
+     "cls": "symbol",
+     "object_id": "9c9fe8b45831",
+     "bbox": [
+      1346.9,
+      1067.973,
+      1380.5,
+      1073.339
+     ],
+     "n_seg": 650,
+     "unmatched_len_pt": 204.689,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 25,
+     "cls": "symbol",
+     "object_id": "e365dc020e46",
+     "bbox": [
+      1499.5,
+      1067.973,
+      1515.883,
+      1073.311
+     ],
+     "n_seg": 279,
+     "unmatched_len_pt": 86.405,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 23,
+     "cls": "symbol",
+     "object_id": "f7122a89b6a4",
+     "bbox": [
+      1413.2,
+      1065.973,
+      1426.7,
+      1073.311
+     ],
+     "n_seg": 193,
+     "unmatched_len_pt": 78.064,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1-v001-7DTQ-7FJA-Y6G",
+   "discipline": "GP",
+   "cls": "stamp",
+   "n_seg": 274,
+   "n_seg9": 38367,
+   "n_text": 48,
+   "n_obj_a": 32,
+   "n_obj_b": 90,
+   "n_gt_b": 782,
+   "n_gt_a": 0,
+   "records_raw": 32,
+   "records_after_oracle": 2,
+   "records_after_heuristic": 24,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 21,
+     "cls": "symbol",
+     "object_id": "94846c30cfde",
+     "bbox": [
+      4941.1,
+      2262.26,
+      4985.7,
+      2269.385
+     ],
+     "n_seg": 742,
+     "unmatched_len_pt": 263.937,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 17,
+     "cls": "symbol",
+     "object_id": "9e1eb7ad429b",
+     "bbox": [
+      4723.7,
+      2260.135,
+      4752.8,
+      2267.26
+     ],
+     "n_seg": 689,
+     "unmatched_len_pt": 181.572,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-43CL-VVJR-QPF",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 1357,
+   "n_seg9": 15896,
+   "n_text": 50,
+   "n_obj_a": 177,
+   "n_obj_b": 190,
+   "n_gt_b": 349,
+   "n_gt_a": 22,
+   "records_raw": 44,
+   "records_after_oracle": 20,
+   "records_after_heuristic": 40,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 61,
+     "cls": "symbol",
+     "object_id": "8afc03407d01",
+     "bbox": [
+      4659.939,
+      1920.235,
+      4697.8,
+      1927.36
+     ],
+     "n_seg": 863,
+     "unmatched_len_pt": 217.294,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 72,
+     "cls": "symbol",
+     "object_id": "20993e2e93b6",
+     "bbox": [
+      4604.37,
+      1908.17,
+      4627.68,
+      1950.168
+     ],
+     "n_seg": 790,
+     "unmatched_len_pt": 203.987,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 44,
+     "cls": "symbol",
+     "object_id": "ff8cd5b6d63d",
+     "bbox": [
+      4878.3,
+      1896.908,
+      4906.78,
+      1921.659
+     ],
+     "n_seg": 564,
+     "unmatched_len_pt": 155.991,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 53,
+     "cls": "symbol",
+     "object_id": "2fbf6bcb7e0d",
+     "bbox": [
+      4738.2,
+      1907.008,
+      4771.84,
+      1926.963
+     ],
+     "n_seg": 617,
+     "unmatched_len_pt": 155.543,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 153,
+     "cls": "symbol",
+     "object_id": "9be3e324772d",
+     "bbox": [
+      4626.8,
+      1959.708,
+      4661.49,
+      1992.373
+     ],
+     "n_seg": 570,
+     "unmatched_len_pt": 148.509,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭО1-ПА_V1-v001-blk_241bfaeef1d54b4d8bf69337c3903760",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 748,
+   "n_seg9": 95531,
+   "n_text": 121,
+   "n_obj_a": 112,
+   "n_obj_b": 390,
+   "n_gt_b": 2253,
+   "n_gt_a": 8,
+   "records_raw": 164,
+   "records_after_oracle": 12,
+   "records_after_heuristic": 117,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 17,
+     "cls": "symbol",
+     "object_id": "f82b73180d9f",
+     "bbox": [
+      449.9,
+      41.02,
+      512.302,
+      80.181
+     ],
+     "n_seg": 2254,
+     "unmatched_len_pt": 743.532,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 371,
+     "cls": "symbol",
+     "object_id": "4ecce4151202",
+     "bbox": [
+      455.261,
+      629.411,
+      517.952,
+      660.52
+     ],
+     "n_seg": 2111,
+     "unmatched_len_pt": 686.654,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 217,
+     "cls": "symbol",
+     "object_id": "3fe86eb398a7",
+     "bbox": [
+      397.227,
+      310.849,
+      429.147,
+      375.482
+     ],
+     "n_seg": 1034,
+     "unmatched_len_pt": 480.099,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 5,
+     "cls": "symbol",
+     "object_id": "f1ded69e0bdf",
+     "bbox": [
+      682.656,
+      48.6,
+      736.3,
+      55.72
+     ],
+     "n_seg": 990,
+     "unmatched_len_pt": 305.543,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 7,
+     "cls": "symbol",
+     "object_id": "faf9e3e80dab",
+     "bbox": [
+      122.5,
+      49.303,
+      158.947,
+      56.42
+     ],
+     "n_seg": 567,
+     "unmatched_len_pt": 201.122,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.СС.ПС_V1-v001-blk_fbe22186597d415f87713df53768eae4",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 5274,
+   "n_seg9": 5172,
+   "n_text": 6,
+   "n_obj_a": 26,
+   "n_obj_b": 34,
+   "n_gt_b": 74,
+   "n_gt_a": 14,
+   "records_raw": 0,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 0,
+   "verdict_raw": "NO_GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "NO_GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К4-v001-669G-L37Y-E47",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 317,
+   "n_seg9": 3702,
+   "n_text": 13,
+   "n_obj_a": 38,
+   "n_obj_b": 49,
+   "n_gt_b": 68,
+   "n_gt_a": 0,
+   "records_raw": 11,
+   "records_after_oracle": 7,
+   "records_after_heuristic": 9,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 42,
+     "cls": "symbol",
+     "object_id": "648014fd04b5",
+     "bbox": [
+      2159.576,
+      945.251,
+      2200.6,
+      952.34
+     ],
+     "n_seg": 766,
+     "unmatched_len_pt": 262.807,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 47,
+     "cls": "symbol",
+     "object_id": "d2cf1a6eb36e",
+     "bbox": [
+      2072.217,
+      970.571,
+      2082.6,
+      977.54
+     ],
+     "n_seg": 284,
+     "unmatched_len_pt": 79.904,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 32,
+     "cls": "symbol",
+     "object_id": "63d3e728601e",
+     "bbox": [
+      1998.23,
+      895.64,
+      2005.2,
+      904.985
+     ],
+     "n_seg": 238,
+     "unmatched_len_pt": 74.264,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 45,
+     "cls": "symbol",
+     "object_id": "1ddc636a620e",
+     "bbox": [
+      2072.749,
+      956.871,
+      2082.1,
+      963.84
+     ],
+     "n_seg": 236,
+     "unmatched_len_pt": 73.589,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 29,
+     "cls": "symbol",
+     "object_id": "7a063e1d6342",
+     "bbox": [
+      1971.089,
+      885.04,
+      1978.1,
+      895.418
+     ],
+     "n_seg": 244,
+     "unmatched_len_pt": 72.122,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "OV-13АВ-РД-ОВ2-К7_V1-v001-blk_40b62e9a14a848a3a508be58ef4c5ba7",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 144,
+   "n_seg9": 30313,
+   "n_text": 68,
+   "n_obj_a": 20,
+   "n_obj_b": 129,
+   "n_gt_b": 1177,
+   "n_gt_a": 0,
+   "records_raw": 89,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 50,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "PT-СТ26_01-14-ПТ7-7-РД_V1-v001-blk_db83119078e04029b349b5bf1a535280",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg": 322,
+   "n_seg9": 10439,
+   "n_text": 25,
+   "n_obj_a": 61,
+   "n_obj_b": 97,
+   "n_gt_b": 249,
+   "n_gt_a": 2,
+   "records_raw": 41,
+   "records_after_oracle": 2,
+   "records_after_heuristic": 29,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 93,
+     "cls": "symbol",
+     "object_id": "3d0cf5eec64a",
+     "bbox": [
+      1031.2,
+      519.231,
+      1041.7,
+      527.134
+     ],
+     "n_seg": 222,
+     "unmatched_len_pt": 88.855,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 92,
+     "cls": "symbol",
+     "object_id": "0d2d3c9fb875",
+     "bbox": [
+      847.6,
+      519.231,
+      858.1,
+      527.134
+     ],
+     "n_seg": 218,
+     "unmatched_len_pt": 87.754,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "PT-ПД-ОО542664-АПТ1.2_V1-v001-blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg": 1200,
+   "n_seg9": 14139,
+   "n_text": 25,
+   "n_obj_a": 78,
+   "n_obj_b": 117,
+   "n_gt_b": 248,
+   "n_gt_a": 2,
+   "records_raw": 29,
+   "records_after_oracle": 3,
+   "records_after_heuristic": 26,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 50,
+     "cls": "symbol",
+     "object_id": "32d09c78bd36",
+     "bbox": [
+      803.085,
+      191.685,
+      850.2,
+      199.43
+     ],
+     "n_seg": 885,
+     "unmatched_len_pt": 276.941,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 53,
+     "cls": "symbol",
+     "object_id": "1f2333dddb94",
+     "bbox": [
+      1028.4,
+      199.52,
+      1052.9,
+      206.85
+     ],
+     "n_seg": 524,
+     "unmatched_len_pt": 148.088,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 38,
+     "cls": "symbol",
+     "object_id": "bcc857988f86",
+     "bbox": [
+      1007.7,
+      186.02,
+      1032.3,
+      193.35
+     ],
+     "n_seg": 353,
+     "unmatched_len_pt": 123.637,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К2 V1-v001-7MC4-EMVG-6DF",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg": 235,
+   "n_seg9": 13628,
+   "n_text": 25,
+   "n_obj_a": 29,
+   "n_obj_b": 58,
+   "n_gt_b": 275,
+   "n_gt_a": 0,
+   "records_raw": 22,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 22,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "SS-ПД-00542664-СУС_V1-v001-blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+   "discipline": "SS",
+   "cls": "stamp",
+   "n_seg": 2179,
+   "n_seg9": 49855,
+   "n_text": 31,
+   "n_obj_a": 35,
+   "n_obj_b": 152,
+   "n_gt_b": 1516,
+   "n_gt_a": 0,
+   "records_raw": 43,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 31,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "VK-СТ26_01-14-ВК-АС-1-РД_V1-v001-blk_e81ac5d1440644c599965a62bf624a4f",
+   "discipline": "VK",
+   "cls": "drawing",
+   "n_seg": 2598,
+   "n_seg9": 44367,
+   "n_text": 49,
+   "n_obj_a": 34,
+   "n_obj_b": 156,
+   "n_gt_b": 1063,
+   "n_gt_a": 0,
+   "records_raw": 81,
+   "records_after_oracle": 14,
+   "records_after_heuristic": 56,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 127,
+     "cls": "symbol",
+     "object_id": "5cd7ebe45986",
+     "bbox": [
+      3056.6,
+      1923.61,
+      3115.6,
+      1932.938
+     ],
+     "n_seg": 795,
+     "unmatched_len_pt": 324.225,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 153,
+     "cls": "symbol",
+     "object_id": "b3f2089aa0a4",
+     "bbox": [
+      3060.6,
+      1972.445,
+      3105.5,
+      1982.438
+     ],
+     "n_seg": 655,
+     "unmatched_len_pt": 296.817,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 137,
+     "cls": "symbol",
+     "object_id": "493c32c5970e",
+     "bbox": [
+      3033.5,
+      1936.143,
+      3066.2,
+      1943.497
+     ],
+     "n_seg": 251,
+     "unmatched_len_pt": 187.256,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 138,
+     "cls": "symbol",
+     "object_id": "63909494a055",
+     "bbox": [
+      3067.2,
+      1936.01,
+      3104.4,
+      1945.073
+     ],
+     "n_seg": 304,
+     "unmatched_len_pt": 178.026,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 113,
+     "cls": "symbol",
+     "object_id": "2c99f11b2505",
+     "bbox": [
+      3033.4,
+      1911.26,
+      3063.2,
+      1920.692
+     ],
+     "n_seg": 444,
+     "unmatched_len_pt": 175.771,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К3-v001-6WNV-DWDA-4CQ",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 1034,
+   "n_seg9": 5077,
+   "n_text": 18,
+   "n_obj_a": 75,
+   "n_obj_b": 87,
+   "n_gt_b": 128,
+   "n_gt_a": 0,
+   "records_raw": 16,
+   "records_after_oracle": 10,
+   "records_after_heuristic": 15,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 72,
+     "cls": "symbol",
+     "object_id": "749f237aefc3",
+     "bbox": [
+      928.497,
+      1221.92,
+      973.091,
+      1229.295
+     ],
+     "n_seg": 579,
+     "unmatched_len_pt": 285.7,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 79,
+     "cls": "symbol",
+     "object_id": "04196595c9ac",
+     "bbox": [
+      1051.97,
+      1246.924,
+      1069.09,
+      1254.29
+     ],
+     "n_seg": 299,
+     "unmatched_len_pt": 132.058,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 78,
+     "cls": "symbol",
+     "object_id": "610208eb1b06",
+     "bbox": [
+      909.964,
+      1246.924,
+      927.691,
+      1254.267
+     ],
+     "n_seg": 219,
+     "unmatched_len_pt": 129.002,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 74,
+     "cls": "symbol",
+     "object_id": "aa978be40bf4",
+     "bbox": [
+      897.84,
+      1215.6,
+      921.691,
+      1236.48
+     ],
+     "n_seg": 196,
+     "unmatched_len_pt": 114.883,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 41,
+     "cls": "symbol",
+     "object_id": "c36865916f02",
+     "bbox": [
+      906.284,
+      1168.249,
+      913.642,
+      1183.277
+     ],
+     "n_seg": 226,
+     "unmatched_len_pt": 114.846,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР1.2-К5-v004-blk_ede531d29f3d48bc98ae16f81ef82652",
+   "discipline": "AR",
+   "cls": "table",
+   "n_seg": 1010,
+   "n_seg9": 297248,
+   "n_text": 137,
+   "n_obj_a": 80,
+   "n_obj_b": 916,
+   "n_gt_b": 6703,
+   "n_gt_a": 0,
+   "records_raw": 352,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 133,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ГСВ_V1-v001-blk_2d0c258f773043e8b7f6481feec6fc4b",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 1724,
+   "n_seg9": 39242,
+   "n_text": 29,
+   "n_obj_a": 33,
+   "n_obj_b": 199,
+   "n_gt_b": 725,
+   "n_gt_a": 0,
+   "records_raw": 27,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 27,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "KJ-13АВ-РД-КЖ5.42.1-К2_V1-v001-blk_fafeb59601b84a839e0616f5fcda4f18",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 723,
+   "n_seg9": 19331,
+   "n_text": 41,
+   "n_obj_a": 115,
+   "n_obj_b": 167,
+   "n_gt_b": 347,
+   "n_gt_a": 0,
+   "records_raw": 55,
+   "records_after_oracle": 8,
+   "records_after_heuristic": 43,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 62,
+     "cls": "symbol",
+     "object_id": "88732e1e96be",
+     "bbox": [
+      2730.43,
+      1771.919,
+      2747.76,
+      1806.719
+     ],
+     "n_seg": 293,
+     "unmatched_len_pt": 80.619,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 86,
+     "cls": "symbol",
+     "object_id": "2010caa7a5bf",
+     "bbox": [
+      2301.117,
+      1806.451,
+      2311.5,
+      1813.42
+     ],
+     "n_seg": 286,
+     "unmatched_len_pt": 80.571,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 149,
+     "cls": "symbol",
+     "object_id": "8a00c7b2c8fb",
+     "bbox": [
+      2442.01,
+      1869.651,
+      2453.36,
+      1879.72
+     ],
+     "n_seg": 196,
+     "unmatched_len_pt": 68.232,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 150,
+     "cls": "symbol",
+     "object_id": "826736639fe4",
+     "bbox": [
+      2626.11,
+      1871.251,
+      2637.46,
+      1881.32
+     ],
+     "n_seg": 196,
+     "unmatched_len_pt": 68.231,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 154,
+     "cls": "symbol",
+     "object_id": "8ba00fec05de",
+     "bbox": [
+      2201.056,
+      1883.4,
+      2207.431,
+      1897.72
+     ],
+     "n_seg": 120,
+     "unmatched_len_pt": 54.831,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К4-v001-PVGW-ALT6-FXV",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 1367,
+   "n_seg9": 15626,
+   "n_text": 43,
+   "n_obj_a": 157,
+   "n_obj_b": 224,
+   "n_gt_b": 274,
+   "n_gt_a": 0,
+   "records_raw": 78,
+   "records_after_oracle": 5,
+   "records_after_heuristic": 32,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 216,
+     "cls": "symbol",
+     "object_id": "85a6eafe8019",
+     "bbox": [
+      211.828,
+      430.419,
+      225.2,
+      437.54
+     ],
+     "n_seg": 129,
+     "unmatched_len_pt": 72.327,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 222,
+     "cls": "symbol",
+     "object_id": "b7157c8b0e3b",
+     "bbox": [
+      621.618,
+      460.11,
+      632.95,
+      470.14
+     ],
+     "n_seg": 196,
+     "unmatched_len_pt": 68.063,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 221,
+     "cls": "symbol",
+     "object_id": "e8beb52d37ae",
+     "bbox": [
+      242.418,
+      460.03,
+      252.2,
+      470.14
+     ],
+     "n_seg": 148,
+     "unmatched_len_pt": 60.002,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 190,
+     "cls": "symbol",
+     "object_id": "69c77de807f2",
+     "bbox": [
+      312.0,
+      369.62,
+      329.04,
+      381.12
+     ],
+     "n_seg": 106,
+     "unmatched_len_pt": 51.375,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 223,
+     "cls": "symbol",
+     "object_id": "f1df2132aff9",
+     "bbox": [
+      472.877,
+      463.53,
+      475.3,
+      473.54
+     ],
+     "n_seg": 46,
+     "unmatched_len_pt": 24.856,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "OV-13АВ-РД-ОВ1.1-К2 V1-v002-4UXN-R3AK-UKH",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 1117,
+   "n_seg9": 15156,
+   "n_text": 50,
+   "n_obj_a": 91,
+   "n_obj_b": 128,
+   "n_gt_b": 359,
+   "n_gt_a": 1,
+   "records_raw": 50,
+   "records_after_oracle": 26,
+   "records_after_heuristic": 48,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 76,
+     "cls": "symbol",
+     "object_id": "424dfced3939",
+     "bbox": [
+      2034.24,
+      1227.601,
+      2082.7,
+      1280.881
+     ],
+     "n_seg": 1648,
+     "unmatched_len_pt": 446.253,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 34,
+     "cls": "symbol",
+     "object_id": "487a5583ebee",
+     "bbox": [
+      2178.5,
+      1206.396,
+      2232.76,
+      1216.182
+     ],
+     "n_seg": 951,
+     "unmatched_len_pt": 334.918,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 57,
+     "cls": "symbol",
+     "object_id": "a167c676f411",
+     "bbox": [
+      2180.5,
+      1235.065,
+      2227.89,
+      1242.44
+     ],
+     "n_seg": 1011,
+     "unmatched_len_pt": 285.107,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 50,
+     "cls": "symbol",
+     "object_id": "ba7ce07d2df3",
+     "bbox": [
+      2183.658,
+      1222.665,
+      2222.9,
+      1230.04
+     ],
+     "n_seg": 859,
+     "unmatched_len_pt": 233.762,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 58,
+     "cls": "symbol",
+     "object_id": "abc39b4a25a1",
+     "bbox": [
+      2244.358,
+      1236.065,
+      2283.6,
+      1243.44
+     ],
+     "n_seg": 863,
+     "unmatched_len_pt": 233.553,
+     "border": false
+    }
+   ]
+  },
+  {
+   "carrier": "SS-ПД-00542664-СОУЭ-5_V1-v001-blk_362a88d5b0ca42b8b6946530dcabdc29",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 609,
+   "n_seg9": 31603,
+   "n_text": 32,
+   "n_obj_a": 24,
+   "n_obj_b": 153,
+   "n_gt_b": 561,
+   "n_gt_a": 0,
+   "records_raw": 85,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 19,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К5-v001-7YVM-HUM4-FWF",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg": 743,
+   "n_seg9": 23856,
+   "n_text": 40,
+   "n_obj_a": 50,
+   "n_obj_b": 89,
+   "n_gt_b": 473,
+   "n_gt_a": 0,
+   "records_raw": 22,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 22,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "VK-13АВ-РД-ВК1.1-ПА V1-v002-blk_f35e275fa7104c5ea70486931d895656",
+   "discipline": "VK",
+   "cls": "stamp",
+   "n_seg": 722,
+   "n_seg9": 6802,
+   "n_text": 18,
+   "n_obj_a": 14,
+   "n_obj_b": 32,
+   "n_gt_b": 141,
+   "n_gt_a": 0,
+   "records_raw": 4,
+   "records_after_oracle": 0,
+   "records_after_heuristic": 3,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "NO_GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": []
+  },
+  {
+   "carrier": "VK-ПД-ОО542664-ВК0-2_V1-v001-blk_09bd668bfaa84c729cfc335bbb5d13d1",
+   "discipline": "VK",
+   "cls": "drawing",
+   "n_seg": 376,
+   "n_seg9": 5053,
+   "n_text": 14,
+   "n_obj_a": 101,
+   "n_obj_b": 111,
+   "n_gt_b": 119,
+   "n_gt_a": 9,
+   "records_raw": 22,
+   "records_after_oracle": 8,
+   "records_after_heuristic": 12,
+   "verdict_raw": "GRAPHIC_CHANGE",
+   "verdict_oracle": "GRAPHIC_CHANGE",
+   "verdict_heuristic": "GRAPHIC_CHANGE",
+   "survivors": [
+    {
+     "side": "B",
+     "oi": 38,
+     "cls": "symbol",
+     "object_id": "27ffdd43e90b",
+     "bbox": [
+      4738.123,
+      1839.279,
+      4760.789,
+      1861.945
+     ],
+     "n_seg": 334,
+     "unmatched_len_pt": 109.688,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 52,
+     "cls": "symbol",
+     "object_id": "b554d78a5159",
+     "bbox": [
+      4728.288,
+      1867.386,
+      4750.957,
+      1890.054
+     ],
+     "n_seg": 316,
+     "unmatched_len_pt": 107.421,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 95,
+     "cls": "symbol",
+     "object_id": "1e1c397ed373",
+     "bbox": [
+      4731.169,
+      1955.495,
+      4740.48,
+      1963.42
+     ],
+     "n_seg": 221,
+     "unmatched_len_pt": 66.34,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 35,
+     "cls": "symbol",
+     "object_id": "d1209e1927ba",
+     "bbox": [
+      4829.3,
+      1846.42,
+      4840.25,
+      1854.42
+     ],
+     "n_seg": 182,
+     "unmatched_len_pt": 64.948,
+     "border": false
+    },
+    {
+     "side": "B",
+     "oi": 36,
+     "cls": "symbol",
+     "object_id": "99f859e4b6c4",
+     "bbox": [
+      4840.633,
+      1846.42,
+      4848.4,
+      1854.42
+     ],
+     "n_seg": 75,
+     "unmatched_len_pt": 53.482,
+     "border": false
+    }
+   ]
+  }
+ ],
+ "skips": [
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К2 V1-v002-blk_a4a3ff36fe9b471ba802b57c55c36776",
+   "reason": "n_seg 33913 > cap"
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР3-К5-К6-v001-4LHJ-3CTA-PVX",
+   "reason": "n_seg 42841 > cap"
+  },
+  {
+   "carrier": "POS-СТ26_01-14-КР0.1-РД_V1-v001-blk_5126c169c8d34173b17372479bbed9f5",
+   "reason": "n_seg 10502 > cap"
+  },
+  {
+   "carrier": "OV-13АВ-РД-ОВ2-К4 V1-v002-7WHK-V9XQ-LGL",
+   "reason": "n_seg 13633 > cap"
+  },
+  {
+   "carrier": "OV-13АВ-РД-ОВ1.2-К4 V1-v001-7NJU-AWMT-HDF",
+   "reason": "n_seg 41853 > cap"
+  },
+  {
+   "carrier": "PT-ПД-ОО542664-АПТ1.2_V1-v001-blk_7e4dc02b3f7548628a3b9f44e92c4f4d",
+   "reason": "n_seg 48114 > cap"
+  },
+  {
+   "carrier": "SS-ПД-00542664-СОУЭ-5_V1-v001-blk_c2c0175cde49410ca2ac848fec579b41",
+   "reason": "n_seg 59575 > cap"
+  },
+  {
+   "carrier": "VK-13АВ-РД-ВК1-К6 V1-v001-3TXG-T76E-F6Q",
+   "reason": "n_seg 44056 > cap"
+  },
+  {
+   "carrier": "AR-13АВ-РД-АР4.1-К3-v001-7PJD-33QQ-W44",
+   "reason": "fewer than 3 text lines"
+  },
+  {
+   "carrier": "AR-СТ26_01-14-АР3-2-РД_V1-v001-blk_06499dafb2ed46398b6fbc571e25e4b0",
+   "reason": "n_seg 15504 > cap"
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.ВК_V1-v001-blk_7bb4fad7511c467894373f9d1b26c3d5",
+   "reason": "n_seg 26787 > cap"
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К6-v002-7YMA-E7V4-9E3",
+   "reason": "n_seg 22657 > cap"
+  },
+  {
+   "carrier": "ITP-ПД-00542664-АИТ.СС.ПС_V1-v001-blk_f3d7c94dc2674824aabd7f52598636b9",
+   "reason": "n_seg 50896 > cap"
+  },
+  {
+   "carrier": "KM-13АВ-РД-КМ-К6-v001-4XAP-3L7F-UKH",
+   "reason": "n_seg 55320 > cap"
+  },
+  {
+   "carrier": "KJ-СТ26_01-14-КЖ-АС-01.1а_V1-v001-blk_64bd6ac9504b43138e250d559c6eeff3",
+   "reason": "n_seg 58621 > cap"
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ2-К1 V1-v002-blk_6c327ffec0f8441abfade5471bd1127c",
+   "reason": "n_seg 48153 > cap"
+  },
+  {
+   "carrier": "TX-13АВ-РД-ТХ1.2-ПА V1-v001-7F3E-DRLK-U96",
+   "reason": "n_seg 56355 > cap"
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП2-v001-A7VL-W7KW-6Y7",
+   "reason": "n_seg 8108 > cap"
+  },
+  {
+   "carrier": "EOM-13АВ-РД-ЭМ-К6-v001-7FP3-FT7J-UCN",
+   "reason": "n_seg 21909 > cap"
+  },
+  {
+   "carrier": "GP-13АВ-РД-ГП1 V1-v001-9LLL-F43F-KRF",
+   "reason": "n_seg 37852 > cap"
+  },
+  {
+   "carrier": "KJ-СТ26_01-14-КЖ3-01.1-РД_V1-v001-blk_77c2d0171dd8491ca629efed80858d30",
+   "reason": "n_seg 23897 > cap"
+  },
+  {
+   "carrier": "KM-13АВ-РД-НВФ-К5-v001-9QAA-FAAH-GDU",
+   "reason": "n_seg 27522 > cap"
+  },
+  {
+   "carrier": "PT-ПД-00542664-НВД_V1-v001-blk_8402c3a033df40c0a81bf3aaec3cfd34",
+   "reason": "n_seg 7248 > cap"
+  },
+  {
+   "carrier": "SS-ПД-00542664-СОУЭ-3_V1-v001-blk_9a8c86a7e64543069b1424ad220a2dca",
+   "reason": "n_seg 9790 > cap"
+  },
+  {
+   "carrier": "SS-ПД-00542664-ПС-4_V1-v001-blk_1c39cf0ae52548caaa6fdd64d5e0569f",
+   "reason": "n_seg 43262 > cap"
+  },
+  {
+   "carrier": "VK-ПД-ОО542664-ВК1-1.1.1_V1-v001-blk_6cf6246193de4e0fb2d3ea33ff2ecf28",
+   "reason": "n_seg 43291 > cap"
+  }
+ ],
+ "cap_n_seg": 6000,
+ "n_rows": 33,
+ "n_skips": 26
+}

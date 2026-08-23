@@ -1,0 +1,182 @@
+[
+ {
+  "block_id": "9GGW-4NWH-TNE",
+  "pred": "raster",
+  "rule": "R3_raster",
+  "bucket": "raster"
+ },
+ {
+  "block_id": "L3VD-P3EN-CYD",
+  "pred": "raster",
+  "rule": "R3_raster",
+  "bucket": "raster"
+ },
+ {
+  "block_id": "FAK6-DY44-H6X",
+  "pred": "raster",
+  "rule": "R3_raster",
+  "bucket": "raster"
+ },
+ {
+  "block_id": "blk_e6a90d65561b432bacd16d85d38d8f7f",
+  "pred": "raster",
+  "rule": "R3_raster",
+  "bucket": "raster"
+ },
+ {
+  "block_id": "blk_077f61546764467f882caf2b8a5bfc5f",
+  "pred": "curved_text",
+  "rule": "R4_curved_text",
+  "bucket": "curved_text"
+ },
+ {
+  "block_id": "97RG-C4WU-FVJ",
+  "pred": "curved_text",
+  "rule": "R4_curved_text",
+  "bucket": "curved_text"
+ },
+ {
+  "block_id": "47HQ-9WNR-PVC",
+  "pred": "curved_text",
+  "rule": "R4_curved_text",
+  "bucket": "curved_text"
+ },
+ {
+  "block_id": "9DPX-CDH9-6JT",
+  "pred": "curved_text",
+  "rule": "R4_curved_text",
+  "bucket": "curved_text"
+ },
+ {
+  "block_id": "blk_a61c04f832bf444b9ba25d567c353b2e",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "vector_raster_mix"
+ },
+ {
+  "block_id": "4FYR-XKE3-UXT",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "vector_raster_mix"
+ },
+ {
+  "block_id": "blk_304649964cab4bbb8aa0a7718b93184f",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "vector_raster_mix"
+ },
+ {
+  "block_id": "blk_0f404135f7c949a28466529a35076a42",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "vector_raster_mix"
+ },
+ {
+  "block_id": "blk_ee24aab4e3c04e9f970cbe66e52ed7a0",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "vector_raster_mix"
+ },
+ {
+  "block_id": "blk_9f646183bbab46728180c77395193437",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "vector_raster_mix"
+ },
+ {
+  "block_id": "blk_39a8fba2135e44b69189368720a7e7ca",
+  "pred": "table",
+  "rule": "R7_table",
+  "bucket": "table"
+ },
+ {
+  "block_id": "blk_655564dfce3e420ea3344bf8a65f9392",
+  "pred": "table",
+  "rule": "R7_table",
+  "bucket": "table"
+ },
+ {
+  "block_id": "9JE7-FPRL-E9E",
+  "pred": "table",
+  "rule": "R7_table",
+  "bucket": "table"
+ },
+ {
+  "block_id": "96TE-9DW3-NPR",
+  "pred": "table",
+  "rule": "R7_table",
+  "bucket": "table"
+ },
+ {
+  "block_id": "AAAE-YQMV-Y6X",
+  "pred": "legend_notes",
+  "rule": "R8_legend_notes",
+  "bucket": "legend_notes"
+ },
+ {
+  "block_id": "6P7G-WQ4Y-UHA",
+  "pred": "legend_notes",
+  "rule": "R8_legend_notes",
+  "bucket": "legend_notes"
+ },
+ {
+  "block_id": "6X7G-TQEA-JHK",
+  "pred": "legend_notes",
+  "rule": "R8_legend_notes",
+  "bucket": "legend_notes"
+ },
+ {
+  "block_id": "blk_bfe9a2715b9b4dfe81a45d0c73c47f8f",
+  "pred": "legend_notes",
+  "rule": "R8_legend_notes",
+  "bucket": "legend_notes"
+ },
+ {
+  "block_id": "9CNG-FGT7-3FH",
+  "pred": "stamp",
+  "rule": "R5_stamp_geom",
+  "bucket": "stamp_geom"
+ },
+ {
+  "block_id": "blk_3ba11a254fe94eeaba0f11e1953887fc",
+  "pred": "stamp",
+  "rule": "R5_stamp_geom",
+  "bucket": "stamp_geom"
+ },
+ {
+  "block_id": "63EE-FMRF-QQ3",
+  "pred": "stamp",
+  "rule": "R5_stamp_geom",
+  "bucket": "stamp_geom"
+ },
+ {
+  "block_id": "blk_7dadf41008154d3a91b7f7dd388ea8c4",
+  "pred": "stamp",
+  "rule": "R5_stamp_geom",
+  "bucket": "stamp_geom"
+ },
+ {
+  "block_id": "9XEJ-33XR-K6J",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "thin"
+ },
+ {
+  "block_id": "blk_f654a68c158b4b64ac04decb1f0c28bb",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "thin"
+ },
+ {
+  "block_id": "4RWF-NVNV-XNC",
+  "pred": "vector_raster_mix",
+  "rule": "R6_mix_raster",
+  "bucket": "thin"
+ },
+ {
+  "block_id": "7U7C-6PFK-VHW",
+  "pred": "table",
+  "rule": "R7_table",
+  "bucket": "thin"
+ }
+]

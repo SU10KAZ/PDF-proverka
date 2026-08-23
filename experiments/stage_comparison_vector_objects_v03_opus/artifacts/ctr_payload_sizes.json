@@ -1,0 +1,142 @@
+{
+ "cases": [
+  {
+   "case": "plan_dense",
+   "block_id": "77KM-NELG-9CE",
+   "discipline": "AR",
+   "census_cls": "drawing",
+   "n_seg": 21985,
+   "n_text": 129,
+   "n_obj": 742,
+   "n_families_rep": 82,
+   "rotation": 0,
+   "shape_type": "polygon",
+   "route": "VECTOR",
+   "bytes": 228731,
+   "tokens": 57021,
+   "bytes_head_only": 1843,
+   "tokens_head_only": 455,
+   "bytes_per_object": 308.3,
+   "cost_s": {
+    "extract": 0.468,
+    "objects": 0.764,
+    "families": 0.07
+   }
+  },
+  {
+   "case": "scheme",
+   "block_id": "blk_1df07c64ccef41d7af899109c178b062",
+   "discipline": "EOM",
+   "census_cls": "drawing",
+   "n_seg": 14128,
+   "n_text": 1134,
+   "n_obj": 1736,
+   "n_families_rep": 128,
+   "rotation": 0,
+   "shape_type": "polygon",
+   "route": "VECTOR",
+   "bytes": 539424,
+   "tokens": 133466,
+   "bytes_head_only": 1887,
+   "tokens_head_only": 466,
+   "bytes_per_object": 310.7,
+   "cost_s": {
+    "extract": 0.45,
+    "objects": 0.946,
+    "families": 0.093
+   }
+  },
+  {
+   "case": "node",
+   "block_id": "blk_bb3c904463b44c6eadbf5ab8f3d8d395",
+   "discipline": "KJ",
+   "census_cls": "drawing",
+   "n_seg": 699,
+   "n_text": 18,
+   "n_obj": 106,
+   "n_families_rep": 20,
+   "rotation": 0,
+   "shape_type": "rectangle",
+   "route": "VECTOR",
+   "bytes": 38200,
+   "tokens": 9214,
+   "bytes_head_only": 1724,
+   "tokens_head_only": 425,
+   "bytes_per_object": 360.4,
+   "cost_s": {
+    "extract": 0.18,
+    "objects": 0.012,
+    "families": 0.004
+   }
+  },
+  {
+   "case": "no_labels",
+   "block_id": "blk_6e6a00d3ddd34500a624a47814bbf961",
+   "discipline": "EOM",
+   "census_cls": "drawing",
+   "n_seg": 3867,
+   "n_text": 0,
+   "n_obj": 364,
+   "n_families_rep": 39,
+   "rotation": 0,
+   "shape_type": "rectangle",
+   "route": "VECTOR",
+   "bytes": 113019,
+   "tokens": 28249,
+   "bytes_head_only": 1740,
+   "tokens_head_only": 429,
+   "bytes_per_object": 310.5,
+   "cost_s": {
+    "extract": 0.094,
+    "objects": 0.034,
+    "families": 0.023
+   }
+  },
+  {
+   "case": "rotated_270",
+   "block_id": "7UFM-U4YY-N3L",
+   "discipline": "SS",
+   "census_cls": "table",
+   "n_seg": 548,
+   "n_text": 69,
+   "n_obj": 49,
+   "n_families_rep": 3,
+   "rotation": 270,
+   "shape_type": "rectangle",
+   "route": "TABLE_PIPELINE",
+   "bytes": 17155,
+   "tokens": 4233,
+   "bytes_head_only": 1710,
+   "tokens_head_only": 419,
+   "bytes_per_object": 350.1,
+   "cost_s": {
+    "extract": 0.292,
+    "objects": 0.007,
+    "families": 0.001
+   }
+  },
+  {
+   "case": "polygon_block",
+   "block_id": "64JM-6L9F-DVJ",
+   "discipline": "AR",
+   "census_cls": "drawing",
+   "n_seg": 10980,
+   "n_text": 301,
+   "n_obj": 544,
+   "n_families_rep": 73,
+   "rotation": 270,
+   "shape_type": "polygon",
+   "route": "VECTOR",
+   "bytes": 171477,
+   "tokens": 42553,
+   "bytes_head_only": 1870,
+   "tokens_head_only": 462,
+   "bytes_per_object": 315.2,
+   "cost_s": {
+    "extract": 0.538,
+    "objects": 0.497,
+    "families": 0.039
+   }
+  }
+ ]
+}

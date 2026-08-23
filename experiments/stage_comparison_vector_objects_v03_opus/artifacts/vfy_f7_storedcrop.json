@@ -1,0 +1,7113 @@
+{
+ "summary": {
+  "n_pool": 9261,
+  "n_sampled": 186,
+  "n_ok": 186,
+  "pool_by_rot": {
+   "0": 8967,
+   "270": 262,
+   "90": 32
+  },
+  "crop_px_equals_coords_all": true,
+  "crop_px_mismatch": 0,
+  "rot0": {
+   "n": 120,
+   "median_iou": 0.8573167573937427,
+   "share_ge_0.60": 0.9666666666666667,
+   "share_lt_0.30": 0.008333333333333333,
+   "p10": 0.7251107941787001
+  },
+  "rot90": {
+   "n": 6,
+   "median_iou": 0.7955548218408128,
+   "share_ge_0.60": 0.8333333333333334,
+   "share_lt_0.30": 0.16666666666666666,
+   "p10": 0.3371241177582721
+  },
+  "rot270": {
+   "n": 60,
+   "median_iou": 0.7953764500104783,
+   "share_ge_0.60": 0.8,
+   "share_lt_0.30": 0.15,
+   "p10": 0.14896806588872236
+  },
+  "all": {
+   "n": 186,
+   "median_iou": 0.8397350210162603,
+   "share_ge_0.60": 0.9086021505376344,
+   "share_lt_0.30": 0.05913978494623656,
+   "median_iou_strict": 0.49966401404599703,
+   "metric": "fnd metric = IoU of 1-px-dilated masks; strict = dilated-match over plain union"
+  }
+ },
+ "rows": [
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-7-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-7-РД_V1",
+   "disc": "OV",
+   "pi": 16,
+   "bid": "blk_9712372c4c81488899d3a4584b8cd7a0",
+   "coords": [
+    2917.0,
+    2622.0,
+    4919.0,
+    5942.0
+   ],
+   "pw": 4961,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-7-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_9712372c4c81488899d3a4584b8cd7a0.png",
+   "src": "cloud",
+   "crop_px": [
+    2917,
+    2622,
+    4919,
+    5942
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    668,
+    1108
+   ],
+   "size_stored": [
+    668,
+    1107
+   ],
+   "size_rel_diff": 0.0009033423667570009,
+   "ink_iou_strict": 0.49974721941354905,
+   "ink_iou": 0.8507276703805714,
+   "ink_share_mine": 0.1540644997268336,
+   "ink_share_stored": 0.15544520714668225
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-2.3_V1",
+   "disc": "OV",
+   "pi": 46,
+   "bid": "blk_d9bde6b03d2e40b483fb8b1917981d59",
+   "coords": [
+    315.0,
+    2425.0,
+    2636.0,
+    5083.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d9bde6b03d2e40b483fb8b1917981d59.png",
+   "src": "cloud",
+   "crop_px": [
+    315,
+    2425,
+    2636,
+    5083
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    775,
+    887
+   ],
+   "size_stored": [
+    774,
+    886
+   ],
+   "size_rel_diff": 0.0012919896640826874,
+   "ink_iou_strict": 0.4990395118460206,
+   "ink_iou": 0.7755993459586848,
+   "ink_share_mine": 0.08508174823991928,
+   "ink_share_stored": 0.08468511032950111
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.2-4_V1",
+   "disc": "AR",
+   "pi": 11,
+   "bid": "blk_50223f0dccd840e5b933db421b6cd0b9",
+   "coords": [
+    242.0,
+    43.0,
+    7434.0,
+    3939.0
+   ],
+   "pw": 9922,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_50223f0dccd840e5b933db421b6cd0b9.png",
+   "src": "cloud",
+   "crop_px": [
+    242,
+    43,
+    7434,
+    3939
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2398,
+    1299
+   ],
+   "size_stored": [
+    2398,
+    1299
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4997853224139302,
+   "ink_iou": 0.8878506368069264,
+   "ink_share_mine": 0.10130330574426598,
+   "ink_share_stored": 0.10133251920865541
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-1.4_V1",
+   "disc": "OV",
+   "pi": 53,
+   "bid": "blk_52ebb10fa1e041db9104d7b94d8f6230",
+   "coords": [
+    0.0,
+    496.0,
+    2481.0,
+    3356.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_52ebb10fa1e041db9104d7b94d8f6230.png",
+   "src": "cloud",
+   "crop_px": [
+    0,
+    496,
+    2481,
+    3356
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    827,
+    954
+   ],
+   "size_stored": [
+    827,
+    954
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8812097554465685,
+   "ink_share_mine": 0.0332273707852636,
+   "ink_share_stored": 0.036406247227355575
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ2-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ПТ2-2-РД_V1",
+   "disc": "PT",
+   "pi": 10,
+   "bid": "blk_a17fcb934e41448e8bbf04f67a2a3843",
+   "coords": [
+    3002.0,
+    1154.0,
+    4891.0,
+    2324.0
+   ],
+   "pw": 4961,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ2-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a17fcb934e41448e8bbf04f67a2a3843.png",
+   "src": "cloud",
+   "crop_px": [
+    3002,
+    1154,
+    4891,
+    2324
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    497
+   ],
+   "size_stored": [
+    800,
+    496
+   ],
+   "size_rel_diff": 0.0020161290322580645,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8656537947527608,
+   "ink_share_mine": 0.07537550403225807,
+   "ink_share_stored": 0.07090977822580645
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-ОО542664-ВК1-1.1.2_V1",
+   "disc": "VK",
+   "pi": 18,
+   "bid": "blk_b1d1e33f878f4cfd9a9aec3a3759f8b4",
+   "coords": [
+    230.0,
+    30.0,
+    3255.0,
+    6814.0
+   ],
+   "pw": 4962,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b1d1e33f878f4cfd9a9aec3a3759f8b4.png",
+   "src": "cloud",
+   "crop_px": [
+    230,
+    30,
+    3255,
+    6814
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1009,
+    2262
+   ],
+   "size_stored": [
+    1009,
+    2262
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.45854555504791555,
+   "ink_iou": 0.7916244871863178,
+   "ink_share_mine": 0.12782219090957686,
+   "ink_share_stored": 0.11895066418151753
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-2.3_V1",
+   "disc": "OV",
+   "pi": 10,
+   "bid": "blk_ee4b5243a6cd4894b224a0de549d684a",
+   "coords": [
+    256.0,
+    61.0,
+    7676.0,
+    3648.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_ee4b5243a6cd4894b224a0de549d684a.png",
+   "src": "cloud",
+   "crop_px": [
+    256,
+    61,
+    7676,
+    3648
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2474,
+    1196
+   ],
+   "size_stored": [
+    2474,
+    1196
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4999900384912697,
+   "ink_iou": 0.8810221322951228,
+   "ink_share_mine": 0.14139323208863822,
+   "ink_share_stored": 0.14505675074284263
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ЭМ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АИТ.ЭМ_V1",
+   "disc": "ITP",
+   "pi": 10,
+   "bid": "blk_82b82702d41042c19bffe3b6f59dec13",
+   "coords": [
+    5559.0,
+    2482.0,
+    6613.0,
+    3498.0
+   ],
+   "pw": 7017,
+   "ph": 4963,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ЭМ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_82b82702d41042c19bffe3b6f59dec13.png",
+   "src": "cloud",
+   "crop_px": [
+    5559,
+    2482,
+    6613,
+    3498
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    772
+   ],
+   "size_stored": [
+    800,
+    772
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8285153540808948,
+   "ink_share_mine": 0.061952720207253884,
+   "ink_share_stored": 0.062237694300518134
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-1-РД_V1",
+   "disc": "OV",
+   "pi": 34,
+   "bid": "blk_7fceb2a219c5433e94f2570e87563666",
+   "coords": [
+    139.0,
+    49.0,
+    2281.0,
+    7869.0
+   ],
+   "pw": 7016,
+   "ph": 9934,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_7fceb2a219c5433e94f2570e87563666.png",
+   "src": "cloud",
+   "crop_px": [
+    139,
+    49,
+    2281,
+    7869
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    715,
+    2607
+   ],
+   "size_stored": [
+    715,
+    2607
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4221395822720326,
+   "ink_iou": 0.7370304114490162,
+   "ink_share_mine": 0.0697771733444921,
+   "ink_share_stored": 0.054922599456546525
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-6-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-6-РД_V1",
+   "disc": "AR",
+   "pi": 11,
+   "bid": "blk_2493a91713c94e27a044ad6a638a1b1e",
+   "coords": [
+    491.0,
+    1758.0,
+    4943.0,
+    3530.0
+   ],
+   "pw": 14565,
+   "ph": 6867,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-6-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_2493a91713c94e27a044ad6a638a1b1e.png",
+   "src": "cloud",
+   "crop_px": [
+    491,
+    1758,
+    4943,
+    3530
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1517,
+    605
+   ],
+   "size_stored": [
+    1517,
+    604
+   ],
+   "size_rel_diff": 0.0016556291390728477,
+   "ink_iou_strict": 0.4999873077118343,
+   "ink_iou": 0.7591200938707168,
+   "ink_share_mine": 0.061336857775236064,
+   "ink_share_stored": 0.06158241911755076
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-3-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-3-2-РД_V1",
+   "disc": "AR",
+   "pi": 18,
+   "bid": "blk_13c89823013540d7b7e289e479a2a4dd",
+   "coords": [
+    5310.0,
+    59.0,
+    8006.0,
+    3858.0
+   ],
+   "pw": 14565,
+   "ph": 6867,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-3-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_13c89823013540d7b7e289e479a2a4dd.png",
+   "src": "cloud",
+   "crop_px": [
+    5310,
+    59,
+    8006,
+    3858
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    919,
+    1294
+   ],
+   "size_stored": [
+    918,
+    1294
+   ],
+   "size_rel_diff": 0.0010893246187363835,
+   "ink_iou_strict": 0.49998944591029026,
+   "ink_iou": 0.8988004663755114,
+   "ink_share_mine": 0.07035235526462001,
+   "ink_share_stored": 0.07118744801715982
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+   "disc": "SS",
+   "pi": 17,
+   "bid": "9TTL-LEDD-NY7",
+   "coords": [
+    224.0,
+    42.0,
+    3956.0,
+    4876.0
+   ],
+   "pw": 7016,
+   "ph": 4962,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_9TTL-LEDD-NY7.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    224,
+    42,
+    3956,
+    4876
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1245,
+    1612
+   ],
+   "size_stored": [
+    1245,
+    1612
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 1.0,
+   "ink_share_mine": 0.14040479536010045,
+   "ink_share_stored": 0.14040479536010045
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-1.5_V1",
+   "disc": "OV",
+   "pi": 118,
+   "bid": "blk_322a14e6513e4a2491d3dfb760181c70",
+   "coords": [
+    0.0,
+    476.0,
+    2459.0,
+    3292.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_322a14e6513e4a2491d3dfb760181c70.png",
+   "src": "cloud",
+   "crop_px": [
+    0,
+    476,
+    2459,
+    3292
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    820,
+    940
+   ],
+   "size_stored": [
+    820,
+    939
+   ],
+   "size_rel_diff": 0.0010649627263045794,
+   "ink_iou_strict": 0.49963655097460796,
+   "ink_iou": 0.9083363370071225,
+   "ink_share_mine": 0.15781189121795372,
+   "ink_share_stored": 0.18041897192134862
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-2-РД/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР0-2-РД",
+   "disc": "AR",
+   "pi": 35,
+   "bid": "blk_ddb62cf529df485bb5fe1e36f165cd90",
+   "coords": [
+    424.0,
+    3514.0,
+    7156.0,
+    6792.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-2-РД/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_ddb62cf529df485bb5fe1e36f165cd90.png",
+   "src": null,
+   "crop_px": [
+    424,
+    3514,
+    7156,
+    6792
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2245,
+    1093
+   ],
+   "size_stored": [
+    2244,
+    1093
+   ],
+   "size_rel_diff": 0.000445632798573975,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9851076992199433,
+   "ink_share_mine": 0.44418255533104034,
+   "ink_share_stored": 0.44433340998380555
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-3-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-3-РД_V1",
+   "disc": "AR",
+   "pi": 9,
+   "bid": "blk_7b3fa4c1ba30444091bd17e1d37c781b",
+   "coords": [
+    210.0,
+    1274.0,
+    4293.0,
+    3005.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-3-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_7b3fa4c1ba30444091bd17e1d37c781b.png",
+   "src": "cloud",
+   "crop_px": [
+    210,
+    1274,
+    4293,
+    3005
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1362,
+    578
+   ],
+   "size_stored": [
+    1361,
+    578
+   ],
+   "size_rel_diff": 0.0007347538574577516,
+   "ink_iou_strict": 0.4876,
+   "ink_iou": 0.729793270322959,
+   "ink_share_mine": 0.10524776967881849,
+   "ink_share_stored": 0.1013502691131343
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-1.1_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-1.1_V1",
+   "disc": "KJ",
+   "pi": 13,
+   "bid": "blk_bd5731aa48dd4fbdadc7d4872d881dca",
+   "coords": [
+    5094.0,
+    35.0,
+    9894.0,
+    4798.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-1.1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_bd5731aa48dd4fbdadc7d4872d881dca.png",
+   "src": "cloud",
+   "crop_px": [
+    5094,
+    35,
+    9894,
+    4798
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1601,
+    1589
+   ],
+   "size_stored": [
+    1600,
+    1588
+   ],
+   "size_rel_diff": 0.0006297229219143577,
+   "ink_iou_strict": 0.49999767825218827,
+   "ink_iou": 0.723725323580415,
+   "ink_share_mine": 0.06143734256926952,
+   "ink_share_stored": 0.05988389483627204
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-АПЗ.АПС-К3 V1",
+   "disc": "SS",
+   "pi": 70,
+   "bid": "6RND-7LAN-9V9",
+   "coords": [
+    92.0,
+    14.0,
+    2462.0,
+    1220.0
+   ],
+   "pw": 2480,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К3 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_6RND-7LAN-9V9.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    92,
+    14,
+    2462,
+    1220
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    408
+   ],
+   "size_stored": [
+    801,
+    408
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.49709347996857817,
+   "ink_iou": 0.9769317016150194,
+   "ink_share_mine": 0.07770311620278574,
+   "ink_share_stored": 0.07505018237007662
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-2-РД_V1",
+   "disc": "OV",
+   "pi": 88,
+   "bid": "blk_be1ecbd3dc014cb1a52f91b3f0a61670",
+   "coords": [
+    66.0,
+    15.0,
+    2440.0,
+    3305.0
+   ],
+   "pw": 2480,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_be1ecbd3dc014cb1a52f91b3f0a61670.png",
+   "src": "cloud",
+   "crop_px": [
+    66,
+    15,
+    2440,
+    3305
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    793,
+    1097
+   ],
+   "size_stored": [
+    791,
+    1097
+   ],
+   "size_rel_diff": 0.0025284450063211127,
+   "ink_iou_strict": 0.4999596940780524,
+   "ink_iou": 0.945152080004734,
+   "ink_share_mine": 0.20921096151208848,
+   "ink_share_stored": 0.20890556592107887
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ЭМ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АИТ.ЭМ_V1",
+   "disc": "ITP",
+   "pi": 11,
+   "bid": "blk_88e12d311da14bac8ff062087125aa4b",
+   "coords": [
+    5532.0,
+    1577.0,
+    6961.0,
+    3582.0
+   ],
+   "pw": 7017,
+   "ph": 4963,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ЭМ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_88e12d311da14bac8ff062087125aa4b.png",
+   "src": "cloud",
+   "crop_px": [
+    5532,
+    1577,
+    6961,
+    3582
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    571,
+    801
+   ],
+   "size_stored": [
+    571,
+    800
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9410539876565402,
+   "ink_share_mine": 0.08194176882661997,
+   "ink_share_stored": 0.0821300350262697
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-2-РД_V1",
+   "disc": "OV",
+   "pi": 20,
+   "bid": "blk_60829754d7e2448ca5df08f9b5661c82",
+   "coords": [
+    4942.0,
+    926.0,
+    6812.0,
+    2563.0
+   ],
+   "pw": 7016,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_60829754d7e2448ca5df08f9b5661c82.png",
+   "src": "cloud",
+   "crop_px": [
+    4942,
+    926,
+    6812,
+    2563
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    701
+   ],
+   "size_stored": [
+    800,
+    700
+   ],
+   "size_rel_diff": 0.0014285714285714286,
+   "ink_iou_strict": 0.499937821579021,
+   "ink_iou": 0.9140608054370617,
+   "ink_share_mine": 0.098775,
+   "ink_share_stored": 0.10083571428571429
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00260568-ОВ1-1.2-3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ОВ1-1.2-3_V1",
+   "disc": "OV",
+   "pi": 12,
+   "bid": "blk_0adea3e007a44f8e93b1324bcf7ad79b",
+   "coords": [
+    183.0,
+    0.0,
+    11850.0,
+    4714.0
+   ],
+   "pw": 11891,
+   "ph": 8411,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00260568-ОВ1-1.2-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_0adea3e007a44f8e93b1324bcf7ad79b.png",
+   "src": "cloud",
+   "crop_px": [
+    183,
+    0,
+    11850,
+    4714
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4593,
+    1856
+   ],
+   "size_stored": [
+    4594,
+    1856
+   ],
+   "size_rel_diff": 0.00021767522855898998,
+   "ink_iou_strict": 0.40789054523177454,
+   "ink_iou": 0.8351704112987343,
+   "ink_share_mine": 0.014316904660014866,
+   "ink_share_stored": 0.011469031772487369
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-1_V1",
+   "disc": "SS",
+   "pi": 12,
+   "bid": "blk_bc0f49dc484046dfa2d06b4eea835fe2",
+   "coords": [
+    181.0,
+    45.0,
+    9889.0,
+    6334.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_bc0f49dc484046dfa2d06b4eea835fe2.png",
+   "src": "cloud",
+   "crop_px": [
+    181,
+    45,
+    9889,
+    6334
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3237,
+    2097
+   ],
+   "size_stored": [
+    3236,
+    2097
+   ],
+   "size_rel_diff": 0.00030902348578491963,
+   "ink_iou_strict": 0.4433052739178487,
+   "ink_iou": 0.7668583685982218,
+   "ink_share_mine": 0.07930379675951224,
+   "ink_share_stored": 0.08898668001200137
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "01-14-АР0-АС-1-РД_V1",
+   "disc": "AR",
+   "pi": 6,
+   "bid": "blk_f402f8dc552f4b7992e1787797a2e2a3",
+   "coords": [
+    2752.0,
+    124.0,
+    5454.0,
+    2176.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/01-14-АР0-АС-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f402f8dc552f4b7992e1787797a2e2a3.png",
+   "src": "cloud",
+   "crop_px": [
+    2752,
+    124,
+    5454,
+    2176
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    901,
+    685
+   ],
+   "size_stored": [
+    901,
+    684
+   ],
+   "size_rel_diff": 0.0014619883040935672,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9205160519548636,
+   "ink_share_mine": 0.11353207287549247,
+   "ink_share_stored": 0.11386795698087246
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭГ-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭГ-РД_V1",
+   "disc": "EOM",
+   "pi": 54,
+   "bid": "blk_5baf697d2182410592a0f97ee4297103",
+   "coords": [
+    242.0,
+    25.0,
+    6206.0,
+    3233.0
+   ],
+   "pw": 7016,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭГ-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5baf697d2182410592a0f97ee4297103.png",
+   "src": "cloud",
+   "crop_px": [
+    242,
+    25,
+    6206,
+    3233
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1989,
+    1070
+   ],
+   "size_stored": [
+    1988,
+    1070
+   ],
+   "size_rel_diff": 0.0005030181086519115,
+   "ink_iou_strict": 0.4991549969441713,
+   "ink_iou": 0.776277780560704,
+   "ink_share_mine": 0.06846969668478159,
+   "ink_share_stored": 0.06240339231651592
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.2-4_V1",
+   "disc": "AR",
+   "pi": 10,
+   "bid": "blk_43b5006e08554bde8d1f71c861a63866",
+   "coords": [
+    256.0,
+    100.0,
+    7761.0,
+    3996.0
+   ],
+   "pw": 9922,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_43b5006e08554bde8d1f71c861a63866.png",
+   "src": "cloud",
+   "crop_px": [
+    256,
+    100,
+    7761,
+    3996
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2502,
+    1299
+   ],
+   "size_stored": [
+    2502,
+    1299
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9213096934824745,
+   "ink_share_mine": 0.0930990388597513,
+   "ink_share_stored": 0.09257043941444228
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-1-2-РД_V1",
+   "disc": "VK",
+   "pi": 4,
+   "bid": "blk_fe92346cb6194d1682e577754a0c91d4",
+   "coords": [
+    1605.0,
+    35.0,
+    8306.0,
+    6957.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_fe92346cb6194d1682e577754a0c91d4.png",
+   "src": "cloud",
+   "crop_px": [
+    1605,
+    35,
+    8306,
+    6957
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2235,
+    2308
+   ],
+   "size_stored": [
+    2234,
+    2308
+   ],
+   "size_rel_diff": 0.0004476275738585497,
+   "ink_iou_strict": 0.4817680483666282,
+   "ink_iou": 0.7434991347655425,
+   "ink_share_mine": 0.07636472105121883,
+   "ink_share_stored": 0.07204631742923683
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-ЭМ-К5",
+   "disc": "EOM",
+   "pi": 10,
+   "bid": "4NYG-RR6D-U4H",
+   "coords": [
+    2859.0,
+    3353.0,
+    4612.0,
+    4835.0
+   ],
+   "pw": 10524,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/03_analysis/latest/blocks_stage02_100/block_4NYG-RR6D-U4H.png",
+   "src": "cloud",
+   "crop_px": [
+    2859,
+    3353,
+    4612,
+    4835
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    677
+   ],
+   "size_stored": [
+    800,
+    678
+   ],
+   "size_rel_diff": 0.0014749262536873156,
+   "ink_iou_strict": 0.3707336365434052,
+   "ink_iou": 0.5766585644014883,
+   "ink_share_mine": 0.05859675036927622,
+   "ink_share_stored": 0.05777326440177252
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00260568-ОВ1-1.4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ОВ1-1.4_V1",
+   "disc": "OV",
+   "pi": 88,
+   "bid": "blk_49c4c51f32d146c881b9b60adf59913b",
+   "coords": [
+    0.0,
+    496.0,
+    2481.0,
+    3356.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00260568-ОВ1-1.4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_49c4c51f32d146c881b9b60adf59913b.png",
+   "src": "cloud",
+   "crop_px": [
+    0,
+    496,
+    2481,
+    3356
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    827,
+    954
+   ],
+   "size_stored": [
+    827,
+    954
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8511136733834807,
+   "ink_share_mine": 0.03160244271558182,
+   "ink_share_stored": 0.03101432522390292
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-01-РД_V1",
+   "disc": "KJ",
+   "pi": 7,
+   "bid": "blk_f6295aad38b94371b48a81f36e683e20",
+   "coords": [
+    212.0,
+    0.0,
+    4104.0,
+    5068.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f6295aad38b94371b48a81f36e683e20.png",
+   "src": null,
+   "crop_px": [
+    212,
+    0,
+    4104,
+    5068
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1298,
+    1690
+   ],
+   "size_stored": [
+    1298,
+    1690
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.49173063068672007,
+   "ink_iou": 0.905510771775359,
+   "ink_share_mine": 0.19485963840592263,
+   "ink_share_stored": 0.1883576006783308
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-7-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-7-РД_V1",
+   "disc": "OV",
+   "pi": 157,
+   "bid": "blk_4dd364e71d0e48a98fb16e118534ada1",
+   "coords": [
+    100.0,
+    24.0,
+    2449.0,
+    3488.0
+   ],
+   "pw": 2480,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-7-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_4dd364e71d0e48a98fb16e118534ada1.png",
+   "src": "cloud",
+   "crop_px": [
+    100,
+    24,
+    2449,
+    3488
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    784,
+    1156
+   ],
+   "size_stored": [
+    783,
+    1155
+   ],
+   "size_rel_diff": 0.001277139208173691,
+   "ink_iou_strict": 0.4998194127728284,
+   "ink_iou": 0.7985219293417128,
+   "ink_share_mine": 0.12789305203098306,
+   "ink_share_stored": 0.12686360042681882
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.5-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.5-2_V1",
+   "disc": "AR",
+   "pi": 15,
+   "bid": "blk_9c39caec8b064f76a6b842c79423313b",
+   "coords": [
+    223.0,
+    35.0,
+    2697.0,
+    6793.0
+   ],
+   "pw": 9922,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.5-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_9c39caec8b064f76a6b842c79423313b.png",
+   "src": "cloud",
+   "crop_px": [
+    223,
+    35,
+    2697,
+    6793
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    825,
+    2254
+   ],
+   "size_stored": [
+    825,
+    2253
+   ],
+   "size_rel_diff": 0.0004438526409232135,
+   "ink_iou_strict": 0.49547347958900306,
+   "ink_iou": 0.7990159564041244,
+   "ink_share_mine": 0.0747431707218658,
+   "ink_share_stored": 0.0753758624863818
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭГ-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭГ-РД_V1",
+   "disc": "EOM",
+   "pi": 29,
+   "bid": "blk_9cb7baff09be4060baef0a1239df05b0",
+   "coords": [
+    5369.0,
+    1915.0,
+    9887.0,
+    5616.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭГ-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_9cb7baff09be4060baef0a1239df05b0.png",
+   "src": "cloud",
+   "crop_px": [
+    5369,
+    1915,
+    9887,
+    5616
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1507,
+    1234
+   ],
+   "size_stored": [
+    1506,
+    1234
+   ],
+   "size_rel_diff": 0.0006640106241699867,
+   "ink_iou_strict": 0.4999476280755413,
+   "ink_iou": 0.8263982917052443,
+   "ink_share_mine": 0.040903915402678855,
+   "ink_share_stored": 0.040050494940820185
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-02.1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-02.1-РД_V1",
+   "disc": "KJ",
+   "pi": 42,
+   "bid": "blk_669d00119b0e4bc888a569aa16373dd1",
+   "coords": [
+    5304.0,
+    12.0,
+    7556.0,
+    2402.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-02.1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_669d00119b0e4bc888a569aa16373dd1.png",
+   "src": "cloud",
+   "crop_px": [
+    5304,
+    12,
+    7556,
+    2402
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    755,
+    801
+   ],
+   "size_stored": [
+    754,
+    800
+   ],
+   "size_rel_diff": 0.001326259946949602,
+   "ink_iou_strict": 0.499613092935077,
+   "ink_iou": 0.9525792738970589,
+   "ink_share_mine": 0.12184018567639257,
+   "ink_share_stored": 0.12098640583554376
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-7-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-7-РД_V1",
+   "disc": "OV",
+   "pi": 15,
+   "bid": "blk_d39657bddc9649c787757727ff4bcadb",
+   "coords": [
+    243.0,
+    14.0,
+    2891.0,
+    5787.0
+   ],
+   "pw": 4961,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-7-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d39657bddc9649c787757727ff4bcadb.png",
+   "src": "cloud",
+   "crop_px": [
+    243,
+    14,
+    2891,
+    5787
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    884,
+    1925
+   ],
+   "size_stored": [
+    883,
+    1925
+   ],
+   "size_rel_diff": 0.0011325028312570782,
+   "ink_iou_strict": 0.49872410222937463,
+   "ink_iou": 0.7868217545294789,
+   "ink_share_mine": 0.15092056301569326,
+   "ink_share_stored": 0.14817255224956244
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-1-1-РД_V1",
+   "disc": "VK",
+   "pi": 29,
+   "bid": "blk_d758673b60b44c3c9694894b61fa3b6e",
+   "coords": [
+    6725.0,
+    1052.0,
+    7847.0,
+    5584.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d758673b60b44c3c9694894b61fa3b6e.png",
+   "src": "cloud",
+   "crop_px": [
+    6725,
+    1052,
+    7847,
+    5584
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    375,
+    1512
+   ],
+   "size_stored": [
+    374,
+    1511
+   ],
+   "size_rel_diff": 0.00267379679144385,
+   "ink_iou_strict": 0.4999137990483415,
+   "ink_iou": 0.8408975905959285,
+   "ink_share_mine": 0.03969287612764858,
+   "ink_share_stored": 0.04156329519353617
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-7-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-7-2-РД_V1",
+   "disc": "VK",
+   "pi": 4,
+   "bid": "blk_30274a279a5844cd9285ed8ea1b82b32",
+   "coords": [
+    1690.0,
+    47.0,
+    4914.0,
+    6187.0
+   ],
+   "pw": 4961,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-7-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_30274a279a5844cd9285ed8ea1b82b32.png",
+   "src": "cloud",
+   "crop_px": [
+    1690,
+    47,
+    4914,
+    6187
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1075,
+    2048
+   ],
+   "size_stored": [
+    1075,
+    2047
+   ],
+   "size_rel_diff": 0.0004885197850512946,
+   "ink_iou_strict": 0.4996697821533441,
+   "ink_iou": 0.8148239426334852,
+   "ink_share_mine": 0.10638143170379796,
+   "ink_share_stored": 0.10923665943354427
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-АК-К3 (Книга 2)",
+   "disc": "SS",
+   "pi": 12,
+   "bid": "9G3D-3EE4-JCJ",
+   "coords": [
+    253.0,
+    75.0,
+    5869.0,
+    4390.0
+   ],
+   "pw": 9933,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К3 (Книга 2)/versions/v001/03_analysis/latest/blocks_stage02_100/block_9G3D-3EE4-JCJ.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    253,
+    75,
+    5869,
+    4390
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1873,
+    1439
+   ],
+   "size_stored": [
+    1873,
+    1439
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9999638212043921,
+   "ink_share_mine": 0.052141417836658384,
+   "ink_share_stored": 0.052145499095259173
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-КК-ПА",
+   "disc": "SS",
+   "pi": 14,
+   "bid": "4J6A-HVCX-AL3",
+   "coords": [
+    387.0,
+    3196.0,
+    2375.0,
+    4778.0
+   ],
+   "pw": 7016,
+   "ph": 4962,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_4J6A-HVCX-AL3.png",
+   "src": "cloud",
+   "crop_px": [
+    387,
+    3196,
+    2375,
+    4778
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    637
+   ],
+   "size_stored": [
+    800,
+    638
+   ],
+   "size_rel_diff": 0.001567398119122257,
+   "ink_iou_strict": 0.4573842145078591,
+   "ink_iou": 0.7309001272264631,
+   "ink_share_mine": 0.05243131868131868,
+   "ink_share_stored": 0.0521193092621664
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.2-ПА V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ВК2.2-ПА V1",
+   "disc": "VK",
+   "pi": 28,
+   "bid": "4Y4W-XFHA-UHU",
+   "coords": [
+    85.0,
+    49.0,
+    9930.0,
+    7013.0
+   ],
+   "pw": 9932,
+   "ph": 7015,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2.2-ПА V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_4Y4W-XFHA-UHU.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    85,
+    49,
+    9930,
+    7013
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3283,
+    2322
+   ],
+   "size_stored": [
+    3283,
+    2322
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9990154309835326,
+   "ink_share_mine": 0.047218031028215986,
+   "ink_share_stored": 0.04711400546180137
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-02.1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-02.1-РД_V1",
+   "disc": "KJ",
+   "pi": 50,
+   "bid": "blk_3e474d0978354878b15eee0141aa2251",
+   "coords": [
+    250.0,
+    24.0,
+    7406.0,
+    3764.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-02.1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_3e474d0978354878b15eee0141aa2251.png",
+   "src": "cloud",
+   "crop_px": [
+    250,
+    24,
+    7406,
+    3764
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2386,
+    1247
+   ],
+   "size_stored": [
+    2386,
+    1247
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9314310217128601,
+   "ink_share_mine": 0.04023974386809987,
+   "ink_share_stored": 0.03732075169846021
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К2 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ВК2-К2 V1",
+   "disc": "VK",
+   "pi": 13,
+   "bid": "4N3K-7DQL-T99",
+   "coords": [
+    265.0,
+    195.0,
+    6907.0,
+    5698.0
+   ],
+   "pw": 7015,
+   "ph": 9932,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К2 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_4N3K-7DQL-T99.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    265,
+    195,
+    6907,
+    5698
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2215,
+    1835
+   ],
+   "size_stored": [
+    2215,
+    1835
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9998902111287729,
+   "ink_share_mine": 0.026124577902706957,
+   "ink_share_stored": 0.02613072868293343
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-2_V1",
+   "disc": "SS",
+   "pi": 50,
+   "bid": "blk_6883a16f0bc047c09f7a6ba5008e1cd7",
+   "coords": [
+    7834.0,
+    4047.0,
+    9877.0,
+    5911.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_6883a16f0bc047c09f7a6ba5008e1cd7.png",
+   "src": "cloud",
+   "crop_px": [
+    7834,
+    4047,
+    9877,
+    5911
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    731
+   ],
+   "size_stored": [
+    800,
+    731
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.49771153267088225,
+   "ink_iou": 0.830465946334964,
+   "ink_share_mine": 0.08609781121751026,
+   "ink_share_stored": 0.10558310533515732
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-3_2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-3_2-РД_V1",
+   "disc": "VK",
+   "pi": 11,
+   "bid": "blk_ffdab3b236b342e1b8e3b82054465f0c",
+   "coords": [
+    2418.0,
+    73.0,
+    7933.0,
+    6045.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-3_2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_ffdab3b236b342e1b8e3b82054465f0c.png",
+   "src": "cloud",
+   "crop_px": [
+    2418,
+    73,
+    7933,
+    6045
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1840,
+    1991
+   ],
+   "size_stored": [
+    1838,
+    1991
+   ],
+   "size_rel_diff": 0.001088139281828074,
+   "ink_iou_strict": 0.49082549905861916,
+   "ink_iou": 0.7743994103213167,
+   "ink_share_mine": 0.06125633905348825,
+   "ink_share_stored": 0.06150528302278643
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР5-1-РД_V1",
+   "disc": "AR",
+   "pi": 7,
+   "bid": "blk_3b5cfc0f78db4b1289c90ad353fdfe7f",
+   "coords": [
+    11985.0,
+    27.0,
+    14184.0,
+    2278.0
+   ],
+   "pw": 16818,
+   "ph": 5947,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_3b5cfc0f78db4b1289c90ad353fdfe7f.png",
+   "src": "cloud",
+   "crop_px": [
+    11985,
+    27,
+    14184,
+    2278
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    866,
+    886
+   ],
+   "size_stored": [
+    865,
+    886
+   ],
+   "size_rel_diff": 0.0011560693641618498,
+   "ink_iou_strict": 0.49998548522880115,
+   "ink_iou": 0.8267949319568277,
+   "ink_share_mine": 0.11728493325852372,
+   "ink_share_stored": 0.11341745064523284
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-01-РД_V1",
+   "disc": "KJ",
+   "pi": 15,
+   "bid": "blk_60686affca9b4a1797813c2e013be6b0",
+   "coords": [
+    274.0,
+    162.0,
+    3302.0,
+    3928.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_60686affca9b4a1797813c2e013be6b0.png",
+   "src": null,
+   "crop_px": [
+    274,
+    162,
+    3302,
+    3928
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1010,
+    1257
+   ],
+   "size_stored": [
+    1010,
+    1256
+   ],
+   "size_rel_diff": 0.0007961783439490446,
+   "ink_iou_strict": 0.49992987967351976,
+   "ink_iou": 0.7862111450499243,
+   "ink_share_mine": 0.044656933846250864,
+   "ink_share_stored": 0.042890363877152046
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-5-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-5-РД_V1",
+   "disc": "AR",
+   "pi": 14,
+   "bid": "blk_8b4ff711bb644f2eb76d821a19a580a8",
+   "coords": [
+    7682.0,
+    32.0,
+    9862.0,
+    1250.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-5-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_8b4ff711bb644f2eb76d821a19a580a8.png",
+   "src": "cloud",
+   "crop_px": [
+    7682,
+    32,
+    9862,
+    1250
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    448
+   ],
+   "size_stored": [
+    800,
+    447
+   ],
+   "size_rel_diff": 0.0022371364653243847,
+   "ink_iou_strict": 0.49996466081449753,
+   "ink_iou": 0.877539573725539,
+   "ink_share_mine": 0.17226510067114095,
+   "ink_share_stored": 0.16872762863534677
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-1_V1",
+   "disc": "SS",
+   "pi": 36,
+   "bid": "blk_ad817877865d4499a5187800acf242d8",
+   "coords": [
+    227.0,
+    37.0,
+    4872.0,
+    3467.0
+   ],
+   "pw": 4963,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_ad817877865d4499a5187800acf242d8.png",
+   "src": "cloud",
+   "crop_px": [
+    227,
+    37,
+    4872,
+    3467
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1549,
+    1144
+   ],
+   "size_stored": [
+    1549,
+    1144
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4076162133621912,
+   "ink_iou": 0.705808964012403,
+   "ink_share_mine": 0.10667495835346061,
+   "ink_share_stored": 0.1042969296681369
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ1-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ПТ1-1-РД_V1",
+   "disc": "PT",
+   "pi": 6,
+   "bid": "blk_b43a577c7fdd4f60a79177a8aaf9d111",
+   "coords": [
+    213.0,
+    41.0,
+    4140.0,
+    3984.0
+   ],
+   "pw": 7016,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ1-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b43a577c7fdd4f60a79177a8aaf9d111.png",
+   "src": "cloud",
+   "crop_px": [
+    213,
+    41,
+    4140,
+    3984
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1310,
+    1315
+   ],
+   "size_stored": [
+    1309,
+    1315
+   ],
+   "size_rel_diff": 0.0007639419404125286,
+   "ink_iou_strict": 0.49731732455593514,
+   "ink_iou": 0.7252598865106402,
+   "ink_share_mine": 0.10362306000865608,
+   "ink_share_stored": 0.10286725129042285
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01.1а_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-01.1а_V1",
+   "disc": "KJ",
+   "pi": 47,
+   "bid": "blk_aa92c2e5f1914d3882b9b9e28396e570",
+   "coords": [
+    386.0,
+    5458.0,
+    3940.0,
+    6322.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01.1а_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_aa92c2e5f1914d3882b9b9e28396e570.png",
+   "src": "cloud",
+   "crop_px": [
+    386,
+    5458,
+    3940,
+    6322
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1186,
+    289
+   ],
+   "size_stored": [
+    1185,
+    288
+   ],
+   "size_rel_diff": 0.003472222222222222,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8629618913780276,
+   "ink_share_mine": 0.06885841537740271,
+   "ink_share_stored": 0.06615389123300516
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ.НС-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ПТ.НС-РД_V1",
+   "disc": "PT",
+   "pi": 11,
+   "bid": "blk_c5e26ece8d04463ca317d35fd23ad753",
+   "coords": [
+    78.0,
+    341.0,
+    2432.0,
+    3006.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ.НС-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_c5e26ece8d04463ca317d35fd23ad753.png",
+   "src": "cloud",
+   "crop_px": [
+    78,
+    341,
+    2432,
+    3006
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    786,
+    889
+   ],
+   "size_stored": [
+    785,
+    889
+   ],
+   "size_rel_diff": 0.0012738853503184713,
+   "ink_iou_strict": 0.49896895258470697,
+   "ink_iou": 0.7697948316505018,
+   "ink_share_mine": 0.1783568455216983,
+   "ink_share_stored": 0.176461063386185
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-3-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР5-3-РД_V1",
+   "disc": "AR",
+   "pi": 9,
+   "bid": "blk_e7c8f6947abe4b93937be254bfce1388",
+   "coords": [
+    170.0,
+    60.0,
+    2371.0,
+    3722.0
+   ],
+   "pw": 13027,
+   "ph": 6142,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР5-3-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_e7c8f6947abe4b93937be254bfce1388.png",
+   "src": "cloud",
+   "crop_px": [
+    170,
+    60,
+    2371,
+    3722
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    839,
+    1396
+   ],
+   "size_stored": [
+    839,
+    1395
+   ],
+   "size_rel_diff": 0.0007168458781362007,
+   "ink_iou_strict": 0.49976621175370406,
+   "ink_iou": 0.7786586961612099,
+   "ink_share_mine": 0.15383649249618722,
+   "ink_share_stored": 0.15438416616470368
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-2-РД/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР0-2-РД",
+   "disc": "AR",
+   "pi": 7,
+   "bid": "blk_9df5b55bd9f24a99bb0664421521cea0",
+   "coords": [
+    254.0,
+    76.0,
+    6508.0,
+    6584.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-2-РД/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_9df5b55bd9f24a99bb0664421521cea0.png",
+   "src": null,
+   "crop_px": [
+    254,
+    76,
+    6508,
+    6584
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2086,
+    2170
+   ],
+   "size_stored": [
+    2085,
+    2170
+   ],
+   "size_rel_diff": 0.00047961630695443646,
+   "ink_iou_strict": 0.49999580493172224,
+   "ink_iou": 0.8511884578868846,
+   "ink_share_mine": 0.14908419807932455,
+   "ink_share_stored": 0.15057233475892098
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01.1а_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-01.1а_V1",
+   "disc": "KJ",
+   "pi": 8,
+   "bid": "blk_47493746a385436e9b77c9aa62a0429b",
+   "coords": [
+    2564.0,
+    8624.0,
+    3820.0,
+    9704.0
+   ],
+   "pw": 7016,
+   "ph": 9934,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01.1а_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_47493746a385436e9b77c9aa62a0429b.png",
+   "src": null,
+   "crop_px": [
+    2564,
+    8624,
+    3820,
+    9704
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    689
+   ],
+   "size_stored": [
+    800,
+    688
+   ],
+   "size_rel_diff": 0.0014534883720930232,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.862486226382669,
+   "ink_share_mine": 0.09013808139534883,
+   "ink_share_stored": 0.09047601744186047
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-1.1_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-1.1_V1",
+   "disc": "KJ",
+   "pi": 25,
+   "bid": "blk_a1b3bba5abce44aca58421bf22568ee4",
+   "coords": [
+    2544.0,
+    706.0,
+    4782.0,
+    2469.0
+   ],
+   "pw": 4961,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-1.1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a1b3bba5abce44aca58421bf22568ee4.png",
+   "src": "cloud",
+   "crop_px": [
+    2544,
+    706,
+    4782,
+    2469
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    631
+   ],
+   "size_stored": [
+    800,
+    631
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.49998402606945463,
+   "ink_iou": 0.9261832231220745,
+   "ink_share_mine": 0.055869651347068144,
+   "ink_share_stored": 0.055600237717908084
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-7-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-7-1-РД_V1",
+   "disc": "VK",
+   "pi": 19,
+   "bid": "blk_42dc607b430844d6929ca0da788dfb92",
+   "coords": [
+    242.0,
+    9058.0,
+    2736.0,
+    10585.0
+   ],
+   "pw": 7523,
+   "ph": 10635,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-7-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_42dc607b430844d6929ca0da788dfb92.png",
+   "src": "cloud",
+   "crop_px": [
+    242,
+    9058,
+    2736,
+    10585
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1099,
+    673
+   ],
+   "size_stored": [
+    1098,
+    672
+   ],
+   "size_rel_diff": 0.001488095238095238,
+   "ink_iou_strict": 0.49989198710492205,
+   "ink_iou": 0.8600492673687103,
+   "ink_share_mine": 0.06727057854107034,
+   "ink_share_stored": 0.06788045363865036
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-5-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭОМ-5-РД_V1",
+   "disc": "EOM",
+   "pi": 27,
+   "bid": "blk_f46e39542c514cbcb69818803cef5e8e",
+   "coords": [
+    283.0,
+    4705.0,
+    2712.0,
+    6925.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-5-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f46e39542c514cbcb69818803cef5e8e.png",
+   "src": null,
+   "crop_px": [
+    283,
+    4705,
+    2712,
+    6925
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    810,
+    741
+   ],
+   "size_stored": [
+    810,
+    740
+   ],
+   "size_rel_diff": 0.0013513513513513514,
+   "ink_iou_strict": 0.4999313721004712,
+   "ink_iou": 0.8565917522447444,
+   "ink_share_mine": 0.06048882215548882,
+   "ink_share_stored": 0.05789456122789456
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01.1а_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-01.1а_V1",
+   "disc": "KJ",
+   "pi": 36,
+   "bid": "blk_12d2ee4bea294c69b3c1ee317eab9510",
+   "coords": [
+    278.0,
+    3840.0,
+    5342.0,
+    4720.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01.1а_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_12d2ee4bea294c69b3c1ee317eab9510.png",
+   "src": "cloud",
+   "crop_px": [
+    278,
+    3840,
+    5342,
+    4720
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1689,
+    295
+   ],
+   "size_stored": [
+    1688,
+    294
+   ],
+   "size_rel_diff": 0.003401360544217687,
+   "ink_iou_strict": 0.4999254198860416,
+   "ink_iou": 0.712465683615262,
+   "ink_share_mine": 0.04782458006899442,
+   "ink_share_stored": 0.04636167263113776
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-6-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-6-1-РД_V1",
+   "disc": "AR",
+   "pi": 4,
+   "bid": "blk_105ce7f9dd844863928f28295c440799",
+   "coords": [
+    348.0,
+    72.0,
+    7216.0,
+    4114.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-6-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_105ce7f9dd844863928f28295c440799.png",
+   "src": "cloud",
+   "crop_px": [
+    348,
+    72,
+    7216,
+    4114
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2291,
+    1348
+   ],
+   "size_stored": [
+    2290,
+    1348
+   ],
+   "size_rel_diff": 0.0004366812227074236,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8482030364117424,
+   "ink_share_mine": 0.06777694271312505,
+   "ink_share_stored": 0.06731369779586124
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-4_V1",
+   "disc": "SS",
+   "pi": 27,
+   "bid": "blk_bab4a7aedc944c42b7c45ac189372ff0",
+   "coords": [
+    7802.0,
+    3680.0,
+    9863.0,
+    5613.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_bab4a7aedc944c42b7c45ac189372ff0.png",
+   "src": "cloud",
+   "crop_px": [
+    7802,
+    3680,
+    9863,
+    5613
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    751
+   ],
+   "size_stored": [
+    800,
+    751
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.49974335198860814,
+   "ink_iou": 0.8637578935322452,
+   "ink_share_mine": 0.07921770972037284,
+   "ink_share_stored": 0.09739680426098535
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-2-РД_V1",
+   "disc": "AR",
+   "pi": 16,
+   "bid": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+   "coords": [
+    3572.0,
+    0.0,
+    6530.0,
+    3705.0
+   ],
+   "pw": 10635,
+   "ph": 7523,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_06499dafb2ed46398b6fbc571e25e4b0.png",
+   "src": null,
+   "crop_px": [
+    3572,
+    0,
+    6530,
+    3705
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1303,
+    1631
+   ],
+   "size_stored": [
+    1302,
+    1631
+   ],
+   "size_rel_diff": 0.0007680491551459293,
+   "ink_iou_strict": 0.4999973033901779,
+   "ink_iou": 0.8459862243217185,
+   "ink_share_mine": 0.06915409109788177,
+   "ink_share_stored": 0.06863986076224758
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-5-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-5-2-РД_V1",
+   "disc": "AR",
+   "pi": 3,
+   "bid": "blk_457c72f671c54793a985f46c4c91779e",
+   "coords": [
+    6130.0,
+    84.0,
+    7624.0,
+    1802.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-5-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_457c72f671c54793a985f46c4c91779e.png",
+   "src": "cloud",
+   "crop_px": [
+    6130,
+    84,
+    7624,
+    1802
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    696,
+    801
+   ],
+   "size_stored": [
+    696,
+    800
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9420584116823365,
+   "ink_share_mine": 0.1123096264367816,
+   "ink_share_stored": 0.11401041666666667
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.2-4_V1",
+   "disc": "AR",
+   "pi": 23,
+   "bid": "blk_fe29136c4d5c48a7a47fedc94f63dc8f",
+   "coords": [
+    256.0,
+    100.0,
+    8714.0,
+    4294.0
+   ],
+   "pw": 9922,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_fe29136c4d5c48a7a47fedc94f63dc8f.png",
+   "src": "cloud",
+   "crop_px": [
+    256,
+    100,
+    8714,
+    4294
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2820,
+    1399
+   ],
+   "size_stored": [
+    2820,
+    1399
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9274718637379452,
+   "ink_share_mine": 0.06369012313760082,
+   "ink_share_stored": 0.06300625066536888
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ-АС-01-РД_V1",
+   "disc": "KJ",
+   "pi": 11,
+   "bid": "blk_f07a241124f54980a6c68a8d7aeaf3b8",
+   "coords": [
+    244.0,
+    5080.0,
+    3716.0,
+    6952.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ-АС-01-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f07a241124f54980a6c68a8d7aeaf3b8.png",
+   "src": null,
+   "crop_px": [
+    244,
+    5080,
+    3716,
+    6952
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1158,
+    625
+   ],
+   "size_stored": [
+    1158,
+    624
+   ],
+   "size_rel_diff": 0.0016025641025641025,
+   "ink_iou_strict": 0.4948410209000561,
+   "ink_iou": 0.8867043452306448,
+   "ink_share_mine": 0.073185144590585,
+   "ink_share_stored": 0.07259283246977548
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ0-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ0-1_V1",
+   "disc": "OV",
+   "pi": 215,
+   "bid": "blk_ec088fff74f3417493994f42ffa91758",
+   "coords": [
+    6.0,
+    500.0,
+    2481.0,
+    3508.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ0-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_ec088fff74f3417493994f42ffa91758.png",
+   "src": "cloud",
+   "crop_px": [
+    6,
+    500,
+    2481,
+    3508
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    825,
+    1004
+   ],
+   "size_stored": [
+    825,
+    1003
+   ],
+   "size_rel_diff": 0.0009970089730807576,
+   "ink_iou_strict": 0.49986439788285725,
+   "ink_iou": 0.8707230311533916,
+   "ink_share_mine": 0.12344662980754706,
+   "ink_share_stored": 0.12346959122632103
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/PT/documents/ПД-ОО542664-АПТ1.2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-ОО542664-АПТ1.2_V1",
+   "disc": "PT",
+   "pi": 35,
+   "bid": "blk_e76b39a929ca4a31912c8beedc558993",
+   "coords": [
+    40.0,
+    50.0,
+    2449.0,
+    3346.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/PT/documents/ПД-ОО542664-АПТ1.2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_e76b39a929ca4a31912c8beedc558993.png",
+   "src": "cloud",
+   "crop_px": [
+    40,
+    50,
+    2449,
+    3346
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    804,
+    1100
+   ],
+   "size_stored": [
+    803,
+    1099
+   ],
+   "size_rel_diff": 0.0012453300124533001,
+   "ink_iou_strict": 0.4999861109825091,
+   "ink_iou": 0.8778189161898351,
+   "ink_share_mine": 0.1052275531814839,
+   "ink_share_stored": 0.10554936730663107
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-1-2-РД_V1",
+   "disc": "VK",
+   "pi": 5,
+   "bid": "blk_5315cfd62c414e1fb32c24adff6f6d90",
+   "coords": [
+    1426.0,
+    17.0,
+    6951.0,
+    4158.0
+   ],
+   "pw": 7016,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5315cfd62c414e1fb32c24adff6f6d90.png",
+   "src": "cloud",
+   "crop_px": [
+    1426,
+    17,
+    6951,
+    4158
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1842,
+    1381
+   ],
+   "size_stored": [
+    1842,
+    1381
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4999255417235665,
+   "ink_iou": 0.8181684931308539,
+   "ink_share_mine": 0.09738611731573447,
+   "ink_share_stored": 0.0930544122537839
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К6 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ДК-К6 V1",
+   "disc": "VK",
+   "pi": 19,
+   "bid": "V6EN-WNEX-MAH",
+   "coords": [
+    357.0,
+    59.0,
+    9878.0,
+    2911.0
+   ],
+   "pw": 9932,
+   "ph": 7015,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К6 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_V6EN-WNEX-MAH.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    357,
+    59,
+    9878,
+    2911
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3174,
+    952
+   ],
+   "size_stored": [
+    3174,
+    952
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 1.0,
+   "ink_share_mine": 0.06957825663346624,
+   "ink_share_stored": 0.06957825663346624
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ЭО-К1 V1",
+   "disc": "EOM",
+   "pi": 18,
+   "bid": "6W47-WQYW-LWH",
+   "coords": [
+    4947.0,
+    129.0,
+    9445.0,
+    4777.0
+   ],
+   "pw": 14881,
+   "ph": 7015,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_6W47-WQYW-LWH.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    4947,
+    129,
+    9445,
+    4777
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1500,
+    1550
+   ],
+   "size_stored": [
+    1500,
+    1550
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.999526226884189,
+   "ink_share_mine": 0.10018838709677419,
+   "ink_share_stored": 0.1002825806451613
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ1-Г-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ1-Г-РД_V1",
+   "disc": "OV",
+   "pi": 15,
+   "bid": "blk_06865965143445cabec7c793ec7362e2",
+   "coords": [
+    123.0,
+    18.0,
+    2454.0,
+    3493.0
+   ],
+   "pw": 2480,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ1-Г-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_06865965143445cabec7c793ec7362e2.png",
+   "src": null,
+   "crop_px": [
+    123,
+    18,
+    2454,
+    3493
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    778,
+    1160
+   ],
+   "size_stored": [
+    777,
+    1159
+   ],
+   "size_rel_diff": 0.001287001287001287,
+   "ink_iou_strict": 0.49846580615942027,
+   "ink_iou": 0.7320103184349344,
+   "ink_share_mine": 0.1496419382528097,
+   "ink_share_stored": 0.14959307884243173
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-3-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-3-2-РД_V1",
+   "disc": "AR",
+   "pi": 25,
+   "bid": "blk_64cd8f3fa2fd4b43bf3cb5973f4ad6e8",
+   "coords": [
+    6650.0,
+    4691.0,
+    9958.0,
+    6396.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-3-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_64cd8f3fa2fd4b43bf3cb5973f4ad6e8.png",
+   "src": "cloud",
+   "crop_px": [
+    6650,
+    4691,
+    9958,
+    6396
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1303,
+    672
+   ],
+   "size_stored": [
+    1302,
+    672
+   ],
+   "size_rel_diff": 0.0007680491551459293,
+   "ink_iou_strict": 0.4999912527772432,
+   "ink_iou": 0.7580730757292052,
+   "ink_share_mine": 0.0485608221783337,
+   "ink_share_stored": 0.047773343208251044
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-5-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-5-РД_V1",
+   "disc": "AR",
+   "pi": 4,
+   "bid": "blk_d2a5cce3d5fa41c99479d7e4bce918a9",
+   "coords": [
+    5307.0,
+    4311.0,
+    9984.0,
+    8369.0
+   ],
+   "pw": 11891,
+   "ph": 8411,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-5-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d2a5cce3d5fa41c99479d7e4bce918a9.png",
+   "src": "cloud",
+   "crop_px": [
+    5307,
+    4311,
+    9984,
+    8369
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1842,
+    1598
+   ],
+   "size_stored": [
+    1842,
+    1598
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4952795736738172,
+   "ink_iou": 0.8788035711944623,
+   "ink_share_mine": 0.0960300538539624,
+   "ink_share_stored": 0.0973020020954532
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-7-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-7-РД_V1",
+   "disc": "AR",
+   "pi": 12,
+   "bid": "blk_de158f20b90146eb95a5299f4c67ccd4",
+   "coords": [
+    6668.0,
+    5218.0,
+    8696.0,
+    8389.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-7-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_de158f20b90146eb95a5299f4c67ccd4.png",
+   "src": "cloud",
+   "crop_px": [
+    6668,
+    5218,
+    8696,
+    8389
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    800,
+    1249
+   ],
+   "size_stored": [
+    799,
+    1249
+   ],
+   "size_rel_diff": 0.0012515644555694619,
+   "ink_iou_strict": 0.499949595757979,
+   "ink_iou": 0.7800876377639092,
+   "ink_share_mine": 0.0724775064106354,
+   "ink_share_stored": 0.07205063174444437
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-2_V1",
+   "disc": "SS",
+   "pi": 18,
+   "bid": "blk_c1333245a14d44798816ce09658aff31",
+   "coords": [
+    223.0,
+    89.0,
+    4395.0,
+    6933.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_c1333245a14d44798816ce09658aff31.png",
+   "src": "cloud",
+   "crop_px": [
+    223,
+    89,
+    4395,
+    6933
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1391,
+    2282
+   ],
+   "size_stored": [
+    1392,
+    2282
+   ],
+   "size_rel_diff": 0.0007183908045977011,
+   "ink_iou_strict": 0.4972989070550046,
+   "ink_iou": 0.887384779185672,
+   "ink_share_mine": 0.0827987733841756,
+   "ink_share_stored": 0.09869349158954113
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-7-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-7-2-РД_V1",
+   "disc": "AR",
+   "pi": 6,
+   "bid": "blk_f05f1e0211ee47f287741e8855da05f9",
+   "coords": [
+    4804.0,
+    3890.0,
+    6932.0,
+    5188.0
+   ],
+   "pw": 7016,
+   "ph": 9934,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-7-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f05f1e0211ee47f287741e8855da05f9.png",
+   "src": "cloud",
+   "crop_px": [
+    4804,
+    3890,
+    6932,
+    5188
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    489
+   ],
+   "size_stored": [
+    800,
+    488
+   ],
+   "size_rel_diff": 0.0020491803278688526,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9330810290514526,
+   "ink_share_mine": 0.14516137295081968,
+   "ink_share_stored": 0.14095030737704917
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭГ-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭГ-РД_V1",
+   "disc": "EOM",
+   "pi": 19,
+   "bid": "blk_66963c95ef05451bbc0bdc19bfdac3be",
+   "coords": [
+    5170.0,
+    48.0,
+    9838.0,
+    1855.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭГ-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_66963c95ef05451bbc0bdc19bfdac3be.png",
+   "src": "cloud",
+   "crop_px": [
+    5170,
+    48,
+    9838,
+    1855
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1557,
+    603
+   ],
+   "size_stored": [
+    1556,
+    603
+   ],
+   "size_rel_diff": 0.0006426735218508997,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9238982589771491,
+   "ink_share_mine": 0.057418562713425166,
+   "ink_share_stored": 0.05415510280644763
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-АС-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-АС-РД_V1",
+   "disc": "OV",
+   "pi": 14,
+   "bid": "blk_8be397eae4b649d7a2c65c8e5685cc65",
+   "coords": [
+    225.0,
+    0.0,
+    7606.0,
+    6939.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-АС-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_8be397eae4b649d7a2c65c8e5685cc65.png",
+   "src": "cloud",
+   "crop_px": [
+    225,
+    0,
+    7606,
+    6939
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2462,
+    2313
+   ],
+   "size_stored": [
+    2461,
+    2313
+   ],
+   "size_rel_diff": 0.0004063388866314506,
+   "ink_iou_strict": 0.4968568391118427,
+   "ink_iou": 0.858041762542741,
+   "ink_share_mine": 0.1512190254437008,
+   "ink_share_stored": 0.15071571333380063
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-4.1_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-4.1_V1",
+   "disc": "KJ",
+   "pi": 13,
+   "bid": "blk_a057ef7d978b4371a2bc0f3b7d6cdfd9",
+   "coords": [
+    555.0,
+    5639.0,
+    5918.0,
+    6973.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-4.1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a057ef7d978b4371a2bc0f3b7d6cdfd9.png",
+   "src": "cloud",
+   "crop_px": [
+    555,
+    5639,
+    5918,
+    6973
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1789,
+    446
+   ],
+   "size_stored": [
+    1788,
+    445
+   ],
+   "size_rel_diff": 0.0022471910112359553,
+   "ink_iou_strict": 0.49999250239923226,
+   "ink_iou": 0.7781110438271138,
+   "ink_share_mine": 0.06669934394087927,
+   "ink_share_stored": 0.06577809617173165
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-3_1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-3_1-РД_V1",
+   "disc": "VK",
+   "pi": 13,
+   "bid": "blk_432e4f73a59b4648adf2b2b202138b84",
+   "coords": [
+    2363.0,
+    71.0,
+    7915.0,
+    6004.0
+   ],
+   "pw": 9922,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-3_1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_432e4f73a59b4648adf2b2b202138b84.png",
+   "src": "cloud",
+   "crop_px": [
+    2363,
+    71,
+    7915,
+    6004
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1852,
+    1979
+   ],
+   "size_stored": [
+    1851,
+    1978
+   ],
+   "size_rel_diff": 0.0005402485143165856,
+   "ink_iou_strict": 0.4954258784392543,
+   "ink_iou": 0.7838861002313271,
+   "ink_share_mine": 0.06085170260220611,
+   "ink_share_stored": 0.061334320966613294
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-4-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-4-1-РД_V1",
+   "disc": "VK",
+   "pi": 7,
+   "bid": "blk_2387ae004019470f9e911d4d5a08e283",
+   "coords": [
+    1521.0,
+    58.0,
+    4909.0,
+    6093.0
+   ],
+   "pw": 4961,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-4-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_2387ae004019470f9e911d4d5a08e283.png",
+   "src": "cloud",
+   "crop_px": [
+    1521,
+    58,
+    4909,
+    6093
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1131,
+    2012
+   ],
+   "size_stored": [
+    1130,
+    2012
+   ],
+   "size_rel_diff": 0.0008849557522123894,
+   "ink_iou_strict": 0.49998810377586156,
+   "ink_iou": 0.8068045645720909,
+   "ink_share_mine": 0.099862330442126,
+   "ink_share_stored": 0.0941479441932476
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР0-АС-1-РД_V1",
+   "disc": "AR",
+   "pi": 9,
+   "bid": "blk_a13a9b9b20a145889fe0a2d057282d23",
+   "coords": [
+    4459.0,
+    2574.0,
+    7527.0,
+    4600.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions/v002/03_analysis/latest/blocks_stage02_100/block_blk_a13a9b9b20a145889fe0a2d057282d23.png",
+   "src": "cloud",
+   "crop_px": [
+    4459,
+    2574,
+    7527,
+    4600
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1023,
+    677
+   ],
+   "size_stored": [
+    1023,
+    676
+   ],
+   "size_rel_diff": 0.0014792899408284023,
+   "ink_iou_strict": 0.4999599601889879,
+   "ink_iou": 0.8064647150917201,
+   "ink_share_mine": 0.09577353994227443,
+   "ink_share_stored": 0.0931851440536304
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-5_V1",
+   "disc": "SS",
+   "pi": 75,
+   "bid": "blk_c5ee16cf4ff74950a6e2c7bc7de9a061",
+   "coords": [
+    3979.0,
+    61.0,
+    6986.0,
+    1686.0
+   ],
+   "pw": 7017,
+   "ph": 4963,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_c5ee16cf4ff74950a6e2c7bc7de9a061.png",
+   "src": "cloud",
+   "crop_px": [
+    3979,
+    61,
+    6986,
+    1686
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1003,
+    542
+   ],
+   "size_stored": [
+    1003,
+    542
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8798735045003206,
+   "ink_share_mine": 0.08491499670729509,
+   "ink_share_stored": 0.08381129673709499
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/POS/documents/СТ26_01-14-КР0.1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КР0.1-РД_V1",
+   "disc": "POS",
+   "pi": 24,
+   "bid": "blk_6b02d58fb8f54b9bad5d671c8ad00ce9",
+   "coords": [
+    4046.0,
+    4600.0,
+    7398.0,
+    6994.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/POS/documents/СТ26_01-14-КР0.1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_6b02d58fb8f54b9bad5d671c8ad00ce9.png",
+   "src": "cloud",
+   "crop_px": [
+    4046,
+    4600,
+    7398,
+    6994
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1118,
+    799
+   ],
+   "size_stored": [
+    1118,
+    798
+   ],
+   "size_rel_diff": 0.0012531328320802004,
+   "ink_iou_strict": 0.49998034204835856,
+   "ink_iou": 0.8939854276651373,
+   "ink_share_mine": 0.09323061679242829,
+   "ink_share_stored": 0.0911132930716774
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.5-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.5-2_V1",
+   "disc": "AR",
+   "pi": 22,
+   "bid": "blk_f60eac2687ea4ddd922b1a212ff8bf67",
+   "coords": [
+    265.0,
+    58.0,
+    3914.0,
+    2945.0
+   ],
+   "pw": 7016,
+   "ph": 4962,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.5-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f60eac2687ea4ddd922b1a212ff8bf67.png",
+   "src": "cloud",
+   "crop_px": [
+    265,
+    58,
+    3914,
+    2945
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1217,
+    963
+   ],
+   "size_stored": [
+    1217,
+    963
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8392297990780203,
+   "ink_share_mine": 0.07158709558512967,
+   "ink_share_stored": 0.06575504001378873
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.АК_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АИТ.АК_V1",
+   "disc": "ITP",
+   "pi": 9,
+   "bid": "blk_c912a94239c04d72bb0226071c0d06a8",
+   "coords": [
+    234.0,
+    93.0,
+    4932.0,
+    3206.0
+   ],
+   "pw": 4963,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.АК_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_c912a94239c04d72bb0226071c0d06a8.png",
+   "src": "cloud",
+   "crop_px": [
+    234,
+    93,
+    4932,
+    3206
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1567,
+    1039
+   ],
+   "size_stored": [
+    1566,
+    1038
+   ],
+   "size_rel_diff": 0.0009633911368015414,
+   "ink_iou_strict": 0.49965824593865,
+   "ink_iou": 0.6766059527620599,
+   "ink_share_mine": 0.062325131589632286,
+   "ink_share_stored": 0.061959707365328257
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-1_V1",
+   "disc": "SS",
+   "pi": 6,
+   "bid": "blk_a9890f843ff8492ba9fba52e4797f4c5",
+   "coords": [
+    227.0,
+    60.0,
+    7666.0,
+    6999.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a9890f843ff8492ba9fba52e4797f4c5.png",
+   "src": "cloud",
+   "crop_px": [
+    227,
+    60,
+    7666,
+    6999
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2481,
+    2313
+   ],
+   "size_stored": [
+    2480,
+    2313
+   ],
+   "size_rel_diff": 0.0004032258064516129,
+   "ink_iou_strict": 0.4999858159381575,
+   "ink_iou": 0.8789828016739244,
+   "ink_share_mine": 0.028491137051448335,
+   "ink_share_stored": 0.03622041616110902
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ.НС-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭОМ.НС-РД_V1",
+   "disc": "EOM",
+   "pi": 7,
+   "bid": "blk_9dbe5d70977f4da39734ec83411a304c",
+   "coords": [
+    203.0,
+    68.0,
+    3527.0,
+    2918.0
+   ],
+   "pw": 10524,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ.НС-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_9dbe5d70977f4da39734ec83411a304c.png",
+   "src": null,
+   "crop_px": [
+    203,
+    68,
+    3527,
+    2918
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1109,
+    951
+   ],
+   "size_stored": [
+    1108,
+    950
+   ],
+   "size_rel_diff": 0.0010526315789473684,
+   "ink_iou_strict": 0.4984780063555779,
+   "ink_iou": 0.7994094525448431,
+   "ink_share_mine": 0.06675755272658179,
+   "ink_share_stored": 0.06595382861485845
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К7 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ДК-К7 V1",
+   "disc": "VK",
+   "pi": 7,
+   "bid": "JXC7-RNFM-3VJ",
+   "coords": [
+    229.0,
+    45.0,
+    13228.0,
+    7675.0
+   ],
+   "pw": 21046,
+   "ph": 9921,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К7 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_JXC7-RNFM-3VJ.png",
+   "src": "cloud",
+   "crop_px": [
+    229,
+    45,
+    13228,
+    7675
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4334,
+    2544
+   ],
+   "size_stored": [
+    4339,
+    2549
+   ],
+   "size_rel_diff": 0.001961553550411926,
+   "ink_iou_strict": 0.30046165730908125,
+   "ink_iou": 0.44453856717971335,
+   "ink_share_mine": 0.03288182442178707,
+   "ink_share_stored": 0.0273841216010309
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-А-Е,Ф-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-А-Е,Ф-РД_V1",
+   "disc": "AR",
+   "pi": 5,
+   "bid": "blk_882cf290eaca46d09b65b5955afa82d5",
+   "coords": [
+    250.0,
+    12.0,
+    6142.0,
+    5016.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-А-Е,Ф-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_882cf290eaca46d09b65b5955afa82d5.png",
+   "src": "cloud",
+   "crop_px": [
+    250,
+    12,
+    6142,
+    5016
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1965,
+    1668
+   ],
+   "size_stored": [
+    1964,
+    1668
+   ],
+   "size_rel_diff": 0.0005091649694501018,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9481988089804899,
+   "ink_share_mine": 0.07448827089041597,
+   "ink_share_stored": 0.07225838473823792
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К2 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ДК-К2 V1",
+   "disc": "VK",
+   "pi": 21,
+   "bid": "4GDV-QCGT-NXG",
+   "coords": [
+    5178.0,
+    49.0,
+    9868.0,
+    2249.0
+   ],
+   "pw": 9932,
+   "ph": 7015,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К2 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_4GDV-QCGT-NXG.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    5178,
+    49,
+    9868,
+    2249
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1564,
+    734
+   ],
+   "size_stored": [
+    1564,
+    734
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 1.0,
+   "ink_share_mine": 0.09111427416601044,
+   "ink_share_stored": 0.09111427416601044
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.1-ПА/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-АР0.1-ПА",
+   "disc": "AR",
+   "pi": 12,
+   "bid": "A97W-3Y4F-QMU",
+   "coords": [
+    222.0,
+    45.0,
+    4230.0,
+    4925.0
+   ],
+   "pw": 10524,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.1-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_A97W-3Y4F-QMU.png",
+   "src": "cloud",
+   "crop_px": [
+    222,
+    45,
+    4230,
+    4925
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1336,
+    1627
+   ],
+   "size_stored": [
+    1342,
+    1632
+   ],
+   "size_rel_diff": 0.004470938897168405,
+   "ink_iou_strict": 0.23598419928695158,
+   "ink_iou": 0.4037806781103703,
+   "ink_share_mine": 0.09401326419073347,
+   "ink_share_stored": 0.0917714356167812
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-1.2_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-1.2_V1",
+   "disc": "KJ",
+   "pi": 18,
+   "bid": "blk_b9991a188c9f46eabd37d020b1e8b323",
+   "coords": [
+    225.0,
+    41.0,
+    1656.0,
+    4260.0
+   ],
+   "pw": 3508,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-1.2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b9991a188c9f46eabd37d020b1e8b323.png",
+   "src": "cloud",
+   "crop_px": [
+    225,
+    41,
+    1656,
+    4260
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    478,
+    1407
+   ],
+   "size_stored": [
+    477,
+    1407
+   ],
+   "size_rel_diff": 0.0020964360587002098,
+   "ink_iou_strict": 0.4795456386986995,
+   "ink_iou": 0.723768963191239,
+   "ink_share_mine": 0.11961903569901317,
+   "ink_share_stored": 0.1089535848758603
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-4.1_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-4.1_V1",
+   "disc": "KJ",
+   "pi": 20,
+   "bid": "blk_ec59f2beaec0497fb0bf3b8b91fc78d8",
+   "coords": [
+    528.0,
+    2369.0,
+    2012.0,
+    3319.0
+   ],
+   "pw": 4961,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-4.1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_ec59f2beaec0497fb0bf3b8b91fc78d8.png",
+   "src": "cloud",
+   "crop_px": [
+    528,
+    2369,
+    2012,
+    3319
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    513
+   ],
+   "size_stored": [
+    800,
+    513
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8879474372695921,
+   "ink_share_mine": 0.04353557504873294,
+   "ink_share_stored": 0.04287768031189084
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-1.5_V1",
+   "disc": "OV",
+   "pi": 84,
+   "bid": "blk_492b9ead0aba4556bfc42aac7061d99a",
+   "coords": [
+    0.0,
+    476.0,
+    2459.0,
+    3292.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_492b9ead0aba4556bfc42aac7061d99a.png",
+   "src": "cloud",
+   "crop_px": [
+    0,
+    476,
+    2459,
+    3292
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    820,
+    940
+   ],
+   "size_stored": [
+    820,
+    939
+   ],
+   "size_rel_diff": 0.0010649627263045794,
+   "ink_iou_strict": 0.49850618407667185,
+   "ink_iou": 0.8816420114510739,
+   "ink_share_mine": 0.10250266240681576,
+   "ink_share_stored": 0.1095067404348165
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ1-7-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ1-7-РД_V1",
+   "disc": "OV",
+   "pi": 12,
+   "bid": "blk_9f6c6cf8d034493c920385165edc8117",
+   "coords": [
+    215.0,
+    45.0,
+    3415.0,
+    6311.0
+   ],
+   "pw": 4961,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ1-7-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_9f6c6cf8d034493c920385165edc8117.png",
+   "src": "cloud",
+   "crop_px": [
+    215,
+    45,
+    3415,
+    6311
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1068,
+    2089
+   ],
+   "size_stored": [
+    1067,
+    2089
+   ],
+   "size_rel_diff": 0.0009372071227741331,
+   "ink_iou_strict": 0.4880166059192607,
+   "ink_iou": 0.8751400643157118,
+   "ink_share_mine": 0.18520630445637726,
+   "ink_share_stored": 0.17864002228839151
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-1-РД_V1",
+   "disc": "OV",
+   "pi": 88,
+   "bid": "blk_8ccd8210ee0c48e780d222f7ef905e29",
+   "coords": [
+    45.0,
+    17.0,
+    2452.0,
+    3169.0
+   ],
+   "pw": 2480,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_8ccd8210ee0c48e780d222f7ef905e29.png",
+   "src": "cloud",
+   "crop_px": [
+    45,
+    17,
+    2452,
+    3169
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    804,
+    1052
+   ],
+   "size_stored": [
+    803,
+    1051
+   ],
+   "size_rel_diff": 0.0012453300124533001,
+   "ink_iou_strict": 0.49990567386022583,
+   "ink_iou": 0.8546327005857032,
+   "ink_share_mine": 0.17843884671302787,
+   "ink_share_stored": 0.179071583370164
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/01-14-АР0-АС-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "01-14-АР0-АС-1-РД_V1",
+   "disc": "AR",
+   "pi": 6,
+   "bid": "blk_0431d21f8bc74946a736d8865e880fab",
+   "coords": [
+    5940.0,
+    2272.0,
+    7680.0,
+    6080.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/01-14-АР0-АС-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_0431d21f8bc74946a736d8865e880fab.png",
+   "src": "cloud",
+   "crop_px": [
+    5940,
+    2272,
+    7680,
+    6080
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    581,
+    1270
+   ],
+   "size_stored": [
+    580,
+    1270
+   ],
+   "size_rel_diff": 0.0017241379310344827,
+   "ink_iou_strict": 0.49999084047776066,
+   "ink_iou": 0.8744560113229011,
+   "ink_share_mine": 0.11172006516426826,
+   "ink_share_stored": 0.1108430627206082
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-0.3-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-0.3-РД_V1",
+   "disc": "KJ",
+   "pi": 6,
+   "bid": "blk_b88478acf5d7424a8e1879762c89cc72",
+   "coords": [
+    1556.0,
+    2262.0,
+    2629.0,
+    3474.0
+   ],
+   "pw": 4961,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-0.3-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b88478acf5d7424a8e1879762c89cc72.png",
+   "src": "cloud",
+   "crop_px": [
+    1556,
+    2262,
+    2629,
+    3474
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    709,
+    801
+   ],
+   "size_stored": [
+    709,
+    800
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.4997282557769074,
+   "ink_iou": 0.9437885136800591,
+   "ink_share_mine": 0.08854372355430183,
+   "ink_share_stored": 0.08991713681241184
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-А-Е,Ф-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-А-Е,Ф-РД_V1",
+   "disc": "AR",
+   "pi": 3,
+   "bid": "blk_cb0eec7d9c00425cbb2f86f6d407faa4",
+   "coords": [
+    208.0,
+    44.0,
+    9942.0,
+    8353.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-А-Е,Ф-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_cb0eec7d9c00425cbb2f86f6d407faa4.png",
+   "src": "cloud",
+   "crop_px": [
+    208,
+    44,
+    9942,
+    8353
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3833,
+    3272
+   ],
+   "size_stored": [
+    3832,
+    3272
+   ],
+   "size_rel_diff": 0.00026096033402922753,
+   "ink_iou_strict": 0.4999859738065061,
+   "ink_iou": 0.9064608288731298,
+   "ink_share_mine": 0.22167527601819192,
+   "ink_share_stored": 0.22025594530169312
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-3-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-3-РД_V1",
+   "disc": "AR",
+   "pi": 15,
+   "bid": "blk_1e5e445fd1554f39978313fd730fbd31",
+   "coords": [
+    180.0,
+    2855.0,
+    3821.0,
+    4143.0
+   ],
+   "pw": 10635,
+   "ph": 7523,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-3-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_1e5e445fd1554f39978313fd730fbd31.png",
+   "src": "cloud",
+   "crop_px": [
+    180,
+    2855,
+    3821,
+    4143
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1603,
+    568
+   ],
+   "size_stored": [
+    1603,
+    568
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9326932743540766,
+   "ink_share_mine": 0.081714083628408,
+   "ink_share_stored": 0.08235438833876622
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К1 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ВК2-К1 V1",
+   "disc": "VK",
+   "pi": 7,
+   "bid": "6GHP-WFYJ-A44",
+   "coords": [
+    1597.0,
+    495.0,
+    6148.0,
+    5051.0
+   ],
+   "pw": 9932,
+   "ph": 7015,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ВК2-К1 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_6GHP-WFYJ-A44.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    1597,
+    495,
+    6148,
+    5051
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1518,
+    1519
+   ],
+   "size_stored": [
+    1518,
+    1519
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9999122178467242,
+   "ink_share_mine": 0.11977707058853122,
+   "ink_share_stored": 0.11974974868182642
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ0-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ0-1_V1",
+   "disc": "OV",
+   "pi": 26,
+   "bid": "blk_f527e5e3d6c94d4da2a017eca64cea81",
+   "coords": [
+    324.0,
+    974.0,
+    9558.0,
+    1938.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ0-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f527e5e3d6c94d4da2a017eca64cea81.png",
+   "src": "cloud",
+   "crop_px": [
+    324,
+    974,
+    9558,
+    1938
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3078,
+    322
+   ],
+   "size_stored": [
+    3078,
+    322
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8710269118532586,
+   "ink_share_mine": 0.049541123339750345,
+   "ink_share_stored": 0.04894179894179894
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-1.4_V1",
+   "disc": "OV",
+   "pi": 61,
+   "bid": "blk_77e05292458944e2a47db987f4f1f24b",
+   "coords": [
+    0.0,
+    496.0,
+    2481.0,
+    3356.0
+   ],
+   "pw": 2481,
+   "ph": 3508,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-1.4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_77e05292458944e2a47db987f4f1f24b.png",
+   "src": "cloud",
+   "crop_px": [
+    0,
+    496,
+    2481,
+    3356
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    827,
+    954
+   ],
+   "size_stored": [
+    827,
+    954
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8903951543120854,
+   "ink_share_mine": 0.03256193612334243,
+   "ink_share_stored": 0.03316779853933923
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-5-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-5-РД_V1",
+   "disc": "OV",
+   "pi": 131,
+   "bid": "blk_81fb7106a40042f6a2c0fc813772301f",
+   "coords": [
+    81.0,
+    13.0,
+    2469.0,
+    3502.0
+   ],
+   "pw": 2480,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-5-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_81fb7106a40042f6a2c0fc813772301f.png",
+   "src": "cloud",
+   "crop_px": [
+    81,
+    13,
+    2469,
+    3502
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    797,
+    1164
+   ],
+   "size_stored": [
+    796,
+    1163
+   ],
+   "size_rel_diff": 0.001256281407035176,
+   "ink_iou_strict": 0.499878937881682,
+   "ink_iou": 0.8402402429545003,
+   "ink_share_mine": 0.1370686191058474,
+   "ink_share_stored": 0.13526035162916905
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-02.1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-02.1-РД_V1",
+   "disc": "KJ",
+   "pi": 10,
+   "bid": "blk_053392898f574a8f80c39dd8167265f0",
+   "coords": [
+    3018.0,
+    5266.0,
+    6630.0,
+    6968.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-02.1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_053392898f574a8f80c39dd8167265f0.png",
+   "src": "cloud",
+   "crop_px": [
+    3018,
+    5266,
+    6630,
+    6968
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1205,
+    568
+   ],
+   "size_stored": [
+    1204,
+    568
+   ],
+   "size_rel_diff": 0.0008305647840531562,
+   "ink_iou_strict": 0.4819744028245159,
+   "ink_iou": 0.7300464594681192,
+   "ink_share_mine": 0.08174336717982313,
+   "ink_share_stored": 0.07687988395489215
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-7-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-7-РД_V1",
+   "disc": "AR",
+   "pi": 8,
+   "bid": "blk_c4b2ceb0a23f4b0f94472370610ffb18",
+   "coords": [
+    222.0,
+    102.0,
+    2961.0,
+    8143.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-7-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_c4b2ceb0a23f4b0f94472370610ffb18.png",
+   "src": "cloud",
+   "crop_px": [
+    222,
+    102,
+    2961,
+    8143
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1079,
+    3166
+   ],
+   "size_stored": [
+    1079,
+    3166
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9465043413519373,
+   "ink_share_mine": 0.1473355397390134,
+   "ink_share_stored": 0.14702700202627897
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-6-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР1-6-2-РД_V1",
+   "disc": "AR",
+   "pi": 10,
+   "bid": "blk_a21ec3c2f0d44773b25189d4ce83192b",
+   "coords": [
+    6072.0,
+    56.0,
+    7642.0,
+    1692.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР1-6-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a21ec3c2f0d44773b25189d4ce83192b.png",
+   "src": "cloud",
+   "crop_px": [
+    6072,
+    56,
+    7642,
+    1692
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    768,
+    801
+   ],
+   "size_stored": [
+    768,
+    800
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.950484547951663,
+   "ink_share_mine": 0.11308919270833333,
+   "ink_share_stored": 0.11538248697916667
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ6-6-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ПТ6-6-РД_V1",
+   "disc": "PT",
+   "pi": 6,
+   "bid": "blk_7478cbd0fb394c1c8b31c56615a92537",
+   "coords": [
+    1737.0,
+    54.0,
+    6968.0,
+    2948.0
+   ],
+   "pw": 7016,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/PT/documents/СТ26_01-14-ПТ6-6-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_7478cbd0fb394c1c8b31c56615a92537.png",
+   "src": "cloud",
+   "crop_px": [
+    1737,
+    54,
+    6968,
+    2948
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1745,
+    966
+   ],
+   "size_stored": [
+    1744,
+    965
+   ],
+   "size_rel_diff": 0.0010362694300518134,
+   "ink_iou_strict": 0.49996782030860326,
+   "ink_iou": 0.7449055864568245,
+   "ink_share_mine": 0.11258021581023911,
+   "ink_share_stored": 0.11081130864667016
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.1-ПА/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-АР0.1-ПА",
+   "disc": "AR",
+   "pi": 5,
+   "bid": "GH9G-CC6N-KCC",
+   "coords": [
+    5190.0,
+    5853.0,
+    7378.0,
+    6979.0
+   ],
+   "pw": 9932,
+   "ph": 7015,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР0.1-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_GH9G-CC6N-KCC.png",
+   "src": "cloud",
+   "crop_px": [
+    5190,
+    5853,
+    7378,
+    6979
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    412
+   ],
+   "size_stored": [
+    800,
+    415
+   ],
+   "size_rel_diff": 0.007228915662650603,
+   "ink_iou_strict": 0.42479765277215703,
+   "ink_iou": 0.6793230994670354,
+   "ink_share_mine": 0.10304915048543689,
+   "ink_share_stored": 0.10125606796116506
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-01.1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-КЖ1-01.1-РД_V1",
+   "disc": "KJ",
+   "pi": 7,
+   "bid": "blk_dfe50b411b8a4cd9b3e9debe805980da",
+   "coords": [
+    212.0,
+    36.0,
+    5730.0,
+    5466.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/KJ/documents/СТ26_01-14-КЖ1-01.1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_dfe50b411b8a4cd9b3e9debe805980da.png",
+   "src": "cloud",
+   "crop_px": [
+    212,
+    36,
+    5730,
+    5466
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1840,
+    1810
+   ],
+   "size_stored": [
+    1840,
+    1810
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.46145538548784354,
+   "ink_iou": 0.7653168590668591,
+   "ink_share_mine": 0.08363199615661783,
+   "ink_share_stored": 0.08274441508527504
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-2-РД/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР0-2-РД",
+   "disc": "AR",
+   "pi": 43,
+   "bid": "blk_a29d1452f75d4373b5ca6a56091320df",
+   "coords": [
+    244.0,
+    56.0,
+    2742.0,
+    3272.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-2-РД/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a29d1452f75d4373b5ca6a56091320df.png",
+   "src": null,
+   "crop_px": [
+    244,
+    56,
+    2742,
+    3272
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    833,
+    1073
+   ],
+   "size_stored": [
+    833,
+    1072
+   ],
+   "size_rel_diff": 0.0009328358208955224,
+   "ink_iou_strict": 0.49999147128809135,
+   "ink_iou": 0.866635535031737,
+   "ink_share_mine": 0.10099711526401606,
+   "ink_share_stored": 0.0989612262815574
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР3-1-РД_V1",
+   "disc": "AR",
+   "pi": 16,
+   "bid": "blk_503eec2055b34a6b8a9e98344923887d",
+   "coords": [
+    7042.0,
+    4200.0,
+    9963.0,
+    8060.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР3-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_503eec2055b34a6b8a9e98344923887d.png",
+   "src": "cloud",
+   "crop_px": [
+    7042,
+    4200,
+    9963,
+    8060
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1151,
+    1520
+   ],
+   "size_stored": [
+    1150,
+    1520
+   ],
+   "size_rel_diff": 0.0008695652173913044,
+   "ink_iou_strict": 0.49860049342287227,
+   "ink_iou": 0.8337881222350614,
+   "ink_share_mine": 0.08014988558352402,
+   "ink_share_stored": 0.07977345537757437
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-6-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-6-2-РД_V1",
+   "disc": "VK",
+   "pi": 8,
+   "bid": "blk_5f3be09f74cc4376bcb579413ba5fdb3",
+   "coords": [
+    1434.0,
+    70.0,
+    6950.0,
+    3660.0
+   ],
+   "pw": 7016,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-6-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5f3be09f74cc4376bcb579413ba5fdb3.png",
+   "src": "cloud",
+   "crop_px": [
+    1434,
+    70,
+    6950,
+    3660
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1840,
+    1197
+   ],
+   "size_stored": [
+    1839,
+    1197
+   ],
+   "size_rel_diff": 0.000543773790103317,
+   "ink_iou_strict": 0.4991300224709836,
+   "ink_iou": 0.8139216868019981,
+   "ink_share_mine": 0.083909701751206,
+   "ink_share_stored": 0.08017006445786388
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-ЭМ2-ПА V1",
+   "disc": "EOM",
+   "pi": 11,
+   "bid": "4TCP-A74J-KK4",
+   "coords": [
+    17697.0,
+    11951.0,
+    19725.0,
+    12895.0
+   ],
+   "pw": 19865,
+   "ph": 14043,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v002/03_analysis/latest/blocks_stage02_100/block_4TCP-A74J-KK4.png",
+   "src": "cloud",
+   "crop_px": [
+    17697,
+    11951,
+    19725,
+    12895
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    373
+   ],
+   "size_stored": [
+    800,
+    376
+   ],
+   "size_rel_diff": 0.007978723404255319,
+   "ink_iou_strict": 0.40634441087613293,
+   "ink_iou": 0.6621613714820666,
+   "ink_share_mine": 0.11641085790884718,
+   "ink_share_stored": 0.11794235924932976
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ1-5-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ1-5-РД_V1",
+   "disc": "OV",
+   "pi": 18,
+   "bid": "blk_6207d979d4eb4258adf67c6a71239c31",
+   "coords": [
+    353.0,
+    4798.0,
+    3290.0,
+    5712.0
+   ],
+   "pw": 4961,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ1-5-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_6207d979d4eb4258adf67c6a71239c31.png",
+   "src": "cloud",
+   "crop_px": [
+    353,
+    4798,
+    3290,
+    5712
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    980,
+    305
+   ],
+   "size_stored": [
+    980,
+    305
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4999501047799621,
+   "ink_iou": 0.8364183928309094,
+   "ink_share_mine": 0.08070257611241217,
+   "ink_share_stored": 0.08071930411508865
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К5 V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ДК-К5 V1",
+   "disc": "VK",
+   "pi": 7,
+   "bid": "4JEV-NWR6-YEJ",
+   "coords": [
+    897.0,
+    9.0,
+    4349.0,
+    6465.0
+   ],
+   "pw": 9932,
+   "ph": 7015,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ДК-К5 V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_4JEV-NWR6-YEJ.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    897,
+    9,
+    4349,
+    6465
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1151,
+    2153
+   ],
+   "size_stored": [
+    1151,
+    2153
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9999827837030533,
+   "ink_share_mine": 0.10714001798956702,
+   "ink_share_stored": 0.10714163212747815
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-5_V1",
+   "disc": "SS",
+   "pi": 51,
+   "bid": "blk_63d9f3c7cd8d4bfa89f7ef1c44f66b3f",
+   "coords": [
+    6637.0,
+    85.0,
+    8627.0,
+    1634.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_63d9f3c7cd8d4bfa89f7ef1c44f66b3f.png",
+   "src": "cloud",
+   "crop_px": [
+    6637,
+    85,
+    8627,
+    1634
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    623
+   ],
+   "size_stored": [
+    800,
+    623
+   ],
+   "size_rel_diff": 0.00125,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9587750457900871,
+   "ink_share_mine": 0.08055979133226324,
+   "ink_share_stored": 0.08025682182985554
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР2-7-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-АР2-7-2-РД_V1",
+   "disc": "AR",
+   "pi": 20,
+   "bid": "blk_b88b702b2cfc4266a179f4314b4be7af",
+   "coords": [
+    7690.0,
+    54.0,
+    9866.0,
+    3840.0
+   ],
+   "pw": 9934,
+   "ph": 7016,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР2-7-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b88b702b2cfc4266a179f4314b4be7af.png",
+   "src": "cloud",
+   "crop_px": [
+    7690,
+    54,
+    9866,
+    3840
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    726,
+    1262
+   ],
+   "size_stored": [
+    726,
+    1262
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9880149222998752,
+   "ink_share_mine": 0.0963030390346339,
+   "ink_share_stored": 0.09699283571924401
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ЭМ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АИТ.ЭМ_V1",
+   "disc": "ITP",
+   "pi": 14,
+   "bid": "blk_0d17ac9feaf74be88adf6c52b69462b7",
+   "coords": [
+    216.0,
+    39.0,
+    3269.0,
+    2189.0
+   ],
+   "pw": 4963,
+   "ph": 3509,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/ITP/documents/ПД-00542664-АИТ.ЭМ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_0d17ac9feaf74be88adf6c52b69462b7.png",
+   "src": "cloud",
+   "crop_px": [
+    216,
+    39,
+    3269,
+    2189
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1019,
+    718
+   ],
+   "size_stored": [
+    1018,
+    717
+   ],
+   "size_rel_diff": 0.001394700139470014,
+   "ink_iou_strict": 0.48430260047281326,
+   "ink_iou": 0.7137649816753062,
+   "ink_share_mine": 0.10353250966562817,
+   "ink_share_stored": 0.10353798982334711
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЛВС_V1",
+   "disc": "SS",
+   "pi": 9,
+   "bid": "blk_d88be2c262ae4565a4e30f06183d8445",
+   "coords": [
+    189.0,
+    20.0,
+    8357.0,
+    9208.0
+   ],
+   "pw": 8411,
+   "ph": 11890,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d88be2c262ae4565a4e30f06183d8445.png",
+   "src": "cloud",
+   "crop_px": [
+    189,
+    20,
+    8357,
+    9208
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3216,
+    3618
+   ],
+   "size_stored": [
+    3140,
+    3532
+   ],
+   "size_rel_diff": 0.02434881087202718,
+   "ink_iou_strict": 0.13059851714875562,
+   "ink_iou": 0.19329567919904966,
+   "ink_share_mine": 0.12518781874183985,
+   "ink_share_stored": 0.14059193109766213
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-2-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ВК-1-2-РД_V1",
+   "disc": "VK",
+   "pi": 16,
+   "bid": "blk_4147a72dc25247dcada3a949c37a47e3",
+   "coords": [
+    1423.0,
+    31.0,
+    6941.0,
+    4078.0
+   ],
+   "pw": 7016,
+   "ph": 4961,
+   "rot": 0,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/VK/documents/СТ26_01-14-ВК-1-2-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_4147a72dc25247dcada3a949c37a47e3.png",
+   "src": "cloud",
+   "crop_px": [
+    1423,
+    31,
+    6941,
+    4078
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1840,
+    1350
+   ],
+   "size_stored": [
+    1840,
+    1349
+   ],
+   "size_rel_diff": 0.0007412898443291327,
+   "ink_iou_strict": 0.49998430073511807,
+   "ink_iou": 0.8724076571870033,
+   "ink_share_mine": 0.08666363167563734,
+   "ink_share_stored": 0.08414606632932607
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.2-2_V1",
+   "disc": "AR",
+   "pi": 7,
+   "bid": "blk_44f22b46f7cc4f27a49fdd2dd4ea5997",
+   "coords": [
+    256.0,
+    71.0,
+    4293.0,
+    6982.0
+   ],
+   "pw": 9922,
+   "ph": 7017,
+   "rot": 90,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_44f22b46f7cc4f27a49fdd2dd4ea5997.png",
+   "src": "cloud",
+   "crop_px": [
+    256,
+    71,
+    4293,
+    6982
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1346,
+    2305
+   ],
+   "size_stored": [
+    1346,
+    2304
+   ],
+   "size_rel_diff": 0.00043402777777777775,
+   "ink_iou_strict": 0.4982726402625222,
+   "ink_iou": 0.8575684689701096,
+   "ink_share_mine": 0.0997941431401684,
+   "ink_share_stored": 0.134740473315998
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.2-2_V1",
+   "disc": "AR",
+   "pi": 11,
+   "bid": "blk_a9e0377c9236424784439bc16b12c433",
+   "coords": [
+    213.0,
+    43.0,
+    4364.0,
+    7010.0
+   ],
+   "pw": 9922,
+   "ph": 7017,
+   "rot": 90,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a9e0377c9236424784439bc16b12c433.png",
+   "src": "cloud",
+   "crop_px": [
+    213,
+    43,
+    4364,
+    7010
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1385,
+    2323
+   ],
+   "size_stored": [
+    1384,
+    2323
+   ],
+   "size_rel_diff": 0.000722543352601156,
+   "ink_iou_strict": 0.4869659063445368,
+   "ink_iou": 0.8108597075780999,
+   "ink_share_mine": 0.07670312457232152,
+   "ink_share_stored": 0.10032372928169922
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-АР1.2-2_V1",
+   "disc": "AR",
+   "pi": 5,
+   "bid": "blk_f75faadef42340289929c48055622b35",
+   "coords": [
+    270.0,
+    57.0,
+    4321.0,
+    7010.0
+   ],
+   "pw": 9922,
+   "ph": 7017,
+   "rot": 90,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/AR/documents/ПД-00542664-АР1.2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f75faadef42340289929c48055622b35.png",
+   "src": "cloud",
+   "crop_px": [
+    270,
+    57,
+    4321,
+    7010
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1352,
+    2318
+   ],
+   "size_stored": [
+    1351,
+    2318
+   ],
+   "size_rel_diff": 0.0007401924500370096,
+   "ink_iou_strict": 0.49693921131305463,
+   "ink_iou": 0.8204169794533879,
+   "ink_share_mine": 0.07804272424031283,
+   "ink_share_stored": 0.10412732331976633
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/PT/documents/ПД-ОО542664-АПТ1.3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-ОО542664-АПТ1.3_V1",
+   "disc": "PT",
+   "pi": 45,
+   "bid": "blk_5c75ddcfd7b34d4e899b9b2944054147",
+   "coords": [
+    25.0,
+    17.0,
+    11876.0,
+    8347.0
+   ],
+   "pw": 11891,
+   "ph": 8411,
+   "rot": 90,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/PT/documents/ПД-ОО542664-АПТ1.3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5c75ddcfd7b34d4e899b9b2944054147.png",
+   "src": "cloud",
+   "crop_px": [
+    25,
+    17,
+    11876,
+    8347
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4667,
+    3280
+   ],
+   "size_stored": [
+    4666,
+    3280
+   ],
+   "size_rel_diff": 0.0002143163309044149,
+   "ink_iou_strict": 0.4874355485262899,
+   "ink_iou": 0.6742482355165442,
+   "ink_share_mine": 0.04256747044002802,
+   "ink_share_stored": 0.04040705727995986
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-ОО542664-ВК1-1.1.3_V1",
+   "disc": "VK",
+   "pi": 99,
+   "bid": "blk_01a4adde550d43cea497dc5024b9d074",
+   "coords": [
+    64.0,
+    64.0,
+    12901.0,
+    5134.0
+   ],
+   "pw": 12901,
+   "ph": 6082,
+   "rot": 90,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_01a4adde550d43cea497dc5024b9d074.png",
+   "src": "cloud",
+   "crop_px": [
+    64,
+    64,
+    12901,
+    5134
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4280,
+    1691
+   ],
+   "size_stored": [
+    4702,
+    3939
+   ],
+   "size_rel_diff": 0.5707032241685707,
+   "ink_iou_strict": 0.0,
+   "ink_iou": 0.0,
+   "ink_share_mine": 0.06810118991693241,
+   "ink_share_stored": 0.0
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-ОО542664-ВК1-1.1.3_V1",
+   "disc": "VK",
+   "pi": 98,
+   "bid": "blk_c8bb1ccc5c024831a2627d006284600f",
+   "coords": [
+    73.0,
+    59.0,
+    11889.0,
+    8411.0
+   ],
+   "pw": 11891,
+   "ph": 8411,
+   "rot": 90,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_c8bb1ccc5c024831a2627d006284600f.png",
+   "src": "cloud",
+   "crop_px": [
+    73,
+    59,
+    11889,
+    8411
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4653,
+    3289
+   ],
+   "size_stored": [
+    4652,
+    3288
+   ],
+   "size_rel_diff": 0.00030413625304136254,
+   "ink_iou_strict": 0.48533915827468055,
+   "ink_iou": 0.7802499361035258,
+   "ink_share_mine": 0.042636150006380845,
+   "ink_share_stored": 0.040220450404085416
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-3_V1",
+   "disc": "SS",
+   "pi": 24,
+   "bid": "blk_b42aa69d74824697b093fcead087cf5c",
+   "coords": [
+    53.0,
+    24.0,
+    2770.0,
+    6988.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b42aa69d74824697b093fcead087cf5c.png",
+   "src": "cloud",
+   "crop_px": [
+    53,
+    24,
+    2770,
+    6988
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    907,
+    2322
+   ],
+   "size_stored": [
+    906,
+    2322
+   ],
+   "size_rel_diff": 0.0011037527593818985,
+   "ink_iou_strict": 0.48066607721780136,
+   "ink_iou": 0.8448150220390562,
+   "ink_share_mine": 0.07557806792880462,
+   "ink_share_stored": 0.08836962122551732
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-3_V1",
+   "disc": "SS",
+   "pi": 37,
+   "bid": "blk_90f9bd25d9a543868300c72b6cc0d0e3",
+   "coords": [
+    214.0,
+    37.0,
+    4920.0,
+    6945.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_90f9bd25d9a543868300c72b6cc0d0e3.png",
+   "src": "cloud",
+   "crop_px": [
+    214,
+    37,
+    4920,
+    6945
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1569,
+    2303
+   ],
+   "size_stored": [
+    1569,
+    2304
+   ],
+   "size_rel_diff": 0.00043402777777777775,
+   "ink_iou_strict": 0.4453439239917485,
+   "ink_iou": 0.7838975784192574,
+   "ink_share_mine": 0.26327507529597416,
+   "ink_share_stored": 0.2516281725252649
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-3_V1",
+   "disc": "SS",
+   "pi": 35,
+   "bid": "blk_aad20d59c0e94741a18a694d2d6bc055",
+   "coords": [
+    189.0,
+    37.0,
+    4911.0,
+    6956.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_aad20d59c0e94741a18a694d2d6bc055.png",
+   "src": "cloud",
+   "crop_px": [
+    189,
+    37,
+    4911,
+    6956
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1575,
+    2307
+   ],
+   "size_stored": [
+    1574,
+    2307
+   ],
+   "size_rel_diff": 0.0006353240152477764,
+   "ink_iou_strict": 0.4729515175939243,
+   "ink_iou": 0.865961050791002,
+   "ink_share_mine": 0.4216576917166637,
+   "ink_share_stored": 0.40879093461202276
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОТ_V1",
+   "disc": "SS",
+   "pi": 36,
+   "bid": "blk_5150f58d1cd0465181057e3c3c85fb91",
+   "coords": [
+    208.0,
+    0.0,
+    11834.0,
+    8369.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5150f58d1cd0465181057e3c3c85fb91.png",
+   "src": "cloud",
+   "crop_px": [
+    208,
+    0,
+    11834,
+    8369
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4578,
+    3295
+   ],
+   "size_stored": [
+    3925,
+    2826
+   ],
+   "size_rel_diff": 0.16636942675159236,
+   "ink_iou_strict": 0.0764093250694681,
+   "ink_iou": 0.11082210764204826,
+   "ink_share_mine": 0.10324060926519445,
+   "ink_share_stored": 0.11923936513088203
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-КК-ПА",
+   "disc": "SS",
+   "pi": 7,
+   "bid": "4ND6-D7CC-VMH",
+   "coords": [
+    10127.0,
+    8917.0,
+    11749.0,
+    9813.0
+   ],
+   "pw": 14041,
+   "ph": 9933,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_4ND6-D7CC-VMH.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    10127,
+    8917,
+    11749,
+    9813
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    443
+   ],
+   "size_stored": [
+    801,
+    443
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 1.0,
+   "ink_share_mine": 0.12449167660063747,
+   "ink_share_stored": 0.12449167660063747
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СКД_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СКД_V1",
+   "disc": "SS",
+   "pi": 6,
+   "bid": "blk_10f5e0cce89d4340a6e23cef770bbe1b",
+   "coords": [
+    199.0,
+    46.0,
+    11859.0,
+    7803.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СКД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_10f5e0cce89d4340a6e23cef770bbe1b.png",
+   "src": "cloud",
+   "crop_px": [
+    199,
+    46,
+    11859,
+    7803
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4591,
+    3054
+   ],
+   "size_stored": [
+    4083,
+    2716
+   ],
+   "size_rel_diff": 0.12444771723122239,
+   "ink_iou_strict": 0.09960784285644213,
+   "ink_iou": 0.14911935238065488,
+   "ink_share_mine": 0.12568042283154732,
+   "ink_share_stored": 0.1474317701508139
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-АПЗ.АПС-К5",
+   "disc": "SS",
+   "pi": 13,
+   "bid": "LWRR-P4CJ-DTE",
+   "coords": [
+    3486.0,
+    3437.0,
+    4910.0,
+    5320.0
+   ],
+   "pw": 4962,
+   "ph": 7016,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/03_analysis/latest/blocks_stage02_100/block_LWRR-P4CJ-DTE.png",
+   "src": "cloud",
+   "crop_px": [
+    3486,
+    3437,
+    4910,
+    5320
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    606,
+    801
+   ],
+   "size_stored": [
+    607,
+    800
+   ],
+   "size_rel_diff": 0.0016474464579901153,
+   "ink_iou_strict": 0.3199095164294995,
+   "ink_iou": 0.5247446485407002,
+   "ink_share_mine": 0.08272277227722773,
+   "ink_share_stored": 0.08306105610561056
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОТ_V1",
+   "disc": "SS",
+   "pi": 11,
+   "bid": "blk_a0be561fe7a140e8881b4ca6e59d6d69",
+   "coords": [
+    180.0,
+    55.0,
+    8218.0,
+    8300.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a0be561fe7a140e8881b4ca6e59d6d69.png",
+   "src": "cloud",
+   "crop_px": [
+    180,
+    55,
+    8218,
+    8300
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3166,
+    3247
+   ],
+   "size_stored": [
+    3165,
+    3246
+   ],
+   "size_rel_diff": 0.000315955766192733,
+   "ink_iou_strict": 0.4990864015574753,
+   "ink_iou": 0.984799491021831,
+   "ink_share_mine": 0.5522612835435325,
+   "ink_share_stored": 0.5527471896386755
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-РФ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-РФ_V1",
+   "disc": "SS",
+   "pi": 12,
+   "bid": "blk_861e3bcae8224eea8a5b12490ef5f4b3",
+   "coords": [
+    234.0,
+    87.0,
+    2442.0,
+    2608.0
+   ],
+   "pw": 2480,
+   "ph": 3509,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-РФ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_861e3bcae8224eea8a5b12490ef5f4b3.png",
+   "src": "cloud",
+   "crop_px": [
+    234,
+    87,
+    2442,
+    2608
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    737,
+    842
+   ],
+   "size_stored": [
+    736,
+    841
+   ],
+   "size_rel_diff": 0.001358695652173913,
+   "ink_iou_strict": 0.48672810878017014,
+   "ink_iou": 0.7598282242860136,
+   "ink_share_mine": 0.05335263402781368,
+   "ink_share_stored": 0.06914969239518172
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО2-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЭО2-2_V1",
+   "disc": "EOM",
+   "pi": 31,
+   "bid": "blk_8140816da14f4cc58577cd118183ac87",
+   "coords": [
+    228.0,
+    83.0,
+    11460.0,
+    6697.0
+   ],
+   "pw": 14569,
+   "ph": 6865,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_8140816da14f4cc58577cd118183ac87.png",
+   "src": "cloud",
+   "crop_px": [
+    228,
+    83,
+    11460,
+    6697
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3828,
+    2254
+   ],
+   "size_stored": [
+    3828,
+    2254
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.3618319169027384,
+   "ink_iou": 0.6403370098226581,
+   "ink_share_mine": 0.0501912772741644,
+   "ink_share_stored": 0.03264381260204777
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-1_V1",
+   "disc": "SS",
+   "pi": 29,
+   "bid": "blk_74b756adc35642da9f4303971a7349a3",
+   "coords": [
+    276.0,
+    69.0,
+    7000.0,
+    7760.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_74b756adc35642da9f4303971a7349a3.png",
+   "src": "cloud",
+   "crop_px": [
+    276,
+    69,
+    7000,
+    7760
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2243,
+    2565
+   ],
+   "size_stored": [
+    2242,
+    2564
+   ],
+   "size_rel_diff": 0.00044603033006244426,
+   "ink_iou_strict": 0.49744497323022013,
+   "ink_iou": 0.7611403828368039,
+   "ink_share_mine": 0.03921448561778332,
+   "ink_share_stored": 0.049790831954420016
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_2-1.1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ЭМ_2-1.1",
+   "disc": "EOM",
+   "pi": 17,
+   "bid": "blk_257429def74a4eafa0a02adbf7931eb3",
+   "coords": [
+    3962.0,
+    347.0,
+    6477.0,
+    2448.0
+   ],
+   "pw": 7442,
+   "ph": 3509,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_2-1.1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_257429def74a4eafa0a02adbf7931eb3.png",
+   "src": "cloud",
+   "crop_px": [
+    3962,
+    347,
+    6477,
+    2448
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    839,
+    701
+   ],
+   "size_stored": [
+    839,
+    701
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.7817406670657989,
+   "ink_share_mine": 0.15891481435510993,
+   "ink_share_stored": 0.1619379092357419
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-РФ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-РФ_V1",
+   "disc": "SS",
+   "pi": 24,
+   "bid": "blk_c67a49e4ac854be48c2f9422002fc566",
+   "coords": [
+    283.0,
+    93.0,
+    3719.0,
+    6018.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-РФ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_c67a49e4ac854be48c2f9422002fc566.png",
+   "src": "cloud",
+   "crop_px": [
+    283,
+    93,
+    3719,
+    6018
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1146,
+    1976
+   ],
+   "size_stored": [
+    1146,
+    1976
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.49999426418038007,
+   "ink_iou": 0.9034416701417848,
+   "ink_share_mine": 0.05950374829542644,
+   "ink_share_stored": 0.07439447894807498
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-1_V1",
+   "disc": "SS",
+   "pi": 42,
+   "bid": "blk_cc14157663684e4eb8f8b0fc852edca6",
+   "coords": [
+    190.0,
+    20.0,
+    10899.0,
+    8386.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_cc14157663684e4eb8f8b0fc852edca6.png",
+   "src": "cloud",
+   "crop_px": [
+    190,
+    20,
+    10899,
+    8386
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4217,
+    3295
+   ],
+   "size_stored": [
+    3768,
+    2944
+   ],
+   "size_rel_diff": 0.11922554347826086,
+   "ink_iou_strict": 0.37683150979831886,
+   "ink_iou": 0.7194876122354029,
+   "ink_share_mine": 0.6322707165028155,
+   "ink_share_stored": 0.5838478924351519
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-5_V1",
+   "disc": "SS",
+   "pi": 77,
+   "bid": "blk_d9950d3ac0b74a298ed0a2b3f2c02c3f",
+   "coords": [
+    245.0,
+    86.0,
+    14009.0,
+    6858.0
+   ],
+   "pw": 14569,
+   "ph": 6865,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d9950d3ac0b74a298ed0a2b3f2c02c3f.png",
+   "src": "cloud",
+   "crop_px": [
+    245,
+    86,
+    14009,
+    6858
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4691,
+    2308
+   ],
+   "size_stored": [
+    4690,
+    2308
+   ],
+   "size_rel_diff": 0.00021321961620469082,
+   "ink_iou_strict": 0.01227452225947826,
+   "ink_iou": 0.024136149489276313,
+   "ink_share_mine": 0.11563866111384154,
+   "ink_share_stored": 0.03133820252537757
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-5_V1",
+   "disc": "SS",
+   "pi": 71,
+   "bid": "blk_84f63a4baa6b4000a11e714738e55d72",
+   "coords": [
+    446.0,
+    171.0,
+    2805.0,
+    5686.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_84f63a4baa6b4000a11e714738e55d72.png",
+   "src": "cloud",
+   "crop_px": [
+    446,
+    171,
+    2805,
+    5686
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    787,
+    1840
+   ],
+   "size_stored": [
+    787,
+    1839
+   ],
+   "size_rel_diff": 0.000543773790103317,
+   "ink_iou_strict": 0.03525116716261341,
+   "ink_iou": 0.04906729189010922,
+   "ink_share_mine": 0.08771202513934635,
+   "ink_share_stored": 0.04825353262953666
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО2-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЭО2-2_V1",
+   "disc": "EOM",
+   "pi": 26,
+   "bid": "blk_12d81a1a67c34383ae31cda74c4a19a0",
+   "coords": [
+    262.0,
+    65.0,
+    6690.0,
+    9865.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_12d81a1a67c34383ae31cda74c4a19a0.png",
+   "src": "cloud",
+   "crop_px": [
+    262,
+    65,
+    6690,
+    9865
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2143,
+    3268
+   ],
+   "size_stored": [
+    2143,
+    3267
+   ],
+   "size_rel_diff": 0.00030609121518212427,
+   "ink_iou_strict": 0.36996554637439605,
+   "ink_iou": 0.6213887291139999,
+   "ink_share_mine": 0.08318825066799444,
+   "ink_share_stored": 0.05539536829572039
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-5_V1",
+   "disc": "SS",
+   "pi": 13,
+   "bid": "blk_50454637050e44b18901f6f0102944b3",
+   "coords": [
+    2372.0,
+    4032.0,
+    4569.0,
+    6825.0
+   ],
+   "pw": 14569,
+   "ph": 6865,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_50454637050e44b18901f6f0102944b3.png",
+   "src": "cloud",
+   "crop_px": [
+    2372,
+    4032,
+    4569,
+    6825
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    749,
+    953
+   ],
+   "size_stored": [
+    749,
+    952
+   ],
+   "size_rel_diff": 0.0010504201680672268,
+   "ink_iou_strict": 0.05976651769129451,
+   "ink_iou": 0.08068874505121598,
+   "ink_share_mine": 0.06991675174742794,
+   "ink_share_stored": 0.05946023269120732
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-КК-ПА",
+   "disc": "SS",
+   "pi": 6,
+   "bid": "6HA3-ALAQ-EAW",
+   "coords": [
+    211.0,
+    87.0,
+    10769.0,
+    8929.0
+   ],
+   "pw": 14041,
+   "ph": 9933,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_6HA3-ALAQ-EAW.png",
+   "src": "cloud",
+   "crop_px": [
+    211,
+    87,
+    10769,
+    8929
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3520,
+    2948
+   ],
+   "size_stored": [
+    3525,
+    2953
+   ],
+   "size_rel_diff": 0.0016931933626820183,
+   "ink_iou_strict": 0.10233562961986813,
+   "ink_iou": 0.1476064874613295,
+   "ink_share_mine": 0.08673995081411126,
+   "ink_share_stored": 0.07871110614283952
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-АПЗ.АПС-К5",
+   "disc": "SS",
+   "pi": 17,
+   "bid": "49QH-MDGJ-339",
+   "coords": [
+    3466.0,
+    3536.0,
+    4920.0,
+    4638.0
+   ],
+   "pw": 4962,
+   "ph": 7016,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/03_analysis/latest/blocks_stage02_100/block_49QH-MDGJ-339.png",
+   "src": "cloud",
+   "crop_px": [
+    3466,
+    3536,
+    4920,
+    4638
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    607
+   ],
+   "size_stored": [
+    800,
+    609
+   ],
+   "size_rel_diff": 0.003284072249589491,
+   "ink_iou_strict": 0.33052119194441293,
+   "ink_iou": 0.5297179497925485,
+   "ink_share_mine": 0.10692133443163097,
+   "ink_share_stored": 0.10532537067545304
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СКД_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СКД_V1",
+   "disc": "SS",
+   "pi": 20,
+   "bid": "blk_220bea0892174f33b04e4621fc32b5a0",
+   "coords": [
+    220.0,
+    46.0,
+    2869.0,
+    6955.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СКД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_220bea0892174f33b04e4621fc32b5a0.png",
+   "src": "cloud",
+   "crop_px": [
+    220,
+    46,
+    2869,
+    6955
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    884,
+    2304
+   ],
+   "size_stored": [
+    884,
+    2303
+   ],
+   "size_rel_diff": 0.0004342162396873643,
+   "ink_iou_strict": 0.4937343761734634,
+   "ink_iou": 0.8714181159396507,
+   "ink_share_mine": 0.14127451307855385,
+   "ink_share_stored": 0.16815809793639222
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-1_V1",
+   "disc": "SS",
+   "pi": 6,
+   "bid": "blk_1f2b83ae80384fd28796564541fb8f0b",
+   "coords": [
+    233.0,
+    52.0,
+    8028.0,
+    4931.0
+   ],
+   "pw": 10525,
+   "ph": 4963,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_1f2b83ae80384fd28796564541fb8f0b.png",
+   "src": "cloud",
+   "crop_px": [
+    233,
+    52,
+    8028,
+    4931
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2599,
+    1627
+   ],
+   "size_stored": [
+    2599,
+    1627
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8856696681718725,
+   "ink_share_mine": 0.037340965853019444,
+   "ink_share_stored": 0.046539104326684205
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-5_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-5_V1",
+   "disc": "SS",
+   "pi": 14,
+   "bid": "blk_fe1eb6476f0245e7a995293112e8ae1d",
+   "coords": [
+    213.0,
+    49.0,
+    4629.0,
+    9865.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-5_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_fe1eb6476f0245e7a995293112e8ae1d.png",
+   "src": "cloud",
+   "crop_px": [
+    213,
+    49,
+    4629,
+    9865
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1473,
+    3273
+   ],
+   "size_stored": [
+    1473,
+    3272
+   ],
+   "size_rel_diff": 0.0003056234718826406,
+   "ink_iou_strict": 0.47839708606102604,
+   "ink_iou": 0.8201742644709459,
+   "ink_share_mine": 0.07862801826520399,
+   "ink_share_stored": 0.08986471233631611
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-РФ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-РФ_V1",
+   "disc": "SS",
+   "pi": 23,
+   "bid": "blk_f4e8b548e382441a984d22133c901e16",
+   "coords": [
+    249.0,
+    81.0,
+    3673.0,
+    5751.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-РФ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f4e8b548e382441a984d22133c901e16.png",
+   "src": "cloud",
+   "crop_px": [
+    249,
+    81,
+    3673,
+    5751
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1143,
+    1891
+   ],
+   "size_stored": [
+    1142,
+    1891
+   ],
+   "size_rel_diff": 0.0008756567425569177,
+   "ink_iou_strict": 0.49947536962594535,
+   "ink_iou": 0.818325588833705,
+   "ink_share_mine": 0.06980618859173465,
+   "ink_share_stored": 0.08650108681458211
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-1_V1",
+   "disc": "SS",
+   "pi": 24,
+   "bid": "blk_21a72f3fb2834bfe88f20d3e3a51892a",
+   "coords": [
+    8976.0,
+    5745.0,
+    9945.0,
+    6599.0
+   ],
+   "pw": 14561,
+   "ph": 6869,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_21a72f3fb2834bfe88f20d3e3a51892a.png",
+   "src": "cloud",
+   "crop_px": [
+    8976,
+    5745,
+    9945,
+    6599
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    706
+   ],
+   "size_stored": [
+    800,
+    705
+   ],
+   "size_rel_diff": 0.0014184397163120568,
+   "ink_iou_strict": 0.49515643853775426,
+   "ink_iou": 0.7835354610302717,
+   "ink_share_mine": 0.07702659574468085,
+   "ink_share_stored": 0.09360638297872341
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЛВС_V1",
+   "disc": "SS",
+   "pi": 11,
+   "bid": "blk_9a395ca2423245afa49bd2849cf79128",
+   "coords": [
+    7894.0,
+    2805.0,
+    11840.0,
+    6503.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_9a395ca2423245afa49bd2849cf79128.png",
+   "src": "cloud",
+   "crop_px": [
+    7894,
+    2805,
+    11840,
+    6503
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1554,
+    1456
+   ],
+   "size_stored": [
+    1554,
+    1456
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8726110198805073,
+   "ink_share_mine": 0.02990156561585133,
+   "ink_share_stored": 0.03713343445486303
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СКД_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СКД_V1",
+   "disc": "SS",
+   "pi": 7,
+   "bid": "blk_2c3b713ef6e44501a1639a65a2e247d8",
+   "coords": [
+    939.0,
+    33.0,
+    4465.0,
+    8997.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СКД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_2c3b713ef6e44501a1639a65a2e247d8.png",
+   "src": "cloud",
+   "crop_px": [
+    939,
+    33,
+    4465,
+    8997
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1177,
+    2988
+   ],
+   "size_stored": [
+    1176,
+    2989
+   ],
+   "size_rel_diff": 0.0008503401360544217,
+   "ink_iou_strict": 0.4989006083300574,
+   "ink_iou": 0.83906389363072,
+   "ink_share_mine": 0.09651104417670683,
+   "ink_share_stored": 0.11818674926463223
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-2_V1",
+   "disc": "SS",
+   "pi": 58,
+   "bid": "blk_7e28e5c40a5647709aa499081cb6c220",
+   "coords": [
+    488.0,
+    102.0,
+    3275.0,
+    7044.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_7e28e5c40a5647709aa499081cb6c220.png",
+   "src": "cloud",
+   "crop_px": [
+    488,
+    102,
+    3275,
+    7044
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    930,
+    2315
+   ],
+   "size_stored": [
+    929,
+    2314
+   ],
+   "size_rel_diff": 0.001076426264800861,
+   "ink_iou_strict": 0.46787423329103217,
+   "ink_iou": 0.6483097317504662,
+   "ink_share_mine": 0.042683511140593176,
+   "ink_share_stored": 0.04956863868826714
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-АПЗ.АПС-К5",
+   "disc": "SS",
+   "pi": 18,
+   "bid": "9P3V-RQWJ-HGN",
+   "coords": [
+    229.0,
+    3227.0,
+    3988.0,
+    4388.0
+   ],
+   "pw": 4962,
+   "ph": 7016,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К5/versions/v002/03_analysis/latest/blocks_stage02_100/block_9P3V-RQWJ-HGN.png",
+   "src": "cloud",
+   "crop_px": [
+    229,
+    3227,
+    3988,
+    4388
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1254,
+    388
+   ],
+   "size_stored": [
+    1259,
+    393
+   ],
+   "size_rel_diff": 0.01272264631043257,
+   "ink_iou_strict": 0.37921630230833003,
+   "ink_iou": 0.6387890736795243,
+   "ink_share_mine": 0.10010235288314508,
+   "ink_share_stored": 0.10006535786514083
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-4_V1",
+   "disc": "SS",
+   "pi": 31,
+   "bid": "blk_16d4b4b950924ae4968231138d81d255",
+   "coords": [
+    199.0,
+    71.0,
+    4949.0,
+    4965.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_16d4b4b950924ae4968231138d81d255.png",
+   "src": "cloud",
+   "crop_px": [
+    199,
+    71,
+    4949,
+    4965
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1584,
+    1632
+   ],
+   "size_stored": [
+    1584,
+    1632
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.49972638232764877,
+   "ink_iou": 0.850470697427738,
+   "ink_share_mine": 0.051607140646662705,
+   "ink_share_stored": 0.06780813651218064
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО2-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЭО2-2_V1",
+   "disc": "EOM",
+   "pi": 27,
+   "bid": "blk_a6efec3e4b7e4d43ba830fc9400daaa7",
+   "coords": [
+    196.0,
+    49.0,
+    6543.0,
+    9881.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО2-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_a6efec3e4b7e4d43ba830fc9400daaa7.png",
+   "src": "cloud",
+   "crop_px": [
+    196,
+    49,
+    6543,
+    9881
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2116,
+    3278
+   ],
+   "size_stored": [
+    2116,
+    3278
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.35469029753535114,
+   "ink_iou": 0.5947619596451713,
+   "ink_share_mine": 0.07028756757255508,
+   "ink_share_stored": 0.046560907280131854
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЛВС_V1",
+   "disc": "SS",
+   "pi": 11,
+   "bid": "blk_39700526304a4b2fbeed16aa7f068e5f",
+   "coords": [
+    174.0,
+    99.0,
+    8291.0,
+    8314.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_39700526304a4b2fbeed16aa7f068e5f.png",
+   "src": "cloud",
+   "crop_px": [
+    174,
+    99,
+    8291,
+    8314
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3196,
+    3235
+   ],
+   "size_stored": [
+    3196,
+    3235
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4989324529052757,
+   "ink_iou": 0.9868593535569959,
+   "ink_share_mine": 0.5471161788402428,
+   "ink_share_stored": 0.5470805856625264
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТС_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОТС_V1",
+   "disc": "SS",
+   "pi": 17,
+   "bid": "blk_502e377ede2a4dca873aedc8f668ef61",
+   "coords": [
+    388.0,
+    81.0,
+    3546.0,
+    6284.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТС_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_502e377ede2a4dca873aedc8f668ef61.png",
+   "src": "cloud",
+   "crop_px": [
+    388,
+    81,
+    3546,
+    6284
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1053,
+    2069
+   ],
+   "size_stored": [
+    1053,
+    2068
+   ],
+   "size_rel_diff": 0.00048355899419729207,
+   "ink_iou_strict": 0.47561614621884457,
+   "ink_iou": 0.7872295736189876,
+   "ink_share_mine": 0.08855374990126763,
+   "ink_share_stored": 0.102501189380622
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_2-1.1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ЭМ_2-1.1",
+   "disc": "EOM",
+   "pi": 22,
+   "bid": "blk_6c9b841bbf73425bb28b7ad43f0893ae",
+   "coords": [
+    184.0,
+    0.0,
+    4634.0,
+    9882.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_2-1.1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_6c9b841bbf73425bb28b7ad43f0893ae.png",
+   "src": "cloud",
+   "crop_px": [
+    184,
+    0,
+    4634,
+    9882
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1484,
+    3294
+   ],
+   "size_stored": [
+    1484,
+    3294
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.9231331845959841,
+   "ink_share_mine": 0.10891361734232133,
+   "ink_share_stored": 0.10850877279117303
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СДС_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СДС_V1",
+   "disc": "SS",
+   "pi": 6,
+   "bid": "blk_ff8432b37d7341e5aa90ef1d608b215c",
+   "coords": [
+    662.0,
+    33.0,
+    4817.0,
+    8818.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СДС_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_ff8432b37d7341e5aa90ef1d608b215c.png",
+   "src": "cloud",
+   "crop_px": [
+    662,
+    33,
+    4817,
+    8818
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1386,
+    2929
+   ],
+   "size_stored": [
+    1385,
+    2929
+   ],
+   "size_rel_diff": 0.0007220216606498195,
+   "ink_iou_strict": 0.49590902041216817,
+   "ink_iou": 0.8310525714359637,
+   "ink_share_mine": 0.05531711393472224,
+   "ink_share_stored": 0.07042262548176889
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-ОО542664-ВК1-1.1.3_V1",
+   "disc": "VK",
+   "pi": 100,
+   "bid": "blk_6440de059d7344939ca06a30591511a2",
+   "coords": [
+    44.0,
+    44.0,
+    11890.0,
+    8084.0
+   ],
+   "pw": 11890,
+   "ph": 8411,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/VK/documents/ПД-ОО542664-ВК1-1.1.3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_6440de059d7344939ca06a30591511a2.png",
+   "src": "cloud",
+   "crop_px": [
+    44,
+    44,
+    11890,
+    8084
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4664,
+    3166
+   ],
+   "size_stored": [
+    4664,
+    3166
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4856230988363672,
+   "ink_iou": 0.8382126325123221,
+   "ink_share_mine": 0.059828971848185426,
+   "ink_share_stored": 0.05757104863098379
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-1_V1",
+   "disc": "SS",
+   "pi": 15,
+   "bid": "blk_26f5492043f2490e92bcb2f2a3439afe",
+   "coords": [
+    13320.0,
+    2084.0,
+    14097.0,
+    3838.0
+   ],
+   "pw": 14561,
+   "ph": 6869,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_26f5492043f2490e92bcb2f2a3439afe.png",
+   "src": "cloud",
+   "crop_px": [
+    13320,
+    2084,
+    14097,
+    3838
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    375,
+    847
+   ],
+   "size_stored": [
+    375,
+    846
+   ],
+   "size_rel_diff": 0.001182033096926714,
+   "ink_iou_strict": 0.49943940951135196,
+   "ink_iou": 0.8850096445301736,
+   "ink_share_mine": 0.05339007092198582,
+   "ink_share_stored": 0.06662253743104807
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/02_work/document.pdf",
+   "doc": "13АВ-РД-АПЗ.АПС-К4",
+   "disc": "SS",
+   "pi": 7,
+   "bid": "9V36-VHA4-MRK",
+   "coords": [
+    299.0,
+    121.0,
+    10467.0,
+    6913.0
+   ],
+   "pw": 14041,
+   "ph": 9933,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АПЗ.АПС-К4/versions/v003/03_analysis/latest/blocks_stage02_100/block_9V36-VHA4-MRK.png",
+   "src": "cloud",
+   "crop_px": [
+    299,
+    121,
+    10467,
+    6913
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3391,
+    2265
+   ],
+   "size_stored": [
+    3395,
+    2270
+   ],
+   "size_rel_diff": 0.0022026431718061676,
+   "ink_iou_strict": 0.139737588930679,
+   "ink_iou": 0.21290849488262595,
+   "ink_share_mine": 0.08277943888607879,
+   "ink_share_stored": 0.08197364403761938
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТ_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОТ_V1",
+   "disc": "SS",
+   "pi": 15,
+   "bid": "blk_5c09ad7664bb498087d17208872d1945",
+   "coords": [
+    226.0,
+    81.0,
+    4923.0,
+    6295.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТ_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5c09ad7664bb498087d17208872d1945.png",
+   "src": "cloud",
+   "crop_px": [
+    226,
+    81,
+    4923,
+    6295
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1566,
+    2073
+   ],
+   "size_stored": [
+    1566,
+    2072
+   ],
+   "size_rel_diff": 0.00048262548262548264,
+   "ink_iou_strict": 0.38009273534356874,
+   "ink_iou": 0.6093471656424774,
+   "ink_share_mine": 0.08347972356593046,
+   "ink_share_stored": 0.06991566689842552
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_2-1.1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ЭМ_2-1.1",
+   "disc": "EOM",
+   "pi": 13,
+   "bid": "blk_def02de206aa49f09344849dfe0184ab",
+   "coords": [
+    142.0,
+    29.0,
+    7370.0,
+    2804.0
+   ],
+   "pw": 7442,
+   "ph": 3509,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_2-1.1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_def02de206aa49f09344849dfe0184ab.png",
+   "src": "cloud",
+   "crop_px": [
+    142,
+    29,
+    7370,
+    2804
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2410,
+    926
+   ],
+   "size_stored": [
+    2410,
+    925
+   ],
+   "size_rel_diff": 0.001081081081081081,
+   "ink_iou_strict": 0.49989679665800657,
+   "ink_iou": 0.7989722118431087,
+   "ink_share_mine": 0.0787672984187507,
+   "ink_share_stored": 0.07896063698553325
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-2.2_V1",
+   "disc": "OV",
+   "pi": 11,
+   "bid": "blk_8879694cc7734a708f040cfe926dbdb2",
+   "coords": [
+    7369.0,
+    332.0,
+    8782.0,
+    1592.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_8879694cc7734a708f040cfe926dbdb2.png",
+   "src": "cloud",
+   "crop_px": [
+    7369,
+    332,
+    8782,
+    1592
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    715
+   ],
+   "size_stored": [
+    800,
+    714
+   ],
+   "size_rel_diff": 0.0014005602240896359,
+   "ink_iou_strict": 0.4984581497797357,
+   "ink_iou": 0.854068211581165,
+   "ink_share_mine": 0.031199229691876752,
+   "ink_share_stored": 0.03705357142857143
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО1-3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЭО1-3_V1",
+   "disc": "EOM",
+   "pi": 24,
+   "bid": "blk_5cce6579c202437189b1e97e23caf3ea",
+   "coords": [
+    69.0,
+    41.0,
+    9129.0,
+    6075.0
+   ],
+   "pw": 13027,
+   "ph": 6142,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00542664-ЭО1-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5cce6579c202437189b1e97e23caf3ea.png",
+   "src": "cloud",
+   "crop_px": [
+    69,
+    41,
+    9129,
+    6075
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4885,
+    3253
+   ],
+   "size_stored": [
+    4885,
+    3253
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4999599928693173,
+   "ink_iou": 0.9075094095157309,
+   "ink_share_mine": 0.09209204887953204,
+   "ink_share_stored": 0.09321111667334239
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-3-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ОВ2-3-РД_V1",
+   "disc": "OV",
+   "pi": 8,
+   "bid": "blk_8acdd602afa34343a47d6d7cf2279489",
+   "coords": [
+    188.0,
+    82.0,
+    6126.0,
+    9930.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/OV/documents/СТ26_01-14-ОВ2-3-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_8acdd602afa34343a47d6d7cf2279489.png",
+   "src": "cloud",
+   "crop_px": [
+    188,
+    82,
+    6126,
+    9930
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1980,
+    3283
+   ],
+   "size_stored": [
+    1980,
+    3283
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4570243300635753,
+   "ink_iou": 0.776798124981516,
+   "ink_share_mine": 0.0742225791266303,
+   "ink_share_stored": 0.0671775630197805
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ОВ1-2.2_V1",
+   "disc": "OV",
+   "pi": 11,
+   "bid": "blk_b6d2a20ce1bd4377b2cdee1e790a8ba2",
+   "coords": [
+    238.0,
+    266.0,
+    5517.0,
+    1760.0
+   ],
+   "pw": 9934,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/OV/documents/ПД-00542664-ОВ1-2.2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b6d2a20ce1bd4377b2cdee1e790a8ba2.png",
+   "src": "cloud",
+   "crop_px": [
+    238,
+    266,
+    5517,
+    1760
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1760,
+    499
+   ],
+   "size_stored": [
+    1760,
+    499
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.499863324494984,
+   "ink_iou": 0.8686770598218816,
+   "ink_share_mine": 0.06296684277646201,
+   "ink_share_stored": 0.08057820185826198
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТС_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОТС_V1",
+   "disc": "SS",
+   "pi": 10,
+   "bid": "blk_26c93252ef8447ff8980c7beeb825c6c",
+   "coords": [
+    226.0,
+    58.0,
+    4737.0,
+    5971.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОТС_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_26c93252ef8447ff8980c7beeb825c6c.png",
+   "src": "cloud",
+   "crop_px": [
+    226,
+    58,
+    4737,
+    5971
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1504,
+    1972
+   ],
+   "size_stored": [
+    1504,
+    1972
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.4682971427769218,
+   "ink_iou": 0.8895632687341544,
+   "ink_share_mine": 0.08006741994303224,
+   "ink_share_stored": 0.08941942514349834
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-2_V1",
+   "disc": "SS",
+   "pi": 69,
+   "bid": "blk_102a79be285d40daa3b699594dc186f5",
+   "coords": [
+    244.0,
+    66.0,
+    4921.0,
+    6219.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_102a79be285d40daa3b699594dc186f5.png",
+   "src": "cloud",
+   "crop_px": [
+    244,
+    66,
+    4921,
+    6219
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1560,
+    2052
+   ],
+   "size_stored": [
+    1559,
+    2052
+   ],
+   "size_rel_diff": 0.0006414368184733803,
+   "ink_iou_strict": 0.4975842885412389,
+   "ink_iou": 0.8895628522201507,
+   "ink_share_mine": 0.1832261771240874,
+   "ink_share_stored": 0.1964237709232814
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-2_V1",
+   "disc": "SS",
+   "pi": 55,
+   "bid": "blk_5ecdb8dc9ca6449897590916f2d54665",
+   "coords": [
+    408.0,
+    536.0,
+    2845.0,
+    5615.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-2_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_5ecdb8dc9ca6449897590916f2d54665.png",
+   "src": "cloud",
+   "crop_px": [
+    408,
+    536,
+    2845,
+    5615
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    814,
+    1694
+   ],
+   "size_stored": [
+    813,
+    1694
+   ],
+   "size_rel_diff": 0.0012300123001230013,
+   "ink_iou_strict": 0.4982482774728483,
+   "ink_iou": 0.8232414636440598,
+   "ink_share_mine": 0.08279202626737012,
+   "ink_share_stored": 0.11276613356452336
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-СОУЭ-3_V1",
+   "disc": "SS",
+   "pi": 6,
+   "bid": "blk_f31aabf322e1479d9750ae6e0f4e1a5a",
+   "coords": [
+    206.0,
+    71.0,
+    8072.0,
+    4879.0
+   ],
+   "pw": 10525,
+   "ph": 4963,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-СОУЭ-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_f31aabf322e1479d9750ae6e0f4e1a5a.png",
+   "src": "cloud",
+   "crop_px": [
+    206,
+    71,
+    8072,
+    4879
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    2623,
+    1604
+   ],
+   "size_stored": [
+    2622,
+    1603
+   ],
+   "size_rel_diff": 0.0006238303181534623,
+   "ink_iou_strict": 0.49838750489950434,
+   "ink_iou": 0.7879894972142001,
+   "ink_share_mine": 0.033887405051455294,
+   "ink_share_stored": 0.04353988255240341
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-1-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭОМ-1-РД_V1",
+   "disc": "EOM",
+   "pi": 86,
+   "bid": "blk_4e54bd0e325248c18f219ff34bb521f4",
+   "coords": [
+    259.0,
+    246.0,
+    3450.0,
+    1943.0
+   ],
+   "pw": 3508,
+   "ph": 2481,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-1-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_4e54bd0e325248c18f219ff34bb521f4.png",
+   "src": null,
+   "crop_px": [
+    259,
+    246,
+    3450,
+    1943
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1064,
+    567
+   ],
+   "size_stored": [
+    1064,
+    566
+   ],
+   "size_rel_diff": 0.0017667844522968198,
+   "ink_iou_strict": 0.4805248521543227,
+   "ink_iou": 0.7520945269101175,
+   "ink_share_mine": 0.07196989824384283,
+   "ink_share_stored": 0.07352413719811897
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/02_work/document.pdf",
+   "doc": "13АВ-РД-КК-ПА",
+   "disc": "SS",
+   "pi": 5,
+   "bid": "6UHJ-4MMP-NYR",
+   "coords": [
+    10085.0,
+    9005.0,
+    11743.0,
+    9787.0
+   ],
+   "pw": 14041,
+   "ph": 9933,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-КК-ПА/versions/v002/03_analysis/latest/blocks_stage02_100/block_6UHJ-4MMP-NYR.png",
+   "src": "pdf_fallback",
+   "crop_px": [
+    10085,
+    9005,
+    11743,
+    9787
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    801,
+    379
+   ],
+   "size_stored": [
+    801,
+    379
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 1.0,
+   "ink_share_mine": 0.1491341627714697,
+   "ink_share_stored": 0.1491341627714697
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-1_V1",
+   "disc": "SS",
+   "pi": 16,
+   "bid": "blk_d3f956dd8b8b4febbee8776ed74a962b",
+   "coords": [
+    155.0,
+    0.0,
+    10460.0,
+    6785.0
+   ],
+   "pw": 14561,
+   "ph": 6869,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_d3f956dd8b8b4febbee8776ed74a962b.png",
+   "src": "cloud",
+   "crop_px": [
+    155,
+    0,
+    10460,
+    6785
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    4969,
+    3271
+   ],
+   "size_stored": [
+    4104,
+    2702
+   ],
+   "size_rel_diff": 0.2107699805068226,
+   "ink_iou_strict": 0.09715108923636928,
+   "ink_iou": 0.1434651181185055,
+   "ink_share_mine": 0.09173237137172234,
+   "ink_share_stored": 0.11715358127616105
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ЛВС_V1",
+   "disc": "SS",
+   "pi": 36,
+   "bid": "blk_363b56c1ff8d493f99c7bdb2d6467db4",
+   "coords": [
+    302.0,
+    128.0,
+    1956.0,
+    2742.0
+   ],
+   "pw": 4963,
+   "ph": 3509,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ЛВС_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_363b56c1ff8d493f99c7bdb2d6467db4.png",
+   "src": "cloud",
+   "crop_px": [
+    302,
+    128,
+    1956,
+    2742
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    552,
+    872
+   ],
+   "size_stored": [
+    552,
+    872
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.49703770118579854,
+   "ink_iou": 0.885073307684309,
+   "ink_share_mine": 0.1879279683552719,
+   "ink_share_stored": 0.2255767185214732
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-3-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭОМ-3-РД_V1",
+   "disc": "EOM",
+   "pi": 78,
+   "bid": "blk_3f62164786a046728c3f6fbdddeb40fc",
+   "coords": [
+    180.0,
+    175.0,
+    3433.0,
+    1700.0
+   ],
+   "pw": 3508,
+   "ph": 2481,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-3-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_3f62164786a046728c3f6fbdddeb40fc.png",
+   "src": null,
+   "crop_px": [
+    180,
+    175,
+    3433,
+    1700
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1085,
+    509
+   ],
+   "size_stored": [
+    1085,
+    509
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8695825337629892,
+   "ink_share_mine": 0.07925724063628874,
+   "ink_share_stored": 0.07964654649488923
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_1-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ЭМ_1-1_V1",
+   "disc": "EOM",
+   "pi": 19,
+   "bid": "blk_14ebf60deeb142dab6a9cc58b2f367e5",
+   "coords": [
+    5529.0,
+    65.0,
+    6968.0,
+    2699.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_1-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_14ebf60deeb142dab6a9cc58b2f367e5.png",
+   "src": "cloud",
+   "crop_px": [
+    5529,
+    65,
+    6968,
+    2699
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    481,
+    879
+   ],
+   "size_stored": [
+    480,
+    879
+   ],
+   "size_rel_diff": 0.0020833333333333333,
+   "ink_iou_strict": 0.49981173369731485,
+   "ink_iou": 0.9016529079280083,
+   "ink_share_mine": 0.17296643913538112,
+   "ink_share_stored": 0.18748577929465302
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_1-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ЭМ_1-1_V1",
+   "disc": "EOM",
+   "pi": 11,
+   "bid": "blk_b5161d3963ec407389b439547548968f",
+   "coords": [
+    195.0,
+    39.0,
+    10790.0,
+    4946.0
+   ],
+   "pw": 14042,
+   "ph": 4963,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_1-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_b5161d3963ec407389b439547548968f.png",
+   "src": "cloud",
+   "crop_px": [
+    195,
+    39,
+    10790,
+    4946
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    3533,
+    1637
+   ],
+   "size_stored": [
+    3532,
+    1636
+   ],
+   "size_rel_diff": 0.0006112469437652812,
+   "ink_iou_strict": 0.49524650293889827,
+   "ink_iou": 0.7917806881778477,
+   "ink_share_mine": 0.051238484605991466,
+   "ink_share_stored": 0.06979550570820192
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-4_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-4_V1",
+   "disc": "SS",
+   "pi": 9,
+   "bid": "blk_73edcb2a2c924100983fd49ad13c9510",
+   "coords": [
+    245.0,
+    49.0,
+    4678.0,
+    9472.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-4_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_73edcb2a2c924100983fd49ad13c9510.png",
+   "src": "cloud",
+   "crop_px": [
+    245,
+    49,
+    4678,
+    9472
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1479,
+    3142
+   ],
+   "size_stored": [
+    1478,
+    3141
+   ],
+   "size_rel_diff": 0.0006765899864682003,
+   "ink_iou_strict": 0.4678880537752573,
+   "ink_iou": 0.7597123916652765,
+   "ink_share_mine": 0.10109925947753726,
+   "ink_share_stored": 0.11227365684717251
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ППТ-ПА V1/versions/v001/02_work/document.pdf",
+   "doc": "13АВ-РД-ППТ-ПА V1",
+   "disc": "VK",
+   "pi": 11,
+   "bid": "9DWQ-NEDP-VVQ",
+   "coords": [
+    279.0,
+    73.0,
+    3686.0,
+    3404.0
+   ],
+   "pw": 4962,
+   "ph": 3508,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/VK/documents/13АВ-РД-ППТ-ПА V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_9DWQ-NEDP-VVQ.png",
+   "src": "cloud",
+   "crop_px": [
+    279,
+    73,
+    3686,
+    3404
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1136,
+    1111
+   ],
+   "size_stored": [
+    1142,
+    1116
+   ],
+   "size_rel_diff": 0.005253940455341506,
+   "ink_iou_strict": 0.11762351198270121,
+   "ink_iou": 0.16231768095710317,
+   "ink_share_mine": 0.0626069649218443,
+   "ink_share_stored": 0.05133682382322739
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_1-1_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00260568-ЭМ_1-1_V1",
+   "disc": "EOM",
+   "pi": 15,
+   "bid": "blk_21eb590e25d445f5bb447144af6ddb54",
+   "coords": [
+    2094.0,
+    8229.0,
+    4727.0,
+    9865.0
+   ],
+   "pw": 7017,
+   "ph": 9934,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/EOM/documents/ПД-00260568-ЭМ_1-1_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_21eb590e25d445f5bb447144af6ddb54.png",
+   "src": "cloud",
+   "crop_px": [
+    2094,
+    8229,
+    4727,
+    9865
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    879,
+    547
+   ],
+   "size_stored": [
+    878,
+    546
+   ],
+   "size_rel_diff": 0.0018315018315018315,
+   "ink_iou_strict": 0.49976316101103935,
+   "ink_iou": 0.8729793324030029,
+   "ink_share_mine": 0.13604428980283195,
+   "ink_share_stored": 0.14665365007050657
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-3-РД_V1/versions/v001/02_work/document.pdf",
+   "doc": "СТ26_01-14-ЭОМ-3-РД_V1",
+   "disc": "EOM",
+   "pi": 70,
+   "bid": "blk_eddb399efb414499b7855bc147595986",
+   "coords": [
+    331.0,
+    89.0,
+    4908.0,
+    2522.0
+   ],
+   "pw": 4961,
+   "ph": 3508,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/256_Primavera_K14_Spartak/disciplines/EOM/documents/СТ26_01-14-ЭОМ-3-РД_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_eddb399efb414499b7855bc147595986.png",
+   "src": null,
+   "crop_px": [
+    331,
+    89,
+    4908,
+    2522
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    1526,
+    812
+   ],
+   "size_stored": [
+    1526,
+    812
+   ],
+   "size_rel_diff": 0.0,
+   "ink_iou_strict": 0.5,
+   "ink_iou": 0.8571856688324524,
+   "ink_share_mine": 0.05766226136136201,
+   "ink_share_stored": 0.0593876905396768
+  },
+  {
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-3_V1/versions/v001/02_work/document.pdf",
+   "doc": "ПД-00542664-ПС-3_V1",
+   "disc": "SS",
+   "pi": 13,
+   "bid": "blk_df338040093749859e531fe789723afe",
+   "coords": [
+    231.0,
+    23.0,
+    2713.0,
+    6943.0
+   ],
+   "pw": 4963,
+   "ph": 7017,
+   "rot": 270,
+   "png": "/home/coder/projects/PDF-proverka/projects_v2/objects/314_Sobytie_6_1_Donstroy/disciplines/SS/documents/ПД-00542664-ПС-3_V1/versions/v001/03_analysis/latest/blocks_stage02_100/block_blk_df338040093749859e531fe789723afe.png",
+   "src": "cloud",
+   "crop_px": [
+    231,
+    23,
+    2713,
+    6943
+   ],
+   "crop_px_equals_coords": true,
+   "size_mine": [
+    829,
+    2308
+   ],
+   "size_stored": [
+    828,
+    2307
+   ],
+   "size_rel_diff": 0.0012077294685990338,
+   "ink_iou_strict": 0.48868437996084757,
+   "ink_iou": 0.7669921098436989,
+   "ink_share_mine": 0.12637184875269344,
+   "ink_share_stored": 0.15382714653365415
+  }
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "n_sampled": 4000,
+ "n_ok": 4000,
+ "n_error": 0,
+ "seed": 24680,
+ "share_no_text_at_all": 0.04425,
+ "share_no_loose_designation": 0.09,
+ "share_no_mark_letter_and_digit": 0.2225,
+ "share_no_mark_near_geometry": 0.29225,
+ "marks_per_block": {
+  "10": 0.0,
+  "25": 1.0,
+  "50": 4.0,
+  "75": 13.0,
+  "90": 33.0
+ },
+ "marks_near_per_block": {
+  "10": 0.0,
+  "25": 0.0,
+  "50": 2.0,
+  "75": 10.0,
+  "90": 31.0
+ },
+ "by_class": {
+  "curved_text": {
+   "n": 4,
+   "no_text": 1.0,
+   "no_mark": 1.0,
+   "no_mark_near_geom": 1.0
+  },
+  "drawing": {
+   "n": 2256,
+   "no_text": 0.02438,
+   "no_mark": 0.13298,
+   "no_mark_near_geom": 0.17819
+  },
+  "legend_notes": {
+   "n": 30,
+   "no_text": 0.0,
+   "no_mark": 0.13333,
+   "no_mark_near_geom": 0.2
+  },
+  "raster": {
+   "n": 92,
+   "no_text": 0.42391,
+   "no_mark": 0.83696,
+   "no_mark_near_geom": 0.94565
+  },
+  "stamp": {
+   "n": 1392,
+   "no_text": 0.04885,
+   "no_mark": 0.33908,
+   "no_mark_near_geom": 0.44397
+  },
+  "table": {
+   "n": 52,
+   "no_text": 0.0,
+   "no_mark": 0.11538,
+   "no_mark_near_geom": 0.19231
+  },
+  "vector_raster_mix": {
+   "n": 174,
+   "no_text": 0.06322,
+   "no_mark": 0.15517,
+   "no_mark_near_geom": 0.24138
+  }
+ },
+ "by_discipline": {
+  "AR": {
+   "n": 943,
+   "no_mark_near_geom": 0.27359
+  },
+  "EOM": {
+   "n": 425,
+   "no_mark_near_geom": 0.24235
+  },
+  "GP": {
+   "n": 11,
+   "no_mark_near_geom": 0.18182
+  },
+  "ITP": {
+   "n": 50,
+   "no_mark_near_geom": 0.62
+  },
+  "KJ": {
+   "n": 706,
+   "no_mark_near_geom": 0.22805
+  },
+  "KM": {
+   "n": 89,
+   "no_mark_near_geom": 0.19101
+  },
+  "OV": {
+   "n": 726,
+   "no_mark_near_geom": 0.39945
+  },
+  "POS": {
+   "n": 8,
+   "no_mark_near_geom": 0.625
+  },
+  "PT": {
+   "n": 36,
+   "no_mark_near_geom": 0.33333
+  },
+  "SS": {
+   "n": 584,
+   "no_mark_near_geom": 0.20377
+  },
+  "TX": {
+   "n": 28,
+   "no_mark_near_geom": 0.5
+  },
+  "VK": {
+   "n": 394,
+   "no_mark_near_geom": 0.39848
+  }
+ }
+}

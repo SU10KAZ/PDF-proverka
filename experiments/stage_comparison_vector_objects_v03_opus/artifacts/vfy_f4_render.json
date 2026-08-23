@@ -1,0 +1,3408 @@
+{
+ "summary": {
+  "prod_profile": {
+   "n": 77,
+   "n_err": 0,
+   "module_equals_production": 77,
+   "mine_equals_production": 77,
+   "size_mismatch_module": 0
+  },
+  "defaults": {
+   "n": 77,
+   "n_err": 0,
+   "module_equals_production": 1,
+   "mine_equals_production": 77,
+   "size_mismatch_module": 76
+  }
+ },
+ "rows": [
+  {
+   "bid": "6RMF-CR66-V4M",
+   "rot": 0,
+   "doc": "13АВ-РД-КЖ7.2-К1",
+   "pi": 7,
+   "coords": [
+    5531.0,
+    4859.0,
+    6797.0,
+    5724.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     548
+    ],
+    "mod_size": [
+     801,
+     548
+    ],
+    "mine_size": [
+     801,
+     548
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1026
+    ],
+    "mod_size": [
+     801,
+     548
+    ],
+    "mine_size": [
+     1501,
+     1026
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "HPQ6-J69D-URD",
+   "rot": 0,
+   "doc": "13АВ-РД-АСКУВТ",
+   "pi": 32,
+   "coords": [
+    7673.0,
+    6300.0,
+    9869.0,
+    6958.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     240
+    ],
+    "mod_size": [
+     801,
+     240
+    ],
+    "mine_size": [
+     801,
+     240
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     451
+    ],
+    "mod_size": [
+     801,
+     240
+    ],
+    "mine_size": [
+     1501,
+     451
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_7da59bdc7d5c480a8265143126656dfb",
+   "rot": 0,
+   "doc": "СТ26_01-14-ОВ2-3-РД_V1",
+   "pi": 187,
+   "coords": [
+    49.0,
+    17.0,
+    2396.0,
+    3418.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     783,
+     1135
+    ],
+    "mod_size": [
+     783,
+     1135
+    ],
+    "mine_size": [
+     783,
+     1135
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1036,
+     1501
+    ],
+    "mod_size": [
+     553,
+     801
+    ],
+    "mine_size": [
+     1036,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "4FPJ-J7FR-97Y",
+   "rot": 0,
+   "doc": "13АВ-РД-АК-К4 (Книга 2)",
+   "pi": 7,
+   "coords": [
+    10801.0,
+    5649.0,
+    12905.0,
+    7239.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     606
+    ],
+    "mod_size": [
+     801,
+     606
+    ],
+    "mine_size": [
+     801,
+     606
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1134
+    ],
+    "mod_size": [
+     801,
+     606
+    ],
+    "mine_size": [
+     1501,
+     1134
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "99P4-LT9Y-HKH",
+   "rot": 0,
+   "doc": "13АВ-РД-АР1.1-К5 V1",
+   "pi": 10,
+   "coords": [
+    4263.0,
+    3463.0,
+    5878.0,
+    6917.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     539,
+     1152
+    ],
+    "mod_size": [
+     539,
+     1152
+    ],
+    "mine_size": [
+     539,
+     1152
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     702,
+     1501
+    ],
+    "mod_size": [
+     375,
+     801
+    ],
+    "mine_size": [
+     702,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "ECL4-JNTP-NGV",
+   "rot": 0,
+   "doc": "13АВ-РД-АР1.1-К6 V1",
+   "pi": 16,
+   "coords": [
+    211.0,
+    51.0,
+    4360.0,
+    4081.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1384,
+     1344
+    ],
+    "mod_size": [
+     1384,
+     1344
+    ],
+    "mine_size": [
+     1384,
+     1344
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1458
+    ],
+    "mod_size": [
+     801,
+     778
+    ],
+    "mine_size": [
+     1501,
+     1458
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_2dad0a90e384410dbbfd4c35fadebdf3",
+   "rot": 0,
+   "doc": "13АВ-РД-КЖ5.36-38.2-К1_V1",
+   "pi": 30,
+   "coords": [
+    8389.0,
+    35.0,
+    9316.0,
+    5338.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     355,
+     2021
+    ],
+    "mod_size": [
+     355,
+     2021
+    ],
+    "mine_size": [
+     355,
+     2021
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     264,
+     1501
+    ],
+    "mod_size": [
+     141,
+     801
+    ],
+    "mine_size": [
+     264,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "AC6J-PQ9Y-HT6",
+   "rot": 0,
+   "doc": "13АВ-РД-ОВ1.1-К5 V1",
+   "pi": 12,
+   "coords": [
+    7704.0,
+    6297.0,
+    9880.0,
+    6967.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     247
+    ],
+    "mod_size": [
+     801,
+     247
+    ],
+    "mine_size": [
+     801,
+     247
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     463
+    ],
+    "mod_size": [
+     801,
+     247
+    ],
+    "mine_size": [
+     1501,
+     463
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "6XDW-3NGU-Y4R",
+   "rot": 0,
+   "doc": "13АВ-РД-КЖ5.22-28.1-К1",
+   "pi": 38,
+   "coords": [
+    105.0,
+    77.0,
+    4824.0,
+    977.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1573,
+     301
+    ],
+    "mod_size": [
+     1573,
+     301
+    ],
+    "mine_size": [
+     1573,
+     301
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     287
+    ],
+    "mod_size": [
+     801,
+     153
+    ],
+    "mine_size": [
+     1501,
+     287
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_9ef63aead698499da90692631f03d212",
+   "rot": 0,
+   "doc": "СТ26_01-14-ОВ2-2-РД_V1",
+   "pi": 55,
+   "coords": [
+    2687.0,
+    3275.0,
+    4908.0,
+    3454.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     66
+    ],
+    "mod_size": [
+     801,
+     66
+    ],
+    "mine_size": [
+     801,
+     66
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     122
+    ],
+    "mod_size": [
+     801,
+     66
+    ],
+    "mine_size": [
+     1501,
+     122
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_6a78b3fa0747482d9a14a528161401ce",
+   "rot": 0,
+   "doc": "13АВ-РД-ОВ1.1-К7_V1",
+   "pi": 15,
+   "coords": [
+    2706.0,
+    3269.0,
+    4913.0,
+    3451.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     67
+    ],
+    "mod_size": [
+     801,
+     67
+    ],
+    "mine_size": [
+     801,
+     67
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     125
+    ],
+    "mod_size": [
+     801,
+     67
+    ],
+    "mine_size": [
+     1501,
+     125
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_3752dca11aab4661acf693cfa08ed4fb",
+   "rot": 0,
+   "doc": "СТ26_01-14-АР2-2-1-РД_V1",
+   "pi": 8,
+   "coords": [
+    11058.0,
+    5518.0,
+    12983.0,
+    6095.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     241
+    ],
+    "mod_size": [
+     801,
+     241
+    ],
+    "mine_size": [
+     801,
+     241
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     450
+    ],
+    "mod_size": [
+     801,
+     241
+    ],
+    "mine_size": [
+     1501,
+     450
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "77FK-4PA9-7EX",
+   "rot": 0,
+   "doc": "13АВ-РД-АР4.2-К4",
+   "pi": 46,
+   "coords": [
+    6370.0,
+    3882.0,
+    7166.0,
+    5858.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     324,
+     801
+    ],
+    "mod_size": [
+     324,
+     801
+    ],
+    "mine_size": [
+     324,
+     801
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     605,
+     1501
+    ],
+    "mod_size": [
+     324,
+     801
+    ],
+    "mine_size": [
+     605,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "6UQL-PMDA-UQC",
+   "rot": 0,
+   "doc": "13АВ-РД-КЖ5.29.2-К1",
+   "pi": 10,
+   "coords": [
+    222.0,
+    59.0,
+    4378.0,
+    4253.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1386,
+     1399
+    ],
+    "mod_size": [
+     1386,
+     1399
+    ],
+    "mine_size": [
+     1386,
+     1399
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1487,
+     1501
+    ],
+    "mod_size": [
+     793,
+     801
+    ],
+    "mine_size": [
+     1487,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_a61bd91dc7f54e80a9c9924269dda27a",
+   "rot": 0,
+   "doc": "13АВ-РД-СОУЭ-ПА",
+   "pi": 100,
+   "coords": [
+    234.0,
+    54.0,
+    3451.0,
+    2423.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1074,
+     791
+    ],
+    "mod_size": [
+     1074,
+     791
+    ],
+    "mine_size": [
+     1074,
+     791
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1105
+    ],
+    "mod_size": [
+     801,
+     590
+    ],
+    "mine_size": [
+     1501,
+     1105
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_498db652c8974fe6af0f9c91ff134cc8",
+   "rot": 0,
+   "doc": "ПД-00542664-СОТС_V1",
+   "pi": 6,
+   "coords": [
+    251.0,
+    75.0,
+    4902.0,
+    2779.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1551,
+     903
+    ],
+    "mod_size": [
+     1551,
+     903
+    ],
+    "mine_size": [
+     1551,
+     903
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     873
+    ],
+    "mod_size": [
+     801,
+     466
+    ],
+    "mine_size": [
+     1501,
+     873
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "9DJG-DNFT-DT3",
+   "rot": 0,
+   "doc": "13АВ-РД-ОВ1.1-К2 V1",
+   "pi": 15,
+   "coords": [
+    673.0,
+    11.0,
+    6628.0,
+    5691.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1986,
+     1895
+    ],
+    "mod_size": [
+     1986,
+     1895
+    ],
+    "mine_size": [
+     1986,
+     1895
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1432
+    ],
+    "mod_size": [
+     801,
+     764
+    ],
+    "mine_size": [
+     1501,
+     1432
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "A9UK-XETY-NQC",
+   "rot": 0,
+   "doc": "13АВ-РД-АР4.2-К4",
+   "pi": 33,
+   "coords": [
+    614.0,
+    60.0,
+    1494.0,
+    1824.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     400,
+     801
+    ],
+    "mod_size": [
+     400,
+     801
+    ],
+    "mine_size": [
+     400,
+     801
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     749,
+     1501
+    ],
+    "mod_size": [
+     400,
+     801
+    ],
+    "mine_size": [
+     749,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "77EV-P9K6-TKY",
+   "rot": 0,
+   "doc": "13АВ-РД-ЭО-К1 V1",
+   "pi": 13,
+   "coords": [
+    1119.0,
+    5335.0,
+    4225.0,
+    6615.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1036,
+     428
+    ],
+    "mod_size": [
+     1036,
+     428
+    ],
+    "mine_size": [
+     1036,
+     428
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     619
+    ],
+    "mod_size": [
+     801,
+     330
+    ],
+    "mine_size": [
+     1501,
+     619
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_609d0633b13a4c2995be3ed71acac323",
+   "rot": 0,
+   "doc": "СТ26_01-14-ОВ1-Д-РД_V1",
+   "pi": 15,
+   "coords": [
+    107.0,
+    27.0,
+    2454.0,
+    3498.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     783,
+     1158
+    ],
+    "mod_size": [
+     783,
+     1158
+    ],
+    "mine_size": [
+     783,
+     1158
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1015,
+     1501
+    ],
+    "mod_size": [
+     542,
+     801
+    ],
+    "mine_size": [
+     1015,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_13fa9d8b643240de91b6286ad7619923",
+   "rot": 0,
+   "doc": "СТ26_01-14-ОВ1-Д-РД_V1",
+   "pi": 3,
+   "coords": [
+    4584.0,
+    4243.0,
+    6962.0,
+    4904.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     223
+    ],
+    "mod_size": [
+     801,
+     223
+    ],
+    "mine_size": [
+     801,
+     223
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     418
+    ],
+    "mod_size": [
+     801,
+     223
+    ],
+    "mine_size": [
+     1501,
+     418
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_fd180f2cc53444e28ff157a871df9ca1",
+   "rot": 0,
+   "doc": "13АВ-РД-НС_V1",
+   "pi": 15,
+   "coords": [
+    532.0,
+    57.0,
+    6386.0,
+    3811.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1952,
+     1252
+    ],
+    "mod_size": [
+     1952,
+     1252
+    ],
+    "mine_size": [
+     1952,
+     1252
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     963
+    ],
+    "mod_size": [
+     801,
+     514
+    ],
+    "mine_size": [
+     1501,
+     963
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "7WHQ-R4LE-RKK",
+   "rot": 0,
+   "doc": "13АВ-РД-КЖ7.2-К1",
+   "pi": 7,
+   "coords": [
+    2333.0,
+    8606.0,
+    4175.0,
+    9892.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     559
+    ],
+    "mod_size": [
+     801,
+     559
+    ],
+    "mine_size": [
+     801,
+     559
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1049
+    ],
+    "mod_size": [
+     801,
+     559
+    ],
+    "mine_size": [
+     1501,
+     1049
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "PAJN-4NL6-ALT",
+   "rot": 0,
+   "doc": "13АВ-РД-КК-К7 V1",
+   "pi": 5,
+   "coords": [
+    12845.0,
+    3932.0,
+    14819.0,
+    4820.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     361
+    ],
+    "mod_size": [
+     801,
+     361
+    ],
+    "mine_size": [
+     801,
+     361
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     676
+    ],
+    "mod_size": [
+     801,
+     361
+    ],
+    "mine_size": [
+     1501,
+     676
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "NPHC-WW6U-M3C",
+   "rot": 0,
+   "doc": "13АВ-РД-ОВ2.1-ПА V1",
+   "pi": 73,
+   "coords": [
+    2712.0,
+    3260.0,
+    4908.0,
+    3452.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     71
+    ],
+    "mod_size": [
+     801,
+     71
+    ],
+    "mine_size": [
+     801,
+     71
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     132
+    ],
+    "mod_size": [
+     801,
+     71
+    ],
+    "mine_size": [
+     1501,
+     132
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_e9dd3d6698d3413f849ad5a3bc26793f",
+   "rot": 270,
+   "doc": "ПД-00542664-ИТП.АТМ_V1",
+   "pi": 53,
+   "coords": [
+    2711.0,
+    3265.0,
+    4910.0,
+    3454.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     70
+    ],
+    "mod_size": [
+     801,
+     70
+    ],
+    "mine_size": [
+     801,
+     70
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     130
+    ],
+    "mod_size": [
+     801,
+     70
+    ],
+    "mine_size": [
+     1501,
+     130
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "QVGQ-A9FL-VNX",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.2-К6",
+   "pi": 112,
+   "coords": [
+    2615.0,
+    1703.0,
+    6944.0,
+    3364.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1444,
+     555
+    ],
+    "mod_size": [
+     1444,
+     555
+    ],
+    "mine_size": [
+     1444,
+     555
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     576
+    ],
+    "mod_size": [
+     801,
+     308
+    ],
+    "mine_size": [
+     1501,
+     576
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "4JEM-A4FA-9PH",
+   "rot": 270,
+   "doc": "13АВ-РД-НВФ-К5",
+   "pi": 33,
+   "coords": [
+    1261.0,
+    4264.0,
+    3452.0,
+    4906.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     236
+    ],
+    "mod_size": [
+     801,
+     236
+    ],
+    "mine_size": [
+     801,
+     236
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     440
+    ],
+    "mod_size": [
+     801,
+     236
+    ],
+    "mine_size": [
+     1501,
+     440
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "6PY9-XQUY-CJX",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.1-К3",
+   "pi": 50,
+   "coords": [
+    7710.0,
+    5436.0,
+    9038.0,
+    6252.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     493
+    ],
+    "mod_size": [
+     801,
+     493
+    ],
+    "mine_size": [
+     801,
+     493
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     923
+    ],
+    "mod_size": [
+     801,
+     493
+    ],
+    "mine_size": [
+     1501,
+     923
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "6WRP-DA7E-CWA",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.2-К4",
+   "pi": 31,
+   "coords": [
+    2858.0,
+    662.0,
+    3464.0,
+    1562.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     540,
+     801
+    ],
+    "mod_size": [
+     540,
+     801
+    ],
+    "mine_size": [
+     540,
+     801
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1011,
+     1501
+    ],
+    "mod_size": [
+     540,
+     801
+    ],
+    "mine_size": [
+     1011,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_4f41957b695c497f801f63509b4d725c",
+   "rot": 270,
+   "doc": "ПД-00542664-ИТП.АТМ_V1",
+   "pi": 59,
+   "coords": [
+    2710.0,
+    2793.0,
+    4907.0,
+    3450.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     241
+    ],
+    "mod_size": [
+     801,
+     241
+    ],
+    "mine_size": [
+     801,
+     241
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     450
+    ],
+    "mod_size": [
+     801,
+     241
+    ],
+    "mine_size": [
+     1501,
+     450
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "9C6J-JLYN-KWW",
+   "rot": 270,
+   "doc": "13АВ-РД-АПЗ.АПС-К4",
+   "pi": 17,
+   "coords": [
+    1243.0,
+    2816.0,
+    2580.0,
+    3460.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     387
+    ],
+    "mod_size": [
+     801,
+     387
+    ],
+    "mine_size": [
+     801,
+     387
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     723
+    ],
+    "mod_size": [
+     801,
+     387
+    ],
+    "mine_size": [
+     1501,
+     723
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_cc83a8476f2b4ca1b5a11c37c85cf3dc",
+   "rot": 270,
+   "doc": "ПД-ОО542664-НВД_V1",
+   "pi": 11,
+   "coords": [
+    2707.0,
+    3269.0,
+    4914.0,
+    3438.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     63
+    ],
+    "mod_size": [
+     801,
+     63
+    ],
+    "mine_size": [
+     801,
+     63
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     116
+    ],
+    "mod_size": [
+     801,
+     63
+    ],
+    "mine_size": [
+     1501,
+     116
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "7RGE-VMWX-TT9",
+   "rot": 270,
+   "doc": "13АВ-РД-СОУЭ-К3-К6",
+   "pi": 49,
+   "coords": [
+    233.0,
+    3276.0,
+    2419.0,
+    3456.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     67
+    ],
+    "mod_size": [
+     801,
+     67
+    ],
+    "mine_size": [
+     801,
+     67
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     124
+    ],
+    "mod_size": [
+     801,
+     67
+    ],
+    "mine_size": [
+     1501,
+     124
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "67V3-MFFH-R6T",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.2-К6",
+   "pi": 93,
+   "coords": [
+    3940.0,
+    43.0,
+    6962.0,
+    1703.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1008,
+     554
+    ],
+    "mod_size": [
+     1008,
+     554
+    ],
+    "mine_size": [
+     1008,
+     554
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     825
+    ],
+    "mod_size": [
+     801,
+     440
+    ],
+    "mine_size": [
+     1501,
+     825
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "4V4H-Y6D6-RTE",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.1-К5",
+   "pi": 29,
+   "coords": [
+    96.0,
+    186.0,
+    3016.0,
+    636.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     974,
+     151
+    ],
+    "mod_size": [
+     974,
+     151
+    ],
+    "mine_size": [
+     974,
+     151
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     232
+    ],
+    "mod_size": [
+     801,
+     125
+    ],
+    "mine_size": [
+     1501,
+     232
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "4MR7-L6D4-GYU",
+   "rot": 270,
+   "doc": "13АВ-РД-ЭО-К3",
+   "pi": 21,
+   "coords": [
+    2706.0,
+    3266.0,
+    4902.0,
+    3434.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     62
+    ],
+    "mod_size": [
+     801,
+     62
+    ],
+    "mine_size": [
+     801,
+     62
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     116
+    ],
+    "mod_size": [
+     801,
+     62
+    ],
+    "mine_size": [
+     1501,
+     116
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "64FX-6E9Y-WPK",
+   "rot": 270,
+   "doc": "13АВ-РД-ТХ2-К1 V1",
+   "pi": 18,
+   "coords": [
+    2554.0,
+    2015.0,
+    3426.0,
+    2335.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     295
+    ],
+    "mod_size": [
+     801,
+     295
+    ],
+    "mine_size": [
+     801,
+     295
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     551
+    ],
+    "mod_size": [
+     801,
+     295
+    ],
+    "mine_size": [
+     1501,
+     551
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "9YHX-P4LL-C6V",
+   "rot": 270,
+   "doc": "Mockup 4",
+   "pi": 16,
+   "coords": [
+    173.0,
+    29.0,
+    4912.0,
+    3480.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1581,
+     1152
+    ],
+    "mod_size": [
+     1581,
+     1152
+    ],
+    "mine_size": [
+     1581,
+     1152
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1093
+    ],
+    "mod_size": [
+     801,
+     584
+    ],
+    "mine_size": [
+     1501,
+     1093
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_c6406f39660a4ab080d8cac695bbec6c",
+   "rot": 270,
+   "doc": "ПД-00542664-РФ_V1",
+   "pi": 23,
+   "coords": [
+    2724.0,
+    6305.0,
+    4897.0,
+    6950.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     238
+    ],
+    "mod_size": [
+     801,
+     238
+    ],
+    "mine_size": [
+     801,
+     238
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     446
+    ],
+    "mod_size": [
+     801,
+     238
+    ],
+    "mine_size": [
+     1501,
+     446
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "3X3C-T3HW-C7W",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.1-К3",
+   "pi": 13,
+   "coords": [
+    7418.0,
+    906.0,
+    9868.0,
+    5024.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     818,
+     1373
+    ],
+    "mod_size": [
+     818,
+     1373
+    ],
+    "mine_size": [
+     818,
+     1373
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     894,
+     1501
+    ],
+    "mod_size": [
+     476,
+     801
+    ],
+    "mine_size": [
+     894,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_034d3b625c354e16b52decd38c220e7b",
+   "rot": 270,
+   "doc": "ПД-00542664-ЭО2-2_V1",
+   "pi": 25,
+   "coords": [
+    4763.0,
+    9216.0,
+    6958.0,
+    9871.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     240
+    ],
+    "mod_size": [
+     801,
+     240
+    ],
+    "mine_size": [
+     801,
+     240
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     449
+    ],
+    "mod_size": [
+     801,
+     240
+    ],
+    "mine_size": [
+     1501,
+     449
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "9GKG-HNHT-PAF",
+   "rot": 270,
+   "doc": "13АВ-РД-НВФ-К5",
+   "pi": 30,
+   "coords": [
+    1261.0,
+    4264.0,
+    3452.0,
+    4906.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     236
+    ],
+    "mod_size": [
+     801,
+     236
+    ],
+    "mine_size": [
+     801,
+     236
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     440
+    ],
+    "mod_size": [
+     801,
+     236
+    ],
+    "mine_size": [
+     1501,
+     440
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "4XF7-D7YN-GVL",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.1-К6",
+   "pi": 34,
+   "coords": [
+    7778.0,
+    768.0,
+    9878.0,
+    2694.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     735
+    ],
+    "mod_size": [
+     801,
+     735
+    ],
+    "mine_size": [
+     801,
+     735
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1377
+    ],
+    "mod_size": [
+     801,
+     735
+    ],
+    "mine_size": [
+     1501,
+     1377
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "ACG9-AKC9-4EG",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.1-К4",
+   "pi": 16,
+   "coords": [
+    2746.0,
+    3984.0,
+    4690.0,
+    4938.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     394
+    ],
+    "mod_size": [
+     801,
+     394
+    ],
+    "mine_size": [
+     801,
+     394
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     737
+    ],
+    "mod_size": [
+     801,
+     394
+    ],
+    "mine_size": [
+     1501,
+     737
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "97A9-4TY3-GWD",
+   "rot": 270,
+   "doc": "13АВ-РД-СОУЭ-К7 V1",
+   "pi": 7,
+   "coords": [
+    11799.0,
+    9209.0,
+    13979.0,
+    9879.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     247
+    ],
+    "mod_size": [
+     801,
+     247
+    ],
+    "mine_size": [
+     801,
+     247
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     462
+    ],
+    "mod_size": [
+     801,
+     247
+    ],
+    "mine_size": [
+     1501,
+     462
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_d33b098888bb4fa1aa4faad2e467191d",
+   "rot": 270,
+   "doc": "13АВ-РД-ТХ2-К1 V1",
+   "pi": 12,
+   "coords": [
+    2130.0,
+    1662.0,
+    2518.0,
+    2352.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     451,
+     801
+    ],
+    "mod_size": [
+     451,
+     801
+    ],
+    "mine_size": [
+     451,
+     801
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     746,
+     1326
+    ],
+    "mod_size": [
+     451,
+     801
+    ],
+    "mine_size": [
+     746,
+     1326
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_2db848f162bc4b2886861eb20b388118",
+   "rot": 270,
+   "doc": "ПД-00542664-ЭО1-3_V1",
+   "pi": 24,
+   "coords": [
+    11616.0,
+    5698.0,
+    12992.0,
+    6108.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     239
+    ],
+    "mod_size": [
+     801,
+     239
+    ],
+    "mine_size": [
+     801,
+     239
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     448
+    ],
+    "mod_size": [
+     801,
+     239
+    ],
+    "mine_size": [
+     1501,
+     448
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_151d590a83784b2e8db39946a242f4d2",
+   "rot": 270,
+   "doc": "ПД-00542664-СКД_V1",
+   "pi": 57,
+   "coords": [
+    231.0,
+    52.0,
+    2399.0,
+    2238.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     794,
+     801
+    ],
+    "mod_size": [
+     794,
+     801
+    ],
+    "mine_size": [
+     794,
+     801
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1488,
+     1501
+    ],
+    "mod_size": [
+     794,
+     801
+    ],
+    "mine_size": [
+     1488,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "6Q9E-4EVM-3RY",
+   "rot": 270,
+   "doc": "13АВ-РД-АР4.1-К5",
+   "pi": 3,
+   "coords": [
+    4776.0,
+    4252.0,
+    6962.0,
+    4904.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     239
+    ],
+    "mod_size": [
+     801,
+     239
+    ],
+    "mine_size": [
+     801,
+     239
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     449
+    ],
+    "mod_size": [
+     801,
+     239
+    ],
+    "mine_size": [
+     1501,
+     449
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_91776dc9bc264b53903b5ac194702c8e",
+   "rot": 90,
+   "doc": "ПД-00542664-ЭН_(АХП)_2-3_V1",
+   "pi": 29,
+   "coords": [
+    2709.0,
+    3265.0,
+    4904.0,
+    3454.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     70
+    ],
+    "mod_size": [
+     801,
+     70
+    ],
+    "mine_size": [
+     801,
+     70
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     130
+    ],
+    "mod_size": [
+     801,
+     70
+    ],
+    "mine_size": [
+     1501,
+     130
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "9P3M-XTJY-KXJ",
+   "rot": 90,
+   "doc": "13АВ-РД-ЭО-К4",
+   "pi": 24,
+   "coords": [
+    2704.0,
+    2786.0,
+    4928.0,
+    3464.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     245
+    ],
+    "mod_size": [
+     801,
+     245
+    ],
+    "mine_size": [
+     801,
+     245
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     458
+    ],
+    "mod_size": [
+     801,
+     245
+    ],
+    "mine_size": [
+     1501,
+     458
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_365f70ea13cc46a394c7f66c706f35ed",
+   "rot": 90,
+   "doc": "13АВ-РД-ВК.КВ-К4_V1",
+   "pi": 12,
+   "coords": [
+    8248.0,
+    4244.0,
+    10473.0,
+    4909.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     240
+    ],
+    "mod_size": [
+     801,
+     240
+    ],
+    "mine_size": [
+     801,
+     240
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     450
+    ],
+    "mod_size": [
+     801,
+     240
+    ],
+    "mine_size": [
+     1501,
+     450
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "6TFW-HFF9-FRK",
+   "rot": 90,
+   "doc": "1232-ЧМ-КМ-1",
+   "pi": 25,
+   "coords": [
+    401.0,
+    63.0,
+    4909.0,
+    1563.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1504,
+     501
+    ],
+    "mod_size": [
+     1504,
+     501
+    ],
+    "mine_size": [
+     1504,
+     501
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     501
+    ],
+    "mod_size": [
+     801,
+     267
+    ],
+    "mine_size": [
+     1501,
+     501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "X3VF-7ELY-4UF",
+   "rot": 90,
+   "doc": "13АВ-РД-НВ V1",
+   "pi": 29,
+   "coords": [
+    189.0,
+    127.0,
+    3446.0,
+    2393.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1086,
+     756
+    ],
+    "mod_size": [
+     1086,
+     756
+    ],
+    "mine_size": [
+     1086,
+     756
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1045
+    ],
+    "mod_size": [
+     801,
+     557
+    ],
+    "mine_size": [
+     1501,
+     1045
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "7AA6-XXYX-EDD",
+   "rot": 90,
+   "doc": "13АВ-РД-ЭО-К3",
+   "pi": 31,
+   "coords": [
+    2714.0,
+    2804.0,
+    4904.0,
+    3438.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     232
+    ],
+    "mod_size": [
+     801,
+     232
+    ],
+    "mine_size": [
+     801,
+     232
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     435
+    ],
+    "mod_size": [
+     801,
+     232
+    ],
+    "mine_size": [
+     1501,
+     435
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_9d7bfa92dbd3476aaf0f2d7a194c1297",
+   "rot": 90,
+   "doc": "13АВ-РД-ВК.КВ-К4_V1",
+   "pi": 19,
+   "coords": [
+    3832.0,
+    37.0,
+    8372.0,
+    6625.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1514,
+     2197
+    ],
+    "mod_size": [
+     1514,
+     2197
+    ],
+    "mine_size": [
+     1514,
+     2197
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1035,
+     1501
+    ],
+    "mod_size": [
+     552,
+     801
+    ],
+    "mine_size": [
+     1035,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "7RV3-NMWH-ANN",
+   "rot": 90,
+   "doc": "1232-ЧМ-КМ-1",
+   "pi": 22,
+   "coords": [
+    275.0,
+    151.0,
+    2365.0,
+    3404.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     698,
+     1085
+    ],
+    "mod_size": [
+     698,
+     1085
+    ],
+    "mine_size": [
+     698,
+     1085
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     965,
+     1501
+    ],
+    "mod_size": [
+     515,
+     801
+    ],
+    "mine_size": [
+     965,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_48a6f7785578461c90388fdb50bd0676",
+   "rot": 90,
+   "doc": "СТ26_01-14-ЭОМ-5-РД_V1",
+   "pi": 53,
+   "coords": [
+    2834.0,
+    2675.0,
+    4845.0,
+    3444.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     306
+    ],
+    "mod_size": [
+     801,
+     306
+    ],
+    "mine_size": [
+     801,
+     306
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     574
+    ],
+    "mod_size": [
+     801,
+     306
+    ],
+    "mine_size": [
+     1501,
+     574
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_46c253094aa840059202037a416730e5",
+   "rot": 90,
+   "doc": "ПД-00542664-АР1.2-2_V1",
+   "pi": 19,
+   "coords": [
+    7675.0,
+    6295.0,
+    9868.0,
+    6972.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     248
+    ],
+    "mod_size": [
+     801,
+     248
+    ],
+    "mine_size": [
+     801,
+     248
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     464
+    ],
+    "mod_size": [
+     801,
+     248
+    ],
+    "mine_size": [
+     1501,
+     464
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_f1321522ba0842f2a23056799be37fd8",
+   "rot": 90,
+   "doc": "13АВ-РД-НК1_V1",
+   "pi": 24,
+   "coords": [
+    278.0,
+    1755.0,
+    2561.0,
+    2810.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     371
+    ],
+    "mod_size": [
+     801,
+     371
+    ],
+    "mine_size": [
+     801,
+     371
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     695
+    ],
+    "mod_size": [
+     801,
+     371
+    ],
+    "mine_size": [
+     1501,
+     695
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "3FU4-NQRH-PEJ",
+   "rot": 90,
+   "doc": "13АВ-РД-ЭО-К3",
+   "pi": 24,
+   "coords": [
+    3437.0,
+    0.0,
+    6978.0,
+    3276.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1182,
+     1093
+    ],
+    "mod_size": [
+     1182,
+     1093
+    ],
+    "mine_size": [
+     1182,
+     1093
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1388
+    ],
+    "mod_size": [
+     801,
+     741
+    ],
+    "mine_size": [
+     1501,
+     1388
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "4AMF-MU9K-ARP",
+   "rot": 90,
+   "doc": "13АВ-РД-ЭО-К4",
+   "pi": 27,
+   "coords": [
+    298.0,
+    148.0,
+    2768.0,
+    2618.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     824,
+     824
+    ],
+    "mod_size": [
+     824,
+     824
+    ],
+    "mine_size": [
+     824,
+     824
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1501
+    ],
+    "mod_size": [
+     801,
+     801
+    ],
+    "mine_size": [
+     1501,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_7b47aef5481941568257ce1a70be7577",
+   "rot": 90,
+   "doc": "ПД-00542664-АР1.2-1_V1",
+   "pi": 6,
+   "coords": [
+    1250.0,
+    1773.0,
+    3465.0,
+    2428.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     237
+    ],
+    "mod_size": [
+     801,
+     237
+    ],
+    "mine_size": [
+     801,
+     237
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     445
+    ],
+    "mod_size": [
+     801,
+     237
+    ],
+    "mine_size": [
+     1501,
+     445
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_195e94babdef4adfb00fc2047888330e",
+   "rot": 90,
+   "doc": "ПД-00542664-АР1.2-2_V1",
+   "pi": 18,
+   "coords": [
+    7675.0,
+    6300.0,
+    9863.0,
+    6972.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     247
+    ],
+    "mod_size": [
+     801,
+     247
+    ],
+    "mine_size": [
+     801,
+     247
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     461
+    ],
+    "mod_size": [
+     801,
+     247
+    ],
+    "mine_size": [
+     1501,
+     461
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_d4527b08954a4572b1e3dd277c199410",
+   "rot": 90,
+   "doc": "ПД-00260568-ЭМ_2-1.1",
+   "pi": 41,
+   "coords": [
+    2662.0,
+    3240.0,
+    4884.0,
+    3418.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     65
+    ],
+    "mod_size": [
+     801,
+     65
+    ],
+    "mine_size": [
+     801,
+     65
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     121
+    ],
+    "mod_size": [
+     801,
+     65
+    ],
+    "mine_size": [
+     1501,
+     121
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_8423257fa0bb471b93c66815351510be",
+   "rot": 90,
+   "doc": "ПД-00542664-АР1.2-1_V1",
+   "pi": 3,
+   "coords": [
+    200.0,
+    94.0,
+    8168.0,
+    5173.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     2657,
+     1694
+    ],
+    "mod_size": [
+     2657,
+     1694
+    ],
+    "mine_size": [
+     2657,
+     1694
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     957
+    ],
+    "mod_size": [
+     958,
+     610
+    ],
+    "mine_size": [
+     1501,
+     957
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "7F3X-JEHG-YNG",
+   "rot": 90,
+   "doc": "13АВ-РД-НВ V1",
+   "pi": 25,
+   "coords": [
+    1135.0,
+    2460.0,
+    3112.0,
+    3352.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     362
+    ],
+    "mod_size": [
+     801,
+     362
+    ],
+    "mine_size": [
+     801,
+     362
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     678
+    ],
+    "mod_size": [
+     801,
+     362
+    ],
+    "mine_size": [
+     1501,
+     678
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "WQME-4UMU-Q9G",
+   "rot": 90,
+   "doc": "13АВ-РД-ЭО-К5",
+   "pi": 22,
+   "coords": [
+    234.0,
+    54.0,
+    2948.0,
+    2710.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     905,
+     886
+    ],
+    "mod_size": [
+     905,
+     886
+    ],
+    "mine_size": [
+     905,
+     886
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1469
+    ],
+    "mod_size": [
+     801,
+     784
+    ],
+    "mine_size": [
+     1501,
+     1469
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "9V9K-KQCT-VHD",
+   "rot": 90,
+   "doc": "13АВ-РД-ЭО-К5",
+   "pi": 25,
+   "coords": [
+    3260.0,
+    804.0,
+    4686.0,
+    2348.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     739,
+     801
+    ],
+    "mod_size": [
+     739,
+     801
+    ],
+    "mine_size": [
+     739,
+     801
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1386,
+     1501
+    ],
+    "mod_size": [
+     739,
+     801
+    ],
+    "mine_size": [
+     1386,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_8c9ff412a6cf4693a683add344267e42",
+   "rot": 90,
+   "doc": "13АВ-РД-НК1_V1",
+   "pi": 17,
+   "coords": [
+    2702.0,
+    2766.0,
+    4859.0,
+    3423.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     245
+    ],
+    "mod_size": [
+     801,
+     245
+    ],
+    "mine_size": [
+     801,
+     245
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     458
+    ],
+    "mod_size": [
+     801,
+     245
+    ],
+    "mine_size": [
+     1501,
+     458
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_af747856a5da46698b70675f1c652585",
+   "rot": 90,
+   "doc": "СТ26_01-14-ВК-2-1-РД_V1",
+   "pi": 26,
+   "coords": [
+    2706.0,
+    2789.0,
+    4912.0,
+    3456.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     243
+    ],
+    "mod_size": [
+     801,
+     243
+    ],
+    "mine_size": [
+     801,
+     243
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     454
+    ],
+    "mod_size": [
+     801,
+     243
+    ],
+    "mine_size": [
+     1501,
+     454
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_5c75ddcfd7b34d4e899b9b2944054147",
+   "rot": 90,
+   "doc": "ПД-ОО542664-АПТ1.3_V1",
+   "pi": 45,
+   "coords": [
+    25.0,
+    17.0,
+    11876.0,
+    8347.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     4667,
+     3280
+    ],
+    "mod_size": [
+     4667,
+     3280
+    ],
+    "mine_size": [
+     4667,
+     3280
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1681,
+     1181
+    ],
+    "mod_size": [
+     1681,
+     1181
+    ],
+    "mine_size": [
+     1681,
+     1181
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "blk_0a56222fa70644a0add7cbd9007d46e6",
+   "rot": 90,
+   "doc": "ПД-00260568-ЭМ_2-1.1",
+   "pi": 44,
+   "coords": [
+    2662.0,
+    3241.0,
+    4884.0,
+    3419.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     65
+    ],
+    "mod_size": [
+     801,
+     65
+    ],
+    "mine_size": [
+     801,
+     65
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     121
+    ],
+    "mod_size": [
+     801,
+     65
+    ],
+    "mine_size": [
+     1501,
+     121
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "49TH-7UHK-CAH",
+   "rot": 90,
+   "doc": "13АВ-РД-КК-ПА",
+   "pi": 21,
+   "coords": [
+    3048.0,
+    2744.0,
+    4876.0,
+    3424.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     801,
+     299
+    ],
+    "mod_size": [
+     801,
+     299
+    ],
+    "mine_size": [
+     801,
+     299
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     559
+    ],
+    "mod_size": [
+     801,
+     299
+    ],
+    "mine_size": [
+     1501,
+     559
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "7AKP-3XAW-JKM",
+   "rot": 180,
+   "doc": "13АВ-РД-НВ V1",
+   "pi": 11,
+   "coords": [
+    261.0,
+    49.0,
+    5353.0,
+    3688.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     1698,
+     1214
+    ],
+    "mod_size": [
+     1698,
+     1214
+    ],
+    "mine_size": [
+     1698,
+     1214
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1501,
+     1073
+    ],
+    "mod_size": [
+     801,
+     573
+    ],
+    "mine_size": [
+     1501,
+     1073
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  },
+  {
+   "bid": "64MK-YEFA-3KU",
+   "rot": 180,
+   "doc": "13АВ-РД-НВ V1",
+   "pi": 13,
+   "coords": [
+    3568.0,
+    95.0,
+    4504.0,
+    1173.0
+   ],
+   "prod_profile": {
+    "prod_size": [
+     696,
+     801
+    ],
+    "mod_size": [
+     696,
+     801
+    ],
+    "mine_size": [
+     696,
+     801
+    ],
+    "sha_prod_vs_module": true,
+    "sha_prod_vs_mine": true
+   },
+   "defaults": {
+    "prod_size": [
+     1304,
+     1501
+    ],
+    "mod_size": [
+     696,
+     801
+    ],
+    "mine_size": [
+     1304,
+     1501
+    ],
+    "sha_prod_vs_module": false,
+    "sha_prod_vs_mine": true
+   }
+  }
+ ]
+}

@@ -1,0 +1,1060 @@
+{
+ "arm": "radius",
+ "carriers": [
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-АР1.2-К3",
+    "version": "v001",
+    "block_id": "6WNV-DWDA-4CQ",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 1034
+   },
+   "n_obj": 75,
+   "labelled_1.0": 6,
+   "labelled_1.6": 7,
+   "labelled_2.5": 7,
+   "same_mark_1.0_vs_1.6": 6,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 7,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-АР1.2-К5",
+    "version": "v004",
+    "block_id": "blk_ede531d29f3d48bc98ae16f81ef82652",
+    "discipline": "AR",
+    "cls": "table",
+    "n_seg": 1010
+   },
+   "n_obj": 80,
+   "labelled_1.0": 47,
+   "labelled_1.6": 53,
+   "labelled_2.5": 53,
+   "same_mark_1.0_vs_1.6": 47,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 53,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ЭМ-К3",
+    "version": "v001",
+    "block_id": "TVWH-NLRM-GNJ",
+    "discipline": "EOM",
+    "cls": "drawing",
+    "n_seg": 397
+   },
+   "n_obj": 8,
+   "labelled_1.0": 2,
+   "labelled_1.6": 3,
+   "labelled_2.5": 4,
+   "same_mark_1.0_vs_1.6": 2,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 3,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-АР4.1-К3",
+    "version": "v001",
+    "block_id": "7PJD-33QQ-W44",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 250
+   },
+   "n_obj": 31,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-ЭОМ-3-РД_V1",
+    "version": "v001",
+    "block_id": "blk_4f3fadc77c584364a5ee052c44eb0016",
+    "discipline": "EOM",
+    "cls": "drawing",
+    "n_seg": 922
+   },
+   "n_obj": 161,
+   "labelled_1.0": 16,
+   "labelled_1.6": 23,
+   "labelled_2.5": 27,
+   "same_mark_1.0_vs_1.6": 16,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 23,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ГП1",
+    "version": "v001",
+    "block_id": "7DTQ-7FJA-Y6G",
+    "discipline": "GP",
+    "cls": "stamp",
+    "n_seg": 274
+   },
+   "n_obj": 32,
+   "labelled_1.0": 1,
+   "labelled_1.6": 1,
+   "labelled_2.5": 6,
+   "same_mark_1.0_vs_1.6": 1,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 1,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ГП1 V1",
+    "version": "v001",
+    "block_id": "43CL-VVJR-QPF",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 1357
+   },
+   "n_obj": 177,
+   "labelled_1.0": 139,
+   "labelled_1.6": 152,
+   "labelled_2.5": 163,
+   "same_mark_1.0_vs_1.6": 139,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 152,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ЭМ-К2 V1",
+    "version": "v002",
+    "block_id": "blk_a4a3ff36fe9b471ba802b57c55c36776",
+    "discipline": "EOM",
+    "cls": "stamp",
+    "n_seg": 33913
+   },
+   "n_obj": 110,
+   "labelled_1.0": 33,
+   "labelled_1.6": 36,
+   "labelled_2.5": 41,
+   "same_mark_1.0_vs_1.6": 33,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 36,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-АР3-К5-К6",
+    "version": "v001",
+    "block_id": "4LHJ-3CTA-PVX",
+    "discipline": "AR",
+    "cls": "stamp",
+    "n_seg": 42841
+   },
+   "n_obj": 997,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-АР3-2-РД_V1",
+    "version": "v001",
+    "block_id": "blk_06499dafb2ed46398b6fbc571e25e4b0",
+    "discipline": "AR",
+    "cls": "drawing",
+    "n_seg": 15504
+   },
+   "n_obj": 363,
+   "labelled_1.0": 12,
+   "labelled_1.6": 20,
+   "labelled_2.5": 33,
+   "same_mark_1.0_vs_1.6": 12,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 20,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ЭО1-ПА_V1",
+    "version": "v001",
+    "block_id": "blk_241bfaeef1d54b4d8bf69337c3903760",
+    "discipline": "EOM",
+    "cls": "table",
+    "n_seg": 748
+   },
+   "n_obj": 112,
+   "labelled_1.0": 43,
+   "labelled_1.6": 60,
+   "labelled_2.5": 66,
+   "same_mark_1.0_vs_1.6": 43,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 60,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-АИТ.ОВ_V1",
+    "version": "v001",
+    "block_id": "blk_25757de0ca0445ea9234217679795df3",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 231
+   },
+   "n_obj": 43,
+   "labelled_1.0": 7,
+   "labelled_1.6": 10,
+   "labelled_2.5": 15,
+   "same_mark_1.0_vs_1.6": 7,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 10,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-АИТ.ГСВ_V1",
+    "version": "v001",
+    "block_id": "blk_2d0c258f773043e8b7f6481feec6fc4b",
+    "discipline": "ITP",
+    "cls": "stamp",
+    "n_seg": 1724
+   },
+   "n_obj": 33,
+   "labelled_1.0": 2,
+   "labelled_1.6": 6,
+   "labelled_2.5": 8,
+   "same_mark_1.0_vs_1.6": 2,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 6,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ГП2",
+    "version": "v001",
+    "block_id": "A7VL-W7KW-6Y7",
+    "discipline": "GP",
+    "cls": "drawing",
+    "n_seg": 8108
+   },
+   "n_obj": 962,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-ИТП.АТМ_V1",
+    "version": "v001",
+    "block_id": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 1955
+   },
+   "n_obj": 278,
+   "labelled_1.0": 111,
+   "labelled_1.6": 127,
+   "labelled_2.5": 143,
+   "same_mark_1.0_vs_1.6": 111,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 127,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-КЖ5.25-29.1-К2",
+    "version": "v001",
+    "block_id": "6GNF-QWEX-CVE",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 121
+   },
+   "n_obj": 58,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-КЖ5.42.1-К2_V1",
+    "version": "v001",
+    "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 723
+   },
+   "n_obj": 115,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ЭМ-К6",
+    "version": "v001",
+    "block_id": "7FP3-FT7J-UCN",
+    "discipline": "EOM",
+    "cls": "drawing",
+    "n_seg": 21909
+   },
+   "n_obj": 303,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-КЖ5.30-31.1-К2",
+    "version": "v002",
+    "block_id": "AD4H-APGD-H7H",
+    "discipline": "KJ",
+    "cls": "stamp",
+    "n_seg": 2702
+   },
+   "n_obj": 35,
+   "labelled_1.0": 2,
+   "labelled_1.6": 7,
+   "labelled_2.5": 11,
+   "same_mark_1.0_vs_1.6": 2,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 7,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-АИТ.СС.ПС_V1",
+    "version": "v001",
+    "block_id": "blk_f3d7c94dc2674824aabd7f52598636b9",
+    "discipline": "ITP",
+    "cls": "stamp",
+    "n_seg": 50896
+   },
+   "n_obj": 89,
+   "labelled_1.0": 18,
+   "labelled_1.6": 27,
+   "labelled_2.5": 35,
+   "same_mark_1.0_vs_1.6": 18,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 27,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-КМ-К4",
+    "version": "v001",
+    "block_id": "669G-L37Y-E47",
+    "discipline": "KM",
+    "cls": "drawing",
+    "n_seg": 317
+   },
+   "n_obj": 38,
+   "labelled_1.0": 5,
+   "labelled_1.6": 7,
+   "labelled_2.5": 13,
+   "same_mark_1.0_vs_1.6": 5,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 7,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-КМ-К4",
+    "version": "v001",
+    "block_id": "PVGW-ALT6-FXV",
+    "discipline": "KM",
+    "cls": "drawing",
+    "n_seg": 1367
+   },
+   "n_obj": 157,
+   "labelled_1.0": 39,
+   "labelled_1.6": 55,
+   "labelled_2.5": 78,
+   "same_mark_1.0_vs_1.6": 39,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 55,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-АИТ.СС.ПС_V1",
+    "version": "v001",
+    "block_id": "blk_fbe22186597d415f87713df53768eae4",
+    "discipline": "ITP",
+    "cls": "stamp",
+    "n_seg": 5274
+   },
+   "n_obj": 26,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-НВФ-К4",
+    "version": "v001",
+    "block_id": "9R9P-HVPN-CVQ",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 620
+   },
+   "n_obj": 33,
+   "labelled_1.0": 3,
+   "labelled_1.6": 7,
+   "labelled_2.5": 11,
+   "same_mark_1.0_vs_1.6": 3,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 7,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ГП1 V1",
+    "version": "v001",
+    "block_id": "9LLL-F43F-KRF",
+    "discipline": "GP",
+    "cls": "stamp",
+    "n_seg": 37852
+   },
+   "n_obj": 96,
+   "labelled_1.0": 20,
+   "labelled_1.6": 25,
+   "labelled_2.5": 31,
+   "same_mark_1.0_vs_1.6": 20,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 25,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-НВФ-К5",
+    "version": "v001",
+    "block_id": "9QAA-FAAH-GDU",
+    "discipline": "KM",
+    "cls": "drawing",
+    "n_seg": 27522
+   },
+   "n_obj": 428,
+   "labelled_1.0": 10,
+   "labelled_1.6": 10,
+   "labelled_2.5": 12,
+   "same_mark_1.0_vs_1.6": 10,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 10,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-АИТ.ВК_V1",
+    "version": "v001",
+    "block_id": "blk_7bb4fad7511c467894373f9d1b26c3d5",
+    "discipline": "ITP",
+    "cls": "drawing",
+    "n_seg": 26787
+   },
+   "n_obj": 809,
+   "labelled_1.0": 42,
+   "labelled_1.6": 59,
+   "labelled_2.5": 95,
+   "same_mark_1.0_vs_1.6": 42,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 59,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ОВ2-К7_V1",
+    "version": "v001",
+    "block_id": "blk_40b62e9a14a848a3a508be58ef4c5ba7",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 144
+   },
+   "n_obj": 20,
+   "labelled_1.0": 20,
+   "labelled_1.6": 20,
+   "labelled_2.5": 20,
+   "same_mark_1.0_vs_1.6": 20,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 20,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-ОВ2-3-РД_V1",
+    "version": "v001",
+    "block_id": "blk_eeb669a5928f4c7ca97ad7b1c212988e",
+    "discipline": "OV",
+    "cls": "table",
+    "n_seg": 1096
+   },
+   "n_obj": 142,
+   "labelled_1.0": 40,
+   "labelled_1.6": 40,
+   "labelled_2.5": 56,
+   "same_mark_1.0_vs_1.6": 40,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 40,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-КМ-К6",
+    "version": "v002",
+    "block_id": "7YMA-E7V4-9E3",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 22657
+   },
+   "n_obj": 90,
+   "labelled_1.0": 2,
+   "labelled_1.6": 2,
+   "labelled_2.5": 6,
+   "same_mark_1.0_vs_1.6": 2,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 2,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ОВ1.1-К2 V1",
+    "version": "v002",
+    "block_id": "4UXN-R3AK-UKH",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 1117
+   },
+   "n_obj": 91,
+   "labelled_1.0": 65,
+   "labelled_1.6": 72,
+   "labelled_2.5": 80,
+   "same_mark_1.0_vs_1.6": 65,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 72,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-КЖ3-01.1-РД_V1",
+    "version": "v001",
+    "block_id": "blk_77c2d0171dd8491ca629efed80858d30",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 23897
+   },
+   "n_obj": 1952,
+   "labelled_1.0": 27,
+   "labelled_1.6": 30,
+   "labelled_2.5": 44,
+   "same_mark_1.0_vs_1.6": 27,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 30,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-ПТ7-7-РД_V1",
+    "version": "v001",
+    "block_id": "blk_db83119078e04029b349b5bf1a535280",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 322
+   },
+   "n_obj": 61,
+   "labelled_1.0": 12,
+   "labelled_1.6": 17,
+   "labelled_2.5": 21,
+   "same_mark_1.0_vs_1.6": 12,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 17,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "block_id": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 1200
+   },
+   "n_obj": 78,
+   "labelled_1.0": 22,
+   "labelled_1.6": 22,
+   "labelled_2.5": 26,
+   "same_mark_1.0_vs_1.6": 22,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 22,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ОВ2-К4 V1",
+    "version": "v002",
+    "block_id": "7WHK-V9XQ-LGL",
+    "discipline": "OV",
+    "cls": "drawing",
+    "n_seg": 13633
+   },
+   "n_obj": 824,
+   "labelled_1.0": 314,
+   "labelled_1.6": 402,
+   "labelled_2.5": 520,
+   "same_mark_1.0_vs_1.6": 314,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 402,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-ПТ1-1-РД_V1",
+    "version": "v001",
+    "block_id": "blk_aaf24626fbb04f93a8e65f4d72d1f06c",
+    "discipline": "PT",
+    "cls": "stamp",
+    "n_seg": 1221
+   },
+   "n_obj": 36,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-НВД_V1",
+    "version": "v001",
+    "block_id": "blk_8402c3a033df40c0a81bf3aaec3cfd34",
+    "discipline": "PT",
+    "cls": "stamp",
+    "n_seg": 7248
+   },
+   "n_obj": 64,
+   "labelled_1.0": 1,
+   "labelled_1.6": 9,
+   "labelled_2.5": 14,
+   "same_mark_1.0_vs_1.6": 1,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 9,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-КМ-К6",
+    "version": "v001",
+    "block_id": "4XAP-3L7F-UKH",
+    "discipline": "KM",
+    "cls": "stamp",
+    "n_seg": 55320
+   },
+   "n_obj": 1799,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-АПЗ.АПС-К4",
+    "version": "v001",
+    "block_id": "7393-HGCY-DVN",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 240
+   },
+   "n_obj": 21,
+   "labelled_1.0": 21,
+   "labelled_1.6": 21,
+   "labelled_2.5": 21,
+   "same_mark_1.0_vs_1.6": 21,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 21,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ОВ1.2-К4 V1",
+    "version": "v001",
+    "block_id": "7NJU-AWMT-HDF",
+    "discipline": "OV",
+    "cls": "stamp",
+    "n_seg": 41853
+   },
+   "n_obj": 954,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-СОУЭ-5_V1",
+    "version": "v001",
+    "block_id": "blk_362a88d5b0ca42b8b6946530dcabdc29",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 609
+   },
+   "n_obj": 24,
+   "labelled_1.0": 11,
+   "labelled_1.6": 13,
+   "labelled_2.5": 16,
+   "same_mark_1.0_vs_1.6": 11,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 13,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-СУС_V1",
+    "version": "v001",
+    "block_id": "blk_a2ac8ddb2c5a4a2d88c4b652888a0dc3",
+    "discipline": "SS",
+    "cls": "stamp",
+    "n_seg": 2179
+   },
+   "n_obj": 35,
+   "labelled_1.0": 9,
+   "labelled_1.6": 9,
+   "labelled_2.5": 11,
+   "same_mark_1.0_vs_1.6": 9,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 9,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-КР0.1-РД_V1",
+    "version": "v001",
+    "block_id": "blk_5126c169c8d34173b17372479bbed9f5",
+    "discipline": "POS",
+    "cls": "drawing",
+    "n_seg": 10502
+   },
+   "n_obj": 2762,
+   "labelled_1.0": 89,
+   "labelled_1.6": 118,
+   "labelled_2.5": 174,
+   "same_mark_1.0_vs_1.6": 89,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 118,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-КЖ-АС-01.1а_V1",
+    "version": "v001",
+    "block_id": "blk_64bd6ac9504b43138e250d559c6eeff3",
+    "discipline": "KJ",
+    "cls": "drawing",
+    "n_seg": 58621
+   },
+   "error": "objects"
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ТХ2-К2 V1",
+    "version": "v001",
+    "block_id": "7MC4-EMVG-6DF",
+    "discipline": "TX",
+    "cls": "drawing",
+    "n_seg": 235
+   },
+   "n_obj": 29,
+   "labelled_1.0": 1,
+   "labelled_1.6": 1,
+   "labelled_2.5": 3,
+   "same_mark_1.0_vs_1.6": 1,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 1,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ТХ2-К5",
+    "version": "v001",
+    "block_id": "7YVM-HUM4-FWF",
+    "discipline": "TX",
+    "cls": "drawing",
+    "n_seg": 743
+   },
+   "n_obj": 50,
+   "labelled_1.0": 3,
+   "labelled_1.6": 6,
+   "labelled_2.5": 12,
+   "same_mark_1.0_vs_1.6": 3,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 6,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ТХ2-К5",
+    "version": "v001",
+    "block_id": "7UKU-WHNK-P4P",
+    "discipline": "TX",
+    "cls": "stamp",
+    "n_seg": 2806
+   },
+   "n_obj": 67,
+   "labelled_1.0": 2,
+   "labelled_1.6": 2,
+   "labelled_2.5": 10,
+   "same_mark_1.0_vs_1.6": 2,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 2,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-СОУЭ-3_V1",
+    "version": "v001",
+    "block_id": "blk_9a8c86a7e64543069b1424ad220a2dca",
+    "discipline": "SS",
+    "cls": "drawing",
+    "n_seg": 9790
+   },
+   "n_obj": 702,
+   "labelled_1.0": 538,
+   "labelled_1.6": 594,
+   "labelled_2.5": 617,
+   "same_mark_1.0_vs_1.6": 538,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 594,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-ПС-4_V1",
+    "version": "v001",
+    "block_id": "blk_1c39cf0ae52548caaa6fdd64d5e0569f",
+    "discipline": "SS",
+    "cls": "stamp",
+    "n_seg": 43262
+   },
+   "n_obj": 56,
+   "labelled_1.0": 18,
+   "labelled_1.6": 25,
+   "labelled_2.5": 28,
+   "same_mark_1.0_vs_1.6": 18,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 25,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ТХ2-К4",
+    "version": "v001",
+    "block_id": "LQKU-D9VL-FVV",
+    "discipline": "TX",
+    "cls": "stamp",
+    "n_seg": 5225
+   },
+   "n_obj": 82,
+   "labelled_1.0": 3,
+   "labelled_1.6": 10,
+   "labelled_2.5": 22,
+   "same_mark_1.0_vs_1.6": 3,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 10,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-ОО542664-АПТ1.2_V1",
+    "version": "v001",
+    "block_id": "blk_7e4dc02b3f7548628a3b9f44e92c4f4d",
+    "discipline": "PT",
+    "cls": "drawing",
+    "n_seg": 48114
+   },
+   "n_obj": 2584,
+   "labelled_1.0": 497,
+   "labelled_1.6": 655,
+   "labelled_2.5": 971,
+   "same_mark_1.0_vs_1.6": 497,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 655,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+    "version": "v002",
+    "block_id": "blk_f35e275fa7104c5ea70486931d895656",
+    "discipline": "VK",
+    "cls": "stamp",
+    "n_seg": 722
+   },
+   "n_obj": 14,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "СТ26_01-14-ВК-АС-1-РД_V1",
+    "version": "v001",
+    "block_id": "blk_e81ac5d1440644c599965a62bf624a4f",
+    "discipline": "VK",
+    "cls": "drawing",
+    "n_seg": 2598
+   },
+   "n_obj": 34,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ТХ2-К1 V1",
+    "version": "v002",
+    "block_id": "blk_6c327ffec0f8441abfade5471bd1127c",
+    "discipline": "TX",
+    "cls": "drawing",
+    "n_seg": 48153
+   },
+   "n_obj": 1400,
+   "labelled_1.0": 192,
+   "labelled_1.6": 293,
+   "labelled_2.5": 357,
+   "same_mark_1.0_vs_1.6": 192,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 293,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-00542664-СОУЭ-5_V1",
+    "version": "v001",
+    "block_id": "blk_c2c0175cde49410ca2ac848fec579b41",
+    "discipline": "SS",
+    "cls": "stamp",
+    "n_seg": 59575
+   },
+   "n_obj": 65,
+   "labelled_1.0": 31,
+   "labelled_1.6": 40,
+   "labelled_2.5": 46,
+   "same_mark_1.0_vs_1.6": 31,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 40,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ТХ1.2-ПА V1",
+    "version": "v001",
+    "block_id": "7F3E-DRLK-U96",
+    "discipline": "TX",
+    "cls": "drawing",
+    "n_seg": 56355
+   },
+   "n_obj": 357,
+   "labelled_1.0": 13,
+   "labelled_1.6": 15,
+   "labelled_2.5": 22,
+   "same_mark_1.0_vs_1.6": 13,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 15,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-ОО542664-ВК1-1.1.1_V1",
+    "version": "v001",
+    "block_id": "blk_6cf6246193de4e0fb2d3ea33ff2ecf28",
+    "discipline": "VK",
+    "cls": "drawing",
+    "n_seg": 43291
+   },
+   "n_obj": 788,
+   "labelled_1.0": 3,
+   "labelled_1.6": 3,
+   "labelled_2.5": 3,
+   "same_mark_1.0_vs_1.6": 3,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 3,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "13АВ-РД-ВК1-К6 V1",
+    "version": "v001",
+    "block_id": "3TXG-T76E-F6Q",
+    "discipline": "VK",
+    "cls": "stamp",
+    "n_seg": 44056
+   },
+   "n_obj": 975,
+   "labelled_1.0": 0,
+   "labelled_1.6": 0,
+   "labelled_2.5": 0,
+   "same_mark_1.0_vs_1.6": 0,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 0,
+   "diff_mark_1.6_vs_2.5": 0
+  },
+  {
+   "carrier": {
+    "doc_id": "ПД-ОО542664-ВК0-2_V1",
+    "version": "v001",
+    "block_id": "blk_09bd668bfaa84c729cfc335bbb5d13d1",
+    "discipline": "VK",
+    "cls": "drawing",
+    "n_seg": 376
+   },
+   "n_obj": 101,
+   "labelled_1.0": 25,
+   "labelled_1.6": 42,
+   "labelled_2.5": 56,
+   "same_mark_1.0_vs_1.6": 25,
+   "diff_mark_1.0_vs_1.6": 0,
+   "same_mark_1.6_vs_2.5": 42,
+   "diff_mark_1.6_vs_2.5": 0
+  }
+ ]
+}

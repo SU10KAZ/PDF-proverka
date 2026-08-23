@@ -1,0 +1,182 @@
+{
+ "n_result_json_docs": 560,
+ "n_blocks_measured": 43261,
+ "n_blocks_error": 0,
+ "n_zero_text_blocks_without_page_text_measurement": 0,
+ "error_kinds": [],
+ "rules": {
+  "R1_empty": "n_seg==0 and n_text==0 and n_images==0 — nothing was extracted at all",
+  "R2_stamp_upstream": "category_code=='stamp' — upstream already labelled it",
+  "R3_raster": "raster_only, or largest raster covers >=50% of the block and n_seg<=200",
+  "R4_curved_text": "n_text==0 and n_curves>=20 — no text layer but many Bezier paths: glyphs converted to outlines",
+  "R5_stamp_geom": "no category_code: flat (aspect>=1.8), small (page_area_frac<=0.10), ruled grid (n_rule_v>=3, len_share_on_rulings>=0.50), text-filled (text_area_share>=0.09, n_text>=5), axis-aligned (share_axis>=0.70)",
+  "R6_mix_raster": "raster_coverage>=0.15 next to a vector layer — the block is part bitmap",
+  "R7_table": "len_share_on_rulings>=0.55 and text_area_share>=0.09 and n_text>=8 and share_axis>=0.90 — the ink IS the ruling grid and every cell carries text",
+  "R8_legend_notes": "text-dominant, geometry sparse: seg_per_text<=6, text_area_share>=0.08, ink_density<=0.030, n_text>=5, len_share_on_rulings<0.50",
+  "R9_drawing": "everything else that has a vector layer"
+ },
+ "class_share": {
+  "drawing": 0.57204,
+  "stamp": 0.33892,
+  "vector_raster_mix": 0.04533,
+  "raster": 0.02328,
+  "table": 0.01105,
+  "legend_notes": 0.00851,
+  "curved_text": 0.00076,
+  "empty": 0.00012
+ },
+ "class_count": {
+  "drawing": 24747,
+  "stamp": 14662,
+  "vector_raster_mix": 1961,
+  "raster": 1007,
+  "table": 478,
+  "legend_notes": 368,
+  "curved_text": 33,
+  "empty": 5
+ },
+ "rule_count": {
+  "R9_drawing": 24747,
+  "R2_stamp_upstream": 14662,
+  "R6_mix_raster": 1961,
+  "R3_raster": 1007,
+  "R7_table_v2": 478,
+  "R8_legend_notes": 368,
+  "R4_curved_text_v2": 33,
+  "R1_empty": 5
+ },
+ "by_discipline": {
+  "AR": {
+   "n": 9636,
+   "share": {
+    "drawing": 0.7116,
+    "stamp": 0.2483,
+    "table": 0.0133,
+    "vector_raster_mix": 0.0115,
+    "raster": 0.0097,
+    "legend_notes": 0.0054,
+    "empty": 0.0002
+   }
+  },
+  "EOM": {
+   "n": 4604,
+   "share": {
+    "drawing": 0.5454,
+    "stamp": 0.4055,
+    "raster": 0.0228,
+    "vector_raster_mix": 0.0161,
+    "table": 0.0046,
+    "curved_text": 0.0037,
+    "legend_notes": 0.002
+   }
+  },
+  "GP": {
+   "n": 118,
+   "share": {
+    "drawing": 0.3898,
+    "vector_raster_mix": 0.3136,
+    "stamp": 0.2797,
+    "legend_notes": 0.0169
+   }
+  },
+  "ITP": {
+   "n": 627,
+   "share": {
+    "stamp": 0.5327,
+    "drawing": 0.3461,
+    "vector_raster_mix": 0.0829,
+    "table": 0.0175,
+    "raster": 0.0159,
+    "curved_text": 0.0048
+   }
+  },
+  "KJ": {
+   "n": 7788,
+   "share": {
+    "drawing": 0.7711,
+    "stamp": 0.188,
+    "table": 0.0203,
+    "legend_notes": 0.0137,
+    "raster": 0.0055,
+    "vector_raster_mix": 0.0012,
+    "empty": 0.0003
+   }
+  },
+  "KM": {
+   "n": 980,
+   "share": {
+    "drawing": 0.701,
+    "stamp": 0.298,
+    "raster": 0.001
+   }
+  },
+  "OV": {
+   "n": 7631,
+   "share": {
+    "stamp": 0.3892,
+    "drawing": 0.3347,
+    "vector_raster_mix": 0.1915,
+    "raster": 0.0607,
+    "legend_notes": 0.017,
+    "table": 0.0064,
+    "curved_text": 0.0005
+   }
+  },
+  "POS": {
+   "n": 64,
+   "share": {
+    "drawing": 0.6406,
+    "stamp": 0.3594
+   }
+  },
+  "PT": {
+   "n": 426,
+   "share": {
+    "drawing": 0.4977,
+    "stamp": 0.4413,
+    "raster": 0.0329,
+    "vector_raster_mix": 0.0258,
+    "table": 0.0023
+   }
+  },
+  "SS": {
+   "n": 6538,
+   "share": {
+    "drawing": 0.534,
+    "stamp": 0.4039,
+    "vector_raster_mix": 0.022,
+    "raster": 0.0165,
+    "table": 0.0141,
+    "legend_notes": 0.008,
+    "curved_text": 0.0014,
+    "empty": 0.0002
+   }
+  },
+  "TX": {
+   "n": 449,
+   "share": {
+    "drawing": 0.6147,
+    "stamp": 0.3719,
+    "raster": 0.0067,
+    "table": 0.0045,
+    "legend_notes": 0.0022
+   }
+  },
+  "VK": {
+   "n": 4400,
+   "share": {
+    "stamp": 0.5205,
+    "drawing": 0.4205,
+    "raster": 0.038,
+    "vector_raster_mix": 0.0141,
+    "table": 0.0036,
+    "legend_notes": 0.0034
+   }
+  }
+ },
+ "stamp_source": {
+  "category_code_stamp": 14664,
+  "geom_fallback": 0,
+  "category_code_present": 14664
+ }
+}

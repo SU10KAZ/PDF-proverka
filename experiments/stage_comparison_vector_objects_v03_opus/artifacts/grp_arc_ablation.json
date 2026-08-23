@@ -1,0 +1,5296 @@
+{
+ "n_blocks": 92,
+ "agg": {
+  "A4_circle_to_bezier|arc_off|drift_mean": {
+   "n": 92,
+   "median": 0.34969,
+   "mean": 0.99905
+  },
+  "A4_circle_to_bezier|arc_on|drift_mean": {
+   "n": 92,
+   "median": 0.2629,
+   "mean": 0.89092
+  },
+  "A4_circle_to_bezier|arc_on|drift_mean_arc_objects": {
+   "n": 83,
+   "median": 0.3918,
+   "mean": 0.5683
+  },
+  "A4b_circle_to_chords5|arc_off|drift_mean": {
+   "n": 92,
+   "median": 0.44134,
+   "mean": 1.02311
+  },
+  "A4b_circle_to_chords5|arc_on|drift_mean": {
+   "n": 92,
+   "median": 0.2809,
+   "mean": 0.90974
+  },
+  "A4b_circle_to_chords5|arc_on|drift_mean_arc_objects": {
+   "n": 83,
+   "median": 0.49151,
+   "mean": 0.68629
+  },
+  "A4c_circle_to_chords24|arc_off|drift_mean": {
+   "n": 92,
+   "median": 0.35441,
+   "mean": 1.00027
+  },
+  "A4c_circle_to_chords24|arc_on|drift_mean": {
+   "n": 92,
+   "median": 0.26695,
+   "mean": 0.88946
+  },
+  "A4c_circle_to_chords24|arc_on|drift_mean_arc_objects": {
+   "n": 83,
+   "median": 0.33675,
+   "mean": 0.55854
+  }
+ },
+ "blocks": [
+  {
+   "block_id": "9TEQ-T9U4-QKM",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg": 1867,
+   "n_circles": 35,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 2e-05,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 2e-05,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.14324,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.14324,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.00218,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.00218,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_e4d353bc34de420282798c062f84babc",
+   "discipline": "ITP",
+   "cls": "stamp",
+   "n_seg": 261,
+   "n_circles": 48,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 10,
+      "n_matched": 10,
+      "drift_mean": 3.64919,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 10,
+      "n_matched": 10,
+      "drift_mean": 3.14613,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 10,
+      "n_matched": 9,
+      "drift_mean": 3.55201,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 10,
+      "n_matched": 9,
+      "drift_mean": 2.73405,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 10,
+      "n_matched": 10,
+      "drift_mean": 3.64761,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 10,
+      "n_matched": 10,
+      "drift_mean": 3.14725,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "UW4D-LRHH-7HR",
+   "discipline": "SS",
+   "cls": "table",
+   "n_seg": 1024,
+   "n_circles": 256,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 154,
+      "n_matched": 154,
+      "drift_mean": 3.8909,
+      "n_arc_obj": 41,
+      "drift_mean_arc_objects": 0.96476
+     },
+     "arc_off": {
+      "n_obj": 154,
+      "n_matched": 154,
+      "drift_mean": 3.81616,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 154,
+      "n_matched": 152,
+      "drift_mean": 3.71428,
+      "n_arc_obj": 41,
+      "drift_mean_arc_objects": 1.04345
+     },
+     "arc_off": {
+      "n_obj": 154,
+      "n_matched": 152,
+      "drift_mean": 3.52768,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 154,
+      "n_matched": 154,
+      "drift_mean": 3.88901,
+      "n_arc_obj": 41,
+      "drift_mean_arc_objects": 0.96559
+     },
+     "arc_off": {
+      "n_obj": 154,
+      "n_matched": 154,
+      "drift_mean": 3.82343,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "PVGW-ALT6-FXV",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 1367,
+   "n_circles": 38,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 157,
+      "n_matched": 155,
+      "drift_mean": 0.28416,
+      "n_arc_obj": 21,
+      "drift_mean_arc_objects": 0.25277
+     },
+     "arc_off": {
+      "n_obj": 153,
+      "n_matched": 151,
+      "drift_mean": 0.36273,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 157,
+      "n_matched": 151,
+      "drift_mean": 0.53293,
+      "n_arc_obj": 21,
+      "drift_mean_arc_objects": 0.51227
+     },
+     "arc_off": {
+      "n_obj": 153,
+      "n_matched": 148,
+      "drift_mean": 0.63133,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 157,
+      "n_matched": 155,
+      "drift_mean": 0.28412,
+      "n_arc_obj": 21,
+      "drift_mean_arc_objects": 0.25522
+     },
+     "arc_off": {
+      "n_obj": 153,
+      "n_matched": 151,
+      "drift_mean": 0.3624,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_362a88d5b0ca42b8b6946530dcabdc29",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 609,
+   "n_circles": 20,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 24,
+      "n_matched": 24,
+      "drift_mean": 0.00829,
+      "n_arc_obj": 15,
+      "drift_mean_arc_objects": 0.01326
+     },
+     "arc_off": {
+      "n_obj": 24,
+      "n_matched": 24,
+      "drift_mean": 0.23137,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 24,
+      "n_matched": 24,
+      "drift_mean": 0.02326,
+      "n_arc_obj": 15,
+      "drift_mean_arc_objects": 0.03722
+     },
+     "arc_off": {
+      "n_obj": 24,
+      "n_matched": 24,
+      "drift_mean": 0.64325,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 24,
+      "n_matched": 24,
+      "drift_mean": 0.00877,
+      "n_arc_obj": 15,
+      "drift_mean_arc_objects": 0.01404
+     },
+     "arc_off": {
+      "n_obj": 24,
+      "n_matched": 24,
+      "drift_mean": 0.23585,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "7WT4-9343-3GC",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 1723,
+   "n_circles": 5,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.21244,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 1.00547
+     },
+     "arc_off": {
+      "n_obj": 31,
+      "n_matched": 31,
+      "drift_mean": 0.22879,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.18352,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.71782
+     },
+     "arc_off": {
+      "n_obj": 31,
+      "n_matched": 31,
+      "drift_mean": 0.26499,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.21242,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 1.0053
+     },
+     "arc_off": {
+      "n_obj": 31,
+      "n_matched": 31,
+      "drift_mean": 0.22858,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_c6e3e1c8ca124a30a192fe8b7388dcd8",
+   "discipline": "VK",
+   "cls": "vector_raster_mix",
+   "n_seg": 4743,
+   "n_circles": 54,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 83,
+      "n_matched": 78,
+      "drift_mean": 0.24144,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 1.33418
+     },
+     "arc_off": {
+      "n_obj": 83,
+      "n_matched": 79,
+      "drift_mean": 0.3248,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 83,
+      "n_matched": 80,
+      "drift_mean": 0.17058,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 1.35108
+     },
+     "arc_off": {
+      "n_obj": 83,
+      "n_matched": 78,
+      "drift_mean": 0.25049,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 83,
+      "n_matched": 79,
+      "drift_mean": 0.23637,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 1.17297
+     },
+     "arc_off": {
+      "n_obj": 83,
+      "n_matched": 80,
+      "drift_mean": 0.32038,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_9d6fa8f6b00648a5942f6c2183cf401f",
+   "discipline": "SS",
+   "cls": "table",
+   "n_seg": 1104,
+   "n_circles": 276,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 179,
+      "n_matched": 179,
+      "drift_mean": 3.97381,
+      "n_arc_obj": 44,
+      "drift_mean_arc_objects": 0.94016
+     },
+     "arc_off": {
+      "n_obj": 179,
+      "n_matched": 179,
+      "drift_mean": 3.83991,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 179,
+      "n_matched": 177,
+      "drift_mean": 3.79993,
+      "n_arc_obj": 44,
+      "drift_mean_arc_objects": 1.01326
+     },
+     "arc_off": {
+      "n_obj": 179,
+      "n_matched": 177,
+      "drift_mean": 3.51867,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 179,
+      "n_matched": 179,
+      "drift_mean": 3.97655,
+      "n_arc_obj": 44,
+      "drift_mean_arc_objects": 0.9487
+     },
+     "arc_off": {
+      "n_obj": 179,
+      "n_matched": 179,
+      "drift_mean": 3.85224,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_629d36b5df9b4722bae8f3d4330bf147",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 2220,
+   "n_circles": 10,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 277,
+      "n_matched": 277,
+      "drift_mean": 0.03977,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.1258
+     },
+     "arc_off": {
+      "n_obj": 277,
+      "n_matched": 277,
+      "drift_mean": 0.03329,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 277,
+      "n_matched": 275,
+      "drift_mean": 0.02436,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.02352
+     },
+     "arc_off": {
+      "n_obj": 277,
+      "n_matched": 275,
+      "drift_mean": 0.02581,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 277,
+      "n_matched": 277,
+      "drift_mean": 0.04242,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.12588
+     },
+     "arc_off": {
+      "n_obj": 277,
+      "n_matched": 277,
+      "drift_mean": 0.03402,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_25c964bfde354b5e8308b79b5dcca5f2",
+   "discipline": "SS",
+   "cls": "vector_raster_mix",
+   "n_seg": 2686,
+   "n_circles": 56,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 52,
+      "n_matched": 52,
+      "drift_mean": 1.3524,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.08339
+     },
+     "arc_off": {
+      "n_obj": 52,
+      "n_matched": 52,
+      "drift_mean": 1.30773,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 52,
+      "n_matched": 49,
+      "drift_mean": 1.04182,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.09116
+     },
+     "arc_off": {
+      "n_obj": 52,
+      "n_matched": 49,
+      "drift_mean": 0.98753,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 52,
+      "n_matched": 52,
+      "drift_mean": 1.35063,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.08239
+     },
+     "arc_off": {
+      "n_obj": 52,
+      "n_matched": 52,
+      "drift_mean": 1.30792,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "TLE3-9YGQ-U9L",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 2257,
+   "n_circles": 5,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.13608,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.28729
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.22255,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.12803,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.18943
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.22927,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.13557,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.27901
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.22216,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "LQKU-D9VL-FVV",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg": 5225,
+   "n_circles": 12,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 82,
+      "n_matched": 81,
+      "drift_mean": 0.14953,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 82,
+      "n_matched": 81,
+      "drift_mean": 0.14412,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 82,
+      "n_matched": 79,
+      "drift_mean": 0.07102,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 82,
+      "n_matched": 79,
+      "drift_mean": 0.06897,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 82,
+      "n_matched": 81,
+      "drift_mean": 0.17041,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 82,
+      "n_matched": 81,
+      "drift_mean": 0.16502,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_a8cce5a18e564417810f33f0d998e87f",
+   "discipline": "PT",
+   "cls": "table",
+   "n_seg": 200,
+   "n_circles": 50,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 1.12965,
+      "n_arc_obj": 46,
+      "drift_mean_arc_objects": 0.80635
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 3.70004,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 1.06681,
+      "n_arc_obj": 46,
+      "drift_mean_arc_objects": 0.74342
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 3.23427,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 1.12975,
+      "n_arc_obj": 46,
+      "drift_mean_arc_objects": 0.80644
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 3.70681,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_35218272802c43498f2eb39adf028138",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg": 613,
+   "n_circles": 24,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 170,
+      "n_matched": 150,
+      "drift_mean": 0.14512,
+      "n_arc_obj": 25,
+      "drift_mean_arc_objects": 0.27037
+     },
+     "arc_off": {
+      "n_obj": 170,
+      "n_matched": 150,
+      "drift_mean": 0.2221,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 170,
+      "n_matched": 166,
+      "drift_mean": 1.74663,
+      "n_arc_obj": 26,
+      "drift_mean_arc_objects": 0.67698
+     },
+     "arc_off": {
+      "n_obj": 170,
+      "n_matched": 166,
+      "drift_mean": 1.90329,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 170,
+      "n_matched": 147,
+      "drift_mean": 0.13566,
+      "n_arc_obj": 25,
+      "drift_mean_arc_objects": 0.27033
+     },
+     "arc_off": {
+      "n_obj": 170,
+      "n_matched": 147,
+      "drift_mean": 0.21527,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_704d88d3cc1b42b6828539db1169bbc4",
+   "discipline": "OV",
+   "cls": "stamp",
+   "n_seg": 294,
+   "n_circles": 61,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 6,
+      "n_matched": 6,
+      "drift_mean": 2.63073,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 6,
+      "n_matched": 6,
+      "drift_mean": 2.03084,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 6,
+      "n_matched": 5,
+      "drift_mean": 3.41033,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 6,
+      "n_matched": 5,
+      "drift_mean": 2.66035,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 6,
+      "n_matched": 6,
+      "drift_mean": 2.63293,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 6,
+      "n_matched": 6,
+      "drift_mean": 2.03757,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_84655520f60a412094b8f4535d995093",
+   "discipline": "ITP",
+   "cls": "vector_raster_mix",
+   "n_seg": 1341,
+   "n_circles": 3,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 40,
+      "n_matched": 40,
+      "drift_mean": 0.00845,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.06763
+     },
+     "arc_off": {
+      "n_obj": 40,
+      "n_matched": 40,
+      "drift_mean": 0.13577,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 40,
+      "n_matched": 39,
+      "drift_mean": 0.00547,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 0.05331
+     },
+     "arc_off": {
+      "n_obj": 40,
+      "n_matched": 39,
+      "drift_mean": 0.18241,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 40,
+      "n_matched": 40,
+      "drift_mean": 0.00845,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.06762
+     },
+     "arc_off": {
+      "n_obj": 40,
+      "n_matched": 40,
+      "drift_mean": 0.13696,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "73T9-WFKK-DMU",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 762,
+   "n_circles": 24,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.03393,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.19068
+     },
+     "arc_off": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.09318,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.11423,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.40959
+     },
+     "arc_off": {
+      "n_obj": 115,
+      "n_matched": 114,
+      "drift_mean": 0.14534,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.02792,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.14997
+     },
+     "arc_off": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.09441,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "6YY3-YUXD-Y66",
+   "discipline": "SS",
+   "cls": "vector_raster_mix",
+   "n_seg": 136,
+   "n_circles": 34,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 4.40417,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 3.67214
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 3.45282,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 4.30581,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 3.6891
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 3.39868,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 4.39059,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 3.6721
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 3.4405,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_c5e26ece8d04463ca317d35fd23ad753",
+   "discipline": "PT",
+   "cls": "vector_raster_mix",
+   "n_seg": 316,
+   "n_circles": 79,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.72131,
+      "n_arc_obj": 75,
+      "drift_mean_arc_objects": 0.55616
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 3.6151,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.6591,
+      "n_arc_obj": 75,
+      "drift_mean_arc_objects": 0.49394
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 3.19615,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.72139,
+      "n_arc_obj": 75,
+      "drift_mean_arc_objects": 0.55624
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 3.62178,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4MPL-MKEN-UWF",
+   "discipline": "SS",
+   "cls": "vector_raster_mix",
+   "n_seg": 10774,
+   "n_circles": 19,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.39362,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.61962
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.59593,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.31036,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.36252
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.70268,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.39247,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.61666
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.59357,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_ed4a9bc319604b9eb9ffb4d01faa0c0c",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg": 1200,
+   "n_circles": 9,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.32338,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.17827
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.2806,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.29644,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.41374
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.26635,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.32336,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.17825
+     },
+     "arc_off": {
+      "n_obj": 78,
+      "n_matched": 78,
+      "drift_mean": 0.28042,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "AAQ4-4V47-9M7",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 7727,
+   "n_circles": 131,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 657,
+      "n_matched": 657,
+      "drift_mean": 0.18283,
+      "n_arc_obj": 71,
+      "drift_mean_arc_objects": 0.79724
+     },
+     "arc_off": {
+      "n_obj": 657,
+      "n_matched": 657,
+      "drift_mean": 0.21855,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 657,
+      "n_matched": 655,
+      "drift_mean": 0.08777,
+      "n_arc_obj": 69,
+      "drift_mean_arc_objects": 0.59311
+     },
+     "arc_off": {
+      "n_obj": 657,
+      "n_matched": 655,
+      "drift_mean": 0.13868,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 657,
+      "n_matched": 657,
+      "drift_mean": 0.17127,
+      "n_arc_obj": 71,
+      "drift_mean_arc_objects": 0.77773
+     },
+     "arc_off": {
+      "n_obj": 657,
+      "n_matched": 657,
+      "drift_mean": 0.20927,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_15c2bebea33e4856bcf9659c9df4a7ee",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 7549,
+   "n_circles": 149,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 236,
+      "n_matched": 234,
+      "drift_mean": 0.7536,
+      "n_arc_obj": 31,
+      "drift_mean_arc_objects": 0.61907
+     },
+     "arc_off": {
+      "n_obj": 233,
+      "n_matched": 232,
+      "drift_mean": 0.74371,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 236,
+      "n_matched": 229,
+      "drift_mean": 0.95279,
+      "n_arc_obj": 30,
+      "drift_mean_arc_objects": 1.34871
+     },
+     "arc_off": {
+      "n_obj": 233,
+      "n_matched": 224,
+      "drift_mean": 0.94695,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 236,
+      "n_matched": 234,
+      "drift_mean": 0.76834,
+      "n_arc_obj": 31,
+      "drift_mean_arc_objects": 0.61452
+     },
+     "arc_off": {
+      "n_obj": 233,
+      "n_matched": 232,
+      "drift_mean": 0.7587,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_e026206a3e7c410a93ba3a4e7f5bd6ec",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 3817,
+   "n_circles": 10,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 89,
+      "n_matched": 89,
+      "drift_mean": 0.00091,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 88,
+      "n_matched": 88,
+      "drift_mean": 0.00092,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 89,
+      "n_matched": 85,
+      "drift_mean": 0.08089,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 88,
+      "n_matched": 84,
+      "drift_mean": 0.08031,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 89,
+      "n_matched": 89,
+      "drift_mean": 0.00101,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 88,
+      "n_matched": 88,
+      "drift_mean": 0.00102,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_2ab07b7510a44c7688a59ee145873f93",
+   "discipline": "EOM",
+   "cls": "legend_notes",
+   "n_seg": 379,
+   "n_circles": 9,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 0.65114,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.4777
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 0.76628,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 0.6572,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.49151
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 0.80341,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 0.62354,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.4862
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 0.76858,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 723,
+   "n_circles": 3,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.0076,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.29125
+     },
+     "arc_off": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.00795,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.10958,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 2.83241
+     },
+     "arc_off": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.11267,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.0076,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.29133
+     },
+     "arc_off": {
+      "n_obj": 115,
+      "n_matched": 115,
+      "drift_mean": 0.00786,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "9P4U-7WFD-DUM",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 9530,
+   "n_circles": 92,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 260,
+      "n_matched": 260,
+      "drift_mean": 0.01682,
+      "n_arc_obj": 92,
+      "drift_mean_arc_objects": 0.04753
+     },
+     "arc_off": {
+      "n_obj": 260,
+      "n_matched": 260,
+      "drift_mean": 0.04084,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 260,
+      "n_matched": 260,
+      "drift_mean": 0.34829,
+      "n_arc_obj": 92,
+      "drift_mean_arc_objects": 0.70484
+     },
+     "arc_off": {
+      "n_obj": 260,
+      "n_matched": 260,
+      "drift_mean": 0.50191,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 260,
+      "n_matched": 260,
+      "drift_mean": 0.02705,
+      "n_arc_obj": 92,
+      "drift_mean_arc_objects": 0.07639
+     },
+     "arc_off": {
+      "n_obj": 260,
+      "n_matched": 260,
+      "drift_mean": 0.04406,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_a5f5d979bba34d029b25e1ac7d0b5f70",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg": 223,
+   "n_circles": 49,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 18,
+      "n_matched": 18,
+      "drift_mean": 3.46919,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 3.34773
+     },
+     "arc_off": {
+      "n_obj": 18,
+      "n_matched": 18,
+      "drift_mean": 3.02298,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 18,
+      "n_matched": 13,
+      "drift_mean": 2.95613,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 3.55384
+     },
+     "arc_off": {
+      "n_obj": 18,
+      "n_matched": 13,
+      "drift_mean": 2.62343,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 18,
+      "n_matched": 18,
+      "drift_mean": 3.20196,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 3.34769
+     },
+     "arc_off": {
+      "n_obj": 18,
+      "n_matched": 18,
+      "drift_mean": 2.85993,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "6WNV-DWDA-4CQ",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 1034,
+   "n_circles": 29,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 75,
+      "n_matched": 73,
+      "drift_mean": 1.05065,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.84162
+     },
+     "arc_off": {
+      "n_obj": 75,
+      "n_matched": 73,
+      "drift_mean": 0.93724,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 75,
+      "n_matched": 73,
+      "drift_mean": 1.16397,
+      "n_arc_obj": 6,
+      "drift_mean_arc_objects": 2.26542
+     },
+     "arc_off": {
+      "n_obj": 75,
+      "n_matched": 73,
+      "drift_mean": 0.99705,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 75,
+      "n_matched": 73,
+      "drift_mean": 1.0436,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.75953
+     },
+     "arc_off": {
+      "n_obj": 75,
+      "n_matched": 73,
+      "drift_mean": 0.92203,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_251da81bb0c04497ac671b8c226f5d36",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 2498,
+   "n_circles": 22,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 173,
+      "n_matched": 173,
+      "drift_mean": 0.21035,
+      "n_arc_obj": 14,
+      "drift_mean_arc_objects": 0.3918
+     },
+     "arc_off": {
+      "n_obj": 172,
+      "n_matched": 172,
+      "drift_mean": 0.18598,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 173,
+      "n_matched": 173,
+      "drift_mean": 0.19093,
+      "n_arc_obj": 14,
+      "drift_mean_arc_objects": 0.39573
+     },
+     "arc_off": {
+      "n_obj": 172,
+      "n_matched": 172,
+      "drift_mean": 0.17652,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 173,
+      "n_matched": 173,
+      "drift_mean": 0.22425,
+      "n_arc_obj": 14,
+      "drift_mean_arc_objects": 0.42611
+     },
+     "arc_off": {
+      "n_obj": 172,
+      "n_matched": 172,
+      "drift_mean": 0.19479,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4G66-T9FQ-L93",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg": 4619,
+   "n_circles": 10,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 436,
+      "n_matched": 436,
+      "drift_mean": 0.05101,
+      "n_arc_obj": 22,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 436,
+      "n_matched": 436,
+      "drift_mean": 0.04637,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 436,
+      "n_matched": 434,
+      "drift_mean": 0.02188,
+      "n_arc_obj": 22,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 436,
+      "n_matched": 434,
+      "drift_mean": 0.02147,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 436,
+      "n_matched": 436,
+      "drift_mean": 0.05101,
+      "n_arc_obj": 22,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 436,
+      "n_matched": 436,
+      "drift_mean": 0.04641,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_19c1eb4374fe4eacb2e25431f89e3148",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 896,
+   "n_circles": 20,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 73,
+      "n_matched": 72,
+      "drift_mean": 0.36862,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.71675
+     },
+     "arc_off": {
+      "n_obj": 72,
+      "n_matched": 72,
+      "drift_mean": 0.47887,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 73,
+      "n_matched": 71,
+      "drift_mean": 0.21665,
+      "n_arc_obj": 19,
+      "drift_mean_arc_objects": 0.19408
+     },
+     "arc_off": {
+      "n_obj": 72,
+      "n_matched": 71,
+      "drift_mean": 0.33116,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 73,
+      "n_matched": 72,
+      "drift_mean": 0.40377,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.84653
+     },
+     "arc_off": {
+      "n_obj": 72,
+      "n_matched": 71,
+      "drift_mean": 0.49029,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "77Q4-3XRE-XLE",
+   "discipline": "AR",
+   "cls": "legend_notes",
+   "n_seg": 186,
+   "n_circles": 4,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 19,
+      "n_matched": 19,
+      "drift_mean": 0.05313,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.14422
+     },
+     "arc_off": {
+      "n_obj": 19,
+      "n_matched": 19,
+      "drift_mean": 0.434,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 19,
+      "n_matched": 19,
+      "drift_mean": 0.01629,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.04421
+     },
+     "arc_off": {
+      "n_obj": 19,
+      "n_matched": 19,
+      "drift_mean": 0.41387,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 19,
+      "n_matched": 19,
+      "drift_mean": 0.02143,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.05817
+     },
+     "arc_off": {
+      "n_obj": 19,
+      "n_matched": 19,
+      "drift_mean": 0.43556,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_4a8a36198cfa401dabe42195e4f9bd3f",
+   "discipline": "OV",
+   "cls": "vector_raster_mix",
+   "n_seg": 1181,
+   "n_circles": 268,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 189,
+      "n_matched": 189,
+      "drift_mean": 1.46136,
+      "n_arc_obj": 95,
+      "drift_mean_arc_objects": 0.79643
+     },
+     "arc_off": {
+      "n_obj": 189,
+      "n_matched": 189,
+      "drift_mean": 1.87768,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 189,
+      "n_matched": 189,
+      "drift_mean": 2.06836,
+      "n_arc_obj": 95,
+      "drift_mean_arc_objects": 1.7212
+     },
+     "arc_off": {
+      "n_obj": 189,
+      "n_matched": 189,
+      "drift_mean": 2.41208,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 189,
+      "n_matched": 189,
+      "drift_mean": 1.45385,
+      "n_arc_obj": 95,
+      "drift_mean_arc_objects": 0.78089
+     },
+     "arc_off": {
+      "n_obj": 189,
+      "n_matched": 189,
+      "drift_mean": 1.87337,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "7393-HGCY-DVN",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 240,
+   "n_circles": 58,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 3.03994,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 0.1147
+     },
+     "arc_off": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 2.86315,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 3.56546,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 0.05288
+     },
+     "arc_off": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 2.6554,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 3.0339,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 0.11476
+     },
+     "arc_off": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 2.85683,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "FT93-N344-YXL",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 11009,
+   "n_circles": 797,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 214,
+      "n_matched": 201,
+      "drift_mean": 1.17371,
+      "n_arc_obj": 39,
+      "drift_mean_arc_objects": 1.53624
+     },
+     "arc_off": {
+      "n_obj": 213,
+      "n_matched": 203,
+      "drift_mean": 1.21897,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 214,
+      "n_matched": 206,
+      "drift_mean": 0.8899,
+      "n_arc_obj": 40,
+      "drift_mean_arc_objects": 0.77577
+     },
+     "arc_off": {
+      "n_obj": 213,
+      "n_matched": 208,
+      "drift_mean": 0.98191,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 214,
+      "n_matched": 202,
+      "drift_mean": 1.23464,
+      "n_arc_obj": 39,
+      "drift_mean_arc_objects": 1.53828
+     },
+     "arc_off": {
+      "n_obj": 213,
+      "n_matched": 204,
+      "drift_mean": 1.28053,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 8657,
+   "n_circles": 21,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 139,
+      "n_matched": 139,
+      "drift_mean": 0.09689,
+      "n_arc_obj": 29,
+      "drift_mean_arc_objects": 0.43888
+     },
+     "arc_off": {
+      "n_obj": 136,
+      "n_matched": 136,
+      "drift_mean": 0.18847,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 139,
+      "n_matched": 138,
+      "drift_mean": 0.06958,
+      "n_arc_obj": 28,
+      "drift_mean_arc_objects": 0.31102
+     },
+     "arc_off": {
+      "n_obj": 136,
+      "n_matched": 135,
+      "drift_mean": 0.15902,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 139,
+      "n_matched": 139,
+      "drift_mean": 0.09612,
+      "n_arc_obj": 29,
+      "drift_mean_arc_objects": 0.43517
+     },
+     "arc_off": {
+      "n_obj": 136,
+      "n_matched": 136,
+      "drift_mean": 0.18877,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_eeb669a5928f4c7ca97ad7b1c212988e",
+   "discipline": "OV",
+   "cls": "table",
+   "n_seg": 1096,
+   "n_circles": 248,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 142,
+      "n_matched": 142,
+      "drift_mean": 1.76315,
+      "n_arc_obj": 48,
+      "drift_mean_arc_objects": 0.75938
+     },
+     "arc_off": {
+      "n_obj": 142,
+      "n_matched": 142,
+      "drift_mean": 1.77407,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 142,
+      "n_matched": 142,
+      "drift_mean": 1.51032,
+      "n_arc_obj": 48,
+      "drift_mean_arc_objects": 0.6035
+     },
+     "arc_off": {
+      "n_obj": 142,
+      "n_matched": 142,
+      "drift_mean": 1.99627,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 142,
+      "n_matched": 142,
+      "drift_mean": 1.75829,
+      "n_arc_obj": 48,
+      "drift_mean_arc_objects": 0.7442
+     },
+     "arc_off": {
+      "n_obj": 142,
+      "n_matched": 142,
+      "drift_mean": 1.7719,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_1e8596d7ce4a4fa39aa466c3cf6a246d",
+   "discipline": "ITP",
+   "cls": "table",
+   "n_seg": 224,
+   "n_circles": 38,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.6509,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.17232,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.52942,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 2.88255,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.65225,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.17582,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4YRN-VTFD-MAM",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 1085,
+   "n_circles": 10,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 110,
+      "n_matched": 110,
+      "drift_mean": 0.07613,
+      "n_arc_obj": 23,
+      "drift_mean_arc_objects": 0.15761
+     },
+     "arc_off": {
+      "n_obj": 110,
+      "n_matched": 110,
+      "drift_mean": 0.28671,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 110,
+      "n_matched": 110,
+      "drift_mean": 0.07055,
+      "n_arc_obj": 23,
+      "drift_mean_arc_objects": 0.13362
+     },
+     "arc_off": {
+      "n_obj": 110,
+      "n_matched": 110,
+      "drift_mean": 0.28272,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 110,
+      "n_matched": 110,
+      "drift_mean": 0.07613,
+      "n_arc_obj": 23,
+      "drift_mean_arc_objects": 0.15762
+     },
+     "arc_off": {
+      "n_obj": 110,
+      "n_matched": 110,
+      "drift_mean": 0.28746,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_5be60d80dbfd404cb6941b0c519c161b",
+   "discipline": "VK",
+   "cls": "vector_raster_mix",
+   "n_seg": 5532,
+   "n_circles": 198,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 1010,
+      "n_matched": 1001,
+      "drift_mean": 0.22453,
+      "n_arc_obj": 138,
+      "drift_mean_arc_objects": 0.58131
+     },
+     "arc_off": {
+      "n_obj": 1012,
+      "n_matched": 1003,
+      "drift_mean": 0.35662,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 1010,
+      "n_matched": 990,
+      "drift_mean": 0.30408,
+      "n_arc_obj": 135,
+      "drift_mean_arc_objects": 0.51924
+     },
+     "arc_off": {
+      "n_obj": 1012,
+      "n_matched": 992,
+      "drift_mean": 0.44984,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 1010,
+      "n_matched": 1001,
+      "drift_mean": 0.22354,
+      "n_arc_obj": 138,
+      "drift_mean_arc_objects": 0.57562
+     },
+     "arc_off": {
+      "n_obj": 1012,
+      "n_matched": 1003,
+      "drift_mean": 0.35617,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_cb88dd54939f46c18933e448f87ab36c",
+   "discipline": "ITP",
+   "cls": "vector_raster_mix",
+   "n_seg": 608,
+   "n_circles": 106,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.81342,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.22339,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.76108,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 2.92936,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.95233,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.33427,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_e76eb44d4942483f99a1965ee93c238d",
+   "discipline": "SS",
+   "cls": "legend_notes",
+   "n_seg": 330,
+   "n_circles": 4,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 71,
+      "n_matched": 71,
+      "drift_mean": 0.06768,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.23887
+     },
+     "arc_off": {
+      "n_obj": 71,
+      "n_matched": 71,
+      "drift_mean": 0.17458,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 71,
+      "n_matched": 71,
+      "drift_mean": 0.00242,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.02458
+     },
+     "arc_off": {
+      "n_obj": 71,
+      "n_matched": 71,
+      "drift_mean": 0.14744,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 71,
+      "n_matched": 71,
+      "drift_mean": 0.06768,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.23886
+     },
+     "arc_off": {
+      "n_obj": 71,
+      "n_matched": 71,
+      "drift_mean": 0.17378,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_5126c169c8d34173b17372479bbed9f5",
+   "discipline": "POS",
+   "cls": "drawing",
+   "n_seg": 10502,
+   "n_circles": 176,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 2762,
+      "n_matched": 2761,
+      "drift_mean": 0.07317,
+      "n_arc_obj": 163,
+      "drift_mean_arc_objects": 0.29984
+     },
+     "arc_off": {
+      "n_obj": 2761,
+      "n_matched": 2760,
+      "drift_mean": 0.16028,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 2762,
+      "n_matched": 2760,
+      "drift_mean": 0.05757,
+      "n_arc_obj": 163,
+      "drift_mean_arc_objects": 0.28739
+     },
+     "arc_off": {
+      "n_obj": 2761,
+      "n_matched": 2759,
+      "drift_mean": 0.16913,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 2762,
+      "n_matched": 2761,
+      "drift_mean": 0.07346,
+      "n_arc_obj": 163,
+      "drift_mean_arc_objects": 0.29641
+     },
+     "arc_off": {
+      "n_obj": 2761,
+      "n_matched": 2760,
+      "drift_mean": 0.1604,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "43CL-VVJR-QPF",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 1357,
+   "n_circles": 35,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 177,
+      "n_matched": 174,
+      "drift_mean": 0.59591,
+      "n_arc_obj": 36,
+      "drift_mean_arc_objects": 1.39829
+     },
+     "arc_off": {
+      "n_obj": 176,
+      "n_matched": 173,
+      "drift_mean": 0.52007,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 177,
+      "n_matched": 176,
+      "drift_mean": 0.25516,
+      "n_arc_obj": 37,
+      "drift_mean_arc_objects": 0.51495
+     },
+     "arc_off": {
+      "n_obj": 176,
+      "n_matched": 175,
+      "drift_mean": 0.38246,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 177,
+      "n_matched": 174,
+      "drift_mean": 0.51356,
+      "n_arc_obj": 36,
+      "drift_mean_arc_objects": 1.25923
+     },
+     "arc_off": {
+      "n_obj": 176,
+      "n_matched": 173,
+      "drift_mean": 0.4528,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_3446f154f6bc4874b01e99e29358f318",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 233,
+   "n_circles": 45,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 11,
+      "n_matched": 11,
+      "drift_mean": 0.27472,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 1.51097
+     },
+     "arc_off": {
+      "n_obj": 11,
+      "n_matched": 11,
+      "drift_mean": 0.26757,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 11,
+      "n_matched": 10,
+      "drift_mean": 0.25526,
+      "n_arc_obj": 1,
+      "drift_mean_arc_objects": 2.55264
+     },
+     "arc_off": {
+      "n_obj": 11,
+      "n_matched": 10,
+      "drift_mean": 0.22687,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 11,
+      "n_matched": 11,
+      "drift_mean": 0.28196,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 1.55077
+     },
+     "arc_off": {
+      "n_obj": 11,
+      "n_matched": 11,
+      "drift_mean": 0.26701,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "A7VL-W7KW-6Y7",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 8108,
+   "n_circles": 72,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 962,
+      "n_matched": 962,
+      "drift_mean": 0.14366,
+      "n_arc_obj": 16,
+      "drift_mean_arc_objects": 0.45783
+     },
+     "arc_off": {
+      "n_obj": 962,
+      "n_matched": 962,
+      "drift_mean": 0.13274,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 962,
+      "n_matched": 950,
+      "drift_mean": 0.10831,
+      "n_arc_obj": 16,
+      "drift_mean_arc_objects": 0.67848
+     },
+     "arc_off": {
+      "n_obj": 962,
+      "n_matched": 950,
+      "drift_mean": 0.11451,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 962,
+      "n_matched": 962,
+      "drift_mean": 0.1437,
+      "n_arc_obj": 16,
+      "drift_mean_arc_objects": 0.45909
+     },
+     "arc_off": {
+      "n_obj": 962,
+      "n_matched": 962,
+      "drift_mean": 0.13368,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "7DTQ-7FJA-Y6G",
+   "discipline": "GP",
+   "cls": "stamp",
+   "n_seg": 274,
+   "n_circles": 10,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.17684,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.04207
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.14288,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.17462,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.09681
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.23008,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.17295,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.00046
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.14382,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4QL6-YMC3-7JG",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg": 4759,
+   "n_circles": 120,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 128,
+      "n_matched": 121,
+      "drift_mean": 0.96212,
+      "n_arc_obj": 24,
+      "drift_mean_arc_objects": 0.73944
+     },
+     "arc_off": {
+      "n_obj": 126,
+      "n_matched": 118,
+      "drift_mean": 1.01591,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 128,
+      "n_matched": 121,
+      "drift_mean": 0.77695,
+      "n_arc_obj": 24,
+      "drift_mean_arc_objects": 0.76995
+     },
+     "arc_off": {
+      "n_obj": 126,
+      "n_matched": 118,
+      "drift_mean": 0.84661,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 128,
+      "n_matched": 120,
+      "drift_mean": 0.94727,
+      "n_arc_obj": 24,
+      "drift_mean_arc_objects": 0.78119
+     },
+     "arc_off": {
+      "n_obj": 126,
+      "n_matched": 117,
+      "drift_mean": 0.99186,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_7c110f138cf540088776acd3474919f7",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 2636,
+   "n_circles": 20,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 85,
+      "n_matched": 82,
+      "drift_mean": 0.16378,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.0413
+     },
+     "arc_off": {
+      "n_obj": 85,
+      "n_matched": 82,
+      "drift_mean": 0.20241,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 85,
+      "n_matched": 83,
+      "drift_mean": 0.20247,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.27015
+     },
+     "arc_off": {
+      "n_obj": 85,
+      "n_matched": 83,
+      "drift_mean": 0.24658,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 85,
+      "n_matched": 82,
+      "drift_mean": 0.15287,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.04082
+     },
+     "arc_off": {
+      "n_obj": 85,
+      "n_matched": 82,
+      "drift_mean": 0.19228,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "7RUW-YAX6-QY4",
+   "discipline": "EOM",
+   "cls": "table",
+   "n_seg": 5723,
+   "n_circles": 73,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 205,
+      "n_matched": 205,
+      "drift_mean": 0.06944,
+      "n_arc_obj": 72,
+      "drift_mean_arc_objects": 0.06799
+     },
+     "arc_off": {
+      "n_obj": 205,
+      "n_matched": 205,
+      "drift_mean": 0.1464,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 205,
+      "n_matched": 205,
+      "drift_mean": 0.2156,
+      "n_arc_obj": 72,
+      "drift_mean_arc_objects": 0.37998
+     },
+     "arc_off": {
+      "n_obj": 205,
+      "n_matched": 205,
+      "drift_mean": 0.60069,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 205,
+      "n_matched": 205,
+      "drift_mean": 0.02915,
+      "n_arc_obj": 72,
+      "drift_mean_arc_objects": 0.08147
+     },
+     "arc_off": {
+      "n_obj": 205,
+      "n_matched": 205,
+      "drift_mean": 0.11541,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_9a8c86a7e64543069b1424ad220a2dca",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 9790,
+   "n_circles": 239,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 702,
+      "n_matched": 702,
+      "drift_mean": 0.22854,
+      "n_arc_obj": 233,
+      "drift_mean_arc_objects": 0.14504
+     },
+     "arc_off": {
+      "n_obj": 693,
+      "n_matched": 693,
+      "drift_mean": 0.73593,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 702,
+      "n_matched": 701,
+      "drift_mean": 0.19101,
+      "n_arc_obj": 232,
+      "drift_mean_arc_objects": 0.12373
+     },
+     "arc_off": {
+      "n_obj": 693,
+      "n_matched": 692,
+      "drift_mean": 0.74062,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 702,
+      "n_matched": 702,
+      "drift_mean": 0.22797,
+      "n_arc_obj": 233,
+      "drift_mean_arc_objects": 0.14322
+     },
+     "arc_off": {
+      "n_obj": 693,
+      "n_matched": 693,
+      "drift_mean": 0.73953,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 1955,
+   "n_circles": 139,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 278,
+      "n_matched": 253,
+      "drift_mean": 1.3321,
+      "n_arc_obj": 27,
+      "drift_mean_arc_objects": 1.76428
+     },
+     "arc_off": {
+      "n_obj": 270,
+      "n_matched": 245,
+      "drift_mean": 1.20923,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 278,
+      "n_matched": 252,
+      "drift_mean": 0.96569,
+      "n_arc_obj": 27,
+      "drift_mean_arc_objects": 1.61782
+     },
+     "arc_off": {
+      "n_obj": 270,
+      "n_matched": 244,
+      "drift_mean": 0.90853,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 278,
+      "n_matched": 253,
+      "drift_mean": 1.33094,
+      "n_arc_obj": 27,
+      "drift_mean_arc_objects": 1.7614
+     },
+     "arc_off": {
+      "n_obj": 270,
+      "n_matched": 245,
+      "drift_mean": 1.20967,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "A9HA-G3YV-9DF",
+   "discipline": "AR",
+   "cls": "legend_notes",
+   "n_seg": 188,
+   "n_circles": 4,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 0.04807,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.14422
+     },
+     "arc_off": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 0.39266,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 0.01474,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.04421
+     },
+     "arc_off": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 0.37446,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 0.01939,
+      "n_arc_obj": 7,
+      "drift_mean_arc_objects": 0.05817
+     },
+     "arc_off": {
+      "n_obj": 21,
+      "n_matched": 21,
+      "drift_mean": 0.39407,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "97PF-LCQC-YHK",
+   "discipline": "AR",
+   "cls": "stamp",
+   "n_seg": 2686,
+   "n_circles": 5,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 42,
+      "n_matched": 42,
+      "drift_mean": 0.1782,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.64404
+     },
+     "arc_off": {
+      "n_obj": 41,
+      "n_matched": 41,
+      "drift_mean": 0.17202,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 42,
+      "n_matched": 42,
+      "drift_mean": 0.182,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.84788
+     },
+     "arc_off": {
+      "n_obj": 41,
+      "n_matched": 41,
+      "drift_mean": 0.17864,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 42,
+      "n_matched": 42,
+      "drift_mean": 0.17813,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.64396
+     },
+     "arc_off": {
+      "n_obj": 41,
+      "n_matched": 41,
+      "drift_mean": 0.17194,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "7EHD-V699-FTC",
+   "discipline": "GP",
+   "cls": "drawing",
+   "n_seg": 2227,
+   "n_circles": 53,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 141,
+      "n_matched": 141,
+      "drift_mean": 1.01152,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 141,
+      "n_matched": 141,
+      "drift_mean": 1.0027,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 141,
+      "n_matched": 141,
+      "drift_mean": 1.17414,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 141,
+      "n_matched": 141,
+      "drift_mean": 1.13782,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 141,
+      "n_matched": 141,
+      "drift_mean": 1.029,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 141,
+      "n_matched": 141,
+      "drift_mean": 1.02022,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_b8275c8ec6734d5fb630364c81b55eea",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 3971,
+   "n_circles": 130,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 323,
+      "n_matched": 323,
+      "drift_mean": 0.31271,
+      "n_arc_obj": 52,
+      "drift_mean_arc_objects": 0.69084
+     },
+     "arc_off": {
+      "n_obj": 331,
+      "n_matched": 331,
+      "drift_mean": 0.43248,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 323,
+      "n_matched": 321,
+      "drift_mean": 0.25971,
+      "n_arc_obj": 52,
+      "drift_mean_arc_objects": 0.78389
+     },
+     "arc_off": {
+      "n_obj": 331,
+      "n_matched": 329,
+      "drift_mean": 0.36686,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 323,
+      "n_matched": 323,
+      "drift_mean": 0.31455,
+      "n_arc_obj": 52,
+      "drift_mean_arc_objects": 0.7024
+     },
+     "arc_off": {
+      "n_obj": 331,
+      "n_matched": 331,
+      "drift_mean": 0.4322,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_a92b35b9d66d45479768ed8afd865b03",
+   "discipline": "SS",
+   "cls": "stamp",
+   "n_seg": 414,
+   "n_circles": 97,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 4.21831,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 3.39426,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 13,
+      "drift_mean": 4.43279,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 13,
+      "drift_mean": 3.27778,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 4.20232,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 3.39681,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_0a677a19ca2b458b83ad440b070aeb72",
+   "discipline": "SS",
+   "cls": "table",
+   "n_seg": 388,
+   "n_circles": 97,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 3.13475,
+      "n_arc_obj": 32,
+      "drift_mean_arc_objects": 0.99913
+     },
+     "arc_off": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 3.79669,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 69,
+      "n_matched": 67,
+      "drift_mean": 3.05951,
+      "n_arc_obj": 31,
+      "drift_mean_arc_objects": 0.89801
+     },
+     "arc_off": {
+      "n_obj": 69,
+      "n_matched": 67,
+      "drift_mean": 3.49266,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 3.14622,
+      "n_arc_obj": 32,
+      "drift_mean_arc_objects": 1.0007
+     },
+     "arc_off": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 3.78828,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_a3f6aeb5f8974441bc086424531393ce",
+   "discipline": "OV",
+   "cls": "table",
+   "n_seg": 1134,
+   "n_circles": 257,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 121,
+      "n_matched": 121,
+      "drift_mean": 1.87686,
+      "n_arc_obj": 41,
+      "drift_mean_arc_objects": 0.61432
+     },
+     "arc_off": {
+      "n_obj": 121,
+      "n_matched": 121,
+      "drift_mean": 2.04668,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 121,
+      "n_matched": 121,
+      "drift_mean": 1.95038,
+      "n_arc_obj": 41,
+      "drift_mean_arc_objects": 0.97659
+     },
+     "arc_off": {
+      "n_obj": 121,
+      "n_matched": 121,
+      "drift_mean": 1.94386,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 121,
+      "n_matched": 121,
+      "drift_mean": 1.87432,
+      "n_arc_obj": 41,
+      "drift_mean_arc_objects": 0.60703
+     },
+     "arc_off": {
+      "n_obj": 121,
+      "n_matched": 121,
+      "drift_mean": 2.04613,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "TVWH-NLRM-GNJ",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 397,
+   "n_circles": 5,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 8,
+      "n_matched": 8,
+      "drift_mean": 0.01718,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.02749
+     },
+     "arc_off": {
+      "n_obj": 8,
+      "n_matched": 8,
+      "drift_mean": 0.11118,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 8,
+      "n_matched": 8,
+      "drift_mean": 0.01987,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.03179
+     },
+     "arc_off": {
+      "n_obj": 8,
+      "n_matched": 8,
+      "drift_mean": 0.10867,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 8,
+      "n_matched": 8,
+      "drift_mean": 0.01521,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.02434
+     },
+     "arc_off": {
+      "n_obj": 8,
+      "n_matched": 8,
+      "drift_mean": 0.10771,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4GXT-HLE7-K66",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 4480,
+   "n_circles": 62,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 304,
+      "n_matched": 303,
+      "drift_mean": 0.02591,
+      "n_arc_obj": 38,
+      "drift_mean_arc_objects": 0.19582
+     },
+     "arc_off": {
+      "n_obj": 299,
+      "n_matched": 298,
+      "drift_mean": 0.08908,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 304,
+      "n_matched": 304,
+      "drift_mean": 0.1004,
+      "n_arc_obj": 38,
+      "drift_mean_arc_objects": 0.80324
+     },
+     "arc_off": {
+      "n_obj": 299,
+      "n_matched": 298,
+      "drift_mean": 0.20344,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 304,
+      "n_matched": 303,
+      "drift_mean": 0.02375,
+      "n_arc_obj": 38,
+      "drift_mean_arc_objects": 0.1799
+     },
+     "arc_off": {
+      "n_obj": 299,
+      "n_matched": 298,
+      "drift_mean": 0.08905,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "9KVY-JMHY-WRK",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 6684,
+   "n_circles": 177,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 1333,
+      "n_matched": 1314,
+      "drift_mean": 0.23838,
+      "n_arc_obj": 137,
+      "drift_mean_arc_objects": 0.748
+     },
+     "arc_off": {
+      "n_obj": 1332,
+      "n_matched": 1314,
+      "drift_mean": 0.27106,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 1333,
+      "n_matched": 1313,
+      "drift_mean": 0.262,
+      "n_arc_obj": 137,
+      "drift_mean_arc_objects": 0.79042
+     },
+     "arc_off": {
+      "n_obj": 1332,
+      "n_matched": 1313,
+      "drift_mean": 0.29361,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 1333,
+      "n_matched": 1314,
+      "drift_mean": 0.23826,
+      "n_arc_obj": 137,
+      "drift_mean_arc_objects": 0.74525
+     },
+     "arc_off": {
+      "n_obj": 1332,
+      "n_matched": 1314,
+      "drift_mean": 0.27122,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_22b1c8b113734792a9f6424ab529e019",
+   "discipline": "VK",
+   "cls": "drawing",
+   "n_seg": 793,
+   "n_circles": 3,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 34,
+      "n_matched": 34,
+      "drift_mean": 0.56479,
+      "n_arc_obj": 9,
+      "drift_mean_arc_objects": 0.42085
+     },
+     "arc_off": {
+      "n_obj": 34,
+      "n_matched": 33,
+      "drift_mean": 0.28572,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 34,
+      "n_matched": 31,
+      "drift_mean": 0.2047,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 0.00677
+     },
+     "arc_off": {
+      "n_obj": 34,
+      "n_matched": 32,
+      "drift_mean": 0.10688,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 34,
+      "n_matched": 34,
+      "drift_mean": 0.47954,
+      "n_arc_obj": 9,
+      "drift_mean_arc_objects": 0.05649
+     },
+     "arc_off": {
+      "n_obj": 34,
+      "n_matched": 33,
+      "drift_mean": 0.20234,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_f509612202904a39a659843b6c8f87b9",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 4178,
+   "n_circles": 44,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 153,
+      "n_matched": 150,
+      "drift_mean": 0.29519,
+      "n_arc_obj": 22,
+      "drift_mean_arc_objects": 0.31169
+     },
+     "arc_off": {
+      "n_obj": 153,
+      "n_matched": 150,
+      "drift_mean": 0.27578,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 153,
+      "n_matched": 151,
+      "drift_mean": 0.2942,
+      "n_arc_obj": 22,
+      "drift_mean_arc_objects": 0.2694
+     },
+     "arc_off": {
+      "n_obj": 153,
+      "n_matched": 151,
+      "drift_mean": 0.2948,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 153,
+      "n_matched": 150,
+      "drift_mean": 0.28963,
+      "n_arc_obj": 22,
+      "drift_mean_arc_objects": 0.312
+     },
+     "arc_off": {
+      "n_obj": 153,
+      "n_matched": 150,
+      "drift_mean": 0.2759,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_84ce9bb61ee94b35a01cf805491137a2",
+   "discipline": "POS",
+   "cls": "drawing",
+   "n_seg": 9857,
+   "n_circles": 193,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 2709,
+      "n_matched": 2706,
+      "drift_mean": 0.13889,
+      "n_arc_obj": 158,
+      "drift_mean_arc_objects": 0.32912
+     },
+     "arc_off": {
+      "n_obj": 2707,
+      "n_matched": 2704,
+      "drift_mean": 0.22744,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 2709,
+      "n_matched": 2702,
+      "drift_mean": 0.10561,
+      "n_arc_obj": 158,
+      "drift_mean_arc_objects": 0.32282
+     },
+     "arc_off": {
+      "n_obj": 2707,
+      "n_matched": 2700,
+      "drift_mean": 0.23147,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 2709,
+      "n_matched": 2706,
+      "drift_mean": 0.14065,
+      "n_arc_obj": 158,
+      "drift_mean_arc_objects": 0.33675
+     },
+     "arc_off": {
+      "n_obj": 2707,
+      "n_matched": 2704,
+      "drift_mean": 0.22698,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "7YVM-HUM4-FWF",
+   "discipline": "TX",
+   "cls": "drawing",
+   "n_seg": 743,
+   "n_circles": 5,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.0,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.0,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.0043,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 0.0021,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 7e-05,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.0
+     },
+     "arc_off": {
+      "n_obj": 50,
+      "n_matched": 50,
+      "drift_mean": 7e-05,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_ec585c570aba481aa36f374faf13005d",
+   "discipline": "KJ",
+   "cls": "vector_raster_mix",
+   "n_seg": 1936,
+   "n_circles": 12,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 106,
+      "n_matched": 106,
+      "drift_mean": 0.02641,
+      "n_arc_obj": 9,
+      "drift_mean_arc_objects": 2e-05
+     },
+     "arc_off": {
+      "n_obj": 106,
+      "n_matched": 106,
+      "drift_mean": 0.01838,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 106,
+      "n_matched": 101,
+      "drift_mean": 0.35145,
+      "n_arc_obj": 9,
+      "drift_mean_arc_objects": 0.06744
+     },
+     "arc_off": {
+      "n_obj": 106,
+      "n_matched": 101,
+      "drift_mean": 0.21167,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 106,
+      "n_matched": 106,
+      "drift_mean": 0.02661,
+      "n_arc_obj": 9,
+      "drift_mean_arc_objects": 0.00127
+     },
+     "arc_off": {
+      "n_obj": 106,
+      "n_matched": 106,
+      "drift_mean": 0.01866,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_1eb7cf7174db4a0598fbee29d6e559f2",
+   "discipline": "VK",
+   "cls": "table",
+   "n_seg": 1032,
+   "n_circles": 258,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 155,
+      "n_matched": 155,
+      "drift_mean": 3.87218,
+      "n_arc_obj": 42,
+      "drift_mean_arc_objects": 0.96535
+     },
+     "arc_off": {
+      "n_obj": 155,
+      "n_matched": 155,
+      "drift_mean": 3.81425,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 155,
+      "n_matched": 153,
+      "drift_mean": 3.69607,
+      "n_arc_obj": 42,
+      "drift_mean_arc_objects": 1.04071
+     },
+     "arc_off": {
+      "n_obj": 155,
+      "n_matched": 153,
+      "drift_mean": 3.53165,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 155,
+      "n_matched": 155,
+      "drift_mean": 3.8703,
+      "n_arc_obj": 42,
+      "drift_mean_arc_objects": 0.96616
+     },
+     "arc_off": {
+      "n_obj": 155,
+      "n_matched": 155,
+      "drift_mean": 3.82146,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_76fca192eff143fdb5947e413d816d94",
+   "discipline": "SS",
+   "cls": "drawing",
+   "n_seg": 258,
+   "n_circles": 6,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 1e-05,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 4e-05
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 1e-05,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 0.13537,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 0.43996
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 0.5016,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 4e-05,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 0.00013
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 0.00722,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "H3LT-PU7R-4YR",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg": 5484,
+   "n_circles": 13,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 84,
+      "n_matched": 84,
+      "drift_mean": 0.15213,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 84,
+      "n_matched": 84,
+      "drift_mean": 0.14659,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 84,
+      "n_matched": 81,
+      "drift_mean": 0.06922,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 84,
+      "n_matched": 81,
+      "drift_mean": 0.06722,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 84,
+      "n_matched": 84,
+      "drift_mean": 0.17764,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 84,
+      "n_matched": 84,
+      "drift_mean": 0.17209,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "9HMU-EWA3-FVV",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 959,
+   "n_circles": 8,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 86,
+      "n_matched": 85,
+      "drift_mean": 0.21047,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 0.15025
+     },
+     "arc_off": {
+      "n_obj": 84,
+      "n_matched": 83,
+      "drift_mean": 0.2284,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 86,
+      "n_matched": 85,
+      "drift_mean": 0.21095,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 0.14459
+     },
+     "arc_off": {
+      "n_obj": 84,
+      "n_matched": 83,
+      "drift_mean": 0.22835,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 86,
+      "n_matched": 85,
+      "drift_mean": 0.25195,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 0.18181
+     },
+     "arc_off": {
+      "n_obj": 84,
+      "n_matched": 83,
+      "drift_mean": 0.27719,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_db83119078e04029b349b5bf1a535280",
+   "discipline": "PT",
+   "cls": "drawing",
+   "n_seg": 322,
+   "n_circles": 8,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 61,
+      "n_matched": 61,
+      "drift_mean": 0.00153,
+      "n_arc_obj": 14,
+      "drift_mean_arc_objects": 0.00667
+     },
+     "arc_off": {
+      "n_obj": 61,
+      "n_matched": 61,
+      "drift_mean": 0.08762,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 61,
+      "n_matched": 61,
+      "drift_mean": 0.00672,
+      "n_arc_obj": 14,
+      "drift_mean_arc_objects": 0.02926
+     },
+     "arc_off": {
+      "n_obj": 61,
+      "n_matched": 61,
+      "drift_mean": 0.20617,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 61,
+      "n_matched": 61,
+      "drift_mean": 0.00155,
+      "n_arc_obj": 14,
+      "drift_mean_arc_objects": 0.00676
+     },
+     "arc_off": {
+      "n_obj": 61,
+      "n_matched": 61,
+      "drift_mean": 0.08796,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_40b62e9a14a848a3a508be58ef4c5ba7",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 144,
+   "n_circles": 36,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 1.36624,
+      "n_arc_obj": 18,
+      "drift_mean_arc_objects": 0.94483
+     },
+     "arc_off": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.29664,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 1.41304,
+      "n_arc_obj": 18,
+      "drift_mean_arc_objects": 1.01849
+     },
+     "arc_off": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.69012,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 1.36622,
+      "n_arc_obj": 18,
+      "drift_mean_arc_objects": 0.94481
+     },
+     "arc_off": {
+      "n_obj": 20,
+      "n_matched": 20,
+      "drift_mean": 3.30239,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_48a6f7785578461c90388fdb50bd0676",
+   "discipline": "EOM",
+   "cls": "stamp",
+   "n_seg": 209,
+   "n_circles": 47,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 57,
+      "n_matched": 57,
+      "drift_mean": 0.28581,
+      "n_arc_obj": 51,
+      "drift_mean_arc_objects": 0.31943
+     },
+     "arc_off": {
+      "n_obj": 57,
+      "n_matched": 57,
+      "drift_mean": 3.07735,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 57,
+      "n_matched": 57,
+      "drift_mean": 0.2345,
+      "n_arc_obj": 51,
+      "drift_mean_arc_objects": 0.26209
+     },
+     "arc_off": {
+      "n_obj": 57,
+      "n_matched": 57,
+      "drift_mean": 3.22502,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 57,
+      "n_matched": 57,
+      "drift_mean": 0.2973,
+      "n_arc_obj": 51,
+      "drift_mean_arc_objects": 0.33227
+     },
+     "arc_off": {
+      "n_obj": 57,
+      "n_matched": 57,
+      "drift_mean": 3.08534,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_4f3fadc77c584364a5ee052c44eb0016",
+   "discipline": "EOM",
+   "cls": "drawing",
+   "n_seg": 922,
+   "n_circles": 33,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 161,
+      "n_matched": 159,
+      "drift_mean": 0.57442,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.59278
+     },
+     "arc_off": {
+      "n_obj": 161,
+      "n_matched": 159,
+      "drift_mean": 0.524,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 161,
+      "n_matched": 160,
+      "drift_mean": 0.40313,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.41977
+     },
+     "arc_off": {
+      "n_obj": 161,
+      "n_matched": 160,
+      "drift_mean": 0.45816,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 161,
+      "n_matched": 159,
+      "drift_mean": 0.56614,
+      "n_arc_obj": 20,
+      "drift_mean_arc_objects": 0.58151
+     },
+     "arc_off": {
+      "n_obj": 161,
+      "n_matched": 159,
+      "drift_mean": 0.52135,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_25757de0ca0445ea9234217679795df3",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 231,
+   "n_circles": 6,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 43,
+      "n_matched": 43,
+      "drift_mean": 0.08296,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 0.4459
+     },
+     "arc_off": {
+      "n_obj": 43,
+      "n_matched": 43,
+      "drift_mean": 0.18993,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 43,
+      "n_matched": 43,
+      "drift_mean": 0.10703,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 0.57528
+     },
+     "arc_off": {
+      "n_obj": 43,
+      "n_matched": 43,
+      "drift_mean": 0.27136,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 43,
+      "n_matched": 43,
+      "drift_mean": 0.05273,
+      "n_arc_obj": 8,
+      "drift_mean_arc_objects": 0.28342
+     },
+     "arc_off": {
+      "n_obj": 43,
+      "n_matched": 43,
+      "drift_mean": 0.19088,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4N3Y-VC3H-7F7",
+   "discipline": "KJ",
+   "cls": "drawing",
+   "n_seg": 151,
+   "n_circles": 8,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 26,
+      "n_matched": 26,
+      "drift_mean": 0.05615,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.12165
+     },
+     "arc_off": {
+      "n_obj": 26,
+      "n_matched": 26,
+      "drift_mean": 0.82666,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 26,
+      "n_matched": 26,
+      "drift_mean": 0.0423,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.09166
+     },
+     "arc_off": {
+      "n_obj": 26,
+      "n_matched": 26,
+      "drift_mean": 0.77462,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 26,
+      "n_matched": 26,
+      "drift_mean": 0.05614,
+      "n_arc_obj": 12,
+      "drift_mean_arc_objects": 0.12163
+     },
+     "arc_off": {
+      "n_obj": 26,
+      "n_matched": 26,
+      "drift_mean": 0.80879,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_7ce8e6b09aab4e2b9af1b2c23bfdefde",
+   "discipline": "EOM",
+   "cls": "vector_raster_mix",
+   "n_seg": 6100,
+   "n_circles": 54,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 122,
+      "n_matched": 119,
+      "drift_mean": 1.0318,
+      "n_arc_obj": 26,
+      "drift_mean_arc_objects": 0.65057
+     },
+     "arc_off": {
+      "n_obj": 120,
+      "n_matched": 116,
+      "drift_mean": 0.85301,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 122,
+      "n_matched": 119,
+      "drift_mean": 0.92096,
+      "n_arc_obj": 26,
+      "drift_mean_arc_objects": 0.79146
+     },
+     "arc_off": {
+      "n_obj": 120,
+      "n_matched": 116,
+      "drift_mean": 0.7339,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 122,
+      "n_matched": 119,
+      "drift_mean": 1.05651,
+      "n_arc_obj": 26,
+      "drift_mean_arc_objects": 0.67085
+     },
+     "arc_off": {
+      "n_obj": 120,
+      "n_matched": 117,
+      "drift_mean": 0.89194,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_5020c8fff9094db6a672cd49950c4b3a",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 452,
+   "n_circles": 50,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 80,
+      "n_matched": 80,
+      "drift_mean": 1.01147,
+      "n_arc_obj": 27,
+      "drift_mean_arc_objects": 0.67079
+     },
+     "arc_off": {
+      "n_obj": 82,
+      "n_matched": 82,
+      "drift_mean": 1.39067,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 80,
+      "n_matched": 78,
+      "drift_mean": 0.80393,
+      "n_arc_obj": 27,
+      "drift_mean_arc_objects": 0.51156
+     },
+     "arc_off": {
+      "n_obj": 82,
+      "n_matched": 80,
+      "drift_mean": 1.52753,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 80,
+      "n_matched": 80,
+      "drift_mean": 1.04085,
+      "n_arc_obj": 27,
+      "drift_mean_arc_objects": 0.75813
+     },
+     "arc_off": {
+      "n_obj": 82,
+      "n_matched": 82,
+      "drift_mean": 1.41079,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "9KYP-KTLH-KXJ",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg": 283,
+   "n_circles": 54,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 0.21946,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.95097
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 0.24046,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 12,
+      "drift_mean": 0.16668,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 1.00008
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 12,
+      "drift_mean": 0.17569,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 0.2183,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 0.94595
+     },
+     "arc_off": {
+      "n_obj": 13,
+      "n_matched": 13,
+      "drift_mean": 0.24048,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_0b6e13a113da435999fa7a077b945321",
+   "discipline": "ITP",
+   "cls": "table",
+   "n_seg": 608,
+   "n_circles": 106,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.81342,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.22339,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.76108,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 2.92936,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.95233,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     },
+     "arc_off": {
+      "n_obj": 44,
+      "n_matched": 44,
+      "drift_mean": 3.33427,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4UXN-R3AK-UKH",
+   "discipline": "OV",
+   "cls": "drawing",
+   "n_seg": 1117,
+   "n_circles": 31,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 91,
+      "n_matched": 91,
+      "drift_mean": 0.01229,
+      "n_arc_obj": 38,
+      "drift_mean_arc_objects": 0.02942
+     },
+     "arc_off": {
+      "n_obj": 89,
+      "n_matched": 89,
+      "drift_mean": 0.01277,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 91,
+      "n_matched": 91,
+      "drift_mean": 0.63176,
+      "n_arc_obj": 38,
+      "drift_mean_arc_objects": 1.27234
+     },
+     "arc_off": {
+      "n_obj": 89,
+      "n_matched": 89,
+      "drift_mean": 0.85598,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 91,
+      "n_matched": 91,
+      "drift_mean": 0.01411,
+      "n_arc_obj": 38,
+      "drift_mean_arc_objects": 0.0338
+     },
+     "arc_off": {
+      "n_obj": 89,
+      "n_matched": 89,
+      "drift_mean": 0.01921,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "6P3U-VA4K-7KA",
+   "discipline": "TX",
+   "cls": "stamp",
+   "n_seg": 316,
+   "n_circles": 76,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 3.39466,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 1.24338
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 3.29884,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 14,
+      "drift_mean": 3.45346,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 1.26245
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 14,
+      "drift_mean": 2.98985,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 3.3763,
+      "n_arc_obj": 4,
+      "drift_mean_arc_objects": 1.22815
+     },
+     "arc_off": {
+      "n_obj": 15,
+      "n_matched": 15,
+      "drift_mean": 3.30106,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_010c2b7d7b754eedaec81e3810ec0115",
+   "discipline": "AR",
+   "cls": "vector_raster_mix",
+   "n_seg": 5473,
+   "n_circles": 31,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 163,
+      "n_matched": 159,
+      "drift_mean": 0.38389,
+      "n_arc_obj": 13,
+      "drift_mean_arc_objects": 0.07986
+     },
+     "arc_off": {
+      "n_obj": 163,
+      "n_matched": 159,
+      "drift_mean": 0.34276,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 163,
+      "n_matched": 159,
+      "drift_mean": 0.43772,
+      "n_arc_obj": 13,
+      "drift_mean_arc_objects": 0.30558
+     },
+     "arc_off": {
+      "n_obj": 163,
+      "n_matched": 159,
+      "drift_mean": 0.38406,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 163,
+      "n_matched": 159,
+      "drift_mean": 0.39302,
+      "n_arc_obj": 13,
+      "drift_mean_arc_objects": 0.07986
+     },
+     "arc_off": {
+      "n_obj": 163,
+      "n_matched": 159,
+      "drift_mean": 0.35266,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "4LYE-LE63-TVX",
+   "discipline": "TX",
+   "cls": "legend_notes",
+   "n_seg": 124,
+   "n_circles": 3,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 33,
+      "n_matched": 33,
+      "drift_mean": 0.60089,
+      "n_arc_obj": 10,
+      "drift_mean_arc_objects": 0.21913
+     },
+     "arc_off": {
+      "n_obj": 33,
+      "n_matched": 33,
+      "drift_mean": 0.4884,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 33,
+      "n_matched": 31,
+      "drift_mean": 0.33305,
+      "n_arc_obj": 10,
+      "drift_mean_arc_objects": 0.01448
+     },
+     "arc_off": {
+      "n_obj": 33,
+      "n_matched": 31,
+      "drift_mean": 0.28659,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 33,
+      "n_matched": 33,
+      "drift_mean": 0.60069,
+      "n_arc_obj": 10,
+      "drift_mean_arc_objects": 0.2185
+     },
+     "arc_off": {
+      "n_obj": 33,
+      "n_matched": 33,
+      "drift_mean": 0.48904,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "669G-L37Y-E47",
+   "discipline": "KM",
+   "cls": "drawing",
+   "n_seg": 317,
+   "n_circles": 3,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 38,
+      "n_matched": 36,
+      "drift_mean": 0.09164,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.04719
+     },
+     "arc_off": {
+      "n_obj": 38,
+      "n_matched": 36,
+      "drift_mean": 0.15531,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 38,
+      "n_matched": 36,
+      "drift_mean": 0.3443,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.04843
+     },
+     "arc_off": {
+      "n_obj": 38,
+      "n_matched": 36,
+      "drift_mean": 0.43285,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 38,
+      "n_matched": 36,
+      "drift_mean": 0.09164,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 0.0472
+     },
+     "arc_off": {
+      "n_obj": 38,
+      "n_matched": 36,
+      "drift_mean": 0.15536,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_e81ac5d1440644c599965a62bf624a4f",
+   "discipline": "VK",
+   "cls": "drawing",
+   "n_seg": 2598,
+   "n_circles": 9,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 34,
+      "n_matched": 34,
+      "drift_mean": 0.3543,
+      "n_arc_obj": 15,
+      "drift_mean_arc_objects": 0.14002
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.30901,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 34,
+      "n_matched": 33,
+      "drift_mean": 0.26759,
+      "n_arc_obj": 15,
+      "drift_mean_arc_objects": 0.14275
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.26791,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 34,
+      "n_matched": 34,
+      "drift_mean": 0.35437,
+      "n_arc_obj": 15,
+      "drift_mean_arc_objects": 0.14
+     },
+     "arc_off": {
+      "n_obj": 32,
+      "n_matched": 32,
+      "drift_mean": 0.30904,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "7NCR-4CRV-LK7",
+   "discipline": "SS",
+   "cls": "stamp",
+   "n_seg": 3950,
+   "n_circles": 65,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 1.47172,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 2.78176
+     },
+     "arc_off": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 1.33992,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 69,
+      "n_matched": 62,
+      "drift_mean": 0.87024,
+      "n_arc_obj": 2,
+      "drift_mean_arc_objects": 2.71663
+     },
+     "arc_off": {
+      "n_obj": 69,
+      "n_matched": 62,
+      "drift_mean": 0.812,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 1.46475,
+      "n_arc_obj": 3,
+      "drift_mean_arc_objects": 2.77917
+     },
+     "arc_off": {
+      "n_obj": 69,
+      "n_matched": 69,
+      "drift_mean": 1.31674,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_bc6959c9f3624aed945fc4be4268f752",
+   "discipline": "AR",
+   "cls": "drawing",
+   "n_seg": 4022,
+   "n_circles": 76,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 963,
+      "n_matched": 956,
+      "drift_mean": 0.25109,
+      "n_arc_obj": 18,
+      "drift_mean_arc_objects": 0.80964
+     },
+     "arc_off": {
+      "n_obj": 960,
+      "n_matched": 953,
+      "drift_mean": 0.23301,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 963,
+      "n_matched": 949,
+      "drift_mean": 0.25975,
+      "n_arc_obj": 17,
+      "drift_mean_arc_objects": 1.04392
+     },
+     "arc_off": {
+      "n_obj": 960,
+      "n_matched": 946,
+      "drift_mean": 0.24203,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 963,
+      "n_matched": 956,
+      "drift_mean": 0.24986,
+      "n_arc_obj": 18,
+      "drift_mean_arc_objects": 0.80254
+     },
+     "arc_off": {
+      "n_obj": 960,
+      "n_matched": 953,
+      "drift_mean": 0.23353,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "AD4H-APGD-H7H",
+   "discipline": "KJ",
+   "cls": "stamp",
+   "n_seg": 2702,
+   "n_circles": 7,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 35,
+      "n_matched": 35,
+      "drift_mean": 0.20957,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.39577
+     },
+     "arc_off": {
+      "n_obj": 35,
+      "n_matched": 35,
+      "drift_mean": 0.36293,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 35,
+      "n_matched": 35,
+      "drift_mean": 0.33061,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.46174
+     },
+     "arc_off": {
+      "n_obj": 35,
+      "n_matched": 35,
+      "drift_mean": 0.48316,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 35,
+      "n_matched": 35,
+      "drift_mean": 0.21034,
+      "n_arc_obj": 5,
+      "drift_mean_arc_objects": 0.40155
+     },
+     "arc_off": {
+      "n_obj": 35,
+      "n_matched": 35,
+      "drift_mean": 0.36282,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  },
+  {
+   "block_id": "blk_690adf3da7424d9fa528d1ea3a9d801c",
+   "discipline": "ITP",
+   "cls": "drawing",
+   "n_seg": 1654,
+   "n_circles": 87,
+   "res": {
+    "A4_circle_to_bezier": {
+     "arc_on": {
+      "n_obj": 152,
+      "n_matched": 152,
+      "drift_mean": 0.49704,
+      "n_arc_obj": 82,
+      "drift_mean_arc_objects": 0.34422
+     },
+     "arc_off": {
+      "n_obj": 138,
+      "n_matched": 138,
+      "drift_mean": 0.61759,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4b_circle_to_chords5": {
+     "arc_on": {
+      "n_obj": 152,
+      "n_matched": 152,
+      "drift_mean": 1.30427,
+      "n_arc_obj": 82,
+      "drift_mean_arc_objects": 1.84678
+     },
+     "arc_off": {
+      "n_obj": 138,
+      "n_matched": 138,
+      "drift_mean": 1.60106,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    },
+    "A4c_circle_to_chords24": {
+     "arc_on": {
+      "n_obj": 152,
+      "n_matched": 152,
+      "drift_mean": 0.50357,
+      "n_arc_obj": 82,
+      "drift_mean_arc_objects": 0.35631
+     },
+     "arc_off": {
+      "n_obj": 138,
+      "n_matched": 138,
+      "drift_mean": 0.61936,
+      "n_arc_obj": 0,
+      "drift_mean_arc_objects": null
+     }
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,1709 @@
+{
+ "summary": {
+  "n_cases": 30,
+  "by_source": {
+   "REAL": 16,
+   "CF": 14
+  },
+  "by_truth": {
+   "SAME": 15,
+   "DIFFERENT": 15
+  },
+  "balance_within_source": {
+   "REAL": {
+    "SAME": 8,
+    "DIFFERENT": 8
+   },
+   "CF": {
+    "SAME": 7,
+    "DIFFERENT": 7
+   }
+  },
+  "by_role": {
+   "A": 25,
+   "B": 3,
+   "C": 2
+  },
+  "by_answer_set": {
+   "1": 26,
+   "2": 4
+  },
+  "tokens_sum": 19840.8,
+  "tokens_median_per_case": 695.65,
+  "tokens_min": 215.1,
+  "tokens_max": 1233.9,
+  "token_formula": "min(1.2014*ceil(w/32)*ceil(h/32)+48.67, 3051), измерено в v0.2"
+ },
+ "truth": [
+  {
+   "case_id": "vis01",
+   "cand_id": "R_EOM-0c86dfde_0",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 41.1 pt) на паре класса text_only_change",
+   "eye_note_ru": "различие только в тексте марки (K1.2.3п / K1.2.3п-12) и её подчёркивании; стены, штриховка, оси совпадают",
+   "pair_id": "EOM-0c86dfde",
+   "discipline": "EOM",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    596.178,
+    923.338,
+    687.162,
+    965.0020000000001
+   ],
+   "rect_b_pt": [
+    596.178,
+    923.288,
+    687.162,
+    964.9520000000001
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 41.115,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    322
+   ],
+   "px_right": [
+    701,
+    322
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.059241,
+    "ink_a": 0.062005,
+    "ink_b": 0.083147,
+    "unexplained_a": 0.017677,
+    "unexplained_b": 0.040182,
+    "structural": 0.040182,
+    "size_mismatch": false
+   },
+   "tokens_left": 339.4,
+   "tokens_right": 339.4
+  },
+  {
+   "case_id": "vis02",
+   "cand_id": "R_EOM-14558cda_0",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 9 223 pt) на паре класса occluding_fill",
+   "eye_note_ru": "слева весь вид закрыт серой заливкой и оранжевой полосой, справа заливки нет",
+   "pair_id": "EOM-14558cda",
+   "discipline": "EOM",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    1257.7176,
+    33.447599999999994,
+    1759.5324,
+    755.8524
+   ],
+   "rect_b_pt": [
+    1257.7476,
+    33.5076,
+    1759.5624,
+    755.9123999999999
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 9222.909,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    487,
+    701
+   ],
+   "px_right": [
+    487,
+    701
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.27301,
+    "ink_a": 0.372721,
+    "ink_b": 0.103355,
+    "unexplained_a": 0.145222,
+    "unexplained_b": 0.001494,
+    "structural": 0.145222,
+    "size_mismatch": false
+   },
+   "tokens_left": 471.6,
+   "tokens_right": 471.6
+  },
+  {
+   "case_id": "vis03",
+   "cand_id": "C_SS_blk_362a_A6_9",
+   "truth": "SAME",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "A6_round_0.5 на кружке соединения кабелей",
+   "eye_note_ru": "тот же символ, окружность стала слегка угловатой",
+   "pair_id": null,
+   "discipline": "SS",
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "block_id": "blk_362a88d5b0ca42b8b6946530dcabdc29",
+   "doc_id": "ПД-00542664-СОУЭ-5_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    1831.65,
+    616.756,
+    1964.55,
+    702.184
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    1871.52,
+    656.626,
+    1924.68,
+    662.314
+   ],
+   "redraw_fidelity_diff": 0.0002,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    451
+   ],
+   "px_right": [
+    701,
+    451
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.000579,
+    "ink_a": 0.123871,
+    "ink_b": 0.124001,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.0,
+    "structural": 0.0,
+    "size_mismatch": false
+   },
+   "tokens_left": 445.1,
+   "tokens_right": 445.1
+  },
+  {
+   "case_id": "vis04",
+   "cand_id": "R_SS-392b7bd3_0",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 0.1 pt) на паре класса bbox_boundary_artifact",
+   "eye_note_ru": "символ (диод + молния) идентичен",
+   "pair_id": "SS-392b7bd3",
+   "discipline": "SS",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    158.67,
+    163.25,
+    184.67,
+    189.25
+   ],
+   "rect_b_pt": [
+    158.75,
+    163.3,
+    184.75,
+    189.3
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 0.06,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    209,
+    208
+   ],
+   "px_right": [
+    208,
+    209
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.019762,
+    "ink_a": 0.184172,
+    "ink_b": 0.184796,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.0,
+    "structural": 0.0,
+    "size_mismatch": true
+   },
+   "tokens_left": 107.5,
+   "tokens_right": 107.5
+  },
+  {
+   "case_id": "vis05",
+   "cand_id": "C_GP_A3QG-4DH_A6_34",
+   "truth": "SAME",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "A6_round_0.5 внутри плотного фрагмента генплана",
+   "eye_note_ru": "тот же фрагмент",
+   "pair_id": null,
+   "discipline": "GP",
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "block_id": "A3QG-4DHP-P7P",
+   "doc_id": "13АВ-РД-ГП2",
+   "version": "v001",
+   "rect_a_pt": [
+    1944.071,
+    295.987,
+    1976.08,
+    325.4
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    1954.071,
+    305.987,
+    1966.08,
+    315.4
+   ],
+   "redraw_fidelity_diff": 0.00112,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    257,
+    237
+   ],
+   "px_right": [
+    257,
+    237
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.010212,
+    "ink_a": 0.177708,
+    "ink_b": 0.18063,
+    "unexplained_a": 0.000312,
+    "unexplained_b": 0.000804,
+    "structural": 0.000804,
+    "size_mismatch": false
+   },
+   "tokens_left": 135.2,
+   "tokens_right": 135.2
+  },
+  {
+   "case_id": "vis06",
+   "cand_id": "C_KJ_MD36-6R6_C2",
+   "truth": "DIFFERENT",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "C2_add_object",
+   "eye_note_ru": "справа над надписью появились две толстые чёрточки",
+   "pair_id": null,
+   "discipline": "KJ",
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "block_id": "MD36-6R6J-DYY",
+   "doc_id": "13АВ-РД-КЖ5.17-23.2-К2",
+   "version": "v001",
+   "rect_a_pt": [
+    280.342,
+    630.622,
+    557.469,
+    797.6
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    363.48,
+    713.76,
+    474.331,
+    714.462
+   ],
+   "redraw_fidelity_diff": 0.00215,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    423
+   ],
+   "px_right": [
+    701,
+    423
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.004249,
+    "ink_a": 0.077889,
+    "ink_b": 0.082139,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.004249,
+    "structural": 0.004249,
+    "size_mismatch": false
+   },
+   "tokens_left": 418.7,
+   "tokens_right": 418.7
+  },
+  {
+   "case_id": "vis07",
+   "cand_id": "S4",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "B",
+   "answer_set": 2,
+   "truth_option": "разные чертежи",
+   "why_uncertain_ru": "пара, на которой компаратор отказался выравниваться (ALIGNMENT_UNAVAILABLE / no_consensus); зонд mine пометил её как block_match_failure",
+   "eye_note_ru": "слева «Условные обозначения», справа «Проход кабелей через перегородки» — разные чертежи",
+   "pair_id": "EOM-1db297d2",
+   "discipline": "EOM",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": null,
+   "rect_b_pt": null,
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": null,
+   "crop_note": "both sides = whole block; the pair the comparator refused to align",
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    670
+   ],
+   "px_right": [
+    700,
+    701
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.079629,
+    "ink_a": 0.042913,
+    "ink_b": 0.041493,
+    "unexplained_a": 0.036776,
+    "unexplained_b": 0.035928,
+    "structural": 0.036776,
+    "size_mismatch": true
+   },
+   "tokens_left": 603.7,
+   "tokens_right": 630.1
+  },
+  {
+   "case_id": "vis08",
+   "cand_id": "R_VK-148ffe6c_1",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 1 452 pt) на аксонометрии трубопровода",
+   "eye_note_ru": "справа у тройника добавлена муфта и отметка -0,019 вместо -0,050",
+   "pair_id": "VK-148ffe6c",
+   "discipline": "VK",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    1140.2779999999998,
+    785.938,
+    1514.8220000000001,
+    1064.482
+   ],
+   "rect_b_pt": [
+    1140.2279999999998,
+    785.9879999999999,
+    1514.7720000000002,
+    1064.532
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 1451.589,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    522
+   ],
+   "px_right": [
+    701,
+    522
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.018335,
+    "ink_a": 0.034185,
+    "ink_b": 0.035784,
+    "unexplained_a": 0.002178,
+    "unexplained_b": 0.003115,
+    "structural": 0.003115,
+    "size_mismatch": false
+   },
+   "tokens_left": 498.0,
+   "tokens_right": 498.0
+  },
+  {
+   "case_id": "vis09",
+   "cand_id": "S1",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "B",
+   "answer_set": 2,
+   "truth_option": "один и тот же чертёж",
+   "why_uncertain_ru": "блок класса vector_raster_mix; сопоставитель связал блоки, в которых предмет один, но масштаб и состав листа разные",
+   "eye_note_ru": "на обоих кропах узел В прохода кабеля в гильзе, разный масштаб",
+   "pair_id": "SS-a369f492",
+   "discipline": "SS",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": null,
+   "rect_b_pt": null,
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": null,
+   "crop_note": "left = whole block A, right = frac 0.28,0.42,1.0,1.0 of block B",
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    554
+   ],
+   "px_right": [
+    632,
+    701
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.252253,
+    "ink_a": 0.142611,
+    "ink_b": 0.162229,
+    "unexplained_a": 0.102957,
+    "unexplained_b": 0.128816,
+    "structural": 0.128816,
+    "size_mismatch": true
+   },
+   "tokens_left": 524.4,
+   "tokens_right": 577.3
+  },
+  {
+   "case_id": "vis10",
+   "cand_id": "R_EOM-c50e2170_1",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 113.2 pt) на том же плане, другое окно",
+   "eye_note_ru": "справа добавлена дверь: створка и пунктирная дуга открывания",
+   "pair_id": "EOM-c50e2170",
+   "discipline": "EOM",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    559.0266,
+    167.5566,
+    642.4204,
+    254.09339999999997
+   ],
+   "rect_b_pt": [
+    559.0196000000001,
+    167.5866,
+    642.4134,
+    254.12339999999998
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 113.15,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    668,
+    693
+   ],
+   "px_right": [
+    668,
+    693
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.023451,
+    "ink_a": 0.10376,
+    "ink_b": 0.095042,
+    "unexplained_a": 0.007876,
+    "unexplained_b": 0.007103,
+    "structural": 0.007876,
+    "size_mismatch": false
+   },
+   "tokens_left": 603.7,
+   "tokens_right": 603.7
+  },
+  {
+   "case_id": "vis11",
+   "cand_id": "S3",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "C",
+   "answer_set": 2,
+   "truth_option": "разные чертежи",
+   "why_uncertain_ru": "правый блок содержит ДВА чертежа, левый один; сопоставитель связал блоки целиком, вектор-слоя нет (растр)",
+   "eye_note_ru": "слева «Опалубка», справа «Армирование» — разные чертежи",
+   "pair_id": "AR-a32b30a6",
+   "discipline": "AR",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": null,
+   "rect_b_pt": null,
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": null,
+   "crop_note": "left = whole block A, right = frac 0.55,0.0,1.0,1.0 of block B (the second drawing that block B carries)",
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    455
+   ],
+   "px_right": [
+    701,
+    460
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.094327,
+    "ink_a": 0.052879,
+    "ink_b": 0.045938,
+    "unexplained_a": 0.047747,
+    "unexplained_b": 0.039491,
+    "structural": 0.047747,
+    "size_mismatch": true
+   },
+   "tokens_left": 445.1,
+   "tokens_right": 445.1
+  },
+  {
+   "case_id": "vis12",
+   "cand_id": "C_PT_blk_3521_A6_63",
+   "truth": "SAME",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "A6_round_0.5 на условном знаке дерева",
+   "eye_note_ru": "тот же знак дерева, чуть иная многоугольность",
+   "pair_id": null,
+   "discipline": "PT",
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "block_id": "blk_35218272802c43498f2eb39adf028138",
+   "doc_id": "ПД-ОО542664-АПТ1.3_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    974.578,
+    922.771,
+    1006.183,
+    954.377
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    984.578,
+    932.771,
+    996.183,
+    944.377
+   ],
+   "redraw_fidelity_diff": 2e-05,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    254,
+    254
+   ],
+   "px_right": [
+    254,
+    254
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.006355,
+    "ink_a": 0.025885,
+    "ink_b": 0.024986,
+    "unexplained_a": 0.000217,
+    "unexplained_b": 6.2e-05,
+    "structural": 0.000217,
+    "size_mismatch": false
+   },
+   "tokens_left": 125.6,
+   "tokens_right": 125.6
+  },
+  {
+   "case_id": "vis13",
+   "cand_id": "P_SS-6fc75e05_0",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "окно, где стороны несут одну краску, но разное число примитивов: 200 против 1658 сегментов (×8.3) при равной длине штриха (отношение 1.016)",
+   "eye_note_ru": "подпись в штампе побитово та же картинка; расхождение только в разложении на примитивы",
+   "pair_id": "SS-6fc75e05",
+   "discipline": "SS",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    1349.75146484375,
+    705.6237182617188,
+    1409.75146484375,
+    765.6237182617188
+   ],
+   "rect_b_pt": [
+    1349.80146484375,
+    705.6737182617187,
+    1409.80146484375,
+    765.6737182617187
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": 200,
+   "n_seg_b": 1658,
+   "px_left": [
+    481,
+    481
+   ],
+   "px_right": [
+    481,
+    481
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.031985,
+    "ink_a": 0.194484,
+    "ink_b": 0.195193,
+    "unexplained_a": 4.3e-05,
+    "unexplained_b": 9.1e-05,
+    "structural": 9.1e-05,
+    "size_mismatch": false
+   },
+   "tokens_left": 356.2,
+   "tokens_right": 356.2
+  },
+  {
+   "case_id": "vis14",
+   "cand_id": "R_AR-5acaab0e_1",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 50.1 pt) на плотном плане со штриховкой",
+   "eye_note_ru": "справа добавлена выноска-параллелограмм с цифрой 1",
+   "pair_id": "AR-5acaab0e",
+   "discipline": "AR",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    1478.32352,
+    2765.4094999999998,
+    1528.42048,
+    2791.4094999999998
+   ],
+   "rect_b_pt": [
+    1478.3735199999999,
+    2751.5595,
+    1528.47048,
+    2777.5595
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 50.141,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    402,
+    209
+   ],
+   "px_right": [
+    402,
+    209
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.03623,
+    "ink_a": 0.0,
+    "ink_b": 0.03623,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.03623,
+    "structural": 0.03623,
+    "size_mismatch": false
+   },
+   "tokens_left": 158.0,
+   "tokens_right": 158.0
+  },
+  {
+   "case_id": "vis15",
+   "cand_id": "S2",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "C",
+   "answer_set": 2,
+   "truth_option": "один и тот же чертёж",
+   "why_uncertain_ru": "оба блока чисто растровые (вектор-слоя нет вообще), сравнивать нечем кроме картинки",
+   "eye_note_ru": "тот же чертёж «Фундамент под оборудование Фпк-3, Фпк-4. Опалубка», другой масштаб",
+   "pair_id": "AR-a32b30a6",
+   "discipline": "AR",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": null,
+   "rect_b_pt": null,
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": null,
+   "crop_note": "left = whole block A, right = frac 0.0,0.0,0.52,1.0 of block B",
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    455
+   ],
+   "px_right": [
+    701,
+    398
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.086062,
+    "ink_a": 0.056348,
+    "ink_b": 0.036015,
+    "unexplained_a": 0.048678,
+    "unexplained_b": 0.028068,
+    "structural": 0.048678,
+    "size_mismatch": true
+   },
+   "tokens_left": 445.1,
+   "tokens_right": 392.3
+  },
+  {
+   "case_id": "vis16",
+   "cand_id": "C_PT_blk_3521_C1",
+   "truth": "DIFFERENT",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "C1_remove_object",
+   "eye_note_ru": "справа исчез один знак дерева",
+   "pair_id": null,
+   "discipline": "PT",
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "block_id": "blk_35218272802c43498f2eb39adf028138",
+   "doc_id": "ПД-ОО542664-АПТ1.3_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    964.159,
+    971.857,
+    995.764,
+    1003.463
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    974.159,
+    981.857,
+    985.764,
+    993.463
+   ],
+   "redraw_fidelity_diff": 0.00045,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    254,
+    254
+   ],
+   "px_right": [
+    254,
+    254
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.011718,
+    "ink_a": 0.156814,
+    "ink_b": 0.145096,
+    "unexplained_a": 0.011083,
+    "unexplained_b": 0.0,
+    "structural": 0.011083,
+    "size_mismatch": false
+   },
+   "tokens_left": 125.6,
+   "tokens_right": 125.6
+  },
+  {
+   "case_id": "vis17",
+   "cand_id": "C_EOM_FT93-N34_A2_51",
+   "truth": "SAME",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "A2_path_merge: соседние сегменты слиты в полилинии",
+   "eye_note_ru": "картинка идентична",
+   "pair_id": null,
+   "discipline": "EOM",
+   "cf_id": "A2_path_merge",
+   "cf_class": "A",
+   "block_id": "FT93-N344-YXL",
+   "doc_id": "13АВ-РД-ЭМ-К5",
+   "version": "v002",
+   "rect_a_pt": [
+    1625.706,
+    1128.24,
+    1673.814,
+    1205.04
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    1648.746,
+    1151.28,
+    1650.774,
+    1182.0
+   ],
+   "redraw_fidelity_diff": 0.00017,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    386,
+    616
+   ],
+   "px_right": [
+    386,
+    616
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.0,
+    "ink_a": 0.301692,
+    "ink_b": 0.301692,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.0,
+    "structural": 0.0,
+    "size_mismatch": false
+   },
+   "tokens_left": 361.0,
+   "tokens_right": 361.0
+  },
+  {
+   "case_id": "vis18",
+   "cand_id": "R_EOM-c50e2170_0",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "запись реестра CHANGED_OBJECT (change_len 151.6 pt) на паре класса object_removed",
+   "eye_note_ru": "справа добавлены дуга открывания двери и прямоугольник, слева есть вертикальная серая линия",
+   "pair_id": "EOM-c50e2170",
+   "discipline": "EOM",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    654.58434,
+    350.26434,
+    700.94266,
+    393.73566
+   ],
+   "rect_b_pt": [
+    654.57734,
+    350.29434,
+    700.9356600000001,
+    393.76565999999997
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "CHANGED_OBJECT",
+   "change_len": 151.564,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    372,
+    348
+   ],
+   "px_right": [
+    372,
+    349
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.037696,
+    "ink_a": 0.072187,
+    "ink_b": 0.079911,
+    "unexplained_a": 0.010853,
+    "unexplained_b": 0.021861,
+    "structural": 0.021861,
+    "size_mismatch": true
+   },
+   "tokens_left": 207.3,
+   "tokens_right": 207.3
+  },
+  {
+   "case_id": "vis19",
+   "cand_id": "C_KJ_blk_fafe_A6_89",
+   "truth": "SAME",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "A6_round_0.5: координаты объекта округлены до 0.5 pt — точность экспорта CAD",
+   "eye_note_ru": "тот же символ арматурного стыка",
+   "pair_id": null,
+   "discipline": "KJ",
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+   "doc_id": "13АВ-РД-КЖ5.42.1-К2_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    2636.16,
+    1821.119,
+    2674.8,
+    1869.119
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    2650.56,
+    1835.519,
+    2660.4,
+    1854.719
+   ],
+   "redraw_fidelity_diff": 0.00039,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    310,
+    385
+   ],
+   "px_right": [
+    310,
+    385
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.005069,
+    "ink_a": 0.042178,
+    "ink_b": 0.043192,
+    "unexplained_a": 7.5e-05,
+    "unexplained_b": 0.000134,
+    "structural": 0.000134,
+    "size_mismatch": false
+   },
+   "tokens_left": 204.9,
+   "tokens_right": 204.9
+  },
+  {
+   "case_id": "vis20",
+   "cand_id": "C_OV_blk_23b7_C9",
+   "truth": "DIFFERENT",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "C9_add_branch: к линейной сети добавлена одна ветвь",
+   "eye_note_ru": "справа в таблице появилась вертикальная линия",
+   "pair_id": null,
+   "discipline": "OV",
+   "cf_id": "C9_add_branch",
+   "cf_class": "C",
+   "block_id": "blk_23b7088792294ac7b2048d025d58c3e1",
+   "doc_id": "СТ26_01-14-ОВ2-2-РД_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    482.347,
+    567.15,
+    547.169,
+    675.18
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    514.756,
+    599.559,
+    514.76,
+    642.771
+   ],
+   "redraw_fidelity_diff": 0.00982,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    421,
+    701
+   ],
+   "px_right": [
+    421,
+    701
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.003595,
+    "ink_a": 0.063418,
+    "ink_b": 0.067013,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.003497,
+    "structural": 0.003497,
+    "size_mismatch": false
+   },
+   "tokens_left": 418.7,
+   "tokens_right": 418.7
+  },
+  {
+   "case_id": "vis21",
+   "cand_id": "C_VK_blk_f35e_A6_4",
+   "truth": "SAME",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "A6_round_0.5 на росчерке подписи (тонкая кривая)",
+   "eye_note_ru": "та же подпись, хвост росчерка стал ступенчатым",
+   "pair_id": null,
+   "discipline": "VK",
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "block_id": "blk_f35e275fa7104c5ea70486931d895656",
+   "doc_id": "13АВ-РД-ВК1.1-ПА V1",
+   "version": "v002",
+   "rect_a_pt": [
+    751.68,
+    781.44,
+    811.68,
+    831.36
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    769.68,
+    799.44,
+    793.68,
+    813.36
+   ],
+   "redraw_fidelity_diff": 0.0001,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    481,
+    400
+   ],
+   "px_right": [
+    481,
+    400
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.016081,
+    "ink_a": 0.186357,
+    "ink_b": 0.187188,
+    "unexplained_a": 0.00145,
+    "unexplained_b": 0.000265,
+    "structural": 0.00145,
+    "size_mismatch": false
+   },
+   "tokens_left": 298.6,
+   "tokens_right": 298.6
+  },
+  {
+   "case_id": "vis22",
+   "cand_id": "C_KJ_blk_fafe_C1",
+   "truth": "DIFFERENT",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "C1_remove_object: один объект слоя удалён целиком",
+   "eye_note_ru": "справа исчез символ арматурного стыка",
+   "pair_id": null,
+   "discipline": "KJ",
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+   "doc_id": "13АВ-РД-КЖ5.42.1-К2_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    2212.319,
+    1821.118,
+    2257.921,
+    1869.121
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    2226.72,
+    1835.519,
+    2243.52,
+    1854.72
+   ],
+   "redraw_fidelity_diff": 0.00035,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    366,
+    385
+   ],
+   "px_right": [
+    366,
+    385
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.008793,
+    "ink_a": 0.029679,
+    "ink_b": 0.020886,
+    "unexplained_a": 0.008793,
+    "unexplained_b": 0.0,
+    "structural": 0.008793,
+    "size_mismatch": false
+   },
+   "tokens_left": 236.1,
+   "tokens_right": 236.1
+  },
+  {
+   "case_id": "vis23",
+   "cand_id": "R_EOM-0c86dfde_2",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "запись реестра REMOVED_OBJECT (change_len 3.5 pt) внутри плотного плана",
+   "eye_note_ru": "глазами картинки не отличаются",
+   "pair_id": "EOM-0c86dfde",
+   "discipline": "EOM",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    983.0912000000001,
+    780.8836,
+    1015.2688,
+    877.4164
+   ],
+   "rect_b_pt": [
+    983.0912000000001,
+    780.8336,
+    1015.2688,
+    877.3664
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 3.512,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    235,
+    701
+   ],
+   "px_right": [
+    235,
+    701
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.0,
+    "ink_a": 0.262294,
+    "ink_b": 0.262294,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.0,
+    "structural": 0.0,
+    "size_mismatch": false
+   },
+   "tokens_left": 260.1,
+   "tokens_right": 260.1
+  },
+  {
+   "case_id": "vis24",
+   "cand_id": "R_AR-55eda7fb_1",
+   "truth": "DIFFERENT",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "запись реестра ADDED_OBJECT (change_len 350.5 pt) на листе перемычек",
+   "eye_note_ru": "справа добавлены два анкера с кружками и размерная цепочка .80.",
+   "pair_id": "AR-55eda7fb",
+   "discipline": "AR",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    248.4028,
+    1458.0028,
+    369.4972,
+    1521.4972
+   ],
+   "rect_b_pt": [
+    248.45280000000002,
+    1458.0528,
+    369.54720000000003,
+    1521.5472
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "ADDED_OBJECT",
+   "change_len": 350.461,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    368
+   ],
+   "px_right": [
+    701,
+    368
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.039307,
+    "ink_a": 0.066237,
+    "ink_b": 0.091054,
+    "unexplained_a": 0.001539,
+    "unexplained_b": 0.026352,
+    "structural": 0.026352,
+    "size_mismatch": false
+   },
+   "tokens_left": 365.8,
+   "tokens_right": 365.8
+  },
+  {
+   "case_id": "vis25",
+   "cand_id": "C_KJ_blk_fafe_C2",
+   "truth": "DIFFERENT",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "C2_add_object: объект продублирован в свободное место блока",
+   "eye_note_ru": "справа появился символ арматурного стыка",
+   "pair_id": null,
+   "discipline": "KJ",
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+   "doc_id": "13АВ-РД-КЖ5.42.1-К2_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    2190.106,
+    1843.546,
+    2230.677,
+    1891.559
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    2204.51,
+    1857.95,
+    2216.273,
+    1877.155
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    326,
+    385
+   ],
+   "px_right": [
+    326,
+    385
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.010812,
+    "ink_a": 0.0323,
+    "ink_b": 0.043112,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.010812,
+    "structural": 0.010812,
+    "size_mismatch": false
+   },
+   "tokens_left": 220.5,
+   "tokens_right": 220.5
+  },
+  {
+   "case_id": "vis26",
+   "cand_id": "R_SS-982f7f30_0",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "B",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "запись реестра REMOVED_OBJECT (change_len 0.2 pt) на логотипе: контурный текст + заливка, вектор-описание бесполезно",
+   "eye_note_ru": "логотип идентичен",
+   "pair_id": "SS-982f7f30",
+   "discipline": "SS",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    1125.0500000000002,
+    786.49,
+    1151.0500000000002,
+    812.49
+   ],
+   "rect_b_pt": [
+    1125.0500000000002,
+    786.54,
+    1151.0500000000002,
+    812.54
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "NO_GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 0.24,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    209,
+    209
+   ],
+   "px_right": [
+    209,
+    209
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.012866,
+    "ink_a": 0.197889,
+    "ink_b": 0.197706,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.0,
+    "structural": 0.0,
+    "size_mismatch": false
+   },
+   "tokens_left": 107.5,
+   "tokens_right": 107.5
+  },
+  {
+   "case_id": "vis27",
+   "cand_id": "C_SS_blk_362a_C1",
+   "truth": "DIFFERENT",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "C1_remove_object",
+   "eye_note_ru": "справа исчезли кружок соединения и отрезок кабеля",
+   "pair_id": null,
+   "discipline": "SS",
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "block_id": "blk_362a88d5b0ca42b8b6946530dcabdc29",
+   "doc_id": "ПД-00542664-СОУЭ-5_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    1831.65,
+    637.15,
+    1964.55,
+    722.59
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    1871.52,
+    677.02,
+    1924.68,
+    682.72
+   ],
+   "redraw_fidelity_diff": 0.0002,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    701,
+    451
+   ],
+   "px_right": [
+    701,
+    451
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.004185,
+    "ink_a": 0.123356,
+    "ink_b": 0.119171,
+    "unexplained_a": 0.004083,
+    "unexplained_b": 0.0,
+    "structural": 0.004083,
+    "size_mismatch": false
+   },
+   "tokens_left": 445.1,
+   "tokens_right": 445.1
+  },
+  {
+   "case_id": "vis28",
+   "cand_id": "R_AR-441907a2_0",
+   "truth": "SAME",
+   "source_kind": "REAL",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "запись реестра REMOVED_OBJECT длиной 15 582 pt на паре класса object_removed — самая крупная запись реестра во всём наборе",
+   "eye_note_ru": "ПЕРЕСМОТРЕНО: мой первый глазной вердикт был «добавлен слой штриховки» и он ОШИБОЧЕН — кропы двух версий побитово идентичны (md5 совпал), пиксельный арбитр даёт структурную разницу 0.0",
+   "pair_id": "AR-441907a2",
+   "discipline": "AR",
+   "cf_id": null,
+   "cf_class": null,
+   "block_id": null,
+   "doc_id": null,
+   "version": null,
+   "rect_a_pt": [
+    677.4432,
+    12.643200000000022,
+    1207.5167999999999,
+    468.3168
+   ],
+   "rect_b_pt": [
+    677.4932,
+    12.693200000000022,
+    1207.5667999999998,
+    468.3668
+   ],
+   "patch_pt": null,
+   "redraw_fidelity_diff": null,
+   "pair_expected": "GRAPHIC_CHANGE",
+   "crop_note": null,
+   "rec_type": "REMOVED_OBJECT",
+   "change_len": 15582.105,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    679,
+    603
+   ],
+   "px_right": [
+    679,
+    603
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.0,
+    "ink_a": 0.10945,
+    "ink_b": 0.10945,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.0,
+    "structural": 0.0,
+    "size_mismatch": false
+   },
+   "tokens_left": 550.9,
+   "tokens_right": 550.9
+  },
+  {
+   "case_id": "vis29",
+   "cand_id": "C_ITP_blk_2d0c_C2",
+   "truth": "DIFFERENT",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "есть графическое отличие",
+   "why_uncertain_ru": "C2_add_object",
+   "eye_note_ru": "справа появилась синяя дуга",
+   "pair_id": null,
+   "discipline": "ITP",
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "block_id": "blk_2d0c258f773043e8b7f6481feec6fc4b",
+   "doc_id": "ПД-00542664-АИТ.ГСВ_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    1104.211,
+    671.596,
+    1141.124,
+    703.104
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    1115.285,
+    682.67,
+    1130.05,
+    692.03
+   ],
+   "redraw_fidelity_diff": 0.0,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    296,
+    253
+   ],
+   "px_right": [
+    296,
+    253
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.009601,
+    "ink_a": 0.074672,
+    "ink_b": 0.084273,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.009601,
+    "structural": 0.009601,
+    "size_mismatch": false
+   },
+   "tokens_left": 144.8,
+   "tokens_right": 144.8
+  },
+  {
+   "case_id": "vis30",
+   "cand_id": "C_KJ_blk_fafe_A1_22",
+   "truth": "SAME",
+   "source_kind": "CF",
+   "role": "A",
+   "answer_set": 1,
+   "truth_option": "графика та же",
+   "why_uncertain_ru": "A1_path_split: каждый путь разбит на односегментные пути (упаковка другая, краска та же)",
+   "eye_note_ru": "картинка идентична",
+   "pair_id": null,
+   "discipline": "KJ",
+   "cf_id": "A1_path_split",
+   "cf_class": "A",
+   "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+   "doc_id": "13АВ-РД-КЖ5.42.1-К2_V1",
+   "version": "v001",
+   "rect_a_pt": [
+    2294.58,
+    1754.819,
+    2353.98,
+    1806.299
+   ],
+   "rect_b_pt": null,
+   "patch_pt": [
+    2312.4,
+    1772.639,
+    2336.16,
+    1788.479
+   ],
+   "redraw_fidelity_diff": 0.00039,
+   "pair_expected": null,
+   "crop_note": null,
+   "rec_type": null,
+   "change_len": null,
+   "n_seg_a": null,
+   "n_seg_b": null,
+   "px_left": [
+    476,
+    413
+   ],
+   "px_right": [
+    476,
+    413
+   ],
+   "pixel_arbiter": {
+    "raw_diff": 0.0,
+    "ink_a": 0.057069,
+    "ink_b": 0.057069,
+    "unexplained_a": 0.0,
+    "unexplained_b": 0.0,
+    "structural": 0.0,
+    "size_mismatch": false
+   },
+   "tokens_left": 282.9,
+   "tokens_right": 282.9
+  }
+ ]
+}

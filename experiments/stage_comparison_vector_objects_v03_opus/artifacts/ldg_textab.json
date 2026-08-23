@@ -1,0 +1,32 @@
+{
+ "C1_remove_object@small": {
+  "n": 36,
+  "equal_record_count": 33,
+  "records_with_text": 39,
+  "records_surviving_without_text": 39,
+  "phrase_set_identical": 28,
+  "S_shift_median": 6.527,
+  "S_shift_max": 19.466,
+  "labels_used": 33
+ },
+ "C9_add_branch": {
+  "n": 34,
+  "equal_record_count": 33,
+  "records_with_text": 29,
+  "records_surviving_without_text": 28,
+  "phrase_set_identical": 24,
+  "S_shift_median": 6.527,
+  "S_shift_max": 49.787,
+  "labels_used": 26
+ },
+ "NEG": {
+  "n": 38,
+  "equal_record_count": 38,
+  "records_with_text": 0,
+  "records_surviving_without_text": 0,
+  "phrase_set_identical": 38,
+  "S_shift_median": 6.769,
+  "S_shift_max": 47.287,
+  "labels_used": 0
+ }
+}

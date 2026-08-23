@@ -1,0 +1,214 @@
+{
+ "schema_version": "scope_sc1/1",
+ "population": {
+  "version_pairs": 114,
+  "matched_sheets": 1916,
+  "prepared_graphic_blocks_a": 6355,
+  "prepared_graphic_blocks_b": 4852,
+  "components_total": 5091,
+  "components_matched": 4125
+ },
+ "kinds": {
+  "1:1_aligned": 2833,
+  "1:0_orphan_a": 684,
+  "1:1_partial": 328,
+  "N:1": 553,
+  "N:M": 172,
+  "1:N": 115,
+  "1:1_nested": 124,
+  "0:1_orphan_b": 282
+ },
+ "shares_of_matched_components": {
+  "1:1_aligned": 0.6868,
+  "1:1_partial": 0.0795,
+  "N:1": 0.1341,
+  "N:M": 0.0417,
+  "1:N": 0.0279,
+  "1:1_nested": 0.0301
+ },
+ "non_1to1": {
+  "components": 840,
+  "share_of_matched_components": 0.2036,
+  "plus_geometric_nesting_1to1": 124,
+  "plus_partial_overlap_1to1": 328,
+  "share_of_matched_components_not_a_clean_1to1": 0.3132
+ },
+ "orphans": {
+  "a_side": 684,
+  "b_side": 282,
+  "share_of_all_components": 0.1897
+ },
+ "blocks": {
+  "total": 11207,
+  "1:1_aligned": 5666,
+  "1:0_orphan_a": 684,
+  "1:1_partial": 656,
+  "N:1": 2234,
+  "N:M": 1050,
+  "1:N": 387,
+  "1:1_nested": 248,
+  "0:1_orphan_b": 282
+ },
+ "block_shares": {
+  "1:1_aligned": 0.5056,
+  "1:0_orphan_a": 0.061,
+  "1:1_partial": 0.0585,
+  "N:1": 0.1993,
+  "N:M": 0.0937,
+  "1:N": 0.0345,
+  "1:1_nested": 0.0221,
+  "0:1_orphan_b": 0.0252
+ },
+ "multi_structure": {
+  "1:N|loose_overlap_chain": 9,
+  "1:N|nested_but_children_overlap": 5,
+  "1:N|one_child_nested_rest_partial": 36,
+  "1:N|tiling_split_or_merge": 65,
+  "N:1|loose_overlap_chain": 17,
+  "N:1|nested_but_children_overlap": 61,
+  "N:1|one_child_nested_rest_partial": 95,
+  "N:1|tiling_split_or_merge": 380
+ },
+ "tiling_coverage_of_the_single_block": {
+  "median": 0.821,
+  "p10": 0.572,
+  "n": 445
+ },
+ "greedy_1to1_inside_multi_components": {
+  "blocks_dropped": 1551,
+  "blocks_total": 3671,
+  "share_blocks_dropped": 0.4225,
+  "share_of_component_area_dropped_median": 0.2143
+ },
+ "category_mix": {
+  "multi_components": {
+   "null": 3615,
+   "stamp": 56
+  },
+  "aligned_1to1": {
+   "null": 2542,
+   "stamp": 3124
+  }
+ },
+ "per_discipline": {
+  "AR": {
+   "matched_components": 914,
+   "non_1to1": 201,
+   "share_non_1to1": 0.2199,
+   "nested_1to1": 15,
+   "partial_1to1": 91,
+   "orphans": 319
+  },
+  "EOM": {
+   "matched_components": 688,
+   "non_1to1": 88,
+   "share_non_1to1": 0.1279,
+   "nested_1to1": 13,
+   "partial_1to1": 74,
+   "orphans": 197
+  },
+  "GP": {
+   "matched_components": 31,
+   "non_1to1": 1,
+   "share_non_1to1": 0.0323,
+   "nested_1to1": 0,
+   "partial_1to1": 7,
+   "orphans": 11
+  },
+  "KJ": {
+   "matched_components": 625,
+   "non_1to1": 288,
+   "share_non_1to1": 0.4608,
+   "nested_1to1": 11,
+   "partial_1to1": 33,
+   "orphans": 198
+  },
+  "KM": {
+   "matched_components": 57,
+   "non_1to1": 34,
+   "share_non_1to1": 0.5965,
+   "nested_1to1": 0,
+   "partial_1to1": 1,
+   "orphans": 13
+  },
+  "OV": {
+   "matched_components": 410,
+   "non_1to1": 44,
+   "share_non_1to1": 0.1073,
+   "nested_1to1": 39,
+   "partial_1to1": 27,
+   "orphans": 44
+  },
+  "SS": {
+   "matched_components": 886,
+   "non_1to1": 133,
+   "share_non_1to1": 0.1501,
+   "nested_1to1": 31,
+   "partial_1to1": 69,
+   "orphans": 153
+  },
+  "TX": {
+   "matched_components": 83,
+   "non_1to1": 14,
+   "share_non_1to1": 0.1687,
+   "nested_1to1": 1,
+   "partial_1to1": 3,
+   "orphans": 14
+  },
+  "VK": {
+   "matched_components": 431,
+   "non_1to1": 37,
+   "share_non_1to1": 0.0858,
+   "nested_1to1": 14,
+   "partial_1to1": 23,
+   "orphans": 17
+  }
+ },
+ "edge_threshold_sensitivity": {
+  "iou005": {
+   "1:1": 3285,
+   "1:0": 684,
+   "N:1": 553,
+   "N:N": 172,
+   "1:N": 115,
+   "0:1": 282
+  },
+  "iou010": {
+   "1:1": 3411,
+   "1:0": 975,
+   "N:1": 579,
+   "1:N": 128,
+   "0:1": 351,
+   "N:N": 94
+  },
+  "iou030": {
+   "1:1": 3743,
+   "1:0": 2115,
+   "0:1": 777,
+   "N:1": 213,
+   "1:N": 57,
+   "N:N": 2
+  }
+ },
+ "rotation": {
+  "sheets_with_different_rotate": 28,
+  "blocks_on_them": 147
+ },
+ "robustness_same_page_size_only": {
+  "components": 4693,
+  "matched": 3880,
+  "kinds": {
+   "1:1_aligned": 2762,
+   "1:0_orphan_a": 553,
+   "1:1_partial": 272,
+   "N:1": 540,
+   "N:M": 129,
+   "1:N": 90,
+   "0:1_orphan_b": 260,
+   "1:1_nested": 87
+  },
+  "share_non_1to1": 0.1956,
+  "share_not_clean_1to1": 0.2881,
+  "share_orphan_of_all": 0.1732
+ }
+}

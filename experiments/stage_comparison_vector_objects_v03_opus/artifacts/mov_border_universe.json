@@ -1,0 +1,8 @@
+{
+ "n_pairs_with_big_components": 3585,
+ "n_border_only": 1291,
+ "n_interior": 2202,
+ "border_only_share": 0.3601,
+ "n_sampled_border": 60,
+ "n_sampled_interior": 30
+}

@@ -1,0 +1,541 @@
+{
+ "n_pairs": 33,
+ "n_used": 25,
+ "n_with_ink_reference": 25,
+ "excluded_no_ink_reference": [
+  [
+   "KJ-25717577",
+   33,
+   18
+  ],
+  [
+   "EOM-1db297d2",
+   46,
+   41
+  ]
+ ],
+ "skipped": [
+  [
+   "AR-a32b30a6",
+   "no vector geometry"
+  ],
+  [
+   "EOM-46355862",
+   "too heavy (27845/60524)"
+  ],
+  [
+   "VK-148ffe6c",
+   "too heavy (106552/115081)"
+  ],
+  [
+   "OV-2cc2a382",
+   "no vector geometry"
+  ],
+  [
+   "AR-5acaab0e",
+   "too heavy (111161/111000)"
+  ],
+  [
+   "GP-6bc1c029",
+   "too heavy (378441/314651)"
+  ]
+ ],
+ "ref_cover": {
+  "n": 25,
+  "median": 0.8681,
+  "mean": 0.75851,
+  "p10": 0.36606,
+  "p90": 1.0,
+  "min": 0.0246,
+  "max": 1.0
+ },
+ "unique_label_share_a": {
+  "n": 25,
+  "median": 0.0355,
+  "mean": 0.08398,
+  "p10": 0.0,
+  "p90": 0.16274,
+  "min": 0.0,
+  "max": 0.6111
+ },
+ "by_cond": {
+  "registered": {
+   "geom": {
+    "n_pairs": 25,
+    "median_acc_on_ref": 0.9938,
+    "mean_acc_on_ref": 0.8838,
+    "p10_acc": 0.4714,
+    "median_false_removed_share": 0.0,
+    "median_wrong_on_ref": 0,
+    "total_wrong_on_ref": 226,
+    "median_paired_though_ink_absent_share": 0.1971
+   },
+   "geom_pos": {
+    "n_pairs": 25,
+    "median_acc_on_ref": 1.0,
+    "mean_acc_on_ref": 0.9314,
+    "p10_acc": 0.6952,
+    "median_false_removed_share": 0.0,
+    "median_wrong_on_ref": 0,
+    "total_wrong_on_ref": 1,
+    "median_paired_though_ink_absent_share": 0.0
+   },
+   "geom_pos_label": {
+    "n_pairs": 25,
+    "median_acc_on_ref": 1.0,
+    "mean_acc_on_ref": 0.9319,
+    "p10_acc": 0.6952,
+    "median_false_removed_share": 0.0,
+    "median_wrong_on_ref": 0,
+    "total_wrong_on_ref": 1,
+    "median_paired_though_ink_absent_share": 0.0
+   }
+  },
+  "raw": {
+   "geom": {
+    "n_pairs": 25,
+    "median_acc_on_ref": 0.9938,
+    "mean_acc_on_ref": 0.8838,
+    "p10_acc": 0.4714,
+    "median_false_removed_share": 0.0,
+    "median_wrong_on_ref": 0,
+    "total_wrong_on_ref": 226,
+    "median_paired_though_ink_absent_share": 0.1971
+   },
+   "geom_pos": {
+    "n_pairs": 25,
+    "median_acc_on_ref": 1.0,
+    "mean_acc_on_ref": 0.8843,
+    "p10_acc": 0.3417,
+    "median_false_removed_share": 0.0,
+    "median_wrong_on_ref": 0,
+    "total_wrong_on_ref": 3,
+    "median_paired_though_ink_absent_share": 0.0
+   },
+   "geom_pos_label": {
+    "n_pairs": 25,
+    "median_acc_on_ref": 1.0,
+    "mean_acc_on_ref": 0.8847,
+    "p10_acc": 0.3482,
+    "median_false_removed_share": 0.0,
+    "median_wrong_on_ref": 0,
+    "total_wrong_on_ref": 3,
+    "median_paired_though_ink_absent_share": 0.0
+   }
+  }
+ },
+ "pooled_by_cond": {
+  "registered": {
+   "geom": {
+    "n_ref_objects": 9870,
+    "n_correct": 9105,
+    "acc_pooled": 0.92249
+   },
+   "geom_pos": {
+    "n_ref_objects": 9870,
+    "n_correct": 9385,
+    "acc_pooled": 0.95086
+   },
+   "geom_pos_label": {
+    "n_ref_objects": 9870,
+    "n_correct": 9392,
+    "acc_pooled": 0.95157
+   }
+  },
+  "raw": {
+   "geom": {
+    "n_ref_objects": 9870,
+    "n_correct": 9105,
+    "acc_pooled": 0.92249
+   },
+   "geom_pos": {
+    "n_ref_objects": 9870,
+    "n_correct": 9372,
+    "acc_pooled": 0.94954
+   },
+   "geom_pos_label": {
+    "n_ref_objects": 9870,
+    "n_correct": 9379,
+    "acc_pooled": 0.95025
+   }
+  }
+ },
+ "by_label_band": {
+  "none": {
+   "n_pairs": 7,
+   "median_acc_geom": 1.0,
+   "median_acc_geom_pos": 1.0,
+   "median_acc_geom_pos_label": 1.0,
+   "delta_label": 0.0,
+   "pooled_ref_objects": 1262
+  },
+  "low": {
+   "n_pairs": 8,
+   "median_acc_geom": 0.9969,
+   "median_acc_geom_pos": 0.9972,
+   "median_acc_geom_pos_label": 0.9972,
+   "delta_label": 0.0,
+   "pooled_ref_objects": 3633
+  },
+  "some": {
+   "n_pairs": 10,
+   "median_acc_geom": 0.9701,
+   "median_acc_geom_pos": 0.9919,
+   "median_acc_geom_pos_label": 0.9919,
+   "delta_label": 0.0,
+   "pooled_ref_objects": 4975
+  }
+ },
+ "per_pair": [
+  {
+   "pair_id": "TX-95031dbd",
+   "discipline": "TX",
+   "n_obj_a": 120,
+   "n_ref_1to1": 120,
+   "ref_cover": 1.0,
+   "band": "none",
+   "unique_label_share_a": 0.0,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "KJ-b5c82f7c",
+   "discipline": "KJ",
+   "n_obj_a": 578,
+   "n_ref_1to1": 578,
+   "ref_cover": 1.0,
+   "band": "low",
+   "unique_label_share_a": 0.026,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "SS-392b7bd3",
+   "discipline": "SS",
+   "n_obj_a": 18,
+   "n_ref_1to1": 15,
+   "ref_cover": 0.8333,
+   "band": "some",
+   "unique_label_share_a": 0.6111,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "KJ-548814a7",
+   "discipline": "KJ",
+   "n_obj_a": 15,
+   "n_ref_1to1": 13,
+   "ref_cover": 0.8667,
+   "band": "none",
+   "unique_label_share_a": 0.0,
+   "acc_geom": 0.61538,
+   "acc_geom_pos": 0.84615,
+   "acc_geom_pos_label": 0.84615,
+   "acc_raw_geom_pos": 0.0,
+   "acc_raw_geom_pos_label": 0.0
+  },
+  {
+   "pair_id": "AR-46f62636",
+   "discipline": "AR",
+   "n_obj_a": 1936,
+   "n_ref_1to1": 1936,
+   "ref_cover": 1.0,
+   "band": "low",
+   "unique_label_share_a": 0.062,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "AR-b38a7dbc",
+   "discipline": "AR",
+   "n_obj_a": 2019,
+   "n_ref_1to1": 2019,
+   "ref_cover": 1.0,
+   "band": "some",
+   "unique_label_share_a": 0.1119,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "EOM-36de2ce2",
+   "discipline": "EOM",
+   "n_obj_a": 388,
+   "n_ref_1to1": 388,
+   "ref_cover": 1.0,
+   "band": "none",
+   "unique_label_share_a": 0.0,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "SS-76640e11",
+   "discipline": "SS",
+   "n_obj_a": 313,
+   "n_ref_1to1": 309,
+   "ref_cover": 0.9872,
+   "band": "some",
+   "unique_label_share_a": 0.1534,
+   "acc_geom": 0.99029,
+   "acc_geom_pos": 0.99353,
+   "acc_geom_pos_label": 0.99353,
+   "acc_raw_geom_pos": 0.99353,
+   "acc_raw_geom_pos_label": 0.99353
+  },
+  {
+   "pair_id": "EOM-3306e907",
+   "discipline": "EOM",
+   "n_obj_a": 468,
+   "n_ref_1to1": 468,
+   "ref_cover": 1.0,
+   "band": "none",
+   "unique_label_share_a": 0.0,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "EOM-c50e2170",
+   "discipline": "EOM",
+   "n_obj_a": 743,
+   "n_ref_1to1": 645,
+   "ref_cover": 0.8681,
+   "band": "some",
+   "unique_label_share_a": 0.144,
+   "acc_geom": 0.24961,
+   "acc_geom_pos": 0.34729,
+   "acc_geom_pos_label": 0.35814,
+   "acc_raw_geom_pos": 0.34729,
+   "acc_raw_geom_pos_label": 0.35814
+  },
+  {
+   "pair_id": "VK-56115717",
+   "discipline": "VK",
+   "n_obj_a": 1001,
+   "n_ref_1to1": 319,
+   "ref_cover": 0.3187,
+   "band": "low",
+   "unique_label_share_a": 0.004,
+   "acc_geom": 0.73354,
+   "acc_geom_pos": 0.94984,
+   "acc_geom_pos_label": 0.94984,
+   "acc_raw_geom_pos": 0.94984,
+   "acc_raw_geom_pos_label": 0.94984
+  },
+  {
+   "pair_id": "AR-dbfd82b8",
+   "discipline": "AR",
+   "n_obj_a": 215,
+   "n_ref_1to1": 161,
+   "ref_cover": 0.7488,
+   "band": "low",
+   "unique_label_share_a": 0.0558,
+   "acc_geom": 0.99379,
+   "acc_geom_pos": 0.99379,
+   "acc_geom_pos_label": 0.99379,
+   "acc_raw_geom_pos": 0.99379,
+   "acc_raw_geom_pos_label": 0.99379
+  },
+  {
+   "pair_id": "SS-c7aa8d26",
+   "discipline": "SS",
+   "n_obj_a": 16,
+   "n_ref_1to1": 7,
+   "ref_cover": 0.4375,
+   "band": "none",
+   "unique_label_share_a": 0.0,
+   "acc_geom": 0.42857,
+   "acc_geom_pos": 0.71429,
+   "acc_geom_pos_label": 0.71429,
+   "acc_raw_geom_pos": 0.71429,
+   "acc_raw_geom_pos_label": 0.71429
+  },
+  {
+   "pair_id": "EOM-0c86dfde",
+   "discipline": "EOM",
+   "n_obj_a": 1985,
+   "n_ref_1to1": 1765,
+   "ref_cover": 0.8892,
+   "band": "some",
+   "unique_label_share_a": 0.131,
+   "acc_geom": 0.92295,
+   "acc_geom_pos": 0.99037,
+   "acc_geom_pos_label": 0.99037,
+   "acc_raw_geom_pos": 0.99037,
+   "acc_raw_geom_pos_label": 0.99037
+  },
+  {
+   "pair_id": "AR-441907a2",
+   "discipline": "AR",
+   "n_obj_a": 282,
+   "n_ref_1to1": 180,
+   "ref_cover": 0.6383,
+   "band": "low",
+   "unique_label_share_a": 0.0355,
+   "acc_geom": 0.95556,
+   "acc_geom_pos": 0.99444,
+   "acc_geom_pos_label": 0.99444,
+   "acc_raw_geom_pos": 0.99444,
+   "acc_raw_geom_pos_label": 0.99444
+  },
+  {
+   "pair_id": "SS-982f7f30",
+   "discipline": "SS",
+   "n_obj_a": 54,
+   "n_ref_1to1": 37,
+   "ref_cover": 0.6852,
+   "band": "some",
+   "unique_label_share_a": 0.1667,
+   "acc_geom": 0.97297,
+   "acc_geom_pos": 0.97297,
+   "acc_geom_pos_label": 0.97297,
+   "acc_raw_geom_pos": 0.97297,
+   "acc_raw_geom_pos_label": 0.97297
+  },
+  {
+   "pair_id": "VK-b71afe81",
+   "discipline": "VK",
+   "n_obj_a": 242,
+   "n_ref_1to1": 241,
+   "ref_cover": 0.9959,
+   "band": "low",
+   "unique_label_share_a": 0.0165,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "AR-55eda7fb",
+   "discipline": "AR",
+   "n_obj_a": 128,
+   "n_ref_1to1": 122,
+   "ref_cover": 0.9531,
+   "band": "some",
+   "unique_label_share_a": 0.1094,
+   "acc_geom": 0.96721,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "EOM-7fef43a3",
+   "discipline": "EOM",
+   "n_obj_a": 200,
+   "n_ref_1to1": 200,
+   "ref_cover": 1.0,
+   "band": "none",
+   "unique_label_share_a": 0.0,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "OV-93cc012f",
+   "discipline": "OV",
+   "n_obj_a": 185,
+   "n_ref_1to1": 6,
+   "ref_cover": 0.0324,
+   "band": "some",
+   "unique_label_share_a": 0.1568,
+   "acc_geom": 0.5,
+   "acc_geom_pos": 0.66667,
+   "acc_geom_pos_label": 0.66667,
+   "acc_raw_geom_pos": 0.33333,
+   "acc_raw_geom_pos_label": 0.33333
+  },
+  {
+   "pair_id": "SS-6fc75e05",
+   "discipline": "SS",
+   "n_obj_a": 57,
+   "n_ref_1to1": 37,
+   "ref_cover": 0.6491,
+   "band": "some",
+   "unique_label_share_a": 0.1754,
+   "acc_geom": 0.89189,
+   "acc_geom_pos": 0.89189,
+   "acc_geom_pos_label": 0.89189,
+   "acc_raw_geom_pos": 0.89189,
+   "acc_raw_geom_pos_label": 0.89189
+  },
+  {
+   "pair_id": "AR-490254e9",
+   "discipline": "AR",
+   "n_obj_a": 28,
+   "n_ref_1to1": 20,
+   "ref_cover": 0.7143,
+   "band": "some",
+   "unique_label_share_a": 0.1071,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "SS-a369f492",
+   "discipline": "SS",
+   "n_obj_a": 151,
+   "n_ref_1to1": 66,
+   "ref_cover": 0.4371,
+   "band": "none",
+   "unique_label_share_a": 0.0,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  },
+  {
+   "pair_id": "EOM-14558cda",
+   "discipline": "EOM",
+   "n_obj_a": 240,
+   "n_ref_1to1": 212,
+   "ref_cover": 0.8833,
+   "band": "low",
+   "unique_label_share_a": 0.0042,
+   "acc_geom": 0.87264,
+   "acc_geom_pos": 0.92453,
+   "acc_geom_pos_label": 0.92453,
+   "acc_raw_geom_pos": 0.92453,
+   "acc_raw_geom_pos_label": 0.92453
+  },
+  {
+   "pair_id": "AR-577a293f",
+   "discipline": "AR",
+   "n_obj_a": 244,
+   "n_ref_1to1": 6,
+   "ref_cover": 0.0246,
+   "band": "low",
+   "unique_label_share_a": 0.0287,
+   "acc_geom": 1.0,
+   "acc_geom_pos": 1.0,
+   "acc_geom_pos_label": 1.0,
+   "acc_raw_geom_pos": 1.0,
+   "acc_raw_geom_pos_label": 1.0
+  }
+ ]
+}

@@ -1,0 +1,144 @@
+{
+ "schema_version": "scope_relation_census/1",
+ "research_only": true,
+ "params": {
+  "edge": "IoU(page-normalised bbox) > 0.05",
+  "page_map": "R3 text-Jaccard arbiter (mine_pagematch.json)",
+  "nested_rule": "containment>=0.90 and area ratio outside [1/1.5, 1.5]",
+  "aligned_rule": "IoU>=0.80"
+ },
+ "summary": {
+  "version_pairs": 114,
+  "pages": 1916,
+  "blocks_a": 6355,
+  "blocks_b": 4852,
+  "rot_mismatch_pages": 28,
+  "rot_mismatch_blocks": 147
+ },
+ "kinds": {
+  "1:1_aligned": 2833,
+  "1:0_orphan_a": 684,
+  "1:1_partial": 328,
+  "N:1": 553,
+  "N:M": 172,
+  "1:N": 115,
+  "1:1_nested": 124,
+  "0:1_orphan_b": 282
+ },
+ "shares_of_all_components": {
+  "1:1_aligned": 0.5565,
+  "1:0_orphan_a": 0.1344,
+  "1:1_partial": 0.0644,
+  "N:1": 0.1086,
+  "N:M": 0.0338,
+  "1:N": 0.0226,
+  "1:1_nested": 0.0244,
+  "0:1_orphan_b": 0.0554
+ },
+ "shares_of_matched_components": {
+  "1:1_aligned": 0.6868,
+  "1:1_partial": 0.0795,
+  "N:1": 0.1341,
+  "N:M": 0.0417,
+  "1:N": 0.0279,
+  "1:1_nested": 0.0301
+ },
+ "sensitivity_edge_threshold": {
+  "iou005": {
+   "1:1": 3285,
+   "1:0": 684,
+   "N:1": 553,
+   "N:N": 172,
+   "1:N": 115,
+   "0:1": 282
+  },
+  "iou010": {
+   "1:1": 3411,
+   "1:0": 975,
+   "N:1": 579,
+   "1:N": 128,
+   "0:1": 351,
+   "N:N": 94
+  },
+  "iou030": {
+   "1:1": 3743,
+   "1:0": 2115,
+   "0:1": 777,
+   "N:1": 213,
+   "1:N": 57,
+   "N:N": 2
+  }
+ },
+ "per_discipline": {
+  "AR": {
+   "pages": 290,
+   "comp": 1233,
+   "non11": 520,
+   "blocks": 2708,
+   "blocks_non11": 1282
+  },
+  "EOM": {
+   "pages": 381,
+   "comp": 885,
+   "non11": 285,
+   "blocks": 1774,
+   "blocks_non11": 574
+  },
+  "GP": {
+   "pages": 13,
+   "comp": 42,
+   "non11": 12,
+   "blocks": 74,
+   "blocks_non11": 14
+  },
+  "KJ": {
+   "pages": 163,
+   "comp": 823,
+   "non11": 486,
+   "blocks": 2099,
+   "blocks_non11": 1425
+  },
+  "KM": {
+   "pages": 17,
+   "comp": 70,
+   "non11": 47,
+   "blocks": 225,
+   "blocks_non11": 179
+  },
+  "OV": {
+   "pages": 229,
+   "comp": 454,
+   "non11": 88,
+   "blocks": 999,
+   "blocks_non11": 267
+  },
+  "SS": {
+   "pages": 528,
+   "comp": 1039,
+   "non11": 286,
+   "blocks": 2168,
+   "blocks_non11": 662
+  },
+  "TX": {
+   "pages": 36,
+   "comp": 97,
+   "non11": 28,
+   "blocks": 214,
+   "blocks_non11": 76
+  },
+  "VK": {
+   "pages": 259,
+   "comp": 448,
+   "non11": 54,
+   "blocks": 946,
+   "blocks_non11": 158
+  },
+  "null": {
+   "pages": 0,
+   "comp": 0,
+   "non11": 0,
+   "blocks": 0,
+   "blocks_non11": 0
+  }
+ }
+}

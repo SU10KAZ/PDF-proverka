@@ -1,0 +1,24 @@
+{
+ "schema_version": "scope_duplicates/1",
+ "note": "geometry hash from cns (identical normalised segment set, blocks >=50 seg)",
+ "summary": {
+  "blocks_a_hashed": 6173,
+  "amb_doc": 0,
+  "amb_page": 0,
+  "unique_in_b": 20,
+  "absent_in_b": 6153,
+  "moved_same_page": 0,
+  "moved_other_page": 3,
+  "positional_ok": 17
+ },
+ "candidates_per_block_hist": {
+  "0": 6153,
+  "1": 20
+ },
+ "shares": {
+  "ambiguous_within_document": 0.0,
+  "ambiguous_within_the_matched_sheet": 0.0,
+  "geometry_moved_off_its_positional_partner": 0.0005
+ },
+ "moved_examples": []
+}

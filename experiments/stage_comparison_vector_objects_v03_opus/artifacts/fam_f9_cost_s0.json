@@ -1,0 +1,312 @@
+{
+ "rows": [
+  {
+   "block_id": "blk_00af65c831614f2cab29c9c77fc7ffd0",
+   "discipline": "AR",
+   "n_seg": 37994,
+   "n_obj": 1323,
+   "n_fam": 426,
+   "n_rep": 99,
+   "t_obj": 1.7764,
+   "t_fam": 0.1474,
+   "t_fam_pair": 0.2444
+  },
+  {
+   "block_id": "AARJ-YWTV-4YY",
+   "discipline": "AR",
+   "n_seg": 43620,
+   "n_obj": 1009,
+   "n_fam": 250,
+   "n_rep": 113,
+   "t_obj": 0.6236,
+   "t_fam": 0.0837,
+   "t_fam_pair": 0.1423
+  },
+  {
+   "block_id": "blk_bc6959c9f3624aed945fc4be4268f752",
+   "discipline": "AR",
+   "n_seg": 4022,
+   "n_obj": 963,
+   "n_fam": 274,
+   "n_rep": 101,
+   "t_obj": 0.1513,
+   "t_fam": 0.1038,
+   "t_fam_pair": 0.1549
+  },
+  {
+   "block_id": "blk_ede531d29f3d48bc98ae16f81ef82652",
+   "discipline": "AR",
+   "n_seg": 1010,
+   "n_obj": 80,
+   "n_fam": 11,
+   "n_rep": 3,
+   "t_obj": 0.0542,
+   "t_fam": 0.0026,
+   "t_fam_pair": 0.0074
+  },
+  {
+   "block_id": "blk_3de92014ef524e29927044c59d6e7e37",
+   "discipline": "AR",
+   "n_seg": 69,
+   "n_obj": 19,
+   "n_fam": 8,
+   "n_rep": 3,
+   "t_obj": 0.0042,
+   "t_fam": 0.0008,
+   "t_fam_pair": 0.0012
+  },
+  {
+   "block_id": "77Q4-3XRE-XLE",
+   "discipline": "AR",
+   "n_seg": 186,
+   "n_obj": 19,
+   "n_fam": 15,
+   "n_rep": 3,
+   "t_obj": 0.0029,
+   "t_fam": 0.0011,
+   "t_fam_pair": 0.0014
+  },
+  {
+   "block_id": "3MQ9-NVKW-D7H",
+   "discipline": "AR",
+   "n_seg": 409,
+   "n_obj": 235,
+   "n_fam": 22,
+   "n_rep": 12,
+   "t_obj": 0.2856,
+   "t_fam": 0.0055,
+   "t_fam_pair": 0.0093
+  },
+  {
+   "block_id": "44WG-LHUC-FRM",
+   "discipline": "AR",
+   "n_seg": 61595,
+   "n_obj": 1001,
+   "n_fam": 538,
+   "n_rep": 123,
+   "t_obj": 3.5149,
+   "t_fam": 0.1911,
+   "t_fam_pair": 0.3261
+  },
+  {
+   "block_id": "QNHM-4G74-WWU",
+   "discipline": "EOM",
+   "n_seg": 33857,
+   "n_obj": 100,
+   "n_fam": 79,
+   "n_rep": 8,
+   "t_obj": 0.8825,
+   "t_fam": 0.0075,
+   "t_fam_pair": 0.0155
+  },
+  {
+   "block_id": "blk_d4d2c9d61c9b43fbb832da7975989ac2",
+   "discipline": "EOM",
+   "n_seg": 8657,
+   "n_obj": 139,
+   "n_fam": 94,
+   "n_rep": 24,
+   "t_obj": 0.1926,
+   "t_fam": 0.0093,
+   "t_fam_pair": 0.014
+  },
+  {
+   "block_id": "blk_4f3fadc77c584364a5ee052c44eb0016",
+   "discipline": "EOM",
+   "n_seg": 922,
+   "n_obj": 161,
+   "n_fam": 105,
+   "n_rep": 26,
+   "t_obj": 0.0282,
+   "t_fam": 0.0103,
+   "t_fam_pair": 0.0164
+  },
+  {
+   "block_id": "73T9-WFKK-DMU",
+   "discipline": "EOM",
+   "n_seg": 762,
+   "n_obj": 115,
+   "n_fam": 46,
+   "n_rep": 17,
+   "t_obj": 0.0186,
+   "t_fam": 0.0046,
+   "t_fam_pair": 0.0074
+  },
+  {
+   "block_id": "RXRH-TXGC-7N9",
+   "discipline": "EOM",
+   "n_seg": 99,
+   "n_obj": 15,
+   "n_fam": 11,
+   "n_rep": 3,
+   "t_obj": 0.0027,
+   "t_fam": 0.001,
+   "t_fam_pair": 0.0015
+  },
+  {
+   "block_id": "blk_3446f154f6bc4874b01e99e29358f318",
+   "discipline": "EOM",
+   "n_seg": 233,
+   "n_obj": 11,
+   "n_fam": 7,
+   "n_rep": 2,
+   "t_obj": 0.0046,
+   "t_fam": 0.0006,
+   "t_fam_pair": 0.0008
+  },
+  {
+   "block_id": "77EM-7LQU-DCN",
+   "discipline": "EOM",
+   "n_seg": 23,
+   "n_obj": 12,
+   "n_fam": 4,
+   "n_rep": 1,
+   "t_obj": 0.0011,
+   "t_fam": 0.0005,
+   "t_fam_pair": 0.0006
+  },
+  {
+   "block_id": "9LLL-F43F-KRF",
+   "discipline": "GP",
+   "n_seg": 37852,
+   "n_obj": 96,
+   "n_fam": 73,
+   "n_rep": 9,
+   "t_obj": 0.8248,
+   "t_fam": 0.0058,
+   "t_fam_pair": 0.0093
+  },
+  {
+   "block_id": "7EHD-V699-FTC",
+   "discipline": "GP",
+   "n_seg": 2227,
+   "n_obj": 141,
+   "n_fam": 74,
+   "n_rep": 22,
+   "t_obj": 0.0658,
+   "t_fam": 0.0085,
+   "t_fam_pair": 0.0155
+  },
+  {
+   "block_id": "blk_fbe22186597d415f87713df53768eae4",
+   "discipline": "ITP",
+   "n_seg": 5274,
+   "n_obj": 26,
+   "n_fam": 19,
+   "n_rep": 2,
+   "t_obj": 0.0863,
+   "t_fam": 0.0015,
+   "t_fam_pair": 0.0024
+  },
+  {
+   "block_id": "blk_2e7b36c0b47544e5907a4aa88179a92b",
+   "discipline": "ITP",
+   "n_seg": 1955,
+   "n_obj": 278,
+   "n_fam": 76,
+   "n_rep": 38,
+   "t_obj": 0.0458,
+   "t_fam": 0.01,
+   "t_fam_pair": 0.0164
+  },
+  {
+   "block_id": "blk_cb88dd54939f46c18933e448f87ab36c",
+   "discipline": "ITP",
+   "n_seg": 608,
+   "n_obj": 44,
+   "n_fam": 29,
+   "n_rep": 7,
+   "t_obj": 0.0146,
+   "t_fam": 0.0023,
+   "t_fam_pair": 0.0036
+  },
+  {
+   "block_id": "blk_0180ed4e581c4440b62816badba3bfab",
+   "discipline": "ITP",
+   "n_seg": 285,
+   "n_obj": 54,
+   "n_fam": 24,
+   "n_rep": 10,
+   "t_obj": 0.0054,
+   "t_fam": 0.0022,
+   "t_fam_pair": 0.0032
+  },
+  {
+   "block_id": "blk_dfb97e1ea3414f1ab819c2ee31cfb94c",
+   "discipline": "ITP",
+   "n_seg": 142238,
+   "n_obj": 526,
+   "n_fam": 335,
+   "n_rep": 56,
+   "t_obj": 4.2278,
+   "t_fam": 0.0417,
+   "t_fam_pair": 0.0631
+  },
+  {
+   "block_id": "AAQ4-4V47-9M7",
+   "discipline": "KJ",
+   "n_seg": 7727,
+   "n_obj": 657,
+   "n_fam": 204,
+   "n_rep": 101,
+   "t_obj": 0.4903,
+   "t_fam": 0.0688,
+   "t_fam_pair": 0.1348
+  },
+  {
+   "block_id": "blk_fafeb59601b84a839e0616f5fcda4f18",
+   "discipline": "KJ",
+   "n_seg": 723,
+   "n_obj": 115,
+   "n_fam": 75,
+   "n_rep": 16,
+   "t_obj": 0.0433,
+   "t_fam": 0.0081,
+   "t_fam_pair": 0.0154
+  },
+  {
+   "block_id": "7J9G-4UTQ-HVL",
+   "discipline": "KJ",
+   "n_seg": 827,
+   "n_obj": 68,
+   "n_fam": 27,
+   "n_rep": 10,
+   "t_obj": 0.0148,
+   "t_fam": 0.0026,
+   "t_fam_pair": 0.0041
+  },
+  {
+   "block_id": "4N3Y-VC3H-7F7",
+   "discipline": "KJ",
+   "n_seg": 151,
+   "n_obj": 26,
+   "n_fam": 14,
+   "n_rep": 8,
+   "t_obj": 0.0024,
+   "t_fam": 0.0012,
+   "t_fam_pair": 0.0017
+  },
+  {
+   "block_id": "MD36-6R6J-DYY",
+   "discipline": "KJ",
+   "n_seg": 232,
+   "n_obj": 16,
+   "n_fam": 16,
+   "n_rep": 0,
+   "t_obj": 0.0033,
+   "t_fam": 0.001,
+   "t_fam_pair": 0.0012
+  },
+  {
+   "block_id": "blk_7da424978fd44439b3adcf880a2e3af7",
+   "discipline": "KJ",
+   "n_seg": 277,
+   "n_obj": 15,
+   "n_fam": 5,
+   "n_rep": 2,
+   "t_obj": 0.0026,
+   "t_fam": 0.0006,
+   "t_fam_pair": 0.0008
+  }
+ ]
+}

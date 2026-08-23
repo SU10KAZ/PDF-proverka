@@ -1,0 +1,904 @@
+{
+ "types": {
+  "CONNECTED_TO": {
+   "stability_cf": {
+    "raw_median": 0.965,
+    "cond_median": 0.9931,
+    "raw_p10": 0.5,
+    "edges": 86192,
+    "observations": 244,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 0.8284,
+    "cond_median": 0.9951,
+    "edges": 11056,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.6432,
+    "cond_median": 0.9288,
+    "edges": 20306,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 0.9982,
+     "cond_median": 1.0,
+     "blocks": 120
+    },
+    "fraction": {
+     "raw_median": 0.9281,
+     "cond_median": 0.9631,
+     "blocks": 120
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.6146,
+     "lift": 0.1108,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8442,
+     "lift": 0.0346,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.6267,
+    "stable": 0.6015,
+    "unique": 0.5156,
+    "usable": 0.4904,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.6071,
+    "C2_add_object": 0.0299,
+    "C3_move_object": 0.6082,
+    "C9_add_branch": 0.5741
+   },
+   "false_rate_eye": {
+    "graded": 30,
+    "true": 25,
+    "false": 0,
+    "unclear": 5,
+    "false_rate_resolvable": 0.0,
+    "false_rate_worst_case": 0.1667
+   },
+   "edges_per_block": {
+    "median": 69,
+    "p90": 759,
+    "max": 12651,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 0.0,
+    "gap_median_in_S": 0.0,
+    "share_edges_over_10S": 0.0,
+    "share_edges_over_0.1_block_diag": 0.0,
+    "blocks": 78
+   }
+  },
+  "PART_OF": {
+   "stability_cf": {
+    "raw_median": 1.0,
+    "cond_median": 1.0,
+    "raw_p10": 0.0,
+    "edges": 408,
+    "observations": 84,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 1.0,
+    "cond_median": 1.0,
+    "edges": 11,
+    "pairs": 6,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.1667,
+    "cond_median": 0.5,
+    "edges": 33,
+    "pairs": 6,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 33
+    },
+    "fraction": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 33
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.5055,
+     "lift": 0.0017,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8106,
+     "lift": 0.001,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.0193,
+    "stable": 0.0193,
+    "unique": 0.0074,
+    "usable": 0.0074,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.0,
+    "C2_add_object": 0.0075,
+    "C3_move_object": 0.0125,
+    "C9_add_branch": 0.0
+   },
+   "false_rate_eye": {
+    "graded": 18,
+    "true": 4,
+    "false": 9,
+    "unclear": 5,
+    "false_rate_resolvable": 0.6923,
+    "false_rate_worst_case": 0.7778
+   },
+   "false_rate_eye_guarded": {
+    "graded": 9,
+    "true": 8,
+    "false": 1,
+    "false_rate_resolvable": 0.1111
+   },
+   "edges_per_block": {
+    "median": 0,
+    "p90": 4,
+    "max": 48,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 0.0,
+    "gap_median_in_S": 0.0,
+    "share_edges_over_10S": 0.0,
+    "share_edges_over_0.1_block_diag": 0.0,
+    "blocks": 18
+   },
+   "arc_defect_share": {
+    "micro_share_only_defective": 0.7803,
+    "macro_median": 1.0,
+    "edges": 223,
+    "blocks": 44
+   }
+  },
+  "INSIDE": {
+   "stability_cf": {
+    "raw_median": 0.9912,
+    "cond_median": 1.0,
+    "raw_p10": 0.4333,
+    "edges": 28052,
+    "observations": 142,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 1.0,
+    "cond_median": 1.0,
+    "edges": 705,
+    "pairs": 9,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.381,
+    "cond_median": 0.9357,
+    "edges": 825,
+    "pairs": 10,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 54
+    },
+    "fraction": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 54
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.5123,
+     "lift": 0.0085,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8118,
+     "lift": 0.0023,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.1985,
+    "stable": 0.1985,
+    "unique": 0.1407,
+    "usable": 0.1407,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.1429,
+    "C2_add_object": 0.0896,
+    "C3_move_object": 0.163,
+    "C9_add_branch": 0.1296
+   },
+   "false_rate_eye": {
+    "graded": 30,
+    "true": 8,
+    "false": 16,
+    "unclear": 6,
+    "false_rate_resolvable": 0.6667,
+    "false_rate_worst_case": 0.7333
+   },
+   "false_rate_eye_guarded": {
+    "graded": 18,
+    "true": 17,
+    "false": 0,
+    "false_rate_resolvable": 0.0
+   },
+   "edges_per_block": {
+    "median": 1,
+    "p90": 106,
+    "max": 3688,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 0.0,
+    "gap_median_in_S": 0.0,
+    "share_edges_over_10S": 0.0,
+    "share_edges_over_0.1_block_diag": 0.0,
+    "blocks": 39
+   },
+   "arc_defect_share": {
+    "micro_share_only_defective": 0.7686,
+    "macro_median": 0.7727,
+    "edges": 9830,
+    "blocks": 83
+   }
+  },
+  "CONTAINS": {
+   "stability_cf": {
+    "raw_median": 0.9912,
+    "cond_median": 1.0,
+    "raw_p10": 0.4333,
+    "edges": 28052,
+    "observations": 142,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 1.0,
+    "cond_median": 1.0,
+    "edges": 705,
+    "pairs": 9,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.381,
+    "cond_median": 0.9357,
+    "edges": 825,
+    "pairs": 10,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 54
+    },
+    "fraction": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 54
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.5054,
+     "lift": 0.0015,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8103,
+     "lift": 0.0007,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.1985,
+    "stable": 0.1985,
+    "unique": 0.1407,
+    "usable": 0.1407,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.1429,
+    "C2_add_object": 0.0896,
+    "C3_move_object": 0.163,
+    "C9_add_branch": 0.1296
+   },
+   "false_rate_eye": {
+    "graded": 9,
+    "true": 2,
+    "false": 4,
+    "unclear": 3,
+    "false_rate_resolvable": 0.6667,
+    "false_rate_worst_case": 0.7778
+   },
+   "edges_per_block": {
+    "median": 1,
+    "p90": 106,
+    "max": 3688,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 0.0,
+    "gap_median_in_S": 0.0,
+    "share_edges_over_10S": 0.0,
+    "share_edges_over_0.1_block_diag": 0.0,
+    "blocks": 39
+   },
+   "arc_defect_share": {
+    "micro_share_only_defective": 0.7686,
+    "macro_median": 0.7727,
+    "edges": 9830,
+    "blocks": 83
+   }
+  },
+  "ADJACENT": {
+   "stability_cf": {
+    "raw_median": 0.9679,
+    "cond_median": 0.993,
+    "raw_p10": 0.6915,
+    "edges": 325502,
+    "observations": 244,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 0.839,
+    "cond_median": 0.99,
+    "edges": 33386,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.7079,
+    "cond_median": 0.9632,
+    "edges": 98091,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 134
+    },
+    "fraction": {
+     "raw_median": 0.8525,
+     "cond_median": 0.8749,
+     "blocks": 134
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.7153,
+     "lift": 0.2115,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8953,
+     "lift": 0.0858,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.8444,
+    "stable": 0.8326,
+    "unique": 0.723,
+    "usable": 0.7156,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.8393,
+    "C2_add_object": 0.306,
+    "C3_move_object": 0.8276,
+    "C9_add_branch": 0.6852
+   },
+   "false_rate_eye": {
+    "graded": 30,
+    "true": 26,
+    "false": 3,
+    "unclear": 1,
+    "false_rate_resolvable": 0.1034,
+    "false_rate_worst_case": 0.1333
+   },
+   "edges_per_block": {
+    "median": 204,
+    "p90": 2720,
+    "max": 18752,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 0.0,
+    "gap_median_in_S": 0.0,
+    "share_edges_over_10S": 0.0,
+    "share_edges_over_0.1_block_diag": 0.0,
+    "blocks": 79
+   },
+   "arc_defect_share": {
+    "micro_share_only_defective": 0.1463,
+    "macro_median": 0.0682,
+    "edges": 163789,
+    "blocks": 156
+   }
+  },
+  "ALIGNED": {
+   "stability_cf": {
+    "raw_median": 0.9471,
+    "cond_median": 0.9839,
+    "raw_p10": 0.5964,
+    "edges": 150996,
+    "observations": 248,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 0.8708,
+    "cond_median": 0.9921,
+    "edges": 12749,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.6435,
+    "cond_median": 0.9134,
+    "edges": 22722,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 0.9875,
+     "cond_median": 1.0,
+     "blocks": 145
+    },
+    "fraction": {
+     "raw_median": 0.8952,
+     "cond_median": 0.9273,
+     "blocks": 145
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.6928,
+     "lift": 0.189,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8957,
+     "lift": 0.0862,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.6459,
+    "stable": 0.6341,
+    "unique": 0.4281,
+    "usable": 0.4252,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.4345,
+    "C2_add_object": 0.2015,
+    "C3_move_object": 0.5361,
+    "C9_add_branch": 0.2963
+   },
+   "false_rate_eye": {
+    "graded": 27,
+    "true": 23,
+    "false": 0,
+    "unclear": 4,
+    "false_rate_resolvable": 0.0,
+    "false_rate_worst_case": 0.1481
+   },
+   "edges_per_block": {
+    "median": 80,
+    "p90": 983,
+    "max": 9905,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 22.92,
+    "gap_median_in_S": 2.4655,
+    "share_edges_over_10S": 0.1613,
+    "share_edges_over_0.1_block_diag": 0.1737,
+    "blocks": 80
+   }
+  },
+  "LEADER_TO": {
+   "stability_cf": {
+    "raw_median": 1.0,
+    "cond_median": 1.0,
+    "raw_p10": 0.6667,
+    "edges": 13288,
+    "observations": 234,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 0.7677,
+    "cond_median": 0.9768,
+    "edges": 1449,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.6,
+    "cond_median": 0.875,
+    "edges": 1390,
+    "pairs": 13,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 88
+    },
+    "fraction": {
+     "raw_median": 0.95,
+     "cond_median": 1.0,
+     "blocks": 88
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.5825,
+     "lift": 0.0787,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8451,
+     "lift": 0.0355,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.16,
+    "stable": 0.1585,
+    "unique": 0.1081,
+    "usable": 0.1067,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.1726,
+    "C2_add_object": 0.0075,
+    "C3_move_object": 0.1317,
+    "C9_add_branch": 0.0
+   },
+   "false_rate_eye": {
+    "graded": 30,
+    "true": 10,
+    "false": 20,
+    "unclear": 0,
+    "false_rate_resolvable": 0.6667,
+    "false_rate_worst_case": 0.6667
+   },
+   "edges_per_block": {
+    "median": 15,
+    "p90": 98,
+    "max": 468,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 0.0,
+    "gap_median_in_S": 0.0,
+    "share_edges_over_10S": 0.0,
+    "share_edges_over_0.1_block_diag": 0.0,
+    "blocks": 70
+   }
+  },
+  "LABEL_ANCHOR": {
+   "stability_cf": {
+    "raw_median": 0.9938,
+    "cond_median": 1.0,
+    "raw_p10": 0.8,
+    "edges": 49944,
+    "observations": 226,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 0.9239,
+    "cond_median": 0.987,
+    "edges": 4235,
+    "pairs": 12,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.41,
+    "cond_median": 0.9268,
+    "edges": 3520,
+    "pairs": 13,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 0.9671,
+     "cond_median": 0.9908,
+     "blocks": 142
+    },
+    "fraction": {
+     "raw_median": 0.8571,
+     "cond_median": 0.8626,
+     "blocks": 142
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.6756,
+     "lift": 0.1718,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8757,
+     "lift": 0.0661,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.6519,
+    "stable": 0.6519,
+    "unique": 0.4119,
+    "usable": 0.4119,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.4583,
+    "C2_add_object": 0.2239,
+    "C3_move_object": 0.4483,
+    "C9_add_branch": 0.5185
+   },
+   "false_rate_eye": {
+    "graded": 27,
+    "true": 13,
+    "false": 10,
+    "unclear": 4,
+    "false_rate_resolvable": 0.4348,
+    "false_rate_worst_case": 0.5185
+   },
+   "edges_per_block": {
+    "median": 38,
+    "p90": 262,
+    "max": 2492,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 1.3475,
+    "gap_median_in_S": 0.1543,
+    "share_edges_over_10S": 0.0,
+    "share_edges_over_0.1_block_diag": 0.0,
+    "blocks": 78
+   }
+  },
+  "REPEATED_WITH": {
+   "stability_cf": {
+    "raw_median": 0.9199,
+    "cond_median": 0.9482,
+    "raw_p10": 0.2727,
+    "edges": 23586,
+    "observations": 202,
+    "source": "[CF] 59 real blocks x 6 adversarial rewrites (A3/A4/A6)"
+   },
+   "stability_real_unchanged": {
+    "raw_median": 1.0,
+    "cond_median": 1.0,
+    "edges": 896,
+    "pairs": 9,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "stability_real_changed": {
+    "raw_median": 0.5191,
+    "cond_median": 0.6822,
+    "edges": 1448,
+    "pairs": 14,
+    "source": "[REAL] mine benchmark pairs"
+   },
+   "crop10_tolerance_regime": {
+    "points": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 93
+    },
+    "fraction": {
+     "raw_median": 1.0,
+     "cond_median": 1.0,
+     "blocks": 93
+    }
+   },
+   "matching_cf": {
+    "noposition": {
+     "desc_only": 0.5038,
+     "desc_plus_type": 0.5166,
+     "lift": 0.0128,
+     "all_types": 0.8122,
+     "observations": 190
+    },
+    "position": {
+     "desc_only": 0.8096,
+     "desc_plus_type": 0.8127,
+     "lift": 0.0031,
+     "all_types": 0.9371,
+     "observations": 190
+    }
+   },
+   "addressing_cf": {
+    "any": 0.197,
+    "stable": 0.1659,
+    "unique": 0.0,
+    "usable": 0.0,
+    "events": 675
+   },
+   "addressing_by_family": {
+    "C1_remove_object": 0.0,
+    "C2_add_object": 0.0,
+    "C3_move_object": 0.0,
+    "C9_add_branch": 0.0
+   },
+   "false_rate_eye": {
+    "graded": 18,
+    "true": 14,
+    "false": 0,
+    "unclear": 4,
+    "false_rate_resolvable": 0.0,
+    "false_rate_worst_case": 0.2222
+   },
+   "edges_per_block": {
+    "median": 7,
+    "p90": 96,
+    "max": 2788,
+    "blocks": 158
+   },
+   "locality": {
+    "gap_median_pt": 141.02,
+    "gap_median_in_S": 16.2919,
+    "share_edges_over_10S": 0.7143,
+    "share_edges_over_0.1_block_diag": 0.7222,
+    "blocks": 57
+   }
+  }
+ },
+ "arc_defect": {
+  "blocks": 160,
+  "share_objects_with_inflated_bbox_median": 0.068,
+  "share_objects_with_inflated_bbox_p90": 0.5,
+  "blocks_affected": 133,
+  "bbox_area_inflation_median": 2.034,
+  "closed_arc_prims_from_<=4_segments": 4253,
+  "arc_prims_total": 13042,
+  "arc_prims_with_guard": 3632,
+  "relations_defective_vs_guarded": {
+   "INSIDE": {
+    "micro_share_only_defective": 0.7686,
+    "macro_median": 0.7727,
+    "edges": 9830,
+    "blocks": 83
+   },
+   "CONTAINS": {
+    "micro_share_only_defective": 0.7686,
+    "macro_median": 0.7727,
+    "edges": 9830,
+    "blocks": 83
+   },
+   "PART_OF": {
+    "micro_share_only_defective": 0.7803,
+    "macro_median": 1.0,
+    "edges": 223,
+    "blocks": 44
+   },
+   "ADJACENT": {
+    "micro_share_only_defective": 0.1463,
+    "macro_median": 0.0682,
+    "edges": 163789,
+    "blocks": 156
+   }
+  }
+ },
+ "guard_effect": {
+  "off": {
+   "stability_median": {
+    "CONNECTED_TO": 0.8778,
+    "PART_OF": 1.0,
+    "INSIDE": 0.9882,
+    "CONTAINS": 0.9882,
+    "ADJACENT": 0.9337,
+    "ALIGNED": 0.8977,
+    "LEADER_TO": 1.0,
+    "LABEL_ANCHOR": 0.9761,
+    "REPEATED_WITH": 0.7751
+   },
+   "usable_address": {
+    "CONNECTED_TO": 0.6313,
+    "PART_OF": 0.0,
+    "INSIDE": 0.1429,
+    "CONTAINS": 0.1429,
+    "ADJACENT": 0.8802,
+    "ALIGNED": 0.4839,
+    "LEADER_TO": 0.1751,
+    "LABEL_ANCHOR": 0.4885,
+    "REPEATED_WITH": 0.0
+   },
+   "address_events": 217,
+   "carriers": 58
+  },
+  "on": {
+   "stability_median": {
+    "CONNECTED_TO": 0.8952,
+    "PART_OF": 1.0,
+    "INSIDE": 1.0,
+    "CONTAINS": 1.0,
+    "ADJACENT": 0.9412,
+    "ALIGNED": 0.9028,
+    "LEADER_TO": 0.9965,
+    "LABEL_ANCHOR": 0.981,
+    "REPEATED_WITH": 0.7751
+   },
+   "usable_address": {
+    "CONNECTED_TO": 0.653,
+    "PART_OF": 0.0,
+    "INSIDE": 0.0685,
+    "CONTAINS": 0.0685,
+    "ADJACENT": 0.8128,
+    "ALIGNED": 0.4886,
+    "LEADER_TO": 0.1735,
+    "LABEL_ANCHOR": 0.5068,
+    "REPEATED_WITH": 0.0
+   },
+   "address_events": 219,
+   "carriers": 58
+  }
+ }
+}

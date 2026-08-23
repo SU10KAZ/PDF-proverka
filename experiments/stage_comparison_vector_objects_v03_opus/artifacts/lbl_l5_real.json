@@ -1,0 +1,1209 @@
+{
+ "threshold_1to1": 0.95,
+ "pairs": [
+  {
+   "pair_id": "TX-95031dbd",
+   "discipline": "TX",
+   "classes": [
+    "unchanged_control",
+    "no_labels",
+    "rotated_page"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 120,
+   "n_obj_b": 120,
+   "n_seg_a": 814,
+   "n_seg_b": 814,
+   "S": 0.48,
+   "reg_offset": [
+    -0.09,
+    -0.01
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 120,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 120
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.0,
+   "no_label_share": 1.0,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    0,
+    0
+   ],
+   "obj_per_text": 120.0
+  },
+  {
+   "pair_id": "KJ-b5c82f7c",
+   "discipline": "KJ",
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 578,
+   "n_obj_b": 579,
+   "n_seg_a": 7253,
+   "n_seg_b": 7254,
+   "S": 8.876,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 578,
+   "binding": {
+    "both_same": 88,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 490
+   },
+   "n_both_labelled": 88,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.84775,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    159,
+    159
+   ],
+   "obj_per_text": 3.64
+  },
+  {
+   "pair_id": "SS-392b7bd3",
+   "discipline": "SS",
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 18,
+   "n_obj_b": 19,
+   "n_seg_a": 860,
+   "n_seg_b": 862,
+   "S": 10.988,
+   "reg_offset": [
+    -0.08,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 15,
+   "binding": {
+    "both_same": 10,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 5
+   },
+   "n_both_labelled": 10,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.33333,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    13,
+    13
+   ],
+   "obj_per_text": 1.38
+  },
+  {
+   "pair_id": "AR-b38a7dbc",
+   "discipline": "AR",
+   "classes": [
+    "unchanged_control",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 2019,
+   "n_obj_b": 2019,
+   "n_seg_a": 32312,
+   "n_seg_b": 32312,
+   "S": 6.429,
+   "reg_offset": [
+    -0.092,
+    -0.006
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 2019,
+   "binding": {
+    "both_same": 747,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 1272
+   },
+   "n_both_labelled": 747,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.63001,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    487,
+    487
+   ],
+   "obj_per_text": 4.15
+  },
+  {
+   "pair_id": "KJ-548814a7",
+   "discipline": "KJ",
+   "classes": [
+    "block_moved",
+    "few_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 15,
+   "n_obj_b": 15,
+   "n_seg_a": 63,
+   "n_seg_b": 63,
+   "S": 0.387,
+   "reg_offset": [
+    137.45,
+    46.833
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 13,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 1,
+    "neither": 12
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.07692,
+   "no_label_share": 0.92308,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    3,
+    3
+   ],
+   "obj_per_text": 5.0
+  },
+  {
+   "pair_id": "AR-46f62636",
+   "discipline": "AR",
+   "classes": [
+    "bbox_boundary_artifact",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 1936,
+   "n_obj_b": 1937,
+   "n_seg_a": 30876,
+   "n_seg_b": 30877,
+   "S": 6.429,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 1936,
+   "binding": {
+    "both_same": 537,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 1399
+   },
+   "n_both_labelled": 537,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.72262,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    501,
+    501
+   ],
+   "obj_per_text": 3.86
+  },
+  {
+   "pair_id": "EOM-36de2ce2",
+   "discipline": "EOM",
+   "classes": [
+    "block_moved",
+    "rotated_page",
+    "few_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 388,
+   "n_obj_b": 388,
+   "n_seg_a": 2207,
+   "n_seg_b": 2207,
+   "S": 1.92,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 388,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 388
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.0,
+   "no_label_share": 1.0,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    2,
+    2
+   ],
+   "obj_per_text": 194.0
+  },
+  {
+   "pair_id": "EOM-3306e907",
+   "discipline": "EOM",
+   "classes": [
+    "block_moved",
+    "rotated_page"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 468,
+   "n_obj_b": 468,
+   "n_seg_a": 2784,
+   "n_seg_b": 2784,
+   "S": 0.84,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 468,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 468
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.0,
+   "no_label_share": 1.0,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    3,
+    3
+   ],
+   "obj_per_text": 156.0
+  },
+  {
+   "pair_id": "KJ-25717577",
+   "discipline": "KJ",
+   "classes": [
+    "text_only_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 33,
+   "n_obj_b": 32,
+   "n_seg_a": 1958,
+   "n_seg_b": 1952,
+   "S": 8.874,
+   "reg_offset": [
+    0.41,
+    -29.351
+   ],
+   "reg_score": 0.142,
+   "n_1to1": 0,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 0
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.0,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    56,
+    56
+   ],
+   "obj_per_text": 0.59
+  },
+  {
+   "pair_id": "SS-76640e11",
+   "discipline": "SS",
+   "classes": [
+    "text_only_change",
+    "with_labels"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 313,
+   "n_obj_b": 311,
+   "n_seg_a": 6726,
+   "n_seg_b": 6155,
+   "S": 12.401,
+   "reg_offset": [
+    -0.053,
+    -0.057
+   ],
+   "reg_score": 0.9974,
+   "n_1to1": 309,
+   "binding": {
+    "both_same": 65,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 244
+   },
+   "n_both_labelled": 65,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.78964,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    76,
+    67
+   ],
+   "obj_per_text": 4.12
+  },
+  {
+   "pair_id": "EOM-c50e2170",
+   "discipline": "EOM",
+   "classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 743,
+   "n_obj_b": 685,
+   "n_seg_a": 8027,
+   "n_seg_b": 4502,
+   "S": 12.537,
+   "reg_offset": [
+    0.007,
+    -0.03
+   ],
+   "reg_score": 0.988,
+   "n_1to1": 645,
+   "binding": {
+    "both_same": 213,
+    "both_diff": 8,
+    "a_only": 1,
+    "b_only": 2,
+    "neither": 421
+   },
+   "n_both_labelled": 221,
+   "same_label_share": 0.9638,
+   "one_sided_share": 0.00465,
+   "no_label_share": 0.65271,
+   "rebind_to_another_a_mark": 7,
+   "diff_examples": [
+    [
+     "К6.2.22АДОКРОВЛИ",
+     "К6.2.21АДОКРОВЛИ"
+    ],
+    [
+     "К6.2.26АДОКРОВЛИ",
+     "К6.2.25АДОКРОВЛИ"
+    ],
+    [
+     "К6.1.14АДОКРОВЛИ",
+     "К6.2.26АДОКРОВЛИ"
+    ],
+    [
+     "ПД6.1.11",
+     "К6.2.14АД"
+    ],
+    [
+     "К6.2.13А",
+     "К6.1.13АДОКРОВЛИ"
+    ],
+    [
+     "К6.2.13А",
+     "К6.1.13АДОКРОВЛИ"
+    ],
+    [
+     "П.29",
+     "П.24"
+    ],
+    [
+     "ШАУВ-1-К6ПЧ",
+     "ГР.6.2"
+    ]
+   ],
+   "text_lines": [
+    240,
+    165
+   ],
+   "obj_per_text": 3.1
+  },
+  {
+   "pair_id": "SS-982f7f30",
+   "discipline": "SS",
+   "classes": [
+    "block_moved",
+    "with_labels",
+    "table_like"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 54,
+   "n_obj_b": 52,
+   "n_seg_a": 5848,
+   "n_seg_b": 4700,
+   "S": 10.988,
+   "reg_offset": [
+    0.0,
+    -0.05
+   ],
+   "reg_score": 0.9928,
+   "n_1to1": 37,
+   "binding": {
+    "both_same": 8,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 29
+   },
+   "n_both_labelled": 8,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.78378,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    55,
+    55
+   ],
+   "obj_per_text": 0.98
+  },
+  {
+   "pair_id": "EOM-0c86dfde",
+   "discipline": "EOM",
+   "classes": [
+    "text_only_change",
+    "object_moved_label",
+    "dense_block"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 1985,
+   "n_obj_b": 1922,
+   "n_seg_a": 53517,
+   "n_seg_b": 50063,
+   "S": 8.859,
+   "reg_offset": [
+    0.0,
+    0.05
+   ],
+   "reg_score": 0.999,
+   "n_1to1": 1765,
+   "binding": {
+    "both_same": 258,
+    "both_diff": 35,
+    "a_only": 15,
+    "b_only": 3,
+    "neither": 1454
+   },
+   "n_both_labelled": 293,
+   "same_label_share": 0.88055,
+   "one_sided_share": 0.0102,
+   "no_label_share": 0.8238,
+   "rebind_to_another_a_mark": 5,
+   "diff_examples": [
+    [
+     "5E4",
+     "5ES"
+    ],
+    [
+     "5E4",
+     "5ES"
+    ],
+    [
+     "5E4",
+     "5ES"
+    ],
+    [
+     "5E4",
+     "5ES"
+    ],
+    [
+     "5E4",
+     "5ES"
+    ],
+    [
+     "5E4",
+     "5ES"
+    ],
+    [
+     "К1.2.1С2",
+     "К1.2.3С1"
+    ],
+    [
+     "К1.2.1С2",
+     "К1.2.3С1"
+    ]
+   ],
+   "text_lines": [
+    279,
+    279
+   ],
+   "obj_per_text": 7.11
+  },
+  {
+   "pair_id": "AR-dbfd82b8",
+   "discipline": "AR",
+   "classes": [
+    "object_removed",
+    "with_labels",
+    "table_like"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 215,
+   "n_obj_b": 179,
+   "n_seg_a": 8895,
+   "n_seg_b": 7829,
+   "S": 9.393,
+   "reg_offset": [
+    -0.07,
+    -0.05
+   ],
+   "reg_score": 0.8407,
+   "n_1to1": 161,
+   "binding": {
+    "both_same": 4,
+    "both_diff": 0,
+    "a_only": 1,
+    "b_only": 0,
+    "neither": 156
+   },
+   "n_both_labelled": 4,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.00621,
+   "no_label_share": 0.96894,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    163,
+    73
+   ],
+   "obj_per_text": 1.32
+  },
+  {
+   "pair_id": "VK-b71afe81",
+   "discipline": "VK",
+   "classes": [
+    "different_packaging",
+    "rotated_page",
+    "dense_block",
+    "garbled_text_layer"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 242,
+   "n_obj_b": 242,
+   "n_seg_a": 16205,
+   "n_seg_b": 16205,
+   "S": 9.426,
+   "reg_offset": [
+    -0.054,
+    -0.08
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 241,
+   "binding": {
+    "both_same": 4,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 237
+   },
+   "n_both_labelled": 4,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.9834,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    36,
+    36
+   ],
+   "obj_per_text": 6.72
+  },
+  {
+   "pair_id": "AR-a32b30a6",
+   "discipline": "AR",
+   "classes": [
+    "object_added",
+    "raster_graphics",
+    "no_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "no vector geometry"
+  },
+  {
+   "pair_id": "SS-c7aa8d26",
+   "discipline": "SS",
+   "classes": [
+    "object_added",
+    "with_labels",
+    "sparse_block"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 16,
+   "n_obj_b": 29,
+   "n_seg_a": 540,
+   "n_seg_b": 726,
+   "S": 10.995,
+   "reg_offset": [
+    -0.02,
+    -0.03
+   ],
+   "reg_score": 0.9352,
+   "n_1to1": 7,
+   "binding": {
+    "both_same": 3,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 4
+   },
+   "n_both_labelled": 3,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.57143,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    6,
+    13
+   ],
+   "obj_per_text": 2.67
+  },
+  {
+   "pair_id": "VK-56115717",
+   "discipline": "VK",
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 1001,
+   "n_obj_b": 552,
+   "n_seg_a": 27227,
+   "n_seg_b": 12395,
+   "S": 9.424,
+   "reg_offset": [
+    -0.05,
+    0.05
+   ],
+   "reg_score": 0.48,
+   "n_1to1": 319,
+   "binding": {
+    "both_same": 116,
+    "both_diff": 0,
+    "a_only": 7,
+    "b_only": 1,
+    "neither": 195
+   },
+   "n_both_labelled": 116,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.02508,
+   "no_label_share": 0.61129,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    276,
+    172
+   ],
+   "obj_per_text": 3.63
+  },
+  {
+   "pair_id": "EOM-46355862",
+   "discipline": "EOM",
+   "classes": [
+    "object_added",
+    "dense_block",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "too heavy (27845/60524)"
+  },
+  {
+   "pair_id": "AR-441907a2",
+   "discipline": "AR",
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 282,
+   "n_obj_b": 191,
+   "n_seg_a": 16388,
+   "n_seg_b": 10793,
+   "S": 9.159,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.5579,
+   "n_1to1": 180,
+   "binding": {
+    "both_same": 12,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 168
+   },
+   "n_both_labelled": 12,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.93333,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    148,
+    76
+   ],
+   "obj_per_text": 1.91
+  },
+  {
+   "pair_id": "SS-6fc75e05",
+   "discipline": "SS",
+   "classes": [
+    "different_packaging",
+    "with_labels",
+    "table_like"
+   ],
+   "expected": "NO_GRAPHIC_CHANGE",
+   "n_obj_a": 57,
+   "n_obj_b": 57,
+   "n_seg_a": 5845,
+   "n_seg_b": 12921,
+   "S": 10.995,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9977,
+   "n_1to1": 37,
+   "binding": {
+    "both_same": 10,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 27
+   },
+   "n_both_labelled": 10,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.72973,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    56,
+    56
+   ],
+   "obj_per_text": 1.02
+  },
+  {
+   "pair_id": "AR-55eda7fb",
+   "discipline": "AR",
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 128,
+   "n_obj_b": 141,
+   "n_seg_a": 4315,
+   "n_seg_b": 4412,
+   "S": 9.13,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9763,
+   "n_1to1": 122,
+   "binding": {
+    "both_same": 48,
+    "both_diff": 4,
+    "a_only": 0,
+    "b_only": 3,
+    "neither": 67
+   },
+   "n_both_labelled": 52,
+   "same_label_share": 0.92308,
+   "one_sided_share": 0.02459,
+   "no_label_share": 0.54918,
+   "rebind_to_another_a_mark": 1,
+   "diff_examples": [
+    [
+     "40Х4",
+     "80Х6"
+    ],
+    [
+     "L=850",
+     "L=1000"
+    ],
+    [
+     "L=850",
+     "L=1000"
+    ],
+    [
+     "L=850",
+     "L=1000"
+    ]
+   ],
+   "text_lines": [
+    75,
+    79
+   ],
+   "obj_per_text": 1.71
+  },
+  {
+   "pair_id": "VK-148ffe6c",
+   "discipline": "VK",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "rotated_page",
+    "dense_block"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "too heavy (106552/115081)"
+  },
+  {
+   "pair_id": "EOM-7fef43a3",
+   "discipline": "EOM",
+   "classes": [
+    "object_added",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 200,
+   "n_obj_b": 200,
+   "n_seg_a": 10972,
+   "n_seg_b": 10972,
+   "S": 13.964,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 200,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 200
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.0,
+   "no_label_share": 1.0,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    0,
+    5
+   ],
+   "obj_per_text": 200.0
+  },
+  {
+   "pair_id": "AR-5acaab0e",
+   "discipline": "AR",
+   "classes": [
+    "object_added",
+    "dense_block",
+    "hatch_noise",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "skip": "too heavy (111161/111000)"
+  },
+  {
+   "pair_id": "AR-490254e9",
+   "discipline": "AR",
+   "classes": [
+    "block_scope_change",
+    "with_labels"
+   ],
+   "expected": "NOT_COMPARABLE",
+   "n_obj_a": 28,
+   "n_obj_b": 242,
+   "n_seg_a": 466,
+   "n_seg_b": 4398,
+   "S": 9.13,
+   "reg_offset": [
+    -0.05,
+    -0.05
+   ],
+   "reg_score": 0.9968,
+   "n_1to1": 20,
+   "binding": {
+    "both_same": 2,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 1,
+    "neither": 17
+   },
+   "n_both_labelled": 2,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.05,
+   "no_label_share": 0.85,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    10,
+    59
+   ],
+   "obj_per_text": 2.8
+  },
+  {
+   "pair_id": "OV-2cc2a382",
+   "discipline": "OV",
+   "classes": [
+    "block_scope_change",
+    "raster_graphics",
+    "no_labels"
+   ],
+   "expected": "NOT_COMPARABLE",
+   "skip": "no vector geometry"
+  },
+  {
+   "pair_id": "OV-93cc012f",
+   "discipline": "OV",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 185,
+   "n_obj_b": 167,
+   "n_seg_a": 9880,
+   "n_seg_b": 9620,
+   "S": 9.767,
+   "reg_offset": [
+    -4.825,
+    -1.735
+   ],
+   "reg_score": 0.2831,
+   "n_1to1": 6,
+   "binding": {
+    "both_same": 1,
+    "both_diff": 2,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 3
+   },
+   "n_both_labelled": 3,
+   "same_label_share": 0.33333,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.5,
+   "rebind_to_another_a_mark": 2,
+   "diff_examples": [
+    [
+     "ПЖ2.3",
+     "Т12.4"
+    ],
+    [
+     "ПЖ2.3",
+     "Т12.4"
+    ]
+   ],
+   "text_lines": [
+    42,
+    45
+   ],
+   "obj_per_text": 4.4
+  },
+  {
+   "pair_id": "EOM-1db297d2",
+   "discipline": "EOM",
+   "classes": [
+    "uncertain",
+    "block_match_failure"
+   ],
+   "expected": "UNCERTAIN",
+   "n_obj_a": 46,
+   "n_obj_b": 54,
+   "n_seg_a": 713,
+   "n_seg_b": 894,
+   "S": 10.517,
+   "reg_offset": [
+    -848.635,
+    -202.946
+   ],
+   "reg_score": 0.0181,
+   "n_1to1": 0,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 0
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.0,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    42,
+    21
+   ],
+   "obj_per_text": 1.1
+  },
+  {
+   "pair_id": "EOM-14558cda",
+   "discipline": "EOM",
+   "classes": [
+    "object_added",
+    "occluding_fill",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 240,
+   "n_obj_b": 226,
+   "n_seg_a": 7932,
+   "n_seg_b": 7767,
+   "S": 12.977,
+   "reg_offset": [
+    -0.03,
+    -0.06
+   ],
+   "reg_score": 0.89,
+   "n_1to1": 212,
+   "binding": {
+    "both_same": 3,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 209
+   },
+   "n_both_labelled": 3,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.98585,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    30,
+    20
+   ],
+   "obj_per_text": 8.0
+  },
+  {
+   "pair_id": "SS-a369f492",
+   "discipline": "SS",
+   "classes": [
+    "object_added",
+    "object_moved",
+    "raster_graphics",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 151,
+   "n_obj_b": 202,
+   "n_seg_a": 4876,
+   "n_seg_b": 6678,
+   "S": 15.244,
+   "reg_offset": [
+    -0.1,
+    0.0
+   ],
+   "reg_score": 1.0,
+   "n_1to1": 66,
+   "binding": {
+    "both_same": 0,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 66
+   },
+   "n_both_labelled": 0,
+   "same_label_share": null,
+   "one_sided_share": 0.0,
+   "no_label_share": 1.0,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    12,
+    21
+   ],
+   "obj_per_text": 12.58
+  },
+  {
+   "pair_id": "AR-577a293f",
+   "discipline": "AR",
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "expected": "GRAPHIC_CHANGE",
+   "n_obj_a": 244,
+   "n_obj_b": 199,
+   "n_seg_a": 11378,
+   "n_seg_b": 10642,
+   "S": 9.393,
+   "reg_offset": [
+    -0.09,
+    -0.01
+   ],
+   "reg_score": 0.5534,
+   "n_1to1": 6,
+   "binding": {
+    "both_same": 1,
+    "both_diff": 0,
+    "a_only": 0,
+    "b_only": 0,
+    "neither": 5
+   },
+   "n_both_labelled": 1,
+   "same_label_share": 1.0,
+   "one_sided_share": 0.0,
+   "no_label_share": 0.83333,
+   "rebind_to_another_a_mark": 0,
+   "diff_examples": [],
+   "text_lines": [
+    85,
+    88
+   ],
+   "obj_per_text": 2.87
+  },
+  {
+   "pair_id": "GP-6bc1c029",
+   "discipline": "GP",
+   "classes": [
+    "uncertain",
+    "dense_block"
+   ],
+   "expected": "UNCERTAIN",
+   "skip": "too heavy (378441/314651)"
+  }
+ ]
+}

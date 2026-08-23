@@ -1,0 +1,2820 @@
+{
+ "n_cases": 56,
+ "truth_balance": {
+  "GRAPHIC_CHANGE": 27,
+  "NO_GRAPHIC_CHANGE": 29
+ },
+ "overall": {
+  "armA": {
+   "n": 56,
+   "acc": 0.768,
+   "false_graphic_changes": 1,
+   "fp_rate_on_negatives": 0.034,
+   "missed": 12,
+   "recall": 0.556,
+   "tokens_total": 2068.1,
+   "tokens_per_case": 36.9
+  },
+  "armB": {
+   "n": 56,
+   "acc": 0.875,
+   "false_graphic_changes": 0,
+   "fp_rate_on_negatives": 0.0,
+   "missed": 7,
+   "recall": 0.741,
+   "tokens_total": 181512.6,
+   "tokens_per_case": 3241.3
+  },
+  "armC": {
+   "n": 56,
+   "acc": 0.875,
+   "false_graphic_changes": 0,
+   "fp_rate_on_negatives": 0.0,
+   "missed": 7,
+   "recall": 0.741,
+   "tokens_total": 10989.2,
+   "tokens_per_case": 196.2
+  }
+ },
+ "by_source": {
+  "REAL": {
+   "armA": {
+    "n": 29,
+    "acc": 0.828,
+    "false_graphic_changes": 0,
+    "fp_rate_on_negatives": 0.0,
+    "missed": 5,
+    "recall": 0.667,
+    "tokens_total": 1623.6,
+    "tokens_per_case": 56.0
+   },
+   "armB": {
+    "n": 29,
+    "acc": 0.862,
+    "false_graphic_changes": 0,
+    "fp_rate_on_negatives": 0.0,
+    "missed": 4,
+    "recall": 0.733,
+    "tokens_total": 110221.9,
+    "tokens_per_case": 3800.8
+   },
+   "armC": {
+    "n": 29,
+    "acc": 0.828,
+    "false_graphic_changes": 0,
+    "fp_rate_on_negatives": 0.0,
+    "missed": 5,
+    "recall": 0.667,
+    "tokens_total": 8195.6,
+    "tokens_per_case": 282.6
+   }
+  },
+  "CF": {
+   "armA": {
+    "n": 27,
+    "acc": 0.704,
+    "false_graphic_changes": 1,
+    "fp_rate_on_negatives": 0.067,
+    "missed": 7,
+    "recall": 0.417,
+    "tokens_total": 444.5,
+    "tokens_per_case": 16.5
+   },
+   "armB": {
+    "n": 27,
+    "acc": 0.889,
+    "false_graphic_changes": 0,
+    "fp_rate_on_negatives": 0.0,
+    "missed": 3,
+    "recall": 0.75,
+    "tokens_total": 71290.7,
+    "tokens_per_case": 2640.4
+   },
+   "armC": {
+    "n": 27,
+    "acc": 0.926,
+    "false_graphic_changes": 0,
+    "fp_rate_on_negatives": 0.0,
+    "missed": 2,
+    "recall": 0.833,
+    "tokens_total": 2793.6,
+    "tokens_per_case": 103.5
+   }
+  }
+ },
+ "rows": [
+  {
+   "case_id": "AR-55eda7fb",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h01",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 2,
+    "max_len": 1165.94,
+    "tokens": 62.5,
+    "sim": 0.971427
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "строка ПР-14: сечение перерисовано (добавлены анкеры и уголки 80x6), размеры 550/150 -> 1000",
+    "tokens": 5179.3
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 62.5,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       392.83,
+       1428.67,
+       569.52,
+       1497.31
+      ],
+      "len": 1165.939
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       264.43,
+       1474.03,
+       353.47,
+       1505.47
+      ],
+      "len": 350.461
+     }
+    ],
+    "gate_records": 2,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 1
+  },
+  {
+   "case_id": "EOM-36de2ce2",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h02",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "block_moved",
+    "rotated_page",
+    "few_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "тот же чертёж, другой масштаб/положение в кадре",
+    "tokens": 3711.2
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "KJ-548814a7",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h03",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "block_moved",
+    "few_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "схема отгиба стержня идентична, другой масштаб",
+    "tokens": 4106.4
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "OV-93cc012f",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h04",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "object_moved",
+    "with_labels"
+   ],
+   "label_confidence": "medium",
+   "discipline": "OV",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.481487
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "убраны выносные кружки узлов 5(33)/1(33); появились отметки/арматура на трассе",
+    "tokens": 4953.4
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 4
+  },
+  {
+   "case_id": "KJ_7J9G-4UT_B3_crop_jitter",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h05",
+   "swapped": true,
+   "cf_id": "B3_crop_jitter_0.02",
+   "cf_class": "B",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.984738
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "схема чередования П-образных элементов идентична",
+    "tokens": 3937.0
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR-a32b30a6",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h06",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "raster_graphics",
+    "no_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": "RuntimeError('no vector geometry on one side')",
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": null
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "на одной стороне нет чертежа 'Фпк-2. Армирование'; размерная цепочка 2075+2200/250 -> 2605",
+    "tokens": 2638.3
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 1,
+    "vision_tokens": 2638.3,
+    "tokens": 2638.8,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 1
+  },
+  {
+   "case_id": "SS-76640e11",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h07",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "text_only_change",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.999117
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "различие только блок примечаний (текст); план идентичен",
+    "tokens": 4953.4
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "AR-dbfd82b8",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h08",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_removed",
+    "with_labels",
+    "table_like"
+   ],
+   "label_confidence": "high",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 4477.32,
+    "tokens": 33.2,
+    "sim": 0.879674
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "на одной стороне присутствует целый блок 'Условные обозначения'",
+    "tokens": 4388.7
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 33.2,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       1422.96,
+       665.56,
+       1478.88,
+       882.28
+      ],
+      "len": 4477.318
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 1
+  },
+  {
+   "case_id": "TX-95031dbd",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h09",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "unchanged_control",
+    "no_labels",
+    "rotated_page"
+   ],
+   "label_confidence": "high",
+   "discipline": "TX",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "схемы цепей идентичны, другой масштаб",
+    "tokens": 2292.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "AR-5acaab0e",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h10",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "dense_block",
+    "hatch_noise",
+    "with_labels"
+   ],
+   "label_confidence": "medium",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 2,
+    "max_len": 1816294.42,
+    "tokens": 63.2,
+    "sim": 0.22983
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "добавлены выноски 'Узел N' и сантехприборы; сняты облака изменений",
+    "tokens": 4501.7
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 1,
+    "vision_tokens": 503.4,
+    "tokens": 566.6,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       166.99,
+       219.528,
+       2246.4,
+       2782.25
+      ],
+      "len": 1816294.418
+     },
+     {
+      "src": "vision",
+      "bbox": [
+       1484.954,
+       2774.569,
+       1521.79,
+       2782.25
+      ],
+      "len": 50.141
+     }
+    ],
+    "gate_records": 2,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 3
+  },
+  {
+   "case_id": "EOM_blk_2ab0_C1_remove_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h11",
+   "swapped": false,
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "удалён прямоугольник условного обозначения 'Щит учета'",
+    "tokens": 1678.4
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    1448.76,
+    702.72,
+    1477.26,
+    716.76
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "GP_7EHD-V69_C6_reshape_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h12",
+   "swapped": true,
+   "cf_id": "C6_reshape_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "GP",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 215.4,
+    "tokens": 27.8,
+    "sim": 0.996827
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "схема подрезки лотков идентична",
+    "tokens": 4501.7
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 27.8,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       2222.48,
+       1312.87,
+       2240.54,
+       1361.05
+      ],
+      "len": 215.4
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    2222.58,
+    1304.44,
+    2240.64,
+    1369.48
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "SS-392b7bd3",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h13",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 0.06,
+    "tokens": 26.2,
+    "sim": 0.905577
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "схема У1.1 идентична, другой масштаб",
+    "tokens": 3372.4
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 26.2,
+    "named": [],
+    "gate_records": 1,
+    "prefiltered": 1
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "EOM-14558cda",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h14",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "occluding_fill",
+    "with_labels"
+   ],
+   "label_confidence": "medium",
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 9222.91,
+    "tokens": 35.5,
+    "sim": 0.959829
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "добавлена серая заливка поверх всего вида и оранжевая полоса слева",
+    "tokens": 5235.7
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 35.5,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       1353.33,
+       129.06,
+       1663.92,
+       660.24
+      ],
+      "len": 9222.909
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 1
+  },
+  {
+   "case_id": "VK-56115717",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h15",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "VK",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 29,
+    "max_len": 30721.21,
+    "tokens": 392.5,
+    "sim": 0.657857
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "правая схема В2.3 обрезана кадром блока; видимая часть совпадает",
+    "tokens": 3315.9
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 392.5,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       1762.08,
+       128.4,
+       2170.08,
+       1313.28
+      ],
+      "len": 30721.213
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1392.67,
+       404.45,
+       1607.52,
+       445.92
+      ],
+      "len": 611.255
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1392.67,
+       987.65,
+       1606.8,
+       1029.84
+      ],
+      "len": 600.518
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1392.67,
+       623.09,
+       1607.04,
+       665.28
+      ],
+      "len": 565.648
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1510.27,
+       1402.61,
+       1604.88,
+       1440.72
+      ],
+      "len": 347.408
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1512.91,
+       846.24,
+       1609.92,
+       881.76
+      ],
+      "len": 343.793
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1512.91,
+       480.05,
+       1602.24,
+       517.2
+      ],
+      "len": 339.763
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1512.96,
+       1060.61,
+       1606.8,
+       1100.4
+      ],
+      "len": 334.622
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1512.91,
+       914.69,
+       1606.8,
+       954.72
+      ],
+      "len": 316.575
+     }
+    ],
+    "gate_records": 9,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 1
+  },
+  {
+   "case_id": "AR_7WT4-934_D7_dim_geometry",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h16",
+   "swapped": true,
+   "cf_id": "D7_dim_geometry",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 2,
+    "max_len": 10.63,
+    "tokens": 55.0,
+    "sim": 0.998258
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "отличается только номер листа 9/13",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 2,
+    "vision_tokens": 430.2,
+    "tokens": 485.2,
+    "named": [
+     {
+      "src": "vision",
+      "bbox": [
+       2341.1,
+       1593.32,
+       2341.1,
+       1603.96
+      ],
+      "len": 10.63
+     },
+     {
+      "src": "vision",
+      "bbox": [
+       2246.65,
+       1593.32,
+       2246.65,
+       1603.96
+      ],
+      "len": 10.63
+     }
+    ],
+    "gate_records": 2,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    2246.75,
+    1593.32,
+    2341.2,
+    1621.07
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "KJ-b5c82f7c",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h17",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "bbox_boundary_artifact",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.993063
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "четыре сечения колонн идентичны, другой масштаб",
+    "tokens": 1621.9
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "KJ-25717577",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h18",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "text_only_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.124937
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "отличаются только даты в штампе",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "EOM-7fef43a3",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h19",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "добавлены только текстовые подписи; полка выноски есть с обеих сторон",
+    "tokens": 4671.1
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 2
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D2_text_move",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h20",
+   "swapped": true,
+   "cf_id": "D2_text_move",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "отличаются только шрифты/начертание нескольких надписей",
+    "tokens": 3485.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    928.68,
+    1039.04,
+    994.9,
+    1098.43
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "KJ_7J9G-4UT_D9_text_to_curves",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h21",
+   "swapped": true,
+   "cf_id": "D9_text_to_curves",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 4,
+    "max_len": 2705.3,
+    "tokens": 109.8,
+    "sim": 0.83972
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "различий не вижу",
+    "tokens": 3937.0
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 109.8,
+    "named": [],
+    "gate_records": 4,
+    "prefiltered": 4
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR-577a293f",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h22",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "small_local_change",
+    "table_only_change",
+    "with_labels"
+   ],
+   "label_confidence": "medium",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 4,
+    "max_len": 16488.3,
+    "tokens": 141.2,
+    "sim": 0.534441
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "эскизы состава пола перерисованы: другое число и положение слоёв в 2.1, 2.4, 2.7",
+    "tokens": 4896.9
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 141.2,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       246.72,
+       1510.96,
+       473.91,
+       1659.63
+      ],
+      "len": 16488.296
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       255.48,
+       1193.43,
+       472.71,
+       1292.2
+      ],
+      "len": 12944.234
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       255.27,
+       1354.71,
+       469.08,
+       1461.271
+      ],
+      "len": 11990.778
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       257.31,
+       1024.72,
+       467.43,
+       1119.99
+      ],
+      "len": 11576.604
+     }
+    ],
+    "gate_records": 4,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 3
+  },
+  {
+   "case_id": "EOM_blk_9dee_A2_path_merge_20",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h23",
+   "swapped": false,
+   "cf_id": "A2_path_merge",
+   "cf_class": "A",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "штампы идентичны",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    4351.68,
+    3289.2,
+    4374.48,
+    3307.2
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "EOM_blk_2ab0_A6_round_0.5_5",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h24",
+   "swapped": true,
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "различий не вижу",
+    "tokens": 1678.4
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    1541.94,
+    410.34,
+    1570.26,
+    427.91
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "VK_blk_f35e_C6_reshape_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h25",
+   "swapped": true,
+   "cf_id": "C6_reshape_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "VK",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 7.23,
+    "tokens": 26.5,
+    "sim": 0.998261
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "строка штампа идентична",
+    "tokens": 549.1
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 1,
+    "vision_tokens": 215.1,
+    "tokens": 241.6,
+    "named": [
+     {
+      "src": "vision",
+      "bbox": [
+       775.43,
+       788.72,
+       788.07,
+       793.87
+      ],
+      "len": 7.23
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    775.48,
+    787.68,
+    788.12,
+    796.08
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D7_dim_geometry",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h26",
+   "swapped": false,
+   "cf_id": "D7_dim_geometry",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 2,
+    "max_len": 10.96,
+    "tokens": 54.5,
+    "sim": 0.999321
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "размерная цепочка перебита: вместо одного размера несколько (334/100) и добавлены засечки",
+    "tokens": 3485.3
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 2,
+    "vision_tokens": 430.2,
+    "tokens": 484.7,
+    "named": [
+     {
+      "src": "vision",
+      "bbox": [
+       922.55,
+       1225.39,
+       933.51,
+       1225.39
+      ],
+      "len": 10.96
+     },
+     {
+      "src": "vision",
+      "bbox": [
+       922.55,
+       1202.98,
+       933.51,
+       1202.98
+      ],
+      "len": 10.96
+     }
+    ],
+    "gate_records": 2,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    906.42,
+    1195.3,
+    933.56,
+    1225.44
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR_6WNV-DWD_D1_text_edit",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h27",
+   "swapped": false,
+   "cf_id": "D1_text_edit",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "изменены только строки: 871->871X, 150->150X, З.Г->З.ГX",
+    "tokens": 3485.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    821.76,
+    1089.3,
+    1007.23,
+    1279.72
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "VK-148ffe6c",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h28",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "object_moved",
+    "rotated_page",
+    "dense_block"
+   ],
+   "label_confidence": "medium",
+   "discipline": "VK",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 7,
+    "max_len": 28508.18,
+    "tokens": 227.8,
+    "sim": 0.667217
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "на одной стороне есть спецификация оборудования и узел кранов с эл. приводом",
+    "tokens": 3880.5
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 4,
+    "vision_tokens": 896.4,
+    "tokens": 1124.2,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       1132.2,
+       1210.51,
+       1450.97,
+       1633.32
+      ],
+      "len": 28508.182
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       1189.85,
+       835.51,
+       1465.25,
+       1014.91
+      ],
+      "len": 1451.589
+     },
+     {
+      "src": "vision",
+      "bbox": [
+       1167.0,
+       967.08,
+       1172.45,
+       981.67
+      ],
+      "len": 0.36
+     }
+    ],
+    "gate_records": 7,
+    "prefiltered": 1
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 3
+  },
+  {
+   "case_id": "SS-982f7f30",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h29",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "block_moved",
+    "with_labels",
+    "table_like"
+   ],
+   "label_confidence": "medium",
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 2,
+    "max_len": 0.24,
+    "tokens": 62.9,
+    "sim": 0.946128
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "штампы идентичны",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 62.9,
+    "named": [],
+    "gate_records": 2,
+    "prefiltered": 2
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "VK_blk_f35e_C1_remove_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h30",
+   "swapped": true,
+   "cf_id": "C1_remove_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "VK",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "подпись в верхней строке штампа: часть росчерка отсутствует",
+    "tokens": 549.1
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    777.12,
+    787.68,
+    786.48,
+    796.08
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR-46f62636",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h31",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "bbox_boundary_artifact",
+    "dense_block",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.995621
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "low",
+    "what": "плотный план этажа; отличий не нашёл",
+    "tokens": 2864.2
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "SS-c7aa8d26",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h32",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "with_labels",
+    "sparse_block"
+   ],
+   "label_confidence": "high",
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.634515
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "low",
+    "what": "кадр блока сдвинут: два узла вне кадра одной стороны",
+    "tokens": 3711.2
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 2
+  },
+  {
+   "case_id": "SS_4YRN-VTF_D3_label_rename",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h33",
+   "swapped": false,
+   "cf_id": "D3_label_rename",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "переименованы метки L30_K1->L31_K2, L29_K1->L30_K2",
+    "tokens": 3937.0
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    1320.0,
+    216.06,
+    1667.11,
+    415.79
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR_7WT4-934_D5_table_row_text",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h34",
+   "swapped": false,
+   "cf_id": "D5_table_row_text",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "текст строки шапки заменён на 'ЗАМЕНА ...'",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    1852.32,
+    1574.09,
+    2025.37,
+    1583.23
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "KJ_blk_a5f5_D1_text_edit",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h35",
+   "swapped": false,
+   "cf_id": "D1_text_edit",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "строки перевёрнуты (Стадия->яидатС и т.п.)",
+    "tokens": 1339.6
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    76.46,
+    749.03,
+    483.6,
+    800.9
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "KJ_blk_a5f5_C2_add_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h36",
+   "swapped": true,
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 166.3,
+    "tokens": 26.8,
+    "sim": 0.988441
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "добавлены два толстых горизонтальных отрезка под текстом внизу",
+    "tokens": 1339.6
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 26.8,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       299.51,
+       811.27,
+       410.36,
+       811.97
+      ],
+      "len": 166.3
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    299.56,
+    811.32,
+    410.41,
+    812.02
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "VK_blk_f35e_C3_move_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h37",
+   "swapped": false,
+   "cf_id": "C3_move_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "VK",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 25.59,
+    "tokens": 26.8,
+    "sim": 0.993947
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "подпись во второй строке изменила форму/положение",
+    "tokens": 549.1
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 1,
+    "vision_tokens": 215.1,
+    "tokens": 241.9,
+    "named": [
+     {
+      "src": "vision",
+      "bbox": [
+       789.37,
+       788.16,
+       796.81,
+       796.56
+      ],
+      "len": 25.59
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    777.12,
+    787.68,
+    796.86,
+    796.61
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "SS_4YRN-VTF_D4_table_values",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h38",
+   "swapped": true,
+   "cf_id": "D4_table_values",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "изменены только числа (207x107, +108,787 и т.п.)",
+    "tokens": 3937.0
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    1272.12,
+    154.9,
+    1667.77,
+    396.11
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "EOM-c50e2170",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h39",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_removed",
+    "dense_block",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 4,
+    "max_len": 151.56,
+    "tokens": 124.2,
+    "sim": 0.980281
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "исчез красный штрихпунктирный контур зоны вверху; иначе идёт трасса справа",
+    "tokens": 5066.3
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 1,
+    "vision_tokens": 215.1,
+    "tokens": 339.3,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       660.72,
+       356.4,
+       694.807,
+       387.6
+      ],
+      "len": 151.564
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       570.48,
+       179.01,
+       630.967,
+       242.64
+      ],
+      "len": 113.15
+     },
+     {
+      "src": "vector",
+      "bbox": [
+       666.247,
+       259.17,
+       694.807,
+       287.73
+      ],
+      "len": 89.337
+     },
+     {
+      "src": "vision",
+      "bbox": [
+       639.36,
+       512.4,
+       644.88,
+       520.8
+      ],
+      "len": 11.2
+     }
+    ],
+    "gate_records": 4,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 30
+  },
+  {
+   "case_id": "EOM-46355862",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h40",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "dense_block",
+    "with_labels"
+   ],
+   "label_confidence": "medium",
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 1158956.72,
+    "tokens": 37.2,
+    "sim": 0.318054
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "на одной стороне есть штриховка помещений, машиноместа с автомобилями и множество выносок оборудования",
+    "tokens": 4735.9
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 37.2,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       398.324,
+       435.775,
+       2454.24,
+       3075.599
+      ],
+      "len": 1158956.724
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 15
+  },
+  {
+   "case_id": "GP_7EHD-V69_C9_add_branch",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h41",
+   "swapped": true,
+   "cf_id": "C9_add_branch",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "GP",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 70.8,
+    "tokens": 27.5,
+    "sim": 0.998768
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "добавлен вертикальный отрезок-ветвь от размерной линии 265 ко второму лотку",
+    "tokens": 4501.7
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 27.5,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       2127.67,
+       1236.76,
+       2127.67,
+       1307.56
+      ],
+      "len": 70.8
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    2127.77,
+    1236.76,
+    2127.77,
+    1307.56
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "GP_7EHD-V69_C2_add_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h42",
+   "swapped": false,
+   "cf_id": "C2_add_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "GP",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 788.04,
+    "tokens": 27.8,
+    "sim": 0.985438
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "добавлен длинный горизонтальный элемент вверху листа",
+    "tokens": 4501.7
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 27.8,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       1867.42,
+       1022.81,
+       2260.3,
+       1025.09
+      ],
+      "len": 788.04
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    1867.52,
+    1022.81,
+    2260.4,
+    1025.09
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "EOM_blk_9dee_A6_round_0.5_14",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h43",
+   "swapped": true,
+   "cf_id": "A6_round_0.5",
+   "cf_class": "A",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "штампы идентичны",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    4354.8,
+    3273.36,
+    4369.44,
+    3291.8
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "EOM_blk_9dee_A1_path_split_20",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h44",
+   "swapped": false,
+   "cf_id": "A1_path_split",
+   "cf_class": "A",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "штампы идентичны",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    4351.68,
+    3289.2,
+    4374.48,
+    3307.2
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR_7WT4-934_D6_dim_value_only",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h45",
+   "swapped": true,
+   "cf_id": "D6_dim_value_only",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "отличается только номер листа 14/13",
+    "tokens": 1791.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    2286.96,
+    1608.13,
+    2296.78,
+    1621.07
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "SS_4YRN-VTF_C9_add_branch",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h46",
+   "swapped": false,
+   "cf_id": "C9_add_branch",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 56.36,
+    "tokens": 27.2,
+    "sim": 0.998473
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "добавлена красная горизонтальная ветвь слева от лотка",
+    "tokens": 3937.0
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 1,
+    "vision_tokens": 1058.5,
+    "tokens": 1085.7,
+    "named": [
+     {
+      "src": "vision",
+      "bbox": [
+       1398.78,
+       317.57,
+       1455.14,
+       317.57
+      ],
+      "len": 56.36
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    1398.88,
+    317.57,
+    1455.24,
+    317.57
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "AR-b38a7dbc",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h47",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "unchanged_control",
+    "dense_block",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "low",
+    "what": "плотный план этажа; отличий не нашёл",
+    "tokens": 3315.9
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "KJ_7J9G-4UT_A7_reexport_cairo",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h48",
+   "swapped": false,
+   "cf_id": "A7_reexport_cairo",
+   "cf_class": "A",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "различий не вижу",
+    "tokens": 3937.0
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "SS-a369f492",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h49",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_added",
+    "object_moved",
+    "raster_graphics",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 0.840549
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "на одной стороне есть второй узел 'А прохода группы кабелей в лотке'",
+    "tokens": 4219.3
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 2
+  },
+  {
+   "case_id": "SS-6fc75e05",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h50",
+   "swapped": false,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "different_packaging",
+    "with_labels",
+    "table_like"
+   ],
+   "label_confidence": "high",
+   "discipline": "SS",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 16.29,
+    "tokens": 27.5,
+    "sim": 0.954197
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "штампы идентичны",
+    "tokens": 1734.8
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 27.5,
+    "named": [],
+    "gate_records": 1,
+    "prefiltered": 1
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "AR-441907a2",
+   "source": "REAL",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h51",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "object_removed",
+    "with_labels"
+   ],
+   "label_confidence": "high",
+   "discipline": "AR",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 15582.1,
+    "tokens": 33.2,
+    "sim": 0.801679
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "кадр блока обрезал сечение а-а и штамп; общая часть совпадает",
+    "tokens": 4275.8
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 33.2,
+    "named": [],
+    "gate_records": 1,
+    "prefiltered": 1
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 2
+  },
+  {
+   "case_id": "EOM-0c86dfde",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h52",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "text_only_change",
+    "object_moved_label",
+    "dense_block"
+   ],
+   "label_confidence": "high",
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 207,
+    "max_len": 41.12,
+    "tokens": 349.0,
+    "sim": 0.993063
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "изменены только метки K1.2.*",
+    "tokens": 5235.7
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 2,
+    "vision_tokens": 2318.8,
+    "tokens": 2667.8,
+    "named": [],
+    "gate_records": 11,
+    "prefiltered": 9
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "OV_blk_1924_C3_move_object",
+   "source": "CF",
+   "truth": "GRAPHIC_CHANGE",
+   "view_id": "h53",
+   "swapped": true,
+   "cf_id": "C3_move_object",
+   "cf_class": "C",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "OV",
+   "armA": {
+    "verdict": "GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 1,
+    "max_len": 78.38,
+    "tokens": 26.8,
+    "sim": 0.993001
+   },
+   "armB": {
+    "verdict": "GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "у обозначения 'Счётчик' изменена геометрия: пропала горизонтальная линия, символ перерисован",
+    "tokens": 3937.0
+   },
+   "armC": {
+    "verdict": "GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 26.8,
+    "named": [
+     {
+      "src": "vector",
+      "bbox": [
+       898.39,
+       994.0,
+       947.17,
+       1009.12
+      ],
+      "len": 78.38
+     }
+    ],
+    "gate_records": 1,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    898.44,
+    994.05,
+    951.3,
+    1023.0
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "KJ_blk_a5f5_D3_label_rename",
+   "source": "CF",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h54",
+   "swapped": true,
+   "cf_id": "D3_label_rename",
+   "cf_class": "D",
+   "classes": null,
+   "label_confidence": null,
+   "discipline": "KJ",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "отличается только шифр КЖ4.1/КЖ3.1",
+    "tokens": 1339.6
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": [
+    357.19,
+    718.51,
+    481.65,
+    734.05
+   ],
+   "expected_changed_objects": null
+  },
+  {
+   "case_id": "VK-b71afe81",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h55",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "different_packaging",
+    "rotated_page",
+    "dense_block",
+    "garbled_text_layer"
+   ],
+   "label_confidence": "high",
+   "discipline": "VK",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "medium",
+    "what": "два узла идентичны, другой масштаб",
+    "tokens": 2751.2
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  },
+  {
+   "case_id": "EOM-3306e907",
+   "source": "REAL",
+   "truth": "NO_GRAPHIC_CHANGE",
+   "view_id": "h56",
+   "swapped": true,
+   "cf_id": null,
+   "cf_class": null,
+   "classes": [
+    "block_moved",
+    "rotated_page"
+   ],
+   "label_confidence": "medium",
+   "discipline": "EOM",
+   "armA": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "error": null,
+    "n_interior": 0,
+    "max_len": 0.0,
+    "tokens": 0.5,
+    "sim": 1.0
+   },
+   "armB": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "conf": "high",
+    "what": "схема размещения фрагмента идентична, другой масштаб",
+    "tokens": 5009.9
+   },
+   "armC": {
+    "verdict": "NO_GRAPHIC_CHANGE",
+    "vision_calls": 0,
+    "vision_tokens": 0.0,
+    "tokens": 0.5,
+    "named": [],
+    "gate_records": 0,
+    "prefiltered": 0
+   },
+   "change_bbox_pt": null,
+   "expected_changed_objects": 0
+  }
+ ]
+}
