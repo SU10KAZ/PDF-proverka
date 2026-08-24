@@ -5559,16 +5559,36 @@
                             <div class="sc-sheet-repair__summary">
                                 <span class="sc-sheet-repair__icon" aria-hidden="true">✓</span>
                                 <strong>
-                                    Автоматически исправлено сопоставление:
+                                    {{ scActiveSheetLinkRepairIsContent
+                                        ? 'Автоматически исправлено по содержанию:'
+                                        : 'Автоматически исправлено сопоставление:' }}
                                     {{ scActiveSheetLinkRepair.changes.length }}
                                 </strong>
                                 <details>
                                     <summary>Что изменено</summary>
                                     <div v-for="change in scActiveSheetLinkRepair.changes"
-                                         :key="change.right_page" class="sc-sheet-repair__change">
-                                        <span>П: {{ change.left_page_before || '—' }} → {{ change.left_page_after }}</span>
-                                        <span>РД: {{ change.right_page }}</span>
-                                        <small>{{ change.left_title_after }} ↔ {{ change.right_title }}</small>
+                                         :key="change.right_page_after || change.right_page"
+                                         class="sc-sheet-repair__change">
+                                        <template v-if="String(change.rule || '').startsWith('CONTENT_')">
+                                            <span>П: {{ change.left_sheet }}</span>
+                                            <span>
+                                                РД: {{ change.right_sheet_before || '—' }}
+                                                → {{ change.right_sheet_after }}
+                                            </span>
+                                            <small>{{ change.left_title }} ↔ {{ change.new_right_title }}</small>
+                                            <small v-if="scSheetRepairAnchors(change)">
+                                                Совпали: {{ scSheetRepairAnchors(change) }}
+                                            </small>
+                                            <small>
+                                                Причина: {{ change.operation || change.rule }} ·
+                                                confidence {{ change.confidence }}
+                                            </small>
+                                        </template>
+                                        <template v-else>
+                                            <span>П: {{ change.left_page_before || '—' }} → {{ change.left_page_after }}</span>
+                                            <span>РД: {{ change.right_page }}</span>
+                                            <small>{{ change.left_title_after }} ↔ {{ change.right_title }}</small>
+                                        </template>
                                     </div>
                                 </details>
                             </div>

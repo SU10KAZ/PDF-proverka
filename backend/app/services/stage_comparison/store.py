@@ -852,7 +852,9 @@ def _apply_sheet_link_repair(
         return None
     links = _load_sheet_links(session_id, pair_id)
     suggestions = _load_sheet_suggestions(session_id, pair_id) or {}
-    plan = sheet_link_repair.plan_repairs(links, suggestions, problem_group_ids)
+    plan = sheet_link_repair.plan_repairs(
+        links, suggestions, problem_group_ids, source_groups=source_groups,
+    )
     if plan is None:
         return None
     artifact = _load_sheet_link_repairs(session_id, pair_id)
@@ -871,7 +873,7 @@ def _apply_sheet_link_repair(
         "id": _new_id("slr_", 12), "status": "applied",
         "created_at": now, "undone_at": None, "superseded_at": None,
         "source_signature": plan["source_signature"], "confidence": "high",
-        "reason": "stage5_sheet_purpose_conflict_with_unique_title_repair",
+        "reason": plan.get("reason") or "stage5_sheet_purpose_conflict_repair",
         "before_links": plan["before_links"], "after_links": plan["after_links"],
         "changes": plan["changes"],
         "before_snapshot": plan["before_snapshot"], "after_snapshot": after_snapshot,

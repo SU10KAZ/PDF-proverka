@@ -7,6 +7,9 @@ import pytest
 from backend.app.services.stage_comparison import paths
 from backend.app.services.stage_comparison import project_change_summary
 from backend.app.services.stage_comparison import store
+from backend.app.services.stage_comparison.sheet_content_fingerprint import (
+    build_sheet_content_fingerprint,
+)
 
 
 def write_json(path, payload):
@@ -61,6 +64,59 @@ def test_apply_persists_atomic_link_snapshot_and_audit(tmp_path, monkeypatch):
     assert recorded["before_snapshot"] == before
     assert recorded["after_snapshot"] == saved
     assert recorded["dependent_artifacts_recomputed"] is False
+    assert recorded["reason"] == "TITLE_EXACT"
+
+
+def test_apply_persists_explainable_content_repair(tmp_path, monkeypatch):
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "runtime"))
+    session_id, pair_id = "session-content", "pair-content"
+    monkeypatch.setattr(store, "_load_session_meta", lambda *_: {"ok": True})
+    monkeypatch.setattr(store, "_load_pair", lambda *_: {"id": pair_id})
+
+    def sheet(page, text):
+        return {
+            "pdf_page": page, "sheet_number": str(page), "title": None,
+            "content_fingerprint": build_sheet_content_fingerprint(text),
+        }
+
+    links = {
+        "version": 1, "pair_id": pair_id, "updated_at": "before",
+        "unlinked_left_pages": [],
+        "links": [{
+            "id": "bad", "left_pages": [1], "right_pages": [2],
+            "source": "manual", "confidence": "manual", "reason": [],
+        }],
+    }
+    suggestions = {
+        "version": 2, "pair_id": pair_id,
+        "left_sheet_index": [
+            sheet(1, "Узел стойки FHV-101. Анкер BSR-M12. Труба 80x4."),
+            sheet(2, "Схема насоса PUMP-202. Шкаф SHU-202."),
+        ],
+        "right_sheet_index": [
+            sheet(1, "Узел крепления FHV-101. Анкер BSR-M12. Труба 80x4."),
+            sheet(2, "Схема насоса PUMP-202. Шкаф SHU-202."),
+        ],
+        "suggestions": [],
+    }
+    write_json(paths.sheet_links_path(session_id, pair_id), links)
+    write_json(paths.sheet_match_suggestions_path(session_id, pair_id), suggestions)
+    groups = [{
+        "group_id": "bad",
+        "pair_precheck": {"status": project_change_summary.PAIR_REVIEW_REQUIRED},
+        "atomic_evidence": [],
+    }]
+
+    result = store._apply_sheet_link_repair(session_id, pair_id, groups)
+
+    assert result is not None
+    assert result["reason"] == "CONTENT_UNIQUE_ANCHORS"
+    assert result["changes"][0]["right_sheet_before"] == 2
+    assert result["changes"][0]["right_sheet_after"] == 1
+    assert result["changes"][0]["unique_anchors"]
+    saved = json.loads(paths.sheet_links_path(session_id, pair_id).read_text(encoding="utf-8"))
+    assert saved["links"][0]["left_pages"] == [1]
+    assert saved["links"][0]["right_pages"] == [1]
 
 
 @pytest.mark.asyncio

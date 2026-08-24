@@ -48,7 +48,7 @@ def test_repairs_one_wrong_manual_link_by_unique_exact_title():
     )
     assert result is not None
     assert pairs(result) == {(2, 1)}
-    assert result["changes"][0]["rule"] == "exact_unique_title"
+    assert result["changes"][0]["rule"] == repair.TITLE_EXACT
     assert result["after_links"][0]["source"] == "auto_repair"
 
 
@@ -86,7 +86,7 @@ def test_accepts_fuzzy_mutual_best_above_threshold():
         ["Узел крепления стойки фахверка оси 1"], [link("bad", 1, 1)], ["bad"],
     )
     assert result is not None
-    assert result["changes"][0]["rule"] == "fuzzy_mutual_unique_title"
+    assert result["changes"][0]["rule"] == repair.TITLE_MUTUAL_FUZZY
     assert result["changes"][0]["similarity"] >= repair.FUZZY_THRESHOLD
 
 

@@ -12014,6 +12014,15 @@ const app = createApp({
             const active = (scSheetLinkRepairs.value && scSheetLinkRepairs.value.active_repairs) || [];
             return active.length ? active[active.length - 1] : null;
         });
+        const scActiveSheetLinkRepairIsContent = computed(() =>
+            Boolean(scActiveSheetLinkRepair.value &&
+                (scActiveSheetLinkRepair.value.changes || []).some(change =>
+                    String(change.rule || '').startsWith('CONTENT_')
+                ))
+        );
+        function scSheetRepairAnchors(change) {
+            return (change && change.unique_anchors || []).slice(0, 6).join(', ');
+        }
         const scUnlinkedLeftPages = computed(() =>
             (scMatchState.value && scMatchState.value.links
                 && scMatchState.value.links.unlinked_left_pages) || []
@@ -16092,7 +16101,8 @@ const app = createApp({
             scRunTextDifferences, scRunTextAiReview, scRunProjectChangeSummary,
             scOpenDifferenceSource,
             scSheetLinks, scAcceptedSheetLinksReady, scSheetMapRows, scPendingSuggestedLinkRows,
-            scSheetLinkRepairs, scActiveSheetLinkRepair, scSheetLinkRepairUndoLoading,
+            scSheetLinkRepairs, scActiveSheetLinkRepair, scActiveSheetLinkRepairIsContent,
+            scSheetRepairAnchors, scSheetLinkRepairUndoLoading,
             scCurrentExplicitLinks, scCurrentRightPages, scCurrentStatus,
             scRightOptions, scUnlinkedLeftPages, scLinkSaving,
             scSheetMapCollapsed, scToggleSheetMap,

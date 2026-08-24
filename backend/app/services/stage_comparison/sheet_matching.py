@@ -9,6 +9,11 @@ from html.parser import HTMLParser
 from math import ceil
 from typing import Any
 
+from .sheet_content_fingerprint import (
+    build_sheet_content_fingerprint,
+    has_meaningful_content,
+)
+
 
 _PAGE_HREF_RE = re.compile(r"^#page-(\d+)$", re.IGNORECASE)
 _SHEET_LABEL_RE = re.compile(r"^(?:sheet|лист)\s+(.+)$", re.IGNORECASE)
@@ -17,7 +22,9 @@ _TITLE_SEPARATOR_RE = re.compile(r"\s+[\-–—]\s+")
 _DASH_RE = re.compile(r"[–—]")
 _SPACE_RE = re.compile(r"\s+")
 _MARKDOWN_PAGE_RE = re.compile(r"(?m)^##\s+Page\s+(\d+)\s*$")
-_MARKDOWN_SUMMARY_RE = re.compile(r"(?m)^\*\*Summary:\*\*\s*(.+)$", re.IGNORECASE)
+_MARKDOWN_FACT_RE = re.compile(
+    r"(?m)^\*\*(?:Summary|Entities):\*\*\s*(.+)$", re.IGNORECASE,
+)
 _FRACTIONAL_SHEET_RE = re.compile(r"^(\d+)\.(\d+)$")
 _EQUIPMENT_RE = re.compile(
     r"(?<![а-яa-z0-9])"
@@ -120,14 +127,28 @@ def extract_page_semantics_from_markdown(markdown: str) -> dict[int, str]:
         end = matches[index + 1].start() if index + 1 < len(matches) else len(markdown)
         body = markdown[match.end():end]
         parts: list[str] = []
-        summary_match = _MARKDOWN_SUMMARY_RE.search(body)
-        if summary_match:
-            summary = _SPACE_RE.sub(" ", summary_match.group(1)).strip()
-            if summary:
-                parts.append(summary)
+        for fact_match in _MARKDOWN_FACT_RE.finditer(body):
+            fact = _SPACE_RE.sub(" ", fact_match.group(1)).strip()
+            if fact:
+                parts.append(fact)
         if parts:
-            semantics[page] = " ".join(dict.fromkeys(parts))[:1200]
+            # This value is transient: match_sheet_indexes immediately converts
+            # it into a bounded fingerprint and does not expose the source text.
+            semantics[page] = " ".join(dict.fromkeys(parts))[:8000]
     return semantics
+
+
+def _public_sheet_index_record(record: dict[str, Any]) -> dict[str, Any]:
+    """Expose display metadata plus a compact fingerprint, never page text."""
+    public = {key: value for key, value in record.items() if not key.startswith("_")}
+    semantic_text = str(record.get("_semantic_text") or "")
+    if semantic_text:
+        fingerprint = build_sheet_content_fingerprint(
+            semantic_text, title=str(record.get("title") or ""),
+        )
+        if has_meaningful_content(fingerprint):
+            public["content_fingerprint"] = fingerprint
+    return public
 
 
 def placeholder_sheet_index(page_count: int) -> list[dict[str, Any]]:
@@ -808,14 +829,8 @@ def match_sheet_indexes(
 
     return {
         "status": "ok",
-        "left_sheet_index": [
-            {key: value for key, value in record.items() if not key.startswith("_")}
-            for record in left_sheet_index
-        ],
-        "right_sheet_index": [
-            {key: value for key, value in record.items() if not key.startswith("_")}
-            for record in right_sheet_index
-        ],
+        "left_sheet_index": [_public_sheet_index_record(record) for record in left_sheet_index],
+        "right_sheet_index": [_public_sheet_index_record(record) for record in right_sheet_index],
         "suggestions": suggestions,
         "unmatched_left_pages": sorted(
             int(record["pdf_page"]) for record in left_sheet_index

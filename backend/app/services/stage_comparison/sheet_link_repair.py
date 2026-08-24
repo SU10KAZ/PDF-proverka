@@ -1,9 +1,10 @@
 """High-confidence, deterministic repair of wrong one-to-one sheet links.
 
 The planner is deliberately narrower than the ordinary sheet matcher.  It is
-only allowed to touch links that Stage 5 has already rejected by sheet purpose,
-and it only accepts unique title identity or a very strong mutual fuzzy match.
-No PDF pixels, OCR retry, embeddings or model calls are involved here.
+only allowed to touch links that Stage 5 has already rejected by sheet purpose.
+Stage 5.1 title proof remains authoritative; Stage 5.2 adds explainable content
+proof from compact existing-text fingerprints.  No PDF pixels, OCR retry,
+embeddings or model calls are involved here.
 """
 from __future__ import annotations
 
@@ -15,11 +16,15 @@ from collections import Counter
 from difflib import SequenceMatcher
 from typing import Any
 
+from . import content_sheet_link_repair
+
 
 VERSION = 1
 KIND = "stage_comparison_sheet_link_repairs"
 FUZZY_THRESHOLD = 0.94
 FUZZY_MARGIN = 0.02
+TITLE_EXACT = "TITLE_EXACT"
+TITLE_MUTUAL_FUZZY = "TITLE_MUTUAL_FUZZY"
 
 _TYPE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("single_line", re.compile(r"однолинейн")),
@@ -121,7 +126,7 @@ def _candidate_for_right(
     if len(exact) == 1 and left_counts[right_title] == 1 and right_counts[right_title] == 1:
         return {
             "left_page": exact[0], "right_page": right_page,
-            "rule": "exact_unique_title", "similarity": 1.0,
+            "rule": TITLE_EXACT, "similarity": 1.0,
         }
     fuzzy = _fuzzy_candidate(right, left_records, right_records)
     if fuzzy is None:
@@ -129,12 +134,13 @@ def _candidate_for_right(
     left_page, score = fuzzy
     return {
         "left_page": left_page, "right_page": right_page,
-        "rule": "fuzzy_mutual_unique_title", "similarity": round(score, 6),
+        "rule": TITLE_MUTUAL_FUZZY, "similarity": round(score, 6),
     }
 
 
 def source_signature(
     links_payload: dict[str, Any], suggestions: dict[str, Any], problem_group_ids: set[str],
+    source_groups: list[dict[str, Any]] | None = None,
 ) -> str:
     source = {
         "version": VERSION,
@@ -147,12 +153,30 @@ def source_signature(
         "left_sheet_index": suggestions.get("left_sheet_index") or [],
         "right_sheet_index": suggestions.get("right_sheet_index") or [],
         "problem_group_ids": sorted(problem_group_ids),
+        "cross_sheet_evidence": [
+            {
+                "group_id": str(group.get("group_id") or ""),
+                "source_group_sha256": str(group.get("source_group_sha256") or ""),
+                "evidence": [
+                    {
+                        "evidence_id": str(item.get("evidence_id") or ""),
+                        "source_status": str(item.get("source_status") or ""),
+                        "right_pages": list(item.get("right_pages") or []),
+                    }
+                    for item in group.get("atomic_evidence") or []
+                    if "FOUND_ON_OTHER_SHEET" in str(item.get("source_status") or "").upper()
+                    or "FOUND_ON_OTHER_SHEET" in str(item.get("reason") or "").upper()
+                ],
+            }
+            for group in source_groups or []
+            if str(group.get("group_id") or "") in problem_group_ids
+        ],
     }
     encoded = json.dumps(source, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(encoded.encode()).hexdigest()
 
 
-def plan_repairs(
+def _plan_title_repairs(
     links_payload: dict[str, Any], suggestions: dict[str, Any], problem_group_ids: set[str],
 ) -> dict[str, Any] | None:
     """Return an atomic replacement payload or ``None`` when proof is insufficient."""
@@ -291,9 +315,34 @@ def plan_repairs(
     }
     return {
         "source_signature": source_signature(links_payload, suggestions, problem_group_ids),
+        "reason": (
+            TITLE_EXACT
+            if all(change["rule"] == TITLE_EXACT for change in changes)
+            else TITLE_MUTUAL_FUZZY
+        ),
         "confidence": "high", "before_links": before_links, "after_links": after_links,
         "changes": changes, "before_snapshot": links_payload, "after_snapshot": after_payload,
     }
+
+
+def plan_repairs(
+    links_payload: dict[str, Any], suggestions: dict[str, Any], problem_group_ids: set[str],
+    *, source_groups: list[dict[str, Any]] | None = None,
+) -> dict[str, Any] | None:
+    """Prefer Stage 5.1 title proof, then try conservative Stage 5.2 content proof."""
+    title_plan = _plan_title_repairs(links_payload, suggestions, problem_group_ids)
+    if title_plan is not None:
+        return title_plan
+    signature = source_signature(
+        links_payload, suggestions, problem_group_ids, source_groups,
+    )
+    return content_sheet_link_repair.plan_content_repairs(
+        links_payload,
+        suggestions,
+        problem_group_ids,
+        source_groups=source_groups,
+        source_signature=signature,
+    )
 
 
 def empty_artifact(pair_id: str) -> dict[str, Any]:
@@ -309,5 +358,6 @@ def public_view(payload: dict[str, Any] | None) -> dict[str, Any]:
 
 __all__ = [
     "FUZZY_MARGIN", "FUZZY_THRESHOLD", "KIND", "VERSION", "empty_artifact",
-    "normalize_title", "plan_repairs", "public_view", "source_signature",
+    "TITLE_EXACT", "TITLE_MUTUAL_FUZZY", "normalize_title", "plan_repairs",
+    "public_view", "source_signature",
 ]

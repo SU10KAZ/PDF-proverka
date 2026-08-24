@@ -54,4 +54,12 @@ describe('Stage 5 project change summary', () => {
     expect(app).toContain('data.sheet_link_repair_applied');
     expect(app).toContain("label: 'Исправлено автоматически'");
   });
+
+  it('explains content-based repairs with anchors while reusing the same undo', () => {
+    expect(html).toContain('Автоматически исправлено по содержанию:');
+    expect(html).toContain('Совпали: {{ scSheetRepairAnchors(change) }}');
+    expect(html).toContain('Причина: {{ change.operation || change.rule }}');
+    expect(html).toContain('confidence {{ change.confidence }}');
+    expect(app).toContain("String(change.rule || '').startsWith('CONTENT_')");
+  });
 });
