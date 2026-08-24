@@ -34,12 +34,39 @@ def test_gate_good_graph_passes():
     g = evaluate_vectograf_gate(_graph())
     assert g["use"] is True
     assert g["reasons"] == []
+    assert g["extraction_ok"] is True
+    assert g["structure_ready"] is True
+    assert g["structure"]["metrics"]["enough_devices"] is True
+    assert g["structure"]["metrics"]["enough_feeders"] is True
+    assert g["structure"]["metrics"]["enough_anchors"] is True
 
 
 def test_gate_few_feeders_rejected():
     g = evaluate_vectograf_gate(_graph(feeders_total=3, active=3))
     assert g["use"] is False
     assert any("мало линий" in r for r in g["reasons"])
+    assert g["extraction_ok"] is True
+    assert g["structure_ready"] is False
+    assert g["reason"]
+
+
+def test_extraction_and_structure_gates_are_independent():
+    graph = _graph()
+    graph["quality_gates"] = {
+        "extraction": {
+            "extraction_ok": False,
+            "reason": "no_words_inside_block",
+            "reasons": ["no_words_inside_block"],
+            "metrics": {"coordinates_valid": True, "words_inside_block": 0},
+        }
+    }
+
+    gate = evaluate_vectograf_gate(graph)
+
+    assert gate["use"] is False
+    assert gate["extraction_ok"] is False
+    assert gate["structure_ready"] is True
+    assert gate["reason"] == "извлечение: no_words_inside_block"
 
 
 def test_gate_bad_physics_rejected():

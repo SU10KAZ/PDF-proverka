@@ -39,6 +39,7 @@ from .singleline_graph_geometry import (
     evaluate_vectograf_gate,
     render_graph_etalon_markdown,
 )
+from .vector_evidence import _visualize_words
 from .block_profile_registry import load_prepared_package, make_package
 from backend.app.pipeline.stages.block_context.reference_catalog import load_reference_rules
 
@@ -537,7 +538,7 @@ def _extract_block(pdf_path: Path, dg: dict, block_id: str):
                     continue
                 page = doc[pi]
                 pw, ph = float(page.rect.width), float(page.rect.height)
-                words = page.get_text("words")
+                words = _visualize_words(page, page.get_text("words"))
                 poly = b.get("polygon_points_norm")
                 bbox = b.get("coords_norm")
                 clipped = (
@@ -598,7 +599,7 @@ def vector_text_block_index(
                     continue
                 page = doc[pi]
                 pw, ph = float(page.rect.width), float(page.rect.height)
-                words = page.get_text("words")
+                words = _visualize_words(page, page.get_text("words"))
                 page_number = p.get("page")
                 if page_number is None:
                     page_number = (pi or 0) + 1
@@ -702,6 +703,7 @@ def resolve_block_package(
         if ex is None:
             return make_package(block_id=block_id, page=page, source_kind="block_not_found", user_text=None)
         page_text, block_text, bbox, poly, page_pdf = ex
+        prepared_page_index = page_pdf - 1
         head = f"# Блок {block_id} | страница PDF {page or page_pdf}\n\n"
         discipline_hint = _discipline_hint(output_dir)
         allows = lambda code: discipline_hint in (None, code)
@@ -835,7 +837,9 @@ def resolve_block_package(
             graph = None
             try:
                 graph = build_singleline_graph(
-                    pdf, page_text, panel_hint=panel_hint, bbox_norm=bbox, polygon_norm=poly
+                    pdf, page_text, panel_hint=panel_hint, bbox_norm=bbox,
+                    polygon_norm=poly, page_index=prepared_page_index,
+                    block_id=str(block_id),
                 )
             except Exception:
                 graph = None

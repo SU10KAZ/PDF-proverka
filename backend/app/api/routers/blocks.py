@@ -613,7 +613,10 @@ def _block_from_result_json(version_dir: Path, block_id: str) -> dict:
     for pg in rj.get("pages", []):
         for b in (pg.get("blocks") or []):
             if _match(b):
-                return b
+                prepared = dict(b)
+                if prepared.get("page_index") is None:
+                    prepared["page_index"] = pg.get("page_index")
+                return prepared
     for b in (rj.get("blocks") or []):
         if _match(b):
             return b
@@ -771,7 +774,8 @@ async def get_block_llm_text(
                 ph = (structured_graph or {}).get("panel") or "ВРУ"
                 singleline_graph = build_singleline_graph(
                     pdf, vector_text, panel_hint=ph, bbox_norm=rblock.get("coords_norm"),
-                    polygon_norm=rblock.get("polygon_points_norm"))
+                    polygon_norm=rblock.get("polygon_points_norm"),
+                    page_index=rblock.get("page_index"), block_id=str(block_id))
     except Exception:
         singleline_graph = None
 
@@ -1313,9 +1317,12 @@ async def get_block_region_image(
         raise HTTPException(404, "Нет данных для рендера области блока")
     doc = fitz.open(str(pdf))
     try:
-        pidx = _find_page_index(doc, vector_text)
+        prepared_page_index = rblock.get("page_index")
+        pidx = int(prepared_page_index) if prepared_page_index is not None else None
         if pidx is None:
-            pidx = int(rblock.get("page_index") or 0)
+            pidx = _find_page_index(doc, vector_text)
+        if pidx is None:
+            pidx = 0
         pg = doc[pidx]
         W, H = pg.rect.width, pg.rect.height
         clip = fitz.Rect(cn[0] * W, cn[1] * H, cn[2] * W, cn[3] * H)

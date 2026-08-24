@@ -1,7 +1,7 @@
 """singleline_graph_geometry — полный граф однолинейной схемы (топология из геометрии PDF).
 
 Восстанавливает граф ввод→панели(РПn)→отходящие линии по чертежу:
-- находит правильную PDF-страницу блока (page_index из result.json НЕ совпадает с PDF — баг нумерации);
+- берёт PDF-страницу из prepared metadata блока; для старых вызовов сохраняет поиск по токенам;
 - кластеризует токены чертежа по X-колонкам (каждая колонка = отходящая линия);
 - внутри панели привязка QF↔код — по ГЕОМЕТРИИ КОЛОНКИ (offset-corrected nearest column,
   `_bind_codes_columnwise`): код ставится в ТУ QF, в чьей x-колонке он реально лежит. QF без
@@ -12,7 +12,7 @@
 - метаданные листа (расчёты панелей, таблица ТТ, примечания, служебные элементы, дерево питания)
   извлекаются из текста страницы и собираются в полный граф.
 
-build_singleline_graph(pdf_path, vector_text, *, panel_hint) -> dict | None
+build_singleline_graph(pdf_path, vector_text, *, panel_hint, page_index=None) -> dict | None
 render_graph_for_prompt(graph)       — компактный текст для промпта Stage 02.
 render_graph_etalon_markdown(graph)  — полный Markdown в формате эталона (8 разделов).
 Возвращает None, если это не однолинейная feeder-схема или PDF/страница недоступны. fail-soft.
@@ -29,6 +29,16 @@ from typing import Optional
 from backend.app.pipeline.stages.block_grounding.singleline_structurer import structure_singleline_text
 from backend.app.pipeline.stages.block_grounding.profiled_graph_localization import (
     ru_edge_type, ru_node_type, ru_state,
+)
+from backend.app.pipeline.stages.block_grounding.vector_evidence import (
+    _clip_words_to_bbox,
+    _clip_words_to_polygon,
+    _convex_hull,
+    _median,
+    _near,
+    _near_xy,
+    _point_in_polygon,
+    extract_vector_evidence,
 )
 
 _PANEL = {"1": "РП1", "2": "РП2", "3": "РП3", "4": "РП4 (АВР)", "5": "РП5"}
@@ -108,130 +118,6 @@ def _filter_text_lines_to_region(text, region_words, *, thr=0.6):
             kept.append(line)
     result = "\n".join(kept)
     return result if result.strip() else text
-
-
-@functools.lru_cache(maxsize=1)
-def _catalog_clip_margin() -> float:
-    try:
-        from backend.app.pipeline.stages.block_context.reference_catalog import (
-            load_reference_rules,
-        )
-        scope = load_reference_rules().get("text_scope") or {}
-        return max(0.0, float(scope.get("outside_margin", 0.0)))
-    except (OSError, RuntimeError, TypeError, ValueError):
-        return 0.0
-
-
-def _clip_words_to_bbox(words, bbox_norm, page_w, page_h, *, margin=None):
-    """Оставить только слова, чей ЦЕНТР попадает в область выделения блока (coords_norm,
-    page-normalized [x0,y0,x1,y1]). Защищает геометрию Вектографа от чужого текста листа
-    (соседняя схема / таблица / штамп), который ``get_text("words")`` отдаёт со ВСЕЙ страницы.
-
-    Граница строгая по умолчанию: внешний запас нельзя применять к смысловому тексту,
-    иначе подпись соседнего блока начинает считаться частью текущего. При отсутствующей
-    или повреждённой области возвращается пустой список — безопаснее честно признать,
-    что текст блока не определён, чем передать модели весь текст страницы.
-    """
-    if not bbox_norm or len(bbox_norm) < 4 or not page_w or not page_h:
-        return []
-    try:
-        x0, y0, x1, y1 = (float(bbox_norm[0]), float(bbox_norm[1]),
-                          float(bbox_norm[2]), float(bbox_norm[3]))
-    except (TypeError, ValueError):
-        return []
-    if not (x1 > x0 and y1 > y0):
-        return []
-    try:
-        margin = _catalog_clip_margin() if margin is None else max(0.0, float(margin or 0.0))
-    except (TypeError, ValueError):
-        return []
-    x0 -= margin; y0 -= margin; x1 += margin; y1 += margin
-    kept = []
-    for w in words:
-        try:
-            cx = ((float(w[0]) + float(w[2])) / 2.0) / page_w
-            cy = ((float(w[1]) + float(w[3])) / 2.0) / page_h
-        except (TypeError, ValueError, ZeroDivisionError):
-            continue
-        if x0 <= cx <= x1 and y0 <= cy <= y1:
-            kept.append(w)
-    return kept
-
-
-def _point_in_polygon(x, y, poly) -> bool:
-    """Точка (x, y) внутри полигона (список (x, y)-вершин). Ray casting (even-odd)."""
-    n = len(poly)
-    inside = False
-    j = n - 1
-    for i in range(n):
-        xi, yi = poly[i]
-        xj, yj = poly[j]
-        if ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / ((yj - yi) or 1e-12) + xi):
-            inside = not inside
-        j = i
-    return inside
-
-
-def _clip_words_to_polygon(words, polygon_norm, page_w, page_h):
-    """Оставить только слова, чей ЦЕНТР попадает в ПОЛИГОН выделения блока (polygon_points_norm,
-    page-normalized список [x, y]-вершин). Точнее прямоугольника: у полигональных блоков (L/ступень)
-    осевой bbox захватывает чужой контент в «вырезах» контура — полигон его отсекает
-    (замер ВРУ-2.1: −550 слов таблицы ТТ вне контура при сохранении всех 70 QF схемы).
-
-    Как и прямоугольный клип, работает fail-closed: битый полигон или отсутствие
-    попаданий дают пустой список, а не текст всей страницы.
-    """
-    if not polygon_norm or len(polygon_norm) < 3 or not page_w or not page_h:
-        return []
-    try:
-        poly = [(float(p[0]), float(p[1])) for p in polygon_norm if len(p) >= 2]
-    except (TypeError, ValueError, IndexError):
-        return []
-    if len(poly) < 3:
-        return []
-    kept = []
-    for w in words:
-        try:
-            cx = ((float(w[0]) + float(w[2])) / 2.0) / page_w
-            cy = ((float(w[1]) + float(w[3])) / 2.0) / page_h
-        except (TypeError, ValueError, ZeroDivisionError):
-            continue
-        if _point_in_polygon(cx, cy, poly):
-            kept.append(w)
-    return kept
-
-
-def _convex_hull(points):
-    """Выпуклая оболочка (monotone chain). Плотно облегает точки, без самопересечений."""
-    pts = sorted(set((round(x, 2), round(y, 2)) for x, y in points))
-    if len(pts) <= 2:
-        return pts
-
-    def cross(o, a, b):
-        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
-
-    lower = []
-    for p in pts:
-        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
-            lower.pop()
-        lower.append(p)
-    upper = []
-    for p in reversed(pts):
-        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
-            upper.pop()
-        upper.append(p)
-    return lower[:-1] + upper[:-1]
-
-
-def _near(qx, qy, arr, dx, dymin, dymax):
-    c = sorted((abs(x - qx), y, t) for x, y, t in arr if abs(x - qx) < dx and dymin < (y - qy) < dymax)
-    return c[0][2] if c else None
-
-
-def _near_xy(qx, qy, arr, dx, dymin, dymax):
-    """Как _near, но возвращает (x, y, text) ближайшего токена (нужны координаты строки)."""
-    c = sorted((abs(x - qx), y, x, t) for x, y, t in arr if abs(x - qx) < dx and dymin < (y - qy) < dymax)
-    return (c[0][2], c[0][1], c[0][3]) if c else None
 
 
 def _pole_for_breaker(qx, qy, ba_xy, poles, dx=44):
@@ -632,14 +518,6 @@ def _extract_additional_devices(qx, qy, nx, words) -> list:
             seen.add(s)
             out.append(s)
     return out
-
-
-def _median(xs):
-    s = sorted(xs)
-    n = len(s)
-    if n == 0:
-        return 0.0
-    return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2
 
 
 def _bind_codes_columnwise(pq, pc):
@@ -1461,9 +1339,75 @@ def _singleline_semantic_facts(words, page_w:float, page_h:float)->list[dict]:
     return facts
 
 
+def evaluate_structure_quality(graph: Optional[dict]) -> dict:
+    """Classic structure readiness, independent from PDF extraction quality.
+
+    Thresholds intentionally match the legacy Vectograf gate.  Named metrics
+    expose whether devices, feeders and anchors are actually present without
+    collapsing extraction and structure into one score.
+    """
+    if not graph:
+        return {
+            "structure_ready": False,
+            "reason": "classic_graph_not_built",
+            "reasons": ["граф не построен (не feeder-однолинейка)"],
+            "metrics": {
+                "enough_devices": False,
+                "enough_feeders": False,
+                "enough_anchors": False,
+            },
+        }
+    validation = graph.get("validation") or {}
+    feeders_total = graph.get("feeders_total") or 0
+    active = validation.get("active") or 0
+    ambiguous = validation.get("ambiguous") or 0
+    bind_rate = active / max(active + ambiguous, 1)
+    conflict_rate = (validation.get("geometry_conflicts") or 0) / max(
+        feeders_total, 1
+    )
+    power_rate = validation.get("power_rate")
+    devices_total = (
+        validation.get("qf_total_unique")
+        or validation.get("qf_total_occurrences")
+        or feeders_total
+    )
+    anchors_total = (
+        validation.get("codes_total_occurrences")
+        or validation.get("codes_total")
+        or active + ambiguous
+    )
+    reasons = []
+    if feeders_total < 5:
+        reasons.append(f"мало линий ({feeders_total} < 5)")
+    if power_rate is not None and power_rate < 0.8:
+        reasons.append(f"физика P {power_rate} < 0.8")
+    if bind_rate < 0.85:
+        reasons.append(f"честная привязка {bind_rate:.0%} < 85%")
+    if conflict_rate > 0.15:
+        reasons.append(f"геом. конфликтов {conflict_rate:.0%} > 15%")
+    return {
+        "structure_ready": not reasons,
+        "reason": reasons[0] if reasons else None,
+        "reasons": reasons,
+        "metrics": {
+            "enough_devices": devices_total >= 3,
+            "enough_feeders": feeders_total >= 5,
+            "enough_anchors": anchors_total >= 1,
+            "devices_total": devices_total,
+            "feeders_total": feeders_total,
+            "anchors_total": anchors_total,
+            "bind_rate": round(bind_rate, 3),
+            "power_rate": power_rate,
+            "conflict_rate": round(conflict_rate, 3),
+        },
+    }
+
+
 def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ",
                            bbox_norm: Optional[list] = None,
-                           polygon_norm: Optional[list] = None) -> Optional[dict]:
+                           polygon_norm: Optional[list] = None,
+                           page_index: Optional[int] = None,
+                           block_id: str = "") -> Optional[dict]:
     """Построить граф однолинейной схемы. None — если не feeder-схема / нет геометрии.
 
     Геометрия строится ТОЛЬКО по словам внутри области выделения блока (если включён
@@ -1477,53 +1421,44 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         return None
     params = {f["circuit_code"]: f for s in base["bus_sections"] for f in s["feeders"]}
 
-    try:
-        import fitz
-        doc = fitz.open(str(pdf_path))
-    except Exception:
+    evidence = extract_vector_evidence(
+        pdf_path,
+        vector_text=vector_text,
+        page_index=page_index,
+        block_id=block_id,
+        bbox_norm=bbox_norm,
+        polygon_norm=polygon_norm,
+        fallback_page_finder=_find_page_index,
+        clip_enabled=_bbox_clip_enabled(),
+        # Classic topology consumes word columns only.  The common layer keeps
+        # drawing extraction available for future dialects without adding a
+        # full-page path-flattening cost to the established classic path.
+        include_drawings=False,
+    )
+    if not evidence.extraction_ok:
         return None
-    try:
-        pidx = _find_page_index(doc, vector_text)
-        if pidx is None:
-            return None
-        pg = doc[pidx]
-        words = pg.get_text("words")
-        # Геометрию (words с координатами) режем по области выделения блока (bbox_norm), чтобы
-        # чужой текст листа — соседняя схема / таблица / штамп — НЕ протекал в топологию. Раньше
-        # брали слова со ВСЕЙ страницы (координат в vector_text нет). Полигон точнее прямоугольника
-        # (отсекает чужой контент в «вырезах» контура). Клип fail-closed: повреждённая
-        # область не должна превращаться в полный текст листа.
-        page_full_text = vector_text
-        if _bbox_clip_enabled():
-            _pw, _ph = float(pg.rect.width), float(pg.rect.height)
-            if polygon_norm:
-                words = _clip_words_to_polygon(words, polygon_norm, _pw, _ph)
-            elif bbox_norm:
-                words = _clip_words_to_bbox(words, bbox_norm, _pw, _ph)
-            # Правило «вектограф = только текст внутри полигона»: ограничиваем и ТЕКСТ-разделы, не
-            # только геометрию. Фильтруем строки vector_text по принадлежности области блока
-            # (VECTOGRAF_POLYGON_TEXT_ONLY_ENABLED). Примечания/ТТ в «вырезе» контура уходят (у них
-            # СВОИ text-блоки + MD → Stage 01, не теряются), фидеры и расчёты панелей (внутри контура)
-            # остаются; фидеры ПЕРЕ-ПАРСИМ из отфильтрованного текста. fail-soft: если фильтр рушит
-            # фидеры (<3) — оставляем исходный текст/base (прежнее поведение).
-            if (polygon_norm or bbox_norm) and _polygon_text_only_enabled():
-                region_text = _filter_text_lines_to_region(vector_text, words)
-                _base2 = structure_singleline_text(region_text)
-                if _base2 and _base2.get("feeder_total", 0) >= 3:
-                    base = _base2
-                    params = {f["circuit_code"]: f for s in base["bus_sections"] for f in s["feeders"]}
-                    page_full_text = region_text
-        # Текст-разделы (питание, панели-расчёты, связи, служебные элементы, ТТ, примечания, заголовок)
-        # берём из текста блока (полигон-отфильтрованного, если правило включено). Фолбэк — весь лист.
-        page_full_text = page_full_text or pg.get_text()
-        page_w, page_h = float(pg.rect.width), float(pg.rect.height)
-    except Exception:
-        return None
-    finally:
-        try:
-            doc.close()
-        except Exception:
-            pass
+    pidx = evidence.page_index
+    words = evidence.visual_words
+    page_w, page_h = evidence.page_size
+    page_full_text = vector_text
+    if (
+        _bbox_clip_enabled()
+        and (polygon_norm or bbox_norm)
+        and _polygon_text_only_enabled()
+    ):
+        # Сохраняем порядок строк pdfplumber: перестройка текста по visual Y ломает
+        # классические формульные строки. Меняется только пул слов, теперь уже в
+        # единой visual coordinate system и после точного клипа блока.
+        region_text = _filter_text_lines_to_region(vector_text, words)
+        base_in_region = structure_singleline_text(region_text)
+        if base_in_region and base_in_region.get("feeder_total", 0) >= 3:
+            base = base_in_region
+            params = {
+                feeder["circuit_code"]: feeder
+                for section in base["bus_sections"]
+                for feeder in section["feeders"]
+            }
+            page_full_text = region_text
 
     def coll(pat, pred=None):
         return [(w[0], w[1], w[4]) for w in words if re.match(pat, w[4]) and (pred is None or pred(w[4]))]
@@ -2029,7 +1964,7 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
                           or missing_panel_warnings or duplicate_param_codes
                           or duplicate_bindings) else "needs_review"
 
-    return {
+    graph = {
         "panel": panel_hint,
         "type": "single_line_calc_diagram",
         "source_page_index": pidx,
@@ -2084,6 +2019,20 @@ def build_singleline_graph(pdf_path: Path, vector_text: str, *, panel_hint: str 
         "review": review_items,
         "feeders_flat": feeders,
     }
+    structure_gate = evaluate_structure_quality(graph)
+    graph["quality_gates"] = {
+        "extraction": evidence.extraction_gate,
+        "structure": structure_gate,
+    }
+    graph["provenance"] = {
+        "dialect": "classic_singleline",
+        "extraction": dict(evidence.provenance),
+        "gate": {
+            "passed": bool(evidence.extraction_ok and structure_gate["structure_ready"]),
+            "reasons": list(evidence.reasons) + list(structure_gate["reasons"]),
+        },
+    }
+    return graph
 
 
 # ── Rich-renderer: полный Markdown графа в формате эталона ──────────────────────────────
@@ -2452,7 +2401,8 @@ _STAGE02_TASK = ("## Задача:\nПосмотри на изображение
 def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str = "ВРУ",
                             rich: bool = False, block_id: str = "", page=None,
                             bbox_norm: Optional[list] = None,
-                            polygon_norm: Optional[list] = None) -> Optional[str]:
+                            polygon_norm: Optional[list] = None,
+                            page_index: Optional[int] = None) -> Optional[str]:
     """Собрать user_text Stage 02 для СХЕМНОГО блока. None — если блок не однолинейная схема.
 
     ЕДИНЫЙ вариант — гибрид `render_graph_for_prompt` (курируемый: ввод+ТТ без
@@ -2465,7 +2415,8 @@ def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str
     чем честный «нет графа».
     """
     graph = build_singleline_graph(pdf_path, vector_text, panel_hint=panel_hint,
-                                   bbox_norm=bbox_norm, polygon_norm=polygon_norm)
+                                   bbox_norm=bbox_norm, polygon_norm=polygon_norm,
+                                   page_index=page_index, block_id=block_id)
     if not graph:
         return None
     if not evaluate_vectograf_gate(graph)["use"]:
@@ -2476,9 +2427,11 @@ def build_singleline_prompt(pdf_path: Path, vector_text: str, *, panel_hint: str
 
 @functools.lru_cache(maxsize=8)
 def _result_blocks_vector_index(rp_str: str, _mtime: float) -> dict:
-    """block_id → {"text": pdfplumber_text, "bbox_norm": coords_norm|None} из result.json
-    (кэш по пути+mtime, чтобы не читать 2МБ на блок). bbox_norm нужен для клипа геометрии
-    Вектографа по области выделения блока (см. ``_clip_words_to_bbox``)."""
+    """Prepared metadata блока из result.json, включая authoritative page_index.
+
+    Кэш по пути+mtime не даёт перечитывать result.json на каждом блоке.  bbox/polygon
+    используются common evidence layer для fail-closed клипа геометрии.
+    """
     try:
         rj = json.loads(Path(rp_str).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -2490,7 +2443,12 @@ def _result_blocks_vector_index(rp_str: str, _mtime: float) -> dict:
             if bid:
                 cn = b.get("coords_norm")
                 pn = b.get("polygon_points_norm")
+                prepared_page_index = b.get("page_index")
+                if prepared_page_index is None:
+                    prepared_page_index = pg.get("page_index")
                 idx[bid] = {"text": b.get("pdfplumber_text") or "",
+                            "block_id": bid,
+                            "page_index": prepared_page_index,
                             "bbox_norm": list(cn) if isinstance(cn, (list, tuple)) and len(cn) >= 4 else None,
                             "polygon_norm": list(pn) if isinstance(pn, (list, tuple)) and len(pn) >= 3 else None}
     return idx
@@ -2509,36 +2467,73 @@ def evaluate_vectograf_gate(graph: Optional[dict]) -> dict:
 
     Возвращает {"use": bool, "reasons": [...], "warnings": [...], "metrics": {...}}.
     """
+    structure_gate = evaluate_structure_quality(graph)
     if not graph:
-        return {"use": False, "reasons": ["граф не построен (не feeder-однолинейка)"],
-                "warnings": [], "metrics": {}}
-    v = graph.get("validation") or {}
-    ft = graph.get("feeders_total") or 0
-    act = v.get("active") or 0
-    amb = v.get("ambiguous") or 0
-    bind = act / max(act + amb, 1)
-    conf_rate = (v.get("geometry_conflicts") or 0) / max(ft, 1)
-    power_rate = v.get("power_rate")
-    cov = (v.get("codes_linked_occurrences") or 0) / max(v.get("codes_total_occurrences") or 1, 1)
-    metrics = {"feeders_total": ft, "bind_rate": round(bind, 3),
-               "power_rate": power_rate, "conflict_rate": round(conf_rate, 3),
-               "coverage": round(cov, 3), "confidence": graph.get("confidence"),
-               "status": graph.get("status")}
+        return {
+            "use": False,
+            "extraction_ok": False,
+            "structure_ready": False,
+            "reason": structure_gate["reason"],
+            "reasons": structure_gate["reasons"],
+            "warnings": [],
+            "metrics": {},
+            "extraction": {
+                "extraction_ok": False,
+                "reason": "graph_not_built",
+                "reasons": ["graph_not_built"],
+                "metrics": {},
+            },
+            "structure": structure_gate,
+            "dialect": "classic_singleline",
+        }
+    validation = graph.get("validation") or {}
+    feeders_total = graph.get("feeders_total") or 0
+    coverage = (validation.get("codes_linked_occurrences") or 0) / max(
+        validation.get("codes_total_occurrences") or 1, 1
+    )
+    structure_metrics = structure_gate["metrics"]
+    metrics = {
+        "feeders_total": feeders_total,
+        "bind_rate": structure_metrics["bind_rate"],
+        "power_rate": structure_metrics["power_rate"],
+        "conflict_rate": structure_metrics["conflict_rate"],
+        "coverage": round(coverage, 3),
+        "confidence": graph.get("confidence"),
+        "status": graph.get("status"),
+    }
+    extraction_gate = ((graph.get("quality_gates") or {}).get("extraction") or {
+        # Backward-compatible callers may evaluate graph dicts produced before
+        # the evidence layer (or small unit-test fixtures).  Their extraction
+        # was already completed, so do not invent a new rejection.
+        "extraction_ok": True,
+        "reason": None,
+        "reasons": [],
+        "metrics": {},
+    })
     reasons = []
-    if ft < 5:
-        reasons.append(f"мало линий ({ft} < 5)")
-    if power_rate is not None and power_rate < 0.8:
-        reasons.append(f"физика P {power_rate} < 0.8")
-    if bind < 0.85:
-        reasons.append(f"честная привязка {bind:.0%} < 85%")
-    if conf_rate > 0.15:
-        reasons.append(f"геом. конфликтов {conf_rate:.0%} > 15%")
+    if not extraction_gate.get("extraction_ok"):
+        reasons.extend(
+            f"извлечение: {reason}"
+            for reason in (extraction_gate.get("reasons") or ["unknown_failure"])
+        )
+    reasons.extend(structure_gate["reasons"])
     warnings = []
-    if cov < 0.6:
-        warnings.append(f"низкое покрытие кодов {cov:.0%} (дубли токенов/чужие панели?)")
+    if coverage < 0.6:
+        warnings.append(f"низкое покрытие кодов {coverage:.0%} (дубли токенов/чужие панели?)")
     if graph.get("status") == "needs_review":
         warnings.append("состояние: требуется проверка")
-    return {"use": not reasons, "reasons": reasons, "warnings": warnings, "metrics": metrics}
+    return {
+        "use": not reasons,
+        "extraction_ok": bool(extraction_gate.get("extraction_ok")),
+        "structure_ready": structure_gate["structure_ready"],
+        "reason": reasons[0] if reasons else None,
+        "reasons": reasons,
+        "warnings": warnings,
+        "metrics": metrics,
+        "extraction": extraction_gate,
+        "structure": structure_gate,
+        "dialect": "classic_singleline",
+    }
 
 
 def vectograf_gate_for_block(version_dir, block_id: str, *, panel_hint: str = "ВРУ"):
@@ -2563,7 +2558,9 @@ def vectograf_gate_for_block(version_dir, block_id: str, *, panel_hint: str = "�
             return evaluate_vectograf_gate(None), None
         graph = build_singleline_graph(pdf, vector_text, panel_hint=panel_hint,
                                        bbox_norm=entry.get("bbox_norm"),
-                                       polygon_norm=entry.get("polygon_norm"))
+                                       polygon_norm=entry.get("polygon_norm"),
+                                       page_index=entry.get("page_index"),
+                                       block_id=entry.get("block_id") or str(block_id))
         return evaluate_vectograf_gate(graph), graph
     except Exception:
         return {"use": False, "reasons": ["исключение при построении графа"],
@@ -2595,4 +2592,5 @@ def resolve_singleline_prompt(version_dir, block_id: str, page, *, rich: bool) -
         return None
     return build_singleline_prompt(pdf, vector_text, rich=rich, block_id=str(block_id), page=page,
                                    bbox_norm=entry.get("bbox_norm"),
-                                   polygon_norm=entry.get("polygon_norm"))
+                                   polygon_norm=entry.get("polygon_norm"),
+                                   page_index=entry.get("page_index"))

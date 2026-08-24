@@ -80,6 +80,25 @@ def test_real_eom_separate_layout_passes_vectograf_gate():
     assert any(line.startswith("РП4 (ПЭСПЗ) ->") for line in graph["hierarchy"]["tree_lines"])
     assert not any(line.startswith("РП4 (АВР) ->") for line in graph["hierarchy"]["tree_lines"])
     assert evaluate_vectograf_gate(graph)["use"] is True
+    assert graph["provenance"]["dialect"] == "classic_singleline"
+    assert graph["provenance"]["extraction"]["coordinate_system"] == "visual"
+    assert graph["provenance"]["gate"]["passed"] is True
+
+    # Prepared metadata changes only additive provenance.  The established
+    # classic graph remains byte-for-byte equal to the legacy page-finder path.
+    prepared = build_singleline_graph(
+        EOM_ALT_PDF,
+        vector_text,
+        panel_hint="ВРУ2",
+        page_index=graph["source_page_index"],
+        block_id="prepared-classic",
+    )
+    legacy_core = {key: value for key, value in graph.items() if key != "provenance"}
+    prepared_core = {
+        key: value for key, value in prepared.items() if key != "provenance"
+    }
+    assert prepared_core == legacy_core
+    assert prepared["provenance"]["extraction"]["page_index_source"] == "prepared_block"
 
 
 EOM_CORPUS_EXPECTED = [
