@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graphic_change_ledger.schema.json",
+  "title": "GraphicChangeLedger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "comparison_scope", "route", "mode", "policy", "quality", "changes", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "graphic-change-ledger.v1"},
+    "comparison_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left_blocks", "right_blocks"],
+      "properties": {
+        "left_blocks": {"type": "array", "items": {"$ref": "#/$defs/block"}},
+        "right_blocks": {"type": "array", "items": {"$ref": "#/$defs/block"}}
+      }
+    },
+    "route": {"enum": ["MODE_1_APPLICABLE", "MODE_2_REQUIRED", "VISION_REQUIRED", "NO_GRAPHIC_COMPARISON"]},
+    "mode": {"enum": ["MODE_1", null]},
+    "policy": {"type": "object"},
+    "quality": {"type": "object"},
+    "changes": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+    "diagnostics": {"type": "object"}
+  },
+  "$defs": {
+    "bbox": {
+      "type": "array",
+      "prefixItems": [{"type": "number"}, {"type": "number"}, {"type": "number"}, {"type": "number"}],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["block_id", "page_index", "block_type", "bbox_visual_pt"],
+      "properties": {
+        "block_id": {"type": "string", "minLength": 1},
+        "page_index": {"type": "integer", "minimum": 0},
+        "block_type": {"type": "string"},
+        "bbox_visual_pt": {"$ref": "#/$defs/bbox"},
+        "polygon_visual_pt": {"type": ["array", "null"], "items": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2}},
+        "source": {"type": "object"}
+      }
+    },
+    "region": {
+      "type": ["object", "null"],
+      "required": ["block_id", "page_index", "bbox_visual_pt"],
+      "properties": {
+        "block_id": {"type": "string"},
+        "page_index": {"type": "integer"},
+        "bbox_visual_pt": {"$ref": "#/$defs/bbox"},
+        "ink_pt": {"type": "number"}
+      }
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["change_id", "type", "left_region", "right_region", "evidence", "address_hints", "confidence", "provenance"],
+      "properties": {
+        "change_id": {"type": "string", "minLength": 1},
+        "type": {"enum": ["ADDED_GRAPHIC", "REMOVED_GRAPHIC", "GEOMETRY_CHANGED", "UNCERTAIN_GRAPHIC_CHANGE"]},
+        "left_region": {"$ref": "#/$defs/region"},
+        "right_region": {"$ref": "#/$defs/region"},
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+        "address_hints": {"type": "array", "items": {"type": "object"}},
+        "confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+        "provenance": {"type": "array", "minItems": 1, "items": {"enum": ["VECTOR", "VISION", "BOTH"]}}
+      }
+    }
+  }
+}

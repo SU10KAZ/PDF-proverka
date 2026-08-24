@@ -7,7 +7,7 @@ import logging
 from fastapi import APIRouter, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from backend.app.services.stage_comparison import objects as objects_mod
 from backend.app.services.stage_comparison import stage_upload as stage_upload_mod
@@ -51,6 +51,15 @@ class SheetLinkRequest(BaseModel):
 class SaveSheetLinksRequest(BaseModel):
     links: list[SheetLinkRequest] = Field(default_factory=list)
     unlinked_left_pages: list[int] = Field(default_factory=list)
+
+
+class GraphicComparisonRequest(BaseModel):
+    """References to upstream-prepared blocks; no inline bbox override exists."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    left_block_ids: list[str] = Field(default_factory=list)
+    right_block_ids: list[str] = Field(default_factory=list)
 
 
 @router.get("/objects")
@@ -271,6 +280,42 @@ async def get_text_exclusions(session_id: str, pair_id: str):
     except KeyError as exc:
         raise HTTPException(404, str(exc)) from exc
     return payload or {"version": 1, "pair_id": pair_id, "status": "not_started"}
+
+
+@router.post("/sessions/{session_id}/pairs/{pair_id}/graphic-comparison")
+async def rebuild_graphic_comparison(
+    session_id: str, pair_id: str, request: GraphicComparisonRequest,
+):
+    try:
+        return await run_in_threadpool(
+            store.run_graphic_comparison,
+            session_id,
+            pair_id,
+            request.left_block_ids,
+            request.right_block_ids,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
+        raise HTTPException(400, f"Не удалось сравнить графические блоки: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("production graphic comparison failed")
+        raise HTTPException(500, f"Ошибка сравнения графики: {exc}") from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/graphic-comparison")
+async def get_graphic_comparison(session_id: str, pair_id: str):
+    try:
+        payload = await run_in_threadpool(
+            store.get_graphic_change_ledger_state, session_id, pair_id,
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return payload or {
+        "schema_version": "graphic-change-ledger.v1",
+        "status": "not_started",
+        "pair_id": pair_id,
+    }
 
 
 @router.post("/sessions/{session_id}/pairs/{pair_id}/text-differences")

@@ -23,6 +23,9 @@ from . import text_comparison
 from . import text_differences
 from . import text_ai_reviewer
 from . import project_change_summary
+from .graphic_comparison import compare_prepared_blocks, validate_ledger
+from .graphic_comparison.policy import EXPERIMENTALLY_CALIBRATED_V1
+from backend.app.services.common.blocks_json import load_blocks_json
 from backend.app.services.llm.codex_runner import run_codex_json_messages
 
 
@@ -375,6 +378,7 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "text_ai_review": get_text_ai_review_state(session_id, pair_id),
         "text_final_comparison": get_text_final_comparison_state(session_id, pair_id),
         "project_change_summary": get_project_change_summary_state(session_id, pair_id),
+        "graphic_change_ledger": get_graphic_change_ledger_state(session_id, pair_id),
     }
 
 
@@ -1498,6 +1502,128 @@ def _resolve_pair_pdf(session_id: str, pair_id: str, side: str) -> Path:
     return pdf_path
 
 
+def _graphic_document_paths(document: dict[str, Any]) -> tuple[Path, Path]:
+    pdf_path = Path(str(document.get("pdf_path") or ""))
+    return pdf_path, pdf_path.parent / "blocks.json"
+
+
+def _graphic_source_signature(
+    pair: dict[str, Any], left_block_ids: list[str], right_block_ids: list[str],
+) -> str:
+    source: dict[str, Any] = {
+        "algorithm": "production_graphic_router_g1",
+        "policy": EXPERIMENTALLY_CALIBRATED_V1.version,
+        "left_block_ids": list(left_block_ids),
+        "right_block_ids": list(right_block_ids),
+        "documents": {},
+    }
+    for side in ("left", "right"):
+        pdf_path, blocks_path = _graphic_document_paths(pair.get(side) or {})
+        entries = {}
+        for kind, path in (("pdf", pdf_path), ("blocks", blocks_path)):
+            try:
+                stat = path.stat()
+                entries[kind] = [str(path.resolve()), stat.st_size, stat.st_mtime_ns]
+            except OSError:
+                entries[kind] = [str(path), None, None]
+        source["documents"][side] = entries
+    raw = json.dumps(source, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _prepared_block_records(
+    document: dict[str, Any], block_ids: list[str], side: str,
+) -> tuple[Path, Path, list[dict[str, Any]]]:
+    pdf_path, blocks_path = _graphic_document_paths(document)
+    if not pdf_path.is_file():
+        raise FileNotFoundError(pdf_path)
+    if not blocks_path.is_file():
+        raise FileNotFoundError(blocks_path)
+    payload = load_blocks_json(blocks_path)
+    if payload is None:
+        raise ValueError(f"invalid_{side}_blocks_json")
+    by_id = {
+        str(record.get("block_id") or record.get("id") or ""): record
+        for record in payload["blocks"]
+        if isinstance(record, dict)
+    }
+    if len(block_ids) != len(set(block_ids)):
+        raise ValueError(f"duplicate_{side}_block_id")
+    missing = [block_id for block_id in block_ids if block_id not in by_id]
+    if missing:
+        raise ValueError(f"unknown_{side}_block_id:{','.join(missing[:5])}")
+    return pdf_path, blocks_path, [by_id[block_id] for block_id in block_ids]
+
+
+def get_graphic_change_ledger_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.graphic_change_ledger_path(session_id, pair_id))
+    if not isinstance(payload, dict):
+        return None
+    try:
+        validate_ledger(payload)
+    except ValueError:
+        return None
+    scope = payload.get("comparison_scope") or {}
+    left_ids = [str(item.get("block_id") or "") for item in scope.get("left_blocks") or []]
+    right_ids = [str(item.get("block_id") or "") for item in scope.get("right_blocks") or []]
+    current_signature = _graphic_source_signature(pair, left_ids, right_ids)
+    public = json.loads(json.dumps(payload, ensure_ascii=False))
+    public.setdefault("diagnostics", {})["stale"] = (
+        (payload.get("diagnostics") or {}).get("source_signature") != current_signature
+    )
+    return validate_ledger(public)
+
+
+def run_graphic_comparison(
+    session_id: str,
+    pair_id: str,
+    left_block_ids: list[str],
+    right_block_ids: list[str],
+) -> dict:
+    """Persist an independent GraphicChangeLedger from real prepared blocks."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        left_pdf, left_blocks_path, left_records = _prepared_block_records(
+            pair.get("left") or {}, list(left_block_ids), "left",
+        )
+        right_pdf, right_blocks_path, right_records = _prepared_block_records(
+            pair.get("right") or {}, list(right_block_ids), "right",
+        )
+        signature = _graphic_source_signature(pair, left_block_ids, right_block_ids)
+        existing = _read_json(paths_mod.graphic_change_ledger_path(session_id, pair_id))
+        if isinstance(existing, dict):
+            try:
+                validate_ledger(existing)
+                if (existing.get("diagnostics") or {}).get("source_signature") == signature:
+                    return existing
+            except ValueError:
+                pass
+
+    ledger = compare_prepared_blocks(
+        left_pdf_path=left_pdf,
+        right_pdf_path=right_pdf,
+        left_records=left_records,
+        right_records=right_records,
+        left_source_artifact=left_blocks_path.name,
+        right_source_artifact=right_blocks_path.name,
+    )
+    ledger["diagnostics"]["source_signature"] = signature
+    validate_ledger(ledger)
+    with _lock:
+        latest_pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if latest_pair is None:
+            raise KeyError("pair_not_found")
+        if _graphic_source_signature(latest_pair, left_block_ids, right_block_ids) != signature:
+            raise ValueError("graphic_sources_changed_during_comparison")
+        _atomic_write_json(paths_mod.graphic_change_ledger_path(session_id, pair_id), ledger)
+    return ledger
+
+
 def render_pdf_page_svg(session_id: str, pair_id: str, side: str, page: int) -> bytes:
     if page < 1:
         raise ValueError("page must be >= 1")
@@ -2050,6 +2176,8 @@ __all__ = [
     "get_text_final_comparison_state",
     "get_project_change_summary_state",
     "run_project_change_summary",
+    "get_graphic_change_ledger_state",
+    "run_graphic_comparison",
     "run_text_ai_review",
     "render_pdf_page_svg",
     "page_svg_payload",
