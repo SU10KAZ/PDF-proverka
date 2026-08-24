@@ -1,0 +1,6276 @@
+{
+  "schema_version": "system-graph-comparison.v1",
+  "status": "CHANGED",
+  "left_graph": {
+    "schema_version": "system-graph.v1",
+    "profile_id": "dense_sectioned_board",
+    "block_id": "blk_039909ec039649a1b8209f059c95167b",
+    "page_index": 0,
+    "validation": {
+      "valid": true,
+      "errors": []
+    },
+    "quality": {
+      "backbone_recovered": true,
+      "source_confidence": 0.95,
+      "bus_confidence": 1.0,
+      "section_confidence": 0.92,
+      "device_coverage": 1.0,
+      "feeder_coverage": 1.0,
+      "identity_coverage": 0.867,
+      "unknown_nodes": 6,
+      "unknown_edges": 6,
+      "sections": 2,
+      "inputs": 2,
+      "section_devices": 1,
+      "outgoing_devices": 30,
+      "section_label_conflicts": 2
+    }
+  },
+  "right_graph": {
+    "schema_version": "system-graph.v1",
+    "profile_id": "dense_sectioned_board",
+    "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+    "page_index": 0,
+    "validation": {
+      "valid": true,
+      "errors": []
+    },
+    "quality": {
+      "backbone_recovered": true,
+      "source_confidence": 0.95,
+      "bus_confidence": 1.0,
+      "section_confidence": 0.92,
+      "device_coverage": 1.0,
+      "feeder_coverage": 1.0,
+      "identity_coverage": 0.926,
+      "unknown_nodes": 2,
+      "unknown_edges": 6,
+      "sections": 2,
+      "inputs": 2,
+      "section_devices": 1,
+      "outgoing_devices": 27,
+      "section_label_conflicts": 0
+    }
+  },
+  "backbone": {
+    "status": "BACKBONE_PRESERVED",
+    "left": {
+      "counts": {
+        "sources": 2,
+        "inputs": 2,
+        "sections": 2,
+        "section_devices": 1,
+        "source_to_section_paths": 2,
+        "tied_section_endpoints": 2
+      },
+      "node_ids": [
+        "SOURCE1",
+        "SOURCE2",
+        "INPUT1",
+        "INPUT2",
+        "BUS1",
+        "BUS2",
+        "SECTION_DEVICE:BUS1-BUS2"
+      ],
+      "edge_ids": [
+        "FEEDS:SOURCE1->SOURCE1:PATH1",
+        "FEEDS:SOURCE1:PATH1->INPUT1",
+        "FEEDS:INPUT1->BUS2",
+        "FEEDS:SOURCE2->SOURCE2:PATH1",
+        "FEEDS:SOURCE2:PATH1->INPUT2",
+        "FEEDS:INPUT2->BUS1",
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS1",
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS2"
+      ],
+      "paths": [
+        {
+          "source_id": "SOURCE2",
+          "input_id": "INPUT2",
+          "section_id": "BUS1",
+          "node_ids": [
+            "SOURCE2",
+            "SOURCE2:PATH1",
+            "INPUT2",
+            "BUS1"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE2->SOURCE2:PATH1",
+            "FEEDS:SOURCE2:PATH1->INPUT2",
+            "FEEDS:INPUT2->BUS1"
+          ]
+        },
+        {
+          "source_id": "SOURCE1",
+          "input_id": "INPUT1",
+          "section_id": "BUS2",
+          "node_ids": [
+            "SOURCE1",
+            "SOURCE1:PATH1",
+            "INPUT1",
+            "BUS2"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE1->SOURCE1:PATH1",
+            "FEEDS:SOURCE1:PATH1->INPUT1",
+            "FEEDS:INPUT1->BUS2"
+          ]
+        }
+      ],
+      "functional_signature": {
+        "sections": [
+          "SECTION#1",
+          "SECTION#2"
+        ],
+        "main_paths": [
+          "UPSTREAM_SUPPLY->SECTION#1",
+          "UPSTREAM_SUPPLY->SECTION#2"
+        ],
+        "section_ties": [
+          [
+            "SECTION#1",
+            "SECTION#2"
+          ]
+        ]
+      },
+      "confidence": 0.92,
+      "contract_valid": true
+    },
+    "right": {
+      "counts": {
+        "sources": 2,
+        "inputs": 2,
+        "sections": 2,
+        "section_devices": 1,
+        "source_to_section_paths": 2,
+        "tied_section_endpoints": 2
+      },
+      "node_ids": [
+        "SOURCE1",
+        "SOURCE2",
+        "INPUT1",
+        "INPUT2",
+        "BUS1",
+        "BUS2",
+        "SECTION_DEVICE:BUS1-BUS2"
+      ],
+      "edge_ids": [
+        "FEEDS:SOURCE1->SOURCE1:PATH1",
+        "FEEDS:SOURCE1:PATH1->INPUT1",
+        "FEEDS:INPUT1->BUS1",
+        "FEEDS:SOURCE2->SOURCE2:PATH1",
+        "FEEDS:SOURCE2:PATH1->INPUT2",
+        "FEEDS:INPUT2->BUS2",
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS1",
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS2"
+      ],
+      "paths": [
+        {
+          "source_id": "SOURCE1",
+          "input_id": "INPUT1",
+          "section_id": "BUS1",
+          "node_ids": [
+            "SOURCE1",
+            "SOURCE1:PATH1",
+            "INPUT1",
+            "BUS1"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE1->SOURCE1:PATH1",
+            "FEEDS:SOURCE1:PATH1->INPUT1",
+            "FEEDS:INPUT1->BUS1"
+          ]
+        },
+        {
+          "source_id": "SOURCE2",
+          "input_id": "INPUT2",
+          "section_id": "BUS2",
+          "node_ids": [
+            "SOURCE2",
+            "SOURCE2:PATH1",
+            "INPUT2",
+            "BUS2"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE2->SOURCE2:PATH1",
+            "FEEDS:SOURCE2:PATH1->INPUT2",
+            "FEEDS:INPUT2->BUS2"
+          ]
+        }
+      ],
+      "functional_signature": {
+        "sections": [
+          "SECTION#1",
+          "SECTION#2"
+        ],
+        "main_paths": [
+          "UPSTREAM_SUPPLY->SECTION#1",
+          "UPSTREAM_SUPPLY->SECTION#2"
+        ],
+        "section_ties": [
+          [
+            "SECTION#1",
+            "SECTION#2"
+          ]
+        ]
+      },
+      "confidence": 0.92,
+      "contract_valid": true
+    },
+    "comparison_basis": [
+      "source_count",
+      "input_count",
+      "bus_section_count",
+      "source_to_section_paths",
+      "section_tie_connectivity"
+    ],
+    "geometry_used": false
+  },
+  "functional_groups": {
+    "status": "FUNCTIONS_UNCERTAIN",
+    "preserved": [
+      {
+        "function": "COMPENSATION_GROUP",
+        "sections": [
+          "SECTION#1",
+          "SECTION#2"
+        ],
+        "labels_ignored": true
+      },
+      {
+        "function": "METERING_GROUP",
+        "sections": [
+          "SECTION#1",
+          "SECTION#2"
+        ],
+        "labels_ignored": true
+      },
+      {
+        "function": "SERVICE_GROUP",
+        "sections": [
+          "SECTION#1",
+          "SECTION#2"
+        ],
+        "labels_ignored": true
+      }
+    ],
+    "changed": [],
+    "uncertain": [
+      "RESERVE"
+    ],
+    "functional_zones_preserved": true,
+    "left": {
+      "groups": {
+        "METERING_GROUP": [
+          {
+            "node_id": "METERING_GROUP:BUS1",
+            "section": "SECTION#1",
+            "confidence": 0.95
+          },
+          {
+            "node_id": "METERING_GROUP:BUS2",
+            "section": "SECTION#2",
+            "confidence": 0.95
+          }
+        ],
+        "COMPENSATION_GROUP": [
+          {
+            "node_id": "COMPENSATION_GROUP:BUS1",
+            "section": "SECTION#1",
+            "confidence": 0.7
+          },
+          {
+            "node_id": "COMPENSATION_GROUP:BUS2",
+            "section": "SECTION#2",
+            "confidence": 0.7
+          }
+        ],
+        "SERVICE_GROUP": [
+          {
+            "node_id": "SERVICE_GROUP:BUS1",
+            "section": "SECTION#1",
+            "confidence": 0.75
+          },
+          {
+            "node_id": "SERVICE_GROUP:BUS2",
+            "section": "SECTION#2",
+            "confidence": 0.75
+          }
+        ]
+      },
+      "reserve": {
+        "count": 2,
+        "node_ids": [
+          "OUT:1QF11@1294",
+          "OUT:2QF11@2597"
+        ],
+        "confidence": 0.35
+      },
+      "functional_zones": [
+        "SECTION#1",
+        "SECTION#2"
+      ]
+    },
+    "right": {
+      "groups": {
+        "METERING_GROUP": [
+          {
+            "node_id": "METERING_GROUP:BUS1",
+            "section": "SECTION#1",
+            "confidence": 0.95
+          },
+          {
+            "node_id": "METERING_GROUP:BUS2",
+            "section": "SECTION#2",
+            "confidence": 0.65
+          }
+        ],
+        "COMPENSATION_GROUP": [
+          {
+            "node_id": "COMPENSATION_GROUP:BUS1",
+            "section": "SECTION#1",
+            "confidence": 0.6
+          },
+          {
+            "node_id": "COMPENSATION_GROUP:BUS2",
+            "section": "SECTION#2",
+            "confidence": 0.6
+          }
+        ],
+        "SERVICE_GROUP": [
+          {
+            "node_id": "SERVICE_GROUP:BUS1",
+            "section": "SECTION#1",
+            "confidence": 0.7
+          },
+          {
+            "node_id": "SERVICE_GROUP:BUS2",
+            "section": "SECTION#2",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "reserve": {
+        "count": 0,
+        "node_ids": [],
+        "confidence": 1.0
+      },
+      "functional_zones": [
+        "SECTION#1",
+        "SECTION#2"
+      ]
+    },
+    "geometry_used": false
+  },
+  "matching": {
+    "matcher_version": "graph-identity-matcher-v1",
+    "matches": [
+      {
+        "left_id": "BUS1",
+        "right_id": "BUS1",
+        "confidence": 0.995,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SECTION#1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "BUS_SECTION"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "BUS_SECTION:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "РП1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.035,
+            "similarity": 0.875
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "BUS2",
+        "right_id": "BUS2",
+        "confidence": 0.995,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SECTION#2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "BUS_SECTION"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "BUS_SECTION:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "РП2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.035,
+            "similarity": 0.875
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "COMPENSATION_GROUP:BUS1",
+        "right_id": "COMPENSATION_GROUP:BUS1",
+        "confidence": 0.648,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "COMPENSATION-GROUP:BUS1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "COMPENSATION_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "COMPENSATION_GROUP:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "COMPENSATION-GROUP:BUS1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "COMPENSATION_GROUP:BUS2",
+        "right_id": "COMPENSATION_GROUP:BUS2",
+        "confidence": 0.648,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "COMPENSATION-GROUP:BUS2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "COMPENSATION_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "COMPENSATION_GROUP:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "COMPENSATION-GROUP:BUS2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "INPUT1",
+        "right_id": "INPUT2",
+        "confidence": 0.95,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "INPUT#BUS2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "INPUT_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "INPUT_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "QF2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "INPUT2",
+        "right_id": "INPUT1",
+        "confidence": 0.95,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "INPUT#BUS1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "INPUT_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "INPUT_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "QF1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF12@1388",
+        "right_id": "LOAD:1QF2@513",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХМ1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ХМ1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF12@1388",
+            "right_parent": "OUT:1QF2@513"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF12@2690",
+        "right_id": "LOAD:2QF11@1897",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХМ2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ХМ2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF12@2690",
+            "right_parent": "OUT:2QF11@1897"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF1@434",
+        "right_id": "LOAD:1QF6@764",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF1@434",
+            "right_parent": "OUT:1QF6@764"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF2@521",
+        "right_id": "LOAD:1QF7@845",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF2@521",
+            "right_parent": "OUT:1QF7@845"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF3@608",
+        "right_id": "LOAD:1QF5@692",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ3"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ3"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF3@608",
+            "right_parent": "OUT:1QF5@692"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF4@696",
+        "right_id": "LOAD:1QF4@608",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ4"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ4"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF4@696",
+            "right_parent": "OUT:1QF4@608"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF5@783",
+        "right_id": "LOAD:1QF8@909",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУА"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУА"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF5@783",
+            "right_parent": "OUT:1QF8@909"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF6@870",
+        "right_id": "LOAD:1QF9@979",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ИТП"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ-ИТП"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF6@870",
+            "right_parent": "OUT:1QF9@979"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF7@958",
+        "right_id": "LOAD:1QF10@1049",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХЦ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF7@958",
+            "right_parent": "OUT:1QF10@1049"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:1QF8@1045",
+        "right_id": "LOAD:1QF11@1106",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "АПТ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#1"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:1QF8@1045",
+            "right_parent": "OUT:1QF11@1106"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:2QF2@1823",
+        "right_id": "LOAD:2QF4@1492",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:2QF2@1823",
+            "right_parent": "OUT:2QF4@1492"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:2QF3@1910",
+        "right_id": "LOAD:2QF3@1434",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ3"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:2QF3@1910",
+            "right_parent": "OUT:2QF3@1434"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:2QF4@1998",
+        "right_id": "LOAD:2QF1@1299",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ4"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:2QF4@1998",
+            "right_parent": "OUT:2QF1@1299"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:2QF5@2085",
+        "right_id": "LOAD:2QF5@1550",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУА"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:2QF5@2085",
+            "right_parent": "OUT:2QF5@1550"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:2QF6@2174",
+        "right_id": "LOAD:2QF6@1607",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ИТП"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:2QF6@2174",
+            "right_parent": "OUT:2QF6@1607"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:2QF7@2260",
+        "right_id": "LOAD:2QF7@1665",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХЦ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:2QF7@2260",
+            "right_parent": "OUT:2QF7@1665"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "LOAD:2QF8@2348",
+        "right_id": "LOAD:2QF8@1723",
+        "confidence": 0.72,
+        "method": "matched_parent_relation",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "АПТ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "LOAD"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "LOAD:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          },
+          {
+            "signal": "matched_parent_relation",
+            "weight": 0.0,
+            "left_parent": "OUT:2QF8@2348",
+            "right_parent": "OUT:2QF8@1723"
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "METERING_GROUP:BUS1",
+        "right_id": "METERING_GROUP:BUS1",
+        "confidence": 0.95,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "METERING-GROUP:BUS1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "METERING_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "METERING_GROUP:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "METERING-GROUP:BUS1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "METERING_GROUP:BUS2",
+        "right_id": "METERING_GROUP:BUS2",
+        "confidence": 0.786,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "METERING-GROUP:BUS2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "METERING_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "METERING_GROUP:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "METERING-GROUP:BUS2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF12@1388",
+        "right_id": "OUT:1QF2@513",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХМ1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ХМ1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF12@2690",
+        "right_id": "OUT:2QF11@1897",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХМ2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ХМ2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF1@434",
+        "right_id": "OUT:1QF6@764",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF2@521",
+        "right_id": "OUT:1QF7@845",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF3@608",
+        "right_id": "OUT:1QF5@692",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ3"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ3"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF4@696",
+        "right_id": "OUT:1QF4@608",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ4"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "1QF4",
+              "ВРУ4"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF5@783",
+        "right_id": "OUT:1QF8@909",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУА"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУА"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF6@870",
+        "right_id": "OUT:1QF9@979",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ИТП"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ВРУ-ИТП"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF7@958",
+        "right_id": "OUT:1QF10@1049",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХЦ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:1QF8@1045",
+        "right_id": "OUT:1QF11@1106",
+        "confidence": 0.814,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "АПТ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#1"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:2QF2@1823",
+        "right_id": "OUT:2QF4@1492",
+        "confidence": 0.72,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:2QF3@1910",
+        "right_id": "OUT:2QF3@1434",
+        "confidence": 0.72,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ3"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "2QF3"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:2QF4@1998",
+        "right_id": "OUT:2QF1@1299",
+        "confidence": 0.72,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУ4"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:2QF5@2085",
+        "right_id": "OUT:2QF5@1550",
+        "confidence": 0.72,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ВРУА"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "2QF5"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:2QF6@2174",
+        "right_id": "OUT:2QF6@1607",
+        "confidence": 0.72,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ИТП"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "2QF6"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:2QF7@2260",
+        "right_id": "OUT:2QF7@1665",
+        "confidence": 0.72,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "ХЦ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "2QF7"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.0133,
+            "similarity": 0.667
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "OUT:2QF8@2348",
+        "right_id": "OUT:2QF8@1723",
+        "confidence": 0.72,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "АПТ"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "OUTGOING_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "OUTGOING_DEVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "2QF8"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SECTION_DEVICE:BUS1-BUS2",
+        "right_id": "SECTION_DEVICE:BUS1-BUS2",
+        "confidence": 0.92,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SECTION-TIE#BUS1-BUS2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SECTION_DEVICE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SECTION_DEVICE:SECTION#1,SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SERVICE_GROUP:BUS1",
+        "right_id": "SERVICE_GROUP:BUS1",
+        "confidence": 0.725,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SERVICE-GROUP:BUS1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SERVICE_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SERVICE_GROUP:FUNCTIONAL_SERVICE:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "SERVICE-GROUP:BUS1"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SERVICE_GROUP:BUS2",
+        "right_id": "SERVICE_GROUP:BUS2",
+        "confidence": 0.671,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SERVICE-GROUP:BUS2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SERVICE_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SERVICE_GROUP:FUNCTIONAL_SERVICE:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "SERVICE-GROUP:BUS2"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SERVICE_GROUP:FU@1576",
+        "right_id": "SERVICE_GROUP:FU1@1091",
+        "confidence": 0.7,
+        "method": "functional_role",
+        "signals": [
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SERVICE_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SERVICE_GROUP:FUSE:SECTION#1"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SOURCE1",
+        "right_id": "SOURCE2",
+        "confidence": 0.94,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SOURCE-PATH#BUS2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SOURCE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SOURCE:UPSTREAM_SUPPLY:SECTION#2"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SOURCE1:PATH1",
+        "right_id": "SOURCE2:PATH1",
+        "confidence": 0.75,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SOURCE-PATH-ELEMENT#BUS2"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SERVICE_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SERVICE_GROUP:BUSWAY:SECTION#2"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ШИНОПРОВОД"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SOURCE2",
+        "right_id": "SOURCE1",
+        "confidence": 0.94,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SOURCE-PATH#BUS1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SOURCE"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SOURCE:UPSTREAM_SUPPLY:SECTION#1"
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      },
+      {
+        "left_id": "SOURCE2:PATH1",
+        "right_id": "SOURCE1:PATH1",
+        "confidence": 0.75,
+        "method": "canonical_identity",
+        "signals": [
+          {
+            "signal": "canonical_identity",
+            "weight": 0.62,
+            "values": [
+              "SOURCE-PATH-ELEMENT#BUS1"
+            ]
+          },
+          {
+            "signal": "node_type",
+            "weight": 0.16,
+            "value": "SERVICE_GROUP"
+          },
+          {
+            "signal": "functional_role",
+            "weight": 0.1,
+            "value": "SERVICE_GROUP:BUSWAY:SECTION#1"
+          },
+          {
+            "signal": "label",
+            "weight": 0.06,
+            "values": [
+              "ШИНОПРОВОД"
+            ]
+          },
+          {
+            "signal": "relations",
+            "weight": 0.04,
+            "similarity": 1.0
+          },
+          {
+            "signal": "attributes",
+            "weight": 0.02,
+            "similarity": 1.0
+          }
+        ],
+        "geometry": {
+          "used_for_identity": false,
+          "weight": 0.0
+        }
+      }
+    ],
+    "unmatched_left": [
+      "LOAD:1QF10@1220",
+      "LOAD:1QF13@1471",
+      "LOAD:1QF15@1630",
+      "LOAD:1QF1@1736",
+      "LOAD:1QF9@1132",
+      "LOAD:2QF10@2524",
+      "LOAD:2QF13@2775",
+      "LOAD:2QF15@2952",
+      "LOAD:2QF9@2437",
+      "OUT:1QF10@1220",
+      "OUT:1QF11@1294",
+      "OUT:1QF13@1471",
+      "OUT:1QF14@1550",
+      "OUT:1QF15@1630",
+      "OUT:1QF1@1736",
+      "OUT:1QF9@1132",
+      "OUT:2QF10@2524",
+      "OUT:2QF11@2597",
+      "OUT:2QF13@2775",
+      "OUT:2QF14@2865",
+      "OUT:2QF15@2952",
+      "OUT:2QF9@2437",
+      "SERVICE_GROUP:ОПН@1488",
+      "SERVICE_GROUP:ОПН@1898",
+      "SERVICE_GROUP:УЗИП1@1472",
+      "SERVICE_GROUP:УЗИП2@1936",
+      "UNKNOWN_NODE:QF4@1477",
+      "UNKNOWN_NODE:QF5@1931",
+      "UNKNOWN_TERMINAL:1QF11@1294",
+      "UNKNOWN_TERMINAL:1QF14@1550",
+      "UNKNOWN_TERMINAL:2QF11@2597",
+      "UNKNOWN_TERMINAL:2QF14@2865"
+    ],
+    "unmatched_right": [
+      "LOAD:1QF12@1164",
+      "LOAD:1QF13@1206",
+      "LOAD:1QF1@460",
+      "LOAD:2QF12@1952",
+      "LOAD:2QF13@1999",
+      "LOAD:2QF14@2053",
+      "LOAD:2QF2@1358",
+      "LOAD:2QF9@1781",
+      "OUT:1QF12@1164",
+      "OUT:1QF13@1206",
+      "OUT:1QF1@460",
+      "OUT:1QF3@558",
+      "OUT:2QF10@1835",
+      "OUT:2QF12@1952",
+      "OUT:2QF13@1999",
+      "OUT:2QF14@2053",
+      "OUT:2QF2@1358",
+      "OUT:2QF9@1781",
+      "SERVICE_GROUP:FU2@1320",
+      "SERVICE_GROUP:ОПН@1043",
+      "SERVICE_GROUP:ОПН@1366",
+      "UNKNOWN_TERMINAL:1QF3@558",
+      "UNKNOWN_TERMINAL:2QF10@1835"
+    ],
+    "ambiguous": [
+      {
+        "left_id": "SERVICE_GROUP:ОПН@1488",
+        "right_candidates": [
+          {
+            "right_id": "SERVICE_GROUP:ОПН@1043",
+            "score": 0.38,
+            "confidence": 0.38,
+            "signals": [
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "SERVICE_GROUP"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "SERVICE_GROUP:SURGE-PROTECTION:SECTION#1"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ОПН"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "SERVICE_GROUP:ОПН@1898",
+        "right_candidates": [
+          {
+            "right_id": "SERVICE_GROUP:ОПН@1366",
+            "score": 0.38,
+            "confidence": 0.38,
+            "signals": [
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "SERVICE_GROUP"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "SERVICE_GROUP:SURGE-PROTECTION:SECTION#2"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ОПН"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "OUT:1QF10@1220",
+        "right_candidates": [
+          {
+            "right_id": "OUT:1QF1@460",
+            "score": 1.0,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ДР1-ХМ1"
+                ]
+              },
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "OUTGOING_DEVICE"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "OUTGOING_DEVICE:SECTION#1"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ДР1-ХМ1"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "LOAD:1QF10@1220",
+        "right_candidates": [
+          {
+            "right_id": "OUT:1QF1@460",
+            "score": 0.7,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ДР1-ХМ1"
+                ]
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ДР1-ХМ1"
+                ]
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          },
+          {
+            "right_id": "LOAD:1QF1@460",
+            "score": 0.38,
+            "confidence": 0.38,
+            "signals": [
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "LOAD"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "LOAD:SECTION#1"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ДР1-ХМ1"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "OUT:1QF13@1471",
+        "right_candidates": [
+          {
+            "right_id": "OUT:1QF13@1206",
+            "score": 1.0,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "OUTGOING_DEVICE"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "OUTGOING_DEVICE:SECTION#1"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "1QF13"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          },
+          {
+            "right_id": "LOAD:1QF13@1206",
+            "score": 0.64,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "LOAD:1QF13@1471",
+        "right_candidates": [
+          {
+            "right_id": "LOAD:1QF13@1206",
+            "score": 0.94,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "LOAD"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "LOAD:SECTION#1"
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          },
+          {
+            "right_id": "OUT:1QF13@1206",
+            "score": 0.64,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "OUT:2QF9@2437",
+        "right_candidates": [
+          {
+            "right_id": "OUT:2QF9@1781",
+            "score": 0.38,
+            "confidence": 0.38,
+            "signals": [
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "OUTGOING_DEVICE"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "OUTGOING_DEVICE:SECTION#2"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "2QF9"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "OUT:2QF10@2524",
+        "right_candidates": [
+          {
+            "right_id": "OUT:2QF12@1952",
+            "score": 1.0,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ДР2-ХМ2"
+                ]
+              },
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "OUTGOING_DEVICE"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "OUTGOING_DEVICE:SECTION#2"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ДР2-ХМ2"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "LOAD:2QF10@2524",
+        "right_candidates": [
+          {
+            "right_id": "OUT:2QF12@1952",
+            "score": 0.7,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ДР2-ХМ2"
+                ]
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ДР2-ХМ2"
+                ]
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          },
+          {
+            "right_id": "LOAD:2QF12@1952",
+            "score": 0.38,
+            "confidence": 0.38,
+            "signals": [
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "LOAD"
+              },
+              {
+                "signal": "functional_role",
+                "weight": 0.1,
+                "value": "LOAD:SECTION#2"
+              },
+              {
+                "signal": "label",
+                "weight": 0.06,
+                "values": [
+                  "ДР2-ХМ2"
+                ]
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "OUT:2QF13@2775",
+        "right_candidates": [
+          {
+            "right_id": "OUT:1QF13@1206",
+            "score": 0.833,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "OUTGOING_DEVICE"
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.0133,
+                "similarity": 0.667
+              }
+            ]
+          },
+          {
+            "right_id": "LOAD:1QF13@1206",
+            "score": 0.64,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "left_id": "LOAD:2QF13@2775",
+        "right_candidates": [
+          {
+            "right_id": "LOAD:1QF13@1206",
+            "score": 0.84,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "node_type",
+                "weight": 0.16,
+                "value": "LOAD"
+              },
+              {
+                "signal": "relations",
+                "weight": 0.04,
+                "similarity": 1.0
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          },
+          {
+            "right_id": "OUT:1QF13@1206",
+            "score": 0.64,
+            "confidence": 0.502,
+            "signals": [
+              {
+                "signal": "canonical_identity",
+                "weight": 0.62,
+                "values": [
+                  "ШНО"
+                ]
+              },
+              {
+                "signal": "attributes",
+                "weight": 0.02,
+                "similarity": 1.0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "metrics": {
+      "left_nodes": 82,
+      "right_nodes": 73,
+      "matched_pairs": 50,
+      "left_match_rate": 0.61,
+      "right_match_rate": 0.685,
+      "ambiguous_left_nodes": 11
+    },
+    "policy": {
+      "identity_priority": [
+        "canonical_identity",
+        "functional_role",
+        "labels",
+        "relations",
+        "attributes",
+        "geometry_diagnostic_only"
+      ],
+      "bbox_identity": false,
+      "geometry_identity_weight": 0.0,
+      "strong_match_threshold": 0.68
+    },
+    "detail_matches": [
+      {
+        "left_nodes": [
+          "SOURCE1",
+          "SOURCE1:PATH1",
+          "INPUT1",
+          "BUS2"
+        ],
+        "right_nodes": [
+          "SOURCE2",
+          "SOURCE2:PATH1",
+          "INPUT2",
+          "BUS2"
+        ],
+        "coarse_left_nodes": [
+          "SOURCE1"
+        ],
+        "expanded_right_nodes": [
+          "SOURCE2",
+          "SOURCE2:PATH1",
+          "INPUT2"
+        ],
+        "cardinality": "one_to_many",
+        "left_representation": "UPSTREAM_TP_CONNECTION",
+        "right_representation": "TRANSFORMER_EXPLICIT",
+        "match_confidence": 0.94
+      },
+      {
+        "left_nodes": [
+          "SOURCE2",
+          "SOURCE2:PATH1",
+          "INPUT2",
+          "BUS1"
+        ],
+        "right_nodes": [
+          "SOURCE1",
+          "SOURCE1:PATH1",
+          "INPUT1",
+          "BUS1"
+        ],
+        "coarse_left_nodes": [
+          "SOURCE2"
+        ],
+        "expanded_right_nodes": [
+          "SOURCE1",
+          "SOURCE1:PATH1",
+          "INPUT1"
+        ],
+        "cardinality": "one_to_many",
+        "left_representation": "UPSTREAM_TP_CONNECTION",
+        "right_representation": "TRANSFORMER_EXPLICIT",
+        "match_confidence": 0.94
+      }
+    ]
+  },
+  "changes": [
+    {
+      "change_id": "chg_5d6e7ac75c0d",
+      "type": "DETAIL_LEVEL_INCREASED",
+      "level": "A",
+      "subject": {
+        "kind": "source_path",
+        "functional_role": "SOURCE:UPSTREAM_SUPPLY:SECTION#1"
+      },
+      "summary": "Источник показан подробнее без смены функционального пути: ТП1 (UPSTREAM_TP_CONNECTION) → Т1 (TRANSFORMER_EXPLICIT).",
+      "confidence": 0.94,
+      "left_nodes": [
+        "SOURCE2",
+        "SOURCE2:PATH1",
+        "INPUT2",
+        "BUS1"
+      ],
+      "right_nodes": [
+        "SOURCE1",
+        "SOURCE1:PATH1",
+        "INPUT1",
+        "BUS1"
+      ],
+      "evidence": {
+        "left": {
+          "block_id": "blk_039909ec039649a1b8209f059c95167b",
+          "node_ids": [
+            "SOURCE2",
+            "SOURCE2:PATH1",
+            "INPUT2",
+            "BUS1"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE2->SOURCE2:PATH1",
+            "FEEDS:SOURCE2:PATH1->INPUT2",
+            "FEEDS:INPUT2->BUS1"
+          ],
+          "confidence": 0.75,
+          "source_tokens": [
+            "ТП1",
+            "Шинопровод",
+            "QF1",
+            "3200А",
+            "1QF1",
+            "1QF2",
+            "1QF3",
+            "1QF4",
+            "1QF5",
+            "1QF6",
+            "1QF7",
+            "1QF8",
+            "1QF9",
+            "1QF10",
+            "1QF11",
+            "1QF12",
+            "1QF13",
+            "1QF14",
+            "1QF15",
+            "РП1"
+          ],
+          "nodes": [
+            {
+              "node_id": "SOURCE2",
+              "node_type": "SOURCE",
+              "canonical_identity": "SOURCE_PATH#BUS1",
+              "label": "ТП1",
+              "confidence": 0.95,
+              "source_tokens": [
+                "ТП1"
+              ]
+            },
+            {
+              "node_id": "SOURCE2:PATH1",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": "SOURCE_PATH_ELEMENT#BUS1",
+              "label": "Шинопровод",
+              "confidence": 0.75,
+              "source_tokens": [
+                "Шинопровод"
+              ]
+            },
+            {
+              "node_id": "INPUT2",
+              "node_type": "INPUT_DEVICE",
+              "canonical_identity": "INPUT#BUS1",
+              "label": "QF1",
+              "confidence": 0.95,
+              "source_tokens": [
+                "QF1",
+                "3200А"
+              ]
+            },
+            {
+              "node_id": "BUS1",
+              "node_type": "BUS_SECTION",
+              "canonical_identity": "SECTION#1",
+              "label": "РП1",
+              "confidence": 1.0,
+              "source_tokens": [
+                "1QF1",
+                "1QF2",
+                "1QF3",
+                "1QF4",
+                "1QF5",
+                "1QF6",
+                "1QF7",
+                "1QF8",
+                "1QF9",
+                "1QF10",
+                "1QF11",
+                "1QF12",
+                "1QF13",
+                "1QF14",
+                "1QF15",
+                "РП1"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "edge_id": "FEEDS:SOURCE2->SOURCE2:PATH1",
+              "edge_type": "FEEDS",
+              "from": "SOURCE2",
+              "to": "SOURCE2:PATH1",
+              "confidence": 0.75,
+              "source_tokens": [
+                "ТП1",
+                "Шинопровод"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:SOURCE2:PATH1->INPUT2",
+              "edge_type": "FEEDS",
+              "from": "SOURCE2:PATH1",
+              "to": "INPUT2",
+              "confidence": 0.9,
+              "source_tokens": [
+                "Шинопровод",
+                "QF1",
+                "3200А"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:INPUT2->BUS1",
+              "edge_type": "FEEDS",
+              "from": "INPUT2",
+              "to": "BUS1",
+              "confidence": 0.9,
+              "source_tokens": [
+                "QF1",
+                "3200А",
+                "1QF1",
+                "1QF2",
+                "1QF3",
+                "1QF4",
+                "1QF5",
+                "1QF6",
+                "1QF7",
+                "1QF8",
+                "1QF9",
+                "1QF10",
+                "1QF11",
+                "1QF12",
+                "1QF13",
+                "1QF14",
+                "1QF15",
+                "РП1"
+              ]
+            }
+          ]
+        },
+        "right": {
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "node_ids": [
+            "SOURCE1",
+            "SOURCE1:PATH1",
+            "INPUT1",
+            "BUS1"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE1->SOURCE1:PATH1",
+            "FEEDS:SOURCE1:PATH1->INPUT1",
+            "FEEDS:INPUT1->BUS1"
+          ],
+          "confidence": 0.75,
+          "source_tokens": [
+            "Т1",
+            "Шинопровод",
+            "QF1",
+            "2500А",
+            "1QF1",
+            "1QF2",
+            "1QF3",
+            "1QF4",
+            "1QF5",
+            "1QF6",
+            "1QF7",
+            "1QF8",
+            "1QF9",
+            "1QF10",
+            "1QF11",
+            "1QF12",
+            "1QF13",
+            "РП1"
+          ],
+          "nodes": [
+            {
+              "node_id": "SOURCE1",
+              "node_type": "SOURCE",
+              "canonical_identity": "SOURCE_PATH#BUS1",
+              "label": "Т1",
+              "confidence": 0.95,
+              "source_tokens": [
+                "Т1"
+              ]
+            },
+            {
+              "node_id": "SOURCE1:PATH1",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": "SOURCE_PATH_ELEMENT#BUS1",
+              "label": "Шинопровод",
+              "confidence": 0.75,
+              "source_tokens": [
+                "Шинопровод"
+              ]
+            },
+            {
+              "node_id": "INPUT1",
+              "node_type": "INPUT_DEVICE",
+              "canonical_identity": "INPUT#BUS1",
+              "label": "QF1",
+              "confidence": 0.95,
+              "source_tokens": [
+                "QF1",
+                "2500А"
+              ]
+            },
+            {
+              "node_id": "BUS1",
+              "node_type": "BUS_SECTION",
+              "canonical_identity": "SECTION#1",
+              "label": "РП1",
+              "confidence": 1.0,
+              "source_tokens": [
+                "1QF1",
+                "1QF2",
+                "1QF3",
+                "1QF4",
+                "1QF5",
+                "1QF6",
+                "1QF7",
+                "1QF8",
+                "1QF9",
+                "1QF10",
+                "1QF11",
+                "1QF12",
+                "1QF13",
+                "РП1"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "edge_id": "FEEDS:SOURCE1->SOURCE1:PATH1",
+              "edge_type": "FEEDS",
+              "from": "SOURCE1",
+              "to": "SOURCE1:PATH1",
+              "confidence": 0.75,
+              "source_tokens": [
+                "Т1",
+                "Шинопровод"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:SOURCE1:PATH1->INPUT1",
+              "edge_type": "FEEDS",
+              "from": "SOURCE1:PATH1",
+              "to": "INPUT1",
+              "confidence": 0.9,
+              "source_tokens": [
+                "Шинопровод",
+                "QF1",
+                "2500А"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:INPUT1->BUS1",
+              "edge_type": "FEEDS",
+              "from": "INPUT1",
+              "to": "BUS1",
+              "confidence": 0.9,
+              "source_tokens": [
+                "QF1",
+                "2500А",
+                "1QF1",
+                "1QF2",
+                "1QF3",
+                "1QF4",
+                "1QF5",
+                "1QF6",
+                "1QF7",
+                "1QF8",
+                "1QF9",
+                "1QF10",
+                "1QF11",
+                "1QF12",
+                "1QF13",
+                "РП1"
+              ]
+            }
+          ]
+        },
+        "reason": {
+          "classification": "coarse_node_to_expanded_subgraph",
+          "left_representation_rank": 1,
+          "right_representation_rank": 2,
+          "not_node_added": true
+        }
+      }
+    },
+    {
+      "change_id": "chg_da7da89fba3c",
+      "type": "DETAIL_LEVEL_INCREASED",
+      "level": "A",
+      "subject": {
+        "kind": "source_path",
+        "functional_role": "SOURCE:UPSTREAM_SUPPLY:SECTION#2"
+      },
+      "summary": "Источник показан подробнее без смены функционального пути: ТП2 (UPSTREAM_TP_CONNECTION) → Т2 (TRANSFORMER_EXPLICIT).",
+      "confidence": 0.94,
+      "left_nodes": [
+        "SOURCE1",
+        "SOURCE1:PATH1",
+        "INPUT1",
+        "BUS2"
+      ],
+      "right_nodes": [
+        "SOURCE2",
+        "SOURCE2:PATH1",
+        "INPUT2",
+        "BUS2"
+      ],
+      "evidence": {
+        "left": {
+          "block_id": "blk_039909ec039649a1b8209f059c95167b",
+          "node_ids": [
+            "SOURCE1",
+            "SOURCE1:PATH1",
+            "INPUT1",
+            "BUS2"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE1->SOURCE1:PATH1",
+            "FEEDS:SOURCE1:PATH1->INPUT1",
+            "FEEDS:INPUT1->BUS2"
+          ],
+          "confidence": 0.75,
+          "source_tokens": [
+            "ТП2",
+            "Шинопровод",
+            "QF2",
+            "3200А",
+            "1QF1",
+            "2QF2",
+            "2QF3",
+            "2QF4",
+            "2QF5",
+            "2QF6",
+            "2QF7",
+            "2QF8",
+            "2QF9",
+            "2QF10",
+            "2QF11",
+            "1QF12",
+            "2QF13",
+            "2QF14",
+            "2QF15",
+            "РП2"
+          ],
+          "nodes": [
+            {
+              "node_id": "SOURCE1",
+              "node_type": "SOURCE",
+              "canonical_identity": "SOURCE_PATH#BUS2",
+              "label": "ТП2",
+              "confidence": 0.95,
+              "source_tokens": [
+                "ТП2"
+              ]
+            },
+            {
+              "node_id": "SOURCE1:PATH1",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": "SOURCE_PATH_ELEMENT#BUS2",
+              "label": "Шинопровод",
+              "confidence": 0.75,
+              "source_tokens": [
+                "Шинопровод"
+              ]
+            },
+            {
+              "node_id": "INPUT1",
+              "node_type": "INPUT_DEVICE",
+              "canonical_identity": "INPUT#BUS2",
+              "label": "QF2",
+              "confidence": 0.95,
+              "source_tokens": [
+                "QF2",
+                "3200А"
+              ]
+            },
+            {
+              "node_id": "BUS2",
+              "node_type": "BUS_SECTION",
+              "canonical_identity": "SECTION#2",
+              "label": "РП2",
+              "confidence": 1.0,
+              "source_tokens": [
+                "1QF1",
+                "2QF2",
+                "2QF3",
+                "2QF4",
+                "2QF5",
+                "2QF6",
+                "2QF7",
+                "2QF8",
+                "2QF9",
+                "2QF10",
+                "2QF11",
+                "1QF12",
+                "2QF13",
+                "2QF14",
+                "2QF15",
+                "РП2"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "edge_id": "FEEDS:SOURCE1->SOURCE1:PATH1",
+              "edge_type": "FEEDS",
+              "from": "SOURCE1",
+              "to": "SOURCE1:PATH1",
+              "confidence": 0.75,
+              "source_tokens": [
+                "ТП2",
+                "Шинопровод"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:SOURCE1:PATH1->INPUT1",
+              "edge_type": "FEEDS",
+              "from": "SOURCE1:PATH1",
+              "to": "INPUT1",
+              "confidence": 0.9,
+              "source_tokens": [
+                "Шинопровод",
+                "QF2",
+                "3200А"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:INPUT1->BUS2",
+              "edge_type": "FEEDS",
+              "from": "INPUT1",
+              "to": "BUS2",
+              "confidence": 0.9,
+              "source_tokens": [
+                "QF2",
+                "3200А",
+                "1QF1",
+                "2QF2",
+                "2QF3",
+                "2QF4",
+                "2QF5",
+                "2QF6",
+                "2QF7",
+                "2QF8",
+                "2QF9",
+                "2QF10",
+                "2QF11",
+                "1QF12",
+                "2QF13",
+                "2QF14",
+                "2QF15",
+                "РП2"
+              ]
+            }
+          ]
+        },
+        "right": {
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "node_ids": [
+            "SOURCE2",
+            "SOURCE2:PATH1",
+            "INPUT2",
+            "BUS2"
+          ],
+          "edge_ids": [
+            "FEEDS:SOURCE2->SOURCE2:PATH1",
+            "FEEDS:SOURCE2:PATH1->INPUT2",
+            "FEEDS:INPUT2->BUS2"
+          ],
+          "confidence": 0.75,
+          "source_tokens": [
+            "Т2",
+            "Шинопровод",
+            "QF2",
+            "2500А",
+            "Секц.",
+            "SF/SA",
+            "2QF1",
+            "2QF2",
+            "2QF3",
+            "2QF4",
+            "2QF5",
+            "2QF6",
+            "2QF7",
+            "2QF8",
+            "2QF9",
+            "2QF10",
+            "2QF11",
+            "2QF12",
+            "2QF13",
+            "2QF14",
+            "РП2"
+          ],
+          "nodes": [
+            {
+              "node_id": "SOURCE2",
+              "node_type": "SOURCE",
+              "canonical_identity": "SOURCE_PATH#BUS2",
+              "label": "Т2",
+              "confidence": 0.95,
+              "source_tokens": [
+                "Т2"
+              ]
+            },
+            {
+              "node_id": "SOURCE2:PATH1",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": "SOURCE_PATH_ELEMENT#BUS2",
+              "label": "Шинопровод",
+              "confidence": 0.75,
+              "source_tokens": [
+                "Шинопровод"
+              ]
+            },
+            {
+              "node_id": "INPUT2",
+              "node_type": "INPUT_DEVICE",
+              "canonical_identity": "INPUT#BUS2",
+              "label": "QF2",
+              "confidence": 0.95,
+              "source_tokens": [
+                "QF2",
+                "2500А",
+                "Секц.",
+                "SF/SA"
+              ]
+            },
+            {
+              "node_id": "BUS2",
+              "node_type": "BUS_SECTION",
+              "canonical_identity": "SECTION#2",
+              "label": "РП2",
+              "confidence": 1.0,
+              "source_tokens": [
+                "2QF1",
+                "2QF2",
+                "2QF3",
+                "2QF4",
+                "2QF5",
+                "2QF6",
+                "2QF7",
+                "2QF8",
+                "2QF9",
+                "2QF10",
+                "2QF11",
+                "2QF12",
+                "2QF13",
+                "2QF14",
+                "РП2"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "edge_id": "FEEDS:SOURCE2->SOURCE2:PATH1",
+              "edge_type": "FEEDS",
+              "from": "SOURCE2",
+              "to": "SOURCE2:PATH1",
+              "confidence": 0.75,
+              "source_tokens": [
+                "Т2",
+                "Шинопровод"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:SOURCE2:PATH1->INPUT2",
+              "edge_type": "FEEDS",
+              "from": "SOURCE2:PATH1",
+              "to": "INPUT2",
+              "confidence": 0.9,
+              "source_tokens": [
+                "Шинопровод",
+                "QF2",
+                "2500А",
+                "Секц.",
+                "SF/SA"
+              ]
+            },
+            {
+              "edge_id": "FEEDS:INPUT2->BUS2",
+              "edge_type": "FEEDS",
+              "from": "INPUT2",
+              "to": "BUS2",
+              "confidence": 0.9,
+              "source_tokens": [
+                "QF2",
+                "2500А",
+                "Секц.",
+                "SF/SA",
+                "2QF1",
+                "2QF2",
+                "2QF3",
+                "2QF4",
+                "2QF5",
+                "2QF6",
+                "2QF7",
+                "2QF8",
+                "2QF9",
+                "2QF10",
+                "2QF11",
+                "2QF12",
+                "2QF13",
+                "2QF14",
+                "РП2"
+              ]
+            }
+          ]
+        },
+        "reason": {
+          "classification": "coarse_node_to_expanded_subgraph",
+          "left_representation_rank": 1,
+          "right_representation_rank": 2,
+          "not_node_added": true
+        }
+      }
+    },
+    {
+      "change_id": "chg_66542577620e",
+      "type": "UNCERTAIN_STRUCTURAL_CHANGE",
+      "level": "B",
+      "subject": {
+        "kind": "reserve_function"
+      },
+      "summary": "Число распознанных резервных отходящих различается, но уверенности идентификации недостаточно для утверждения об изменении: 2 → 0.",
+      "confidence": 0.35,
+      "left_nodes": [
+        "OUT:1QF11@1294",
+        "OUT:2QF11@2597"
+      ],
+      "right_nodes": [],
+      "evidence": {
+        "left": {
+          "block_id": "blk_039909ec039649a1b8209f059c95167b",
+          "node_ids": [
+            "OUT:1QF11@1294",
+            "OUT:2QF11@2597"
+          ],
+          "edge_ids": [],
+          "confidence": 0.35,
+          "source_tokens": [
+            "1QF11",
+            "ГРЩ1-РП1-11",
+            "2QF11",
+            "ГРЩ1-РП2-11"
+          ],
+          "nodes": [
+            {
+              "node_id": "OUT:1QF11@1294",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "1QF11",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF11",
+                "ГРЩ1-РП1-11"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF11@2597",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "2QF11",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF11",
+                "ГРЩ1-РП2-11"
+              ]
+            }
+          ],
+          "edges": []
+        },
+        "right": {
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "node_ids": [],
+          "edge_ids": [],
+          "confidence": 0.0,
+          "source_tokens": [],
+          "nodes": [],
+          "edges": []
+        },
+        "reason": {
+          "left_count": 2,
+          "right_count": 0,
+          "absence_is_bounded_by_identity_coverage": 0.867,
+          "minimum_change_confidence": 0.6
+        }
+      }
+    },
+    {
+      "change_id": "chg_4aafe649bd59",
+      "type": "GROUP_COUNT_CHANGED",
+      "level": "C",
+      "subject": {
+        "kind": "repeated_node_group",
+        "node_type": "OUTGOING_DEVICE"
+      },
+      "summary": "Количество отходящих аппаратов изменилось: 30 → 27.",
+      "confidence": 0.867,
+      "left_nodes": [
+        "OUT:1QF1@434",
+        "OUT:1QF2@521",
+        "OUT:1QF3@608",
+        "OUT:1QF4@696",
+        "OUT:1QF5@783",
+        "OUT:1QF6@870",
+        "OUT:1QF7@958",
+        "OUT:1QF8@1045",
+        "OUT:1QF9@1132",
+        "OUT:1QF10@1220",
+        "OUT:1QF11@1294",
+        "OUT:1QF12@1388",
+        "OUT:1QF13@1471",
+        "OUT:1QF14@1550",
+        "OUT:1QF15@1630",
+        "OUT:1QF1@1736",
+        "OUT:2QF2@1823",
+        "OUT:2QF3@1910",
+        "OUT:2QF4@1998",
+        "OUT:2QF5@2085",
+        "OUT:2QF6@2174",
+        "OUT:2QF7@2260",
+        "OUT:2QF8@2348",
+        "OUT:2QF9@2437",
+        "OUT:2QF10@2524",
+        "OUT:2QF11@2597",
+        "OUT:1QF12@2690",
+        "OUT:2QF13@2775",
+        "OUT:2QF14@2865",
+        "OUT:2QF15@2952"
+      ],
+      "right_nodes": [
+        "OUT:1QF1@460",
+        "OUT:1QF2@513",
+        "OUT:1QF3@558",
+        "OUT:1QF4@608",
+        "OUT:1QF5@692",
+        "OUT:1QF6@764",
+        "OUT:1QF7@845",
+        "OUT:1QF8@909",
+        "OUT:1QF9@979",
+        "OUT:1QF10@1049",
+        "OUT:1QF11@1106",
+        "OUT:1QF12@1164",
+        "OUT:1QF13@1206",
+        "OUT:2QF1@1299",
+        "OUT:2QF2@1358",
+        "OUT:2QF3@1434",
+        "OUT:2QF4@1492",
+        "OUT:2QF5@1550",
+        "OUT:2QF6@1607",
+        "OUT:2QF7@1665",
+        "OUT:2QF8@1723",
+        "OUT:2QF9@1781",
+        "OUT:2QF10@1835",
+        "OUT:2QF11@1897",
+        "OUT:2QF12@1952",
+        "OUT:2QF13@1999",
+        "OUT:2QF14@2053"
+      ],
+      "evidence": {
+        "left": {
+          "block_id": "blk_039909ec039649a1b8209f059c95167b",
+          "node_ids": [
+            "OUT:1QF1@434",
+            "OUT:1QF2@521",
+            "OUT:1QF3@608",
+            "OUT:1QF4@696",
+            "OUT:1QF5@783",
+            "OUT:1QF6@870",
+            "OUT:1QF7@958",
+            "OUT:1QF8@1045",
+            "OUT:1QF9@1132",
+            "OUT:1QF10@1220",
+            "OUT:1QF11@1294",
+            "OUT:1QF12@1388",
+            "OUT:1QF13@1471",
+            "OUT:1QF14@1550",
+            "OUT:1QF15@1630",
+            "OUT:1QF1@1736",
+            "OUT:2QF2@1823",
+            "OUT:2QF3@1910",
+            "OUT:2QF4@1998",
+            "OUT:2QF5@2085",
+            "OUT:2QF6@2174",
+            "OUT:2QF7@2260",
+            "OUT:2QF8@2348",
+            "OUT:2QF9@2437",
+            "OUT:2QF10@2524",
+            "OUT:2QF11@2597",
+            "OUT:1QF12@2690",
+            "OUT:2QF13@2775",
+            "OUT:2QF14@2865",
+            "OUT:2QF15@2952"
+          ],
+          "edge_ids": [],
+          "confidence": 0.35,
+          "source_tokens": [
+            "1QF1",
+            "ВРУ1",
+            "ГРЩ1-РП1-1",
+            "1QF2",
+            "ВРУ2",
+            "ГРЩ1-РП1-2",
+            "1QF3",
+            "ВРУ3",
+            "ГРЩ1-РП1-3",
+            "1QF4",
+            "ВРУ4",
+            "ГРЩ1-РП1-4",
+            "1QF5",
+            "ВРУа",
+            "ВРУА",
+            "ГРЩ1-РП1-5",
+            "1QF6",
+            "ВРУ-ИТП",
+            "ИТП",
+            "ГРЩ1-РП1-6",
+            "1QF7",
+            "ВРУ-ХЦ",
+            "ХЦ",
+            "ГРЩ1-РП1-7",
+            "1QF8",
+            "ВРУ-АПТ",
+            "АПТ",
+            "ГРЩ1-РП1-8",
+            "1QF9",
+            "ВРУ-НСТ",
+            "НСТ",
+            "ГРЩ1-РП1-9",
+            "1QF10",
+            "ДР1-ХМ1",
+            "ГРЩ1-РП1-10",
+            "1QF11",
+            "ГРЩ1-РП1-11",
+            "1QF12",
+            "ХМ1",
+            "ГРЩ1-РП1-12",
+            "1QF13",
+            "ЩНО",
+            "ШНО",
+            "ГРЩ1-РП1-13",
+            "1QF14",
+            "ГРЩ1-РП1-14",
+            "1QF15",
+            "АУКРМ",
+            "ГРЩ1-РП1-15",
+            "ГРЩ1-РП2-1",
+            "2QF2",
+            "ГРЩ1-РП2-2",
+            "2QF3",
+            "ГРЩ1-РП2-3",
+            "2QF4",
+            "ГРЩ1-РП2-4",
+            "2QF5",
+            "ГРЩ1-РП2-5",
+            "2QF6",
+            "ГРЩ1-РП2-6",
+            "2QF7",
+            "ГРЩ1-РП2-7",
+            "2QF8",
+            "ГРЩ1-РП2-8",
+            "2QF9",
+            "ГРЩ1-РП2-9",
+            "2QF10",
+            "ДР2-ХМ2",
+            "ГРЩ1-РП2-10",
+            "2QF11",
+            "ГРЩ1-РП2-11",
+            "ХМ2",
+            "ГРЩ1-РП2-12",
+            "2QF13",
+            "ГРЩ1-РП2-13",
+            "2QF14",
+            "ГРЩ1-РП2-14",
+            "2QF15",
+            "ГРЩ1-РП2-15"
+          ],
+          "nodes": [
+            {
+              "node_id": "OUT:1QF1@434",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ1",
+              "label": "1QF1",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF1",
+                "ВРУ1",
+                "ГРЩ1-РП1-1"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF2@521",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ2",
+              "label": "1QF2",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF2",
+                "ВРУ2",
+                "ГРЩ1-РП1-2"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF3@608",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ3",
+              "label": "1QF3",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF3",
+                "ВРУ3",
+                "ГРЩ1-РП1-3"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF4@696",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ4",
+              "label": "1QF4",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF4",
+                "ВРУ4",
+                "ГРЩ1-РП1-4"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF5@783",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУА",
+              "label": "1QF5",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF5",
+                "ВРУа",
+                "ВРУА",
+                "ГРЩ1-РП1-5"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF6@870",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ИТП",
+              "label": "1QF6",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF6",
+                "ВРУ-ИТП",
+                "ИТП",
+                "ГРЩ1-РП1-6"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF7@958",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХЦ",
+              "label": "1QF7",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF7",
+                "ВРУ-ХЦ",
+                "ХЦ",
+                "ГРЩ1-РП1-7"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF8@1045",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АПТ",
+              "label": "1QF8",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF8",
+                "ВРУ-АПТ",
+                "АПТ",
+                "ГРЩ1-РП1-8"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF9@1132",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "НСТ",
+              "label": "1QF9",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF9",
+                "ВРУ-НСТ",
+                "НСТ",
+                "ГРЩ1-РП1-9"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF10@1220",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР1-ХМ1",
+              "label": "1QF10",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF10",
+                "ДР1-ХМ1",
+                "ГРЩ1-РП1-10"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF11@1294",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "1QF11",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF11",
+                "ГРЩ1-РП1-11"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF12@1388",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХМ1",
+              "label": "1QF12",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF12",
+                "ХМ1",
+                "ГРЩ1-РП1-12"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF13@1471",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ШНО",
+              "label": "1QF13",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF13",
+                "ЩНО",
+                "ШНО",
+                "ГРЩ1-РП1-13"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF14@1550",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "1QF14",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF14",
+                "ГРЩ1-РП1-14"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF15@1630",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АУКРМ",
+              "label": "1QF15",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF15",
+                "АУКРМ",
+                "ГРЩ1-РП1-15"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF1@1736",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ1",
+              "label": "1QF1",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF1",
+                "ВРУ1",
+                "ГРЩ1-РП2-1"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF2@1823",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ2",
+              "label": "2QF2",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF2",
+                "ВРУ2",
+                "ГРЩ1-РП2-2"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF3@1910",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ3",
+              "label": "2QF3",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF3",
+                "ВРУ3",
+                "ГРЩ1-РП2-3"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF4@1998",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ4",
+              "label": "2QF4",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF4",
+                "ВРУ4",
+                "ГРЩ1-РП2-4"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF5@2085",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУА",
+              "label": "2QF5",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF5",
+                "ВРУа",
+                "ВРУА",
+                "ГРЩ1-РП2-5"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF6@2174",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ИТП",
+              "label": "2QF6",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF6",
+                "ВРУ-ИТП",
+                "ИТП",
+                "ГРЩ1-РП2-6"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF7@2260",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХЦ",
+              "label": "2QF7",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF7",
+                "ВРУ-ХЦ",
+                "ХЦ",
+                "ГРЩ1-РП2-7"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF8@2348",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АПТ",
+              "label": "2QF8",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF8",
+                "ВРУ-АПТ",
+                "АПТ",
+                "ГРЩ1-РП2-8"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF9@2437",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "НСТ",
+              "label": "2QF9",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF9",
+                "ВРУ-НСТ",
+                "НСТ",
+                "ГРЩ1-РП2-9"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF10@2524",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР2-ХМ2",
+              "label": "2QF10",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF10",
+                "ДР2-ХМ2",
+                "ГРЩ1-РП2-10"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF11@2597",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "2QF11",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF11",
+                "ГРЩ1-РП2-11"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF12@2690",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХМ2",
+              "label": "1QF12",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF12",
+                "ХМ2",
+                "ГРЩ1-РП2-12"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF13@2775",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ШНО",
+              "label": "2QF13",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF13",
+                "ЩНО",
+                "ШНО",
+                "ГРЩ1-РП2-13"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF14@2865",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "2QF14",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF14",
+                "ГРЩ1-РП2-14"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF15@2952",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АУКРМ",
+              "label": "2QF15",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF15",
+                "АУКРМ",
+                "ГРЩ1-РП2-15"
+              ]
+            }
+          ],
+          "edges": []
+        },
+        "right": {
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "node_ids": [
+            "OUT:1QF1@460",
+            "OUT:1QF2@513",
+            "OUT:1QF3@558",
+            "OUT:1QF4@608",
+            "OUT:1QF5@692",
+            "OUT:1QF6@764",
+            "OUT:1QF7@845",
+            "OUT:1QF8@909",
+            "OUT:1QF9@979",
+            "OUT:1QF10@1049",
+            "OUT:1QF11@1106",
+            "OUT:1QF12@1164",
+            "OUT:1QF13@1206",
+            "OUT:2QF1@1299",
+            "OUT:2QF2@1358",
+            "OUT:2QF3@1434",
+            "OUT:2QF4@1492",
+            "OUT:2QF5@1550",
+            "OUT:2QF6@1607",
+            "OUT:2QF7@1665",
+            "OUT:2QF8@1723",
+            "OUT:2QF9@1781",
+            "OUT:2QF10@1835",
+            "OUT:2QF11@1897",
+            "OUT:2QF12@1952",
+            "OUT:2QF13@1999",
+            "OUT:2QF14@2053"
+          ],
+          "edge_ids": [],
+          "confidence": 0.35,
+          "source_tokens": [
+            "1QF1",
+            "ДР1-ХМ1",
+            "ДР1",
+            "1ГРЩ-ДР1",
+            "1QF2",
+            "ХМ1",
+            "1ГРЩ-ХМ1",
+            "1QF3",
+            "1QF4",
+            "ВРУ4",
+            "1ГРЩ-ВРУ4",
+            "1QF5",
+            "ВРУ3",
+            "1ГРЩ-ВРУ3",
+            "1QF6",
+            "ВРУ1",
+            "1ГРЩ-ВРУ1",
+            "1QF7",
+            "ВРУ2",
+            "1ГРЩ-ВРУ2",
+            "1QF8",
+            "ВРУа",
+            "ВРУА",
+            "1ГРЩ-ВРУа",
+            "1QF9",
+            "ВРУ-ИТП",
+            "ИТП",
+            "1ГРЩ-ВРУ.ИТП",
+            "1QF10",
+            "ШУ-ХЦ",
+            "ХЦ",
+            "1ГРЩ-ШУХЦ-",
+            "1QF11",
+            "ШУ-АПТ",
+            "АПТ",
+            "1ГРЩ-ЩУ.АПТ",
+            "1QF12",
+            "1ГРЩ-ШУ.ХП",
+            "ХП",
+            "1QF13",
+            "ШУ-ХВС",
+            "ШНО",
+            "1ГРЩ-ШНO",
+            "2QF1",
+            "2ГРЩ-ВРУ4",
+            "2QF2",
+            "2ГРЩ-ВРУ3",
+            "2QF3",
+            "2QF4",
+            "2ГРЩ-ВРУ2",
+            "2QF5",
+            "2ГРЩ-ВРУа",
+            "2QF6",
+            "2ГРЩ-ВРУ.ИТП",
+            "2QF7",
+            "2ГРЩ-ШУХЦ-",
+            "2QF8",
+            "2ГРЩ-ЩУ.АПТ",
+            "2QF9",
+            "2ГРЩ-ШУ.ХП",
+            "2QF10",
+            "2QF11",
+            "ХМ2",
+            "2ГРЩ-ХМ2",
+            "2QF12",
+            "ДР2-ХМ2",
+            "ДР2",
+            "2ГРЩ-ДР2",
+            "2QF13",
+            "ЯСН",
+            "ЭБ-ГВС",
+            "2ГРЩ-ЭБ.ГВС",
+            "2QF14"
+          ],
+          "nodes": [
+            {
+              "node_id": "OUT:1QF1@460",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР1",
+              "label": "1QF1",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF1",
+                "ДР1-ХМ1",
+                "ДР1",
+                "1ГРЩ-ДР1"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF2@513",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХМ1",
+              "label": "1QF2",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF2",
+                "ХМ1",
+                "1ГРЩ-ХМ1"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF3@558",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "1QF3",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF3"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF4@608",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ4",
+              "label": "1QF4",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF4",
+                "ВРУ4",
+                "1ГРЩ-ВРУ4"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF5@692",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ3",
+              "label": "1QF5",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF5",
+                "ВРУ3",
+                "1ГРЩ-ВРУ3"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF6@764",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ1",
+              "label": "1QF6",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF6",
+                "ВРУ1",
+                "1ГРЩ-ВРУ1"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF7@845",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ2",
+              "label": "1QF7",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF7",
+                "ВРУ2",
+                "1ГРЩ-ВРУ2"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF8@909",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУА",
+              "label": "1QF8",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF8",
+                "ВРУа",
+                "ВРУА",
+                "1ГРЩ-ВРУа"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF9@979",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ИТП",
+              "label": "1QF9",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF9",
+                "ВРУ-ИТП",
+                "ИТП",
+                "1ГРЩ-ВРУ.ИТП"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF10@1049",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХЦ",
+              "label": "1QF10",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF10",
+                "ШУ-ХЦ",
+                "ХЦ",
+                "1ГРЩ-ШУХЦ-"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF11@1106",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АПТ",
+              "label": "1QF11",
+              "confidence": 0.92,
+              "source_tokens": [
+                "1QF11",
+                "ШУ-АПТ",
+                "АПТ",
+                "1ГРЩ-ЩУ.АПТ"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF12@1164",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХП",
+              "label": "1QF12",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF12",
+                "1ГРЩ-ШУ.ХП",
+                "ХП"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF13@1206",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ШНО",
+              "label": "1QF13",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF13",
+                "ШУ-ХВС",
+                "ШНО",
+                "1ГРЩ-ШНO"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF1@1299",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ4",
+              "label": "2QF1",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF1",
+                "2ГРЩ-ВРУ4",
+                "ВРУ4"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF2@1358",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ3",
+              "label": "2QF2",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF2",
+                "2ГРЩ-ВРУ3",
+                "ВРУ3"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF3@1434",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ3",
+              "label": "2QF3",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF3",
+                "2ГРЩ-ВРУ3",
+                "ВРУ3"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF4@1492",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ2",
+              "label": "2QF4",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF4",
+                "2ГРЩ-ВРУ2",
+                "ВРУ2"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF5@1550",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУА",
+              "label": "2QF5",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF5",
+                "2ГРЩ-ВРУа",
+                "ВРУА"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF6@1607",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ИТП",
+              "label": "2QF6",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF6",
+                "2ГРЩ-ВРУ.ИТП",
+                "ИТП"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF7@1665",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХЦ",
+              "label": "2QF7",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF7",
+                "2ГРЩ-ШУХЦ-",
+                "ХЦ"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF8@1723",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АПТ",
+              "label": "2QF8",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF8",
+                "2ГРЩ-ЩУ.АПТ",
+                "АПТ"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF9@1781",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХП",
+              "label": "2QF9",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF9",
+                "2ГРЩ-ШУ.ХП",
+                "ХП"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF10@1835",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "2QF10",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF10"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF11@1897",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХМ2",
+              "label": "2QF11",
+              "confidence": 0.92,
+              "source_tokens": [
+                "2QF11",
+                "ХМ2",
+                "2ГРЩ-ХМ2"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF12@1952",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР2",
+              "label": "2QF12",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF12",
+                "ДР2-ХМ2",
+                "ДР2",
+                "2ГРЩ-ДР2"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF13@1999",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ЭБ-ГВС",
+              "label": "2QF13",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF13",
+                "ЯСН",
+                "ЭБ-ГВС",
+                "2ГРЩ-ЭБ.ГВС"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF14@2053",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ЭБ-ГВС",
+              "label": "2QF14",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF14",
+                "2ГРЩ-ЭБ.ГВС",
+                "ЭБ-ГВС"
+              ]
+            }
+          ],
+          "edges": []
+        },
+        "reason": {
+          "left_count": 30,
+          "right_count": 27,
+          "individual_unmatched_nodes_are_not_automatically_added_or_removed": true
+        }
+      }
+    },
+    {
+      "change_id": "chg_1b601fa171f2",
+      "type": "NODE_TYPE_CHANGED",
+      "level": "C",
+      "subject": {
+        "kind": "individual_node",
+        "identity": [
+          "SECTION-TIE#BUS1-BUS2"
+        ]
+      },
+      "summary": "Тип сопоставленного узла изменился: QF3 (CIRCUIT_BREAKER) → QS1 (SWITCH_DISCONNECTOR).",
+      "confidence": 0.92,
+      "left_nodes": [
+        "SECTION_DEVICE:BUS1-BUS2"
+      ],
+      "right_nodes": [
+        "SECTION_DEVICE:BUS1-BUS2"
+      ],
+      "evidence": {
+        "left": {
+          "block_id": "blk_039909ec039649a1b8209f059c95167b",
+          "node_ids": [
+            "SECTION_DEVICE:BUS1-BUS2"
+          ],
+          "edge_ids": [],
+          "confidence": 0.92,
+          "source_tokens": [
+            "QF3"
+          ],
+          "nodes": [
+            {
+              "node_id": "SECTION_DEVICE:BUS1-BUS2",
+              "node_type": "SECTION_DEVICE",
+              "canonical_identity": "SECTION_TIE#BUS1-BUS2",
+              "label": "QF3",
+              "confidence": 0.92,
+              "source_tokens": [
+                "QF3"
+              ]
+            }
+          ],
+          "edges": []
+        },
+        "right": {
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "node_ids": [
+            "SECTION_DEVICE:BUS1-BUS2"
+          ],
+          "edge_ids": [],
+          "confidence": 0.92,
+          "source_tokens": [
+            "QS1"
+          ],
+          "nodes": [
+            {
+              "node_id": "SECTION_DEVICE:BUS1-BUS2",
+              "node_type": "SECTION_DEVICE",
+              "canonical_identity": "SECTION_TIE#BUS1-BUS2",
+              "label": "QS1",
+              "confidence": 0.92,
+              "source_tokens": [
+                "QS1"
+              ]
+            }
+          ],
+          "edges": []
+        },
+        "reason": {
+          "left_effective_type": "CIRCUIT_BREAKER",
+          "right_effective_type": "SWITCH_DISCONNECTOR",
+          "identity_match_method": "canonical_identity",
+          "identity_signals": [
+            {
+              "signal": "canonical_identity",
+              "weight": 0.62,
+              "values": [
+                "SECTION-TIE#BUS1-BUS2"
+              ]
+            },
+            {
+              "signal": "node_type",
+              "weight": 0.16,
+              "value": "SECTION_DEVICE"
+            },
+            {
+              "signal": "functional_role",
+              "weight": 0.1,
+              "value": "SECTION_DEVICE:SECTION#1,SECTION#2"
+            },
+            {
+              "signal": "relations",
+              "weight": 0.04,
+              "similarity": 1.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "change_id": "chg_dc6246a46f5c",
+      "type": "UNCERTAIN_STRUCTURAL_CHANGE",
+      "level": "C",
+      "subject": {
+        "kind": "unresolved_correspondence"
+      },
+      "summary": "Для части узлов соответствие недостаточно надёжно; удаление или добавление не утверждается.",
+      "confidence": 0.49,
+      "left_nodes": [
+        "SERVICE_GROUP:ОПН@1488",
+        "SERVICE_GROUP:ОПН@1898",
+        "SERVICE_GROUP:УЗИП1@1472",
+        "SERVICE_GROUP:УЗИП2@1936",
+        "UNKNOWN_NODE:QF4@1477",
+        "UNKNOWN_NODE:QF5@1931",
+        "OUT:1QF10@1220",
+        "OUT:1QF11@1294",
+        "OUT:1QF13@1471",
+        "OUT:1QF14@1550",
+        "OUT:1QF15@1630",
+        "OUT:1QF1@1736",
+        "OUT:1QF9@1132",
+        "OUT:2QF10@2524",
+        "OUT:2QF11@2597",
+        "OUT:2QF13@2775",
+        "OUT:2QF14@2865",
+        "OUT:2QF15@2952",
+        "OUT:2QF9@2437"
+      ],
+      "right_nodes": [
+        "SERVICE_GROUP:FU2@1320",
+        "SERVICE_GROUP:ОПН@1043",
+        "SERVICE_GROUP:ОПН@1366",
+        "OUT:1QF12@1164",
+        "OUT:1QF13@1206",
+        "OUT:1QF1@460",
+        "OUT:1QF3@558",
+        "OUT:2QF10@1835",
+        "OUT:2QF12@1952",
+        "OUT:2QF13@1999",
+        "OUT:2QF14@2053",
+        "OUT:2QF2@1358",
+        "OUT:2QF9@1781"
+      ],
+      "evidence": {
+        "left": {
+          "block_id": "blk_039909ec039649a1b8209f059c95167b",
+          "node_ids": [
+            "SERVICE_GROUP:ОПН@1488",
+            "SERVICE_GROUP:ОПН@1898",
+            "SERVICE_GROUP:УЗИП1@1472",
+            "SERVICE_GROUP:УЗИП2@1936",
+            "UNKNOWN_NODE:QF4@1477",
+            "UNKNOWN_NODE:QF5@1931",
+            "OUT:1QF10@1220",
+            "OUT:1QF11@1294",
+            "OUT:1QF13@1471",
+            "OUT:1QF14@1550",
+            "OUT:1QF15@1630",
+            "OUT:1QF1@1736",
+            "OUT:1QF9@1132",
+            "OUT:2QF10@2524",
+            "OUT:2QF11@2597",
+            "OUT:2QF13@2775",
+            "OUT:2QF14@2865",
+            "OUT:2QF15@2952",
+            "OUT:2QF9@2437"
+          ],
+          "edge_ids": [],
+          "confidence": 0.3,
+          "source_tokens": [
+            "ОПН",
+            "УЗИП1",
+            "УЗИП2",
+            "QF4",
+            "QF5",
+            "1QF10",
+            "ДР1-ХМ1",
+            "ГРЩ1-РП1-10",
+            "1QF11",
+            "ГРЩ1-РП1-11",
+            "1QF13",
+            "ЩНО",
+            "ШНО",
+            "ГРЩ1-РП1-13",
+            "1QF14",
+            "ГРЩ1-РП1-14",
+            "1QF15",
+            "АУКРМ",
+            "ГРЩ1-РП1-15",
+            "1QF1",
+            "ВРУ1",
+            "ГРЩ1-РП2-1",
+            "1QF9",
+            "ВРУ-НСТ",
+            "НСТ",
+            "ГРЩ1-РП1-9",
+            "2QF10",
+            "ДР2-ХМ2",
+            "ГРЩ1-РП2-10",
+            "2QF11",
+            "ГРЩ1-РП2-11",
+            "2QF13",
+            "ГРЩ1-РП2-13",
+            "2QF14",
+            "ГРЩ1-РП2-14",
+            "2QF15",
+            "ГРЩ1-РП2-15",
+            "2QF9",
+            "ГРЩ1-РП2-9"
+          ],
+          "nodes": [
+            {
+              "node_id": "SERVICE_GROUP:ОПН@1488",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": null,
+              "label": "ОПН",
+              "confidence": 0.7,
+              "source_tokens": [
+                "ОПН"
+              ]
+            },
+            {
+              "node_id": "SERVICE_GROUP:ОПН@1898",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": null,
+              "label": "ОПН",
+              "confidence": 0.7,
+              "source_tokens": [
+                "ОПН"
+              ]
+            },
+            {
+              "node_id": "SERVICE_GROUP:УЗИП1@1472",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": null,
+              "label": "УЗИП1",
+              "confidence": 0.7,
+              "source_tokens": [
+                "УЗИП1"
+              ]
+            },
+            {
+              "node_id": "SERVICE_GROUP:УЗИП2@1936",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": null,
+              "label": "УЗИП2",
+              "confidence": 0.7,
+              "source_tokens": [
+                "УЗИП2"
+              ]
+            },
+            {
+              "node_id": "UNKNOWN_NODE:QF4@1477",
+              "node_type": "UNKNOWN_NODE",
+              "canonical_identity": null,
+              "label": "QF4",
+              "confidence": 0.3,
+              "source_tokens": [
+                "QF4"
+              ]
+            },
+            {
+              "node_id": "UNKNOWN_NODE:QF5@1931",
+              "node_type": "UNKNOWN_NODE",
+              "canonical_identity": null,
+              "label": "QF5",
+              "confidence": 0.3,
+              "source_tokens": [
+                "QF5"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF10@1220",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР1-ХМ1",
+              "label": "1QF10",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF10",
+                "ДР1-ХМ1",
+                "ГРЩ1-РП1-10"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF11@1294",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "1QF11",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF11",
+                "ГРЩ1-РП1-11"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF13@1471",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ШНО",
+              "label": "1QF13",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF13",
+                "ЩНО",
+                "ШНО",
+                "ГРЩ1-РП1-13"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF14@1550",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "1QF14",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF14",
+                "ГРЩ1-РП1-14"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF15@1630",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АУКРМ",
+              "label": "1QF15",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF15",
+                "АУКРМ",
+                "ГРЩ1-РП1-15"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF1@1736",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ1",
+              "label": "1QF1",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF1",
+                "ВРУ1",
+                "ГРЩ1-РП2-1"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF9@1132",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "НСТ",
+              "label": "1QF9",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF9",
+                "ВРУ-НСТ",
+                "НСТ",
+                "ГРЩ1-РП1-9"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF10@2524",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР2-ХМ2",
+              "label": "2QF10",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF10",
+                "ДР2-ХМ2",
+                "ГРЩ1-РП2-10"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF11@2597",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "2QF11",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF11",
+                "ГРЩ1-РП2-11"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF13@2775",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ШНО",
+              "label": "2QF13",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF13",
+                "ЩНО",
+                "ШНО",
+                "ГРЩ1-РП2-13"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF14@2865",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "2QF14",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF14",
+                "ГРЩ1-РП2-14"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF15@2952",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "АУКРМ",
+              "label": "2QF15",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF15",
+                "АУКРМ",
+                "ГРЩ1-РП2-15"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF9@2437",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "НСТ",
+              "label": "2QF9",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF9",
+                "ВРУ-НСТ",
+                "НСТ",
+                "ГРЩ1-РП2-9"
+              ]
+            }
+          ],
+          "edges": []
+        },
+        "right": {
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "node_ids": [
+            "SERVICE_GROUP:FU2@1320",
+            "SERVICE_GROUP:ОПН@1043",
+            "SERVICE_GROUP:ОПН@1366",
+            "OUT:1QF12@1164",
+            "OUT:1QF13@1206",
+            "OUT:1QF1@460",
+            "OUT:1QF3@558",
+            "OUT:2QF10@1835",
+            "OUT:2QF12@1952",
+            "OUT:2QF13@1999",
+            "OUT:2QF14@2053",
+            "OUT:2QF2@1358",
+            "OUT:2QF9@1781"
+          ],
+          "edge_ids": [],
+          "confidence": 0.35,
+          "source_tokens": [
+            "FU2",
+            "ОПН",
+            "1QF12",
+            "1ГРЩ-ШУ.ХП",
+            "ХП",
+            "1QF13",
+            "ШУ-ХВС",
+            "ШНО",
+            "1ГРЩ-ШНO",
+            "1QF1",
+            "ДР1-ХМ1",
+            "ДР1",
+            "1ГРЩ-ДР1",
+            "1QF3",
+            "2QF10",
+            "2QF12",
+            "ДР2-ХМ2",
+            "ДР2",
+            "2ГРЩ-ДР2",
+            "2QF13",
+            "ЯСН",
+            "ЭБ-ГВС",
+            "2ГРЩ-ЭБ.ГВС",
+            "2QF14",
+            "2QF2",
+            "2ГРЩ-ВРУ3",
+            "ВРУ3",
+            "2QF9",
+            "2ГРЩ-ШУ.ХП"
+          ],
+          "nodes": [
+            {
+              "node_id": "SERVICE_GROUP:FU2@1320",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": null,
+              "label": "FU2",
+              "confidence": 0.7,
+              "source_tokens": [
+                "FU2"
+              ]
+            },
+            {
+              "node_id": "SERVICE_GROUP:ОПН@1043",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": null,
+              "label": "ОПН",
+              "confidence": 0.7,
+              "source_tokens": [
+                "ОПН"
+              ]
+            },
+            {
+              "node_id": "SERVICE_GROUP:ОПН@1366",
+              "node_type": "SERVICE_GROUP",
+              "canonical_identity": null,
+              "label": "ОПН",
+              "confidence": 0.7,
+              "source_tokens": [
+                "ОПН"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF12@1164",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХП",
+              "label": "1QF12",
+              "confidence": 0.72,
+              "source_tokens": [
+                "1QF12",
+                "1ГРЩ-ШУ.ХП",
+                "ХП"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF13@1206",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ШНО",
+              "label": "1QF13",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF13",
+                "ШУ-ХВС",
+                "ШНО",
+                "1ГРЩ-ШНO"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF1@460",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР1",
+              "label": "1QF1",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF1",
+                "ДР1-ХМ1",
+                "ДР1",
+                "1ГРЩ-ДР1"
+              ]
+            },
+            {
+              "node_id": "OUT:1QF3@558",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "1QF3",
+              "confidence": 0.35,
+              "source_tokens": [
+                "1QF3"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF10@1835",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": null,
+              "label": "2QF10",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF10"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF12@1952",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ДР2",
+              "label": "2QF12",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF12",
+                "ДР2-ХМ2",
+                "ДР2",
+                "2ГРЩ-ДР2"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF13@1999",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ЭБ-ГВС",
+              "label": "2QF13",
+              "confidence": 0.35,
+              "source_tokens": [
+                "2QF13",
+                "ЯСН",
+                "ЭБ-ГВС",
+                "2ГРЩ-ЭБ.ГВС"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF14@2053",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ЭБ-ГВС",
+              "label": "2QF14",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF14",
+                "2ГРЩ-ЭБ.ГВС",
+                "ЭБ-ГВС"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF2@1358",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ВРУ3",
+              "label": "2QF2",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF2",
+                "2ГРЩ-ВРУ3",
+                "ВРУ3"
+              ]
+            },
+            {
+              "node_id": "OUT:2QF9@1781",
+              "node_type": "OUTGOING_DEVICE",
+              "canonical_identity": "ХП",
+              "label": "2QF9",
+              "confidence": 0.72,
+              "source_tokens": [
+                "2QF9",
+                "2ГРЩ-ШУ.ХП",
+                "ХП"
+              ]
+            }
+          ],
+          "edges": []
+        },
+        "reason": {
+          "ambiguous_pairs": [
+            {
+              "left_id": "SERVICE_GROUP:ОПН@1488",
+              "right_candidates": [
+                {
+                  "right_id": "SERVICE_GROUP:ОПН@1043",
+                  "score": 0.38,
+                  "confidence": 0.38,
+                  "signals": [
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "SERVICE_GROUP"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "SERVICE_GROUP:SURGE-PROTECTION:SECTION#1"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ОПН"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "SERVICE_GROUP:ОПН@1898",
+              "right_candidates": [
+                {
+                  "right_id": "SERVICE_GROUP:ОПН@1366",
+                  "score": 0.38,
+                  "confidence": 0.38,
+                  "signals": [
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "SERVICE_GROUP"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "SERVICE_GROUP:SURGE-PROTECTION:SECTION#2"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ОПН"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "OUT:1QF10@1220",
+              "right_candidates": [
+                {
+                  "right_id": "OUT:1QF1@460",
+                  "score": 1.0,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ДР1-ХМ1"
+                      ]
+                    },
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "OUTGOING_DEVICE"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "OUTGOING_DEVICE:SECTION#1"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ДР1-ХМ1"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "LOAD:1QF10@1220",
+              "right_candidates": [
+                {
+                  "right_id": "OUT:1QF1@460",
+                  "score": 0.7,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ДР1-ХМ1"
+                      ]
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ДР1-ХМ1"
+                      ]
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                },
+                {
+                  "right_id": "LOAD:1QF1@460",
+                  "score": 0.38,
+                  "confidence": 0.38,
+                  "signals": [
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "LOAD"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "LOAD:SECTION#1"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ДР1-ХМ1"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "OUT:1QF13@1471",
+              "right_candidates": [
+                {
+                  "right_id": "OUT:1QF13@1206",
+                  "score": 1.0,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "OUTGOING_DEVICE"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "OUTGOING_DEVICE:SECTION#1"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "1QF13"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                },
+                {
+                  "right_id": "LOAD:1QF13@1206",
+                  "score": 0.64,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "LOAD:1QF13@1471",
+              "right_candidates": [
+                {
+                  "right_id": "LOAD:1QF13@1206",
+                  "score": 0.94,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "LOAD"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "LOAD:SECTION#1"
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                },
+                {
+                  "right_id": "OUT:1QF13@1206",
+                  "score": 0.64,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "OUT:2QF9@2437",
+              "right_candidates": [
+                {
+                  "right_id": "OUT:2QF9@1781",
+                  "score": 0.38,
+                  "confidence": 0.38,
+                  "signals": [
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "OUTGOING_DEVICE"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "OUTGOING_DEVICE:SECTION#2"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "2QF9"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "OUT:2QF10@2524",
+              "right_candidates": [
+                {
+                  "right_id": "OUT:2QF12@1952",
+                  "score": 1.0,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ДР2-ХМ2"
+                      ]
+                    },
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "OUTGOING_DEVICE"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "OUTGOING_DEVICE:SECTION#2"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ДР2-ХМ2"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "LOAD:2QF10@2524",
+              "right_candidates": [
+                {
+                  "right_id": "OUT:2QF12@1952",
+                  "score": 0.7,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ДР2-ХМ2"
+                      ]
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ДР2-ХМ2"
+                      ]
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                },
+                {
+                  "right_id": "LOAD:2QF12@1952",
+                  "score": 0.38,
+                  "confidence": 0.38,
+                  "signals": [
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "LOAD"
+                    },
+                    {
+                      "signal": "functional_role",
+                      "weight": 0.1,
+                      "value": "LOAD:SECTION#2"
+                    },
+                    {
+                      "signal": "label",
+                      "weight": 0.06,
+                      "values": [
+                        "ДР2-ХМ2"
+                      ]
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "OUT:2QF13@2775",
+              "right_candidates": [
+                {
+                  "right_id": "OUT:1QF13@1206",
+                  "score": 0.833,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "OUTGOING_DEVICE"
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.0133,
+                      "similarity": 0.667
+                    }
+                  ]
+                },
+                {
+                  "right_id": "LOAD:1QF13@1206",
+                  "score": 0.64,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "left_id": "LOAD:2QF13@2775",
+              "right_candidates": [
+                {
+                  "right_id": "LOAD:1QF13@1206",
+                  "score": 0.84,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "node_type",
+                      "weight": 0.16,
+                      "value": "LOAD"
+                    },
+                    {
+                      "signal": "relations",
+                      "weight": 0.04,
+                      "similarity": 1.0
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                },
+                {
+                  "right_id": "OUT:1QF13@1206",
+                  "score": 0.64,
+                  "confidence": 0.502,
+                  "signals": [
+                    {
+                      "signal": "canonical_identity",
+                      "weight": 0.62,
+                      "values": [
+                        "ШНО"
+                      ]
+                    },
+                    {
+                      "signal": "attributes",
+                      "weight": 0.02,
+                      "similarity": 1.0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "left_unresolved": 19,
+          "right_unresolved": 13,
+          "not_converted_to_removed_added": true
+        }
+      }
+    }
+  ],
+  "summary": {
+    "changes_total": 6,
+    "certain_changes": 4,
+    "uncertain_changes": 2,
+    "by_type": {
+      "DETAIL_LEVEL_INCREASED": 2,
+      "UNCERTAIN_STRUCTURAL_CHANGE": 2,
+      "GROUP_COUNT_CHANGED": 1,
+      "NODE_TYPE_CHANGED": 1
+    },
+    "false_removed_added_suppressed": 2
+  },
+  "provenance": {
+    "comparator_version": "system-graph-comparator-v1",
+    "matcher_version": "graph-identity-matcher-v1",
+    "input_kind": "ready_system_graph_json",
+    "bbox_identity": false,
+    "geometry_identity_weight": 0.0,
+    "manual_cases": false,
+    "pdf_opened": false,
+    "vision_used": false,
+    "stage_comparison_integration": false,
+    "graphic_change_ledger_integration": false
+  },
+  "validation": {
+    "valid": true,
+    "errors": []
+  }
+}
