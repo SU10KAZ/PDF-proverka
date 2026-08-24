@@ -1,4 +1,6 @@
-# Regenerable heavy caches. Not results — re-created by the probe scripts named beside them.
+# Regenerable research outputs and caches. Final knowledge/contract files in artifacts/
+# are already tracked and remain visible to Git.
+artifacts/*
 artifacts/ptn/recut/
 __pycache__/
 *.pyc
