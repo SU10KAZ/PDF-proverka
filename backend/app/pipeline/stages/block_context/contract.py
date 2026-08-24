@@ -19,6 +19,7 @@ STAGE = "block_context"
 STAGE_TITLE = "Векторные графы блоков"
 SOURCE_KINDS = {
     "structured_singleline",
+    "structured_system_graph",
     "structured_electrical",
     "structured_general_plan",
     "structured_architecture",

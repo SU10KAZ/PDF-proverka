@@ -46,6 +46,7 @@ DISCIPLINE_TITLES = {
 
 SOURCE_DISCIPLINES = {
     "structured_singleline": "ЭОМ",
+    "structured_system_graph": "ЭОМ",
     "structured_electrical": "ЭОМ",
     "structured_general_plan": "ГП",
     "structured_architecture": "АР",
@@ -150,8 +151,9 @@ def _graph_signature(graph: Optional[dict[str, Any]]) -> dict[str, Any]:
     if not isinstance(graph, dict):
         return {}
     node_types = collections.Counter(
-        str(node.get("node_type") or "") for node in graph.get("nodes") or []
-        if isinstance(node, dict) and node.get("node_type")
+        str(node.get("node_type") or node.get("type") or "")
+        for node in graph.get("nodes") or []
+        if isinstance(node, dict) and (node.get("node_type") or node.get("type"))
     )
     validation = graph.get("validation") or {}
     counts = {

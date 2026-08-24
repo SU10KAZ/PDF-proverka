@@ -219,6 +219,94 @@ def _cluster_by_gap(values, *, gap: float) -> list[list[float]]:
     return groups
 
 
+def bind_offset_columns(items, labels):
+    """Bind X-offset labels to repeated geometry columns.
+
+    ``items`` and ``labels`` are ``(x, y, identity)`` triples. Drawing
+    conventions often shift every label in a row by a near-constant delta, and
+    that delta can exceed half a column step. Evaluate neighbouring aliases of
+    the observed delta and choose the fit with the fewest unexplained leading
+    columns. The primitive is semantic-free and shared by classic and dense
+    profiles.
+    """
+    names = [name for _, _, name in items]
+    centers = [x for x, _, _ in items]
+    assign = {name: None for name in names}
+    conflicts = {}
+    if not labels or not centers:
+        return assign, conflicts
+
+    def nearest(value):
+        return min(range(len(centers)), key=lambda index: abs(centers[index] - value))
+
+    spacing = (
+        _median(
+            [
+                centers[index + 1] - centers[index]
+                for index in range(len(centers) - 1)
+            ]
+        )
+        if len(centers) > 1
+        else 60.0
+    ) or 60.0
+    label_xs = [x for x, _, _ in labels]
+    observed = _median([x - centers[nearest(x)] for x in label_xs])
+    candidates = [
+        delta
+        for delta in (observed - spacing, observed, observed + spacing)
+        if abs(delta) < spacing * 0.9
+    ] or [observed]
+
+    def evaluate(delta):
+        fit, hit = 0, set()
+        for label_x in label_xs:
+            index = nearest(label_x - delta)
+            hit.add(index)
+            if abs(centers[index] - (label_x - delta)) < 0.35 * spacing:
+                fit += 1
+        return fit, min(hit) if hit else len(centers)
+
+    scored = [(evaluate(delta), delta) for delta in candidates]
+    max_fit = max(score[0][0] for score in scored)
+    _, _, delta = min(
+        (score[0][1], abs(score[1]), score[1])
+        for score in scored
+        if score[0][0] >= max_fit - 2
+    )
+
+    owners = {}
+    for label_x, _, label in labels:
+        index = nearest(label_x - delta)
+        first_distance = abs(centers[index] - (label_x - delta))
+        second_distance = min(
+            (
+                abs(centers[other] - (label_x - delta))
+                for other in range(len(centers))
+                if other != index
+            ),
+            default=1e9,
+        )
+        owners.setdefault(names[index], []).append(
+            (first_distance, second_distance, label)
+        )
+    for name, owned in owners.items():
+        owned.sort()
+        first_distance, second_distance, label = owned[0]
+        assign[name] = label
+        if second_distance - first_distance < 10:
+            conflicts.setdefault(name, []).append(
+                f"ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ: код {label} у границы колонки "
+                f"(Δ={second_distance - first_distance:.0f}px) — требует проверки"
+            )
+        for _first, _second, extra_label in owned[1:]:
+            if extra_label != label:
+                conflicts.setdefault(name, []).append(
+                    f"ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ: в колонку {name} попадает 2 кода "
+                    f"({label}, {extra_label})"
+                )
+    return assign, conflicts
+
+
 def _visualize_words(page, words) -> list:
     """Translate raw PyMuPDF word bboxes to visual coordinates exactly once."""
     if not int(getattr(page, "rotation", 0) or 0) % 360:

@@ -8,11 +8,12 @@
   1) однолинейная расчётная схема И гейт Вектографа пройден → ПОЛНЫЙ структурированный
      рендер (`render_graph_etalon_markdown`): связи QF↔код↔кабель↔потребитель привязаны
      геометрией колонок (мис-привязки соседства нет);
-  2) известная схема ЭОМ/ОВ/ВК/ALIA И профильный гейт пройден → структурированный дисциплинарный
+  2) плотный секционированный щит → grounded SYSTEM_GRAPH поверх общего VectorEvidence;
+  3) известная схема ЭОМ/ОВ/ВК/ALIA И профильный гейт пройден → структурированный дисциплинарный
      Markdown: контейнеры, узлы, сети и честное состояние доказательности связей;
-  3) есть содержательный вектор-слой (иначе) → СЫРОЙ вектор-текст блока (полигон-клип):
+  4) есть содержательный вектор-слой (иначе) → СЫРОЙ вектор-текст блока (полигон-клип):
      100% полнота, 0 галлюцинаций OCR; связи домысливает LLM по соседству;
-  4) вектор-слоя нет (скан/растр — клип тоньше порога) → image-only: Stage 01
+  5) вектор-слоя нет (скан/растр — клип тоньше порога) → image-only: Stage 01
      анализирует приложенный PNG без OCR-описания.
 
 Источник вектор-текста — полигон-клип из PDF по `document_graph.json` (НЕ `pdfplumber_text`
@@ -39,7 +40,7 @@ from .singleline_graph_geometry import (
     evaluate_vectograf_gate,
     render_graph_etalon_markdown,
 )
-from .vector_evidence import _visualize_words
+from .vector_evidence import _visualize_words, extract_vector_evidence
 from .block_profile_registry import load_prepared_package, make_package
 from backend.app.pipeline.stages.block_context.reference_catalog import load_reference_rules
 
@@ -674,7 +675,7 @@ def resolve_block_package(
     """Канонический пакет Stage 01: эталон + профиль + граф + Markdown + LLM-текст.
 
     source_kind:
-      structured_singleline | structured_electrical | structured_general_plan | structured_architecture | structured_structure | structured_hvac | structured_water | structured_alia_scheme | raw_vector | image_only |
+      structured_singleline | structured_system_graph | structured_electrical | structured_general_plan | structured_architecture | structured_structure | structured_hvac | structured_water | structured_alia_scheme | raw_vector | image_only |
       no_sources | block_not_found | error.
     fail-soft: при любой проблеме возвращается пакет без текста и прод-путь сохраняется.
     """
@@ -855,7 +856,53 @@ def resolve_block_package(
                         markdown=etalon, user_text=head + etalon + "\n\n" + _TASK,
                     )
 
-        # (2) остальные профили ЭОМ. Они идут до общих инженерных профилей:
+        # (2) Dense SYSTEM_GRAPH. Classic stays first: an established
+        # electrical_singleline result must never be replaced by a new dialect.
+        dense_graph = None
+        dense_gate = None
+        if allows("ЭОМ"):
+            try:
+                from .dense_sectioned_board import (
+                    PROFILE_ID as DENSE_PROFILE_ID,
+                    build_dense_sectioned_board_graph,
+                    detect_dense_sectioned_board,
+                    evaluate_dense_sectioned_board_gate,
+                    render_dense_sectioned_board_markdown,
+                )
+
+                dense_evidence = extract_vector_evidence(
+                    pdf,
+                    page_index=prepared_page_index,
+                    block_id=str(block_id),
+                    bbox_norm=bbox,
+                    polygon_norm=poly,
+                )
+                dense_detection = detect_dense_sectioned_board(dense_evidence)
+                dense_graph = build_dense_sectioned_board_graph(
+                    dense_evidence,
+                    detection=dense_detection,
+                )
+                dense_gate = evaluate_dense_sectioned_board_gate(dense_graph)
+            except Exception:
+                dense_graph = None
+                dense_gate = None
+            if dense_graph and dense_gate and dense_gate.get("use"):
+                dense_markdown = render_dense_sectioned_board_markdown(dense_graph)
+                if dense_markdown and len(dense_markdown) > 200:
+                    remember_profile_source(DENSE_PROFILE_ID, "vector_evidence_pdf")
+                    return package(
+                        block_id=block_id,
+                        page=page or page_pdf,
+                        source_kind="structured_system_graph",
+                        discipline="ЭОМ",
+                        profile_id=DENSE_PROFILE_ID,
+                        graph=dense_graph,
+                        gate=dense_gate,
+                        markdown=dense_markdown,
+                        user_text=head + dense_markdown + "\n\n" + _TASK,
+                    )
+
+        # (3) остальные профили ЭОМ. Они идут до общих инженерных профилей:
         # план электрощитовой содержит слова «план» и «оборудование», из-за чего
         # без дисциплинарного приоритета мог ошибочно попасть в ВК.
         try:

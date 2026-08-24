@@ -38,6 +38,7 @@ from backend.app.pipeline.stages.block_grounding.vector_evidence import (
     _near,
     _near_xy,
     _point_in_polygon,
+    bind_offset_columns,
     extract_vector_evidence,
 )
 
@@ -521,69 +522,8 @@ def _extract_additional_devices(qx, qy, nx, words) -> list:
 
 
 def _bind_codes_columnwise(pq, pc):
-    """Привязка код→QF по ГЕОМЕТРИИ КОЛОНКИ (а не по порядку текста), alias-устойчивая.
-
-    pq: отсортированный по X список панели [(qx, qy, qn)]; pc: коды панели [(cx, cy, code)].
-
-    Коды смещены от своей QF на ~постоянную величину δ. Простая медиана «code−nearest_qf»
-    работает, пока |δ| < полушага колонки. Но на листах-окончаниях (РП5.1) δ≈+38px при шаге
-    ~62px — БОЛЬШЕ полушага: код ближе к СОСЕДНЕЙ QF, и медиана даёт алиас (δ−шаг), что сдвигает
-    весь ряд на 1 (QF5.1.14→К1.2.1.12а вместо .13а). Поэтому перебираем алиасы δ ∈ {δ₀−шаг, δ₀,
-    δ₀+шаг} в пределах одной колонки (|δ|<шаг) и среди равно-хороших по невязке выбираем тот, что
-    даёт МИНИМУМ ведущих пустых колонок (физически резервы — в хвосте, а не в начале). Это:
-    - сохраняет 9VCW (δ≈+20<полушага: QF3.1 верно без кода, QF3.10→К1.2.4-2);
-    - чинит 7TLY РП5.1 (δ≈+38>полушага: QF5.1.1→К1.2.1.1а).
-
-    Возвращает (assign{qn: code|None}, conflicts{qn: [note...]}).
-    """
-    names = [n for _, _, n in pq]
-    centers = [x for x, _, _ in pq]
-    assign = {n: None for n in names}
-    conflicts = {}
-    if not pc or not centers:
-        return assign, conflicts
-
-    def nearest(t):
-        return min(range(len(centers)), key=lambda i: abs(centers[i] - t))
-
-    spacing = (_median([centers[i + 1] - centers[i] for i in range(len(centers) - 1)])
-               if len(centers) > 1 else 60.0) or 60.0
-    code_xs = [cx for cx, _, _ in pc]
-    draw = _median([cx - centers[nearest(cx)] for cx in code_xs])
-    cands = [d for d in (draw - spacing, draw, draw + spacing) if abs(d) < spacing * 0.9] or [draw]
-
-    def evaluate(d):
-        fit, hit = 0, set()
-        for cx in code_xs:
-            j = nearest(cx - d)
-            hit.add(j)
-            if abs(centers[j] - (cx - d)) < 0.35 * spacing:
-                fit += 1
-        return fit, (min(hit) if hit else len(centers))   # (невязка-fit, ведущие пустые)
-
-    scored = [(evaluate(d), d) for d in cands]
-    max_fit = max(s[0][0] for s in scored)
-    # среди δ с почти-лучшим fit: min ведущих пустых, затем min |δ|
-    _, _, delta = min((s[0][1], abs(s[1]), s[1]) for s in scored if s[0][0] >= max_fit - 2)
-
-    owner = {}
-    for cx, _, code in pc:
-        j = nearest(cx - delta)
-        d1 = abs(centers[j] - (cx - delta))
-        d2 = min((abs(centers[k] - (cx - delta)) for k in range(len(centers)) if k != j), default=1e9)
-        owner.setdefault(names[j], []).append((d1, d2, code))
-    for n, lst in owner.items():
-        lst.sort()
-        d1, d2, code = lst[0]
-        assign[n] = code
-        if d2 - d1 < 10:   # код почти равноудалён от двух колонок — спорно
-            conflicts.setdefault(n, []).append(
-                f"ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ: код {code} у границы колонки (Δ={d2 - d1:.0f}px) — требует проверки")
-        for _d1, _d2, code2 in lst[1:]:
-            if code2 != code:   # 2 РАЗНЫХ кода в одну колонку — реальная коллизия
-                conflicts.setdefault(n, []).append(
-                    f"ГЕОМЕТРИЧЕСКИЙ КОНФЛИКТ: в колонку {n} попадает 2 кода ({code}, {code2})")
-    return assign, conflicts
+    """Backward-compatible classic name for the common geometry helper."""
+    return bind_offset_columns(pq, pc)
 
 
 # Метка QF: 2 сегмента (QF5.30 → панель «5») или 3 сегмента (QF5.1.17 → суб-панель «5.1»).

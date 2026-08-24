@@ -12,6 +12,7 @@ from typing import Any
 SOURCE_LABELS = {
     "structured_legend": "структурированная расшифровка условных обозначений",
     "structured_singleline": "структурированный граф однолинейной схемы",
+    "structured_system_graph": "структурный граф секционированного щита",
     "structured_electrical": "структурированный граф ЭОМ",
     "structured_general_plan": "структурированный граф генерального плана",
     "structured_architecture": "структурированный архитектурный граф",
@@ -33,6 +34,7 @@ PROFILE_LABELS = {
     "raw_vector": "Векторный текст без предметной классификации",
     "legend": "Условные обозначения",
     "electrical_singleline": "Однолинейная электрическая схема",
+    "dense_sectioned_board": "Плотный секционированный щит",
     "panel_circuit_scheme": "Схема электрических цепей щита",
     "electrical_distribution_plan": "План силовых распределительных сетей",
     "lighting_plan": "План электроосвещения",
@@ -172,6 +174,11 @@ CONTAINER_TYPE_LABELS = {
 
 
 NODE_TYPE_LABELS = {
+    "SOURCE": "источник питания", "INPUT_DEVICE": "вводной аппарат",
+    "BUS_SECTION": "секция шин", "SECTION_DEVICE": "секционный аппарат",
+    "OUTGOING_DEVICE": "аппарат отходящей линии", "LOAD": "нагрузка",
+    "METERING_GROUP": "группа учёта", "COMPENSATION_GROUP": "компенсационная установка",
+    "SERVICE_GROUP": "служебная или защитная группа", "UNKNOWN_NODE": "неопределённый узел",
     "legend_code": "код условного обозначения", "legend_meaning": "расшифровка обозначения",
     "legend_value": "параметр условного обозначения", "legend_note": "надпись вне строк легенды",
     "assembly_part": "элемент сборки", "elevation": "высотная отметка",
@@ -331,6 +338,10 @@ STATE_LABELS = {
 
 
 EDGE_TYPE_LABELS = {
+    "FEEDS": "питает", "BELONGS_TO_SECTION": "относится к секции",
+    "TIES_SECTIONS": "связывает секции", "MEASURES": "измеряет",
+    "PROTECTS_OR_SWITCHES": "защищает или коммутирует",
+    "TERMINATES_AT": "заканчивается на нагрузке",
     "обозначает": "код → расшифровка обозначения", "параметр": "обозначение → параметр",
     "system_to_air_device": "система вентиляции → устройство", "riser_to_parameter": "стояк → параметр",
     "riser_to_level": "стояк → уровень или отметка", "source_to_system": "источник → система",
