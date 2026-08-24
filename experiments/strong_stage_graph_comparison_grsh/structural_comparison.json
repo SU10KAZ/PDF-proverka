@@ -1,0 +1,778 @@
+{
+  "schema_version": "system-graph-comparison-grsh-poc-v1",
+  "research_only": true,
+  "scope": {
+    "left_block_id": "blk_039909ec039649a1b8209f059c95167b",
+    "right_block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+    "pairing": "explicit prepared IMAGE block pair",
+    "cross_version_coordinate_use": false,
+    "text_table_diff_performed": false
+  },
+  "level_a_system_backbone": {
+    "verdict": "UNCHANGED_FUNCTIONAL_STRUCTURE_WITH_SECTION_DEVICE_CHANGE",
+    "sources": {
+      "left": 2,
+      "right": 2
+    },
+    "inputs": {
+      "left": 2,
+      "right": 2
+    },
+    "bus_sections": {
+      "left": 2,
+      "right": 2
+    },
+    "section_tie": {
+      "left": true,
+      "right": true
+    },
+    "source_representation": {
+      "left": "UPSTREAM_TP_CONNECTION",
+      "right": "TRANSFORMER_EXPLICIT"
+    }
+  },
+  "level_b_functional_groups": {
+    "metering": "present on both sides; grouping/drawing detail reorganized",
+    "compensation": "АУКРМ-1 and АУКРМ-2 preserved and moved in layout/order",
+    "outgoing_counts": {
+      "left": {
+        "device_count": 30,
+        "by_section": [
+          15,
+          15
+        ],
+        "active_or_functional": 28,
+        "free_reserve": 2,
+        "uncertain_identity": 0
+      },
+      "right": {
+        "device_count": 27,
+        "by_section": [
+          13,
+          14
+        ],
+        "active_or_functional": 27,
+        "free_reserve": 0,
+        "uncertain_identity": 2
+      }
+    },
+    "certain_branch_correspondences": 25,
+    "correspondence_denominator_left": 30,
+    "correspondence_denominator_right": 25,
+    "matched_but_moved": 18
+  },
+  "level_c_devices_connections": {
+    "section_device_type_changed": true,
+    "same_section_matches": 25,
+    "cross_section_matches": 0,
+    "unmatched_left": [
+      {
+        "section": 1,
+        "slot": 11,
+        "device_label_as_drawn": "1QF11",
+        "device_bbox_page_norm": [
+          0.359765,
+          0.547052,
+          0.364521,
+          0.552271
+        ],
+        "functional_identity": "free_reserve_s1",
+        "terminal_label": "Резерв",
+        "status": "FREE_RESERVE"
+      },
+      {
+        "section": 1,
+        "slot": 14,
+        "device_label_as_drawn": "1QF14",
+        "device_bbox_page_norm": [
+          0.431187,
+          0.548121,
+          0.43642,
+          0.55334
+        ],
+        "functional_identity": "dhw_tanks_feed_s1",
+        "terminal_label": "Резервные баки ГВС",
+        "status": "ACTIVE"
+      },
+      {
+        "section": 2,
+        "slot": 1,
+        "device_label_as_drawn": "1QF1",
+        "device_bbox_page_norm": [
+          0.483998,
+          0.548121,
+          0.487962,
+          0.55334
+        ],
+        "functional_identity": "vru1",
+        "terminal_label": "ВРУ1, ввод 2 — корпус 1,2",
+        "status": "ACTIVE"
+      },
+      {
+        "section": 2,
+        "slot": 11,
+        "device_label_as_drawn": "2QF11",
+        "device_bbox_page_norm": [
+          0.724468,
+          0.547052,
+          0.729541,
+          0.552271
+        ],
+        "functional_identity": "free_reserve_s2",
+        "terminal_label": "Резерв",
+        "status": "FREE_RESERVE"
+      },
+      {
+        "section": 2,
+        "slot": 13,
+        "device_label_as_drawn": "2QF13",
+        "device_bbox_page_norm": [
+          0.774188,
+          0.548121,
+          0.779579,
+          0.55334
+        ],
+        "functional_identity": "tp_aux_lighting",
+        "terminal_label": "ЩНО — собственные нужды ТП",
+        "status": "ACTIVE"
+      }
+    ],
+    "unmatched_right": [
+      {
+        "section": 2,
+        "slot": 3,
+        "device_label_as_drawn": "2QF3",
+        "device_bbox_page_norm": [
+          0.597836,
+          0.511026,
+          0.604956,
+          0.516235
+        ],
+        "functional_identity": "vru1",
+        "terminal_label": "ВРУ1; identity восстановлена по симметрии ветвей, подпись feeder повторяет ВРУ3",
+        "status": "ACTIVE_UNCERTAIN_LABEL"
+      },
+      {
+        "section": 2,
+        "slot": 14,
+        "device_label_as_drawn": "2QF14",
+        "device_bbox_page_norm": [
+          0.856812,
+          0.511026,
+          0.865404,
+          0.516235
+        ],
+        "functional_identity": "tp_aux_or_dhw_secondary",
+        "terminal_label": "ЯСН ТП по terminal-якорю; ЭБ-ГВС по feeder-якорю",
+        "status": "ACTIVE_UNCERTAIN_IDENTITY"
+      }
+    ],
+    "caveat": "Level C is not used to negate the preserved Level A backbone."
+  },
+  "branch_correspondence": [
+    {
+      "functional_identity": "vru1",
+      "left": {
+        "section": 1,
+        "slot": 1,
+        "terminal_label": "ВРУ1, ввод 1 — корпус 1,2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 6,
+        "terminal_label": "ВРУ1",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru2",
+      "left": {
+        "section": 1,
+        "slot": 2,
+        "terminal_label": "ВРУ2, ввод 1 — встроенные помещения корпуса 1,2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 7,
+        "terminal_label": "ВРУ2",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru3",
+      "left": {
+        "section": 1,
+        "slot": 3,
+        "terminal_label": "ВРУ3, ввод 1 — корпус 3",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 5,
+        "terminal_label": "ВРУ3",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru4",
+      "left": {
+        "section": 1,
+        "slot": 4,
+        "terminal_label": "ВРУ4, ввод 1 — корпус 4",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 4,
+        "terminal_label": "ВРУ4",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": true,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru_parking",
+      "left": {
+        "section": 1,
+        "slot": 5,
+        "terminal_label": "ВРУа, ввод 1 — подземная автостоянка",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 8,
+        "terminal_label": "ВРУа",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru_itp",
+      "left": {
+        "section": 1,
+        "slot": 6,
+        "terminal_label": "ВРУ-ИТП, ввод 1",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 9,
+        "terminal_label": "ВРУ-ИТП",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "refrigeration_control",
+      "left": {
+        "section": 1,
+        "slot": 7,
+        "terminal_label": "ВРУ-ХЦ, ввод 1",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 10,
+        "terminal_label": "ШУ-ХЦ",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "fire_pumps_control",
+      "left": {
+        "section": 1,
+        "slot": 8,
+        "terminal_label": "ВРУ-АПТ, ввод 1",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 11,
+        "terminal_label": "ШУ-АПТ, резервный ввод",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "water_pumps_control",
+      "left": {
+        "section": 1,
+        "slot": 9,
+        "terminal_label": "ВРУ-НСТ, ввод 1",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 12,
+        "terminal_label": "ШУ-ХП, рабочий ввод",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "cooler_1",
+      "left": {
+        "section": 1,
+        "slot": 10,
+        "terminal_label": "ДР1-ХМ1",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 1,
+        "terminal_label": "ДР1-ХМ1",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "chiller_1",
+      "left": {
+        "section": 1,
+        "slot": 12,
+        "terminal_label": "ХМ1",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 2,
+        "terminal_label": "ХМ1",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "outdoor_lighting",
+      "left": {
+        "section": 1,
+        "slot": 13,
+        "terminal_label": "ЩНО — наружное освещение",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 13,
+        "terminal_label": "ЩНО",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": true,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "compensation_1",
+      "left": {
+        "section": 1,
+        "slot": 15,
+        "terminal_label": "АУКРМ №1",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 1,
+        "slot": 3,
+        "terminal_label": "АУКРМ-1",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru2",
+      "left": {
+        "section": 2,
+        "slot": 2,
+        "terminal_label": "ВРУ2, ввод 2 — встроенные помещения корпуса 1,2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 4,
+        "terminal_label": "ВРУ2",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru3",
+      "left": {
+        "section": 2,
+        "slot": 3,
+        "terminal_label": "ВРУ3, ввод 2 — корпус 3",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 2,
+        "terminal_label": "ВРУ3",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru4",
+      "left": {
+        "section": 2,
+        "slot": 4,
+        "terminal_label": "ВРУ4, ввод 2 — корпус 4",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 1,
+        "terminal_label": "ВРУ4",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru_parking",
+      "left": {
+        "section": 2,
+        "slot": 5,
+        "terminal_label": "ВРУа, ввод 2 — подземная автостоянка",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 5,
+        "terminal_label": "ВРУа",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": true,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "vru_itp",
+      "left": {
+        "section": 2,
+        "slot": 6,
+        "terminal_label": "ВРУ-ИТП, ввод 2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 6,
+        "terminal_label": "ВРУ-ИТП",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": true,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "refrigeration_control",
+      "left": {
+        "section": 2,
+        "slot": 7,
+        "terminal_label": "ВРУ-ХЦ, ввод 2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 7,
+        "terminal_label": "ШУ-ХЦ",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": true,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "fire_pumps_control",
+      "left": {
+        "section": 2,
+        "slot": 8,
+        "terminal_label": "ВРУ-АПТ, ввод 2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 8,
+        "terminal_label": "ШУ-АПТ, рабочий ввод",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": true,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "water_pumps_control",
+      "left": {
+        "section": 2,
+        "slot": 9,
+        "terminal_label": "ВРУ-НСТ, ввод 2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 9,
+        "terminal_label": "ШУ-ХП, резервный ввод",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": true,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "cooler_2",
+      "left": {
+        "section": 2,
+        "slot": 10,
+        "terminal_label": "ДР2-ХМ2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 12,
+        "terminal_label": "ДР2-ХМ2",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "chiller_2",
+      "left": {
+        "section": 2,
+        "slot": 12,
+        "terminal_label": "ХМ2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 11,
+        "terminal_label": "ХМ2",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "dhw_tanks_feed_s2",
+      "left": {
+        "section": 2,
+        "slot": 14,
+        "terminal_label": "Резервные баки ГВС",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 13,
+        "terminal_label": "Резервные баки ГВС / ЭБ-ГВС",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    },
+    {
+      "functional_identity": "compensation_2",
+      "left": {
+        "section": 2,
+        "slot": 15,
+        "terminal_label": "АУКРМ №2",
+        "status": "ACTIVE"
+      },
+      "right": {
+        "section": 2,
+        "slot": 10,
+        "terminal_label": "АУКРМ-2",
+        "status": "ACTIVE"
+      },
+      "same_section": true,
+      "same_slot": false,
+      "identity_basis": "canonical EOM functional anchor; cross-version coordinates not used"
+    }
+  ],
+  "events": [
+    {
+      "class": "UNCHANGED_FUNCTIONAL_STRUCTURE",
+      "level": "A_SYSTEM_BACKBONE",
+      "confidence": 0.99,
+      "finding": "Сохранены два источника, два ввода, две секции шин и межсекционная связь.",
+      "evidence": {
+        "left": {
+          "source_count": 2,
+          "bus_section_count": 2,
+          "input_device_count": 2,
+          "section_tie_present": true,
+          "section_device": {
+            "label": "QF3",
+            "subclass": "MOTORIZED_CIRCUIT_BREAKER",
+            "rating": "2000A",
+            "control": "АВР"
+          },
+          "source_representation": "UPSTREAM_TP_CONNECTION"
+        },
+        "right": {
+          "source_count": 2,
+          "bus_section_count": 2,
+          "input_device_count": 2,
+          "section_tie_present": true,
+          "section_device": {
+            "label": "QS1",
+            "subclass": "SECTION_SWITCH_DISCONNECTOR",
+            "rating": "1600A",
+            "control": "SA / секц."
+          },
+          "source_representation": "TRANSFORMER_EXPLICIT"
+        }
+      }
+    },
+    {
+      "class": "STRUCTURE_REORGANIZED",
+      "level": "B_FUNCTIONAL_GROUPS",
+      "confidence": 0.99,
+      "finding": "Порядок и компоновка ветвей существенно изменены; identity сопоставлялась по функции, а не по позиции.",
+      "evidence": {
+        "matched_branches": 25,
+        "matched_but_moved": 18
+      }
+    },
+    {
+      "class": "SECTIONING_CHANGED",
+      "level": "C_DEVICE_CONNECTION",
+      "confidence": 0.98,
+      "finding": "Топология секционирования сохранена, но секционный аппарат изменён с QF3 на QS1 и иначе представлен по управлению.",
+      "evidence": {
+        "left": {
+          "label": "QF3",
+          "subclass": "MOTORIZED_CIRCUIT_BREAKER",
+          "rating": "2000A",
+          "control": "АВР"
+        },
+        "right": {
+          "label": "QS1",
+          "subclass": "SECTION_SWITCH_DISCONNECTOR",
+          "rating": "1600A",
+          "control": "SA / секц."
+        }
+      }
+    },
+    {
+      "class": "NODE_TYPE_CHANGED",
+      "level": "C_DEVICE_CONNECTION",
+      "confidence": 0.99,
+      "finding": "Класс межсекционного устройства изменён: автоматический выключатель → секционный выключатель/разъединитель.",
+      "evidence": {
+        "left_node": "section_device",
+        "right_node": "section_device"
+      }
+    },
+    {
+      "class": "DETAIL_LEVEL_INCREASED",
+      "level": "A_SYSTEM_BACKBONE",
+      "confidence": 0.97,
+      "finding": "RIGHT показывает Т1 и Т2 явно; LEFT показывает подключения к ТП1/ТП2. Это не доказательство появления новых источников.",
+      "evidence": {
+        "left": "UPSTREAM_TP_CONNECTION",
+        "right": "TRANSFORMER_EXPLICIT"
+      }
+    },
+    {
+      "class": "OUTGOING_GROUP_CHANGED",
+      "level": "B_FUNCTIONAL_GROUPS",
+      "confidence": 0.99,
+      "finding": "Количество отходящих аппаратов изменилось 30 → 27; свободные резервы 2 → 0.",
+      "evidence": {
+        "left": {
+          "device_count": 30,
+          "by_section": [
+            15,
+            15
+          ],
+          "active_or_functional": 28,
+          "free_reserve": 2,
+          "uncertain_identity": 0
+        },
+        "right": {
+          "device_count": 27,
+          "by_section": [
+            13,
+            14
+          ],
+          "active_or_functional": 27,
+          "free_reserve": 0,
+          "uncertain_identity": 2
+        }
+      }
+    },
+    {
+      "class": "UNCERTAIN",
+      "level": "C_DEVICE_CONNECTION",
+      "confidence": 1.0,
+      "finding": "Точное соответствие хвостовой ветви 2QF14 не утверждается из-за конфликта terminal-якоря ЯСН ТП и feeder-якоря ЭБ-ГВС.",
+      "evidence": {
+        "right_branch": {
+          "section": 2,
+          "slot": 14,
+          "device_label_as_drawn": "2QF14",
+          "device_bbox_page_norm": [
+            0.856812,
+            0.511026,
+            0.865404,
+            0.516235
+          ],
+          "functional_identity": "tp_aux_or_dhw_secondary",
+          "terminal_label": "ЯСН ТП по terminal-якорю; ЭБ-ГВС по feeder-якорю",
+          "status": "ACTIVE_UNCERTAIN_IDENTITY"
+        }
+      }
+    }
+  ],
+  "human_answers": {
+    "A_two_section_architecture": "YES",
+    "B_source_count": {
+      "left": 2,
+      "right": 2
+    },
+    "C_source_input_bus": "two parallel source → input device → bus section paths on both sides",
+    "D_section_relation": "one inter-section tie on both sides",
+    "E_sectioning_principle": "topology unchanged; device type/control representation changed",
+    "F_outgoing_groups": "15+15 (2 free reserves) → 13+14 (no free reserve shown)",
+    "G_preserved_moved_branches": 18,
+    "H_new_removed_nodes": "no confirmed new/removed backbone function; outgoing slots reduced; exact one-to-one for two RIGHT identities remains uncertain",
+    "I_principle_or_detail": "system principle preserved; real section-device/outgoing implementation changes coexist with increased RD detail"
+  },
+  "verdict": {
+    "choice": "B",
+    "text": "Structural graph comparison works on this pair, but reliable identity and engineering meaning require an EOM/single-line profile."
+  }
+}

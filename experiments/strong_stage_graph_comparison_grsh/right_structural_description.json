@@ -1,0 +1,2213 @@
+{
+  "schema_version": "system-graph-grsh-poc-v1",
+  "research_only": true,
+  "side": "RIGHT",
+  "stage_role": "RD",
+  "input": {
+    "blocks_json": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+    "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+    "source_pdf": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/document.pdf",
+    "blocks_json_sha256": "e92c0c5321c32737f17cad350e85e98397302e3d97ac8bd902d35c246c5cafca",
+    "source_pdf_sha256": "a5bfbc209192f60ea0ee31e5a39e263c7d095e624f22bf152a8046bc0ea2e030",
+    "page_index": 0,
+    "coords_norm": [
+      0.12643446748540366,
+      0.16927899686520376,
+      0.868532313267566,
+      0.8466799658022228
+    ],
+    "polygon_points_norm": [
+      [
+        0.4495671431447554,
+        0.8429752066115702
+      ],
+      [
+        0.5741896517012282,
+        0.8466799658022228
+      ],
+      [
+        0.6055969398026978,
+        0.7520661157024794
+      ],
+      [
+        0.868532313267566,
+        0.6873753206041607
+      ],
+      [
+        0.8663176967988726,
+        0.16927899686520376
+      ],
+      [
+        0.12643446748540366,
+        0.18153320034197779
+      ],
+      [
+        0.1320716730420777,
+        0.7762895411798233
+      ],
+      [
+        0.23797060599959735,
+        0.8235964662296951
+      ]
+    ],
+    "pairing_source": "explicit user-selected existing IMAGE block; no detector or sheet matcher"
+  },
+  "method": {
+    "sequence": [
+      "resolve existing upstream block",
+      "extract vector words in upstream polygon",
+      "find repeated outgoing QF positions",
+      "apply research-only EOM single-line profile",
+      "adjudicate central and ambiguous local regions on raster"
+    ],
+    "coordinate_use": "within-side connectivity only; never used for cross-version identity",
+    "text_use": "identifier/anchor only; no text or table diff",
+    "generic_graph_result": "recorded separately in overlay_comparison_diagnostic.json"
+  },
+  "extraction_evidence": {
+    "page_rect": [
+      0.0,
+      0.0,
+      2384.0,
+      1684.0
+    ],
+    "page_rotation": 270,
+    "page_drawings_total": 1622,
+    "words_in_upstream_polygon": 500,
+    "outgoing_device_positions": 27,
+    "outgoing_by_section": [
+      13,
+      14
+    ],
+    "outgoing_token_x_gap_median": 0.024312
+  },
+  "backbone": {
+    "source_count": 2,
+    "bus_section_count": 2,
+    "input_device_count": 2,
+    "section_tie_present": true,
+    "section_device": {
+      "label": "QS1",
+      "subclass": "SECTION_SWITCH_DISCONNECTOR",
+      "rating": "1600A",
+      "control": "SA / секц."
+    },
+    "source_representation": "TRANSFORMER_EXPLICIT"
+  },
+  "outgoing_summary": {
+    "device_count": 27,
+    "by_section": [
+      13,
+      14
+    ],
+    "active_or_functional": 27,
+    "free_reserve": 0,
+    "uncertain_identity": 2
+  },
+  "branches": [
+    {
+      "section": 1,
+      "slot": 1,
+      "device_label_as_drawn": "1QF1",
+      "device_bbox_page_norm": [
+        0.190017,
+        0.511026,
+        0.196151,
+        0.516235
+      ],
+      "functional_identity": "cooler_1",
+      "terminal_label": "ДР1-ХМ1",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 2,
+      "device_label_as_drawn": "1QF2",
+      "device_bbox_page_norm": [
+        0.211862,
+        0.511026,
+        0.21849,
+        0.516235
+      ],
+      "functional_identity": "chiller_1",
+      "terminal_label": "ХМ1",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 3,
+      "device_label_as_drawn": "1QF3",
+      "device_bbox_page_norm": [
+        0.230738,
+        0.511026,
+        0.237365,
+        0.516235
+      ],
+      "functional_identity": "compensation_1",
+      "terminal_label": "АУКРМ-1",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 4,
+      "device_label_as_drawn": "1QF4",
+      "device_bbox_page_norm": [
+        0.251728,
+        0.511026,
+        0.258602,
+        0.516235
+      ],
+      "functional_identity": "vru4",
+      "terminal_label": "ВРУ4",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 5,
+      "device_label_as_drawn": "1QF5",
+      "device_bbox_page_norm": [
+        0.287064,
+        0.511026,
+        0.293691,
+        0.516235
+      ],
+      "functional_identity": "vru3",
+      "terminal_label": "ВРУ3",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 6,
+      "device_label_as_drawn": "1QF6",
+      "device_bbox_page_norm": [
+        0.317265,
+        0.511026,
+        0.323892,
+        0.516235
+      ],
+      "functional_identity": "vru1",
+      "terminal_label": "ВРУ1",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 7,
+      "device_label_as_drawn": "1QF7",
+      "device_bbox_page_norm": [
+        0.35094,
+        0.511026,
+        0.357567,
+        0.516235
+      ],
+      "functional_identity": "vru2",
+      "terminal_label": "ВРУ2",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 8,
+      "device_label_as_drawn": "1QF8",
+      "device_bbox_page_norm": [
+        0.377869,
+        0.510029,
+        0.384496,
+        0.515238
+      ],
+      "functional_identity": "vru_parking",
+      "terminal_label": "ВРУа",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 9,
+      "device_label_as_drawn": "1QF9",
+      "device_bbox_page_norm": [
+        0.407416,
+        0.510029,
+        0.414043,
+        0.515238
+      ],
+      "functional_identity": "vru_itp",
+      "terminal_label": "ВРУ-ИТП",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 10,
+      "device_label_as_drawn": "1QF10",
+      "device_bbox_page_norm": [
+        0.435906,
+        0.511026,
+        0.443758,
+        0.516235
+      ],
+      "functional_identity": "refrigeration_control",
+      "terminal_label": "ШУ-ХЦ",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 11,
+      "device_label_as_drawn": "1QF11",
+      "device_bbox_page_norm": [
+        0.460168,
+        0.511026,
+        0.467527,
+        0.516235
+      ],
+      "functional_identity": "fire_pumps_control",
+      "terminal_label": "ШУ-АПТ, резервный ввод",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 12,
+      "device_label_as_drawn": "1QF12",
+      "device_bbox_page_norm": [
+        0.48448,
+        0.511026,
+        0.492332,
+        0.516235
+      ],
+      "functional_identity": "water_pumps_control",
+      "terminal_label": "ШУ-ХП, рабочий ввод",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 1,
+      "slot": 13,
+      "device_label_as_drawn": "1QF13",
+      "device_bbox_page_norm": [
+        0.502148,
+        0.511026,
+        0.51,
+        0.516235
+      ],
+      "functional_identity": "outdoor_lighting",
+      "terminal_label": "ЩНО",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 1,
+      "device_label_as_drawn": "2QF1",
+      "device_bbox_page_norm": [
+        0.541762,
+        0.511026,
+        0.548389,
+        0.516235
+      ],
+      "functional_identity": "vru4",
+      "terminal_label": "ВРУ4",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 2,
+      "device_label_as_drawn": "2QF2",
+      "device_bbox_page_norm": [
+        0.566024,
+        0.511026,
+        0.573144,
+        0.516235
+      ],
+      "functional_identity": "vru3",
+      "terminal_label": "ВРУ3",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 3,
+      "device_label_as_drawn": "2QF3",
+      "device_bbox_page_norm": [
+        0.597836,
+        0.511026,
+        0.604956,
+        0.516235
+      ],
+      "functional_identity": "vru1",
+      "terminal_label": "ВРУ1; identity восстановлена по симметрии ветвей, подпись feeder повторяет ВРУ3",
+      "status": "ACTIVE_UNCERTAIN_LABEL"
+    },
+    {
+      "section": 2,
+      "slot": 4,
+      "device_label_as_drawn": "2QF4",
+      "device_bbox_page_norm": [
+        0.622097,
+        0.511026,
+        0.629464,
+        0.516235
+      ],
+      "functional_identity": "vru2",
+      "terminal_label": "ВРУ2",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 5,
+      "device_label_as_drawn": "2QF5",
+      "device_bbox_page_norm": [
+        0.646409,
+        0.511026,
+        0.65353,
+        0.516235
+      ],
+      "functional_identity": "vru_parking",
+      "terminal_label": "ВРУа",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 6,
+      "device_label_as_drawn": "2QF6",
+      "device_bbox_page_norm": [
+        0.670671,
+        0.511026,
+        0.677791,
+        0.516235
+      ],
+      "functional_identity": "vru_itp",
+      "terminal_label": "ВРУ-ИТП",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 7,
+      "device_label_as_drawn": "2QF7",
+      "device_bbox_page_norm": [
+        0.694983,
+        0.511026,
+        0.702103,
+        0.516235
+      ],
+      "functional_identity": "refrigeration_control",
+      "terminal_label": "ШУ-ХЦ",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 8,
+      "device_label_as_drawn": "2QF8",
+      "device_bbox_page_norm": [
+        0.719245,
+        0.511026,
+        0.726365,
+        0.516235
+      ],
+      "functional_identity": "fire_pumps_control",
+      "terminal_label": "ШУ-АПТ, рабочий ввод",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 9,
+      "device_label_as_drawn": "2QF9",
+      "device_bbox_page_norm": [
+        0.743557,
+        0.511026,
+        0.750677,
+        0.516235
+      ],
+      "functional_identity": "water_pumps_control",
+      "terminal_label": "ШУ-ХП, резервный ввод",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 10,
+      "device_label_as_drawn": "2QF10",
+      "device_bbox_page_norm": [
+        0.765705,
+        0.511026,
+        0.77405,
+        0.516235
+      ],
+      "functional_identity": "compensation_2",
+      "terminal_label": "АУКРМ-2",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 11,
+      "device_label_as_drawn": "2QF11",
+      "device_bbox_page_norm": [
+        0.791879,
+        0.511026,
+        0.799732,
+        0.516235
+      ],
+      "functional_identity": "chiller_2",
+      "terminal_label": "ХМ2",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 12,
+      "device_label_as_drawn": "2QF12",
+      "device_bbox_page_norm": [
+        0.81453,
+        0.511026,
+        0.822876,
+        0.516235
+      ],
+      "functional_identity": "cooler_2",
+      "terminal_label": "ДР2-ХМ2",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 13,
+      "device_label_as_drawn": "2QF13",
+      "device_bbox_page_norm": [
+        0.834362,
+        0.511026,
+        0.842708,
+        0.516235
+      ],
+      "functional_identity": "dhw_tanks_feed_s2",
+      "terminal_label": "Резервные баки ГВС / ЭБ-ГВС",
+      "status": "ACTIVE"
+    },
+    {
+      "section": 2,
+      "slot": 14,
+      "device_label_as_drawn": "2QF14",
+      "device_bbox_page_norm": [
+        0.856812,
+        0.511026,
+        0.865404,
+        0.516235
+      ],
+      "functional_identity": "tp_aux_or_dhw_secondary",
+      "terminal_label": "ЯСН ТП по terminal-якорю; ЭБ-ГВС по feeder-якорю",
+      "status": "ACTIVE_UNCERTAIN_IDENTITY"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "source_1",
+      "class": "SOURCE",
+      "subclass": "TRANSFORMER_EXPLICIT",
+      "label": "Т1",
+      "roles": [
+        "SOURCE"
+      ],
+      "section": 1,
+      "representation_detail": "EXPLICIT_TRANSFORMER",
+      "evidence": "vector label + incoming trunk confirmed on raster"
+    },
+    {
+      "id": "input_1",
+      "class": "INPUT_DEVICE",
+      "subclass": "CIRCUIT_BREAKER",
+      "label": "QF1",
+      "rating_anchor": "2500A",
+      "section": 1,
+      "evidence": "device tag on incoming vertical path"
+    },
+    {
+      "id": "bus_1",
+      "class": "BUS_SECTION",
+      "label": "РП1",
+      "section": 1,
+      "evidence": "long busbar with repeated outgoing branches and section label"
+    },
+    {
+      "id": "metering_1",
+      "class": "METERING_GROUP",
+      "label": "1ТТ1…1ТТ9, PW1, Wh1, мультиметр",
+      "section": 1,
+      "evidence": "TT/TA, PW and Wh anchors on the incoming path"
+    },
+    {
+      "id": "source_2",
+      "class": "SOURCE",
+      "subclass": "TRANSFORMER_EXPLICIT",
+      "label": "Т2",
+      "roles": [
+        "SOURCE"
+      ],
+      "section": 2,
+      "representation_detail": "EXPLICIT_TRANSFORMER",
+      "evidence": "vector label + incoming trunk confirmed on raster"
+    },
+    {
+      "id": "input_2",
+      "class": "INPUT_DEVICE",
+      "subclass": "CIRCUIT_BREAKER",
+      "label": "QF2",
+      "rating_anchor": "2500A",
+      "section": 2,
+      "evidence": "device tag on incoming vertical path"
+    },
+    {
+      "id": "bus_2",
+      "class": "BUS_SECTION",
+      "label": "РП2",
+      "section": 2,
+      "evidence": "long busbar with repeated outgoing branches and section label"
+    },
+    {
+      "id": "metering_2",
+      "class": "METERING_GROUP",
+      "label": "2ТТ1…2ТТ9, PW2, Wh2, мультиметр",
+      "section": 2,
+      "evidence": "TT/TA, PW and Wh anchors on the incoming path"
+    },
+    {
+      "id": "section_device",
+      "class": "SECTION_DEVICE",
+      "label": "QS1",
+      "subclass": "SECTION_SWITCH_DISCONNECTOR",
+      "rating": "1600A",
+      "control": "SA / секц.",
+      "evidence_anchor": {
+        "text": "QS1",
+        "bbox_page_norm": [
+          0.506024,
+          0.664447,
+          0.511179,
+          0.669656
+        ],
+        "center_page_norm": [
+          0.508601,
+          0.667051
+        ]
+      },
+      "evidence": "tag on the only cross-link between the two incoming/section paths"
+    },
+    {
+      "id": "grounding",
+      "class": "GROUNDING",
+      "label": "N/PE/PEN and equipotential bonding group",
+      "evidence": "N/PE/PEN rails and grounding/equipotential symbols"
+    },
+    {
+      "id": "outdev_s1_01",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF1",
+      "section": 1,
+      "slot": 1,
+      "bbox_page_norm": [
+        0.190017,
+        0.511026,
+        0.196151,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_01",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 1",
+      "section": 1,
+      "slot": 1,
+      "functional_identity": "cooler_1",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_01",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ДР1-ХМ1",
+      "section": 1,
+      "functional_identity": "cooler_1",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_02",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF2",
+      "section": 1,
+      "slot": 2,
+      "bbox_page_norm": [
+        0.211862,
+        0.511026,
+        0.21849,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_02",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 2",
+      "section": 1,
+      "slot": 2,
+      "functional_identity": "chiller_1",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_02",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ХМ1",
+      "section": 1,
+      "functional_identity": "chiller_1",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_03",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF3",
+      "section": 1,
+      "slot": 3,
+      "bbox_page_norm": [
+        0.230738,
+        0.511026,
+        0.237365,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_03",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 3",
+      "section": 1,
+      "slot": 3,
+      "functional_identity": "compensation_1",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_03",
+      "class": "COMPENSATION_GROUP",
+      "label": "АУКРМ-1",
+      "section": 1,
+      "functional_identity": "compensation_1",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_04",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF4",
+      "section": 1,
+      "slot": 4,
+      "bbox_page_norm": [
+        0.251728,
+        0.511026,
+        0.258602,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_04",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 4",
+      "section": 1,
+      "slot": 4,
+      "functional_identity": "vru4",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_04",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ4",
+      "section": 1,
+      "functional_identity": "vru4",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_05",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF5",
+      "section": 1,
+      "slot": 5,
+      "bbox_page_norm": [
+        0.287064,
+        0.511026,
+        0.293691,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_05",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 5",
+      "section": 1,
+      "slot": 5,
+      "functional_identity": "vru3",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_05",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ3",
+      "section": 1,
+      "functional_identity": "vru3",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_06",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF6",
+      "section": 1,
+      "slot": 6,
+      "bbox_page_norm": [
+        0.317265,
+        0.511026,
+        0.323892,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_06",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 6",
+      "section": 1,
+      "slot": 6,
+      "functional_identity": "vru1",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_06",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ1",
+      "section": 1,
+      "functional_identity": "vru1",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_07",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF7",
+      "section": 1,
+      "slot": 7,
+      "bbox_page_norm": [
+        0.35094,
+        0.511026,
+        0.357567,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_07",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 7",
+      "section": 1,
+      "slot": 7,
+      "functional_identity": "vru2",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_07",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ2",
+      "section": 1,
+      "functional_identity": "vru2",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_08",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF8",
+      "section": 1,
+      "slot": 8,
+      "bbox_page_norm": [
+        0.377869,
+        0.510029,
+        0.384496,
+        0.515238
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_08",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 8",
+      "section": 1,
+      "slot": 8,
+      "functional_identity": "vru_parking",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_08",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУа",
+      "section": 1,
+      "functional_identity": "vru_parking",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_09",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF9",
+      "section": 1,
+      "slot": 9,
+      "bbox_page_norm": [
+        0.407416,
+        0.510029,
+        0.414043,
+        0.515238
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_09",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 9",
+      "section": 1,
+      "slot": 9,
+      "functional_identity": "vru_itp",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_09",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ-ИТП",
+      "section": 1,
+      "functional_identity": "vru_itp",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_10",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF10",
+      "section": 1,
+      "slot": 10,
+      "bbox_page_norm": [
+        0.435906,
+        0.511026,
+        0.443758,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_10",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 10",
+      "section": 1,
+      "slot": 10,
+      "functional_identity": "refrigeration_control",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_10",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ШУ-ХЦ",
+      "section": 1,
+      "functional_identity": "refrigeration_control",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_11",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF11",
+      "section": 1,
+      "slot": 11,
+      "bbox_page_norm": [
+        0.460168,
+        0.511026,
+        0.467527,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_11",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 11",
+      "section": 1,
+      "slot": 11,
+      "functional_identity": "fire_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_11",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ШУ-АПТ, резервный ввод",
+      "section": 1,
+      "functional_identity": "fire_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_12",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF12",
+      "section": 1,
+      "slot": 12,
+      "bbox_page_norm": [
+        0.48448,
+        0.511026,
+        0.492332,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_12",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 12",
+      "section": 1,
+      "slot": 12,
+      "functional_identity": "water_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_12",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ШУ-ХП, рабочий ввод",
+      "section": 1,
+      "functional_identity": "water_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s1_13",
+      "class": "OUTGOING_DEVICE",
+      "label": "1QF13",
+      "section": 1,
+      "slot": 13,
+      "bbox_page_norm": [
+        0.502148,
+        0.511026,
+        0.51,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s1_13",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 1 / slot 13",
+      "section": 1,
+      "slot": 13,
+      "functional_identity": "outdoor_lighting",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s1_13",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ЩНО",
+      "section": 1,
+      "functional_identity": "outdoor_lighting",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_01",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF1",
+      "section": 2,
+      "slot": 1,
+      "bbox_page_norm": [
+        0.541762,
+        0.511026,
+        0.548389,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_01",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 1",
+      "section": 2,
+      "slot": 1,
+      "functional_identity": "vru4",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_01",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ4",
+      "section": 2,
+      "functional_identity": "vru4",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_02",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF2",
+      "section": 2,
+      "slot": 2,
+      "bbox_page_norm": [
+        0.566024,
+        0.511026,
+        0.573144,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_02",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 2",
+      "section": 2,
+      "slot": 2,
+      "functional_identity": "vru3",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_02",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ3",
+      "section": 2,
+      "functional_identity": "vru3",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_03",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF3",
+      "section": 2,
+      "slot": 3,
+      "bbox_page_norm": [
+        0.597836,
+        0.511026,
+        0.604956,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_03",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 3",
+      "section": 2,
+      "slot": 3,
+      "functional_identity": "vru1",
+      "status": "ACTIVE_UNCERTAIN_LABEL",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_03",
+      "class": "UNKNOWN_FUNCTIONAL_NODE",
+      "label": "ВРУ1; identity восстановлена по симметрии ветвей, подпись feeder повторяет ВРУ3",
+      "section": 2,
+      "functional_identity": "vru1",
+      "status": "ACTIVE_UNCERTAIN_LABEL",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_04",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF4",
+      "section": 2,
+      "slot": 4,
+      "bbox_page_norm": [
+        0.622097,
+        0.511026,
+        0.629464,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_04",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 4",
+      "section": 2,
+      "slot": 4,
+      "functional_identity": "vru2",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_04",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ2",
+      "section": 2,
+      "functional_identity": "vru2",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_05",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF5",
+      "section": 2,
+      "slot": 5,
+      "bbox_page_norm": [
+        0.646409,
+        0.511026,
+        0.65353,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_05",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 5",
+      "section": 2,
+      "slot": 5,
+      "functional_identity": "vru_parking",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_05",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУа",
+      "section": 2,
+      "functional_identity": "vru_parking",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_06",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF6",
+      "section": 2,
+      "slot": 6,
+      "bbox_page_norm": [
+        0.670671,
+        0.511026,
+        0.677791,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_06",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 6",
+      "section": 2,
+      "slot": 6,
+      "functional_identity": "vru_itp",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_06",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ВРУ-ИТП",
+      "section": 2,
+      "functional_identity": "vru_itp",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_07",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF7",
+      "section": 2,
+      "slot": 7,
+      "bbox_page_norm": [
+        0.694983,
+        0.511026,
+        0.702103,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_07",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 7",
+      "section": 2,
+      "slot": 7,
+      "functional_identity": "refrigeration_control",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_07",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ШУ-ХЦ",
+      "section": 2,
+      "functional_identity": "refrigeration_control",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_08",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF8",
+      "section": 2,
+      "slot": 8,
+      "bbox_page_norm": [
+        0.719245,
+        0.511026,
+        0.726365,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_08",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 8",
+      "section": 2,
+      "slot": 8,
+      "functional_identity": "fire_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_08",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ШУ-АПТ, рабочий ввод",
+      "section": 2,
+      "functional_identity": "fire_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_09",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF9",
+      "section": 2,
+      "slot": 9,
+      "bbox_page_norm": [
+        0.743557,
+        0.511026,
+        0.750677,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_09",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 9",
+      "section": 2,
+      "slot": 9,
+      "functional_identity": "water_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_09",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ШУ-ХП, резервный ввод",
+      "section": 2,
+      "functional_identity": "water_pumps_control",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_10",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF10",
+      "section": 2,
+      "slot": 10,
+      "bbox_page_norm": [
+        0.765705,
+        0.511026,
+        0.77405,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_10",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 10",
+      "section": 2,
+      "slot": 10,
+      "functional_identity": "compensation_2",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_10",
+      "class": "COMPENSATION_GROUP",
+      "label": "АУКРМ-2",
+      "section": 2,
+      "functional_identity": "compensation_2",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_11",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF11",
+      "section": 2,
+      "slot": 11,
+      "bbox_page_norm": [
+        0.791879,
+        0.511026,
+        0.799732,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_11",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 11",
+      "section": 2,
+      "slot": 11,
+      "functional_identity": "chiller_2",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_11",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ХМ2",
+      "section": 2,
+      "functional_identity": "chiller_2",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_12",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF12",
+      "section": 2,
+      "slot": 12,
+      "bbox_page_norm": [
+        0.81453,
+        0.511026,
+        0.822876,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_12",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 12",
+      "section": 2,
+      "slot": 12,
+      "functional_identity": "cooler_2",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_12",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "ДР2-ХМ2",
+      "section": 2,
+      "functional_identity": "cooler_2",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_13",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF13",
+      "section": 2,
+      "slot": 13,
+      "bbox_page_norm": [
+        0.834362,
+        0.511026,
+        0.842708,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_13",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 13",
+      "section": 2,
+      "slot": 13,
+      "functional_identity": "dhw_tanks_feed_s2",
+      "status": "ACTIVE",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_13",
+      "class": "LOAD_OR_TERMINAL",
+      "label": "Резервные баки ГВС / ЭБ-ГВС",
+      "section": 2,
+      "functional_identity": "dhw_tanks_feed_s2",
+      "status": "ACTIVE",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    },
+    {
+      "id": "outdev_s2_14",
+      "class": "OUTGOING_DEVICE",
+      "label": "2QF14",
+      "section": 2,
+      "slot": 14,
+      "bbox_page_norm": [
+        0.856812,
+        0.511026,
+        0.865404,
+        0.516235
+      ],
+      "evidence": "outgoing QF tag on branch stem"
+    },
+    {
+      "id": "feeder_s2_14",
+      "class": "OUTGOING_FEEDER",
+      "label": "section 2 / slot 14",
+      "section": 2,
+      "slot": 14,
+      "functional_identity": "tp_aux_or_dhw_secondary",
+      "status": "ACTIVE_UNCERTAIN_IDENTITY",
+      "evidence": "same branch column as outgoing device and terminal anchor"
+    },
+    {
+      "id": "terminal_s2_14",
+      "class": "UNKNOWN_FUNCTIONAL_NODE",
+      "label": "ЯСН ТП по terminal-якорю; ЭБ-ГВС по feeder-якорю",
+      "section": 2,
+      "functional_identity": "tp_aux_or_dhw_secondary",
+      "status": "ACTIVE_UNCERTAIN_IDENTITY",
+      "evidence": "functional text anchor used only for graph identity; human raster adjudication"
+    }
+  ],
+  "relations": [
+    {
+      "id": "edge_0001",
+      "source": "source_1",
+      "target": "input_1",
+      "relation": "FEEDS",
+      "confidence": 0.99,
+      "evidence": "continuous incoming trunk"
+    },
+    {
+      "id": "edge_0002",
+      "source": "input_1",
+      "target": "bus_1",
+      "relation": "FEEDS",
+      "confidence": 0.99,
+      "evidence": "continuous incoming trunk to bus section"
+    },
+    {
+      "id": "edge_0003",
+      "source": "metering_1",
+      "target": "input_1",
+      "relation": "MEASURES",
+      "confidence": 0.98,
+      "evidence": "metering symbols share the incoming path"
+    },
+    {
+      "id": "edge_0004",
+      "source": "source_2",
+      "target": "input_2",
+      "relation": "FEEDS",
+      "confidence": 0.99,
+      "evidence": "continuous incoming trunk"
+    },
+    {
+      "id": "edge_0005",
+      "source": "input_2",
+      "target": "bus_2",
+      "relation": "FEEDS",
+      "confidence": 0.99,
+      "evidence": "continuous incoming trunk to bus section"
+    },
+    {
+      "id": "edge_0006",
+      "source": "metering_2",
+      "target": "input_2",
+      "relation": "MEASURES",
+      "confidence": 0.98,
+      "evidence": "metering symbols share the incoming path"
+    },
+    {
+      "id": "edge_0007",
+      "source": "section_device",
+      "target": "bus_1",
+      "relation": "TIES_SECTIONS",
+      "confidence": 0.99,
+      "evidence": "cross-link geometry"
+    },
+    {
+      "id": "edge_0008",
+      "source": "section_device",
+      "target": "bus_2",
+      "relation": "TIES_SECTIONS",
+      "confidence": 0.99,
+      "evidence": "cross-link geometry"
+    },
+    {
+      "id": "edge_0009",
+      "source": "grounding",
+      "target": "bus_1",
+      "relation": "CONNECTED_TO",
+      "confidence": 0.98,
+      "evidence": "grounding rails"
+    },
+    {
+      "id": "edge_0010",
+      "source": "grounding",
+      "target": "bus_2",
+      "relation": "CONNECTED_TO",
+      "confidence": 0.98,
+      "evidence": "grounding rails"
+    },
+    {
+      "id": "edge_0011",
+      "source": "bus_1",
+      "target": "outdev_s1_01",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0012",
+      "source": "outdev_s1_01",
+      "target": "feeder_s1_01",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0013",
+      "source": "feeder_s1_01",
+      "target": "terminal_s1_01",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0014",
+      "source": "bus_1",
+      "target": "outdev_s1_02",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0015",
+      "source": "outdev_s1_02",
+      "target": "feeder_s1_02",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0016",
+      "source": "feeder_s1_02",
+      "target": "terminal_s1_02",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0017",
+      "source": "bus_1",
+      "target": "outdev_s1_03",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0018",
+      "source": "outdev_s1_03",
+      "target": "feeder_s1_03",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0019",
+      "source": "feeder_s1_03",
+      "target": "terminal_s1_03",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0020",
+      "source": "bus_1",
+      "target": "outdev_s1_04",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0021",
+      "source": "outdev_s1_04",
+      "target": "feeder_s1_04",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0022",
+      "source": "feeder_s1_04",
+      "target": "terminal_s1_04",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0023",
+      "source": "bus_1",
+      "target": "outdev_s1_05",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0024",
+      "source": "outdev_s1_05",
+      "target": "feeder_s1_05",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0025",
+      "source": "feeder_s1_05",
+      "target": "terminal_s1_05",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0026",
+      "source": "bus_1",
+      "target": "outdev_s1_06",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0027",
+      "source": "outdev_s1_06",
+      "target": "feeder_s1_06",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0028",
+      "source": "feeder_s1_06",
+      "target": "terminal_s1_06",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0029",
+      "source": "bus_1",
+      "target": "outdev_s1_07",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0030",
+      "source": "outdev_s1_07",
+      "target": "feeder_s1_07",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0031",
+      "source": "feeder_s1_07",
+      "target": "terminal_s1_07",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0032",
+      "source": "bus_1",
+      "target": "outdev_s1_08",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0033",
+      "source": "outdev_s1_08",
+      "target": "feeder_s1_08",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0034",
+      "source": "feeder_s1_08",
+      "target": "terminal_s1_08",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0035",
+      "source": "bus_1",
+      "target": "outdev_s1_09",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0036",
+      "source": "outdev_s1_09",
+      "target": "feeder_s1_09",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0037",
+      "source": "feeder_s1_09",
+      "target": "terminal_s1_09",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0038",
+      "source": "bus_1",
+      "target": "outdev_s1_10",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0039",
+      "source": "outdev_s1_10",
+      "target": "feeder_s1_10",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0040",
+      "source": "feeder_s1_10",
+      "target": "terminal_s1_10",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0041",
+      "source": "bus_1",
+      "target": "outdev_s1_11",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0042",
+      "source": "outdev_s1_11",
+      "target": "feeder_s1_11",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0043",
+      "source": "feeder_s1_11",
+      "target": "terminal_s1_11",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0044",
+      "source": "bus_1",
+      "target": "outdev_s1_12",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0045",
+      "source": "outdev_s1_12",
+      "target": "feeder_s1_12",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0046",
+      "source": "feeder_s1_12",
+      "target": "terminal_s1_12",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0047",
+      "source": "bus_1",
+      "target": "outdev_s1_13",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0048",
+      "source": "outdev_s1_13",
+      "target": "feeder_s1_13",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0049",
+      "source": "feeder_s1_13",
+      "target": "terminal_s1_13",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0050",
+      "source": "bus_2",
+      "target": "outdev_s2_01",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0051",
+      "source": "outdev_s2_01",
+      "target": "feeder_s2_01",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0052",
+      "source": "feeder_s2_01",
+      "target": "terminal_s2_01",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0053",
+      "source": "bus_2",
+      "target": "outdev_s2_02",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0054",
+      "source": "outdev_s2_02",
+      "target": "feeder_s2_02",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0055",
+      "source": "feeder_s2_02",
+      "target": "terminal_s2_02",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0056",
+      "source": "bus_2",
+      "target": "outdev_s2_03",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0057",
+      "source": "outdev_s2_03",
+      "target": "feeder_s2_03",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0058",
+      "source": "feeder_s2_03",
+      "target": "terminal_s2_03",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.95,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0059",
+      "source": "bus_2",
+      "target": "outdev_s2_04",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0060",
+      "source": "outdev_s2_04",
+      "target": "feeder_s2_04",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0061",
+      "source": "feeder_s2_04",
+      "target": "terminal_s2_04",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0062",
+      "source": "bus_2",
+      "target": "outdev_s2_05",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0063",
+      "source": "outdev_s2_05",
+      "target": "feeder_s2_05",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0064",
+      "source": "feeder_s2_05",
+      "target": "terminal_s2_05",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0065",
+      "source": "bus_2",
+      "target": "outdev_s2_06",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0066",
+      "source": "outdev_s2_06",
+      "target": "feeder_s2_06",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0067",
+      "source": "feeder_s2_06",
+      "target": "terminal_s2_06",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0068",
+      "source": "bus_2",
+      "target": "outdev_s2_07",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0069",
+      "source": "outdev_s2_07",
+      "target": "feeder_s2_07",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0070",
+      "source": "feeder_s2_07",
+      "target": "terminal_s2_07",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0071",
+      "source": "bus_2",
+      "target": "outdev_s2_08",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0072",
+      "source": "outdev_s2_08",
+      "target": "feeder_s2_08",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0073",
+      "source": "feeder_s2_08",
+      "target": "terminal_s2_08",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0074",
+      "source": "bus_2",
+      "target": "outdev_s2_09",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0075",
+      "source": "outdev_s2_09",
+      "target": "feeder_s2_09",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0076",
+      "source": "feeder_s2_09",
+      "target": "terminal_s2_09",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0077",
+      "source": "bus_2",
+      "target": "outdev_s2_10",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0078",
+      "source": "outdev_s2_10",
+      "target": "feeder_s2_10",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0079",
+      "source": "feeder_s2_10",
+      "target": "terminal_s2_10",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0080",
+      "source": "bus_2",
+      "target": "outdev_s2_11",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0081",
+      "source": "outdev_s2_11",
+      "target": "feeder_s2_11",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0082",
+      "source": "feeder_s2_11",
+      "target": "terminal_s2_11",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0083",
+      "source": "bus_2",
+      "target": "outdev_s2_12",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0084",
+      "source": "outdev_s2_12",
+      "target": "feeder_s2_12",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0085",
+      "source": "feeder_s2_12",
+      "target": "terminal_s2_12",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0086",
+      "source": "bus_2",
+      "target": "outdev_s2_13",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0087",
+      "source": "outdev_s2_13",
+      "target": "feeder_s2_13",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0088",
+      "source": "feeder_s2_13",
+      "target": "terminal_s2_13",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.99,
+      "evidence": "continuous branch column"
+    },
+    {
+      "id": "edge_0089",
+      "source": "bus_2",
+      "target": "outdev_s2_14",
+      "relation": "BELONGS_TO_SECTION",
+      "confidence": 0.99,
+      "evidence": "branch stem meets busbar"
+    },
+    {
+      "id": "edge_0090",
+      "source": "outdev_s2_14",
+      "target": "feeder_s2_14",
+      "relation": "PROTECTS_OR_SWITCHES",
+      "confidence": 0.99,
+      "evidence": "device lies on feeder stem"
+    },
+    {
+      "id": "edge_0091",
+      "source": "feeder_s2_14",
+      "target": "terminal_s2_14",
+      "relation": "TERMINATES_AT",
+      "confidence": 0.95,
+      "evidence": "continuous branch column"
+    }
+  ],
+  "uncertainties": [
+    "У ветви 2QF3 feeder-якорь повторяет ВРУ3; сопоставление с ВРУ1 основано на симметрии двухсекционной схемы и помечено как uncertain.",
+    "У 2QF14 terminal-якорь ЯСН ТП конфликтует с feeder-якорем ЭБ-ГВС; точная identity не утверждается.",
+    "Обозначение QS1 надёжно, но одного листа недостаточно, чтобы доказать полный алгоритм его автоматического управления."
+  ]
+}

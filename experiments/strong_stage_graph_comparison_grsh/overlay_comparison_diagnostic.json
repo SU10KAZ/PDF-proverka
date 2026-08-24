@@ -1,0 +1,236 @@
+{
+  "schema_version": "overlay-comparison-diagnostic-grsh-poc-v1",
+  "research_only": true,
+  "scope": {
+    "left_block_id": "blk_039909ec039649a1b8209f059c95167b",
+    "right_block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6"
+  },
+  "renders": {
+    "left": "renders/left_block.png",
+    "right": "renders/right_block.png",
+    "side_by_side": "renders/side_by_side.png",
+    "overlay": "renders/overlay_stretch_diagnostic.png",
+    "left_size_px": [
+      5642,
+      2785
+    ],
+    "right_size_px": [
+      3540,
+      2282
+    ],
+    "left_aspect_ratio": 2.025853,
+    "right_aspect_ratio": 1.551271
+  },
+  "feature_registration": {
+    "method": "ORB + ratio test + RANSAC diagnostic only",
+    "left_keypoints": 8000,
+    "right_keypoints": 8000,
+    "good_matches": 96,
+    "affine_inliers": 9,
+    "affine_inlier_ratio": 0.09375,
+    "homography_inliers": 12,
+    "homography_inlier_ratio": 0.125,
+    "estimated_affine_scale": 0.0,
+    "estimated_affine_rotation_deg": -0.0,
+    "reliable": false,
+    "reason": "too few geometrically consistent anchors; fitted affine is degenerate or dominated by repeated CAD/text features"
+  },
+  "forced_bbox_normalized_ink_diff": {
+    "warning": "Each whole block is independently stretched to 1600x900. This is an intentionally generous overlay upper bound, not a valid engineering registration.",
+    "threshold_gray_lt": 220,
+    "left_ink_pixels": 100301,
+    "right_ink_pixels": 92927,
+    "intersection_pixels": 10519,
+    "union_pixels": 182709,
+    "iou": 0.057572,
+    "dice": 0.108877,
+    "ink_lost_pixels": 89782,
+    "ink_new_pixels": 82408,
+    "ink_lost_components_area_ge_4px": 3603,
+    "ink_new_components_area_ge_4px": 2262,
+    "interpretation": "thousands of pixel islands describe layout/primitive/text packaging, not thousands of system changes"
+  },
+  "generic_graph_diagnostic": {
+    "method": "existing generic prepared-object graph v0.3",
+    "left": {
+      "quality": {
+        "status": "OBJECT_FORMATION_PARTIAL",
+        "extraction_reliable": true,
+        "bbox_reliable": true,
+        "object_formation_complete": false,
+        "dangerous_cap": true
+      },
+      "visible_geometry_summary": {
+        "objects": 2271,
+        "object_types": {
+          "CLOSED_REGION": 53,
+          "COMPOSITE_GRAPHIC": 2,
+          "CONNECTED_NETWORK": 129,
+          "LINEAR_OBJECT": 1531,
+          "SYMBOL_OBJECT": 422,
+          "UNKNOWN_OBJECT": 134
+        },
+        "segments": 30000,
+        "extraction": {
+          "page_drawings_total": 10038,
+          "drawings_intersecting_block": 9625,
+          "source_paths": 9625,
+          "invisible_white_fill_only_filtered": 0,
+          "block_visual_rect": [
+            323.548985,
+            161.775371,
+            3144.281683,
+            1553.90764
+          ],
+          "block_unrotated_rect": [
+            323.548981,
+            161.775375,
+            3144.281738,
+            1553.907593
+          ],
+          "block_cropbox_space_rect": [
+            323.548981,
+            161.775375,
+            3144.281738,
+            1553.907593
+          ],
+          "coordinate_method": "upstream visual coords + page.rotation_matrix; inverse audit via derotation_matrix + cropbox_position, matching production pdf_crop",
+          "segments_capped": true,
+          "segments_before": 59553,
+          "segments_after": 30000,
+          "occupied_cells_before": 158,
+          "occupied_cells_after": 158,
+          "policy": "round-robin spatial cells; never longest-lines-only"
+        },
+        "grouping": {
+          "symbol_candidate_cap": true,
+          "symbol_candidates_before": 8816,
+          "symbol_candidates_after": 2000,
+          "symbol_candidate_lists_truncated": 6816,
+          "candidate_limit_per_neighbor_cell": 64,
+          "selection": "32x32 spatial round-robin when over 2000 eligible atoms"
+        },
+        "relations_capped": true,
+        "normalization": "positions use bbox axes; angles/lengths/object shape use one isotropic block-diagonal scale"
+      },
+      "uncertainties": [
+        "spatial_segment_cap",
+        "symbol_group_candidate_cap",
+        "relations_cap",
+        "prepared_label_metadata_unavailable"
+      ]
+    },
+    "right": {
+      "quality": {
+        "status": "OBJECT_FORMATION_PARTIAL",
+        "extraction_reliable": true,
+        "bbox_reliable": true,
+        "object_formation_complete": false,
+        "dangerous_cap": true
+      },
+      "visible_geometry_summary": {
+        "objects": 148,
+        "object_types": {
+          "CLOSED_REGION": 51,
+          "COMPOSITE_GRAPHIC": 2,
+          "CONNECTED_NETWORK": 17,
+          "LINEAR_OBJECT": 68,
+          "SYMBOL_OBJECT": 10
+        },
+        "segments": 9094,
+        "extraction": {
+          "page_drawings_total": 1622,
+          "drawings_intersecting_block": 1567,
+          "source_paths": 1567,
+          "invisible_white_fill_only_filtered": 0,
+          "block_visual_rect": [
+            301.41977,
+            285.065831,
+            2070.581035,
+            1425.809062
+          ],
+          "block_unrotated_rect": [
+            258.190918,
+            301.419769,
+            1398.934204,
+            2070.581055
+          ],
+          "block_cropbox_space_rect": [
+            258.190918,
+            301.419769,
+            1398.934204,
+            2070.581055
+          ],
+          "coordinate_method": "upstream visual coords + page.rotation_matrix; inverse audit via derotation_matrix + cropbox_position, matching production pdf_crop",
+          "segments_capped": false,
+          "segments_before": 9094,
+          "segments_after": 9094,
+          "occupied_cells_before": null,
+          "occupied_cells_after": null
+        },
+        "grouping": {
+          "symbol_candidate_cap": false,
+          "symbol_candidates_before": 1476,
+          "symbol_candidates_after": 1476,
+          "symbol_candidate_lists_truncated": 0,
+          "candidate_limit_per_neighbor_cell": 64,
+          "selection": "32x32 spatial round-robin when over 2000 eligible atoms"
+        },
+        "relations_capped": true,
+        "normalization": "positions use bbox axes; angles/lengths/object shape use one isotropic block-diagonal scale"
+      },
+      "uncertainties": [
+        "relations_cap",
+        "prepared_label_metadata_unavailable"
+      ]
+    },
+    "alignment": {
+      "model": "translation_plus_uniform_scale",
+      "uniform_scale": 1.701665,
+      "translation_isotropic": [
+        -0.688316,
+        -0.149172
+      ],
+      "anchor_count": 1,
+      "median_residual_isotropic": 0.0,
+      "reliable": false,
+      "evidence": [
+        {
+          "left_object": "b1:obj_01577",
+          "right_object": "b1:obj_00012",
+          "basis": "family_signature"
+        }
+      ],
+      "provenance": "unique generic object signatures; no affine warp"
+    },
+    "decision": {
+      "graphic_verdict": "GRAPHIC_CHANGE",
+      "route": "GRAPHIC_VISION_ONLY",
+      "route_reasons": [
+        "dangerous spatial/relation cap",
+        "translation+uniform-scale alignment not reliable",
+        "object matched fraction 0.008 < 0.72",
+        "object-level change requires fused raster interpretation"
+      ],
+      "correspondence_reliable": false,
+      "matched_fraction": 0.008366,
+      "left_object_count": 2271,
+      "right_object_count": 148
+    },
+    "object_status_counts": {
+      "ADDED": 129,
+      "CONNECTION_CHANGED": 12,
+      "GEOMETRY_CHANGED": 11,
+      "REMOVED": 2252,
+      "STYLE_CHANGED": 19
+    },
+    "change_event_count": 2423,
+    "interpretation": "CAD primitive packaging dominates generic object formation; these events are not engineering ground truth."
+  },
+  "structural_graph_contrast": {
+    "engineering_events": 7,
+    "backbone_events": 2,
+    "generic_change_events": 2423,
+    "conclusion": "EOM structural comparison compresses the same pair into a preserved backbone plus a small set of typed changes and uncertainties."
+  }
+}
