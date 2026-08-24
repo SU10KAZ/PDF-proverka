@@ -11142,14 +11142,14 @@ const app = createApp({
             const [y, m, day] = d.week_start_date.split('-');
             const wdIdx = _subSpendWdIndex(d.week_start_date);
             const wd = wdIdx === null ? '' : _SUB_SPEND_WD_GEN[wdIdx] + ' ';
-            return `с ${wd}${day}.${m} ${d.week_start_time || '17:00'} (сброс лимитов)`;
+            return `с ${wd}${day}.${m} ${d.week_start_time || '00:00'} (сброс лимитов)`;
         });
-        // Короткая подпись плана: «сброс пн 17:00 MSK».
+        // Короткая подпись плана: «сброс пн 00:00 MSK».
         const subSpendResetText = computed(() => {
             const d = subSpendData.value;
             const wdIdx = d ? _subSpendWdIndex(d.week_start_date) : null;
             const wd = wdIdx === null ? 'пн' : _SUB_SPEND_WD[wdIdx];
-            const time = (d && d.week_start_time) || '17:00';
+            const time = (d && d.week_start_time) || '00:00';
             const plan = (d && d.plan) || 'Claude Max 20x';
             return `${plan} · сброс ${wd} ${time} MSK · оценка $`;
         });

@@ -46,7 +46,7 @@ async def update_weekly_reset(
 ):
     """Изменить день/время еженедельного сброса.
     weekday: 0=пн..6=вс, hour_utc: час UTC.
-    По умолчанию — штатный сброс подписки: пн 14:00 UTC = 17:00 MSK."""
+    По умолчанию — штатный сброс подписки: вс 21:00 UTC = пн 00:00 MSK."""
     global_scanner.set_weekly_reset(weekday=weekday, hour_utc=hour_utc)
     return {"status": "ok", "weekday": weekday, "hour_utc": hour_utc}
 

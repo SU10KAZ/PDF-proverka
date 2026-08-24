@@ -47,10 +47,11 @@ WINDOW_5H_TOKEN_LIMIT = 12_000_000
 WEEKLY_TOKEN_LIMIT = 17_000_000
 
 # Момент еженедельного сброса лимитов подписки Claude.
-# Понедельник 17:00 MSK = 14:00 UTC. Единый источник истины для окна недели
-# и суточных бакетов панели «Расход подписки по инженерам».
-WEEKLY_RESET_WEEKDAY = 0   # понедельник (0=пн … 6=вс)
-WEEKLY_RESET_HOUR_UTC = 14  # 14:00 UTC = 17:00 MSK
+# Понедельник 00:00 MSK («с утра понедельника») = воскресенье 21:00 UTC.
+# Единый источник истины для окна недели и суточных бакетов панели
+# «Расход подписки по инженерам». Хранится в UTC, поэтому день недели — вс.
+WEEKLY_RESET_WEEKDAY = 6   # воскресенье UTC (0=пн … 6=вс) = понедельник МСК
+WEEKLY_RESET_HOUR_UTC = 21  # 21:00 UTC вс = 00:00 MSK пн
 
 # Москва (UTC+3, без перехода на летнее время). Столбцы панели «Расход
 # подписки» считаются по календарным суткам именно в этой зоне, независимо
@@ -204,7 +205,7 @@ class UsageTracker:
             except ValueError:
                 pass
 
-        # 3. Недельный (с момента сброса лимитов подписки — пн 17:00 MSK).
+        # 3. Недельный (с момента сброса лимитов подписки — пн 00:00 MSK).
         # Записи хранят наивный local-ISO, поэтому момент сброса переводим
         # в МСК и снимаем tzinfo — сравнение строк остаётся корректным.
         week_start = _prev_weekly_reset(
@@ -661,10 +662,10 @@ class GlobalUsageScanner:
         self._cache: Optional[GlobalUsageCounters] = None
         self._cache_at: float = 0
         self._lock = threading.Lock()
-        # Настройки сброса (по умолчанию понедельник 17:00 MSK = 14:00 UTC)
+        # Настройки сброса (по умолчанию понедельник 00:00 MSK = вс 21:00 UTC)
         # Можно менять через set_weekly_reset()
-        self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY  # понедельник
-        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 14:00 UTC = 17:00 MSK
+        self.weekly_reset_weekday = WEEKLY_RESET_WEEKDAY  # вс UTC = пн МСК
+        self.weekly_reset_hour_utc = WEEKLY_RESET_HOUR_UTC  # 21:00 UTC = 00:00 MSK
         # Лимиты (output_tokens как основная метрика)
         self.session_5h_limit = WINDOW_5H_TOKEN_LIMIT
         self.weekly_all_limit = WEEKLY_TOKEN_LIMIT
@@ -1533,7 +1534,11 @@ def _subscription_person(dirname: str):
         return ("kuldiaev", "Кульдяев Ф. С.")
     if "OSA-Alexandra" in d:            # Александра Калинина
         return ("kalinina", "Калинина А.")
-    if "projects-PDF-proverka" in d or "AuditManager" in d:
+    # Сравнение регистронезависимое: боевые релизы лежат в
+    # ~/auditmanager/releases/... (нижний регистр) и раньше выпадали из
+    # учёта целиком — их расход не попадал ни к кому.
+    dl = d.lower()
+    if "projects-pdf-proverka" in dl or "auditmanager" in dl:
         return ("uzun", "Узун А.И.")
     return None
 
@@ -1542,7 +1547,7 @@ def scan_subscription_by_person(days: int = 7) -> dict:
     """Расход подписки Claude по инженерам за ТЕКУЩУЮ недельную квоту.
 
     Окно = от последнего еженедельного сброса лимитов (по умолчанию
-    понедельник 14:00 UTC = 17:00 MSK) до сейчас. Дни-колонки — это
+    понедельник 00:00 MSK = воскресенье 21:00 UTC) до сейчас. Дни-колонки — это
     календарные сутки по МСК, начиная с даты сброса, поэтому таблица всегда
     начинается с дня сброса (первый столбец — частичный).
 
@@ -1557,11 +1562,11 @@ def scan_subscription_by_person(days: int = 7) -> dict:
 
     # Столбцы — настоящие календарные сутки по МСК (00:00–24:00), от даты
     # сброса до сегодня включительно. Считаем только записи внутри недельного
-    # окна (ts ≥ week_start), поэтому первый столбец (день сброса) —
-    # частичный, с момента сброса; сумма столбцов = недельному «Итого».
+    # окна (ts ≥ week_start); при сбросе в 00:00 МСК первый столбец — полные
+    # сутки, при смещённом сбросе — частичный. Сумма столбцов = «Итого».
     start_local_date = week_start.astimezone(MSK_TZ).date()
     today_local = now_utc.astimezone(MSK_TZ).date()
-    # До 8 календарных дат: окно пн 17:00 → пн 17:00 может задевать 8 суток.
+    # До 8 календарных дат: смещённый сброс (напр. пн 17:00) задевает 8 суток.
     n_days = max(1, min((today_local - start_local_date).days + 1, 8))
     day_keys = [(start_local_date + timedelta(days=i)).isoformat() for i in range(n_days)]
     day_key_set = set(day_keys)
