@@ -1,0 +1,860 @@
+{
+  "route": "MODE_2_REQUIRED",
+  "mode": "MODE_2",
+  "backbone_verdict": "BACKBONE_PRESERVED",
+  "levels": {
+    "A": {
+      "bus_sections": [
+        2,
+        2
+      ],
+      "section_ties": [
+        1,
+        1
+      ],
+      "inputs": [
+        2,
+        2
+      ],
+      "source_paths": [
+        {
+          "section": [
+            "РП1",
+            "РП1"
+          ],
+          "left_path": [
+            "ТП1",
+            "Шинопровод",
+            "QF1"
+          ],
+          "right_path": [
+            "Т1",
+            "Шинопровод",
+            "QF1"
+          ],
+          "left_source_subclass": "UPSTREAM_TP_CONNECTION",
+          "right_source_subclass": "TRANSFORMER_EXPLICIT",
+          "intermediates": [
+            [
+              "BUSWAY"
+            ],
+            [
+              "BUSWAY"
+            ]
+          ]
+        },
+        {
+          "section": [
+            "РП2",
+            "РП2"
+          ],
+          "left_path": [
+            "ТП2",
+            "Шинопровод",
+            "QF2"
+          ],
+          "right_path": [
+            "Т2",
+            "Шинопровод",
+            "QF2"
+          ],
+          "left_source_subclass": "UPSTREAM_TP_CONNECTION",
+          "right_source_subclass": "TRANSFORMER_EXPLICIT",
+          "intermediates": [
+            [
+              "BUSWAY"
+            ],
+            [
+              "BUSWAY"
+            ]
+          ]
+        }
+      ]
+    },
+    "B": {
+      "COMPENSATION_GROUP": {
+        "left_sections": [
+          "BS1",
+          "BS2"
+        ],
+        "right_sections": [
+          "BS1",
+          "BS2"
+        ]
+      },
+      "COMPENSATION_GROUP:overlap": {
+        "BS1": 1.0,
+        "BS2": 1.0
+      },
+      "METERING_GROUP": {
+        "left_sections": [
+          "BS1",
+          "BS2"
+        ],
+        "right_sections": [
+          "BS1",
+          "BS2"
+        ]
+      },
+      "METERING_GROUP:overlap": {
+        "BS1": 0.333,
+        "BS2": 0.2
+      },
+      "SERVICE_GROUP": {
+        "left_sections": [
+          "BS1",
+          "BS2"
+        ],
+        "right_sections": [
+          "BS1",
+          "BS2"
+        ]
+      },
+      "SERVICE_GROUP:overlap": {
+        "BS1": 0.5,
+        "BS2": 0.5
+      }
+    },
+    "C": {
+      "left_outgoing": 30,
+      "right_outgoing": 27,
+      "matched": 20,
+      "matched_high": 17,
+      "matched_in_other_section": 0,
+      "reordered": 14,
+      "unmatched_left": 10,
+      "unmatched_right": 7,
+      "uncertain_pairs": 0,
+      "matches": [
+        {
+          "left": "ВРУ1",
+          "left_device": "1QF1",
+          "right": "ВРУ1",
+          "right_device": "1QF6",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 0,
+          "right_pos": 5,
+          "score": 2
+        },
+        {
+          "left": "ВРУ2",
+          "left_device": "1QF2",
+          "right": "ВРУ2",
+          "right_device": "1QF7",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 1,
+          "right_pos": 6,
+          "score": 2
+        },
+        {
+          "left": "ВРУ3",
+          "left_device": "1QF3",
+          "right": "ВРУ3",
+          "right_device": "1QF5",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 2,
+          "right_pos": 4,
+          "score": 2
+        },
+        {
+          "left": "ВРУ4",
+          "left_device": "1QF4",
+          "right": "ВРУ4",
+          "right_device": "1QF4",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 3,
+          "right_pos": 3,
+          "score": 2
+        },
+        {
+          "left": "ВРУа",
+          "left_device": "1QF5",
+          "right": "ВРУа",
+          "right_device": "1QF8",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 4,
+          "right_pos": 7,
+          "score": 2
+        },
+        {
+          "left": "ВРУ-ИТП",
+          "left_device": "1QF6",
+          "right": "ВРУ-ИТП",
+          "right_device": "1QF9",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 5,
+          "right_pos": 8,
+          "score": 2
+        },
+        {
+          "left": "ВРУ-ХЦ",
+          "left_device": "1QF7",
+          "right": "ШУ-ХЦ",
+          "right_device": "1QF10",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 6,
+          "right_pos": 9,
+          "score": 2
+        },
+        {
+          "left": "ВРУ-АПТ",
+          "left_device": "1QF8",
+          "right": "ШУ-АПТ",
+          "right_device": "1QF11",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 7,
+          "right_pos": 10,
+          "score": 2
+        },
+        {
+          "left": "ДР1-ХМ1",
+          "left_device": "1QF10",
+          "right": "ДР1-ХМ1",
+          "right_device": "1QF1",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 9,
+          "right_pos": 0,
+          "score": 2
+        },
+        {
+          "left": "ХМ1",
+          "left_device": "1QF12",
+          "right": "ХМ1",
+          "right_device": "1QF2",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 11,
+          "right_pos": 1,
+          "score": 2
+        },
+        {
+          "left": "ЩНО",
+          "left_device": "1QF13",
+          "right": "ШУ-ХВС",
+          "right_device": "1QF13",
+          "left_section": "BS1",
+          "right_section": "BS1",
+          "left_pos": 12,
+          "right_pos": 12,
+          "score": 2
+        },
+        {
+          "left": "ВРУ2",
+          "left_device": "2QF2",
+          "right": "2ГРЩ-ВРУ2",
+          "right_device": "2QF4",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 1,
+          "right_pos": 3,
+          "score": 2
+        },
+        {
+          "left": "ВРУ3",
+          "left_device": "2QF3",
+          "right": "2ГРЩ-ВРУ3",
+          "right_device": "2QF2",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 2,
+          "right_pos": 1,
+          "score": 2
+        },
+        {
+          "left": "ВРУ4",
+          "left_device": "2QF4",
+          "right": "2ГРЩ-ВРУ4",
+          "right_device": "2QF1",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 3,
+          "right_pos": 0,
+          "score": 2
+        },
+        {
+          "left": "ВРУа",
+          "left_device": "2QF5",
+          "right": "2ГРЩ-ВРУа",
+          "right_device": "2QF5",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 4,
+          "right_pos": 4,
+          "score": 2
+        },
+        {
+          "left": "ВРУ-ИТП",
+          "left_device": "2QF6",
+          "right": "2ГРЩ-ВРУ.ИТП",
+          "right_device": "2QF6",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 5,
+          "right_pos": 5,
+          "score": 2
+        },
+        {
+          "left": "ВРУ-ХЦ",
+          "left_device": "2QF7",
+          "right": "2ГРЩ-ШУХЦ-",
+          "right_device": "2QF7",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 6,
+          "right_pos": 6,
+          "score": 2
+        },
+        {
+          "left": "ВРУ-АПТ",
+          "left_device": "2QF8",
+          "right": "2ГРЩ-ЩУ.АПТ",
+          "right_device": "2QF8",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 7,
+          "right_pos": 7,
+          "score": 2
+        },
+        {
+          "left": "ДР2-ХМ2",
+          "left_device": "2QF10",
+          "right": "ДР2-ХМ2",
+          "right_device": "2QF12",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 9,
+          "right_pos": 11,
+          "score": 2
+        },
+        {
+          "left": "ХМ2",
+          "left_device": "1QF12",
+          "right": "ХМ2",
+          "right_device": "2QF11",
+          "left_section": "BS2",
+          "right_section": "BS2",
+          "left_pos": 11,
+          "right_pos": 10,
+          "score": 2
+        }
+      ]
+    }
+  },
+  "changes": [
+    {
+      "type": "DETAIL_LEVEL_INCREASED",
+      "level": "A",
+      "subject": "source_path",
+      "summary": "источник секции РП1 показан подробнее: ТП1 (UPSTREAM_TP_CONNECTION) → Т1 (TRANSFORMER_EXPLICIT); остальная цепочка питания совпадает",
+      "left_region": {
+        "block_id": "blk_039909ec039649a1b8209f059c95167b",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1471.65,
+          1385.86,
+          1486.5,
+          1396.85
+        ]
+      },
+      "right_region": {
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1144.08,
+          1369.37,
+          1151.69,
+          1378.14
+        ]
+      },
+      "evidence": [
+        {
+          "side": "left",
+          "value": [
+            "ТП1",
+            "Шинопровод",
+            "QF1"
+          ]
+        },
+        {
+          "side": "right",
+          "value": [
+            "Т1",
+            "Шинопровод",
+            "QF1"
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": [
+        "VECTOR"
+      ],
+      "note": "НЕ трактуется как появление нового источника",
+      "change_id": "M2-001"
+    },
+    {
+      "type": "DETAIL_LEVEL_INCREASED",
+      "level": "A",
+      "subject": "source_path",
+      "summary": "источник секции РП2 показан подробнее: ТП2 (UPSTREAM_TP_CONNECTION) → Т2 (TRANSFORMER_EXPLICIT); остальная цепочка питания совпадает",
+      "left_region": {
+        "block_id": "blk_039909ec039649a1b8209f059c95167b",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1904.85,
+          1385.86,
+          1921.11,
+          1396.85
+        ]
+      },
+      "right_region": {
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1313.76,
+          1369.37,
+          1322.54,
+          1378.14
+        ]
+      },
+      "evidence": [
+        {
+          "side": "left",
+          "value": [
+            "ТП2",
+            "Шинопровод",
+            "QF2"
+          ]
+        },
+        {
+          "side": "right",
+          "value": [
+            "Т2",
+            "Шинопровод",
+            "QF2"
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": [
+        "VECTOR"
+      ],
+      "note": "НЕ трактуется как появление нового источника",
+      "change_id": "M2-002"
+    },
+    {
+      "type": "NODE_TYPE_CHANGED",
+      "level": "A",
+      "subject": "section_tie",
+      "summary": "секционный аппарат сменил тип: QF3 (SECTION_CIRCUIT_BREAKER) → QS1 (SECTION_SWITCH_DISCONNECTOR)",
+      "left_region": {
+        "block_id": "blk_039909ec039649a1b8209f059c95167b",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1689.0,
+          1154.38,
+          1704.58,
+          1165.37
+        ]
+      },
+      "right_region": {
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1206.36,
+          1118.93,
+          1218.65,
+          1127.7
+        ]
+      },
+      "evidence": [
+        {
+          "side": "left",
+          "value": "QF3",
+          "attrs": {
+            "rating_a": 2000,
+            "control": [
+              "АВР",
+              "М"
+            ]
+          }
+        },
+        {
+          "side": "right",
+          "value": "QS1",
+          "attrs": {
+            "rating_a": 1600,
+            "control": [
+              "SA",
+              "Секц."
+            ]
+          }
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": [
+        "VECTOR"
+      ],
+      "change_id": "M2-003"
+    },
+    {
+      "type": "FUNCTIONAL_GROUP_CHANGED",
+      "level": "A",
+      "subject": "section_tie_control",
+      "summary": "управление секционным аппаратом: ['АВР', 'М'] → ['SA', 'Секц.']",
+      "left_region": {
+        "block_id": "blk_039909ec039649a1b8209f059c95167b",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1689.0,
+          1154.38,
+          1704.58,
+          1165.37
+        ]
+      },
+      "right_region": {
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1206.36,
+          1118.93,
+          1218.65,
+          1127.7
+        ]
+      },
+      "evidence": [
+        {
+          "side": "left",
+          "value": [
+            "АВР",
+            "М"
+          ]
+        },
+        {
+          "side": "right",
+          "value": [
+            "SA",
+            "Секц."
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": [
+        "VECTOR"
+      ],
+      "change_id": "M2-004"
+    },
+    {
+      "type": "GROUP_COUNT_CHANGED",
+      "level": "C",
+      "subject": "outgoing_devices",
+      "summary": "число отходящих аппаратов изменилось: 30 → 27",
+      "left_region": null,
+      "right_region": null,
+      "evidence": [
+        {
+          "side": "left",
+          "value": {
+            "BS1": 15,
+            "BS2": 15
+          }
+        },
+        {
+          "side": "right",
+          "value": {
+            "BS1": 13,
+            "BS2": 14
+          }
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": [
+        "VECTOR"
+      ],
+      "change_id": "M2-005"
+    },
+    {
+      "type": "CONNECTION_CHANGED",
+      "level": "C",
+      "subject": "branch_order",
+      "summary": "порядок ветвей в секциях перестроен: у 14 из 20 сопоставленных ветвей изменилась позиция",
+      "left_region": null,
+      "right_region": null,
+      "evidence": [
+        {
+          "side": "both",
+          "value": {
+            "reordered": 14,
+            "matched": 20
+          }
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": [
+        "VECTOR"
+      ],
+      "note": "позиция на листе не является идентичностью ветви",
+      "change_id": "M2-006"
+    },
+    {
+      "type": "UNCERTAIN_STRUCTURAL_CHANGE",
+      "level": "C",
+      "subject": "unresolved_correspondence",
+      "summary": "секция BS1: соответствие не установлено для 4 ветвей слева и 2 справа — утверждать удаление/добавление нельзя",
+      "left_region": {
+        "block_id": "blk_039909ec039649a1b8209f059c95167b",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1124.64,
+          923.04,
+          1139.93,
+          931.82
+        ]
+      },
+      "right_region": {
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          550.08,
+          860.57,
+          565.88,
+          869.34
+        ]
+      },
+      "evidence": [
+        {
+          "side": "left",
+          "value": [
+            "ВРУ-НСТ (1QF9)",
+            "ГРЩ1-РП1-11 (1QF11)",
+            "ГРЩ1-РП1-14 (1QF14)",
+            "АУКРМ (1QF15)"
+          ],
+          "identity": [
+            [
+              "НСТ"
+            ],
+            [],
+            [],
+            [
+              "АУКРМ"
+            ]
+          ]
+        },
+        {
+          "side": "right",
+          "value": [
+            "1QF3 (1QF3)",
+            "1ГРЩ-ШУ.ХП (1QF12)"
+          ],
+          "identity": [
+            [],
+            [
+              "ХП"
+            ]
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": [
+        "VECTOR"
+      ],
+      "note": "кандидаты на переименование семейства щита либо на перенос функции",
+      "change_id": "M2-007"
+    },
+    {
+      "type": "GROUP_COUNT_CHANGED",
+      "level": "C",
+      "subject": "outgoing_devices@BS1",
+      "summary": "секция BS1: несопоставленных ветвей слева 4, справа 2 — нетто-изменение -2 отходящих",
+      "left_region": null,
+      "right_region": null,
+      "evidence": [
+        {
+          "side": "left",
+          "value": [
+            "ВРУ-НСТ (1QF9)",
+            "ГРЩ1-РП1-11 (1QF11)",
+            "ГРЩ1-РП1-14 (1QF14)",
+            "АУКРМ (1QF15)"
+          ]
+        },
+        {
+          "side": "right",
+          "value": [
+            "1QF3 (1QF3)",
+            "1ГРЩ-ШУ.ХП (1QF12)"
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": [
+        "VECTOR"
+      ],
+      "change_id": "M2-008"
+    },
+    {
+      "type": "UNCERTAIN_STRUCTURAL_CHANGE",
+      "level": "C",
+      "subject": "unresolved_correspondence",
+      "summary": "секция BS2: соответствие не установлено для 6 ветвей слева и 5 справа — утверждать удаление/добавление нельзя",
+      "left_region": {
+        "block_id": "blk_039909ec039649a1b8209f059c95167b",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1728.84,
+          923.04,
+          1743.0,
+          931.82
+        ]
+      },
+      "right_region": {
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "bbox_visual_pt": [
+          1425.24,
+          860.57,
+          1442.21,
+          869.34
+        ]
+      },
+      "evidence": [
+        {
+          "side": "left",
+          "value": [
+            "ВРУ1 (1QF1)",
+            "ВРУ-НСТ (2QF9)",
+            "ГРЩ1-РП2-11 (2QF11)",
+            "ЩНО (2QF13)",
+            "ГРЩ1-РП2-14 (2QF14)",
+            "АУКРМ (2QF15)"
+          ],
+          "identity": [
+            [
+              "ВРУ1"
+            ],
+            [
+              "НСТ"
+            ],
+            [],
+            [
+              "ШНО"
+            ],
+            [],
+            [
+              "АУКРМ"
+            ]
+          ]
+        },
+        {
+          "side": "right",
+          "value": [
+            "2ГРЩ-ВРУ3 (2QF3)",
+            "2ГРЩ-ШУ.ХП (2QF9)",
+            "2QF10 (2QF10)",
+            "ЯСН (2QF13)",
+            "2ГРЩ-ЭБ.ГВС (2QF14)"
+          ],
+          "identity": [
+            [
+              "ВРУ3"
+            ],
+            [
+              "ХП"
+            ],
+            [],
+            [
+              "ЭБ-ГВС",
+              "ЯСН"
+            ],
+            [
+              "ЭБ-ГВС"
+            ]
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": [
+        "VECTOR"
+      ],
+      "note": "кандидаты на переименование семейства щита либо на перенос функции",
+      "change_id": "M2-009"
+    },
+    {
+      "type": "GROUP_COUNT_CHANGED",
+      "level": "C",
+      "subject": "outgoing_devices@BS2",
+      "summary": "секция BS2: несопоставленных ветвей слева 6, справа 5 — нетто-изменение -1 отходящих",
+      "left_region": null,
+      "right_region": null,
+      "evidence": [
+        {
+          "side": "left",
+          "value": [
+            "ВРУ1 (1QF1)",
+            "ВРУ-НСТ (2QF9)",
+            "ГРЩ1-РП2-11 (2QF11)",
+            "ЩНО (2QF13)",
+            "ГРЩ1-РП2-14 (2QF14)",
+            "АУКРМ (2QF15)"
+          ]
+        },
+        {
+          "side": "right",
+          "value": [
+            "2ГРЩ-ВРУ3 (2QF3)",
+            "2ГРЩ-ШУ.ХП (2QF9)",
+            "2QF10 (2QF10)",
+            "ЯСН (2QF13)",
+            "2ГРЩ-ЭБ.ГВС (2QF14)"
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": [
+        "VECTOR"
+      ],
+      "change_id": "M2-010"
+    }
+  ],
+  "quality": {
+    "left": {
+      "backbone_recovered": true,
+      "source_confidence": 1.0,
+      "bus_confidence": 1.0,
+      "section_confidence": 1.0,
+      "feeder_coverage": 1.0,
+      "identity_coverage": 0.867,
+      "unresolved_nodes": 0,
+      "unresolved_edges": 0,
+      "section_label_conflicts": 2,
+      "sections": 2,
+      "inputs": 2,
+      "outgoing_devices": 30
+    },
+    "right": {
+      "backbone_recovered": true,
+      "source_confidence": 1.0,
+      "bus_confidence": 1.0,
+      "section_confidence": 1.0,
+      "feeder_coverage": 1.0,
+      "identity_coverage": 0.926,
+      "unresolved_nodes": 2,
+      "unresolved_edges": 4,
+      "section_label_conflicts": 0,
+      "sections": 2,
+      "inputs": 2,
+      "outgoing_devices": 27
+    },
+    "identity_match_rate": 0.667,
+    "high_confidence_match_rate": 0.567
+  }
+}

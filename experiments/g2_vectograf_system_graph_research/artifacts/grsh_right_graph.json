@@ -1,0 +1,3533 @@
+{
+  "schema_version": "system-graph.v0-research",
+  "side": "right",
+  "block": {
+    "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+    "page_index": 0,
+    "rotation": 270,
+    "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/document.pdf",
+    "bbox_visual_pt": [
+      301.42,
+      285.07,
+      2070.58,
+      1425.81
+    ]
+  },
+  "discipline": "ЭОМ",
+  "profile": {
+    "id": "dense_sectioned_board",
+    "signals": {
+      "device_tokens": 29,
+      "dotted_frac": 0.0,
+      "prefixed_frac": 0.931,
+      "prefix_groups": [
+        "1",
+        "2"
+      ],
+      "joined_param_lines": 0,
+      "kv_params": 104,
+      "bus_markers": 2,
+      "tie_candidates": 1,
+      "metering_tokens": 12,
+      "compensation_tokens": 2
+    },
+    "why": [
+      "нумерация <секция>QF<N> при ≥10 аппаратах + маркер шин/секционный аппарат"
+    ],
+    "note": "плотный ГРЩ/ВРУ: нумерация <секция>QF<N>, секционный аппарат в разрыве"
+  },
+  "levels": {
+    "A": "источники/вводы/секции/секционник",
+    "B": "функциональные группы",
+    "C": "аппараты и ветви"
+  },
+  "nodes": [
+    {
+      "id": "BS1",
+      "type": "BUS_SECTION",
+      "level": "A",
+      "label": "РП1",
+      "display_label": "РП1",
+      "canonical_identity": "SECTION#1",
+      "attrs": {
+        "x_range": [
+          460.3,
+          1206.5
+        ],
+        "device_count": 13,
+        "label_prefix": "1"
+      },
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "device_cluster",
+          "value": {
+            "x_range": [
+              460.3,
+              1206.5
+            ],
+            "n": 13
+          }
+        },
+        {
+          "kind": "token",
+          "role": "section_name",
+          "token": "РП1",
+          "bbox": [
+            413.64,
+            947.69,
+            425.93,
+            956.46
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BS2",
+      "type": "BUS_SECTION",
+      "level": "A",
+      "label": "РП2",
+      "display_label": "РП2",
+      "canonical_identity": "SECTION#2",
+      "attrs": {
+        "x_range": [
+          1299.5,
+          2052.9
+        ],
+        "device_count": 14,
+        "label_prefix": "2"
+      },
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "device_cluster",
+          "value": {
+            "x_range": [
+              1299.5,
+              2052.9
+            ],
+            "n": 14
+          }
+        },
+        {
+          "kind": "token",
+          "role": "section_name",
+          "token": "РП2",
+          "bbox": [
+            1949.4,
+            935.21,
+            1962.87,
+            943.98
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC1",
+      "type": "SOURCE",
+      "level": "A",
+      "label": "Т1",
+      "display_label": "Т1",
+      "subclass": "TRANSFORMER_EXPLICIT",
+      "canonical_identity": "SOURCE_PATH#BS1",
+      "attrs": {
+        "abstraction": "EXPANDED"
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_anchor",
+          "value": "Т1",
+          "bbox_visual_pt": [
+            1144.08,
+            1369.37,
+            1151.69,
+            1378.14
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC1-INT1",
+      "type": "SERVICE_NODE",
+      "level": "A",
+      "subclass": "BUSWAY",
+      "label": "Шинопровод",
+      "display_label": "Шинопровод",
+      "canonical_identity": "BUSWAY#BS1",
+      "attrs": {
+        "on_source_path": true
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_path_node",
+          "value": "Шинопровод",
+          "bbox_visual_pt": [
+            1116.69,
+            1302.92,
+            1125.46,
+            1345.64
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "IN1",
+      "type": "INPUT_DEVICE",
+      "level": "A",
+      "label": "QF1",
+      "display_label": "QF1",
+      "canonical_identity": "INPUT#BS1",
+      "attrs": {
+        "rating_a": 2500,
+        "control": []
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QF1",
+          "bbox_visual_pt": [
+            1136.28,
+            1141.49,
+            1147.98,
+            1150.26
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC2",
+      "type": "SOURCE",
+      "level": "A",
+      "label": "Т2",
+      "display_label": "Т2",
+      "subclass": "TRANSFORMER_EXPLICIT",
+      "canonical_identity": "SOURCE_PATH#BS2",
+      "attrs": {
+        "abstraction": "EXPANDED"
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_anchor",
+          "value": "Т2",
+          "bbox_visual_pt": [
+            1313.76,
+            1369.37,
+            1322.54,
+            1378.14
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC2-INT1",
+      "type": "SERVICE_NODE",
+      "level": "A",
+      "subclass": "BUSWAY",
+      "label": "Шинопровод",
+      "display_label": "Шинопровод",
+      "canonical_identity": "BUSWAY#BS2",
+      "attrs": {
+        "on_source_path": true
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_path_node",
+          "value": "Шинопровод",
+          "bbox_visual_pt": [
+            1286.37,
+            1302.92,
+            1295.14,
+            1345.64
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "IN2",
+      "type": "INPUT_DEVICE",
+      "level": "A",
+      "label": "QF2",
+      "display_label": "QF2",
+      "canonical_identity": "INPUT#BS2",
+      "attrs": {
+        "rating_a": 2500,
+        "control": [
+          "SF/SA",
+          "Секц."
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QF2",
+          "bbox_visual_pt": [
+            1278.0,
+            1141.25,
+            1290.88,
+            1150.02
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "TIE:BS1-BS2",
+      "type": "SECTION_DEVICE",
+      "level": "A",
+      "label": "QS1",
+      "display_label": "QS1",
+      "subclass": "SECTION_SWITCH_DISCONNECTOR",
+      "canonical_identity": "SECTION_TIE#BS1-BS2",
+      "attrs": {
+        "rating_a": 1600,
+        "control": [
+          "SA",
+          "Секц."
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QS1",
+          "bbox_visual_pt": [
+            1206.36,
+            1118.93,
+            1218.65,
+            1127.7
+          ]
+        },
+        {
+          "kind": "geometry",
+          "role": "between_sections",
+          "value": {
+            "left": "BS1",
+            "right": "BS2",
+            "x": 1212.5
+          }
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF1@460",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF1",
+      "display_label": "ДР1-ХМ1",
+      "canonical_identity": "ДР1",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ДР1",
+          "ДР1-ХМ1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ДР1",
+          "canonical": "ДР1"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР1-ХМ1",
+          "canonical": "ДР1-ХМ1"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 460.3,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            453.0,
+            860.57,
+            467.62,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": [
+        "улики дают разные идентичности: ДР1, ДР1-ХМ1"
+      ]
+    },
+    {
+      "id": "LOAD:ДР1@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ДР1-ХМ1",
+      "display_label": "ДР1-ХМ1",
+      "canonical_identity": "ДР1",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ДР1",
+          "canonical": "ДР1"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР1-ХМ1",
+          "canonical": "ДР1-ХМ1"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "OUT:1QF2@513",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF2",
+      "display_label": "ХМ1",
+      "canonical_identity": "ХМ1",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 400,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХМ1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ХМ1",
+          "canonical": "ХМ1"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ1",
+          "canonical": "ХМ1"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 513.0,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            505.08,
+            860.57,
+            520.88,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХМ1@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ХМ1",
+      "display_label": "ХМ1",
+      "canonical_identity": "ХМ1",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ХМ1",
+          "canonical": "ХМ1"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ1",
+          "canonical": "ХМ1"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF3@558",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF3",
+      "display_label": null,
+      "canonical_identity": null,
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 315,
+        "cable": [],
+        "status": "UNKNOWN",
+        "identity_set": []
+      },
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 558.0,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            550.08,
+            860.57,
+            565.88,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": []
+    },
+    {
+      "id": "OUT:1QF4@608",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF4",
+      "display_label": "ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 500,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ4"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 608.3,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            600.12,
+            860.57,
+            616.51,
+            869.34
+          ]
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ-1",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ4@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ4",
+      "display_label": "ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ-1",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF5@692",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF5",
+      "display_label": "ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 400,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ3"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 692.3,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            684.36,
+            860.57,
+            700.16,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ3@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ3",
+      "display_label": "ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ3",
+          "canonical": "ВРУ3"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF6@764",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF6",
+      "display_label": "ВРУ1",
+      "canonical_identity": "ВРУ1",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ1",
+          "canonical": "ВРУ1"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ1",
+          "canonical": "ВРУ1"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 764.3,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            756.36,
+            860.57,
+            772.16,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ1@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ1",
+      "display_label": "ВРУ1",
+      "canonical_identity": "ВРУ1",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ1",
+          "canonical": "ВРУ1"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ1",
+          "canonical": "ВРУ1"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF7@845",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF7",
+      "display_label": "ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 844.5,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            836.64,
+            860.57,
+            852.44,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ2@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ2",
+      "display_label": "ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ2",
+          "canonical": "ВРУ2"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF8@909",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF8",
+      "display_label": "ВРУа",
+      "canonical_identity": "ВРУА",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 400,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУА"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 908.7,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            900.84,
+            858.89,
+            916.64,
+            867.66
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУА@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУа",
+      "display_label": "ВРУа",
+      "canonical_identity": "ВРУА",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУа",
+          "canonical": "ВРУА"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF9@979",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF9",
+      "display_label": "ВРУ-ИТП",
+      "canonical_identity": "ИТП",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 50,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ИТП"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ.ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 979.2,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            971.28,
+            858.89,
+            987.08,
+            867.66
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ИТП@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-ИТП",
+      "display_label": "ВРУ-ИТП",
+      "canonical_identity": "ИТП",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ВРУ.ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ИТП",
+          "canonical": "ИТП"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF10@1049",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF10",
+      "display_label": "ШУ-ХЦ",
+      "canonical_identity": "ХЦ",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 160,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХЦ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ШУХЦ-",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ШУ-ХЦ",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1048.6,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1039.2,
+            860.57,
+            1057.92,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХЦ@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ШУ-ХЦ",
+      "display_label": "ШУ-ХЦ",
+      "canonical_identity": "ХЦ",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ШУХЦ-",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ШУ-ХЦ",
+          "canonical": "ХЦ"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF11@1106",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF11",
+      "display_label": "ШУ-АПТ",
+      "canonical_identity": "АПТ",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-FRНF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "АПТ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ЩУ.АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ШУ-АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1105.8,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1097.04,
+            860.57,
+            1114.58,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:АПТ@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ШУ-АПТ",
+      "display_label": "ШУ-АПТ",
+      "canonical_identity": "АПТ",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ЩУ.АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ШУ-АПТ",
+          "canonical": "АПТ"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:1QF12@1164",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF12",
+      "display_label": "1ГРЩ-ШУ.ХП",
+      "canonical_identity": "ХП",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 50,
+        "cable": [
+          "ППГнг(А)-НF",
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХП"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ШУ.ХП",
+          "canonical": "ХП"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1164.4,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1155.0,
+            860.57,
+            1173.72,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХП@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "1ГРЩ-ШУ.ХП",
+      "display_label": "1ГРЩ-ШУ.ХП",
+      "canonical_identity": "ХП",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ШУ.ХП",
+          "canonical": "ХП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF13@1206",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF13",
+      "display_label": "ШУ-ХВС",
+      "canonical_identity": "ШНО",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 20,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХВС",
+          "ШНО"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ШНO",
+          "canonical": "ШНО"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ШУ-ХВС",
+          "canonical": "ХВС"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1206.5,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1197.12,
+            860.57,
+            1215.84,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": [
+        "улики дают разные идентичности: ХВС, ШНО"
+      ]
+    },
+    {
+      "id": "LOAD:ШНО@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ШУ-ХВС",
+      "display_label": "ШУ-ХВС",
+      "canonical_identity": "ШНО",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "1ГРЩ-ШНO",
+          "canonical": "ШНО"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ШУ-ХВС",
+          "canonical": "ХВС"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "OUT:2QF1@1299",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF1",
+      "display_label": "2ГРЩ-ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 500,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ4"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1299.5,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1291.56,
+            860.57,
+            1307.36,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ4@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ВРУ4",
+      "display_label": "2ГРЩ-ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ4",
+          "canonical": "ВРУ4"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF2@1358",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF2",
+      "display_label": "2ГРЩ-ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 400,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ3"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1357.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1349.4,
+            860.57,
+            1366.37,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ3@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ВРУ3",
+      "display_label": "2ГРЩ-ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ3",
+          "canonical": "ВРУ3"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF3@1434",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF3",
+      "display_label": "2ГРЩ-ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ3"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1433.7,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1425.24,
+            860.57,
+            1442.21,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "OUT:2QF4@1492",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF4",
+      "display_label": "2ГРЩ-ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1491.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1483.08,
+            860.57,
+            1500.64,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ2@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ВРУ2",
+      "display_label": "2ГРЩ-ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ2",
+          "canonical": "ВРУ2"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF5@1550",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF5",
+      "display_label": "2ГРЩ-ВРУа",
+      "canonical_identity": "ВРУА",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 400,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУА"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1549.5,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1541.04,
+            860.57,
+            1558.01,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУА@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ВРУа",
+      "display_label": "2ГРЩ-ВРУа",
+      "canonical_identity": "ВРУА",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУа",
+          "canonical": "ВРУА"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF6@1607",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF6",
+      "display_label": "2ГРЩ-ВРУ.ИТП",
+      "canonical_identity": "ИТП",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 50,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ИТП"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ.ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1607.4,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1598.88,
+            860.57,
+            1615.85,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ИТП@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ВРУ.ИТП",
+      "display_label": "2ГРЩ-ВРУ.ИТП",
+      "canonical_identity": "ИТП",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ВРУ.ИТП",
+          "canonical": "ИТП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF7@1665",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF7",
+      "display_label": "2ГРЩ-ШУХЦ-",
+      "canonical_identity": "ХЦ",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 160,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХЦ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ШУХЦ-",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1665.3,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1656.84,
+            860.57,
+            1673.81,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХЦ@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ШУХЦ-",
+      "display_label": "2ГРЩ-ШУХЦ-",
+      "canonical_identity": "ХЦ",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ШУХЦ-",
+          "canonical": "ХЦ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF8@1723",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF8",
+      "display_label": "2ГРЩ-ЩУ.АПТ",
+      "canonical_identity": "АПТ",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-FRНF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "АПТ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ЩУ.АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1723.2,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1714.68,
+            860.57,
+            1731.65,
+            869.34
+          ]
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ-2",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:АПТ@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ЩУ.АПТ",
+      "display_label": "2ГРЩ-ЩУ.АПТ",
+      "canonical_identity": "АПТ",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ЩУ.АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ-2",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF9@1781",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF9",
+      "display_label": "2ГРЩ-ШУ.ХП",
+      "canonical_identity": "ХП",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 50,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХП"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ШУ.ХП",
+          "canonical": "ХП"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1781.1,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1772.64,
+            860.57,
+            1789.61,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХП@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "2ГРЩ-ШУ.ХП",
+      "display_label": "2ГРЩ-ШУ.ХП",
+      "canonical_identity": "ХП",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ШУ.ХП",
+          "canonical": "ХП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF10@1835",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF10",
+      "display_label": null,
+      "canonical_identity": null,
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 315,
+        "cable": [],
+        "status": "UNKNOWN",
+        "identity_set": []
+      },
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1835.4,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1825.44,
+            860.57,
+            1845.34,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": []
+    },
+    {
+      "id": "OUT:2QF11@1897",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF11",
+      "display_label": "ХМ2",
+      "canonical_identity": "ХМ2",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 400,
+        "cable": [
+          "ППГнг(А)-НF",
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХМ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ХМ2",
+          "canonical": "ХМ2"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ2",
+          "canonical": "ХМ2"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1897.2,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1887.84,
+            860.57,
+            1906.56,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "HIGH",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХМ2@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ХМ2",
+      "display_label": "ХМ2",
+      "canonical_identity": "ХМ2",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ХМ2",
+          "canonical": "ХМ2"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ2",
+          "canonical": "ХМ2"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "OUT:2QF12@1952",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF12",
+      "display_label": "ДР2-ХМ2",
+      "canonical_identity": "ДР2",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-НF",
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ДР2",
+          "ДР2-ХМ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ДР2",
+          "canonical": "ДР2"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР2-ХМ2",
+          "canonical": "ДР2-ХМ2"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1951.8,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1941.84,
+            860.57,
+            1961.74,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": [
+        "улики дают разные идентичности: ДР2, ДР2-ХМ2"
+      ]
+    },
+    {
+      "id": "LOAD:ДР2@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ДР2-ХМ2",
+      "display_label": "ДР2-ХМ2",
+      "canonical_identity": "ДР2",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ДР2",
+          "canonical": "ДР2"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР2-ХМ2",
+          "canonical": "ДР2-ХМ2"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "OUT:2QF13@1999",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF13",
+      "display_label": "ЯСН",
+      "canonical_identity": "ЭБ-ГВС",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 100,
+        "cable": [
+          "ППГнг(А)-НF",
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ЭБ-ГВС",
+          "ЯСН"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ЭБ.ГВС",
+          "canonical": "ЭБ-ГВС"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ЯСН",
+          "canonical": "ЯСН"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1999.1,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1989.12,
+            860.57,
+            2009.02,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": [
+        "улики дают разные идентичности: ЭБ-ГВС, ЯСН"
+      ]
+    },
+    {
+      "id": "LOAD:ЭБ-ГВС@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ЯСН",
+      "display_label": "ЯСН",
+      "canonical_identity": "ЭБ-ГВС",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ЭБ.ГВС",
+          "canonical": "ЭБ-ГВС"
+        },
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ЯСН",
+          "canonical": "ЯСН"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "OUT:2QF14@2053",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF14",
+      "display_label": "2ГРЩ-ЭБ.ГВС",
+      "canonical_identity": "ЭБ-ГВС",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 32,
+        "cable": [
+          "ППГнг(А)-НF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ЭБ-ГВС"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "2ГРЩ-ЭБ.ГВС",
+          "canonical": "ЭБ-ГВС"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2052.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2042.64,
+            860.57,
+            2063.12,
+            869.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "METERING_GROUP:BS1",
+      "type": "METERING_GROUP",
+      "level": "B",
+      "label": "METERING_GROUP:BS1",
+      "display_label": "METERING_GROUP:BS1",
+      "canonical_identity": "METERING_GROUP:BS1",
+      "section": "BS1",
+      "attrs": {
+        "member_tokens": [
+          "1ТТ1...1ТТ3",
+          "1ТТ4...1ТТ6",
+          "1ТТ7...1ТТ9",
+          "2ТТ1...2ТТ3",
+          "2ТТ4...2ТТ6",
+          "2ТТ7...2ТТ9",
+          "PW1",
+          "Wh1",
+          "Wh2",
+          "Мультиметр"
+        ],
+        "member_count": 10
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "Wh1",
+          "bbox_visual_pt": [
+            1140.6,
+            1071.65,
+            1154.06,
+            1080.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "1ТТ1...1ТТ3",
+          "bbox_visual_pt": [
+            1071.48,
+            1060.13,
+            1108.34,
+            1068.9
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "1ТТ4...1ТТ6",
+          "bbox_visual_pt": [
+            1065.6,
+            1028.33,
+            1104.22,
+            1037.1
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "1ТТ7...1ТТ9",
+          "bbox_visual_pt": [
+            1136.28,
+            996.77,
+            1174.32,
+            1005.54
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "2ТТ1...2ТТ3",
+          "bbox_visual_pt": [
+            1239.96,
+            1060.73,
+            1279.17,
+            1069.5
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh2",
+          "bbox_visual_pt": [
+            1310.52,
+            1070.57,
+            1325.15,
+            1079.34
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "2ТТ4...2ТТ6",
+          "bbox_visual_pt": [
+            1238.16,
+            1028.93,
+            1279.14,
+            1037.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "2ТТ7...2ТТ9",
+          "bbox_visual_pt": [
+            1240.92,
+            996.65,
+            1281.31,
+            1005.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Мультиметр",
+          "bbox_visual_pt": [
+            1134.72,
+            1019.93,
+            1179.8,
+            1028.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "PW1",
+          "bbox_visual_pt": [
+            1148.76,
+            1038.89,
+            1162.8,
+            1047.66
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "METERING_GROUP:BS2",
+      "type": "METERING_GROUP",
+      "level": "B",
+      "label": "METERING_GROUP:BS2",
+      "display_label": "METERING_GROUP:BS2",
+      "canonical_identity": "METERING_GROUP:BS2",
+      "section": "BS2",
+      "attrs": {
+        "member_tokens": [
+          "PW2",
+          "Мультиметр"
+        ],
+        "member_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "Мультиметр",
+          "bbox_visual_pt": [
+            1304.88,
+            1019.93,
+            1349.96,
+            1028.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "PW2",
+          "bbox_visual_pt": [
+            1318.56,
+            1038.89,
+            1333.78,
+            1047.66
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS1",
+      "type": "COMPENSATION_GROUP",
+      "level": "B",
+      "label": "COMPENSATION_GROUP:BS1",
+      "display_label": "COMPENSATION_GROUP:BS1",
+      "canonical_identity": "COMPENSATION_GROUP:BS1",
+      "section": "BS1",
+      "attrs": {
+        "member_tokens": [
+          "АУКРМ-1"
+        ],
+        "member_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ-1",
+          "bbox_visual_pt": [
+            635.85,
+            1097.81,
+            667.46,
+            1106.58
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS2",
+      "type": "COMPENSATION_GROUP",
+      "level": "B",
+      "label": "COMPENSATION_GROUP:BS2",
+      "display_label": "COMPENSATION_GROUP:BS2",
+      "canonical_identity": "COMPENSATION_GROUP:BS2",
+      "section": "BS2",
+      "attrs": {
+        "member_tokens": [
+          "АУКРМ-2"
+        ],
+        "member_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ-2",
+          "bbox_visual_pt": [
+            1739.97,
+            1052.57,
+            1772.76,
+            1061.34
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "SERVICE_GROUP:BS1",
+      "type": "SERVICE_GROUP",
+      "level": "B",
+      "label": "SERVICE_GROUP:BS1",
+      "display_label": "SERVICE_GROUP:BS1",
+      "canonical_identity": "SERVICE_GROUP:BS1",
+      "section": "BS1",
+      "attrs": {
+        "member_tokens": [
+          "ОПН"
+        ],
+        "member_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1035.6,
+            1162.85,
+            1049.65,
+            1171.62
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "SERVICE_GROUP:BS2",
+      "type": "SERVICE_GROUP",
+      "level": "B",
+      "label": "SERVICE_GROUP:BS2",
+      "display_label": "SERVICE_GROUP:BS2",
+      "canonical_identity": "SERVICE_GROUP:BS2",
+      "section": "BS2",
+      "attrs": {
+        "member_tokens": [
+          "ОПН"
+        ],
+        "member_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1359.0,
+            1162.85,
+            1373.05,
+            1171.62
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    }
+  ],
+  "edges": [
+    {
+      "id": "FEEDS:SRC1->SRC1-INT1",
+      "type": "FEEDS",
+      "from": "SRC1",
+      "to": "SRC1-INT1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "FEEDS:SRC1-INT1->IN1",
+      "type": "FEEDS",
+      "from": "SRC1-INT1",
+      "to": "IN1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:IN1->BS1",
+      "type": "FEEDS",
+      "from": "IN1",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "input_to_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:SRC2->SRC2-INT1",
+      "type": "FEEDS",
+      "from": "SRC2",
+      "to": "SRC2-INT1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "FEEDS:SRC2-INT1->IN2",
+      "type": "FEEDS",
+      "from": "SRC2-INT1",
+      "to": "IN2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:IN2->BS2",
+      "type": "FEEDS",
+      "from": "IN2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "input_to_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "TIES_SECTIONS:TIE:BS1-BS2->BS1",
+      "type": "TIES_SECTIONS",
+      "from": "TIE:BS1-BS2",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "gap_left"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "TIES_SECTIONS:TIE:BS1-BS2->BS2",
+      "type": "TIES_SECTIONS",
+      "from": "TIE:BS1-BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "gap_right"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF1@460->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF1@460",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF1@460->LOAD:ДР1@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF1@460",
+      "to": "LOAD:ДР1@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ДР1"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF2@513->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF2@513",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF2@513->LOAD:ХМ1@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF2@513",
+      "to": "LOAD:ХМ1@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХМ1"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF3@558->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF3@558",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF4@608->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF4@608",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF4@608->LOAD:ВРУ4@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF4@608",
+      "to": "LOAD:ВРУ4@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ4"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF5@692->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF5@692",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF5@692->LOAD:ВРУ3@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF5@692",
+      "to": "LOAD:ВРУ3@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ3"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF6@764->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF6@764",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF6@764->LOAD:ВРУ1@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF6@764",
+      "to": "LOAD:ВРУ1@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ1"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF7@845->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF7@845",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF7@845->LOAD:ВРУ2@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF7@845",
+      "to": "LOAD:ВРУ2@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ2"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF8@909->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF8@909",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF8@909->LOAD:ВРУА@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF8@909",
+      "to": "LOAD:ВРУА@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУА"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF9@979->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF9@979",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF9@979->LOAD:ИТП@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF9@979",
+      "to": "LOAD:ИТП@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ИТП"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF10@1049->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF10@1049",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF10@1049->LOAD:ХЦ@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF10@1049",
+      "to": "LOAD:ХЦ@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХЦ"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF11@1106->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF11@1106",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF11@1106->LOAD:АПТ@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF11@1106",
+      "to": "LOAD:АПТ@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "АПТ"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF12@1164->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF12@1164",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF12@1164->LOAD:ХП@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF12@1164",
+      "to": "LOAD:ХП@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF13@1206->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF13@1206",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF13@1206->LOAD:ШНО@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF13@1206",
+      "to": "LOAD:ШНО@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ШНО"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF1@1299->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF1@1299",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF1@1299->LOAD:ВРУ4@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF1@1299",
+      "to": "LOAD:ВРУ4@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ4"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF2@1358->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF2@1358",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF2@1358->LOAD:ВРУ3@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF2@1358",
+      "to": "LOAD:ВРУ3@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ3"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF3@1434->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF3@1434",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF3@1434->LOAD:ВРУ3@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF3@1434",
+      "to": "LOAD:ВРУ3@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ3"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF4@1492->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF4@1492",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF4@1492->LOAD:ВРУ2@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF4@1492",
+      "to": "LOAD:ВРУ2@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ2"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF5@1550->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF5@1550",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF5@1550->LOAD:ВРУА@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF5@1550",
+      "to": "LOAD:ВРУА@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУА"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF6@1607->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF6@1607",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF6@1607->LOAD:ИТП@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF6@1607",
+      "to": "LOAD:ИТП@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ИТП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF7@1665->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF7@1665",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF7@1665->LOAD:ХЦ@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF7@1665",
+      "to": "LOAD:ХЦ@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХЦ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF8@1723->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF8@1723",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF8@1723->LOAD:АПТ@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF8@1723",
+      "to": "LOAD:АПТ@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "АПТ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF9@1781->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF9@1781",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF9@1781->LOAD:ХП@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF9@1781",
+      "to": "LOAD:ХП@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF10@1835->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF10@1835",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF11@1897->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF11@1897",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF11@1897->LOAD:ХМ2@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF11@1897",
+      "to": "LOAD:ХМ2@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХМ2"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF12@1952->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF12@1952",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF12@1952->LOAD:ДР2@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF12@1952",
+      "to": "LOAD:ДР2@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ДР2"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF13@1999->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF13@1999",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF13@1999->LOAD:ЭБ-ГВС@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF13@1999",
+      "to": "LOAD:ЭБ-ГВС@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ЭБ-ГВС"
+        }
+      ],
+      "confidence": "LOW"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF14@2053->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF14@2053",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF14@2053->LOAD:ЭБ-ГВС@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF14@2053",
+      "to": "LOAD:ЭБ-ГВС@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ЭБ-ГВС"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:METERING_GROUP:BS1->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "METERING_GROUP:BS1",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:METERING_GROUP:BS2->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "METERING_GROUP:BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BS1->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "COMPENSATION_GROUP:BS1",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BS2->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "COMPENSATION_GROUP:BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:SERVICE_GROUP:BS1->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "SERVICE_GROUP:BS1",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:SERVICE_GROUP:BS2->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "SERVICE_GROUP:BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    }
+  ],
+  "groups": [
+    {
+      "id": "METERING_GROUP:BS1",
+      "type": "METERING_GROUP",
+      "section": "BS1",
+      "member_tokens": [
+        "1ТТ1...1ТТ3",
+        "1ТТ4...1ТТ6",
+        "1ТТ7...1ТТ9",
+        "2ТТ1...2ТТ3",
+        "2ТТ4...2ТТ6",
+        "2ТТ7...2ТТ9",
+        "PW1",
+        "Wh1",
+        "Wh2",
+        "Мультиметр"
+      ],
+      "member_count": 10,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "Wh1",
+          "bbox_visual_pt": [
+            1140.6,
+            1071.65,
+            1154.06,
+            1080.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "1ТТ1...1ТТ3",
+          "bbox_visual_pt": [
+            1071.48,
+            1060.13,
+            1108.34,
+            1068.9
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "1ТТ4...1ТТ6",
+          "bbox_visual_pt": [
+            1065.6,
+            1028.33,
+            1104.22,
+            1037.1
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "1ТТ7...1ТТ9",
+          "bbox_visual_pt": [
+            1136.28,
+            996.77,
+            1174.32,
+            1005.54
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "2ТТ1...2ТТ3",
+          "bbox_visual_pt": [
+            1239.96,
+            1060.73,
+            1279.17,
+            1069.5
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh2",
+          "bbox_visual_pt": [
+            1310.52,
+            1070.57,
+            1325.15,
+            1079.34
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "2ТТ4...2ТТ6",
+          "bbox_visual_pt": [
+            1238.16,
+            1028.93,
+            1279.14,
+            1037.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "2ТТ7...2ТТ9",
+          "bbox_visual_pt": [
+            1240.92,
+            996.65,
+            1281.31,
+            1005.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Мультиметр",
+          "bbox_visual_pt": [
+            1134.72,
+            1019.93,
+            1179.8,
+            1028.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "PW1",
+          "bbox_visual_pt": [
+            1148.76,
+            1038.89,
+            1162.8,
+            1047.66
+          ]
+        }
+      ]
+    },
+    {
+      "id": "METERING_GROUP:BS2",
+      "type": "METERING_GROUP",
+      "section": "BS2",
+      "member_tokens": [
+        "PW2",
+        "Мультиметр"
+      ],
+      "member_count": 2,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "Мультиметр",
+          "bbox_visual_pt": [
+            1304.88,
+            1019.93,
+            1349.96,
+            1028.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "PW2",
+          "bbox_visual_pt": [
+            1318.56,
+            1038.89,
+            1333.78,
+            1047.66
+          ]
+        }
+      ]
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS1",
+      "type": "COMPENSATION_GROUP",
+      "section": "BS1",
+      "member_tokens": [
+        "АУКРМ-1"
+      ],
+      "member_count": 1,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ-1",
+          "bbox_visual_pt": [
+            635.85,
+            1097.81,
+            667.46,
+            1106.58
+          ]
+        }
+      ]
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS2",
+      "type": "COMPENSATION_GROUP",
+      "section": "BS2",
+      "member_tokens": [
+        "АУКРМ-2"
+      ],
+      "member_count": 1,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ-2",
+          "bbox_visual_pt": [
+            1739.97,
+            1052.57,
+            1772.76,
+            1061.34
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SERVICE_GROUP:BS1",
+      "type": "SERVICE_GROUP",
+      "section": "BS1",
+      "member_tokens": [
+        "ОПН"
+      ],
+      "member_count": 1,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1035.6,
+            1162.85,
+            1049.65,
+            1171.62
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SERVICE_GROUP:BS2",
+      "type": "SERVICE_GROUP",
+      "section": "BS2",
+      "member_tokens": [
+        "ОПН"
+      ],
+      "member_count": 1,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1359.0,
+            1162.85,
+            1373.05,
+            1171.62
+          ]
+        }
+      ]
+    }
+  ],
+  "section_label_conflicts": [],
+  "quality": {
+    "backbone_recovered": true,
+    "source_confidence": 1.0,
+    "bus_confidence": 1.0,
+    "section_confidence": 1.0,
+    "feeder_coverage": 1.0,
+    "identity_coverage": 0.926,
+    "unresolved_nodes": 2,
+    "unresolved_edges": 4,
+    "section_label_conflicts": 0,
+    "sections": 2,
+    "inputs": 2,
+    "outgoing_devices": 27
+  },
+  "warnings": []
+}

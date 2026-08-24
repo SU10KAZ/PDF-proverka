@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auditmanager.local/schemas/system_graph_comparison.v0.json",
+  "title": "SYSTEM_GRAPH comparison (предложение, research)",
+  "description": "Результат сравнения двух SYSTEM_GRAPH. Компаратор дисциплинарно нейтрален: он не знает ни про ЭОМ, ни про ВК — только про типы узлов, уровни и canonical_identity.",
+  "type": "object",
+  "required": ["route", "mode", "backbone_verdict", "levels", "changes", "quality"],
+  "properties": {
+    "route": {"const": "MODE_2_REQUIRED"},
+    "mode": {"const": "MODE_2"},
+    "backbone_verdict": {"enum": ["BACKBONE_PRESERVED", "BACKBONE_CHANGED", "UNCERTAIN"]},
+    "levels": {
+      "type": "object",
+      "properties": {
+        "A": {"type": "object", "description": "источники, пути питания, вводы, секции, секционник"},
+        "B": {"type": "object", "description": "функциональные группы: учёт, компенсация, служебные"},
+        "C": {"type": "object", "description": "отходящие аппараты и ветви"}
+      }
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["change_id", "type", "level", "subject", "summary",
+                      "left_region", "right_region", "evidence", "confidence", "provenance"],
+        "properties": {
+          "change_id": {"type": "string"},
+          "type": {"enum": ["SYSTEM_BACKBONE_CHANGED", "FUNCTIONAL_GROUP_CHANGED",
+                             "NODE_ADDED", "NODE_REMOVED", "NODE_TYPE_CHANGED",
+                             "CONNECTION_CHANGED", "GROUP_COUNT_CHANGED",
+                             "DETAIL_LEVEL_INCREASED", "UNCERTAIN_STRUCTURAL_CHANGE"]},
+          "level": {"enum": ["A", "B", "C"]},
+          "subject": {"type": "string"},
+          "summary": {"type": "string"},
+          "left_region": {"type": ["object", "null"]},
+          "right_region": {"type": ["object", "null"]},
+          "evidence": {"type": "array", "minItems": 1},
+          "confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+          "provenance": {"type": "array", "items": {"enum": ["VECTOR", "VISION", "BOTH"]}},
+          "note": {"type": "string"}
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "properties": {
+        "left": {"type": "object"},
+        "right": {"type": "object"},
+        "identity_match_rate": {"type": "number"},
+        "high_confidence_match_rate": {"type": "number"}
+      }
+    }
+  }
+}

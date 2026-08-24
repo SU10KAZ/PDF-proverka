@@ -1,0 +1,1876 @@
+{
+  "total": 144,
+  "routes": {
+    "CLASSIC": 55,
+    "PROFILE:kv_annotated_singleline": 51,
+    "PROFILE:bare_device_scheme": 23,
+    "PROFILE:unknown_singleline": 11,
+    "PROFILE:dense_sectioned_board": 4
+  },
+  "rows": [
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "7HYD-CUDD-FPU",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "7A3T-NE7Q-UJQ",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "9VCW-VLFL-G4F",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "7TLY-K9XV-UGJ",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "677G-P3HT-LPK",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "9AXN-3CAJ-TRK",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "4A3T-N6JT-XDP",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "7UYE-GQE6-P3N",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "6TQ9-HNX7-T4A",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "RURG-U3UC-KNX",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "4UHC-UF4H-7V6",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "6YU9-MCUW-K4U",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "6VM4-4RED-WE6",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "6A3U-CGMA-JPF",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "4DLW-QE6T-MWW",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "JTVT-VDGG-RQ9",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/result.json",
+      "block_id": "7DM3-PWF9-3N6",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "67CE-XFJJ-XQE",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "7GUY-QK6L-6NN",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "4NPQ-FHCK-KWY",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "VUWN-QMHG-C3L",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "V3UD-T6Q9-NYM",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "7JGM-APPK-L4U",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "4U6X-FVAH-PH4",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "A3EX-QLML-TGC",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "4WAQ-AFGN-FKR",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "7NAY-WAHK-W6E",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "9U3L-HMFL-G39",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "7LNR-VP4X-JQT",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "9H6X-7Q7J-Y6C",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "6HK4-QEM9-TQE",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "4YWX-EELK-JGL",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "7HEY-WHN6-UC6",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/result.json",
+      "block_id": "9TEA-6QMA-YHK",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "466U-6UCY-6FY",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "TWCV-RG4E-AQJ",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "9CAF-FCQN-U6G",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "7TJJ-ARFM-PMF",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "7CEQ-NUQK-YYK",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "9J7D-X39N-QK4",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "4ANX-Q4JC-A7M",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "7VUN-GDX3-YNE",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "6LCT-LGAV-MAR",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 1,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "NEWT-W7EG-DVX",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 1,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "499P-V4MN-63T",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "47GA-TPW9-ATE",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "7WGJ-9P9D-6YK",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "GACL-CA94-YCG",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "4XAF-3LJ7-NJT",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "4RUJ-69GU-J93",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "4H9W-DQVW-ATE",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К2 V1/versions/v001/02_work/result.json",
+      "block_id": "6ERG-3JVF-9AM",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/result.json",
+      "block_id": "6FFN-W3FM-A7U",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/result.json",
+      "block_id": "9L4P-PL4L-9FH",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/result.json",
+      "block_id": "6N3Q-GH7U-74P",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v001/02_work/result.json",
+      "block_id": "99LR-WTHA-VCG",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/result.json",
+      "block_id": "LMQR-XDPX-EKY",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/result.json",
+      "block_id": "43F7-QLP4-HYW",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/result.json",
+      "block_id": "6DNM-FUL4-DY4",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/result.json",
+      "block_id": "4RLC-WGJY-C9T",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К3/versions/v002/02_work/result.json",
+      "block_id": "A9UN-AMGA-7DW",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/result.json",
+      "block_id": "4GW6-QX3P-PE9",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К4/versions/v001/02_work/result.json",
+      "block_id": "3FNU-XJM3-RPY",
+      "rotation": 270,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v001/02_work/result.json",
+      "block_id": "4PAG-Y4EV-HDR",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v001/02_work/result.json",
+      "block_id": "6DYC-3VPW-X3L",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v001/02_work/result.json",
+      "block_id": "7E7W-VNTC-WLX",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v001/02_work/result.json",
+      "block_id": "4J3P-6NGK-RUF",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/02_work/result.json",
+      "block_id": "NUXT-KWLV-WAW",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/02_work/result.json",
+      "block_id": "4GJR-L36R-Y7M",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/02_work/result.json",
+      "block_id": "7G3R-XFM7-AVE",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К5/versions/v002/02_work/result.json",
+      "block_id": "7CCM-ALCM-QGT",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/result.json",
+      "block_id": "47HW-KDG3-N7U",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/result.json",
+      "block_id": "AD3V-LGGJ-6PK",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/result.json",
+      "block_id": "A93W-EWQR-VDP",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/result.json",
+      "block_id": "7FPM-HKC3-VKF",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К6/versions/v001/02_work/result.json",
+      "block_id": "9FNY-4PHX-7CT",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К7 V1/versions/v001/02_work/result.json",
+      "block_id": "63CV-JC4L-HDH",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К7 V1/versions/v001/02_work/result.json",
+      "block_id": "6UYA-F6C7-UQN",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К7 V1/versions/v001/02_work/result.json",
+      "block_id": "9HXL-4MM6-EV6",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К7 V1/versions/v001/02_work/result.json",
+      "block_id": "969R-V99M-VCX",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К7 V1/versions/v001/02_work/result.json",
+      "block_id": "7UWA-UNKL-JNV",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К7 V1/versions/v001/02_work/result.json",
+      "block_id": "46H3-TWN7-XQV",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ1-ПА V1/versions/v001/02_work/result.json",
+      "block_id": "44WK-KWYK-EXJ",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ1-ПА V1/versions/v001/02_work/result.json",
+      "block_id": "7K3Q-L6N3-LHP",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v002/02_work/result.json",
+      "block_id": "6QWX-FCQ9-33E",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1 V1/versions/v001/02_work/result.json",
+      "block_id": "RMYQ-A6ED-UWD",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1 V1/versions/v001/02_work/result.json",
+      "block_id": "6DP7-CVY3-9EC",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1 V1/versions/v001/02_work/result.json",
+      "block_id": "9Q6Q-HVN4-LHH",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 9,
+        "identity_coverage": 0.222,
+        "source_confidence": 0.0,
+        "bus_confidence": 1.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К1 V1/versions/v001/02_work/result.json",
+      "block_id": "63FP-VMYM-4VC",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v001/02_work/result.json",
+      "block_id": "4UJ9-3D93-W7A",
+      "rotation": 270,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v001/02_work/result.json",
+      "block_id": "6RCT-Y4UW-K6J",
+      "rotation": 270,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v001/02_work/result.json",
+      "block_id": "4HFN-HAAD-K9T",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v001/02_work/result.json",
+      "block_id": "9LUM-Y3XJ-HT9",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": false
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v002/02_work/result.json",
+      "block_id": "6HMF-YLQV-JN9",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К3/versions/v002/02_work/result.json",
+      "block_id": "63VG-MWXG-64D",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v001/02_work/result.json",
+      "block_id": "6TN4-ULAY-3XG",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v001/02_work/result.json",
+      "block_id": "9P4U-7WFD-DUM",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v001/02_work/result.json",
+      "block_id": "7GY6-7YKG-K39",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v001/02_work/result.json",
+      "block_id": "96NV-LJQD-PET",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v002/02_work/result.json",
+      "block_id": "9DNF-RY3D-FAH",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К6/versions/v002/02_work/result.json",
+      "block_id": "6QQU-HYV9-P7F",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО2-ПА V1/versions/v001/02_work/result.json",
+      "block_id": "4LQJ-LYHX-M3T",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО2-ПА V1/versions/v001/02_work/result.json",
+      "block_id": "4Q7G-L769-7Q3",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.333,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО2-ПА V1/versions/v001/02_work/result.json",
+      "block_id": "97W7-FKXW-XNL",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 3,
+        "identity_coverage": 0.333,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО2-ПА V1/versions/v001/02_work/result.json",
+      "block_id": "4CD9-CHUV-34U",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 3,
+        "identity_coverage": 0.333,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО2-ПА V1/versions/v001/02_work/result.json",
+      "block_id": "73T9-WFKK-DMU",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭОМ-НС V1/versions/v001/02_work/result.json",
+      "block_id": "7M7F-ED7H-DWA",
+      "rotation": 0,
+      "route": "CLASSIC",
+      "classic_graph": true,
+      "classic_gate_use": true
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К2 (Книга 2) V1/versions/v001/02_work/result.json",
+      "block_id": "U3CR-MFUH-XDP",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ/versions/v001/02_work/result.json",
+      "block_id": "9WRW-TQYG-JG6",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ/versions/v001/02_work/result.json",
+      "block_id": "93XF-ML4D-VL3",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ/versions/v001/02_work/result.json",
+      "block_id": "4PMP-EURL-E7F",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ/versions/v001/02_work/result.json",
+      "block_id": "7WXW-RMQ9-YEC",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ/versions/v001/02_work/result.json",
+      "block_id": "9LHJ-673L-EFH",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСКУВТ/versions/v001/02_work/result.json",
+      "block_id": "9YXQ-7GLG-9PA",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСУД.Л V1/versions/v001/02_work/result.json",
+      "block_id": "6LCH-PCEN-6HU",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 2,
+        "inputs": 0,
+        "outgoing_devices": 5,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": 0.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСУД.Л V1/versions/v001/02_work/result.json",
+      "block_id": "7CGA-7KRN-WWF",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 1,
+        "outgoing_devices": 2,
+        "identity_coverage": 0.0,
+        "source_confidence": 1.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСУД.Л V1/versions/v001/02_work/result.json",
+      "block_id": "9X3U-V6QC-R66",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 2,
+        "inputs": 0,
+        "outgoing_devices": 5,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": 0.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСУД.Л V1/versions/v001/02_work/result.json",
+      "block_id": "6GC6-UAFY-6EJ",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСУД.Л V1/versions/v001/02_work/result.json",
+      "block_id": "47XP-A6RV-M7M",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 2,
+        "inputs": 0,
+        "outgoing_devices": 5,
+        "identity_coverage": 0.0,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": 0.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АСУД.Л V1/versions/v001/02_work/result.json",
+      "block_id": "4433-NKMC-366",
+      "rotation": 0,
+      "route": "PROFILE:unknown_singleline",
+      "backbone": false,
+      "quality": {
+        "sections": null,
+        "inputs": null,
+        "outgoing_devices": null,
+        "identity_coverage": null,
+        "source_confidence": null,
+        "bus_confidence": null,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/АА_БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_7d0d6c0536a541889e8082b4b2de2000",
+      "rotation": 270,
+      "route": "PROFILE:dense_sectioned_board",
+      "backbone": true,
+      "quality": {
+        "sections": 2,
+        "inputs": 2,
+        "outgoing_devices": 27,
+        "identity_coverage": 0.926,
+        "source_confidence": 1.0,
+        "bus_confidence": 1.0,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/Страница_21_из_АА-БЭ-03-ДС3-ИОС1.1_—_копия/versions/v001/02_work/blocks.json",
+      "block_id": "blk_039909ec039649a1b8209f059c95167b",
+      "rotation": 0,
+      "route": "PROFILE:dense_sectioned_board",
+      "backbone": true,
+      "quality": {
+        "sections": 2,
+        "inputs": 2,
+        "outgoing_devices": 30,
+        "identity_coverage": 0.867,
+        "source_confidence": 1.0,
+        "bus_confidence": 1.0,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_055dc095ad2343b29e469ea6d3f58790",
+      "rotation": 0,
+      "route": "PROFILE:dense_sectioned_board",
+      "backbone": true,
+      "quality": {
+        "sections": 2,
+        "inputs": 2,
+        "outgoing_devices": 30,
+        "identity_coverage": 0.867,
+        "source_confidence": 1.0,
+        "bus_confidence": 1.0,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_e3ff9e7e1e1344c9b842f652ac101170",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 6,
+        "inputs": 2,
+        "outgoing_devices": 79,
+        "identity_coverage": 0.975,
+        "source_confidence": 1.0,
+        "bus_confidence": 0.667,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_dbaf647e8ebb422a850e58af9f8b482d",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 80,
+        "identity_coverage": 0.938,
+        "source_confidence": 0.0,
+        "bus_confidence": 1.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_b321f08ed9dd4873aeb15855c1821778",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 4,
+        "inputs": 4,
+        "outgoing_devices": 8,
+        "identity_coverage": 1.0,
+        "source_confidence": 0.5,
+        "bus_confidence": 0.75,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_d410b6200ae94a50a9d7c0af6114c75a",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 6,
+        "inputs": 2,
+        "outgoing_devices": 65,
+        "identity_coverage": 0.923,
+        "source_confidence": 1.0,
+        "bus_confidence": 0.833,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_cd0365f5c53f4a15be75518d1775376d",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 6,
+        "inputs": 2,
+        "outgoing_devices": 64,
+        "identity_coverage": 0.922,
+        "source_confidence": 1.0,
+        "bus_confidence": 0.333,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_1475dbbc18394a1db120cc67e31b1e31",
+      "rotation": 0,
+      "route": "PROFILE:kv_annotated_singleline",
+      "backbone": true,
+      "quality": {
+        "sections": 7,
+        "inputs": 2,
+        "outgoing_devices": 58,
+        "identity_coverage": 0.879,
+        "source_confidence": 1.0,
+        "bus_confidence": 0.286,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_544d3231107e4b12b651fb1dfac7d5f0",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 3,
+        "identity_coverage": 0.333,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_ee0e44e78efc4287be69840b02950d4b",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 7,
+        "inputs": 3,
+        "outgoing_devices": 16,
+        "identity_coverage": 0.312,
+        "source_confidence": 0.667,
+        "bus_confidence": 0.429,
+        "section_confidence": 1.0
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_7b59ca1636374724bd9ae64dd5c4d082",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.167,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_80a76a847e7a46b49d5790cffbab6a07",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.167,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_1381369f5b0a40669a55e8c2c41d9cfa",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.167,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_11ca7806926c49bdbaa71e4305bdb5dc",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 7,
+        "identity_coverage": 0.143,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_45bc6cb841a24682b6b0f9c5375df853",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 7,
+        "identity_coverage": 0.143,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_b14418c16a8e4bbc9ddc0637c2a2d9bb",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 7,
+        "identity_coverage": 0.143,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_b32e3506228548dbbe0de9478dfa1c84",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 7,
+        "identity_coverage": 0.143,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_3d8486663fb74377a4cf7cc9a1041a13",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.167,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_423d094f244e47b196e2eddd84573bb7",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.167,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_75ca5001de3d4436a74b91799c1185e7",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.167,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_b1e8217fdfe2437cbff5ef16f751f343",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 6,
+        "identity_coverage": 0.167,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/АА-БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_00143b0f4373410ebf41c31bde4e2cbe",
+      "rotation": 0,
+      "route": "PROFILE:bare_device_scheme",
+      "backbone": true,
+      "quality": {
+        "sections": 1,
+        "inputs": 0,
+        "outgoing_devices": 7,
+        "identity_coverage": 0.143,
+        "source_confidence": 0.0,
+        "bus_confidence": 0.0,
+        "section_confidence": null
+      }
+    },
+    {
+      "source": "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_2/documents/Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1/versions/v001/02_work/blocks.json",
+      "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+      "rotation": 270,
+      "route": "PROFILE:dense_sectioned_board",
+      "backbone": true,
+      "quality": {
+        "sections": 2,
+        "inputs": 2,
+        "outgoing_devices": 27,
+        "identity_coverage": 0.926,
+        "source_confidence": 1.0,
+        "bus_confidence": 1.0,
+        "section_confidence": 1.0
+      }
+    }
+  ]
+}

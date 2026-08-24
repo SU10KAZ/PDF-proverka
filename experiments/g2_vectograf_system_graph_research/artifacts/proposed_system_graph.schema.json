@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auditmanager.local/schemas/system_graph.v0.json",
+  "title": "SYSTEM_GRAPH (предложение, research)",
+  "description": "Единый контракт структурного описания одного подготовленного графического блока. Дисциплинарно нейтрален: специфика ЭОМ живёт в subclass и profile, а не в форме документа.",
+  "type": "object",
+  "required": ["schema_version", "block", "discipline", "profile", "nodes", "edges", "quality"],
+  "properties": {
+    "schema_version": {"const": "system-graph.v0-research"},
+    "side": {"type": "string"},
+    "block": {
+      "type": "object",
+      "required": ["block_id", "page_index"],
+      "properties": {
+        "block_id": {"type": "string"},
+        "page_index": {"type": "integer", "minimum": 0},
+        "rotation": {"type": "integer"},
+        "pdf": {"type": "string"},
+        "bbox_visual_pt": {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4}
+      }
+    },
+    "discipline": {"type": "string", "description": "ЭОМ / ВК / ОВ — задаёт экстрактор, но не компаратор"},
+    "profile": {
+      "type": "object",
+      "required": ["id", "signals", "why"],
+      "properties": {
+        "id": {"type": "string", "description": "диалект: classic_calc_singleline | dense_sectioned_board | kv_annotated_singleline | bare_device_scheme | unknown_singleline"},
+        "signals": {"type": "object"},
+        "why": {"type": "array", "items": {"type": "string"}},
+        "note": {"type": "string"}
+      }
+    },
+    "levels": {"type": "object", "description": "A — остов, B — функциональные группы, C — аппараты"},
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "evidence", "confidence"],
+        "properties": {
+          "id": {"type": "string"},
+          "type": {"enum": ["SOURCE", "INPUT_DEVICE", "BUS_SECTION", "SECTION_DEVICE",
+                             "OUTGOING_DEVICE", "LOAD", "METERING_GROUP",
+                             "COMPENSATION_GROUP", "SERVICE_GROUP", "SERVICE_NODE",
+                             "UNKNOWN_NODE"]},
+          "subclass": {"type": ["string", "null"],
+                       "description": "уровень абстракции/исполнение: UPSTREAM_TP_CONNECTION, TRANSFORMER_EXPLICIT, BUSWAY, SECTION_CIRCUIT_BREAKER, SECTION_SWITCH_DISCONNECTOR, SURGE_PROTECTION, FUSE_PROTECTION"},
+          "level": {"enum": ["A", "B", "C"]},
+          "label": {"type": ["string", "null"], "description": "как подписано на чертеже"},
+          "display_label": {"type": ["string", "null"]},
+          "canonical_identity": {"type": ["string", "null"],
+                                  "description": "функциональная идентичность, независимая от стадии и компоновки; null = не установлена"},
+          "section": {"type": ["string", "null"]},
+          "attrs": {"type": "object"},
+          "evidence": {
+            "type": "array", "minItems": 0,
+            "items": {
+              "type": "object",
+              "required": ["kind"],
+              "properties": {
+                "kind": {"enum": ["token", "geometry"]},
+                "role": {"type": "string"},
+                "value": {},
+                "canonical": {"type": ["string", "null"]},
+                "bbox_visual_pt": {"type": "array", "items": {"type": "number"}},
+                "note": {"type": "string"}
+              }
+            }
+          },
+          "confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+          "conflicts": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "from", "to", "evidence", "confidence"],
+        "properties": {
+          "id": {"type": "string"},
+          "type": {"enum": ["FEEDS", "BELONGS_TO_SECTION", "TIES_SECTIONS",
+                             "MEASURES", "PROTECTS_OR_SWITCHES", "TERMINATES_AT"]},
+          "from": {"type": "string"},
+          "to": {"type": "string"},
+          "evidence": {"type": "array"},
+          "confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]}
+        }
+      }
+    },
+    "groups": {"type": "array", "items": {"type": "object"}},
+    "section_label_conflicts": {"type": "array", "items": {"type": "object"}},
+    "quality": {
+      "type": "object",
+      "description": "РАЗДЕЛЬНЫЕ гейты честности (§40): единого graph_quality намеренно нет",
+      "required": ["backbone_recovered"],
+      "properties": {
+        "backbone_recovered": {"type": "boolean"},
+        "source_confidence": {"type": ["number", "null"]},
+        "bus_confidence": {"type": ["number", "null"]},
+        "section_confidence": {"type": ["number", "null"]},
+        "feeder_coverage": {"type": ["number", "null"]},
+        "identity_coverage": {"type": ["number", "null"]},
+        "unresolved_nodes": {"type": "integer"},
+        "unresolved_edges": {"type": "integer"},
+        "section_label_conflicts": {"type": "integer"},
+        "sections": {"type": "integer"},
+        "inputs": {"type": "integer"},
+        "outgoing_devices": {"type": "integer"}
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}}
+  }
+}

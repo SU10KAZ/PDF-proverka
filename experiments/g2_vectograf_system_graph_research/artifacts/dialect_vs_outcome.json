@@ -1,0 +1,17 @@
+{
+  "classic_calc_singleline": {
+    "geometry_none": 12,
+    "structurer_none": 2,
+    "ok": 42,
+    "gate_rejected": 13
+  },
+  "bare_device_scheme": {
+    "structurer_none": 50
+  },
+  "kv_annotated_singleline": {
+    "structurer_none": 52
+  },
+  "dense_sectioned_board": {
+    "structurer_none": 4
+  }
+}

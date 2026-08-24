@@ -1,0 +1,4431 @@
+{
+  "schema_version": "system-graph.v0-research",
+  "side": "left",
+  "block": {
+    "block_id": "blk_039909ec039649a1b8209f059c95167b",
+    "page_index": 0,
+    "rotation": 0,
+    "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/stage_1/documents/Страница_21_из_АА-БЭ-03-ДС3-ИОС1.1_—_копия/versions/v001/02_work/document.pdf",
+    "bbox_visual_pt": [
+      323.55,
+      161.78,
+      3144.28,
+      1553.91
+    ]
+  },
+  "discipline": "ЭОМ",
+  "profile": {
+    "id": "dense_sectioned_board",
+    "signals": {
+      "device_tokens": 33,
+      "dotted_frac": 0.0,
+      "prefixed_frac": 0.848,
+      "prefix_groups": [
+        "1",
+        "2"
+      ],
+      "joined_param_lines": 0,
+      "kv_params": 0,
+      "bus_markers": 3,
+      "tie_candidates": 0,
+      "metering_tokens": 28,
+      "compensation_tokens": 6
+    },
+    "why": [
+      "нумерация <секция>QF<N> при ≥10 аппаратах + маркер шин/секционный аппарат"
+    ],
+    "note": "плотный ГРЩ/ВРУ: нумерация <секция>QF<N>, секционный аппарат в разрыве"
+  },
+  "levels": {
+    "A": "источники/вводы/секции/секционник",
+    "B": "функциональные группы",
+    "C": "аппараты и ветви"
+  },
+  "nodes": [
+    {
+      "id": "BS1",
+      "type": "BUS_SECTION",
+      "level": "A",
+      "label": "РП1",
+      "display_label": "РП1",
+      "canonical_identity": "SECTION#1",
+      "attrs": {
+        "x_range": [
+          433.8,
+          1630.3
+        ],
+        "device_count": 15,
+        "label_prefix": "1"
+      },
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "device_cluster",
+          "value": {
+            "x_range": [
+              433.8,
+              1630.3
+            ],
+            "n": 15
+          }
+        },
+        {
+          "kind": "token",
+          "role": "section_name",
+          "token": "РП1",
+          "bbox": [
+            428.76,
+            1015.78,
+            443.58,
+            1026.77
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BS2",
+      "type": "BUS_SECTION",
+      "level": "A",
+      "label": "РП2",
+      "display_label": "РП2",
+      "canonical_identity": "SECTION#2",
+      "attrs": {
+        "x_range": [
+          1735.9,
+          2952.3
+        ],
+        "device_count": 15,
+        "label_prefix": "2"
+      },
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "device_cluster",
+          "value": {
+            "x_range": [
+              1735.9,
+              2952.3
+            ],
+            "n": 15
+          }
+        },
+        {
+          "kind": "token",
+          "role": "section_name",
+          "token": "РП2",
+          "bbox": [
+            3108.96,
+            1015.78,
+            3125.19,
+            1026.77
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC1",
+      "type": "SOURCE",
+      "level": "A",
+      "label": "ТП2",
+      "display_label": "ТП2",
+      "subclass": "UPSTREAM_TP_CONNECTION",
+      "canonical_identity": "SOURCE_PATH#BS2",
+      "attrs": {
+        "abstraction": "ABSTRACT"
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_anchor",
+          "value": "ТП2",
+          "bbox_visual_pt": [
+            1904.85,
+            1385.86,
+            1921.11,
+            1396.85
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC1-INT1",
+      "type": "SERVICE_NODE",
+      "level": "A",
+      "subclass": "BUSWAY",
+      "label": "Шинопровод",
+      "display_label": "Шинопровод",
+      "canonical_identity": "BUSWAY#BS2",
+      "attrs": {
+        "on_source_path": true
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_path_node",
+          "value": "Шинопровод",
+          "bbox_visual_pt": [
+            1929.6,
+            1385.86,
+            1981.28,
+            1396.85
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "IN1",
+      "type": "INPUT_DEVICE",
+      "level": "A",
+      "label": "QF2",
+      "display_label": "QF2",
+      "canonical_identity": "INPUT#BS2",
+      "attrs": {
+        "rating_a": 3200,
+        "control": []
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QF2",
+          "bbox_visual_pt": [
+            1861.8,
+            1256.5,
+            1877.38,
+            1267.49
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC2",
+      "type": "SOURCE",
+      "level": "A",
+      "label": "ТП1",
+      "display_label": "ТП1",
+      "subclass": "UPSTREAM_TP_CONNECTION",
+      "canonical_identity": "SOURCE_PATH#BS1",
+      "attrs": {
+        "abstraction": "ABSTRACT"
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_anchor",
+          "value": "ТП1",
+          "bbox_visual_pt": [
+            1471.65,
+            1385.86,
+            1486.5,
+            1396.85
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SRC2-INT1",
+      "type": "SERVICE_NODE",
+      "level": "A",
+      "subclass": "BUSWAY",
+      "label": "Шинопровод",
+      "display_label": "Шинопровод",
+      "canonical_identity": "BUSWAY#BS1",
+      "attrs": {
+        "on_source_path": true
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "source_path_node",
+          "value": "Шинопровод",
+          "bbox_visual_pt": [
+            1494.96,
+            1385.86,
+            1546.64,
+            1396.85
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "IN2",
+      "type": "INPUT_DEVICE",
+      "level": "A",
+      "label": "QF1",
+      "display_label": "QF1",
+      "canonical_identity": "INPUT#BS1",
+      "attrs": {
+        "rating_a": 3200,
+        "control": []
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QF1",
+          "bbox_visual_pt": [
+            1515.48,
+            1256.5,
+            1529.64,
+            1267.49
+          ]
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SVC:QF4@1477",
+      "type": "SERVICE_NODE",
+      "level": "B",
+      "label": "QF4",
+      "display_label": "QF4",
+      "subclass": "SURGE_PROTECTION",
+      "canonical_identity": "SPD#BS1",
+      "attrs": {
+        "markers": [
+          "УЗИП1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QF4",
+          "bbox_visual_pt": [
+            1468.8,
+            1235.74,
+            1485.09,
+            1246.73
+          ]
+        },
+        {
+          "kind": "token",
+          "role": "protection_marker",
+          "value": "УЗИП1"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "TIE:BS1-BS2",
+      "type": "SECTION_DEVICE",
+      "level": "A",
+      "label": "QF3",
+      "display_label": "QF3",
+      "subclass": "SECTION_CIRCUIT_BREAKER",
+      "canonical_identity": "SECTION_TIE#BS1-BS2",
+      "attrs": {
+        "rating_a": 2000,
+        "control": [
+          "АВР",
+          "М"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QF3",
+          "bbox_visual_pt": [
+            1689.0,
+            1154.38,
+            1704.58,
+            1165.37
+          ]
+        },
+        {
+          "kind": "geometry",
+          "role": "between_sections",
+          "value": {
+            "left": "BS1",
+            "right": "BS2",
+            "x": 1696.8
+          }
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "SVC:QF5@1931",
+      "type": "SERVICE_NODE",
+      "level": "B",
+      "label": "QF5",
+      "display_label": "QF5",
+      "subclass": "SURGE_PROTECTION",
+      "canonical_identity": "SPD#BS2",
+      "attrs": {
+        "markers": [
+          "УЗИП2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "device",
+          "value": "QF5",
+          "bbox_visual_pt": [
+            1922.76,
+            1235.74,
+            1938.34,
+            1246.73
+          ]
+        },
+        {
+          "kind": "token",
+          "role": "protection_marker",
+          "value": "УЗИП2"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF1@434",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF1",
+      "display_label": "ВРУ1",
+      "canonical_identity": "ВРУ1",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "3хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ1",
+          "canonical": "ВРУ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-1",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 433.8,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            426.72,
+            923.04,
+            440.88,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ1@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ1",
+      "display_label": "ВРУ1",
+      "canonical_identity": "ВРУ1",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ1",
+          "canonical": "ВРУ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-1",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF2@521",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF2",
+      "display_label": "ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 200,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-2",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 521.1,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            513.48,
+            923.04,
+            528.77,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ2@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ2",
+      "display_label": "ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-2",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF3@608",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF3",
+      "display_label": "ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 500,
+        "cable": [
+          "2хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ3"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-3",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 608.4,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            600.72,
+            918.24,
+            616.01,
+            927.02
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ3@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ3",
+      "display_label": "ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-3",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF4@696",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF4",
+      "display_label": "ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 630,
+        "cable": [
+          "3хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ4"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-4",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 695.7,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            687.72,
+            923.04,
+            703.58,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ4@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ4",
+      "display_label": "ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-4",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF5@783",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF5",
+      "display_label": "ВРУа",
+      "canonical_identity": "ВРУА",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 320,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУА"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-5",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 783.0,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            775.32,
+            923.04,
+            790.61,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУА@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУа",
+      "display_label": "ВРУа",
+      "canonical_identity": "ВРУА",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-5",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF6@870",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF6",
+      "display_label": "ВРУ-ИТП",
+      "canonical_identity": "ИТП",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ИТП"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-6",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 870.3,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            862.68,
+            923.04,
+            877.97,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ИТП@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-ИТП",
+      "display_label": "ВРУ-ИТП",
+      "canonical_identity": "ИТП",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-6",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF7@958",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF7",
+      "display_label": "ВРУ-ХЦ",
+      "canonical_identity": "ХЦ",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 200,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХЦ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ХЦ",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-7",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 957.7,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            950.04,
+            923.04,
+            965.33,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХЦ@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-ХЦ",
+      "display_label": "ВРУ-ХЦ",
+      "canonical_identity": "ХЦ",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ХЦ",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-7",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF8@1045",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF8",
+      "display_label": "ВРУ-АПТ",
+      "canonical_identity": "АПТ",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-FRHF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "АПТ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-8",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1044.9,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1037.28,
+            923.04,
+            1052.57,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:АПТ@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-АПТ",
+      "display_label": "ВРУ-АПТ",
+      "canonical_identity": "АПТ",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-8",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF9@1132",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF9",
+      "display_label": "ВРУ-НСТ",
+      "canonical_identity": "НСТ",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-FRHF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "НСТ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-НСТ",
+          "canonical": "НСТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-9",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1132.3,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1124.64,
+            923.04,
+            1139.93,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:НСТ@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-НСТ",
+      "display_label": "ВРУ-НСТ",
+      "canonical_identity": "НСТ",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-НСТ",
+          "canonical": "НСТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-9",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF10@1220",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF10",
+      "display_label": "ДР1-ХМ1",
+      "canonical_identity": "ДР1-ХМ1",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ДР1-ХМ1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР1-ХМ1",
+          "canonical": "ДР1-ХМ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-10",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1219.6,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1210.56,
+            923.04,
+            1228.68,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ДР1-ХМ1@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ДР1-ХМ1",
+      "display_label": "ДР1-ХМ1",
+      "canonical_identity": "ДР1-ХМ1",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР1-ХМ1",
+          "canonical": "ДР1-ХМ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-10",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF11@1294",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF11",
+      "display_label": "ГРЩ1-РП1-11",
+      "canonical_identity": null,
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "RESERVE",
+        "identity_set": []
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-11",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1293.6,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1285.08,
+            921.24,
+            1302.07,
+            930.02
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": []
+    },
+    {
+      "id": "OUT:1QF12@1388",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF12",
+      "display_label": "ХМ1",
+      "canonical_identity": "ХМ1",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "3хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХМ1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ1",
+          "canonical": "ХМ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-12",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1388.5,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1379.4,
+            921.24,
+            1397.52,
+            930.02
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХМ1@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ХМ1",
+      "display_label": "ХМ1",
+      "canonical_identity": "ХМ1",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ1",
+          "canonical": "ХМ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-12",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF13@1471",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF13",
+      "display_label": "ЩНО",
+      "canonical_identity": "ШНО",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 20,
+        "cable": [
+          "ППГнг(А)-FRHF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ШНО"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ЩНО",
+          "canonical": "ШНО"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-13",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1470.5,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1461.48,
+            923.04,
+            1479.6,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ШНО@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ЩНО",
+      "display_label": "ЩНО",
+      "canonical_identity": "ШНО",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ЩНО",
+          "canonical": "ШНО"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-13",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF14@1550",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF14",
+      "display_label": "ГРЩ1-РП1-14",
+      "canonical_identity": null,
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 320,
+        "cable": [
+          "ППГнг(А)-FRHF",
+          "ППГнг(А)-HF"
+        ],
+        "status": "RESERVE",
+        "identity_set": []
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-14",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1549.5,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1540.2,
+            923.04,
+            1558.89,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": []
+    },
+    {
+      "id": "OUT:1QF15@1630",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF15",
+      "display_label": "АУКРМ",
+      "canonical_identity": "АУКРМ",
+      "subclass": null,
+      "section": "BS1",
+      "attrs": {
+        "rating_a": 320,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "АУКРМ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "АУКРМ",
+          "canonical": "АУКРМ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-15",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1630.3,
+            "section": "BS1"
+          },
+          "bbox_visual_pt": [
+            1621.2,
+            923.04,
+            1639.32,
+            931.82
+          ]
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:АУКРМ@BS1",
+      "type": "LOAD",
+      "level": "C",
+      "label": "АУКРМ",
+      "display_label": "АУКРМ",
+      "canonical_identity": "АУКРМ",
+      "section": "BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "АУКРМ",
+          "canonical": "АУКРМ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП1-15",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:1QF1@1736",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF1",
+      "display_label": "ВРУ1",
+      "canonical_identity": "ВРУ1",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "3хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ1"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ1",
+          "canonical": "ВРУ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-1",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1735.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1728.84,
+            923.04,
+            1743.0,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ1@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ1",
+      "display_label": "ВРУ1",
+      "canonical_identity": "ВРУ1",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ1",
+          "canonical": "ВРУ1"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-1",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF2@1823",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF2",
+      "display_label": "ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 200,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-2",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1822.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1814.64,
+            923.04,
+            1831.07,
+            931.82
+          ]
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ2@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ2",
+      "display_label": "ВРУ2",
+      "canonical_identity": "ВРУ2",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ2",
+          "canonical": "ВРУ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-2",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "token",
+          "role": "nearby_compensation_hint",
+          "value": "АУКРМ",
+          "note": "подпись компенсации ниже ряда — подсказка, не идентичность"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF3@1910",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF3",
+      "display_label": "ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 500,
+        "cable": [
+          "2хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ3"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-3",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1909.6,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1901.4,
+            918.24,
+            1917.83,
+            927.02
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ3@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ3",
+      "display_label": "ВРУ3",
+      "canonical_identity": "ВРУ3",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ3",
+          "canonical": "ВРУ3"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-3",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF4@1998",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF4",
+      "display_label": "ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 630,
+        "cable": [
+          "3хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУ4"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-4",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 1998.5,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            1989.96,
+            923.04,
+            2006.96,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУ4@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ4",
+      "display_label": "ВРУ4",
+      "canonical_identity": "ВРУ4",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ4",
+          "canonical": "ВРУ4"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-4",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF5@2085",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF5",
+      "display_label": "ВРУа",
+      "canonical_identity": "ВРУА",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 320,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ВРУА"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-5",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2084.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2076.72,
+            923.04,
+            2093.15,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ВРУА@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУа",
+      "display_label": "ВРУа",
+      "canonical_identity": "ВРУА",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУа",
+          "canonical": "ВРУА"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-5",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF6@2174",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF6",
+      "display_label": "ВРУ-ИТП",
+      "canonical_identity": "ИТП",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ИТП"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-6",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2173.7,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2165.52,
+            923.04,
+            2181.95,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ИТП@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-ИТП",
+      "display_label": "ВРУ-ИТП",
+      "canonical_identity": "ИТП",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ИТП",
+          "canonical": "ИТП"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-6",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF7@2260",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF7",
+      "display_label": "ВРУ-ХЦ",
+      "canonical_identity": "ХЦ",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 200,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХЦ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ХЦ",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-7",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2260.0,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2251.8,
+            923.04,
+            2268.23,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХЦ@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-ХЦ",
+      "display_label": "ВРУ-ХЦ",
+      "canonical_identity": "ХЦ",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-ХЦ",
+          "canonical": "ХЦ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-7",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF8@2348",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF8",
+      "display_label": "ВРУ-АПТ",
+      "canonical_identity": "АПТ",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-FRHF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "АПТ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-8",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2348.0,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2339.76,
+            923.04,
+            2356.19,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:АПТ@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-АПТ",
+      "display_label": "ВРУ-АПТ",
+      "canonical_identity": "АПТ",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-АПТ",
+          "canonical": "АПТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-8",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF9@2437",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF9",
+      "display_label": "ВРУ-НСТ",
+      "canonical_identity": "НСТ",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 50,
+        "cable": [
+          "ППГнг(А)-FRHF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "НСТ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-НСТ",
+          "canonical": "НСТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-9",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2436.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2428.68,
+            923.04,
+            2445.11,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:НСТ@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ВРУ-НСТ",
+      "display_label": "ВРУ-НСТ",
+      "canonical_identity": "НСТ",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ВРУ-НСТ",
+          "canonical": "НСТ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-9",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF10@2524",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF10",
+      "display_label": "ДР2-ХМ2",
+      "canonical_identity": "ДР2-ХМ2",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 63,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ДР2-ХМ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР2-ХМ2",
+          "canonical": "ДР2-ХМ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-10",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2524.2,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2514.6,
+            923.04,
+            2533.86,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ДР2-ХМ2@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ДР2-ХМ2",
+      "display_label": "ДР2-ХМ2",
+      "canonical_identity": "ДР2-ХМ2",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ДР2-ХМ2",
+          "canonical": "ДР2-ХМ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-10",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF11@2597",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF11",
+      "display_label": "ГРЩ1-РП2-11",
+      "canonical_identity": null,
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "RESERVE",
+        "identity_set": []
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-11",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2596.9,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2587.8,
+            921.24,
+            2605.92,
+            930.02
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": []
+    },
+    {
+      "id": "OUT:1QF12@2690",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "1QF12",
+      "display_label": "ХМ2",
+      "canonical_identity": "ХМ2",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 800,
+        "cable": [
+          "3хППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ХМ2"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ2",
+          "canonical": "ХМ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-12",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2690.5,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2681.4,
+            921.24,
+            2699.52,
+            930.02
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ХМ2@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ХМ2",
+      "display_label": "ХМ2",
+      "canonical_identity": "ХМ2",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ХМ2",
+          "canonical": "ХМ2"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-12",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF13@2775",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF13",
+      "display_label": "ЩНО",
+      "canonical_identity": "ШНО",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 32,
+        "cable": [
+          "ППГнг(А)-FRHF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "ШНО"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ЩНО",
+          "canonical": "ШНО"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-13",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2775.0,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2765.4,
+            923.04,
+            2784.66,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:ШНО@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "ЩНО",
+      "display_label": "ЩНО",
+      "canonical_identity": "ШНО",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "ЩНО",
+          "canonical": "ШНО"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-13",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "OUT:2QF14@2865",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF14",
+      "display_label": "ГРЩ1-РП2-14",
+      "canonical_identity": null,
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 320,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "RESERVE",
+        "identity_set": []
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-14",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2865.2,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2855.28,
+            923.04,
+            2875.11,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "LOW",
+      "conflicts": []
+    },
+    {
+      "id": "OUT:2QF15@2952",
+      "type": "OUTGOING_DEVICE",
+      "level": "C",
+      "label": "2QF15",
+      "display_label": "АУКРМ",
+      "canonical_identity": "АУКРМ",
+      "subclass": null,
+      "section": "BS2",
+      "attrs": {
+        "rating_a": 320,
+        "cable": [
+          "ППГнг(А)-HF"
+        ],
+        "status": "ACTIVE",
+        "identity_set": [
+          "АУКРМ"
+        ]
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "АУКРМ",
+          "canonical": "АУКРМ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-15",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        },
+        {
+          "kind": "geometry",
+          "role": "column",
+          "value": {
+            "x": 2952.3,
+            "section": "BS2"
+          },
+          "bbox_visual_pt": [
+            2942.64,
+            923.04,
+            2961.9,
+            931.82
+          ]
+        }
+      ],
+      "confidence": "MEDIUM",
+      "conflicts": []
+    },
+    {
+      "id": "LOAD:АУКРМ@BS2",
+      "type": "LOAD",
+      "level": "C",
+      "label": "АУКРМ",
+      "display_label": "АУКРМ",
+      "canonical_identity": "АУКРМ",
+      "section": "BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "consumer_label",
+          "value": "АУКРМ",
+          "canonical": "АУКРМ"
+        },
+        {
+          "kind": "token",
+          "role": "destination_code",
+          "value": "ГРЩ1-РП2-15",
+          "canonical": null,
+          "note": "позиционный код — идентичностью не является"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "METERING_GROUP:BS1",
+      "type": "METERING_GROUP",
+      "level": "B",
+      "label": "METERING_GROUP:BS1",
+      "display_label": "METERING_GROUP:BS1",
+      "canonical_identity": "METERING_GROUP:BS1",
+      "section": "BS1",
+      "attrs": {
+        "member_tokens": [
+          "PW",
+          "Wh",
+          "Анализатор",
+          "Меркурий"
+        ],
+        "member_count": 14
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "PW",
+          "bbox_visual_pt": [
+            1509.24,
+            1091.64,
+            1520.01,
+            1100.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Анализатор",
+          "bbox_visual_pt": [
+            1460.04,
+            1088.04,
+            1502.81,
+            1096.82
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1298.16,
+            1078.92,
+            1308.35,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1272.96,
+            1078.92,
+            1283.15,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1247.64,
+            1078.92,
+            1257.83,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1222.44,
+            1078.92,
+            1232.63,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1197.24,
+            1078.92,
+            1207.43,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1171.92,
+            1078.92,
+            1182.11,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1146.72,
+            1078.92,
+            1156.91,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1121.52,
+            1078.92,
+            1131.71,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1323.48,
+            1078.92,
+            1333.67,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1506.12,
+            898.8,
+            1516.31,
+            907.58
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "METERING_GROUP:BS2",
+      "type": "METERING_GROUP",
+      "level": "B",
+      "label": "METERING_GROUP:BS2",
+      "display_label": "METERING_GROUP:BS2",
+      "canonical_identity": "METERING_GROUP:BS2",
+      "section": "BS2",
+      "attrs": {
+        "member_tokens": [
+          "PW",
+          "Wh",
+          "Анализатор",
+          "Меркурий"
+        ],
+        "member_count": 14
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "PW",
+          "bbox_visual_pt": [
+            1887.84,
+            1091.64,
+            1898.61,
+            1100.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Анализатор",
+          "bbox_visual_pt": [
+            1905.0,
+            1088.04,
+            1947.77,
+            1096.82
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2809.56,
+            898.8,
+            2819.75,
+            907.58
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Меркурий",
+          "bbox_visual_pt": [
+            2752.44,
+            863.4,
+            2785.28,
+            872.18
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2224.32,
+            1078.92,
+            2234.51,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2199.12,
+            1078.92,
+            2209.31,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2173.92,
+            1078.92,
+            2184.11,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2148.6,
+            1078.92,
+            2158.79,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2123.4,
+            1078.92,
+            2133.59,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2098.2,
+            1078.92,
+            2108.39,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2072.88,
+            1078.92,
+            2083.07,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2047.68,
+            1078.92,
+            2057.87,
+            1087.7
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS1",
+      "type": "COMPENSATION_GROUP",
+      "level": "B",
+      "label": "COMPENSATION_GROUP:BS1",
+      "display_label": "COMPENSATION_GROUP:BS1",
+      "canonical_identity": "COMPENSATION_GROUP:BS1",
+      "section": "BS1",
+      "attrs": {
+        "member_tokens": [
+          "АУКРМ"
+        ],
+        "member_count": 3
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1619.7,
+            1006.56,
+            1643.5,
+            1015.34
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1682.46,
+            813.89,
+            1693.45,
+            843.64
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1643.4,
+            329.86,
+            1673.15,
+            340.85
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS2",
+      "type": "COMPENSATION_GROUP",
+      "level": "B",
+      "label": "COMPENSATION_GROUP:BS2",
+      "display_label": "COMPENSATION_GROUP:BS2",
+      "canonical_identity": "COMPENSATION_GROUP:BS2",
+      "section": "BS2",
+      "attrs": {
+        "member_tokens": [
+          "АУКРМ"
+        ],
+        "member_count": 3
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1804.62,
+            1006.68,
+            1828.42,
+            1015.46
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            3004.02,
+            813.89,
+            3015.01,
+            843.64
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            2964.96,
+            330.22,
+            2994.71,
+            341.21
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "SERVICE_GROUP:BS1",
+      "type": "SERVICE_GROUP",
+      "level": "B",
+      "label": "SERVICE_GROUP:BS1",
+      "display_label": "SERVICE_GROUP:BS1",
+      "canonical_identity": "SERVICE_GROUP:BS1",
+      "section": "BS1",
+      "attrs": {
+        "member_tokens": [
+          "ОПН",
+          "УЗИП1"
+        ],
+        "member_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "УЗИП1",
+          "bbox_visual_pt": [
+            1459.32,
+            1226.26,
+            1485.06,
+            1237.25
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1481.4,
+            1319.52,
+            1495.0,
+            1328.3
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "SERVICE_GROUP:BS2",
+      "type": "SERVICE_GROUP",
+      "level": "B",
+      "label": "SERVICE_GROUP:BS2",
+      "display_label": "SERVICE_GROUP:BS2",
+      "canonical_identity": "SERVICE_GROUP:BS2",
+      "section": "BS2",
+      "attrs": {
+        "member_tokens": [
+          "ОПН",
+          "УЗИП2"
+        ],
+        "member_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "УЗИП2",
+          "bbox_visual_pt": [
+            1922.76,
+            1226.26,
+            1949.91,
+            1237.25
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1890.72,
+            1319.52,
+            1904.32,
+            1328.3
+          ]
+        }
+      ],
+      "confidence": "MEDIUM"
+    }
+  ],
+  "edges": [
+    {
+      "id": "FEEDS:SRC1->SRC1-INT1",
+      "type": "FEEDS",
+      "from": "SRC1",
+      "to": "SRC1-INT1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "FEEDS:SRC1-INT1->IN1",
+      "type": "FEEDS",
+      "from": "SRC1-INT1",
+      "to": "IN1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:IN1->BS2",
+      "type": "FEEDS",
+      "from": "IN1",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "input_to_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:SRC2->SRC2-INT1",
+      "type": "FEEDS",
+      "from": "SRC2",
+      "to": "SRC2-INT1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "FEEDS:SRC2-INT1->IN2",
+      "type": "FEEDS",
+      "from": "SRC2-INT1",
+      "to": "IN2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "source_path_order"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:IN2->BS1",
+      "type": "FEEDS",
+      "from": "IN2",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "input_to_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:SVC:QF4@1477->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "SVC:QF4@1477",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "TIES_SECTIONS:TIE:BS1-BS2->BS1",
+      "type": "TIES_SECTIONS",
+      "from": "TIE:BS1-BS2",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "gap_left"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "TIES_SECTIONS:TIE:BS1-BS2->BS2",
+      "type": "TIES_SECTIONS",
+      "from": "TIE:BS1-BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "gap_right"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:SVC:QF5@1931->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "SVC:QF5@1931",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF1@434->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF1@434",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF1@434->LOAD:ВРУ1@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF1@434",
+      "to": "LOAD:ВРУ1@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ1"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF2@521->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF2@521",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF2@521->LOAD:ВРУ2@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF2@521",
+      "to": "LOAD:ВРУ2@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ2"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF3@608->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF3@608",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF3@608->LOAD:ВРУ3@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF3@608",
+      "to": "LOAD:ВРУ3@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ3"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF4@696->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF4@696",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF4@696->LOAD:ВРУ4@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF4@696",
+      "to": "LOAD:ВРУ4@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ4"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF5@783->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF5@783",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF5@783->LOAD:ВРУА@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF5@783",
+      "to": "LOAD:ВРУА@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУА"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF6@870->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF6@870",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF6@870->LOAD:ИТП@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF6@870",
+      "to": "LOAD:ИТП@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ИТП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF7@958->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF7@958",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF7@958->LOAD:ХЦ@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF7@958",
+      "to": "LOAD:ХЦ@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХЦ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF8@1045->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF8@1045",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF8@1045->LOAD:АПТ@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF8@1045",
+      "to": "LOAD:АПТ@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "АПТ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF9@1132->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF9@1132",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF9@1132->LOAD:НСТ@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF9@1132",
+      "to": "LOAD:НСТ@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "НСТ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF10@1220->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF10@1220",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF10@1220->LOAD:ДР1-ХМ1@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF10@1220",
+      "to": "LOAD:ДР1-ХМ1@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ДР1-ХМ1"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF11@1294->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF11@1294",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF12@1388->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF12@1388",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF12@1388->LOAD:ХМ1@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF12@1388",
+      "to": "LOAD:ХМ1@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХМ1"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF13@1471->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF13@1471",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF13@1471->LOAD:ШНО@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF13@1471",
+      "to": "LOAD:ШНО@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ШНО"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF14@1550->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF14@1550",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF15@1630->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF15@1630",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF15@1630->LOAD:АУКРМ@BS1",
+      "type": "FEEDS",
+      "from": "OUT:1QF15@1630",
+      "to": "LOAD:АУКРМ@BS1",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "АУКРМ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF1@1736->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF1@1736",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF1@1736->LOAD:ВРУ1@BS2",
+      "type": "FEEDS",
+      "from": "OUT:1QF1@1736",
+      "to": "LOAD:ВРУ1@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ1"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF2@1823->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF2@1823",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF2@1823->LOAD:ВРУ2@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF2@1823",
+      "to": "LOAD:ВРУ2@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ2"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF3@1910->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF3@1910",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF3@1910->LOAD:ВРУ3@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF3@1910",
+      "to": "LOAD:ВРУ3@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ3"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF4@1998->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF4@1998",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF4@1998->LOAD:ВРУ4@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF4@1998",
+      "to": "LOAD:ВРУ4@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУ4"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF5@2085->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF5@2085",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF5@2085->LOAD:ВРУА@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF5@2085",
+      "to": "LOAD:ВРУА@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ВРУА"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF6@2174->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF6@2174",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF6@2174->LOAD:ИТП@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF6@2174",
+      "to": "LOAD:ИТП@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ИТП"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF7@2260->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF7@2260",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF7@2260->LOAD:ХЦ@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF7@2260",
+      "to": "LOAD:ХЦ@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХЦ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF8@2348->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF8@2348",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF8@2348->LOAD:АПТ@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF8@2348",
+      "to": "LOAD:АПТ@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "АПТ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF9@2437->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF9@2437",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF9@2437->LOAD:НСТ@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF9@2437",
+      "to": "LOAD:НСТ@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "НСТ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF10@2524->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF10@2524",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF10@2524->LOAD:ДР2-ХМ2@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF10@2524",
+      "to": "LOAD:ДР2-ХМ2@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ДР2-ХМ2"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF11@2597->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF11@2597",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:1QF12@2690->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:1QF12@2690",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:1QF12@2690->LOAD:ХМ2@BS2",
+      "type": "FEEDS",
+      "from": "OUT:1QF12@2690",
+      "to": "LOAD:ХМ2@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ХМ2"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF13@2775->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF13@2775",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF13@2775->LOAD:ШНО@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF13@2775",
+      "to": "LOAD:ШНО@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "ШНО"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF14@2865->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF14@2865",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:OUT:2QF15@2952->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "OUT:2QF15@2952",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "column_in_section"
+        }
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "FEEDS:OUT:2QF15@2952->LOAD:АУКРМ@BS2",
+      "type": "FEEDS",
+      "from": "OUT:2QF15@2952",
+      "to": "LOAD:АУКРМ@BS2",
+      "evidence": [
+        {
+          "kind": "token",
+          "role": "column_identity",
+          "value": "АУКРМ"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:METERING_GROUP:BS1->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "METERING_GROUP:BS1",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:METERING_GROUP:BS2->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "METERING_GROUP:BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BS1->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "COMPENSATION_GROUP:BS1",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BS2->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "COMPENSATION_GROUP:BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:SERVICE_GROUP:BS1->BS1",
+      "type": "BELONGS_TO_SECTION",
+      "from": "SERVICE_GROUP:BS1",
+      "to": "BS1",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "BELONGS_TO_SECTION:SERVICE_GROUP:BS2->BS2",
+      "type": "BELONGS_TO_SECTION",
+      "from": "SERVICE_GROUP:BS2",
+      "to": "BS2",
+      "evidence": [
+        {
+          "kind": "geometry",
+          "role": "x_within_section"
+        }
+      ],
+      "confidence": "MEDIUM"
+    }
+  ],
+  "groups": [
+    {
+      "id": "METERING_GROUP:BS1",
+      "type": "METERING_GROUP",
+      "section": "BS1",
+      "member_tokens": [
+        "PW",
+        "Wh",
+        "Анализатор",
+        "Меркурий"
+      ],
+      "member_count": 14,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "PW",
+          "bbox_visual_pt": [
+            1509.24,
+            1091.64,
+            1520.01,
+            1100.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Анализатор",
+          "bbox_visual_pt": [
+            1460.04,
+            1088.04,
+            1502.81,
+            1096.82
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1298.16,
+            1078.92,
+            1308.35,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1272.96,
+            1078.92,
+            1283.15,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1247.64,
+            1078.92,
+            1257.83,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1222.44,
+            1078.92,
+            1232.63,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1197.24,
+            1078.92,
+            1207.43,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1171.92,
+            1078.92,
+            1182.11,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1146.72,
+            1078.92,
+            1156.91,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1121.52,
+            1078.92,
+            1131.71,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1323.48,
+            1078.92,
+            1333.67,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            1506.12,
+            898.8,
+            1516.31,
+            907.58
+          ]
+        }
+      ]
+    },
+    {
+      "id": "METERING_GROUP:BS2",
+      "type": "METERING_GROUP",
+      "section": "BS2",
+      "member_tokens": [
+        "PW",
+        "Wh",
+        "Анализатор",
+        "Меркурий"
+      ],
+      "member_count": 14,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "PW",
+          "bbox_visual_pt": [
+            1887.84,
+            1091.64,
+            1898.61,
+            1100.42
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Анализатор",
+          "bbox_visual_pt": [
+            1905.0,
+            1088.04,
+            1947.77,
+            1096.82
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2809.56,
+            898.8,
+            2819.75,
+            907.58
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Меркурий",
+          "bbox_visual_pt": [
+            2752.44,
+            863.4,
+            2785.28,
+            872.18
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2224.32,
+            1078.92,
+            2234.51,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2199.12,
+            1078.92,
+            2209.31,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2173.92,
+            1078.92,
+            2184.11,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2148.6,
+            1078.92,
+            2158.79,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2123.4,
+            1078.92,
+            2133.59,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2098.2,
+            1078.92,
+            2108.39,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2072.88,
+            1078.92,
+            2083.07,
+            1087.7
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "Wh",
+          "bbox_visual_pt": [
+            2047.68,
+            1078.92,
+            2057.87,
+            1087.7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS1",
+      "type": "COMPENSATION_GROUP",
+      "section": "BS1",
+      "member_tokens": [
+        "АУКРМ"
+      ],
+      "member_count": 3,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1619.7,
+            1006.56,
+            1643.5,
+            1015.34
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1682.46,
+            813.89,
+            1693.45,
+            843.64
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1643.4,
+            329.86,
+            1673.15,
+            340.85
+          ]
+        }
+      ]
+    },
+    {
+      "id": "COMPENSATION_GROUP:BS2",
+      "type": "COMPENSATION_GROUP",
+      "section": "BS2",
+      "member_tokens": [
+        "АУКРМ"
+      ],
+      "member_count": 3,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            1804.62,
+            1006.68,
+            1828.42,
+            1015.46
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            3004.02,
+            813.89,
+            3015.01,
+            843.64
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "АУКРМ",
+          "bbox_visual_pt": [
+            2964.96,
+            330.22,
+            2994.71,
+            341.21
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SERVICE_GROUP:BS1",
+      "type": "SERVICE_GROUP",
+      "section": "BS1",
+      "member_tokens": [
+        "ОПН",
+        "УЗИП1"
+      ],
+      "member_count": 2,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "УЗИП1",
+          "bbox_visual_pt": [
+            1459.32,
+            1226.26,
+            1485.06,
+            1237.25
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1481.4,
+            1319.52,
+            1495.0,
+            1328.3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SERVICE_GROUP:BS2",
+      "type": "SERVICE_GROUP",
+      "section": "BS2",
+      "member_tokens": [
+        "ОПН",
+        "УЗИП2"
+      ],
+      "member_count": 2,
+      "evidence": [
+        {
+          "kind": "token",
+          "value": "УЗИП2",
+          "bbox_visual_pt": [
+            1922.76,
+            1226.26,
+            1949.91,
+            1237.25
+          ]
+        },
+        {
+          "kind": "token",
+          "value": "ОПН",
+          "bbox_visual_pt": [
+            1890.72,
+            1319.52,
+            1904.32,
+            1328.3
+          ]
+        }
+      ]
+    }
+  ],
+  "section_label_conflicts": [
+    {
+      "label": "1QF1",
+      "x": 1735.9,
+      "label_section": "1",
+      "geometric_section": "2",
+      "note": "префикс метки не совпадает с непрерывным X-раскроем секций (вероятная опечатка CAD); принята геометрия"
+    },
+    {
+      "label": "1QF12",
+      "x": 2690.5,
+      "label_section": "1",
+      "geometric_section": "2",
+      "note": "префикс метки не совпадает с непрерывным X-раскроем секций (вероятная опечатка CAD); принята геометрия"
+    }
+  ],
+  "quality": {
+    "backbone_recovered": true,
+    "source_confidence": 1.0,
+    "bus_confidence": 1.0,
+    "section_confidence": 1.0,
+    "feeder_coverage": 1.0,
+    "identity_coverage": 0.867,
+    "unresolved_nodes": 0,
+    "unresolved_edges": 0,
+    "section_label_conflicts": 2,
+    "sections": 2,
+    "inputs": 2,
+    "outgoing_devices": 30
+  },
+  "warnings": [
+    "2 меток аппаратов противоречат геометрической секции (вероятные опечатки CAD) — принята геометрия"
+  ]
+}
