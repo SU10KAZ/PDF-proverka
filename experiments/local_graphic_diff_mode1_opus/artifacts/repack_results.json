@@ -1,0 +1,246 @@
+{
+ "probe": "controls.repacking",
+ "research_only": true,
+ "rows": [
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К3/versions",
+   "discipline": "KM",
+   "sheet": "4",
+   "segments": [
+    1184,
+    1806
+   ],
+   "ink_pt": [
+    29296.3,
+    39334.4
+   ],
+   "segment_ratio": 0.344,
+   "raster_changed_fraction": 9e-05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.83101
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/KM/documents/13АВ-РД-КМ-К4/versions",
+   "discipline": "KM",
+   "sheet": "5",
+   "segments": [
+    417,
+    685
+   ],
+   "ink_pt": [
+    6703.4,
+    9888.4
+   ],
+   "segment_ratio": 0.391,
+   "raster_changed_fraction": 0.00129,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.77798
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "4",
+   "segments": [
+    5845,
+    12931
+   ],
+   "ink_pt": [
+    12332.4,
+    13638.6
+   ],
+   "segment_ratio": 0.548,
+   "raster_changed_fraction": 0.00046,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.93094
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "6",
+   "segments": [
+    5866,
+    12926
+   ],
+   "ink_pt": [
+    13404.1,
+    12578.0
+   ],
+   "segment_ratio": 0.546,
+   "raster_changed_fraction": 0.00042,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.96498
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "7",
+   "segments": [
+    901,
+    1084
+   ],
+   "ink_pt": [
+    3191.6,
+    2676.8
+   ],
+   "segment_ratio": 0.169,
+   "raster_changed_fraction": 0.00022,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 1.0
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "9",
+   "segments": [
+    5853,
+    12929
+   ],
+   "ink_pt": [
+    12862.8,
+    13799.9
+   ],
+   "segment_ratio": 0.547,
+   "raster_changed_fraction": 0.00041,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.95991
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "10",
+   "segments": [
+    5837,
+    12908
+   ],
+   "ink_pt": [
+    13059.4,
+    12549.6
+   ],
+   "segment_ratio": 0.548,
+   "raster_changed_fraction": 0.0008,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.96497
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "12",
+   "segments": [
+    5833,
+    12918
+   ],
+   "ink_pt": [
+    13066.9,
+    12927.7
+   ],
+   "segment_ratio": 0.548,
+   "raster_changed_fraction": 0.0019,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.99892
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "13",
+   "segments": [
+    950,
+    1758
+   ],
+   "ink_pt": [
+    3480.8,
+    3486.0
+   ],
+   "segment_ratio": 0.46,
+   "raster_changed_fraction": 0.0,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 1.0
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "11",
+   "segments": [
+    12908,
+    5838
+   ],
+   "ink_pt": [
+    12549.9,
+    12827.1
+   ],
+   "segment_ratio": 0.548,
+   "raster_changed_fraction": 0.00031,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.98965
+  },
+  {
+   "doc": "214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions",
+   "discipline": "SS",
+   "sheet": "15",
+   "segments": [
+    766,
+    971
+   ],
+   "ink_pt": [
+    5236.3,
+    5431.2
+   ],
+   "segment_ratio": 0.211,
+   "raster_changed_fraction": 0.00119,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.98184
+  },
+  {
+   "doc": "256_Primavera_K14_Spartak/disciplines/AR/documents/СТ26_01-14-АР0-АС-1-РД_V1/versions",
+   "discipline": "AR",
+   "sheet": "18",
+   "segments": [
+    2937,
+    3669
+   ],
+   "ink_pt": [
+    14445.3,
+    20084.8
+   ],
+   "segment_ratio": 0.2,
+   "raster_changed_fraction": 0.0,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "published": 0,
+   "published_ink_pt": [],
+   "sym_cov": 0.69424
+  }
+ ]
+}

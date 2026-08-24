@@ -1,0 +1,497 @@
+{
+ "probe": "vision_payloads",
+ "research_only": true,
+ "token_formula": "min(3051, 1.2014*ceil(w/32)*ceil(h/32)+48.67) per image; provider-unconfirmed",
+ "cases": [
+  {
+   "case_id": "ar_medium_change_24_v0",
+   "pair_id": "ar_medium_change_24",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    912.35,
+    2481.0,
+    938.15,
+    2542.8
+   ],
+   "region_ink_pt": 57.0,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/ar_medium_change_24_v0.png",
+   "crop_px": [
+    287,
+    390
+   ],
+   "image_tokens_estimate": 378.5,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "справа добавлена короткая линия у стены — на левом кропе её нет",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "ar_medium_change_24_v1",
+   "pair_id": "ar_medium_change_24",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    924.35,
+    2578.8,
+    959.75,
+    2589.6
+   ],
+   "region_ink_pt": 55.8,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/ar_medium_change_24_v1.png",
+   "crop_px": [
+    223,
+    153
+   ],
+   "image_tokens_estimate": 181.4,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "справа появился отрезок в нижней части штрихованной полосы (слабый случай)",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "ar_small_change_21_v0",
+   "pair_id": "ar_small_change_21",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    669.71,
+    628.92,
+    704.51,
+    644.52
+   ],
+   "region_ink_pt": 54.0,
+   "region_type": "GEOMETRY_CHANGED",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/ar_small_change_21_v0.png",
+   "crop_px": [
+    220,
+    165
+   ],
+   "image_tokens_estimate": 198.3,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "ниша «ЭОМ/ВК» перечерчена другой толщиной/контуром",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "ar_small_change_21_v1",
+   "pair_id": "ar_small_change_21",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    712.91,
+    628.92,
+    747.71,
+    644.52
+   ],
+   "region_ink_pt": 48.6,
+   "region_type": "GEOMETRY_CHANGED",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/ar_small_change_21_v1.png",
+   "crop_px": [
+    219,
+    165
+   ],
+   "image_tokens_estimate": 198.3,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "слева у «ВК» есть залитый чёрный элемент, справа его нет",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_29_v0",
+   "pair_id": "eom_dense_small_change_29",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    778.44,
+    171.24,
+    831.84,
+    196.44
+   ],
+   "region_ink_pt": 45.6,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_29_v0.png",
+   "crop_px": [
+    337,
+    256
+   ],
+   "image_tokens_estimate": 308.8,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "справа добавлена выноска со стрелкой и точкой привязки",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_29_v1",
+   "pair_id": "eom_dense_small_change_29",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    744.23,
+    216.84,
+    755.64,
+    228.84
+   ],
+   "region_ink_pt": 26.4,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_29_v1.png",
+   "crop_px": [
+    91,
+    93
+   ],
+   "image_tokens_estimate": 119.0,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "добавлена стрелка/маркер выноски",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_30_v0",
+   "pair_id": "eom_dense_small_change_30",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    763.44,
+    249.84,
+    779.64,
+    265.44
+   ],
+   "region_ink_pt": 37.2,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_30_v0.png",
+   "crop_px": [
+    105,
+    102
+   ],
+   "image_tokens_estimate": 135.8,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "добавлена стрелка и узловая точка",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_30_v1",
+   "pair_id": "eom_dense_small_change_30",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    753.84,
+    264.84,
+    764.04,
+    273.84
+   ],
+   "region_ink_pt": 14.4,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_30_v1.png",
+   "crop_px": [
+    87,
+    83
+   ],
+   "image_tokens_estimate": 119.0,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "добавлена стрелка выноски",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_31_v0",
+   "pair_id": "eom_dense_small_change_31",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    819.23,
+    169.44,
+    834.84,
+    185.04
+   ],
+   "region_ink_pt": 33.6,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_31_v0.png",
+   "crop_px": [
+    102,
+    103
+   ],
+   "image_tokens_estimate": 135.8,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "добавлена стрелка и узловая точка",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_31_v1",
+   "pair_id": "eom_dense_small_change_31",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    809.64,
+    184.44,
+    819.84,
+    193.44
+   ],
+   "region_ink_pt": 13.2,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_31_v1.png",
+   "crop_px": [
+    87,
+    84
+   ],
+   "image_tokens_estimate": 119.0,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "добавлена стрелка выноски",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_32_v0",
+   "pair_id": "eom_dense_small_change_32",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    789.84,
+    245.88,
+    805.44,
+    261.48
+   ],
+   "region_ink_pt": 33.0,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_32_v0.png",
+   "crop_px": [
+    102,
+    103
+   ],
+   "image_tokens_estimate": 135.8,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "добавлена стрелка и узловая точка",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_dense_small_change_32_v1",
+   "pair_id": "eom_dense_small_change_32",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    779.64,
+    253.08,
+    790.44,
+    269.88
+   ],
+   "region_ink_pt": 32.4,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_dense_small_change_32_v1.png",
+   "crop_px": [
+    90,
+    106
+   ],
+   "image_tokens_estimate": 126.2,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "добавлены две стрелки выноски",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_medium_change_23_v0",
+   "pair_id": "eom_medium_change_23",
+   "route": "VISION_REQUIRED",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    1714.32,
+    2389.55,
+    1851.12,
+    2607.95
+   ],
+   "region_ink_pt": 805.2,
+   "region_type": "REMOVED_GRAPHIC",
+   "question": "Это реальное изменение графики или различие экспорта/кадрирования (растровая подложка, текст в кривых)?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_medium_change_23_v0.png",
+   "crop_px": [
+    431,
+    520
+   ],
+   "image_tokens_estimate": 669.2,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "слева проложены кабельные трассы 2РП1-5/2РП4-19 с маркерами, справа их нет",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_repack_33_v0",
+   "pair_id": "eom_repack_33",
+   "route": "VISION_REQUIRED",
+   "gt_label": "CROP_DIFFERENCE",
+   "region_bbox": [
+    773.27,
+    783.96,
+    841.67,
+    827.16
+   ],
+   "region_ink_pt": 451.2,
+   "region_type": "GEOMETRY_CHANGED",
+   "question": "Это реальное изменение графики или различие экспорта/кадрирования (растровая подложка, текст в кривых)?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_repack_33_v0.png",
+   "crop_px": [
+    431,
+    282
+   ],
+   "image_tokens_estimate": 400.1,
+   "verdict": "NO_REAL_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "тот же фрагмент штампа, отличается только кадрирование",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_repack_34_v0",
+   "pair_id": "eom_repack_34",
+   "route": "VISION_REQUIRED",
+   "gt_label": "NO_CHANGE",
+   "region_bbox": [
+    650.75,
+    781.92,
+    870.75,
+    826.56
+   ],
+   "region_ink_pt": null,
+   "region_type": null,
+   "question": "Это реальное изменение графики или различие экспорта/кадрирования (растровая подложка, текст в кривых)?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_repack_34_v0.png",
+   "crop_px": [
+    520,
+    206
+   ],
+   "image_tokens_estimate": 383.3,
+   "verdict": "NO_REAL_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "штамп совпадает, сдвиг кадра",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "eom_repack_35_v0",
+   "pair_id": "eom_repack_35",
+   "route": "VISION_REQUIRED",
+   "gt_label": "NO_CHANGE",
+   "region_bbox": [
+    647.87,
+    784.32,
+    867.87,
+    829.44
+   ],
+   "region_ink_pt": null,
+   "region_type": null,
+   "question": "Это реальное изменение графики или различие экспорта/кадрирования (растровая подложка, текст в кривых)?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/eom_repack_35_v0.png",
+   "crop_px": [
+    520,
+    204
+   ],
+   "image_tokens_estimate": 383.3,
+   "verdict": "NO_REAL_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "таблица и штамп совпадают, сдвиг кадра",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "km_rotated_page_39_v0",
+   "pair_id": "km_rotated_page_39",
+   "route": "VISION_REQUIRED",
+   "gt_label": "NO_CHANGE",
+   "region_bbox": [
+    50.88,
+    507.26,
+    270.88,
+    727.26
+   ],
+   "region_ink_pt": null,
+   "region_type": null,
+   "question": "Это реальное изменение графики или различие экспорта/кадрирования (растровая подложка, текст в кривых)?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/km_rotated_page_39_v0.png",
+   "crop_px": [
+    433,
+    520
+   ],
+   "image_tokens_estimate": 669.2,
+   "verdict": "NO_REAL_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "узел рамы Рм-1 совпадает целиком, отличается кадрирование",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "ss_medium_change_25_v0",
+   "pair_id": "ss_medium_change_25",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    1212.12,
+    1302.0,
+    1217.52,
+    1351.2
+   ],
+   "region_ink_pt": 38.4,
+   "region_type": "REMOVED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/ss_medium_change_25_v0.png",
+   "crop_px": [
+    185,
+    310
+   ],
+   "image_tokens_estimate": 241.5,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "слева есть вертикальная линия-разделитель, справа её нет",
+   "agrees_with_pair_gt": true
+  },
+  {
+   "case_id": "ss_small_change_18_v0",
+   "pair_id": "ss_small_change_18",
+   "route": "MODE_1_APPLICABLE",
+   "gt_label": "LOCAL_CHANGE",
+   "region_bbox": [
+    1589.24,
+    761.52,
+    1613.24,
+    798.12
+   ],
+   "region_ink_pt": 43.8,
+   "region_type": "ADDED_GRAPHIC",
+   "question": "Это реальное изменение графического элемента или различие кадрирования/экспорта?",
+   "image": "/home/coder/projects/PDF-proverka/experiments/local_graphic_diff_mode1_opus/artifacts/vision_crops/ss_small_change_18_v0.png",
+   "crop_px": [
+    195,
+    231
+   ],
+   "image_tokens_estimate": 231.9,
+   "verdict": "REAL_GRAPHIC_CHANGE",
+   "verdict_by": "Claude Opus 5 (эта сессия), по двум маленьким кропам без остального блока",
+   "verdict_note": "справа добавлен прибор PM-4 с полкой выноски",
+   "agrees_with_pair_gt": true
+  }
+ ],
+ "summary": {
+  "cases": 19,
+  "pairs_with_vision": 13,
+  "benchmark_pairs": 56,
+  "vision_invocation_rate_pairs": 0.232,
+  "verdicts_recorded": 19,
+  "agreement_with_pair_ground_truth": "19/19",
+  "image_tokens_per_case": {
+   "min": 119.0,
+   "median": 198.3,
+   "max": 669.2,
+   "sum": 5134.4
+  },
+  "note": "оценка токенов по формуле прошлого аудита, провайдером не подтверждена; полный блок вместо кропов стоил бы 3051 токен на изображение (потолок формулы)"
+ }
+}

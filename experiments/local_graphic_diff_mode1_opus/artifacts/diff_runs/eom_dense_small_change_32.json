@@ -1,0 +1,435 @@
+{
+ "mode": "MODE_1",
+ "params": {
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "merge_pt": 2.4,
+  "min_region_ink_pt": 8.0,
+  "border_pt": 3.0,
+  "text_overlap_drop": 0.65
+ },
+ "left": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/document.pdf",
+  "page_index": 38,
+  "block_id": "6NKA-XAF9-33X",
+  "bbox_vis": [
+   148.32,
+   35.99,
+   1547.96,
+   1390.3
+  ],
+  "label": ""
+ },
+ "right": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/document.pdf",
+  "page_index": 38,
+  "block_id": "4H6A-FTNC-QT6",
+  "bbox_vis": [
+   193.44,
+   22.08,
+   1575.33,
+   1385.98
+  ],
+  "label": ""
+ },
+ "registration": {
+  "method": "vote",
+  "transform": {
+   "scale": 1.0,
+   "theta_deg": 0.0,
+   "tx": 1e-05,
+   "ty": 1e-05
+  },
+  "frame": [
+   193.436,
+   22.076,
+   1575.326,
+   1385.977
+  ],
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "coverage": {
+   "left_ink_cells": 189129,
+   "right_ink_cells": 189715,
+   "left_matched": 189129,
+   "right_matched": 189213,
+   "left_cov": 1.0,
+   "right_cov": 0.99735,
+   "sym_cov": 0.99867
+  },
+  "residual": {
+   "n": 6247,
+   "median": 0.0,
+   "p90": 0.0
+  },
+  "anchors": {
+   "left_candidates": 6253,
+   "right_candidates": 6273,
+   "matched": 6247,
+   "coverage": 0.999,
+   "min_len_pt": 7.766,
+   "votes": 6652
+  },
+  "success": true,
+  "failure_reason": null,
+  "confidence": 0.9987,
+  "hypotheses": [
+   {
+    "hypothesis": "bbox_anchor",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 45.11818,
+     "ty": -13.91826
+    },
+    "sym_cov": 0.3135
+   },
+   {
+    "hypothesis": "bbox_anchor+lsq",
+    "transform": {
+     "scale": 0.99768,
+     "theta_deg": 0.29121,
+     "tx": 49.63879,
+     "ty": -16.65149
+    },
+    "sym_cov": 0.3126
+   },
+   {
+    "hypothesis": "bbox_fit",
+    "transform": {
+     "scale": 0.98731,
+     "theta_deg": 0.0,
+     "tx": 46.9997,
+     "ty": -0.07121
+    },
+    "sym_cov": 0.3528
+   },
+   {
+    "hypothesis": "bbox_fit+lsq",
+    "transform": {
+     "scale": 0.98103,
+     "theta_deg": 0.8287,
+     "tx": 58.81677,
+     "ty": -9.44016
+    },
+    "sym_cov": 0.3506
+   },
+   {
+    "hypothesis": "vote",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 1e-05,
+     "ty": 1e-05
+    },
+    "sym_cov": 0.9987
+   },
+   {
+    "hypothesis": "vote+lsq",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 0.0,
+     "ty": 0.0
+    },
+    "sym_cov": 0.9987
+   },
+   {
+    "hypothesis": "phase_corr",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 0.0038,
+     "ty": -0.01014
+    },
+    "sym_cov": 0.9987
+   },
+   {
+    "hypothesis": "phase_corr+lsq",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 0.0,
+     "ty": 0.0
+    },
+    "sym_cov": 0.9987
+   },
+   {
+    "hypothesis": "rot90",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 90.0,
+     "tx": 1547.07991,
+     "ty": -374.90002
+    },
+    "sym_cov": 0.2731
+   },
+   {
+    "hypothesis": "rot180",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 180.0,
+     "tx": 1846.13993,
+     "ty": 1294.76003
+    },
+    "sym_cov": 0.2647
+   },
+   {
+    "hypothesis": "rot270",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 270.0,
+     "tx": 374.89998,
+     "ty": 1547.07993
+    },
+    "sym_cov": 0.27
+   }
+  ],
+  "left_segments_merged": 57402,
+  "right_segments_merged": 54368,
+  "left_ink_pt": 243029.55,
+  "right_ink_pt": 243592.28
+ },
+ "extraction": {
+  "left": {
+   "n_paths_seen": 32325,
+   "n_paths_kept": 32304,
+   "n_invisible_paths": 17,
+   "segments_dropped_invisible": 97,
+   "n_page_images": 24,
+   "page_rotation": 0
+  },
+  "right": {
+   "n_paths_seen": 32240,
+   "n_paths_kept": 32220,
+   "n_invisible_paths": 15,
+   "segments_dropped_invisible": 85,
+   "n_page_images": 594,
+   "page_rotation": 0
+  },
+  "left_segments": 58565,
+  "right_segments": 56124,
+  "image_coverage": [
+   0.0,
+   0.0007
+  ],
+  "text_as_curves": [
+   false,
+   false
+  ],
+  "flags": {
+   "raster_backed_side": false,
+   "text_as_curves_asymmetry": false
+  }
+ },
+ "diff": {
+  "left_ink_cells": 189128,
+  "right_ink_cells": 189714,
+  "matched_cells": 189128,
+  "left_only_cells": 0,
+  "right_only_cells": 502,
+  "changed_ink_fraction": 0.00133,
+  "published_ink_fraction": 0.00029,
+  "n_regions_raw": 6,
+  "n_regions_published": 2,
+  "n_regions_suppressed": 4,
+  "left_texts": 306,
+  "right_texts": 311
+ },
+ "change_regions": [
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 55,
+   "ink_pt": 33.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 33.0,
+   "bbox": [
+    789.84,
+    245.88,
+    805.44,
+    261.48
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 44455,
+      "bbox": [
+       366.3,
+       171.94,
+       1251.78,
+       1005.46
+      ]
+     }
+    ],
+    "nearby_text": [
+     "ВК"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 54,
+   "ink_pt": 32.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 32.4,
+   "bbox": [
+    779.64,
+    253.08,
+    790.44,
+    269.88
+   ],
+   "text_overlap": 0.481,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 44455,
+      "bbox": [
+       366.3,
+       171.94,
+       1251.78,
+       1005.46
+      ]
+     }
+    ],
+    "nearby_text": [
+     "ВК"
+    ]
+   }
+  }
+ ],
+ "suppressed_regions": [
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 319,
+   "ink_pt": 191.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 191.4,
+   "bbox": [
+    786.24,
+    169.68,
+    951.84,
+    233.28
+   ],
+   "text_overlap": 0.715,
+   "suppressed_by": "TEXT_REGION"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 71,
+   "ink_pt": 42.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 42.6,
+   "bbox": [
+    814.44,
+    211.68,
+    863.64,
+    233.28
+   ],
+   "text_overlap": 0.704,
+   "suppressed_by": "TEXT_REGION"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 2,
+   "ink_pt": 1.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 1.2,
+   "bbox": [
+    806.64,
+    232.68,
+    815.64,
+    242.28
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "BELOW_MIN_INK"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 1,
+   "ink_pt": 0.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 0.6,
+   "bbox": [
+    863.64,
+    640.08,
+    869.04,
+    645.48
+   ],
+   "text_overlap": 1.0,
+   "suppressed_by": "BELOW_MIN_INK"
+  }
+ ],
+ "route": "MODE_1_APPLICABLE",
+ "route_reason": "2 small region(s) eligible for a targeted look",
+ "verdict": "LOCAL_CHANGE",
+ "pair_id": "eom_dense_small_change_32",
+ "bucket": "dense_small_change",
+ "discipline": "EOM",
+ "latency_s": 3.939,
+ "extraction_quality": {
+  "left": {
+   "block_id": "6NKA-XAF9-33X",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v001/02_work/document.pdf",
+   "page_index": 38,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 388953,
+   "predicted_cells": 502893,
+   "precision": 0.9707,
+   "recall": 0.9985,
+   "missed_cells": 575,
+   "missed_largest_component": 58,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 444998,
+   "edge_ring_cells": 41280,
+   "excluded_image_cells": 0,
+   "text_spans": 306,
+   "page_rotation": 0,
+   "segments": 58565,
+   "fill_polygons": 1171,
+   "invisible_paths": 17,
+   "segments_dropped_invisible": 97,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "right": {
+   "block_id": "4H6A-FTNC-QT6",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ-К1/versions/v002/02_work/document.pdf",
+   "page_index": 38,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 387597,
+   "predicted_cells": 504658,
+   "precision": 0.9702,
+   "recall": 0.9999,
+   "missed_cells": 38,
+   "missed_largest_component": 31,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 474488,
+   "edge_ring_cells": 41154,
+   "excluded_image_cells": 493,
+   "text_spans": 311,
+   "page_rotation": 0,
+   "segments": 56124,
+   "fill_polygons": 507,
+   "invisible_paths": 15,
+   "segments_dropped_invisible": 85,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "latency_s": 0.763
+ }
+}

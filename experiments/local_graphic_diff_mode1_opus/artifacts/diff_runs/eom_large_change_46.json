@@ -1,0 +1,8877 @@
+{
+ "mode": "MODE_1",
+ "params": {
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "merge_pt": 2.4,
+  "min_region_ink_pt": 8.0,
+  "border_pt": 3.0,
+  "text_overlap_drop": 0.65
+ },
+ "left": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v001/02_work/document.pdf",
+  "page_index": 10,
+  "block_id": "R7NH-P7N6-F6G",
+  "bbox_vis": [
+   52.32,
+   14.88,
+   1074.24,
+   1676.64
+  ],
+  "label": ""
+ },
+ "right": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v002/02_work/document.pdf",
+  "page_index": 11,
+  "block_id": "6A9L-6PYQ-FFP",
+  "bbox_vis": [
+   50.88,
+   13.44,
+   1831.2,
+   1683.84
+  ],
+  "label": ""
+ },
+ "registration": {
+  "method": "vote+lsq",
+  "transform": {
+   "scale": 0.99998,
+   "theta_deg": 0.00066,
+   "tx": -42.50293,
+   "ty": 0.00812
+  },
+  "frame": [
+   50.88,
+   13.44,
+   1831.201,
+   1683.84
+  ],
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "coverage": {
+   "left_ink_cells": 179533,
+   "right_ink_cells": 358127,
+   "left_matched": 171151,
+   "right_matched": 174447,
+   "left_cov": 0.95331,
+   "right_cov": 0.48711,
+   "sym_cov": 0.64278
+  },
+  "residual": {
+   "n": 2549,
+   "median": 0.0452,
+   "p90": 0.1952
+  },
+  "anchors": {
+   "left_candidates": 5234,
+   "right_candidates": 9587,
+   "matched": 2549,
+   "coverage": 0.487,
+   "min_len_pt": 9.765,
+   "votes": 1298
+  },
+  "success": true,
+  "failure_reason": null,
+  "confidence": 0.6347,
+  "hypotheses": [
+   {
+    "hypothesis": "bbox_anchor",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -1.44055,
+     "ty": -1.44305
+    },
+    "sym_cov": 0.2636
+   },
+   {
+    "hypothesis": "bbox_anchor+lsq",
+    "transform": {
+     "scale": 0.9987,
+     "theta_deg": -0.18035,
+     "tx": -3.36517,
+     "ty": 3.24347
+    },
+    "sym_cov": 0.3026
+   },
+   {
+    "hypothesis": "bbox_fit",
+    "transform": {
+     "scale": 1.0052,
+     "theta_deg": 0.0,
+     "tx": 374.82919,
+     "ty": -1.52048
+    },
+    "sym_cov": 0.1206
+   },
+   {
+    "hypothesis": "bbox_fit+lsq",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 376.32013,
+     "ty": -0.00024
+    },
+    "sym_cov": 0.1651
+   },
+   {
+    "hypothesis": "vote",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -42.47998,
+     "ty": -0.00012
+    },
+    "sym_cov": 0.6428
+   },
+   {
+    "hypothesis": "vote+lsq",
+    "transform": {
+     "scale": 0.99998,
+     "theta_deg": 0.00066,
+     "tx": -42.50293,
+     "ty": 0.00812
+    },
+    "sym_cov": 0.6428
+   },
+   {
+    "hypothesis": "phase_corr",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -42.49529,
+     "ty": 0.01712
+    },
+    "sym_cov": 0.6428
+   },
+   {
+    "hypothesis": "phase_corr+lsq",
+    "transform": {
+     "scale": 0.99998,
+     "theta_deg": 0.00066,
+     "tx": -42.50293,
+     "ty": 0.00812
+    },
+    "sym_cov": 0.6428
+   },
+   {
+    "hypothesis": "rot90",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 90.0,
+     "tx": 2479.43996,
+     "ty": 139.91983
+    },
+    "sym_cov": 0.1333
+   },
+   {
+    "hypothesis": "rot180",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 180.0,
+     "tx": 1114.31996,
+     "ty": 1720.56007
+    },
+    "sym_cov": 0.2176
+   },
+   {
+    "hypothesis": "rot270",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 270.0,
+     "tx": 923.75999,
+     "ty": 1715.27991
+    },
+    "sym_cov": 0.0964
+   }
+  ],
+  "left_segments_merged": 26944,
+  "right_segments_merged": 42453,
+  "left_ink_pt": 372582.06,
+  "right_ink_pt": 546736.88
+ },
+ "extraction": {
+  "left": {
+   "n_paths_seen": 2461,
+   "n_paths_kept": 2270,
+   "n_invisible_paths": 191,
+   "segments_dropped_invisible": 764,
+   "n_page_images": 0,
+   "page_rotation": 0
+  },
+  "right": {
+   "n_paths_seen": 3017,
+   "n_paths_kept": 2901,
+   "n_invisible_paths": 114,
+   "segments_dropped_invisible": 456,
+   "n_page_images": 38,
+   "page_rotation": 0
+  },
+  "left_segments": 27866,
+  "right_segments": 43631,
+  "image_coverage": [
+   0.0,
+   0.0
+  ],
+  "text_as_curves": [
+   false,
+   false
+  ],
+  "flags": {
+   "raster_backed_side": false,
+   "text_as_curves_asymmetry": false
+  }
+ },
+ "diff": {
+  "left_ink_cells": 179533,
+  "right_ink_cells": 358127,
+  "matched_cells": 171151,
+  "left_only_cells": 8382,
+  "right_only_cells": 183679,
+  "changed_ink_fraction": 0.35722,
+  "published_ink_fraction": 0.33918,
+  "n_regions_raw": 477,
+  "n_regions_published": 141,
+  "n_regions_suppressed": 336,
+  "left_texts": 762,
+  "right_texts": 956
+ },
+ "change_regions": [
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 148214,
+   "ink_pt": 88928.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 88928.4,
+   "bbox": [
+    1001.88,
+    151.44,
+    1799.28,
+    1589.04
+   ],
+   "text_overlap": 0.058,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 148214,
+    "unmatched_cells_on_page": 189912,
+    "probe_rect": [
+     858.12,
+     7.68,
+     1943.04,
+     1732.8
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 13266,
+      "bbox": [
+       1004.16,
+       200.4,
+       1788.96,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o2",
+      "n_segments": 8,
+      "bbox": [
+       1609.68,
+       909.36,
+       1618.32,
+       919.44
+      ]
+     },
+     {
+      "object_id": "o3",
+      "n_segments": 6,
+      "bbox": [
+       1731.36,
+       418.08,
+       1731.6,
+       429.84
+      ]
+     },
+     {
+      "object_id": "o4",
+      "n_segments": 5,
+      "bbox": [
+       1731.36,
+       432.24,
+       1731.6,
+       441.84
+      ]
+     },
+     {
+      "object_id": "o5",
+      "n_segments": 6,
+      "bbox": [
+       1731.12,
+       508.32,
+       1732.56,
+       517.92
+      ]
+     },
+     {
+      "object_id": "o6",
+      "n_segments": 5,
+      "bbox": [
+       1731.36,
+       520.32,
+       1731.6,
+       529.68
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.400.5",
+     "5.401.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 6159,
+   "ink_pt": 3695.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 3695.4,
+   "bbox": [
+    50.88,
+    13.44,
+    1831.68,
+    1670.64
+   ],
+   "text_overlap": 0.001,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 6159,
+    "unmatched_cells_on_page": 235804,
+    "probe_rect": [
+     -127.2,
+     -164.64,
+     2009.76,
+     1848.72
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 13266,
+      "bbox": [
+       1004.16,
+       200.4,
+       1788.96,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o2",
+      "n_segments": 8,
+      "bbox": [
+       1609.68,
+       909.36,
+       1618.32,
+       919.44
+      ]
+     },
+     {
+      "object_id": "o3",
+      "n_segments": 6,
+      "bbox": [
+       1731.36,
+       418.08,
+       1731.6,
+       429.84
+      ]
+     },
+     {
+      "object_id": "o4",
+      "n_segments": 5,
+      "bbox": [
+       1731.36,
+       432.24,
+       1731.6,
+       441.84
+      ]
+     },
+     {
+      "object_id": "o5",
+      "n_segments": 6,
+      "bbox": [
+       1731.12,
+       508.32,
+       1732.56,
+       517.92
+      ]
+     },
+     {
+      "object_id": "o6",
+      "n_segments": 5,
+      "bbox": [
+       1731.36,
+       520.32,
+       1731.6,
+       529.68
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.",
+     "К",
+     "П",
+     ".",
+     "Ж"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 602,
+   "right_only_cells": 3176,
+   "ink_pt": 2266.8,
+   "left_only_ink_pt": 361.2,
+   "right_only_ink_pt": 1905.6,
+   "bbox": [
+    160.68,
+    380.64,
+    440.28,
+    1415.64
+   ],
+   "text_overlap": 0.005,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o319",
+      "n_segments": 1,
+      "bbox": [
+       432.72,
+       638.88,
+       432.72,
+       642.96
+      ]
+     },
+     {
+      "object_id": "o320",
+      "n_segments": 1,
+      "bbox": [
+       432.72,
+       647.28,
+       432.72,
+       655.92
+      ]
+     },
+     {
+      "object_id": "o321",
+      "n_segments": 1,
+      "bbox": [
+       432.72,
+       660.0,
+       432.72,
+       668.64
+      ]
+     },
+     {
+      "object_id": "o322",
+      "n_segments": 1,
+      "bbox": [
+       432.72,
+       672.72,
+       432.72,
+       681.36
+      ]
+     },
+     {
+      "object_id": "o323",
+      "n_segments": 1,
+      "bbox": [
+       432.72,
+       685.68,
+       432.72,
+       694.08
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 200",
+     "41 550"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 446,
+   "right_only_cells": 2586,
+   "ink_pt": 1819.2,
+   "left_only_ink_pt": 267.6,
+   "right_only_ink_pt": 1551.6,
+   "bbox": [
+    755.88,
+    408.84,
+    890.28,
+    1357.44
+   ],
+   "text_overlap": 0.111,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o272",
+      "n_segments": 5,
+      "bbox": [
+       817.44,
+       432.24,
+       817.68,
+       441.84
+      ]
+     },
+     {
+      "object_id": "o273",
+      "n_segments": 6,
+      "bbox": [
+       816.96,
+       508.32,
+       818.64,
+       517.92
+      ]
+     },
+     {
+      "object_id": "o274",
+      "n_segments": 5,
+      "bbox": [
+       817.44,
+       520.32,
+       817.68,
+       529.68
+      ]
+     },
+     {
+      "object_id": "o275",
+      "n_segments": 5,
+      "bbox": [
+       817.44,
+       532.08,
+       817.68,
+       541.68
+      ]
+     },
+     {
+      "object_id": "o276",
+      "n_segments": 6,
+      "bbox": [
+       817.44,
+       608.16,
+       817.68,
+       619.92
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.7-2 (8-15",
+     "эт",
+     ".)",
+     "К",
+     "-2 (1-7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 2389,
+   "ink_pt": 1433.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 1433.4,
+   "bbox": [
+    1031.28,
+    1599.24,
+    1831.68,
+    1672.44
+   ],
+   "text_overlap": 0.124,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 2389,
+    "unmatched_cells_on_page": 5186,
+    "probe_rect": [
+     951.24,
+     1519.2,
+     1911.72,
+     1752.48
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o550",
+      "n_segments": 25,
+      "bbox": [
+       1110.96,
+       1601.52,
+       1133.52,
+       1666.56
+      ]
+     },
+     {
+      "object_id": "o589",
+      "n_segments": 25,
+      "bbox": [
+       1353.12,
+       1601.52,
+       1375.92,
+       1666.56
+      ]
+     },
+     {
+      "object_id": "o625",
+      "n_segments": 25,
+      "bbox": [
+       1606.08,
+       1601.52,
+       1628.64,
+       1666.56
+      ]
+     },
+     {
+      "object_id": "o765",
+      "n_segments": 25,
+      "bbox": [
+       1504.08,
+       1601.52,
+       1526.64,
+       1666.56
+      ]
+     },
+     {
+      "object_id": "o790",
+      "n_segments": 50,
+      "bbox": [
+       1221.36,
+       1601.52,
+       1263.84,
+       1666.56
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 300,
+   "right_only_cells": 560,
+   "ink_pt": 516.0,
+   "left_only_ink_pt": 180.0,
+   "right_only_ink_pt": 336.0,
+   "bbox": [
+    571.08,
+    240.84,
+    716.88,
+    261.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1304",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       226.56,
+       703.44,
+       283.2
+      ]
+     },
+     {
+      "object_id": "o1441",
+      "n_segments": 1,
+      "bbox": [
+       601.44,
+       226.56,
+       601.44,
+       283.2
+      ]
+     },
+     {
+      "object_id": "o1702",
+      "n_segments": 25,
+      "bbox": [
+       708.48,
+       200.4,
+       731.28,
+       255.12
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 371,
+   "right_only_cells": 411,
+   "ink_pt": 469.2,
+   "left_only_ink_pt": 222.6,
+   "right_only_ink_pt": 246.6,
+   "bbox": [
+    303.48,
+    1130.04,
+    337.68,
+    1237.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o414",
+      "n_segments": 1,
+      "bbox": [
+       333.6,
+       1147.92,
+       333.6,
+       1150.8
+      ]
+     },
+     {
+      "object_id": "o1513",
+      "n_segments": 1,
+      "bbox": [
+       318.72,
+       1158.72,
+       318.72,
+       1160.16
+      ]
+     },
+     {
+      "object_id": "o1514",
+      "n_segments": 1,
+      "bbox": [
+       318.72,
+       1231.2,
+       318.72,
+       1232.64
+      ]
+     },
+     {
+      "object_id": "o1764",
+      "n_segments": 1,
+      "bbox": [
+       301.92,
+       1205.76,
+       303.6,
+       1205.76
+      ]
+     },
+     {
+      "object_id": "o1765",
+      "n_segments": 1,
+      "bbox": [
+       310.56,
+       1205.76,
+       367.2,
+       1205.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "1 050"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 592,
+   "right_only_cells": 141,
+   "ink_pt": 439.8,
+   "left_only_ink_pt": 355.2,
+   "right_only_ink_pt": 84.6,
+   "bbox": [
+    547.08,
+    880.44,
+    568.68,
+    1267.44
+   ],
+   "text_overlap": 0.179,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o184",
+      "n_segments": 15,
+      "bbox": [
+       539.71,
+       1164.48,
+       553.63,
+       1178.64
+      ]
+     },
+     {
+      "object_id": "o185",
+      "n_segments": 15,
+      "bbox": [
+       561.55,
+       1164.48,
+       575.71,
+       1178.64
+      ]
+     },
+     {
+      "object_id": "o186",
+      "n_segments": 15,
+      "bbox": [
+       539.71,
+       1075.68,
+       553.63,
+       1089.6
+      ]
+     },
+     {
+      "object_id": "o187",
+      "n_segments": 15,
+      "bbox": [
+       539.72,
+       986.64,
+       553.64,
+       1000.56
+      ]
+     },
+     {
+      "object_id": "o188",
+      "n_segments": 15,
+      "bbox": [
+       561.56,
+       986.64,
+       575.72,
+       1000.56
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "А",
+     "5.6-1-1",
+     "2",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 186,
+   "right_only_cells": 512,
+   "ink_pt": 418.8,
+   "left_only_ink_pt": 111.6,
+   "right_only_ink_pt": 307.2,
+   "bbox": [
+    767.28,
+    685.44,
+    820.68,
+    771.84
+   ],
+   "text_overlap": 0.102,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o290",
+      "n_segments": 5,
+      "bbox": [
+       817.44,
+       698.4,
+       817.68,
+       708.0
+      ]
+     },
+     {
+      "object_id": "o291",
+      "n_segments": 5,
+      "bbox": [
+       817.44,
+       710.16,
+       817.68,
+       719.76
+      ]
+     },
+     {
+      "object_id": "o292",
+      "n_segments": 6,
+      "bbox": [
+       817.44,
+       722.16,
+       817.68,
+       733.92
+      ]
+     },
+     {
+      "object_id": "o423",
+      "n_segments": 1,
+      "bbox": [
+       794.4,
+       725.76,
+       794.4,
+       728.64
+      ]
+     },
+     {
+      "object_id": "o1378",
+      "n_segments": 1,
+      "bbox": [
+       816.96,
+       747.84,
+       818.64,
+       747.84
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "5.5-2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 21,
+   "right_only_cells": 453,
+   "ink_pt": 284.4,
+   "left_only_ink_pt": 12.6,
+   "right_only_ink_pt": 271.8,
+   "bbox": [
+    339.48,
+    1307.04,
+    583.68,
+    1331.64
+   ],
+   "text_overlap": 0.002,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o393",
+      "n_segments": 1,
+      "bbox": [
+       428.64,
+       1308.0,
+       428.64,
+       1316.4
+      ]
+     },
+     {
+      "object_id": "o491",
+      "n_segments": 1,
+      "bbox": [
+       574.8,
+       1329.36,
+       614.4,
+       1329.36
+      ]
+     },
+     {
+      "object_id": "o1292",
+      "n_segments": 1,
+      "bbox": [
+       450.48,
+       1312.08,
+       450.48,
+       1368.72
+      ]
+     },
+     {
+      "object_id": "o1837",
+      "n_segments": 32,
+      "bbox": [
+       480.24,
+       1306.56,
+       497.28,
+       1323.6
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.398.8"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 188,
+   "right_only_cells": 265,
+   "ink_pt": 271.8,
+   "left_only_ink_pt": 112.8,
+   "right_only_ink_pt": 159.0,
+   "bbox": [
+    715.08,
+    258.24,
+    808.08,
+    291.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1409",
+      "n_segments": 1,
+      "bbox": [
+       753.36,
+       274.56,
+       810.0,
+       274.56
+      ]
+     },
+     {
+      "object_id": "o1410",
+      "n_segments": 1,
+      "bbox": [
+       744.72,
+       274.56,
+       746.16,
+       274.56
+      ]
+     },
+     {
+      "object_id": "o1541",
+      "n_segments": 1,
+      "bbox": [
+       753.36,
+       264.72,
+       810.0,
+       264.72
+      ]
+     },
+     {
+      "object_id": "o1542",
+      "n_segments": 1,
+      "bbox": [
+       744.72,
+       264.72,
+       746.16,
+       264.72
+      ]
+     },
+     {
+      "object_id": "o1543",
+      "n_segments": 1,
+      "bbox": [
+       680.88,
+       264.72,
+       737.52,
+       264.72
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 223,
+   "right_only_cells": 223,
+   "ink_pt": 267.6,
+   "left_only_ink_pt": 133.8,
+   "right_only_ink_pt": 133.8,
+   "bbox": [
+    635.88,
+    1466.64,
+    697.08,
+    1481.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o286",
+      "n_segments": 2,
+      "bbox": [
+       644.16,
+       1470.48,
+       645.84,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o287",
+      "n_segments": 2,
+      "bbox": [
+       648.24,
+       1470.48,
+       649.92,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "4 850"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 99,
+   "right_only_cells": 322,
+   "ink_pt": 252.6,
+   "left_only_ink_pt": 59.4,
+   "right_only_ink_pt": 193.2,
+   "bbox": [
+    703.08,
+    405.24,
+    820.68,
+    465.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o272",
+      "n_segments": 5,
+      "bbox": [
+       817.44,
+       432.24,
+       817.68,
+       441.84
+      ]
+     },
+     {
+      "object_id": "o421",
+      "n_segments": 1,
+      "bbox": [
+       794.4,
+       445.2,
+       794.4,
+       448.08
+      ]
+     },
+     {
+      "object_id": "o1308",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       371.28,
+       703.44,
+       427.92
+      ]
+     },
+     {
+      "object_id": "o1309",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       435.12,
+       703.44,
+       436.56
+      ]
+     },
+     {
+      "object_id": "o1310",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       443.76,
+       703.44,
+       500.4
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.405.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 191,
+   "right_only_cells": 208,
+   "ink_pt": 239.4,
+   "left_only_ink_pt": 114.6,
+   "right_only_ink_pt": 124.8,
+   "bbox": [
+    303.48,
+    566.04,
+    318.48,
+    627.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1819",
+      "n_segments": 1,
+      "bbox": [
+       301.92,
+       587.76,
+       303.6,
+       587.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "1 800",
+     "1 300"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 188,
+   "right_only_cells": 194,
+   "ink_pt": 229.2,
+   "left_only_ink_pt": 112.8,
+   "right_only_ink_pt": 116.4,
+   "bbox": [
+    303.48,
+    943.44,
+    317.88,
+    1004.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 200",
+     "К",
+     "К",
+     "К",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 368,
+   "ink_pt": 220.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 220.8,
+   "bbox": [
+    572.28,
+    1307.04,
+    733.08,
+    1332.24
+   ],
+   "text_overlap": 0.101,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o341",
+      "n_segments": 2,
+      "bbox": [
+       699.84,
+       1311.12,
+       709.44,
+       1319.76
+      ]
+     },
+     {
+      "object_id": "o383",
+      "n_segments": 1,
+      "bbox": [
+       713.76,
+       1319.76,
+       722.16,
+       1319.76
+      ]
+     },
+     {
+      "object_id": "o491",
+      "n_segments": 1,
+      "bbox": [
+       574.8,
+       1329.36,
+       614.4,
+       1329.36
+      ]
+     },
+     {
+      "object_id": "o1329",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       1312.08,
+       703.44,
+       1368.72
+      ]
+     },
+     {
+      "object_id": "o1456",
+      "n_segments": 1,
+      "bbox": [
+       601.44,
+       1312.08,
+       601.44,
+       1368.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.397.5",
+     "5.397.7",
+     "5.397.8"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 366,
+   "ink_pt": 219.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 219.6,
+   "bbox": [
+    1001.88,
+    251.04,
+    1075.68,
+    288.84
+   ],
+   "text_overlap": 0.191,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 366,
+    "unmatched_cells_on_page": 476,
+    "probe_rect": [
+     994.5,
+     243.66,
+     1083.06,
+     296.22
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 13266,
+      "bbox": [
+       1004.16,
+       200.4,
+       1788.96,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o729",
+      "n_segments": 50,
+      "bbox": [
+       1004.16,
+       253.2,
+       1072.56,
+       285.84
+      ]
+     }
+    ],
+    "nearby_text": [
+     "Р",
+     "П",
+     ".",
+     ".",
+     "П"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 185,
+   "right_only_cells": 179,
+   "ink_pt": 218.4,
+   "left_only_ink_pt": 111.0,
+   "right_only_ink_pt": 107.4,
+   "bbox": [
+    730.68,
+    1394.04,
+    800.28,
+    1452.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o353",
+      "n_segments": 2,
+      "bbox": [
+       744.91,
+       1448.15,
+       801.55,
+       1448.15
+      ]
+     },
+     {
+      "object_id": "o429",
+      "n_segments": 2,
+      "bbox": [
+       795.07,
+       1420.07,
+       795.07,
+       1421.51
+      ]
+     },
+     {
+      "object_id": "o430",
+      "n_segments": 2,
+      "bbox": [
+       795.07,
+       1428.71,
+       795.07,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o608",
+      "n_segments": 2,
+      "bbox": [
+       753.31,
+       1439.51,
+       809.95,
+       1439.51
+      ]
+     },
+     {
+      "object_id": "o609",
+      "n_segments": 2,
+      "bbox": [
+       744.67,
+       1439.51,
+       746.11,
+       1439.51
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.397.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 147,
+   "right_only_cells": 214,
+   "ink_pt": 216.6,
+   "left_only_ink_pt": 88.2,
+   "right_only_ink_pt": 128.4,
+   "bbox": [
+    440.28,
+    1464.84,
+    501.48,
+    1478.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1295",
+      "n_segments": 1,
+      "bbox": [
+       450.48,
+       1456.8,
+       450.48,
+       1513.44
+      ]
+     }
+    ],
+    "nearby_text": [
+     "7 050"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 187,
+   "right_only_cells": 172,
+   "ink_pt": 215.4,
+   "left_only_ink_pt": 112.2,
+   "right_only_ink_pt": 103.2,
+   "bbox": [
+    320.88,
+    1412.04,
+    406.68,
+    1461.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o112",
+      "n_segments": 1,
+      "bbox": [
+       340.03,
+       1424.39,
+       340.03,
+       1432.79
+      ]
+     },
+     {
+      "object_id": "o113",
+      "n_segments": 1,
+      "bbox": [
+       340.03,
+       1437.11,
+       340.03,
+       1444.55
+      ]
+     },
+     {
+      "object_id": "o114",
+      "n_segments": 2,
+      "bbox": [
+       322.99,
+       1457.99,
+       332.83,
+       1457.99
+      ]
+     },
+     {
+      "object_id": "o350",
+      "n_segments": 2,
+      "bbox": [
+       310.51,
+       1448.15,
+       367.39,
+       1448.15
+      ]
+     },
+     {
+      "object_id": "o351",
+      "n_segments": 2,
+      "bbox": [
+       374.35,
+       1448.15,
+       375.79,
+       1448.15
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.398.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 156,
+   "right_only_cells": 191,
+   "ink_pt": 208.2,
+   "left_only_ink_pt": 93.6,
+   "right_only_ink_pt": 114.6,
+   "bbox": [
+    328.68,
+    266.04,
+    366.48,
+    341.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1415",
+      "n_segments": 1,
+      "bbox": [
+       318.96,
+       274.56,
+       375.84,
+       274.56
+      ]
+     },
+     {
+      "object_id": "o1467",
+      "n_segments": 1,
+      "bbox": [
+       338.64,
+       226.56,
+       338.64,
+       283.2
+      ]
+     },
+     {
+      "object_id": "o1468",
+      "n_segments": 1,
+      "bbox": [
+       338.64,
+       290.4,
+       338.64,
+       291.84
+      ]
+     },
+     {
+      "object_id": "o1469",
+      "n_segments": 1,
+      "bbox": [
+       338.64,
+       299.04,
+       338.64,
+       355.68
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 192,
+   "right_only_cells": 146,
+   "ink_pt": 202.8,
+   "left_only_ink_pt": 115.2,
+   "right_only_ink_pt": 87.6,
+   "bbox": [
+    812.88,
+    1086.24,
+    826.68,
+    1147.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o328",
+      "n_segments": 2,
+      "bbox": [
+       817.15,
+       1112.16,
+       873.79,
+       1112.16
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 90,
+   "right_only_cells": 163,
+   "ink_pt": 151.8,
+   "left_only_ink_pt": 54.0,
+   "right_only_ink_pt": 97.8,
+   "bbox": [
+    524.88,
+    266.04,
+    583.68,
+    275.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o407",
+      "n_segments": 1,
+      "bbox": [
+       563.76,
+       270.96,
+       566.4,
+       270.96
+      ]
+     },
+     {
+      "object_id": "o1411",
+      "n_segments": 1,
+      "bbox": [
+       536.16,
+       274.56,
+       592.8,
+       274.56
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 85,
+   "right_only_cells": 168,
+   "ink_pt": 151.8,
+   "left_only_ink_pt": 51.0,
+   "right_only_ink_pt": 100.8,
+   "bbox": [
+    618.48,
+    266.04,
+    677.28,
+    275.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 244,
+   "right_only_cells": 0,
+   "ink_pt": 146.4,
+   "left_only_ink_pt": 146.4,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    400.68,
+    239.64,
+    461.88,
+    260.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o535",
+      "n_segments": 2,
+      "bbox": [
+       450.69,
+       226.57,
+       450.69,
+       283.21
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 79,
+   "right_only_cells": 161,
+   "ink_pt": 144.0,
+   "left_only_ink_pt": 47.4,
+   "right_only_ink_pt": 96.6,
+   "bbox": [
+    401.88,
+    266.04,
+    460.08,
+    275.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o314",
+      "n_segments": 1,
+      "bbox": [
+       441.12,
+       274.8,
+       441.12,
+       283.44
+      ]
+     },
+     {
+      "object_id": "o315",
+      "n_segments": 3,
+      "bbox": [
+       383.04,
+       264.72,
+       443.28,
+       270.96
+      ]
+     },
+     {
+      "object_id": "o1265",
+      "n_segments": 1,
+      "bbox": [
+       450.48,
+       226.56,
+       450.48,
+       283.2
+      ]
+     },
+     {
+      "object_id": "o1413",
+      "n_segments": 1,
+      "bbox": [
+       391.44,
+       274.56,
+       448.08,
+       274.56
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 29,
+   "right_only_cells": 211,
+   "ink_pt": 144.0,
+   "left_only_ink_pt": 17.4,
+   "right_only_ink_pt": 126.6,
+   "bbox": [
+    697.68,
+    843.24,
+    752.28,
+    900.24
+   ],
+   "text_overlap": 0.454,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o406",
+      "n_segments": 4,
+      "bbox": [
+       741.12,
+       900.24,
+       746.16,
+       913.2
+      ]
+     },
+     {
+      "object_id": "o465",
+      "n_segments": 2,
+      "bbox": [
+       689.04,
+       846.96,
+       700.32,
+       847.68
+      ]
+     },
+     {
+      "object_id": "o508",
+      "n_segments": 2,
+      "bbox": [
+       708.48,
+       880.56,
+       708.48,
+       922.32
+      ]
+     },
+     {
+      "object_id": "o1320",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       805.44,
+       703.44,
+       862.08
+      ]
+     },
+     {
+      "object_id": "o1534",
+      "n_segments": 1,
+      "bbox": [
+       744.72,
+       886.8,
+       746.16,
+       886.8
+      ]
+     }
+    ],
+    "nearby_text": [
+     "1 360",
+     "5.",
+     "570",
+     "МОП",
+     "мм"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 206,
+   "right_only_cells": 22,
+   "ink_pt": 136.8,
+   "left_only_ink_pt": 123.6,
+   "right_only_ink_pt": 13.2,
+   "bbox": [
+    303.48,
+    756.24,
+    319.68,
+    816.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o786",
+      "n_segments": 2,
+      "bbox": [
+       318.68,
+       733.2,
+       318.68,
+       789.84
+      ]
+     },
+     {
+      "object_id": "o787",
+      "n_segments": 2,
+      "bbox": [
+       318.68,
+       796.8,
+       318.68,
+       798.48
+      ]
+     },
+     {
+      "object_id": "o788",
+      "n_segments": 2,
+      "bbox": [
+       318.68,
+       805.44,
+       318.68,
+       862.08
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 600",
+     "5.401.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 206,
+   "ink_pt": 123.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 123.6,
+   "bbox": [
+    465.48,
+    1188.24,
+    546.48,
+    1205.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1684",
+      "n_segments": 1,
+      "bbox": [
+       532.8,
+       1202.88,
+       532.8,
+       1204.56
+      ]
+     },
+     {
+      "object_id": "o1873",
+      "n_segments": 7,
+      "bbox": [
+       368.16,
+       1188.48,
+       571.44,
+       1206.48
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 140",
+     "5.399.6",
+     "5.398.7",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 204,
+   "ink_pt": 122.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 122.4,
+   "bbox": [
+    365.88,
+    1188.24,
+    464.88,
+    1197.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1289",
+      "n_segments": 1,
+      "bbox": [
+       450.48,
+       1167.36,
+       450.48,
+       1224.0
+      ]
+     },
+     {
+      "object_id": "o1873",
+      "n_segments": 7,
+      "bbox": [
+       368.16,
+       1188.48,
+       571.44,
+       1206.48
+      ]
+     }
+    ],
+    "nearby_text": [
+     "мм",
+     "Шинопровод",
+     "L=29830",
+     "5.399.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 39,
+   "right_only_cells": 159,
+   "ink_pt": 118.8,
+   "left_only_ink_pt": 23.4,
+   "right_only_ink_pt": 95.4,
+   "bbox": [
+    659.28,
+    374.64,
+    701.88,
+    434.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o478",
+      "n_segments": 2,
+      "bbox": [
+       696.0,
+       395.28,
+       696.72,
+       406.56
+      ]
+     },
+     {
+      "object_id": "o479",
+      "n_segments": 2,
+      "bbox": [
+       696.24,
+       398.88,
+       696.24,
+       401.28
+      ]
+     },
+     {
+      "object_id": "o1853",
+      "n_segments": 32,
+      "bbox": [
+       671.76,
+       431.76,
+       688.8,
+       448.8
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.405.4",
+     "5.405.6"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 89,
+   "right_only_cells": 108,
+   "ink_pt": 118.2,
+   "left_only_ink_pt": 53.4,
+   "right_only_ink_pt": 64.8,
+   "bbox": [
+    637.08,
+    1443.84,
+    695.28,
+    1461.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "4 850"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 87,
+   "right_only_cells": 100,
+   "ink_pt": 112.2,
+   "left_only_ink_pt": 52.2,
+   "right_only_ink_pt": 60.0,
+   "bbox": [
+    790.68,
+    1087.44,
+    807.48,
+    1146.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1637",
+      "n_segments": 33,
+      "bbox": [
+       744.48,
+       1108.08,
+       801.6,
+       1125.12
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.396.2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 185,
+   "ink_pt": 111.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 111.0,
+   "bbox": [
+    1001.88,
+    498.84,
+    1075.68,
+    527.04
+   ],
+   "text_overlap": 0.065,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 185,
+    "unmatched_cells_on_page": 321,
+    "probe_rect": [
+     994.5,
+     491.46,
+     1083.06,
+     534.42
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 13266,
+      "bbox": [
+       1004.16,
+       200.4,
+       1788.96,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o716",
+      "n_segments": 25,
+      "bbox": [
+       1004.16,
+       501.36,
+       1072.56,
+       523.92
+      ]
+     }
+    ],
+    "nearby_text": [
+     "М",
+     ".",
+     "П"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 185,
+   "ink_pt": 111.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 111.0,
+   "bbox": [
+    1001.88,
+    873.24,
+    1075.68,
+    900.84
+   ],
+   "text_overlap": 0.097,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 185,
+    "unmatched_cells_on_page": 324,
+    "probe_rect": [
+     994.5,
+     865.86,
+     1083.06,
+     908.22
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 13266,
+      "bbox": [
+       1004.16,
+       200.4,
+       1788.96,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o846",
+      "n_segments": 25,
+      "bbox": [
+       1004.16,
+       875.52,
+       1072.56,
+       898.08
+      ]
+     }
+    ],
+    "nearby_text": [
+     "Ж",
+     ".",
+     "П"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 185,
+   "ink_pt": 111.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 111.0,
+   "bbox": [
+    1001.88,
+    1227.24,
+    1075.68,
+    1255.44
+   ],
+   "text_overlap": 0.043,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 185,
+    "unmatched_cells_on_page": 269,
+    "probe_rect": [
+     994.5,
+     1219.86,
+     1083.06,
+     1262.82
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 13266,
+      "bbox": [
+       1004.16,
+       200.4,
+       1788.96,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o746",
+      "n_segments": 25,
+      "bbox": [
+       1004.16,
+       1229.76,
+       1072.56,
+       1252.56
+      ]
+     }
+    ],
+    "nearby_text": [
+     "В",
+     ".",
+     "П"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 84,
+   "right_only_cells": 101,
+   "ink_pt": 111.0,
+   "left_only_ink_pt": 50.4,
+   "right_only_ink_pt": 60.6,
+   "bbox": [
+    441.48,
+    1443.84,
+    500.88,
+    1459.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1295",
+      "n_segments": 1,
+      "bbox": [
+       450.48,
+       1456.8,
+       450.48,
+       1513.44
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 183,
+   "ink_pt": 109.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 109.8,
+   "bbox": [
+    1001.88,
+    1425.84,
+    1075.68,
+    1454.04
+   ],
+   "text_overlap": 0.087,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 183,
+    "unmatched_cells_on_page": 270,
+    "probe_rect": [
+     994.5,
+     1418.46,
+     1083.06,
+     1461.42
+    ]
+   },
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 13266,
+      "bbox": [
+       1004.16,
+       200.4,
+       1788.96,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o663",
+      "n_segments": 25,
+      "bbox": [
+       1004.16,
+       1428.24,
+       1072.56,
+       1451.04
+      ]
+     }
+    ],
+    "nearby_text": [
+     "А",
+     ".",
+     "П"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 85,
+   "right_only_cells": 96,
+   "ink_pt": 108.6,
+   "left_only_ink_pt": 51.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    322.68,
+    567.24,
+    337.68,
+    626.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o410",
+      "n_segments": 1,
+      "bbox": [
+       333.6,
+       583.92,
+       333.6,
+       586.56
+      ]
+     },
+     {
+      "object_id": "o1400",
+      "n_segments": 2,
+      "bbox": [
+       318.72,
+       512.64,
+       375.84,
+       572.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.403.2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 57,
+   "right_only_cells": 124,
+   "ink_pt": 108.6,
+   "left_only_ink_pt": 34.2,
+   "right_only_ink_pt": 74.4,
+   "bbox": [
+    706.08,
+    890.04,
+    751.68,
+    932.04
+   ],
+   "text_overlap": 0.238,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o406",
+      "n_segments": 4,
+      "bbox": [
+       741.12,
+       900.24,
+       746.16,
+       913.2
+      ]
+     },
+     {
+      "object_id": "o508",
+      "n_segments": 2,
+      "bbox": [
+       708.48,
+       880.56,
+       708.48,
+       922.32
+      ]
+     },
+     {
+      "object_id": "o546",
+      "n_segments": 2,
+      "bbox": [
+       695.28,
+       900.48,
+       708.48,
+       914.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     "570",
+     "1",
+     "А",
+     "1 360",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 85,
+   "right_only_cells": 95,
+   "ink_pt": 108.0,
+   "left_only_ink_pt": 51.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    322.68,
+    944.04,
+    337.68,
+    1002.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o413",
+      "n_segments": 1,
+      "bbox": [
+       333.6,
+       960.96,
+       333.6,
+       963.6
+      ]
+     },
+     {
+      "object_id": "o1371",
+      "n_segments": 1,
+      "bbox": [
+       318.96,
+       980.4,
+       375.84,
+       980.4
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "К",
+     "К",
+     "5.3",
+     "5.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 90,
+   "right_only_cells": 90,
+   "ink_pt": 108.0,
+   "left_only_ink_pt": 54.0,
+   "right_only_ink_pt": 54.0,
+   "bbox": [
+    328.68,
+    1037.64,
+    337.68,
+    1096.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "5.7-2 (8-15",
+     "К",
+     "5.7-1 (2-7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 89,
+   "right_only_cells": 89,
+   "ink_pt": 106.8,
+   "left_only_ink_pt": 53.4,
+   "right_only_ink_pt": 53.4,
+   "bbox": [
+    347.28,
+    663.84,
+    356.28,
+    722.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o411",
+      "n_segments": 1,
+      "bbox": [
+       351.84,
+       680.16,
+       351.84,
+       683.04
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.402.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 89,
+   "right_only_cells": 87,
+   "ink_pt": 105.6,
+   "left_only_ink_pt": 53.4,
+   "right_only_ink_pt": 52.2,
+   "bbox": [
+    328.68,
+    757.44,
+    337.68,
+    815.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o127",
+      "n_segments": 3,
+      "bbox": [
+       331.4,
+       776.64,
+       332.84,
+       834.0
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.401.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 87,
+   "right_only_cells": 85,
+   "ink_pt": 103.2,
+   "left_only_ink_pt": 52.2,
+   "right_only_ink_pt": 51.0,
+   "bbox": [
+    790.68,
+    593.64,
+    800.28,
+    652.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o444",
+      "n_segments": 2,
+      "bbox": [
+       744.92,
+       638.89,
+       801.56,
+       638.89
+      ]
+     }
+    ],
+    "nearby_text": [
+     "-2",
+     "а",
+     "5.9"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 85,
+   "right_only_cells": 85,
+   "ink_pt": 102.0,
+   "left_only_ink_pt": 51.0,
+   "right_only_ink_pt": 51.0,
+   "bbox": [
+    328.68,
+    473.64,
+    337.68,
+    532.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o409",
+      "n_segments": 1,
+      "bbox": [
+       333.6,
+       490.32,
+       333.6,
+       493.2
+      ]
+     },
+     {
+      "object_id": "o1400",
+      "n_segments": 2,
+      "bbox": [
+       318.72,
+       512.64,
+       375.84,
+       572.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.403.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 119,
+   "right_only_cells": 51,
+   "ink_pt": 102.0,
+   "left_only_ink_pt": 71.4,
+   "right_only_ink_pt": 30.6,
+   "bbox": [
+    585.48,
+    800.64,
+    648.48,
+    843.84
+   ],
+   "text_overlap": 0.106,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o223",
+      "n_segments": 1,
+      "bbox": [
+       616.28,
+       804.48,
+       630.44,
+       804.48
+      ]
+     },
+     {
+      "object_id": "o454",
+      "n_segments": 2,
+      "bbox": [
+       591.56,
+       842.88,
+       593.0,
+       842.88
+      ]
+     },
+     {
+      "object_id": "o898",
+      "n_segments": 32,
+      "bbox": [
+       610.04,
+       813.12,
+       627.08,
+       830.16
+      ]
+     }
+    ],
+    "nearby_text": [
+     "МОП",
+     "5.",
+     ".4",
+     "К",
+     "5.7-1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 82,
+   "right_only_cells": 87,
+   "ink_pt": 101.4,
+   "left_only_ink_pt": 49.2,
+   "right_only_ink_pt": 52.2,
+   "bbox": [
+    790.68,
+    990.84,
+    805.68,
+    1049.64
+   ],
+   "text_overlap": 0.367,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o417",
+      "n_segments": 1,
+      "bbox": [
+       794.4,
+       1029.6,
+       794.4,
+       1032.48
+      ]
+     },
+     {
+      "object_id": "o1621",
+      "n_segments": 1,
+      "bbox": [
+       744.72,
+       1024.32,
+       801.6,
+       1024.32
+      ]
+     }
+    ],
+    "nearby_text": [
+     ".)",
+     "эт",
+     "-3 (8-15",
+     ".)",
+     "эт"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 82,
+   "right_only_cells": 82,
+   "ink_pt": 98.4,
+   "left_only_ink_pt": 49.2,
+   "right_only_ink_pt": 49.2,
+   "bbox": [
+    526.68,
+    1443.84,
+    583.68,
+    1452.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o416",
+      "n_segments": 1,
+      "bbox": [
+       542.88,
+       1447.68,
+       545.76,
+       1447.68
+      ]
+     },
+     {
+      "object_id": "o1688",
+      "n_segments": 1,
+      "bbox": [
+       532.8,
+       1428.72,
+       532.8,
+       1485.36
+      ]
+     },
+     {
+      "object_id": "o1700",
+      "n_segments": 1,
+      "bbox": [
+       582.48,
+       1428.72,
+       582.48,
+       1485.36
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.397.2",
+     "1 750"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 82,
+   "right_only_cells": 80,
+   "ink_pt": 97.2,
+   "left_only_ink_pt": 49.2,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    790.68,
+    500.04,
+    800.28,
+    558.84
+   ],
+   "text_overlap": 0.364,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o142",
+      "n_segments": 1,
+      "bbox": [
+       796.28,
+       535.93,
+       796.28,
+       538.81
+      ]
+     },
+     {
+      "object_id": "o262",
+      "n_segments": 2,
+      "bbox": [
+       744.92,
+       551.05,
+       801.56,
+       551.05
+      ]
+     },
+     {
+      "object_id": "o662",
+      "n_segments": 2,
+      "bbox": [
+       753.32,
+       512.65,
+       809.96,
+       512.65
+      ]
+     }
+    ],
+    "nearby_text": [
+     "а",
+     "а",
+     "5.2",
+     "5.3",
+     "а"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 84,
+   "right_only_cells": 77,
+   "ink_pt": 96.6,
+   "left_only_ink_pt": 50.4,
+   "right_only_ink_pt": 46.2,
+   "bbox": [
+    328.68,
+    851.04,
+    337.68,
+    909.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o128",
+      "n_segments": 1,
+      "bbox": [
+       331.4,
+       870.24,
+       331.4,
+       872.88
+      ]
+     },
+     {
+      "object_id": "o837",
+      "n_segments": 2,
+      "bbox": [
+       318.92,
+       886.8,
+       375.8,
+       886.8
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.400.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 81,
+   "right_only_cells": 79,
+   "ink_pt": 96.0,
+   "left_only_ink_pt": 48.6,
+   "right_only_ink_pt": 47.4,
+   "bbox": [
+    790.68,
+    318.84,
+    800.28,
+    371.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o140",
+      "n_segments": 1,
+      "bbox": [
+       796.28,
+       351.61,
+       796.28,
+       354.49
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 80,
+   "right_only_cells": 80,
+   "ink_pt": 96.0,
+   "left_only_ink_pt": 48.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    328.68,
+    1224.84,
+    337.68,
+    1283.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o415",
+      "n_segments": 1,
+      "bbox": [
+       333.6,
+       1241.52,
+       333.6,
+       1244.4
+      ]
+     },
+     {
+      "object_id": "o1432",
+      "n_segments": 2,
+      "bbox": [
+       318.72,
+       1239.6,
+       375.84,
+       1296.48
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 8,
+   "right_only_cells": 141,
+   "ink_pt": 89.4,
+   "left_only_ink_pt": 4.8,
+   "right_only_ink_pt": 84.6,
+   "bbox": [
+    524.28,
+    408.84,
+    602.28,
+    447.84
+   ],
+   "text_overlap": 0.034,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o434",
+      "n_segments": 2,
+      "bbox": [
+       554.64,
+       431.52,
+       566.16,
+       432.24
+      ]
+     },
+     {
+      "object_id": "o435",
+      "n_segments": 1,
+      "bbox": [
+       560.88,
+       432.0,
+       562.56,
+       432.0
+      ]
+     },
+     {
+      "object_id": "o1677",
+      "n_segments": 1,
+      "bbox": [
+       532.8,
+       415.44,
+       532.8,
+       472.08
+      ]
+     }
+    ],
+    "nearby_text": [
+     "880",
+     "5.404.6",
+     "2",
+     "2",
+     "5.404.7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 49,
+   "right_only_cells": 99,
+   "ink_pt": 88.8,
+   "left_only_ink_pt": 29.4,
+   "right_only_ink_pt": 59.4,
+   "bbox": [
+    585.48,
+    863.64,
+    602.28,
+    915.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "2",
+     "2",
+     "5.",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 144,
+   "ink_pt": 86.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 86.4,
+   "bbox": [
+    633.48,
+    912.24,
+    692.28,
+    918.24
+   ],
+   "text_overlap": 0.472,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o467",
+      "n_segments": 2,
+      "bbox": [
+       639.12,
+       914.64,
+       689.52,
+       915.12
+      ]
+     },
+     {
+      "object_id": "o547",
+      "n_segments": 1,
+      "bbox": [
+       655.44,
+       914.64,
+       669.6,
+       914.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     ".2",
+     "МОП",
+     "1 120",
+     "1 120"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 72,
+   "right_only_cells": 72,
+   "ink_pt": 86.4,
+   "left_only_ink_pt": 43.2,
+   "right_only_ink_pt": 43.2,
+   "bbox": [
+    406.08,
+    1071.84,
+    428.28,
+    1112.64
+   ],
+   "text_overlap": 0.535,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1628",
+      "n_segments": 1,
+      "bbox": [
+       383.04,
+       1112.16,
+       439.68,
+       1112.16
+      ]
+     },
+     {
+      "object_id": "o1830",
+      "n_segments": 32,
+      "bbox": [
+       408.48,
+       1092.72,
+       425.52,
+       1109.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.399.2",
+     "5.399.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 22,
+   "right_only_cells": 117,
+   "ink_pt": 83.4,
+   "left_only_ink_pt": 13.2,
+   "right_only_ink_pt": 70.2,
+   "bbox": [
+    608.88,
+    777.24,
+    649.08,
+    792.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     ".4",
+     "МОП",
+     "5.407.5",
+     "5.",
+     "5.407.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 67,
+   "right_only_cells": 65,
+   "ink_pt": 79.2,
+   "left_only_ink_pt": 40.2,
+   "right_only_ink_pt": 39.0,
+   "bbox": [
+    790.68,
+    902.04,
+    800.28,
+    954.84
+   ],
+   "text_overlap": 0.159,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o138",
+      "n_segments": 1,
+      "bbox": [
+       796.27,
+       934.8,
+       796.27,
+       937.68
+      ]
+     },
+     {
+      "object_id": "o291",
+      "n_segments": 2,
+      "bbox": [
+       744.91,
+       933.6,
+       801.55,
+       933.6
+      ]
+     },
+     {
+      "object_id": "o865",
+      "n_segments": 15,
+      "bbox": [
+       715.63,
+       942.72,
+       792.19,
+       975.6
+      ]
+     }
+    ],
+    "nearby_text": [
+     "740",
+     "А",
+     "530",
+     "А",
+     "1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 104,
+   "right_only_cells": 28,
+   "ink_pt": 79.2,
+   "left_only_ink_pt": 62.4,
+   "right_only_ink_pt": 16.8,
+   "bbox": [
+    725.88,
+    1178.04,
+    760.68,
+    1213.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o471",
+      "n_segments": 2,
+      "bbox": [
+       672.43,
+       1205.76,
+       729.07,
+       1205.76
+      ]
+     },
+     {
+      "object_id": "o472",
+      "n_segments": 2,
+      "bbox": [
+       744.91,
+       1205.76,
+       801.55,
+       1205.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.396.3",
+     "5.396.9"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 67,
+   "right_only_cells": 60,
+   "ink_pt": 76.2,
+   "left_only_ink_pt": 40.2,
+   "right_only_ink_pt": 36.0,
+   "bbox": [
+    443.28,
+    1059.84,
+    471.48,
+    1094.64
+   ],
+   "text_overlap": 0.63,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o301",
+      "n_segments": 38,
+      "bbox": [
+       445.88,
+       1022.64,
+       462.68,
+       1091.52
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.399.3",
+     "5.399.2",
+     "5.399.5",
+     ".)",
+     "5.399.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 102,
+   "right_only_cells": 22,
+   "ink_pt": 74.4,
+   "left_only_ink_pt": 61.2,
+   "right_only_ink_pt": 13.2,
+   "bbox": [
+    622.08,
+    957.24,
+    718.08,
+    999.84
+   ],
+   "text_overlap": 0.444,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o153",
+      "n_segments": 1,
+      "bbox": [
+       651.31,
+       999.36,
+       651.31,
+       1007.76
+      ]
+     },
+     {
+      "object_id": "o154",
+      "n_segments": 1,
+      "bbox": [
+       651.31,
+       985.44,
+       651.31,
+       995.04
+      ]
+     },
+     {
+      "object_id": "o589",
+      "n_segments": 2,
+      "bbox": [
+       703.39,
+       950.16,
+       703.39,
+       1007.04
+      ]
+     },
+     {
+      "object_id": "o626",
+      "n_segments": 2,
+      "bbox": [
+       680.83,
+       980.4,
+       737.47,
+       980.4
+      ]
+     },
+     {
+      "object_id": "o627",
+      "n_segments": 2,
+      "bbox": [
+       672.19,
+       980.4,
+       673.87,
+       980.4
+      ]
+     }
+    ],
+    "nearby_text": [
+     "Вт",
+     ", 48",
+     "-2",
+     "В",
+     "Драйвер"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 28,
+   "right_only_cells": 79,
+   "ink_pt": 64.2,
+   "left_only_ink_pt": 16.8,
+   "right_only_ink_pt": 47.4,
+   "bbox": [
+    585.48,
+    910.44,
+    615.48,
+    957.24
+   ],
+   "text_overlap": 0.168,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o483",
+      "n_segments": 1,
+      "bbox": [
+       589.44,
+       926.64,
+       589.44,
+       953.52
+      ]
+     },
+     {
+      "object_id": "o1447",
+      "n_segments": 1,
+      "bbox": [
+       601.44,
+       950.16,
+       601.44,
+       1007.04
+      ]
+     },
+     {
+      "object_id": "o1604",
+      "n_segments": 1,
+      "bbox": [
+       591.6,
+       933.6,
+       593.04,
+       933.6
+      ]
+     }
+    ],
+    "nearby_text": [
+     "570",
+     "1 120",
+     "Лк",
+     "220/24",
+     "Драйвер"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 43,
+   "right_only_cells": 61,
+   "ink_pt": 62.4,
+   "left_only_ink_pt": 25.8,
+   "right_only_ink_pt": 36.6,
+   "bbox": [
+    719.28,
+    961.44,
+    761.88,
+    1004.04
+   ],
+   "text_overlap": 0.5,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1359",
+      "n_segments": 1,
+      "bbox": [
+       753.36,
+       980.4,
+       810.0,
+       980.4
+      ]
+     },
+     {
+      "object_id": "o1360",
+      "n_segments": 1,
+      "bbox": [
+       744.72,
+       980.4,
+       746.16,
+       980.4
+      ]
+     },
+     {
+      "object_id": "o1361",
+      "n_segments": 1,
+      "bbox": [
+       680.88,
+       980.4,
+       737.52,
+       980.4
+      ]
+     },
+     {
+      "object_id": "o1715",
+      "n_segments": 1,
+      "bbox": [
+       719.76,
+       994.56,
+       719.76,
+       1051.2
+      ]
+     },
+     {
+      "object_id": "o1820",
+      "n_segments": 15,
+      "bbox": [
+       715.68,
+       942.72,
+       792.24,
+       975.6
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.5",
+     "К",
+     "а",
+     "1 300",
+     "550"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 83,
+   "ink_pt": 49.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 49.8,
+   "bbox": [
+    742.08,
+    1307.04,
+    787.68,
+    1331.64
+   ],
+   "text_overlap": 0.337,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o384",
+      "n_segments": 1,
+      "bbox": [
+       764.64,
+       1319.76,
+       773.28,
+       1319.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.397.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 25,
+   "right_only_cells": 55,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 15.0,
+   "right_only_ink_pt": 33.0,
+   "bbox": [
+    687.48,
+    900.24,
+    711.48,
+    950.64
+   ],
+   "text_overlap": 0.225,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o467",
+      "n_segments": 2,
+      "bbox": [
+       639.12,
+       914.64,
+       689.52,
+       915.12
+      ]
+     },
+     {
+      "object_id": "o508",
+      "n_segments": 2,
+      "bbox": [
+       708.48,
+       880.56,
+       708.48,
+       922.32
+      ]
+     },
+     {
+      "object_id": "o546",
+      "n_segments": 2,
+      "bbox": [
+       695.28,
+       900.48,
+       708.48,
+       914.64
+      ]
+     },
+     {
+      "object_id": "o1321",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       941.76,
+       703.44,
+       943.2
+      ]
+     },
+     {
+      "object_id": "o1322",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       950.16,
+       703.44,
+       1007.04
+      ]
+     }
+    ],
+    "nearby_text": [
+     "620",
+     "1 120",
+     "570",
+     "2",
+     "1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 27,
+   "right_only_cells": 43,
+   "ink_pt": 42.0,
+   "left_only_ink_pt": 16.2,
+   "right_only_ink_pt": 25.8,
+   "bbox": [
+    692.88,
+    385.44,
+    721.08,
+    409.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o478",
+      "n_segments": 2,
+      "bbox": [
+       696.0,
+       395.28,
+       696.72,
+       406.56
+      ]
+     },
+     {
+      "object_id": "o479",
+      "n_segments": 2,
+      "bbox": [
+       696.24,
+       398.88,
+       696.24,
+       401.28
+      ]
+     },
+     {
+      "object_id": "o1308",
+      "n_segments": 1,
+      "bbox": [
+       703.44,
+       371.28,
+       703.44,
+       427.92
+      ]
+     },
+     {
+      "object_id": "o1705",
+      "n_segments": 1,
+      "bbox": [
+       719.76,
+       406.8,
+       719.76,
+       408.48
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.405.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 20,
+   "right_only_cells": 50,
+   "ink_pt": 42.0,
+   "left_only_ink_pt": 12.0,
+   "right_only_ink_pt": 30.0,
+   "bbox": [
+    805.68,
+    592.44,
+    820.68,
+    606.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "-2",
+     "а",
+     "эт",
+     ".)",
+     "-2 (8-15"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 67,
+   "ink_pt": 40.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 40.2,
+   "bbox": [
+    657.48,
+    360.24,
+    702.48,
+    365.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o302",
+      "n_segments": 1,
+      "bbox": [
+       664.08,
+       352.32,
+       664.08,
+       360.96
+      ]
+     },
+     {
+      "object_id": "o505",
+      "n_segments": 1,
+      "bbox": [
+       659.76,
+       362.88,
+       699.36,
+       362.88
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.405.2",
+     "5.405.3",
+     "5.405.6"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 67,
+   "ink_pt": 40.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 40.2,
+   "bbox": [
+    655.68,
+    683.04,
+    700.68,
+    688.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o498",
+      "n_segments": 1,
+      "bbox": [
+       658.32,
+       685.2,
+       697.92,
+       685.2
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.407.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 11,
+   "right_only_cells": 56,
+   "ink_pt": 40.2,
+   "left_only_ink_pt": 6.6,
+   "right_only_ink_pt": 33.6,
+   "bbox": [
+    799.68,
+    1240.44,
+    812.88,
+    1253.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.396.9"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 12,
+   "right_only_cells": 54,
+   "ink_pt": 39.6,
+   "left_only_ink_pt": 7.2,
+   "right_only_ink_pt": 32.4,
+   "bbox": [
+    307.68,
+    472.44,
+    319.68,
+    486.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1497",
+      "n_segments": 1,
+      "bbox": [
+       318.72,
+       443.76,
+       318.72,
+       500.4
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 300"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 66,
+   "right_only_cells": 0,
+   "ink_pt": 39.6,
+   "left_only_ink_pt": 39.6,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    467.28,
+    641.04,
+    477.48,
+    678.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.402.3",
+     "5.402.2",
+     "5.402.4",
+     "3 140"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 10,
+   "right_only_cells": 56,
+   "ink_pt": 39.6,
+   "left_only_ink_pt": 6.0,
+   "right_only_ink_pt": 33.6,
+   "bbox": [
+    604.08,
+    905.64,
+    632.88,
+    921.84
+   ],
+   "text_overlap": 0.197,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o458",
+      "n_segments": 50,
+      "bbox": [
+       626.16,
+       878.4,
+       660.96,
+       911.52
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "5.",
+     "1 120",
+     "МОП",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 19,
+   "right_only_cells": 47,
+   "ink_pt": 39.6,
+   "left_only_ink_pt": 11.4,
+   "right_only_ink_pt": 28.2,
+   "bbox": [
+    798.48,
+    1191.84,
+    812.88,
+    1206.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o281",
+      "n_segments": 7,
+      "bbox": [
+       808.56,
+       1202.16,
+       810.0,
+       1213.92
+      ]
+     },
+     {
+      "object_id": "o1776",
+      "n_segments": 1,
+      "bbox": [
+       744.72,
+       1205.76,
+       801.6,
+       1205.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.396.9"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 18,
+   "right_only_cells": 46,
+   "ink_pt": 38.4,
+   "left_only_ink_pt": 10.8,
+   "right_only_ink_pt": 27.6,
+   "bbox": [
+    806.28,
+    498.84,
+    820.68,
+    513.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o273",
+      "n_segments": 6,
+      "bbox": [
+       816.96,
+       508.32,
+       818.64,
+       517.92
+      ]
+     },
+     {
+      "object_id": "o1394",
+      "n_segments": 1,
+      "bbox": [
+       753.36,
+       512.64,
+       810.0,
+       512.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     ".)",
+     "эт",
+     "-1 (2-7",
+     "а",
+     "5.2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 63,
+   "ink_pt": 37.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 37.8,
+   "bbox": [
+    433.68,
+    1253.64,
+    439.08,
+    1299.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o489",
+      "n_segments": 1,
+      "bbox": [
+       436.08,
+       1256.16,
+       436.08,
+       1296.0
+      ]
+     },
+     {
+      "object_id": "o1643",
+      "n_segments": 1,
+      "bbox": [
+       383.04,
+       1268.16,
+       439.68,
+       1268.16
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.398.6",
+     "5.398.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 10,
+   "right_only_cells": 52,
+   "ink_pt": 37.2,
+   "left_only_ink_pt": 6.0,
+   "right_only_ink_pt": 31.2,
+   "bbox": [
+    307.68,
+    520.44,
+    319.68,
+    533.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1400",
+      "n_segments": 2,
+      "bbox": [
+       318.72,
+       512.64,
+       375.84,
+       572.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 300"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 10,
+   "right_only_cells": 52,
+   "ink_pt": 37.2,
+   "left_only_ink_pt": 6.0,
+   "right_only_ink_pt": 31.2,
+   "bbox": [
+    307.68,
+    1271.64,
+    319.68,
+    1284.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1432",
+      "n_segments": 2,
+      "bbox": [
+       318.72,
+       1239.6,
+       375.84,
+       1296.48
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2 600",
+     "2 200"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 60,
+   "ink_pt": 36.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 36.0,
+   "bbox": [
+    652.08,
+    432.84,
+    657.48,
+    479.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o437",
+      "n_segments": 4,
+      "bbox": [
+       600.0,
+       450.24,
+       656.88,
+       461.76
+      ]
+     },
+     {
+      "object_id": "o476",
+      "n_segments": 1,
+      "bbox": [
+       654.48,
+       435.36,
+       654.48,
+       476.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.405.5",
+     "5.405.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 15,
+   "right_only_cells": 43,
+   "ink_pt": 34.8,
+   "left_only_ink_pt": 9.0,
+   "right_only_ink_pt": 25.8,
+   "bbox": [
+    307.68,
+    1084.44,
+    322.08,
+    1097.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1512",
+      "n_segments": 1,
+      "bbox": [
+       318.72,
+       1086.48,
+       318.72,
+       1087.92
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 100"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 57,
+   "ink_pt": 34.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 34.2,
+   "bbox": [
+    505.08,
+    374.64,
+    550.08,
+    380.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o503",
+      "n_segments": 1,
+      "bbox": [
+       507.36,
+       376.8,
+       546.96,
+       376.8
+      ]
+     },
+     {
+      "object_id": "o1675",
+      "n_segments": 1,
+      "bbox": [
+       532.8,
+       343.2,
+       532.8,
+       399.84
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.6",
+     "5.404.2",
+     "5.404.7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 57,
+   "ink_pt": 34.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 34.2,
+   "bbox": [
+    470.88,
+    1112.04,
+    476.28,
+    1151.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o495",
+      "n_segments": 1,
+      "bbox": [
+       473.52,
+       1114.32,
+       473.52,
+       1153.92
+      ]
+     },
+     {
+      "object_id": "o1630",
+      "n_segments": 1,
+      "bbox": [
+       455.28,
+       1112.16,
+       512.16,
+       1112.16
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.399.4",
+     "5.399.6",
+     "3 140",
+     "5.399.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 56,
+   "right_only_cells": 0,
+   "ink_pt": 33.6,
+   "left_only_ink_pt": 33.6,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    670.08,
+    866.64,
+    691.68,
+    903.24
+   ],
+   "text_overlap": 0.054,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o194",
+      "n_segments": 15,
+      "bbox": [
+       658.04,
+       858.96,
+       671.95,
+       873.12
+      ]
+     },
+     {
+      "object_id": "o195",
+      "n_segments": 15,
+      "bbox": [
+       658.03,
+       897.6,
+       671.95,
+       911.52
+      ]
+     },
+     {
+      "object_id": "o843",
+      "n_segments": 2,
+      "bbox": [
+       672.19,
+       886.8,
+       673.87,
+       886.8
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "5.7-1",
+     "2",
+     "2",
+     "А"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 7,
+   "right_only_cells": 47,
+   "ink_pt": 32.4,
+   "left_only_ink_pt": 4.2,
+   "right_only_ink_pt": 28.2,
+   "bbox": [
+    523.68,
+    245.04,
+    537.48,
+    258.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1672",
+      "n_segments": 25,
+      "bbox": [
+       521.52,
+       200.4,
+       544.08,
+       255.12
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 14,
+   "right_only_cells": 40,
+   "ink_pt": 32.4,
+   "left_only_ink_pt": 8.4,
+   "right_only_ink_pt": 24.0,
+   "bbox": [
+    807.48,
+    452.04,
+    820.68,
+    466.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1796",
+      "n_segments": 1,
+      "bbox": [
+       808.56,
+       457.44,
+       810.0,
+       457.44
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 11,
+   "right_only_cells": 43,
+   "ink_pt": 32.4,
+   "left_only_ink_pt": 6.6,
+   "right_only_ink_pt": 25.8,
+   "bbox": [
+    307.68,
+    897.24,
+    319.68,
+    910.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1508",
+      "n_segments": 1,
+      "bbox": [
+       318.72,
+       877.92,
+       318.72,
+       934.56
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 200",
+     "5.400.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 2,
+   "right_only_cells": 51,
+   "ink_pt": 31.8,
+   "left_only_ink_pt": 1.2,
+   "right_only_ink_pt": 30.6,
+   "bbox": [
+    547.08,
+    437.04,
+    568.68,
+    458.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "2",
+     "880",
+     "5.404.7",
+     "5.404.6"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 53,
+   "right_only_cells": 0,
+   "ink_pt": 31.8,
+   "left_only_ink_pt": 31.8,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    604.08,
+    886.44,
+    629.88,
+    905.04
+   ],
+   "text_overlap": 0.585,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "МОП",
+     "5.",
+     ".2",
+     "100",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 53,
+   "ink_pt": 31.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 31.8,
+   "bbox": [
+    463.68,
+    929.64,
+    469.08,
+    969.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1601",
+      "n_segments": 1,
+      "bbox": [
+       455.28,
+       933.6,
+       512.16,
+       933.6
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.400.4",
+     "5.400.2",
+     "5.400.6",
+     "а",
+     "5.2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 51,
+   "ink_pt": 30.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 30.6,
+   "bbox": [
+    463.08,
+    410.04,
+    499.08,
+    434.04
+   ],
+   "text_overlap": 0.549,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.8",
+     "5.404.7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 11,
+   "right_only_cells": 40,
+   "ink_pt": 30.6,
+   "left_only_ink_pt": 6.6,
+   "right_only_ink_pt": 24.0,
+   "bbox": [
+    307.68,
+    1037.04,
+    319.68,
+    1050.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1511",
+      "n_segments": 1,
+      "bbox": [
+       318.72,
+       1022.64,
+       318.72,
+       1079.28
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "3 100",
+     "К",
+     "5.7-2 (8-15",
+     "5.7-1 (2-7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 51,
+   "ink_pt": 30.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 30.6,
+   "bbox": [
+    484.68,
+    1070.64,
+    520.08,
+    1076.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.399.5",
+     "3 140",
+     "5.399.3",
+     "-2",
+     "5.399.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 10,
+   "right_only_cells": 40,
+   "ink_pt": 30.0,
+   "left_only_ink_pt": 6.0,
+   "right_only_ink_pt": 24.0,
+   "bbox": [
+    307.68,
+    849.84,
+    319.68,
+    863.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1506",
+      "n_segments": 1,
+      "bbox": [
+       318.72,
+       805.44,
+       318.72,
+       862.08
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.400.1",
+     "3 200"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 50,
+   "ink_pt": 30.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 30.0,
+   "bbox": [
+    650.88,
+    1184.04,
+    685.68,
+    1189.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o475",
+      "n_segments": 1,
+      "bbox": [
+       651.36,
+       1186.32,
+       682.56,
+       1186.32
+      ]
+     }
+    ],
+    "nearby_text": [
+     "-2 (8-15",
+     "эт",
+     ".)",
+     "эт",
+     "-1 (2-7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 12,
+   "right_only_cells": 37,
+   "ink_pt": 29.4,
+   "left_only_ink_pt": 7.2,
+   "right_only_ink_pt": 22.2,
+   "bbox": [
+    808.68,
+    639.84,
+    820.68,
+    653.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o278",
+      "n_segments": 6,
+      "bbox": [
+       817.2,
+       634.32,
+       873.84,
+       643.68
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 49,
+   "ink_pt": 29.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 29.4,
+   "bbox": [
+    607.68,
+    851.04,
+    623.88,
+    866.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "100",
+     "2",
+     "МОП",
+     "5."
+    ]
+   }
+  },
+  {
+   "left_only_cells": 16,
+   "right_only_cells": 33,
+   "ink_pt": 29.4,
+   "left_only_ink_pt": 9.6,
+   "right_only_ink_pt": 19.8,
+   "bbox": [
+    806.88,
+    1037.04,
+    820.68,
+    1050.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     ".)",
+     "эт",
+     "-3 (8-15",
+     ".)",
+     "эт"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 48,
+   "ink_pt": 28.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 28.8,
+   "bbox": [
+    446.28,
+    368.64,
+    451.68,
+    402.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.8",
+     "5.404.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 16,
+   "right_only_cells": 31,
+   "ink_pt": 28.2,
+   "left_only_ink_pt": 9.6,
+   "right_only_ink_pt": 18.6,
+   "bbox": [
+    807.48,
+    990.24,
+    820.68,
+    1004.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o279",
+      "n_segments": 5,
+      "bbox": [
+       817.44,
+       1000.08,
+       817.68,
+       1009.68
+      ]
+     }
+    ],
+    "nearby_text": [
+     ".)",
+     ".)",
+     "эт",
+     "эт",
+     "-3 (8-15"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 46,
+   "ink_pt": 27.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 27.6,
+   "bbox": [
+    587.28,
+    722.04,
+    592.68,
+    764.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o484",
+      "n_segments": 1,
+      "bbox": [
+       589.44,
+       723.84,
+       589.44,
+       763.44
+      ]
+     },
+     {
+      "object_id": "o1592",
+      "n_segments": 1,
+      "bbox": [
+       591.6,
+       740.88,
+       593.04,
+       740.88
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.407.5",
+     "2",
+     "5.407.4",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 5,
+   "right_only_cells": 38,
+   "ink_pt": 25.8,
+   "left_only_ink_pt": 3.0,
+   "right_only_ink_pt": 22.8,
+   "bbox": [
+    326.28,
+    662.64,
+    340.08,
+    675.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1474",
+      "n_segments": 1,
+      "bbox": [
+       338.64,
+       660.72,
+       338.64,
+       717.36
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.402.1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 42,
+   "ink_pt": 25.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 25.2,
+   "bbox": [
+    607.68,
+    707.04,
+    644.28,
+    712.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o293",
+      "n_segments": 35,
+      "bbox": [
+       592.56,
+       692.88,
+       648.24,
+       709.92
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.407.4",
+     "5.407.5",
+     "5.407.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 5,
+   "right_only_cells": 36,
+   "ink_pt": 24.6,
+   "left_only_ink_pt": 3.0,
+   "right_only_ink_pt": 21.6,
+   "bbox": [
+    326.28,
+    711.24,
+    340.08,
+    723.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1474",
+      "n_segments": 1,
+      "bbox": [
+       338.64,
+       660.72,
+       338.64,
+       717.36
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 41,
+   "ink_pt": 24.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 24.6,
+   "bbox": [
+    672.48,
+    1131.84,
+    677.88,
+    1164.24
+   ],
+   "text_overlap": 0.463,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o494",
+      "n_segments": 37,
+      "bbox": [
+       571.68,
+       1145.52,
+       686.64,
+       1159.68
+      ]
+     }
+    ],
+    "nearby_text": [
+     "Вт",
+     ", 48",
+     "Драйвер",
+     ".)",
+     "эт"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 41,
+   "ink_pt": 24.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 24.6,
+   "bbox": [
+    428.88,
+    1332.24,
+    461.28,
+    1337.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1292",
+      "n_segments": 1,
+      "bbox": [
+       450.48,
+       1312.08,
+       450.48,
+       1368.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.398.8",
+     "5.398.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 40,
+   "ink_pt": 24.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 24.0,
+   "bbox": [
+    437.28,
+    378.24,
+    443.28,
+    395.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o470",
+      "n_segments": 2,
+      "bbox": [
+       439.68,
+       380.88,
+       440.4,
+       392.16
+      ]
+     },
+     {
+      "object_id": "o471",
+      "n_segments": 2,
+      "bbox": [
+       440.16,
+       386.16,
+       440.16,
+       388.8
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.8",
+     "5.404.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 38,
+   "ink_pt": 22.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 22.8,
+   "bbox": [
+    499.68,
+    408.84,
+    525.48,
+    434.04
+   ],
+   "text_overlap": 0.421,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.7",
+     "5.404.8",
+     "5.404.6",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 21,
+   "right_only_cells": 17,
+   "ink_pt": 22.8,
+   "left_only_ink_pt": 12.6,
+   "right_only_ink_pt": 10.2,
+   "bbox": [
+    484.08,
+    962.04,
+    505.68,
+    980.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o877",
+      "n_segments": 32,
+      "bbox": [
+       480.44,
+       978.96,
+       497.24,
+       996.0
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.400.6",
+     "3 140",
+     "5.400.4",
+     "5.6-1-1",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 15,
+   "right_only_cells": 22,
+   "ink_pt": 22.2,
+   "left_only_ink_pt": 9.0,
+   "right_only_ink_pt": 13.2,
+   "bbox": [
+    572.88,
+    1460.04,
+    583.68,
+    1473.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o285",
+      "n_segments": 2,
+      "bbox": [
+       574.08,
+       1470.48,
+       575.76,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1700",
+      "n_segments": 1,
+      "bbox": [
+       582.48,
+       1428.72,
+       582.48,
+       1485.36
+      ]
+     }
+    ],
+    "nearby_text": [
+     "1 750",
+     "16 300"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 36,
+   "ink_pt": 21.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 21.6,
+   "bbox": [
+    617.28,
+    715.44,
+    632.88,
+    721.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": [
+    611.88,
+    674.64,
+    632.88,
+    680.04
+   ],
+   "move_similarity": 0.992,
+   "change_type": "POSITION_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o472",
+      "n_segments": 2,
+      "bbox": [
+       619.68,
+       717.6,
+       631.2,
+       718.32
+      ]
+     },
+     {
+      "object_id": "o473",
+      "n_segments": 1,
+      "bbox": [
+       625.2,
+       717.84,
+       627.6,
+       717.84
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.407.4",
+     "5.407.5",
+     "5.407.3"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 3,
+   "right_only_cells": 33,
+   "ink_pt": 21.6,
+   "left_only_ink_pt": 1.8,
+   "right_only_ink_pt": 19.8,
+   "bbox": [
+    525.48,
+    1461.84,
+    538.68,
+    1473.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1688",
+      "n_segments": 1,
+      "bbox": [
+       532.8,
+       1428.72,
+       532.8,
+       1485.36
+      ]
+     }
+    ],
+    "nearby_text": [
+     "1 750"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 35,
+   "ink_pt": 21.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 21.0,
+   "bbox": [
+    503.88,
+    932.64,
+    529.08,
+    962.04
+   ],
+   "text_overlap": 0.486,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1601",
+      "n_segments": 1,
+      "bbox": [
+       455.28,
+       933.6,
+       512.16,
+       933.6
+      ]
+     },
+     {
+      "object_id": "o1602",
+      "n_segments": 1,
+      "bbox": [
+       519.12,
+       933.6,
+       520.56,
+       933.6
+      ]
+     },
+     {
+      "object_id": "o1603",
+      "n_segments": 1,
+      "bbox": [
+       527.76,
+       933.6,
+       584.4,
+       933.6
+      ]
+     }
+    ],
+    "nearby_text": [
+     "3 140",
+     "5.400.4",
+     "100",
+     "5.400.6",
+     "Лк"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 28,
+   "ink_pt": 16.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 16.8,
+   "bbox": [
+    518.88,
+    365.64,
+    533.88,
+    371.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": [
+    484.08,
+    892.44,
+    504.48,
+    897.84
+   ],
+   "move_similarity": 0.903,
+   "change_type": "POSITION_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o504",
+      "n_segments": 2,
+      "bbox": [
+       524.88,
+       368.4,
+       584.4,
+       369.6
+      ]
+     },
+     {
+      "object_id": "o1675",
+      "n_segments": 1,
+      "bbox": [
+       532.8,
+       343.2,
+       532.8,
+       399.84
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.2",
+     "5.404.6"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 28,
+   "ink_pt": 16.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 16.8,
+   "bbox": [
+    440.88,
+    408.84,
+    465.48,
+    423.24
+   ],
+   "text_overlap": 0.143,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.8"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 28,
+   "right_only_cells": 0,
+   "ink_pt": 16.8,
+   "left_only_ink_pt": 16.8,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    481.08,
+    1148.64,
+    502.68,
+    1154.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.399.6",
+     "3 140",
+     "5.399.4",
+     "5.6-1-1",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 28,
+   "right_only_cells": 0,
+   "ink_pt": 16.8,
+   "left_only_ink_pt": 16.8,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    651.48,
+    1299.24,
+    673.08,
+    1304.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.397.7",
+     "5.397.5",
+     "5.397.8"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 27,
+   "right_only_cells": 0,
+   "ink_pt": 16.2,
+   "left_only_ink_pt": 16.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    607.08,
+    530.04,
+    628.08,
+    535.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": [
+    584.88,
+    786.84,
+    602.28,
+    792.24
+   ],
+   "move_similarity": 0.998,
+   "change_type": "POSITION_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.406.5",
+     "5.406.3",
+     "К",
+     "К",
+     "А"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 27,
+   "right_only_cells": 0,
+   "ink_pt": 16.2,
+   "left_only_ink_pt": 16.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    611.88,
+    674.64,
+    632.88,
+    680.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": [
+    617.28,
+    715.44,
+    632.88,
+    721.44
+   ],
+   "move_similarity": 0.992,
+   "change_type": "POSITION_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.407.6",
+     "5.407.4",
+     "К",
+     "5.7-2 (",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 27,
+   "right_only_cells": 0,
+   "ink_pt": 16.2,
+   "left_only_ink_pt": 16.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    613.08,
+    1119.24,
+    634.08,
+    1124.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.396.8",
+     "Драйвер",
+     "5.396.6",
+     "220/24",
+     "В"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 27,
+   "right_only_cells": 0,
+   "ink_pt": 16.2,
+   "left_only_ink_pt": 16.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    476.28,
+    1241.04,
+    497.28,
+    1246.44
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o107",
+      "n_segments": 3,
+      "bbox": [
+       463.87,
+       1241.27,
+       520.51,
+       1250.15
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.398.7",
+     "5.398.6",
+     "3 140",
+     "880"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 27,
+   "right_only_cells": 0,
+   "ink_pt": 16.2,
+   "left_only_ink_pt": 16.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    609.48,
+    1299.24,
+    630.48,
+    1304.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.397.5",
+     "5.397.8",
+     "388",
+     "5.397.7"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 26,
+   "right_only_cells": 0,
+   "ink_pt": 15.6,
+   "left_only_ink_pt": 15.6,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    484.08,
+    892.44,
+    504.48,
+    897.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": [
+    518.88,
+    365.64,
+    533.88,
+    371.64
+   ],
+   "move_similarity": 0.903,
+   "change_type": "POSITION_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.400.5",
+     "3 140",
+     "5.400.4",
+     "К",
+     "5.6-1-1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 25,
+   "ink_pt": 15.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 15.0,
+   "bbox": [
+    615.48,
+    408.84,
+    634.68,
+    422.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.405.6",
+     "5.405.5",
+     "880",
+     "5.404.6",
+     "5.405.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 23,
+   "right_only_cells": 0,
+   "ink_pt": 13.8,
+   "left_only_ink_pt": 13.8,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    596.88,
+    566.64,
+    618.48,
+    572.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.406.3",
+     "5.406.4",
+     "А",
+     "2",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 22,
+   "ink_pt": 13.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 13.2,
+   "bbox": [
+    657.48,
+    920.64,
+    671.88,
+    927.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o468",
+      "n_segments": 2,
+      "bbox": [
+       657.6,
+       923.04,
+       668.88,
+       924.0
+      ]
+     },
+     {
+      "object_id": "o469",
+      "n_segments": 1,
+      "bbox": [
+       664.56,
+       923.52,
+       665.28,
+       923.52
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "1 120",
+     "1 120",
+     ".2",
+     "МОП"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 22,
+   "right_only_cells": 0,
+   "ink_pt": 13.2,
+   "left_only_ink_pt": 13.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    647.88,
+    1194.24,
+    653.28,
+    1215.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o469",
+      "n_segments": 2,
+      "bbox": [
+       600.19,
+       1205.76,
+       656.83,
+       1205.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.396.7",
+     "5.6-1-2",
+     "К",
+     "В",
+     "220/24"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 11,
+   "right_only_cells": 11,
+   "ink_pt": 13.2,
+   "left_only_ink_pt": 6.6,
+   "right_only_ink_pt": 6.6,
+   "bbox": [
+    527.28,
+    1267.44,
+    545.28,
+    1278.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o451",
+      "n_segments": 3,
+      "bbox": [
+       532.32,
+       1211.52,
+       533.28,
+       1268.16
+      ]
+     },
+     {
+      "object_id": "o1647",
+      "n_segments": 2,
+      "bbox": [
+       527.76,
+       1211.52,
+       584.4,
+       1268.16
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "880",
+     "388",
+     "774",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 21,
+   "ink_pt": 12.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 12.6,
+   "bbox": [
+    584.88,
+    786.84,
+    602.28,
+    792.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": [
+    607.08,
+    530.04,
+    628.08,
+    535.44
+   ],
+   "move_similarity": 0.998,
+   "change_type": "POSITION_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.",
+     "2",
+     "МОП",
+     "5.407.5",
+     ".4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 10,
+   "right_only_cells": 10,
+   "ink_pt": 12.0,
+   "left_only_ink_pt": 6.0,
+   "right_only_ink_pt": 6.0,
+   "bbox": [
+    636.48,
+    866.64,
+    653.28,
+    881.04
+   ],
+   "text_overlap": 0.55,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o458",
+      "n_segments": 50,
+      "bbox": [
+       626.16,
+       878.4,
+       660.96,
+       911.52
+      ]
+     },
+     {
+      "object_id": "o460",
+      "n_segments": 1,
+      "bbox": [
+       644.64,
+       864.24,
+       644.64,
+       872.64
+      ]
+     }
+    ],
+    "nearby_text": [
+     "100",
+     "Лк",
+     "2",
+     "МОП",
+     "5."
+    ]
+   }
+  },
+  {
+   "left_only_cells": 20,
+   "right_only_cells": 0,
+   "ink_pt": 12.0,
+   "left_only_ink_pt": 12.0,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    720.48,
+    938.64,
+    736.08,
+    960.24
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o865",
+      "n_segments": 15,
+      "bbox": [
+       715.63,
+       942.72,
+       792.19,
+       975.6
+      ]
+     }
+    ],
+    "nearby_text": [
+     "1",
+     "550",
+     "А",
+     "1",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 6,
+   "right_only_cells": 13,
+   "ink_pt": 11.4,
+   "left_only_ink_pt": 3.6,
+   "right_only_ink_pt": 7.8,
+   "bbox": [
+    539.28,
+    426.84,
+    553.08,
+    435.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.404.7",
+     "2",
+     "5.404.6",
+     "2",
+     "880"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 19,
+   "ink_pt": 11.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 11.4,
+   "bbox": [
+    585.48,
+    843.84,
+    602.88,
+    863.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o461",
+      "n_segments": 1,
+      "bbox": [
+       596.64,
+       850.08,
+       605.04,
+       850.08
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.",
+     "2",
+     "МОП",
+     "2",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 19,
+   "ink_pt": 11.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 11.4,
+   "bbox": [
+    438.48,
+    994.44,
+    457.68,
+    999.84
+   ],
+   "text_overlap": 0.474,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o1283",
+      "n_segments": 1,
+      "bbox": [
+       450.48,
+       950.16,
+       450.48,
+       1007.04
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "К",
+     "5.2",
+     "5.5",
+     "5.400.2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 18,
+   "ink_pt": 10.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 10.8,
+   "bbox": [
+    632.28,
+    422.64,
+    640.08,
+    434.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "5.405.5",
+     "5.405.6",
+     "5.405.4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 13,
+   "right_only_cells": 5,
+   "ink_pt": 10.8,
+   "left_only_ink_pt": 7.8,
+   "right_only_ink_pt": 3.0,
+   "bbox": [
+    547.08,
+    860.04,
+    562.08,
+    873.24
+   ],
+   "text_overlap": 0.5,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     },
+     {
+      "object_id": "o208",
+      "n_segments": 2,
+      "bbox": [
+       531.56,
+       847.68,
+       558.92,
+       862.32
+      ]
+     },
+     {
+      "object_id": "o209",
+      "n_segments": 1,
+      "bbox": [
+       558.92,
+       867.6,
+       558.92,
+       881.76
+      ]
+     }
+    ],
+    "nearby_text": [
+     "Лк",
+     "100",
+     "5.6-1-1",
+     "а",
+     "5.6"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 17,
+   "right_only_cells": 0,
+   "ink_pt": 10.2,
+   "left_only_ink_pt": 10.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    641.28,
+    795.24,
+    658.08,
+    801.84
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     ".4",
+     "МОП",
+     "5.",
+     "К"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 16,
+   "right_only_cells": 0,
+   "ink_pt": 9.6,
+   "left_only_ink_pt": 9.6,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    794.28,
+    755.64,
+    802.68,
+    764.04
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "К",
+     "550",
+     "5.5-2",
+     "1"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 15,
+   "ink_pt": 9.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 9.0,
+   "bbox": [
+    574.68,
+    903.84,
+    580.08,
+    917.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "570",
+     "2",
+     "Лк",
+     "2"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 14,
+   "right_only_cells": 0,
+   "ink_pt": 8.4,
+   "left_only_ink_pt": 8.4,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    529.08,
+    763.44,
+    546.48,
+    772.44
+   ],
+   "text_overlap": 0.357,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 18731,
+      "bbox": [
+       302.12,
+       200.41,
+       887.23,
+       1485.35
+      ]
+     }
+    ],
+    "nearby_text": [
+     "МОП",
+     "5.",
+     ".3",
+     "5.6-1-1",
+     "3 140"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 14,
+   "ink_pt": 8.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 8.4,
+   "bbox": [
+    530.88,
+    911.64,
+    546.48,
+    923.64
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": false,
+   "border_resolution": null,
+   "moved_with": null,
+   "change_type": "ADDED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o271",
+      "n_segments": 19204,
+      "bbox": [
+       162.96,
+       200.4,
+       882.48,
+       1470.72
+      ]
+     },
+     {
+      "object_id": "o446",
+      "n_segments": 3,
+      "bbox": [
+       532.32,
+       849.6,
+       533.28,
+       918.0
+      ]
+     },
+     {
+      "object_id": "o447",
+      "n_segments": 2,
+      "bbox": [
+       532.8,
+       910.08,
+       532.8,
+       914.88
+      ]
+     }
+    ],
+    "nearby_text": [
+     "2",
+     "100",
+     "Лк",
+     "2",
+     "3 140"
+    ]
+   }
+  }
+ ],
+ "suppressed_regions": [
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 349,
+   "ink_pt": 209.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 209.4,
+   "bbox": [
+    1219.08,
+    71.04,
+    1267.08,
+    141.24
+   ],
+   "text_overlap": 0.269,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 299,
+   "ink_pt": 179.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 179.4,
+   "bbox": [
+    1728.48,
+    262.44,
+    1799.28,
+    277.44
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 191,
+   "ink_pt": 114.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 114.6,
+   "bbox": [
+    1085.88,
+    947.64,
+    1148.28,
+    1010.04
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 190,
+   "ink_pt": 114.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 114.0,
+   "bbox": [
+    1085.88,
+    875.64,
+    1148.28,
+    937.44
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 190,
+   "ink_pt": 114.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 114.0,
+   "bbox": [
+    1085.88,
+    1237.44,
+    1148.28,
+    1299.24
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 178,
+   "ink_pt": 106.8,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 106.8,
+   "bbox": [
+    1285.68,
+    570.24,
+    1356.48,
+    592.44
+   ],
+   "text_overlap": 0.388,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 176,
+   "ink_pt": 105.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 105.6,
+   "bbox": [
+    1108.68,
+    71.04,
+    1136.28,
+    141.24
+   ],
+   "text_overlap": 0.193,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 176,
+   "ink_pt": 105.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 105.6,
+   "bbox": [
+    1350.48,
+    71.04,
+    1378.68,
+    141.24
+   ],
+   "text_overlap": 0.284,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 176,
+   "ink_pt": 105.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 105.6,
+   "bbox": [
+    1501.68,
+    71.04,
+    1529.88,
+    141.24
+   ],
+   "text_overlap": 0.261,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 175,
+   "ink_pt": 105.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 105.0,
+   "bbox": [
+    1603.68,
+    71.04,
+    1631.88,
+    141.24
+   ],
+   "text_overlap": 0.263,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 51,
+   "right_only_cells": 111,
+   "ink_pt": 97.2,
+   "left_only_ink_pt": 30.6,
+   "right_only_ink_pt": 66.6,
+   "bbox": [
+    751.08,
+    895.44,
+    836.28,
+    910.44
+   ],
+   "text_overlap": 0.975,
+   "suppressed_by": "TEXT_REGION"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 162,
+   "ink_pt": 97.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 97.2,
+   "bbox": [
+    1695.48,
+    198.24,
+    1723.08,
+    258.24
+   ],
+   "text_overlap": 0.049,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 137,
+   "ink_pt": 82.2,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 82.2,
+   "bbox": [
+    665.88,
+    832.44,
+    721.08,
+    845.64
+   ],
+   "text_overlap": 0.796,
+   "suppressed_by": "TEXT_REGION"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 119,
+   "ink_pt": 71.4,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 71.4,
+   "bbox": [
+    1801.08,
+    262.44,
+    1831.68,
+    277.44
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1120.08,
+    151.44,
+    1125.48,
+    213.84
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1362.48,
+    151.44,
+    1367.88,
+    213.84
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1513.08,
+    151.44,
+    1518.48,
+    213.84
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1728.48,
+    367.44,
+    1790.88,
+    372.84
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1120.08,
+    368.64,
+    1125.48,
+    431.04
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1120.08,
+    585.84,
+    1125.48,
+    648.24
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1120.08,
+    1092.24,
+    1125.48,
+    1154.64
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1120.08,
+    1164.84,
+    1125.48,
+    1227.24
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1728.48,
+    1173.84,
+    1790.88,
+    1179.24
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1728.48,
+    1203.24,
+    1790.88,
+    1208.64
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1736.88,
+    1238.64,
+    1799.28,
+    1244.04
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1728.48,
+    1265.64,
+    1790.88,
+    1271.04
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1120.08,
+    1309.44,
+    1125.48,
+    1371.84
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1736.88,
+    1437.24,
+    1799.28,
+    1442.64
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1728.48,
+    1445.64,
+    1790.88,
+    1451.04
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 96,
+   "ink_pt": 57.6,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.6,
+   "bbox": [
+    1120.08,
+    1526.64,
+    1125.48,
+    1589.04
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1120.08,
+    296.64,
+    1125.48,
+    358.44
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1362.48,
+    296.64,
+    1367.88,
+    358.44
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1120.08,
+    658.44,
+    1125.48,
+    720.24
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1230.48,
+    658.44,
+    1235.88,
+    720.24
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1120.08,
+    803.04,
+    1125.48,
+    864.84
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1294.68,
+    1173.84,
+    1356.48,
+    1179.24
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1444.08,
+    1353.84,
+    1449.48,
+    1415.64
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1493.88,
+    1353.84,
+    1499.28,
+    1415.64
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1631.28,
+    1353.84,
+    1636.68,
+    1415.64
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1120.08,
+    1454.64,
+    1125.48,
+    1516.44
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 95,
+   "ink_pt": 57.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 57.0,
+   "bbox": [
+    1230.48,
+    1454.64,
+    1235.88,
+    1516.44
+   ],
+   "text_overlap": 0.0,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 12,
+   "right_only_cells": 80,
+   "ink_pt": 55.2,
+   "left_only_ink_pt": 7.2,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    603.48,
+    866.64,
+    628.68,
+    884.04
+   ],
+   "text_overlap": 0.663,
+   "suppressed_by": "TEXT_REGION"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1288.68,
+    326.04,
+    1310.88,
+    348.24
+   ],
+   "text_overlap": 0.5,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1375.68,
+    326.04,
+    1397.88,
+    348.24
+   ],
+   "text_overlap": 0.5,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1453.68,
+    326.04,
+    1476.48,
+    348.24
+   ],
+   "text_overlap": 0.5,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1534.08,
+    326.04,
+    1556.88,
+    348.24
+   ],
+   "text_overlap": 0.5,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1470.48,
+    386.64,
+    1492.68,
+    408.84
+   ],
+   "text_overlap": 0.475,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1534.08,
+    386.64,
+    1556.88,
+    408.84
+   ],
+   "text_overlap": 0.475,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1288.68,
+    411.84,
+    1310.88,
+    434.64
+   ],
+   "text_overlap": 0.487,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  },
+  {
+   "left_only_cells": 0,
+   "right_only_cells": 80,
+   "ink_pt": 48.0,
+   "left_only_ink_pt": 0.0,
+   "right_only_ink_pt": 48.0,
+   "bbox": [
+    1375.68,
+    411.84,
+    1397.88,
+    434.64
+   ],
+   "text_overlap": 0.487,
+   "suppressed_by": "OUTSIDE_COMMON_AREA",
+   "border_ambiguity": true,
+   "border_resolution": "CROP_ARTIFACT"
+  }
+ ],
+ "route": "MODE_2_REQUIRED",
+ "route_reason": "matched ink coverage 0.643 < 0.8",
+ "verdict": "MODE_2_REQUIRED",
+ "pair_id": "eom_large_change_46",
+ "bucket": "large_change",
+ "discipline": "EOM",
+ "latency_s": 5.373,
+ "extraction_quality": {
+  "left": {
+   "block_id": "R7NH-P7N6-F6G",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v001/02_work/document.pdf",
+   "page_index": 10,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 404762,
+   "predicted_cells": 637309,
+   "precision": 0.9445,
+   "recall": 0.997,
+   "missed_cells": 1207,
+   "missed_largest_component": 52,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 573334,
+   "edge_ring_cells": 40224,
+   "excluded_image_cells": 0,
+   "text_spans": 762,
+   "page_rotation": 0,
+   "segments": 27866,
+   "fill_polygons": 20,
+   "invisible_paths": 191,
+   "segments_dropped_invisible": 764,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "right": {
+   "block_id": "6A9L-6PYQ-FFP",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭО-К5/versions/v002/02_work/document.pdf",
+   "page_index": 11,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 647873,
+   "predicted_cells": 932287,
+   "precision": 0.8409,
+   "recall": 0.9985,
+   "missed_cells": 974,
+   "missed_largest_component": 126,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 985916,
+   "edge_ring_cells": 51726,
+   "excluded_image_cells": 0,
+   "text_spans": 956,
+   "page_rotation": 0,
+   "segments": 43631,
+   "fill_polygons": 40,
+   "invisible_paths": 114,
+   "segments_dropped_invisible": 456,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "latency_s": 0.898
+ }
+}

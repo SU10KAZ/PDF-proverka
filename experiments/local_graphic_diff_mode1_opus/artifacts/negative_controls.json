@@ -1,0 +1,105 @@
+{
+ "probe": "assemble.negative_controls",
+ "research_only": true,
+ "controls": {
+  "unchanged": {
+   "pairs": 6,
+   "verdicts": {
+    "NO_GRAPHIC_CHANGE": 6
+   },
+   "routes": {
+    "MODE_1_APPLICABLE": 6
+   },
+   "published_regions_total": 0,
+   "pairs_with_any_published_region": 0,
+   "pair_ids": [
+    "ar_unchanged_03",
+    "ar_unchanged_04",
+    "ss_unchanged_01",
+    "ss_unchanged_02",
+    "ss_unchanged_06",
+    "tx_unchanged_05"
+   ]
+  },
+  "text_only": {
+   "pairs": 4,
+   "verdicts": {
+    "NO_GRAPHIC_CHANGE": 4
+   },
+   "routes": {
+    "MODE_1_APPLICABLE": 4
+   },
+   "published_regions_total": 0,
+   "pairs_with_any_published_region": 0,
+   "pair_ids": [
+    "ar_text_only_49",
+    "ar_text_only_52",
+    "ar_text_only_53",
+    "kj_text_only_51"
+   ]
+  },
+  "table_only": {
+   "pairs": 4,
+   "verdicts": {
+    "NO_GRAPHIC_CHANGE": 4
+   },
+   "routes": {
+    "MODE_1_APPLICABLE": 4
+   },
+   "published_regions_total": 0,
+   "pairs_with_any_published_region": 0,
+   "pair_ids": [
+    "kj_table_only_55",
+    "kj_table_only_56",
+    "km_table_only_50",
+    "ss_table_only_54"
+   ]
+  },
+  "repack": {
+   "pairs": 4,
+   "verdicts": {
+    "VISION_REQUIRED": 3,
+    "NO_GRAPHIC_CHANGE": 1
+   },
+   "routes": {
+    "VISION_REQUIRED": 3,
+    "MODE_1_APPLICABLE": 1
+   },
+   "published_regions_total": 5,
+   "pairs_with_any_published_region": 1,
+   "pair_ids": [
+    "eom_repack_33",
+    "eom_repack_34",
+    "eom_repack_35",
+    "ss_repack_36"
+   ]
+  },
+  "repack_extra_real_pairs": {
+   "pairs": 12,
+   "published_regions_total": 0,
+   "routes": {
+    "MODE_1_APPLICABLE": 10,
+    "MODE_2_REQUIRED": 2
+   },
+   "segment_ratio_range": [
+    0.169,
+    0.548
+   ]
+  },
+  "crop_drift": {
+   "runs": 120,
+   "runs_with_published_regions": 0,
+   "fractions": [
+    0.0025,
+    0.01,
+    0.02,
+    0.05,
+    0.1
+   ],
+   "kinds": [
+    "shift",
+    "shrink"
+   ]
+  }
+ }
+}

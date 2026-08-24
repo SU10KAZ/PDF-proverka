@@ -1,0 +1,2763 @@
+{
+ "probe": "evaluate",
+ "research_only": true,
+ "summary": {
+  "pairs": 56,
+  "routes": {
+   "MODE_1_APPLICABLE": 40,
+   "VISION_REQUIRED": 5,
+   "MODE_2_REQUIRED": 11
+  },
+  "gt_labels": {
+   "NO_CHANGE": 24,
+   "CROP_DIFFERENCE": 11,
+   "LOCAL_CHANGE": 21
+  },
+  "answered_by_mode1": 45,
+  "pair_level": {
+   "TP": 10,
+   "FP": 1,
+   "FN": 0,
+   "TN": 34,
+   "precision": 0.909,
+   "recall": 1.0
+  },
+  "region_level_mode1_applicable": {
+   "gt_regions": 42,
+   "gt_regions_hit": 40,
+   "region_recall": 0.952,
+   "gt_regions_strict_text_cutoff_0.3": 34,
+   "gt_regions_strict_hit": 34,
+   "region_recall_strict": 1.0,
+   "false_regions": 0,
+   "false_regions_on_no_change_pairs": 0,
+   "median_iou": 0.285
+  },
+  "pair_level_mode1_applicable": {
+   "TP": 9,
+   "FP": 0,
+   "FN": 0,
+   "TN": 31
+  },
+  "region_level": {
+   "gt_regions": 62,
+   "gt_regions_hit": 42,
+   "region_recall": 0.677,
+   "false_regions_total": 15,
+   "false_regions_on_no_change_pairs": 5,
+   "median_iou": 0.348
+  },
+  "registration": {
+   "success_rate": 0.964,
+   "methods": {
+    "vote": 41,
+    "bbox_anchor+lsq": 4,
+    "bbox_anchor": 3,
+    "phase_corr": 3,
+    "bbox_fit+lsq": 1,
+    "vote+lsq": 4
+   },
+   "sym_cov_median": 0.9971,
+   "residual_median": 0.0001
+  },
+  "negative_controls": {
+   "unchanged": {
+    "pairs": 6,
+    "pairs_with_published_regions": 0,
+    "regions": 0
+   },
+   "text_only": {
+    "pairs": 4,
+    "pairs_with_published_regions": 0,
+    "regions": 0
+   },
+   "table_only": {
+    "pairs": 4,
+    "pairs_with_published_regions": 0,
+    "regions": 0
+   },
+   "repack": {
+    "pairs": 4,
+    "pairs_with_published_regions": 1,
+    "regions": 5
+   }
+  },
+  "latency_s": {
+   "median": 3.2,
+   "p90": 14.1,
+   "max": 29.1
+  },
+  "extraction": {
+   "precision_min": 0.4563,
+   "precision_median": 0.9758,
+   "recall_min": 0.978,
+   "recall_median": 0.9998,
+   "blocks_with_recall_below_0_95": 0,
+   "blocks_measured": 112,
+   "text_as_curves_pairs": 5,
+   "raster_backed_pairs": 0
+  }
+ },
+ "pairs": [
+  {
+   "pair_id": "ss_unchanged_01",
+   "bucket": "unchanged",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 3.366,
+   "extraction_precision": [
+    0.9931,
+    0.9956
+   ],
+   "extraction_recall": [
+    0.9998,
+    0.9998
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "bucket": "unchanged",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 3.613,
+   "extraction_precision": [
+    0.9972,
+    0.9971
+   ],
+   "extraction_recall": [
+    0.9986,
+    0.9985
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "bucket": "unchanged",
+   "discipline": "AR",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 2.054,
+   "extraction_precision": [
+    0.9777,
+    0.9767
+   ],
+   "extraction_recall": [
+    0.9999,
+    0.9999
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "bucket": "unchanged",
+   "discipline": "AR",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "bbox_anchor+lsq",
+   "sym_cov": 0.99711,
+   "residual": 0.1205,
+   "anchor_cov": 0.9998,
+   "changed_fraction": 0.00289,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 2.638,
+   "extraction_precision": [
+    0.8739,
+    0.8705
+   ],
+   "extraction_recall": [
+    0.9998,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "bucket": "unchanged",
+   "discipline": "TX",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99995,
+   "residual": 0.0,
+   "anchor_cov": 0.9997,
+   "changed_fraction": 5e-05,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 2.929,
+   "extraction_precision": [
+    0.9601,
+    0.9603
+   ],
+   "extraction_recall": [
+    0.9987,
+    0.9983
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "bucket": "unchanged",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "bbox_anchor",
+   "sym_cov": 0.99998,
+   "residual": 0.6691,
+   "anchor_cov": 0.9995,
+   "changed_fraction": 2e-05,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 4.494,
+   "extraction_precision": [
+    0.9959,
+    0.996
+   ],
+   "extraction_recall": [
+    0.9999,
+    0.9999
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99625,
+   "residual": 0.0001,
+   "anchor_cov": 0.9993,
+   "changed_fraction": 0.00375,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 3.477,
+   "extraction_precision": [
+    0.9765,
+    0.9772
+   ],
+   "extraction_recall": [
+    0.9997,
+    0.9997
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "bucket": "tiny_change",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 0.9998,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 3.925,
+   "extraction_precision": [
+    0.9964,
+    0.9966
+   ],
+   "extraction_recall": [
+    0.9987,
+    0.9998
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "bucket": "tiny_change",
+   "discipline": "TX",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 0.9993,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 3.281,
+   "extraction_precision": [
+    0.9667,
+    0.9659
+   ],
+   "extraction_recall": [
+    0.9981,
+    0.9981
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99984,
+   "residual": 0.0,
+   "anchor_cov": 0.9941,
+   "changed_fraction": 0.00016,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 1.753,
+   "extraction_precision": [
+    0.8931,
+    0.8936
+   ],
+   "extraction_recall": [
+    0.9997,
+    0.9998
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "bucket": "tiny_change",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 3.105,
+   "extraction_precision": [
+    0.9818,
+    0.9808
+   ],
+   "extraction_recall": [
+    0.9998,
+    0.9985
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 1.1,
+   "extraction_precision": [
+    0.7502,
+    0.7444
+   ],
+   "extraction_recall": [
+    0.9999,
+    0.9998
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_tiny_change_13",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 0.9998,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 1.593,
+   "extraction_precision": [
+    0.7384,
+    0.7239
+   ],
+   "extraction_recall": [
+    0.9999,
+    0.9999
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_tiny_change_14",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.9999,
+   "residual": 0.0,
+   "anchor_cov": 0.9998,
+   "changed_fraction": 0.0001,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 2.257,
+   "extraction_precision": [
+    0.9264,
+    0.927
+   ],
+   "extraction_recall": [
+    0.9955,
+    0.9935
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_small_change_15",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 0.9939,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 4.218,
+   "extraction_precision": [
+    0.9712,
+    0.969
+   ],
+   "extraction_recall": [
+    0.9999,
+    0.9997
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "tx_small_change_16",
+   "bucket": "small_change",
+   "discipline": "TX",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 2.273,
+   "extraction_precision": [
+    0.9955,
+    0.9952
+   ],
+   "extraction_recall": [
+    0.9992,
+    0.9992
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_small_change_17",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99229,
+   "residual": 0.0001,
+   "anchor_cov": 0.9935,
+   "changed_fraction": 0.00771,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 2.604,
+   "extraction_precision": [
+    0.9704,
+    0.9696
+   ],
+   "extraction_recall": [
+    0.999,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_small_change_18",
+   "bucket": "small_change",
+   "discipline": "SS",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "local",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99521,
+   "residual": 0.0001,
+   "anchor_cov": 0.9987,
+   "changed_fraction": 0.00479,
+   "n_pred": 4,
+   "n_gt": 2,
+   "n_gt_all": 3,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 2,
+   "matched_pred": 4,
+   "unmatched_pred": 0,
+   "median_iou": 0.577,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 2.204,
+   "extraction_precision": [
+    0.9923,
+    0.9918
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "ADDED_GRAPHIC": 3,
+    "REMOVED_GRAPHIC": 1
+   }
+  },
+  {
+   "pair_id": "ss_small_change_19",
+   "bucket": "small_change",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99772,
+   "residual": 0.0423,
+   "anchor_cov": 0.8409,
+   "changed_fraction": 0.00228,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 8.135,
+   "extraction_precision": [
+    0.9041,
+    0.9051
+   ],
+   "extraction_recall": [
+    0.9997,
+    0.9997
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_small_change_20",
+   "bucket": "small_change",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.03,
+   "anchor_cov": 0.9436,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 5.783,
+   "extraction_precision": [
+    0.9742,
+    0.976
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_small_change_21",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "many_local",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99695,
+   "residual": 0.0,
+   "anchor_cov": 0.9747,
+   "changed_fraction": 0.00305,
+   "n_pred": 9,
+   "n_gt": 7,
+   "n_gt_all": 8,
+   "n_gt_strict": 6,
+   "matched_gt_strict": 6,
+   "matched_gt": 7,
+   "matched_pred": 9,
+   "unmatched_pred": 0,
+   "median_iou": 0.798,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 1.773,
+   "extraction_precision": [
+    0.9871,
+    0.9873
+   ],
+   "extraction_recall": [
+    0.9993,
+    0.9951
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "GEOMETRY_CHANGED": 6,
+    "REMOVED_GRAPHIC": 2,
+    "ADDED_GRAPHIC": 1
+   }
+  },
+  {
+   "pair_id": "ar_small_change_22",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.9265,
+   "residual": 0.0,
+   "anchor_cov": 0.9996,
+   "changed_fraction": 0.0735,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 2.093,
+   "extraction_precision": [
+    0.846,
+    0.8507
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "eom_medium_change_23",
+   "bucket": "medium_change",
+   "discipline": "EOM",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": true,
+   "route": "VISION_REQUIRED",
+   "verdict": "VISION_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.95363,
+   "residual": 0.1199,
+   "anchor_cov": 0.6398,
+   "changed_fraction": 0.04637,
+   "n_pred": 21,
+   "n_gt": 20,
+   "n_gt_all": 20,
+   "n_gt_strict": 20,
+   "matched_gt_strict": 2,
+   "matched_gt": 2,
+   "matched_pred": 11,
+   "unmatched_pred": 10,
+   "median_iou": 0.611,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 13.033,
+   "extraction_precision": [
+    0.9516,
+    0.8915
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    true,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "REMOVED_GRAPHIC": 11,
+    "ADDED_GRAPHIC": 10
+   }
+  },
+  {
+   "pair_id": "ar_medium_change_24",
+   "bucket": "medium_change",
+   "discipline": "AR",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "local",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99457,
+   "residual": 0.0,
+   "anchor_cov": 0.9683,
+   "changed_fraction": 0.00543,
+   "n_pred": 13,
+   "n_gt": 5,
+   "n_gt_all": 15,
+   "n_gt_strict": 5,
+   "matched_gt_strict": 5,
+   "matched_gt": 5,
+   "matched_pred": 13,
+   "unmatched_pred": 0,
+   "median_iou": 0.285,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 2.153,
+   "extraction_precision": [
+    0.9757,
+    0.9762
+   ],
+   "extraction_recall": [
+    0.9999,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "GEOMETRY_CHANGED": 6,
+    "ADDED_GRAPHIC": 6,
+    "REMOVED_GRAPHIC": 1
+   }
+  },
+  {
+   "pair_id": "ss_medium_change_25",
+   "bucket": "medium_change",
+   "discipline": "SS",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "many_local",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99119,
+   "residual": 0.0,
+   "anchor_cov": 0.9913,
+   "changed_fraction": 0.00881,
+   "n_pred": 18,
+   "n_gt": 18,
+   "n_gt_all": 20,
+   "n_gt_strict": 17,
+   "matched_gt_strict": 17,
+   "matched_gt": 18,
+   "matched_pred": 18,
+   "unmatched_pred": 0,
+   "median_iou": 0.679,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 10.107,
+   "extraction_precision": [
+    0.9814,
+    0.981
+   ],
+   "extraction_recall": [
+    0.9999,
+    0.9998
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "GEOMETRY_CHANGED": 17,
+    "REMOVED_GRAPHIC": 1
+   }
+  },
+  {
+   "pair_id": "ss_medium_change_26",
+   "bucket": "medium_change",
+   "discipline": "SS",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "local",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99709,
+   "residual": 0.0,
+   "anchor_cov": 0.9997,
+   "changed_fraction": 0.00291,
+   "n_pred": 1,
+   "n_gt": 1,
+   "n_gt_all": 3,
+   "n_gt_strict": 1,
+   "matched_gt_strict": 1,
+   "matched_gt": 1,
+   "matched_pred": 1,
+   "unmatched_pred": 0,
+   "median_iou": 0.111,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 2.68,
+   "extraction_precision": [
+    0.9971,
+    0.9963
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "ADDED_GRAPHIC": 1
+   }
+  },
+  {
+   "pair_id": "ar_medium_change_27",
+   "bucket": "medium_change",
+   "discipline": "AR",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99317,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.00683,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 4.142,
+   "extraction_precision": [
+    0.9583,
+    0.9601
+   ],
+   "extraction_recall": [
+    0.9997,
+    0.9997
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_medium_change_28",
+   "bucket": "medium_change",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.03,
+   "anchor_cov": 0.8964,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 8.588,
+   "extraction_precision": [
+    0.9046,
+    0.9041
+   ],
+   "extraction_recall": [
+    0.9998,
+    0.9997
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "eom_dense_small_change_29",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "local",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99876,
+   "residual": 0.0,
+   "anchor_cov": 0.9989,
+   "changed_fraction": 0.00124,
+   "n_pred": 3,
+   "n_gt": 2,
+   "n_gt_all": 2,
+   "n_gt_strict": 1,
+   "matched_gt_strict": 1,
+   "matched_gt": 2,
+   "matched_pred": 3,
+   "unmatched_pred": 0,
+   "median_iou": 0.215,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 5.67,
+   "extraction_precision": [
+    0.9711,
+    0.974
+   ],
+   "extraction_recall": [
+    0.9998,
+    0.999
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "ADDED_GRAPHIC": 3
+   }
+  },
+  {
+   "pair_id": "eom_dense_small_change_30",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "local",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99954,
+   "residual": 0.0,
+   "anchor_cov": 0.9988,
+   "changed_fraction": 0.00046,
+   "n_pred": 2,
+   "n_gt": 2,
+   "n_gt_all": 2,
+   "n_gt_strict": 1,
+   "matched_gt_strict": 1,
+   "matched_gt": 2,
+   "matched_pred": 2,
+   "unmatched_pred": 0,
+   "median_iou": 0.26,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 4.994,
+   "extraction_precision": [
+    0.9714,
+    0.9747
+   ],
+   "extraction_recall": [
+    0.9998,
+    0.999
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "ADDED_GRAPHIC": 2
+   }
+  },
+  {
+   "pair_id": "eom_dense_small_change_31",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "local",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.9991,
+   "residual": 0.0,
+   "anchor_cov": 0.9996,
+   "changed_fraction": 0.0009,
+   "n_pred": 5,
+   "n_gt": 2,
+   "n_gt_all": 2,
+   "n_gt_strict": 2,
+   "matched_gt_strict": 2,
+   "matched_gt": 2,
+   "matched_pred": 5,
+   "unmatched_pred": 0,
+   "median_iou": 0.411,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 4.059,
+   "extraction_precision": [
+    0.9624,
+    0.9634
+   ],
+   "extraction_recall": [
+    0.9991,
+    0.9991
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "ADDED_GRAPHIC": 5
+   }
+  },
+  {
+   "pair_id": "eom_dense_small_change_32",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "local",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "LOCAL_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99867,
+   "residual": 0.0,
+   "anchor_cov": 0.999,
+   "changed_fraction": 0.00133,
+   "n_pred": 2,
+   "n_gt": 3,
+   "n_gt_all": 3,
+   "n_gt_strict": 1,
+   "matched_gt_strict": 1,
+   "matched_gt": 1,
+   "matched_pred": 2,
+   "unmatched_pred": 0,
+   "median_iou": 0.232,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 3.939,
+   "extraction_precision": [
+    0.9707,
+    0.9702
+   ],
+   "extraction_recall": [
+    0.9985,
+    0.9999
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "ADDED_GRAPHIC": 2
+   }
+  },
+  {
+   "pair_id": "eom_repack_33",
+   "bucket": "repack",
+   "discipline": "EOM",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "VISION_REQUIRED",
+   "verdict": "VISION_REQUIRED",
+   "reg_success": false,
+   "reg_method": "bbox_anchor",
+   "sym_cov": 0.46865,
+   "residual": null,
+   "anchor_cov": 0.0,
+   "changed_fraction": 0.53135,
+   "n_pred": 5,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 5,
+   "median_iou": null,
+   "pred_change": true,
+   "gt_change": false,
+   "latency_s": 0.901,
+   "extraction_precision": [
+    1.0,
+    1.0
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    true,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 5,
+   "types": {
+    "GEOMETRY_CHANGED": 4,
+    "REMOVED_GRAPHIC": 1
+   }
+  },
+  {
+   "pair_id": "eom_repack_34",
+   "bucket": "repack",
+   "discipline": "EOM",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "VISION_REQUIRED",
+   "verdict": "VISION_REQUIRED",
+   "reg_success": true,
+   "reg_method": "bbox_anchor+lsq",
+   "sym_cov": 0.60375,
+   "residual": 0.0032,
+   "anchor_cov": 0.2308,
+   "changed_fraction": 0.39633,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 1.001,
+   "extraction_precision": [
+    1.0,
+    1.0
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    true,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "eom_repack_35",
+   "bucket": "repack",
+   "discipline": "EOM",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "VISION_REQUIRED",
+   "verdict": "VISION_REQUIRED",
+   "reg_success": true,
+   "reg_method": "phase_corr",
+   "sym_cov": 0.67952,
+   "residual": 0.3264,
+   "anchor_cov": 0.5,
+   "changed_fraction": 0.32048,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.913,
+   "extraction_precision": [
+    0.9221,
+    1.0
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    true,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_repack_36",
+   "bucket": "repack",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "bbox_fit+lsq",
+   "sym_cov": 0.99892,
+   "residual": 0.0668,
+   "anchor_cov": 0.9753,
+   "changed_fraction": 0.00108,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 1.222,
+   "extraction_precision": [
+    0.9953,
+    1.0
+   ],
+   "extraction_recall": [
+    1.0,
+    0.9956
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "tx_rotated_page_37",
+   "bucket": "rotated_page",
+   "discipline": "TX",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "many_local",
+   "eye": true,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99488,
+   "residual": 0.2935,
+   "anchor_cov": 0.9836,
+   "changed_fraction": 0.00512,
+   "n_pred": 107,
+   "n_gt": 16,
+   "n_gt_all": 20,
+   "n_gt_strict": 13,
+   "matched_gt_strict": 13,
+   "matched_gt": 16,
+   "matched_pred": 46,
+   "unmatched_pred": 61,
+   "median_iou": 0.725,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 18.587,
+   "extraction_precision": [
+    0.9899,
+    0.9898
+   ],
+   "extraction_recall": [
+    0.9997,
+    0.9996
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "GEOMETRY_CHANGED": 13,
+    "ADDED_GRAPHIC": 18,
+    "REMOVED_GRAPHIC": 62,
+    "POSITION_CHANGED": 14
+   }
+  },
+  {
+   "pair_id": "ss_rotated_page_38",
+   "bucket": "rotated_page",
+   "discipline": "SS",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": false,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.58976,
+   "residual": 0.0599,
+   "anchor_cov": 0.4824,
+   "changed_fraction": 0.41024,
+   "n_pred": 438,
+   "n_gt": 19,
+   "n_gt_all": 20,
+   "n_gt_strict": 18,
+   "matched_gt_strict": 18,
+   "matched_gt": 19,
+   "matched_pred": 396,
+   "unmatched_pred": 42,
+   "median_iou": 0.809,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 14.097,
+   "extraction_precision": [
+    0.9864,
+    0.999
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 1,
+   "types": {
+    "GEOMETRY_CHANGED": 101,
+    "ADDED_GRAPHIC": 89,
+    "REMOVED_GRAPHIC": 134,
+    "POSITION_CHANGED": 114
+   }
+  },
+  {
+   "pair_id": "km_rotated_page_39",
+   "bucket": "rotated_page",
+   "discipline": "KM",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "VISION_REQUIRED",
+   "verdict": "VISION_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.66069,
+   "residual": 0.0474,
+   "anchor_cov": 0.7834,
+   "changed_fraction": 0.33931,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 3.128,
+   "extraction_precision": [
+    1.0,
+    1.0
+   ],
+   "extraction_recall": [
+    1.0,
+    0.9998
+   ],
+   "text_as_curves": [
+    true,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_strong_redesign_40",
+   "bucket": "strong_redesign",
+   "discipline": "SS",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": true,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote+lsq",
+   "sym_cov": 0.80203,
+   "residual": 0.035,
+   "anchor_cov": 0.5305,
+   "changed_fraction": 0.19796,
+   "n_pred": 601,
+   "n_gt": 20,
+   "n_gt_all": 20,
+   "n_gt_strict": 20,
+   "matched_gt_strict": 20,
+   "matched_gt": 20,
+   "matched_pred": 601,
+   "unmatched_pred": 0,
+   "median_iou": 0.28,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 13.134,
+   "extraction_precision": [
+    0.9996,
+    0.9999
+   ],
+   "extraction_recall": [
+    0.9997,
+    0.9997
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 21,
+   "types": {
+    "GEOMETRY_CHANGED": 142,
+    "ADDED_GRAPHIC": 404,
+    "REMOVED_GRAPHIC": 47,
+    "POSITION_CHANGED": 8
+   }
+  },
+  {
+   "pair_id": "eom_strong_redesign_41",
+   "bucket": "strong_redesign",
+   "discipline": "EOM",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": false,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.95328,
+   "residual": 0.0001,
+   "anchor_cov": 0.929,
+   "changed_fraction": 0.04672,
+   "n_pred": 52,
+   "n_gt": 15,
+   "n_gt_all": 20,
+   "n_gt_strict": 7,
+   "matched_gt_strict": 5,
+   "matched_gt": 5,
+   "matched_pred": 52,
+   "unmatched_pred": 0,
+   "median_iou": 0.129,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 8.936,
+   "extraction_precision": [
+    0.9788,
+    0.8678
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "GEOMETRY_CHANGED": 5,
+    "ADDED_GRAPHIC": 40,
+    "REMOVED_GRAPHIC": 3,
+    "POSITION_CHANGED": 4
+   }
+  },
+  {
+   "pair_id": "ss_strong_redesign_42",
+   "bucket": "strong_redesign",
+   "discipline": "SS",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "many_local",
+   "eye": false,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": false,
+   "reg_method": "vote+lsq",
+   "sym_cov": 0.26008,
+   "residual": 0.0296,
+   "anchor_cov": 0.3733,
+   "changed_fraction": 0.73991,
+   "n_pred": 264,
+   "n_gt": 6,
+   "n_gt_all": 20,
+   "n_gt_strict": 5,
+   "matched_gt_strict": 5,
+   "matched_gt": 6,
+   "matched_pred": 80,
+   "unmatched_pred": 184,
+   "median_iou": 0.002,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 23.442,
+   "extraction_precision": [
+    0.9997,
+    0.9995
+   ],
+   "extraction_recall": [
+    1.0,
+    0.9985
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 8,
+   "types": {
+    "GEOMETRY_CHANGED": 32,
+    "POSITION_CHANGED": 152,
+    "ADDED_GRAPHIC": 62,
+    "REMOVED_GRAPHIC": 18
+   }
+  },
+  {
+   "pair_id": "ov_strong_redesign_43",
+   "bucket": "strong_redesign",
+   "discipline": "OV",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": true,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote+lsq",
+   "sym_cov": 0.91105,
+   "residual": 0.0181,
+   "anchor_cov": 0.6134,
+   "changed_fraction": 0.08895,
+   "n_pred": 182,
+   "n_gt": 17,
+   "n_gt_all": 20,
+   "n_gt_strict": 13,
+   "matched_gt_strict": 13,
+   "matched_gt": 17,
+   "matched_pred": 182,
+   "unmatched_pred": 0,
+   "median_iou": 0.245,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 29.098,
+   "extraction_precision": [
+    0.5194,
+    0.4563
+   ],
+   "extraction_recall": [
+    0.9843,
+    0.9973
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 1,
+   "types": {
+    "GEOMETRY_CHANGED": 53,
+    "REMOVED_GRAPHIC": 55,
+    "ADDED_GRAPHIC": 46,
+    "POSITION_CHANGED": 28
+   }
+  },
+  {
+   "pair_id": "ov_strong_redesign_44",
+   "bucket": "strong_redesign",
+   "discipline": "OV",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": false,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "phase_corr",
+   "sym_cov": 0.86828,
+   "residual": 0.1064,
+   "anchor_cov": 0.4746,
+   "changed_fraction": 0.13172,
+   "n_pred": 186,
+   "n_gt": 18,
+   "n_gt_all": 20,
+   "n_gt_strict": 14,
+   "matched_gt_strict": 14,
+   "matched_gt": 18,
+   "matched_pred": 136,
+   "unmatched_pred": 50,
+   "median_iou": 0.149,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 19.857,
+   "extraction_precision": [
+    0.4661,
+    0.4846
+   ],
+   "extraction_recall": [
+    0.978,
+    0.9992
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {
+    "GEOMETRY_CHANGED": 71,
+    "ADDED_GRAPHIC": 78,
+    "REMOVED_GRAPHIC": 23,
+    "POSITION_CHANGED": 14
+   }
+  },
+  {
+   "pair_id": "ar_large_change_45",
+   "bucket": "large_change",
+   "discipline": "AR",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "many_local",
+   "eye": true,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99081,
+   "residual": 0.0027,
+   "anchor_cov": 0.6534,
+   "changed_fraction": 0.00919,
+   "n_pred": 169,
+   "n_gt": 14,
+   "n_gt_all": 20,
+   "n_gt_strict": 14,
+   "matched_gt_strict": 14,
+   "matched_gt": 14,
+   "matched_pred": 49,
+   "unmatched_pred": 120,
+   "median_iou": 0.739,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 14.794,
+   "extraction_precision": [
+    0.964,
+    0.9639
+   ],
+   "extraction_recall": [
+    0.9995,
+    0.9995
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 2,
+   "types": {
+    "GEOMETRY_CHANGED": 19,
+    "ADDED_GRAPHIC": 38,
+    "REMOVED_GRAPHIC": 112
+   }
+  },
+  {
+   "pair_id": "eom_large_change_46",
+   "bucket": "large_change",
+   "discipline": "EOM",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": false,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote+lsq",
+   "sym_cov": 0.64278,
+   "residual": 0.0452,
+   "anchor_cov": 0.487,
+   "changed_fraction": 0.35722,
+   "n_pred": 141,
+   "n_gt": 17,
+   "n_gt_all": 20,
+   "n_gt_strict": 13,
+   "matched_gt_strict": 13,
+   "matched_gt": 17,
+   "matched_pred": 136,
+   "unmatched_pred": 5,
+   "median_iou": 0.055,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 5.373,
+   "extraction_precision": [
+    0.9445,
+    0.8409
+   ],
+   "extraction_recall": [
+    0.997,
+    0.9985
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 8,
+   "types": {
+    "ADDED_GRAPHIC": 48,
+    "GEOMETRY_CHANGED": 71,
+    "REMOVED_GRAPHIC": 16,
+    "POSITION_CHANGED": 6
+   }
+  },
+  {
+   "pair_id": "ss_large_change_47",
+   "bucket": "large_change",
+   "discipline": "SS",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": false,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.81353,
+   "residual": 0.06,
+   "anchor_cov": 0.5564,
+   "changed_fraction": 0.18647,
+   "n_pred": 384,
+   "n_gt": 20,
+   "n_gt_all": 20,
+   "n_gt_strict": 20,
+   "matched_gt_strict": 20,
+   "matched_gt": 20,
+   "matched_pred": 355,
+   "unmatched_pred": 29,
+   "median_iou": 0.442,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 11.364,
+   "extraction_precision": [
+    0.998,
+    0.9999
+   ],
+   "extraction_recall": [
+    0.9999,
+    0.9996
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 14,
+   "types": {
+    "GEOMETRY_CHANGED": 143,
+    "ADDED_GRAPHIC": 167,
+    "REMOVED_GRAPHIC": 44,
+    "POSITION_CHANGED": 30
+   }
+  },
+  {
+   "pair_id": "ar_large_change_48",
+   "bucket": "large_change",
+   "discipline": "AR",
+   "gt_label": "LOCAL_CHANGE",
+   "gt_scale": "major",
+   "eye": false,
+   "route": "MODE_2_REQUIRED",
+   "verdict": "MODE_2_REQUIRED",
+   "reg_success": true,
+   "reg_method": "phase_corr",
+   "sym_cov": 0.94201,
+   "residual": 0.0652,
+   "anchor_cov": 0.7014,
+   "changed_fraction": 0.05799,
+   "n_pred": 110,
+   "n_gt": 17,
+   "n_gt_all": 20,
+   "n_gt_strict": 15,
+   "matched_gt_strict": 15,
+   "matched_gt": 17,
+   "matched_pred": 39,
+   "unmatched_pred": 71,
+   "median_iou": 0.659,
+   "pred_change": true,
+   "gt_change": true,
+   "latency_s": 4.506,
+   "extraction_precision": [
+    0.9601,
+    0.9657
+   ],
+   "extraction_recall": [
+    0.9997,
+    0.9999
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 4,
+   "types": {
+    "ADDED_GRAPHIC": 54,
+    "GEOMETRY_CHANGED": 31,
+    "REMOVED_GRAPHIC": 21,
+    "POSITION_CHANGED": 4
+   }
+  },
+  {
+   "pair_id": "ar_text_only_49",
+   "bucket": "text_only",
+   "discipline": "AR",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": true,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0001,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.613,
+   "extraction_precision": [
+    0.8314,
+    0.8324
+   ],
+   "extraction_recall": [
+    0.9959,
+    0.9957
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "km_table_only_50",
+   "bucket": "table_only",
+   "discipline": "KM",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.83101,
+   "residual": 0.0001,
+   "anchor_cov": 0.9877,
+   "changed_fraction": 0.16899,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.314,
+   "extraction_precision": [
+    0.999,
+    0.9986
+   ],
+   "extraction_recall": [
+    1.0,
+    0.9998
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "kj_text_only_51",
+   "bucket": "text_only",
+   "discipline": "KJ",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.45,
+   "extraction_precision": [
+    0.9952,
+    0.9952
+   ],
+   "extraction_recall": [
+    0.9987,
+    0.9949
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_text_only_52",
+   "bucket": "text_only",
+   "discipline": "AR",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 1.0,
+   "residual": 0.0001,
+   "anchor_cov": 1.0,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.374,
+   "extraction_precision": [
+    0.8693,
+    0.8649
+   ],
+   "extraction_recall": [
+    0.997,
+    0.9976
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ar_text_only_53",
+   "bucket": "text_only",
+   "discipline": "AR",
+   "gt_label": "CROP_DIFFERENCE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "vote",
+   "sym_cov": 0.99979,
+   "residual": 0.0001,
+   "anchor_cov": 0.9989,
+   "changed_fraction": 0.00021,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.881,
+   "extraction_precision": [
+    0.8345,
+    0.8344
+   ],
+   "extraction_recall": [
+    0.9915,
+    0.99
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "ss_table_only_54",
+   "bucket": "table_only",
+   "discipline": "SS",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "bbox_anchor",
+   "sym_cov": 1.0,
+   "residual": 0.6994,
+   "anchor_cov": 0.965,
+   "changed_fraction": 0.0,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.363,
+   "extraction_precision": [
+    0.9949,
+    0.9838
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "kj_table_only_55",
+   "bucket": "table_only",
+   "discipline": "KJ",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "bbox_anchor+lsq",
+   "sym_cov": 0.99104,
+   "residual": 0.0001,
+   "anchor_cov": 0.9326,
+   "changed_fraction": 0.00896,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.267,
+   "extraction_precision": [
+    0.9834,
+    0.9834
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  },
+  {
+   "pair_id": "kj_table_only_56",
+   "bucket": "table_only",
+   "discipline": "KJ",
+   "gt_label": "NO_CHANGE",
+   "gt_scale": "none",
+   "eye": false,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "reg_success": true,
+   "reg_method": "bbox_anchor+lsq",
+   "sym_cov": 0.99104,
+   "residual": 0.0002,
+   "anchor_cov": 0.9205,
+   "changed_fraction": 0.00896,
+   "n_pred": 0,
+   "n_gt": 0,
+   "n_gt_all": 0,
+   "n_gt_strict": 0,
+   "matched_gt_strict": 0,
+   "matched_gt": 0,
+   "matched_pred": 0,
+   "unmatched_pred": 0,
+   "median_iou": null,
+   "pred_change": false,
+   "gt_change": false,
+   "latency_s": 0.319,
+   "extraction_precision": [
+    0.9821,
+    0.983
+   ],
+   "extraction_recall": [
+    1.0,
+    1.0
+   ],
+   "text_as_curves": [
+    false,
+    false
+   ],
+   "raster_backed": [
+    false,
+    false
+   ],
+   "border_regions": 0,
+   "types": {}
+  }
+ ]
+}

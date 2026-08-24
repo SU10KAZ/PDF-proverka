@@ -1,0 +1,419 @@
+{
+ "probe": "controls.dilution",
+ "research_only": true,
+ "pairs": [
+  {
+   "pair_id": "ar_medium_change_24",
+   "target_bbox": [
+    1364.75,
+    1656.0,
+    1584.35,
+    2242.2
+   ],
+   "ladder": [
+    {
+     "crop": "tight",
+     "factor": 1.3,
+     "area_ratio": 1.69,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 8,
+     "target_found": true,
+     "changed_ink_fraction": 0.01855,
+     "left_ink_pt": 50954.05,
+     "latency_s": 1.05
+    },
+    {
+     "crop": "medium",
+     "factor": 4.0,
+     "area_ratio": 14.38,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 9,
+     "target_found": true,
+     "changed_ink_fraction": 0.00388,
+     "left_ink_pt": 279443.16,
+     "latency_s": 0.62
+    },
+    {
+     "crop": "wide",
+     "factor": 12.0,
+     "area_ratio": 49.72,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 20,
+     "target_found": true,
+     "changed_ink_fraction": 0.00544,
+     "left_ink_pt": 639991.62,
+     "latency_s": 1.65
+    },
+    {
+     "crop": "prepared_block",
+     "factor": null,
+     "area_ratio": 51.92,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 20,
+     "target_found": true,
+     "changed_ink_fraction": 0.00543,
+     "left_ink_pt": 643721.75,
+     "latency_s": 2.176
+    }
+   ]
+  },
+  {
+   "pair_id": "ss_medium_change_25",
+   "target_bbox": [
+    1046.52,
+    890.4,
+    1089.12,
+    931.8
+   ],
+   "ladder": [
+    {
+     "crop": "tight",
+     "factor": 1.3,
+     "area_ratio": 1.69,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 1,
+     "target_found": true,
+     "changed_ink_fraction": 0.75484,
+     "left_ink_pt": 369.31,
+     "latency_s": 3.18
+    },
+    {
+     "crop": "medium",
+     "factor": 4.0,
+     "area_ratio": 16.0,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 1,
+     "target_found": true,
+     "changed_ink_fraction": 0.08691,
+     "left_ink_pt": 5025.97,
+     "latency_s": 0.14
+    },
+    {
+     "crop": "wide",
+     "factor": 12.0,
+     "area_ratio": 144.0,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 5,
+     "target_found": true,
+     "changed_ink_fraction": 0.02933,
+     "left_ink_pt": 52693.95,
+     "latency_s": 0.93
+    },
+    {
+     "crop": "prepared_block",
+     "factor": null,
+     "area_ratio": 2732.78,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 18,
+     "target_found": true,
+     "changed_ink_fraction": 0.00881,
+     "left_ink_pt": 510547.75,
+     "latency_s": 9.7
+    }
+   ]
+  },
+  {
+   "pair_id": "ss_medium_change_26",
+   "target_bbox": [
+    129.0,
+    1261.32,
+    159.6,
+    1291.32
+   ],
+   "ladder": [
+    {
+     "crop": "tight",
+     "factor": 1.3,
+     "area_ratio": 2.72,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 3,
+     "target_found": true,
+     "changed_ink_fraction": 0.37005,
+     "left_ink_pt": 233.7,
+     "latency_s": 0.58
+    },
+    {
+     "crop": "medium",
+     "factor": 4.0,
+     "area_ratio": 16.0,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 2,
+     "target_found": true,
+     "changed_ink_fraction": 0.13275,
+     "left_ink_pt": 1246.83,
+     "latency_s": 0.04
+    },
+    {
+     "crop": "wide",
+     "factor": 12.0,
+     "area_ratio": 116.35,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 1,
+     "target_found": true,
+     "changed_ink_fraction": 0.08733,
+     "left_ink_pt": 8264.33,
+     "latency_s": 0.1
+    },
+    {
+     "crop": "prepared_block",
+     "factor": null,
+     "area_ratio": 5400.32,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 1,
+     "target_found": true,
+     "changed_ink_fraction": 0.00291,
+     "left_ink_pt": 455540.22,
+     "latency_s": 3.576
+    }
+   ]
+  },
+  {
+   "pair_id": "eom_dense_small_change_29",
+   "target_bbox": [
+    755.63,
+    161.64,
+    832.43,
+    216.24
+   ],
+   "ladder": [
+    {
+     "crop": "tight",
+     "factor": 1.3,
+     "area_ratio": 1.69,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 1,
+     "target_found": true,
+     "changed_ink_fraction": 0.29684,
+     "left_ink_pt": 3757.91,
+     "latency_s": 1.2
+    },
+    {
+     "crop": "medium",
+     "factor": 4.0,
+     "area_ratio": 16.0,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 3,
+     "target_found": true,
+     "changed_ink_fraction": 0.06461,
+     "left_ink_pt": 19814.02,
+     "latency_s": 0.4
+    },
+    {
+     "crop": "wide",
+     "factor": 12.0,
+     "area_ratio": 111.63,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 4,
+     "target_found": true,
+     "changed_ink_fraction": 0.01625,
+     "left_ink_pt": 104751.61,
+     "latency_s": 1.45
+    },
+    {
+     "crop": "prepared_block",
+     "factor": null,
+     "area_ratio": 439.02,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 4,
+     "target_found": true,
+     "changed_ink_fraction": 0.00124,
+     "left_ink_pt": 263638.81,
+     "latency_s": 4.268
+    }
+   ]
+  },
+  {
+   "pair_id": "eom_dense_small_change_32",
+   "target_bbox": [
+    775.44,
+    239.88,
+    809.04,
+    271.08
+   ],
+   "ladder": [
+    {
+     "crop": "tight",
+     "factor": 1.3,
+     "area_ratio": 2.38,
+     "route": "VISION_REQUIRED",
+     "verdict": "VISION_REQUIRED",
+     "regions": 0,
+     "target_found": false,
+     "changed_ink_fraction": 0.42871,
+     "left_ink_pt": 895.14,
+     "latency_s": 3.15
+    },
+    {
+     "crop": "medium",
+     "factor": 4.0,
+     "area_ratio": 16.0,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 3,
+     "target_found": true,
+     "changed_ink_fraction": 0.16937,
+     "left_ink_pt": 6750.92,
+     "latency_s": 0.3
+    },
+    {
+     "crop": "wide",
+     "factor": 12.0,
+     "area_ratio": 144.0,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 2,
+     "target_found": true,
+     "changed_ink_fraction": 0.04335,
+     "left_ink_pt": 43767.27,
+     "latency_s": 0.68
+    },
+    {
+     "crop": "prepared_block",
+     "factor": null,
+     "area_ratio": 1797.89,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 2,
+     "target_found": true,
+     "changed_ink_fraction": 0.00133,
+     "left_ink_pt": 243029.55,
+     "latency_s": 6.113
+    }
+   ]
+  },
+  {
+   "pair_id": "tx_rotated_page_37",
+   "target_bbox": [
+    1673.76,
+    382.32,
+    2012.76,
+    514.32
+   ],
+   "ladder": [
+    {
+     "crop": "tight",
+     "factor": 1.3,
+     "area_ratio": 1.69,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 8,
+     "target_found": true,
+     "changed_ink_fraction": 0.06046,
+     "left_ink_pt": 13884.67,
+     "latency_s": 6.64
+    },
+    {
+     "crop": "medium",
+     "factor": 4.0,
+     "area_ratio": 16.0,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 15,
+     "target_found": true,
+     "changed_ink_fraction": 0.01839,
+     "left_ink_pt": 129793.6,
+     "latency_s": 3.09
+    },
+    {
+     "crop": "wide",
+     "factor": 12.0,
+     "area_ratio": 102.96,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 86,
+     "target_found": true,
+     "changed_ink_fraction": 0.00808,
+     "left_ink_pt": 918406.5,
+     "latency_s": 10.62
+    },
+    {
+     "crop": "prepared_block",
+     "factor": null,
+     "area_ratio": 211.54,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 122,
+     "target_found": true,
+     "changed_ink_fraction": 0.00512,
+     "left_ink_pt": 1435842.5,
+     "latency_s": 19.337
+    }
+   ]
+  },
+  {
+   "pair_id": "ar_large_change_45",
+   "target_bbox": [
+    1244.99,
+    1172.4,
+    1384.19,
+    1406.4
+   ],
+   "ladder": [
+    {
+     "crop": "tight",
+     "factor": 1.3,
+     "area_ratio": 1.69,
+     "route": "MODE_1_APPLICABLE",
+     "verdict": "LOCAL_CHANGE",
+     "regions": 12,
+     "target_found": true,
+     "changed_ink_fraction": 0.14162,
+     "left_ink_pt": 18463.01,
+     "latency_s": 5.81
+    },
+    {
+     "crop": "medium",
+     "factor": 4.0,
+     "area_ratio": 16.0,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 67,
+     "target_found": true,
+     "changed_ink_fraction": 0.03401,
+     "left_ink_pt": 172095.11,
+     "latency_s": 1.14
+    },
+    {
+     "crop": "wide",
+     "factor": 12.0,
+     "area_ratio": 136.65,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 222,
+     "target_found": true,
+     "changed_ink_fraction": 0.01084,
+     "left_ink_pt": 1052624.75,
+     "latency_s": 9.38
+    },
+    {
+     "crop": "prepared_block",
+     "factor": null,
+     "area_ratio": 195.58,
+     "route": "MODE_2_REQUIRED",
+     "verdict": "MODE_2_REQUIRED",
+     "regions": 247,
+     "target_found": true,
+     "changed_ink_fraction": 0.00919,
+     "left_ink_pt": 1192908.75,
+     "latency_s": 13.393
+    }
+   ]
+  }
+ ]
+}

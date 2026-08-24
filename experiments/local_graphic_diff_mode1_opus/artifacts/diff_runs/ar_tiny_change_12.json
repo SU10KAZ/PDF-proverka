@@ -1,0 +1,303 @@
+{
+ "mode": "MODE_1",
+ "params": {
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "merge_pt": 2.4,
+  "min_region_ink_pt": 8.0,
+  "border_pt": 3.0,
+  "text_overlap_drop": 0.65
+ },
+ "left": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v001/02_work/document.pdf",
+  "page_index": 17,
+  "block_id": "6UCX-CEWP-7RA",
+  "bbox_vis": [
+   59.53,
+   6.72,
+   613.02,
+   1439.66
+  ],
+  "label": ""
+ },
+ "right": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v002/02_work/document.pdf",
+  "page_index": 17,
+  "block_id": "9L4G-XEXA-JDM",
+  "bbox_vis": [
+   64.78,
+   19.2,
+   625.25,
+   1435.89
+  ],
+  "label": ""
+ },
+ "registration": {
+  "method": "vote",
+  "transform": {
+   "scale": 1.0,
+   "theta_deg": 0.0,
+   "tx": -1e-05,
+   "ty": -3e-05
+  },
+  "frame": [
+   64.781,
+   19.196,
+   625.251,
+   1435.888
+  ],
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "coverage": {
+   "left_ink_cells": 168927,
+   "right_ink_cells": 168927,
+   "left_matched": 168927,
+   "right_matched": 168927,
+   "left_cov": 1.0,
+   "right_cov": 1.0,
+   "sym_cov": 1.0
+  },
+  "residual": {
+   "n": 3444,
+   "median": 0.0,
+   "p90": 0.0
+  },
+  "anchors": {
+   "left_candidates": 3445,
+   "right_candidates": 3444,
+   "matched": 3444,
+   "coverage": 1.0,
+   "min_len_pt": 6.094,
+   "votes": 2689
+  },
+  "success": true,
+  "failure_reason": null,
+  "confidence": 1.0,
+  "hypotheses": [
+   {
+    "hypothesis": "bbox_anchor",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 5.25469,
+     "ty": 12.47507
+    },
+    "sym_cov": 0.6289
+   },
+   {
+    "hypothesis": "bbox_anchor+lsq",
+    "transform": {
+     "scale": 0.9998,
+     "theta_deg": -0.02044,
+     "tx": 5.09938,
+     "ty": 13.57074
+    },
+    "sym_cov": 0.6685
+   },
+   {
+    "hypothesis": "bbox_fit",
+    "transform": {
+     "scale": 0.98866,
+     "theta_deg": 0.0,
+     "tx": 12.55397,
+     "ty": 12.55126
+    },
+    "sym_cov": 0.678
+   },
+   {
+    "hypothesis": "bbox_fit+lsq",
+    "transform": {
+     "scale": 0.99633,
+     "theta_deg": -0.02077,
+     "tx": 10.78845,
+     "ty": 4.099
+    },
+    "sym_cov": 0.7117
+   },
+   {
+    "hypothesis": "vote",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -1e-05,
+     "ty": -3e-05
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "vote+lsq",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 0.0,
+     "ty": 0.0
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "phase_corr",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -0.00467,
+     "ty": -0.01066
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "phase_corr+lsq",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 0.0,
+     "ty": 0.0
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "rot90",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 90.0,
+     "tx": 1156.26996,
+     "ty": 517.33009
+    },
+    "sym_cov": 0.4245
+   },
+   {
+    "hypothesis": "rot180",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 180.0,
+     "tx": 639.00001,
+     "ty": 1582.88005
+    },
+    "sym_cov": 0.4109
+   },
+   {
+    "hypothesis": "rot270",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 270.0,
+     "tx": -517.33002,
+     "ty": 1156.27011
+    },
+    "sym_cov": 0.4244
+   }
+  ],
+  "left_segments_merged": 15432,
+  "right_segments_merged": 15431,
+  "left_ink_pt": 163099.03,
+  "right_ink_pt": 162545.53
+ },
+ "extraction": {
+  "left": {
+   "n_paths_seen": 10801,
+   "n_paths_kept": 10760,
+   "n_invisible_paths": 41,
+   "segments_dropped_invisible": 230,
+   "n_page_images": 0,
+   "page_rotation": 0
+  },
+  "right": {
+   "n_paths_seen": 10801,
+   "n_paths_kept": 10760,
+   "n_invisible_paths": 41,
+   "segments_dropped_invisible": 230,
+   "n_page_images": 0,
+   "page_rotation": 0
+  },
+  "left_segments": 15454,
+  "right_segments": 15453,
+  "image_coverage": [
+   0.0,
+   0.0
+  ],
+  "text_as_curves": [
+   false,
+   false
+  ],
+  "flags": {
+   "raster_backed_side": false,
+   "text_as_curves_asymmetry": false
+  }
+ },
+ "diff": {
+  "left_ink_cells": 168927,
+  "right_ink_cells": 168927,
+  "matched_cells": 168927,
+  "left_only_cells": 0,
+  "right_only_cells": 0,
+  "changed_ink_fraction": 0.0,
+  "published_ink_fraction": 0.0,
+  "n_regions_raw": 0,
+  "n_regions_published": 0,
+  "n_regions_suppressed": 0,
+  "left_texts": 128,
+  "right_texts": 128
+ },
+ "change_regions": [],
+ "suppressed_regions": [],
+ "route": "MODE_1_APPLICABLE",
+ "route_reason": "registration and local diff within gates",
+ "verdict": "NO_GRAPHIC_CHANGE",
+ "pair_id": "ar_tiny_change_12",
+ "bucket": "tiny_change",
+ "discipline": "AR",
+ "latency_s": 1.1,
+ "extraction_quality": {
+  "left": {
+   "block_id": "6UCX-CEWP-7RA",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v001/02_work/document.pdf",
+   "page_index": 17,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 190742,
+   "predicted_cells": 294730,
+   "precision": 0.7502,
+   "recall": 0.9999,
+   "missed_cells": 27,
+   "missed_largest_component": 26,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 227486,
+   "edge_ring_cells": 29766,
+   "excluded_image_cells": 0,
+   "text_spans": 128,
+   "page_rotation": 0,
+   "segments": 15454,
+   "fill_polygons": 312,
+   "invisible_paths": 41,
+   "segments_dropped_invisible": 230,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "right": {
+   "block_id": "9L4G-XEXA-JDM",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/AR/documents/13АВ-РД-АР4.1-К5/versions/v002/02_work/document.pdf",
+   "page_index": 17,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 185468,
+   "predicted_cells": 288039,
+   "precision": 0.7444,
+   "recall": 0.9998,
+   "missed_cells": 29,
+   "missed_largest_component": 27,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 228484,
+   "edge_ring_cells": 29628,
+   "excluded_image_cells": 0,
+   "text_spans": 128,
+   "page_rotation": 0,
+   "segments": 15453,
+   "fill_polygons": 312,
+   "invisible_paths": 41,
+   "segments_dropped_invisible": 230,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "latency_s": 0.206
+ }
+}

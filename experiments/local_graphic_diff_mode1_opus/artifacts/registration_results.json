@@ -1,0 +1,2498 @@
+{
+ "probe": "assemble.registration",
+ "research_only": true,
+ "summary": {
+  "pairs": 56,
+  "success": 54,
+  "success_rate": 0.964,
+  "methods": {
+   "vote": 41,
+   "phase_corr": 3,
+   "bbox_anchor+lsq": 4,
+   "vote+lsq": 4,
+   "bbox_anchor": 3,
+   "bbox_fit+lsq": 1
+  },
+  "failure_reasons": {
+   "LOW_MATCHED_INK": 2
+  },
+  "sym_cov": {
+   "median": 0.9971,
+   "p10": 0.6607
+  },
+  "residual_pt": {
+   "median": 0.0001
+  },
+  "scale_deviation_from_1": {
+   "max": 0.00052,
+   "pairs_with_scale_change": 0
+  },
+  "rotation_used": 8
+ },
+ "pairs": [
+  {
+   "pair_id": "ar_large_change_45",
+   "bucket": "large_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.0,
+    "ty": -35.51999
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9901,
+   "coverage": {
+    "left_ink_cells": 1598586,
+    "right_ink_cells": 1582972,
+    "left_matched": 1582720,
+    "right_matched": 1569593,
+    "left_cov": 0.99007,
+    "right_cov": 0.99155,
+    "sym_cov": 0.99081
+   },
+   "residual": {
+    "n": 6798,
+    "median": 0.0027,
+    "p90": 0.2397
+   },
+   "anchors": {
+    "left_candidates": 10404,
+    "right_candidates": 10484,
+    "matched": 6798,
+    "coverage": 0.6534,
+    "min_len_pt": 14.374,
+    "votes": 3844
+   },
+   "left_ink_pt": 1192908.75,
+   "right_ink_pt": 1168484.5,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ar_large_change_48",
+   "bucket": "large_change",
+   "discipline": "AR",
+   "method": "phase_corr",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 42.54546,
+    "ty": -0.00039
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9249,
+   "coverage": {
+    "left_ink_cells": 698302,
+    "right_ink_cells": 753856,
+    "left_matched": 685667,
+    "right_matched": 682287,
+    "left_cov": 0.98191,
+    "right_cov": 0.90506,
+    "sym_cov": 0.94201
+   },
+   "residual": {
+    "n": 3133,
+    "median": 0.0652,
+    "p90": 0.1746
+   },
+   "anchors": {
+    "left_candidates": 5047,
+    "right_candidates": 4467,
+    "matched": 3133,
+    "coverage": 0.7014,
+    "min_len_pt": 13.56,
+    "votes": 2117
+   },
+   "left_ink_pt": 440664.84,
+   "right_ink_pt": 420629.5,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ar_medium_change_24",
+   "bucket": "medium_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": 4e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9946,
+   "coverage": {
+    "left_ink_cells": 979951,
+    "right_ink_cells": 993311,
+    "left_matched": 979720,
+    "right_matched": 982829,
+    "left_cov": 0.99976,
+    "right_cov": 0.98945,
+    "sym_cov": 0.99457
+   },
+   "residual": {
+    "n": 2900,
+    "median": 0.0,
+    "p90": 0.0002
+   },
+   "anchors": {
+    "left_candidates": 2995,
+    "right_candidates": 3166,
+    "matched": 2900,
+    "coverage": 0.9683,
+    "min_len_pt": 14.788,
+    "votes": 2428
+   },
+   "left_ink_pt": 643721.75,
+   "right_ink_pt": 668688.62,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ar_medium_change_27",
+   "bucket": "medium_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9932,
+   "coverage": {
+    "left_ink_cells": 785753,
+    "right_ink_cells": 796555,
+    "left_matched": 785753,
+    "right_matched": 785755,
+    "left_cov": 1.0,
+    "right_cov": 0.98644,
+    "sym_cov": 0.99317
+   },
+   "residual": {
+    "n": 4437,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 4437,
+    "right_candidates": 4474,
+    "matched": 4437,
+    "coverage": 1.0,
+    "min_len_pt": 15.529,
+    "votes": 3490
+   },
+   "left_ink_pt": 433101.47,
+   "right_ink_pt": 440664.84,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "ar_small_change_15",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": 2e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 1081999,
+    "right_ink_cells": 1082005,
+    "left_matched": 1081999,
+    "right_matched": 1081995,
+    "left_cov": 1.0,
+    "right_cov": 0.99999,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 6732,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 7047,
+    "right_candidates": 6773,
+    "matched": 6732,
+    "coverage": 0.9939,
+    "min_len_pt": 14.597,
+    "votes": 5286
+   },
+   "left_ink_pt": 647903.0,
+   "right_ink_pt": 586970.62,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "ar_small_change_17",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 6e-05,
+    "ty": 1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9923,
+   "coverage": {
+    "left_ink_cells": 407654,
+    "right_ink_cells": 414003,
+    "left_matched": 407654,
+    "right_matched": 407672,
+    "left_cov": 1.0,
+    "right_cov": 0.98471,
+    "sym_cov": 0.99229
+   },
+   "residual": {
+    "n": 3045,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 3071,
+    "right_candidates": 3065,
+    "matched": 3045,
+    "coverage": 0.9935,
+    "min_len_pt": 14.611,
+    "votes": 2317
+   },
+   "left_ink_pt": 296709.38,
+   "right_ink_pt": 296447.0,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "ar_small_change_21",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9969,
+   "coverage": {
+    "left_ink_cells": 261710,
+    "right_ink_cells": 261531,
+    "left_matched": 260863,
+    "right_matched": 260783,
+    "left_cov": 0.99676,
+    "right_cov": 0.99714,
+    "sym_cov": 0.99695
+   },
+   "residual": {
+    "n": 5163,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 5406,
+    "right_candidates": 5297,
+    "matched": 5163,
+    "coverage": 0.9747,
+    "min_len_pt": 6.183,
+    "votes": 3765
+   },
+   "left_ink_pt": 182335.0,
+   "right_ink_pt": 179143.34,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ar_small_change_22",
+   "bucket": "small_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9265,
+   "coverage": {
+    "left_ink_cells": 252403,
+    "right_ink_cells": 292450,
+    "left_matched": 252403,
+    "right_matched": 252405,
+    "left_cov": 1.0,
+    "right_cov": 0.86307,
+    "sym_cov": 0.9265
+   },
+   "residual": {
+    "n": 2598,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 2599,
+    "right_candidates": 3283,
+    "matched": 2598,
+    "coverage": 0.9996,
+    "min_len_pt": 8.657,
+    "votes": 458
+   },
+   "left_ink_pt": 134647.59,
+   "right_ink_pt": 159900.8,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ar_text_only_49",
+   "bucket": "text_only",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -6e-05,
+    "ty": 2e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 81949,
+    "right_ink_cells": 81949,
+    "left_matched": 81949,
+    "right_matched": 81949,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 1495,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 1495,
+    "right_candidates": 1495,
+    "matched": 1495,
+    "coverage": 1.0,
+    "min_len_pt": 4.39,
+    "votes": 853
+   },
+   "left_ink_pt": 51197.19,
+   "right_ink_pt": 51197.19,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ar_text_only_52",
+   "bucket": "text_only",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": 8e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 191709,
+    "right_ink_cells": 191709,
+    "left_matched": 191709,
+    "right_matched": 191709,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 2110,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 2111,
+    "right_candidates": 2110,
+    "matched": 2110,
+    "coverage": 1.0,
+    "min_len_pt": 4.998,
+    "votes": 672
+   },
+   "left_ink_pt": 33477.53,
+   "right_ink_pt": 32231.8,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "ar_text_only_53",
+   "bucket": "text_only",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -5e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9998,
+   "coverage": {
+    "left_ink_cells": 43120,
+    "right_ink_cells": 43140,
+    "left_matched": 43120,
+    "right_matched": 43122,
+    "left_cov": 1.0,
+    "right_cov": 0.99958,
+    "sym_cov": 0.99979
+   },
+   "residual": {
+    "n": 912,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 913,
+    "right_candidates": 913,
+    "matched": 912,
+    "coverage": 0.9989,
+    "min_len_pt": 3.546,
+    "votes": 603
+   },
+   "left_ink_pt": 30488.81,
+   "right_ink_pt": 30486.29,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 7e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9962,
+   "coverage": {
+    "left_ink_cells": 645866,
+    "right_ink_cells": 650724,
+    "left_matched": 645866,
+    "right_matched": 645866,
+    "left_cov": 1.0,
+    "right_cov": 0.99253,
+    "sym_cov": 0.99625
+   },
+   "residual": {
+    "n": 2978,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 2982,
+    "right_candidates": 2980,
+    "matched": 2978,
+    "coverage": 0.9993,
+    "min_len_pt": 14.922,
+    "votes": 1597
+   },
+   "left_ink_pt": 396469.5,
+   "right_ink_pt": 399202.62,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": -1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9998,
+   "coverage": {
+    "left_ink_cells": 361380,
+    "right_ink_cells": 361528,
+    "left_matched": 361380,
+    "right_matched": 361412,
+    "left_cov": 1.0,
+    "right_cov": 0.99968,
+    "sym_cov": 0.99984
+   },
+   "residual": {
+    "n": 3694,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 3716,
+    "right_candidates": 3719,
+    "matched": 3694,
+    "coverage": 0.9941,
+    "min_len_pt": 8.252,
+    "votes": 2045
+   },
+   "left_ink_pt": 186263.84,
+   "right_ink_pt": 186374.81,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -3e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 168927,
+    "right_ink_cells": 168927,
+    "left_matched": 168927,
+    "right_matched": 168927,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 3444,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 3445,
+    "right_candidates": 3444,
+    "matched": 3444,
+    "coverage": 1.0,
+    "min_len_pt": 6.094,
+    "votes": 2689
+   },
+   "left_ink_pt": 163099.03,
+   "right_ink_pt": 162545.53,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ar_tiny_change_13",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 155233,
+    "right_ink_cells": 155233,
+    "left_matched": 155233,
+    "right_matched": 155233,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 4131,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 4133,
+    "right_candidates": 4132,
+    "matched": 4131,
+    "coverage": 0.9998,
+    "min_len_pt": 6.156,
+    "votes": 3427
+   },
+   "left_ink_pt": 154936.72,
+   "right_ink_pt": 154266.56,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ar_tiny_change_14",
+   "bucket": "tiny_change",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": 0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9999,
+   "coverage": {
+    "left_ink_cells": 306960,
+    "right_ink_cells": 307022,
+    "left_matched": 306960,
+    "right_matched": 306962,
+    "left_cov": 1.0,
+    "right_cov": 0.9998,
+    "sym_cov": 0.9999
+   },
+   "residual": {
+    "n": 4301,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 4302,
+    "right_candidates": 4302,
+    "matched": 4301,
+    "coverage": 0.9998,
+    "min_len_pt": 7.246,
+    "votes": 1794
+   },
+   "left_ink_pt": 151280.22,
+   "right_ink_pt": 151303.64,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "bucket": "unchanged",
+   "discipline": "AR",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -2e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 300238,
+    "right_ink_cells": 300238,
+    "left_matched": 300238,
+    "right_matched": 300238,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 2676,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 2678,
+    "right_candidates": 2676,
+    "matched": 2676,
+    "coverage": 1.0,
+    "min_len_pt": 12.708,
+    "votes": 2166
+   },
+   "left_ink_pt": 199204.28,
+   "right_ink_pt": 195197.72,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "bucket": "unchanged",
+   "discipline": "AR",
+   "method": "bbox_anchor+lsq",
+   "transform": {
+    "scale": 0.9999,
+    "theta_deg": 0.00993,
+    "tx": 0.21942,
+    "ty": 0.04102
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9637,
+   "coverage": {
+    "left_ink_cells": 411789,
+    "right_ink_cells": 409179,
+    "left_matched": 409416,
+    "right_matched": 409179,
+    "left_cov": 0.99424,
+    "right_cov": 1.0,
+    "sym_cov": 0.99711
+   },
+   "residual": {
+    "n": 4445,
+    "median": 0.1205,
+    "p90": 0.2193
+   },
+   "anchors": {
+    "left_candidates": 4447,
+    "right_candidates": 4446,
+    "matched": 4445,
+    "coverage": 0.9998,
+    "min_len_pt": 8.747,
+    "votes": 2349
+   },
+   "left_ink_pt": 195207.59,
+   "right_ink_pt": 193774.09,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "eom_dense_small_change_29",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": 0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9988,
+   "coverage": {
+    "left_ink_cells": 199323,
+    "right_ink_cells": 199783,
+    "left_matched": 199323,
+    "right_matched": 199288,
+    "left_cov": 1.0,
+    "right_cov": 0.99752,
+    "sym_cov": 0.99876
+   },
+   "residual": {
+    "n": 6641,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 6648,
+    "right_candidates": 6669,
+    "matched": 6641,
+    "coverage": 0.9989,
+    "min_len_pt": 7.675,
+    "votes": 7222
+   },
+   "left_ink_pt": 263638.81,
+   "right_ink_pt": 262729.09,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "eom_dense_small_change_30",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9995,
+   "coverage": {
+    "left_ink_cells": 199534,
+    "right_ink_cells": 199709,
+    "left_matched": 199534,
+    "right_matched": 199527,
+    "left_cov": 1.0,
+    "right_cov": 0.99909,
+    "sym_cov": 0.99954
+   },
+   "residual": {
+    "n": 6458,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 6466,
+    "right_candidates": 6479,
+    "matched": 6458,
+    "coverage": 0.9988,
+    "min_len_pt": 7.675,
+    "votes": 6843
+   },
+   "left_ink_pt": 254089.91,
+   "right_ink_pt": 252730.7,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "eom_dense_small_change_31",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": 0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9991,
+   "coverage": {
+    "left_ink_cells": 199255,
+    "right_ink_cells": 199711,
+    "left_matched": 199255,
+    "right_matched": 199352,
+    "left_cov": 1.0,
+    "right_cov": 0.9982,
+    "sym_cov": 0.9991
+   },
+   "residual": {
+    "n": 6885,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 6888,
+    "right_candidates": 6902,
+    "matched": 6885,
+    "coverage": 0.9996,
+    "min_len_pt": 7.675,
+    "votes": 7137
+   },
+   "left_ink_pt": 248949.5,
+   "right_ink_pt": 249199.55,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "eom_dense_small_change_32",
+   "bucket": "dense_small_change",
+   "discipline": "EOM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9987,
+   "coverage": {
+    "left_ink_cells": 189129,
+    "right_ink_cells": 189715,
+    "left_matched": 189129,
+    "right_matched": 189213,
+    "left_cov": 1.0,
+    "right_cov": 0.99735,
+    "sym_cov": 0.99867
+   },
+   "residual": {
+    "n": 6247,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 6253,
+    "right_candidates": 6273,
+    "matched": 6247,
+    "coverage": 0.999,
+    "min_len_pt": 7.766,
+    "votes": 6652
+   },
+   "left_ink_pt": 243029.55,
+   "right_ink_pt": 243592.28,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "eom_large_change_46",
+   "bucket": "large_change",
+   "discipline": "EOM",
+   "method": "vote+lsq",
+   "transform": {
+    "scale": 0.99998,
+    "theta_deg": 0.00066,
+    "tx": -42.50293,
+    "ty": 0.00812
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.6347,
+   "coverage": {
+    "left_ink_cells": 179533,
+    "right_ink_cells": 358127,
+    "left_matched": 171151,
+    "right_matched": 174447,
+    "left_cov": 0.95331,
+    "right_cov": 0.48711,
+    "sym_cov": 0.64278
+   },
+   "residual": {
+    "n": 2549,
+    "median": 0.0452,
+    "p90": 0.1952
+   },
+   "anchors": {
+    "left_candidates": 5234,
+    "right_candidates": 9587,
+    "matched": 2549,
+    "coverage": 0.487,
+    "min_len_pt": 9.765,
+    "votes": 1298
+   },
+   "left_ink_pt": 372582.06,
+   "right_ink_pt": 546736.88,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "eom_medium_change_23",
+   "bucket": "medium_change",
+   "discipline": "EOM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.11956,
+    "ty": -0.23959
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9219,
+   "coverage": {
+    "left_ink_cells": 681546,
+    "right_ink_cells": 621872,
+    "left_matched": 621498,
+    "right_matched": 621482,
+    "left_cov": 0.91189,
+    "right_cov": 0.99937,
+    "sym_cov": 0.95363
+   },
+   "residual": {
+    "n": 4238,
+    "median": 0.1199,
+    "p90": 0.2394
+   },
+   "anchors": {
+    "left_candidates": 6655,
+    "right_candidates": 6624,
+    "matched": 4238,
+    "coverage": 0.6398,
+    "min_len_pt": 17.828,
+    "votes": 4202
+   },
+   "left_ink_pt": 757218.06,
+   "right_ink_pt": 718744.56,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "eom_repack_33",
+   "bucket": "repack",
+   "discipline": "EOM",
+   "method": "bbox_anchor",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1.00891,
+    "ty": -0.95967
+   },
+   "success": false,
+   "failure_reason": "LOW_MATCHED_INK",
+   "confidence": 0.4687,
+   "coverage": {
+    "left_ink_cells": 4797,
+    "right_ink_cells": 2078,
+    "left_matched": 1616,
+    "right_matched": 1606,
+    "left_cov": 0.33688,
+    "right_cov": 0.77286,
+    "sym_cov": 0.46865
+   },
+   "residual": {
+    "n": 0,
+    "median": null,
+    "p90": null
+   },
+   "anchors": {
+    "left_candidates": 201,
+    "right_candidates": 12,
+    "matched": 0,
+    "coverage": 0.0,
+    "min_len_pt": 2.107,
+    "votes": 0
+   },
+   "left_ink_pt": 2690.98,
+   "right_ink_pt": 1257.03,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "eom_repack_34",
+   "bucket": "repack",
+   "discipline": "EOM",
+   "method": "bbox_anchor+lsq",
+   "transform": {
+    "scale": 0.99955,
+    "theta_deg": -0.00319,
+    "tx": -1.30176,
+    "ty": -0.07794
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.6032,
+   "coverage": {
+    "left_ink_cells": 4798,
+    "right_ink_cells": 2074,
+    "left_matched": 2075,
+    "right_matched": 2074,
+    "left_cov": 0.43247,
+    "right_cov": 1.0,
+    "sym_cov": 0.60375
+   },
+   "residual": {
+    "n": 3,
+    "median": 0.0032,
+    "p90": 0.0032
+   },
+   "anchors": {
+    "left_candidates": 201,
+    "right_candidates": 13,
+    "matched": 3,
+    "coverage": 0.2308,
+    "min_len_pt": 2.11,
+    "votes": 3
+   },
+   "left_ink_pt": 3752.54,
+   "right_ink_pt": 1298.16,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "eom_repack_35",
+   "bucket": "repack",
+   "discipline": "EOM",
+   "method": "phase_corr",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1.0246,
+    "ty": -0.50403
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.6179,
+   "coverage": {
+    "left_ink_cells": 5542,
+    "right_ink_cells": 2961,
+    "left_matched": 2885,
+    "right_matched": 2893,
+    "left_cov": 0.52057,
+    "right_cov": 0.97703,
+    "sym_cov": 0.67952
+   },
+   "residual": {
+    "n": 7,
+    "median": 0.3264,
+    "p90": 0.4223
+   },
+   "anchors": {
+    "left_candidates": 204,
+    "right_candidates": 14,
+    "matched": 7,
+    "coverage": 0.5,
+    "min_len_pt": 2.117,
+    "votes": 5
+   },
+   "left_ink_pt": 3748.63,
+   "right_ink_pt": 2310.14,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "eom_strong_redesign_41",
+   "bucket": "strong_redesign",
+   "discipline": "EOM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.0,
+    "ty": -0.00025
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9532,
+   "coverage": {
+    "left_ink_cells": 221959,
+    "right_ink_cells": 242744,
+    "left_matched": 219834,
+    "right_matched": 223157,
+    "left_cov": 0.99043,
+    "right_cov": 0.91931,
+    "sym_cov": 0.95328
+   },
+   "residual": {
+    "n": 8155,
+    "median": 0.0001,
+    "p90": 0.0002
+   },
+   "anchors": {
+    "left_candidates": 8778,
+    "right_candidates": 9575,
+    "matched": 8155,
+    "coverage": 0.929,
+    "min_len_pt": 6.521,
+    "votes": 4466
+   },
+   "left_ink_pt": 392536.62,
+   "right_ink_pt": 432826.91,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "kj_table_only_55",
+   "bucket": "table_only",
+   "discipline": "KJ",
+   "method": "bbox_anchor+lsq",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.00012,
+    "ty": -0.00012
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.991,
+   "coverage": {
+    "left_ink_cells": 13707,
+    "right_ink_cells": 13978,
+    "left_matched": 13707,
+    "right_matched": 13730,
+    "left_cov": 1.0,
+    "right_cov": 0.98226,
+    "sym_cov": 0.99104
+   },
+   "residual": {
+    "n": 83,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 89,
+    "right_candidates": 90,
+    "matched": 83,
+    "coverage": 0.9326,
+    "min_len_pt": 2.213,
+    "votes": 90
+   },
+   "left_ink_pt": 6630.5,
+   "right_ink_pt": 6798.94,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "kj_table_only_56",
+   "bucket": "table_only",
+   "discipline": "KJ",
+   "method": "bbox_anchor+lsq",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": -1e-05,
+    "tx": 0.0,
+    "ty": 0.00037
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.991,
+   "coverage": {
+    "left_ink_cells": 13655,
+    "right_ink_cells": 13919,
+    "left_matched": 13655,
+    "right_matched": 13672,
+    "left_cov": 1.0,
+    "right_cov": 0.98225,
+    "sym_cov": 0.99104
+   },
+   "residual": {
+    "n": 81,
+    "median": 0.0002,
+    "p90": 0.0002
+   },
+   "anchors": {
+    "left_candidates": 89,
+    "right_candidates": 88,
+    "matched": 81,
+    "coverage": 0.9205,
+    "min_len_pt": 2.205,
+    "votes": 88
+   },
+   "left_ink_pt": 6630.51,
+   "right_ink_pt": 6786.97,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "kj_text_only_51",
+   "bucket": "text_only",
+   "discipline": "KJ",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": 2e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 54001,
+    "right_ink_cells": 54001,
+    "left_matched": 54001,
+    "right_matched": 54001,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 856,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 856,
+    "right_candidates": 856,
+    "matched": 856,
+    "coverage": 1.0,
+    "min_len_pt": 8.396,
+    "votes": 572
+   },
+   "left_ink_pt": 34994.23,
+   "right_ink_pt": 34994.23,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "km_rotated_page_39",
+   "bucket": "rotated_page",
+   "discipline": "KM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.02988,
+    "ty": -0.14988
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.652,
+   "coverage": {
+    "left_ink_cells": 30320,
+    "right_ink_cells": 41959,
+    "left_matched": 23960,
+    "right_matched": 23794,
+    "left_cov": 0.79024,
+    "right_cov": 0.56708,
+    "sym_cov": 0.66069
+   },
+   "residual": {
+    "n": 369,
+    "median": 0.0474,
+    "p90": 0.1027
+   },
+   "anchors": {
+    "left_candidates": 471,
+    "right_candidates": 1006,
+    "matched": 369,
+    "coverage": 0.7834,
+    "min_len_pt": 7.268,
+    "votes": 222
+   },
+   "left_ink_pt": 20306.5,
+   "right_ink_pt": 33621.12,
+   "page_rotation": [
+    0,
+    270
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "km_table_only_50",
+   "bucket": "table_only",
+   "discipline": "KM",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 4e-05,
+    "ty": -3e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.831,
+   "coverage": {
+    "left_ink_cells": 30739,
+    "right_ink_cells": 43241,
+    "left_matched": 30739,
+    "right_matched": 30739,
+    "left_cov": 1.0,
+    "right_cov": 0.71088,
+    "sym_cov": 0.83101
+   },
+   "residual": {
+    "n": 641,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 649,
+    "right_candidates": 975,
+    "matched": 641,
+    "coverage": 0.9877,
+    "min_len_pt": 5.527,
+    "votes": 245
+   },
+   "left_ink_pt": 29296.3,
+   "right_ink_pt": 39340.18,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ov_strong_redesign_43",
+   "bucket": "strong_redesign",
+   "discipline": "OV",
+   "method": "vote+lsq",
+   "transform": {
+    "scale": 0.99999,
+    "theta_deg": 0.00113,
+    "tx": 0.01239,
+    "ty": 0.00134
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9065,
+   "coverage": {
+    "left_ink_cells": 307729,
+    "right_ink_cells": 295006,
+    "left_matched": 275309,
+    "right_matched": 273811,
+    "left_cov": 0.89465,
+    "right_cov": 0.92815,
+    "sym_cov": 0.91105
+   },
+   "residual": {
+    "n": 5837,
+    "median": 0.0181,
+    "p90": 0.0243
+   },
+   "anchors": {
+    "left_candidates": 9955,
+    "right_candidates": 9516,
+    "matched": 5837,
+    "coverage": 0.6134,
+    "min_len_pt": 7.824,
+    "votes": 3923
+   },
+   "left_ink_pt": 369442.47,
+   "right_ink_pt": 342373.56,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ov_strong_redesign_44",
+   "bucket": "strong_redesign",
+   "discipline": "OV",
+   "method": "phase_corr",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -33.51292,
+    "ty": -1.61885
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.8426,
+   "coverage": {
+    "left_ink_cells": 269205,
+    "right_ink_cells": 296255,
+    "left_matched": 238975,
+    "right_matched": 252001,
+    "left_cov": 0.88771,
+    "right_cov": 0.85062,
+    "sym_cov": 0.86828
+   },
+   "residual": {
+    "n": 3807,
+    "median": 0.1064,
+    "p90": 1.5056
+   },
+   "anchors": {
+    "left_candidates": 8022,
+    "right_candidates": 8673,
+    "matched": 3807,
+    "coverage": 0.4746,
+    "min_len_pt": 8.211,
+    "votes": 1822
+   },
+   "left_ink_pt": 319420.0,
+   "right_ink_pt": 348795.69,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_large_change_47",
+   "bucket": "large_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.8,
+   "coverage": {
+    "left_ink_cells": 413241,
+    "right_ink_cells": 509480,
+    "left_matched": 371454,
+    "right_matched": 379207,
+    "left_cov": 0.89888,
+    "right_cov": 0.7443,
+    "sym_cov": 0.81353
+   },
+   "residual": {
+    "n": 4298,
+    "median": 0.06,
+    "p90": 0.18
+   },
+   "anchors": {
+    "left_candidates": 10601,
+    "right_candidates": 7724,
+    "matched": 4298,
+    "coverage": 0.5564,
+    "min_len_pt": 7.091,
+    "votes": 3602
+   },
+   "left_ink_pt": 467076.78,
+   "right_ink_pt": 405347.88,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_medium_change_25",
+   "bucket": "medium_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 2e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9912,
+   "coverage": {
+    "left_ink_cells": 476821,
+    "right_ink_cells": 482084,
+    "left_matched": 474954,
+    "right_matched": 475499,
+    "left_cov": 0.99608,
+    "right_cov": 0.98634,
+    "sym_cov": 0.99119
+   },
+   "residual": {
+    "n": 8406,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 8480,
+    "right_candidates": 8848,
+    "matched": 8406,
+    "coverage": 0.9913,
+    "min_len_pt": 13.378,
+    "votes": 610
+   },
+   "left_ink_pt": 510547.75,
+   "right_ink_pt": 511596.03,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_medium_change_26",
+   "bucket": "medium_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -3e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9971,
+   "coverage": {
+    "left_ink_cells": 467334,
+    "right_ink_cells": 470176,
+    "left_matched": 467334,
+    "right_matched": 467451,
+    "left_cov": 1.0,
+    "right_cov": 0.9942,
+    "sym_cov": 0.99709
+   },
+   "residual": {
+    "n": 7693,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 7695,
+    "right_candidates": 7715,
+    "matched": 7693,
+    "coverage": 0.9997,
+    "min_len_pt": 13.669,
+    "votes": 416
+   },
+   "left_ink_pt": 455540.22,
+   "right_ink_pt": 457362.5,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_medium_change_28",
+   "bucket": "medium_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.06002,
+    "ty": -1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9917,
+   "coverage": {
+    "left_ink_cells": 308787,
+    "right_ink_cells": 309241,
+    "left_matched": 308787,
+    "right_matched": 309241,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 3298,
+    "median": 0.03,
+    "p90": 0.06
+   },
+   "anchors": {
+    "left_candidates": 3691,
+    "right_candidates": 3679,
+    "matched": 3298,
+    "coverage": 0.8964,
+    "min_len_pt": 10.864,
+    "votes": 3199
+   },
+   "left_ink_pt": 284585.31,
+   "right_ink_pt": 280506.03,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_repack_36",
+   "bucket": "repack",
+   "discipline": "SS",
+   "method": "bbox_fit+lsq",
+   "transform": {
+    "scale": 0.99948,
+    "theta_deg": 0.0159,
+    "tx": 0.76208,
+    "ty": 0.15381
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9804,
+   "coverage": {
+    "left_ink_cells": 11970,
+    "right_ink_cells": 12200,
+    "left_matched": 11970,
+    "right_matched": 12174,
+    "left_cov": 1.0,
+    "right_cov": 0.99787,
+    "sym_cov": 0.99892
+   },
+   "residual": {
+    "n": 1146,
+    "median": 0.0668,
+    "p90": 0.1372
+   },
+   "anchors": {
+    "left_candidates": 1257,
+    "right_candidates": 1175,
+    "matched": 1146,
+    "coverage": 0.9753,
+    "min_len_pt": 2.176,
+    "votes": 1204
+   },
+   "left_ink_pt": 13066.88,
+   "right_ink_pt": 12927.69,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_rotated_page_38",
+   "bucket": "rotated_page",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -6e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.58,
+   "coverage": {
+    "left_ink_cells": 774120,
+    "right_ink_cells": 771221,
+    "left_matched": 456433,
+    "right_matched": 454949,
+    "left_cov": 0.58962,
+    "right_cov": 0.58991,
+    "sym_cov": 0.58976
+   },
+   "residual": {
+    "n": 2203,
+    "median": 0.0599,
+    "p90": 0.1201
+   },
+   "anchors": {
+    "left_candidates": 7883,
+    "right_candidates": 4567,
+    "matched": 2203,
+    "coverage": 0.4824,
+    "min_len_pt": 13.372,
+    "votes": 1486
+   },
+   "left_ink_pt": 600467.0,
+   "right_ink_pt": 433510.25,
+   "page_rotation": [
+    270,
+    270
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_small_change_18",
+   "bucket": "small_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": 6e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9952,
+   "coverage": {
+    "left_ink_cells": 356061,
+    "right_ink_cells": 358946,
+    "left_matched": 355763,
+    "right_matched": 355817,
+    "left_cov": 0.99916,
+    "right_cov": 0.99128,
+    "sym_cov": 0.99521
+   },
+   "residual": {
+    "n": 4580,
+    "median": 0.0001,
+    "p90": 0.0001
+   },
+   "anchors": {
+    "left_candidates": 4586,
+    "right_candidates": 4604,
+    "matched": 4580,
+    "coverage": 0.9987,
+    "min_len_pt": 8.781,
+    "votes": 5040
+   },
+   "left_ink_pt": 294573.81,
+   "right_ink_pt": 296489.56,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_small_change_19",
+   "bucket": "small_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.02996,
+    "ty": 0.02991
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.986,
+   "coverage": {
+    "left_ink_cells": 309316,
+    "right_ink_cells": 310131,
+    "left_matched": 309316,
+    "right_matched": 308720,
+    "left_cov": 1.0,
+    "right_cov": 0.99545,
+    "sym_cov": 0.99772
+   },
+   "residual": {
+    "n": 3082,
+    "median": 0.0423,
+    "p90": 0.0425
+   },
+   "anchors": {
+    "left_candidates": 3665,
+    "right_candidates": 3674,
+    "matched": 3082,
+    "coverage": 0.8409,
+    "min_len_pt": 11.004,
+    "votes": 3025
+   },
+   "left_ink_pt": 280506.03,
+   "right_ink_pt": 281559.38,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_small_change_20",
+   "bucket": "small_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.02996,
+    "ty": 0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9917,
+   "coverage": {
+    "left_ink_cells": 187007,
+    "right_ink_cells": 187765,
+    "left_matched": 187007,
+    "right_matched": 187765,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 5052,
+    "median": 0.03,
+    "p90": 0.03
+   },
+   "anchors": {
+    "left_candidates": 5354,
+    "right_candidates": 5359,
+    "matched": 5052,
+    "coverage": 0.9436,
+    "min_len_pt": 5.834,
+    "votes": 2509
+   },
+   "left_ink_pt": 189108.31,
+   "right_ink_pt": 189106.34,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_strong_redesign_40",
+   "bucket": "strong_redesign",
+   "discipline": "SS",
+   "method": "vote+lsq",
+   "transform": {
+    "scale": 1.00006,
+    "theta_deg": -0.00016,
+    "tx": -0.01892,
+    "ty": -0.0368
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.7942,
+   "coverage": {
+    "left_ink_cells": 511467,
+    "right_ink_cells": 726536,
+    "left_matched": 477380,
+    "right_matched": 515538,
+    "left_cov": 0.93335,
+    "right_cov": 0.70958,
+    "sym_cov": 0.80203
+   },
+   "residual": {
+    "n": 4762,
+    "median": 0.035,
+    "p90": 0.1577
+   },
+   "anchors": {
+    "left_candidates": 8976,
+    "right_candidates": 9565,
+    "matched": 4762,
+    "coverage": 0.5305,
+    "min_len_pt": 10.256,
+    "votes": 2651
+   },
+   "left_ink_pt": 467886.75,
+   "right_ink_pt": 591762.31,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_strong_redesign_42",
+   "bucket": "strong_redesign",
+   "discipline": "SS",
+   "method": "vote+lsq",
+   "transform": {
+    "scale": 0.99992,
+    "theta_deg": 0.00017,
+    "tx": 1828.85046,
+    "ty": 237.92294
+   },
+   "success": false,
+   "failure_reason": "LOW_MATCHED_INK",
+   "confidence": 0.2579,
+   "coverage": {
+    "left_ink_cells": 187806,
+    "right_ink_cells": 567199,
+    "left_matched": 98121,
+    "right_matched": 98242,
+    "left_cov": 0.52246,
+    "right_cov": 0.17321,
+    "sym_cov": 0.26008
+   },
+   "residual": {
+    "n": 479,
+    "median": 0.0296,
+    "p90": 0.0459
+   },
+   "anchors": {
+    "left_candidates": 1283,
+    "right_candidates": 4279,
+    "matched": 479,
+    "coverage": 0.3733,
+    "min_len_pt": 21.819,
+    "votes": 206
+   },
+   "left_ink_pt": 147810.84,
+   "right_ink_pt": 426523.0,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "ss_table_only_54",
+   "bucket": "table_only",
+   "discipline": "SS",
+   "method": "bbox_anchor",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.45734,
+    "ty": 0.47068
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.8057,
+   "coverage": {
+    "left_ink_cells": 33497,
+    "right_ink_cells": 33414,
+    "left_matched": 33497,
+    "right_matched": 33414,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 496,
+    "median": 0.6994,
+    "p90": 0.6994
+   },
+   "anchors": {
+    "left_candidates": 514,
+    "right_candidates": 514,
+    "matched": 496,
+    "coverage": 0.965,
+    "min_len_pt": 4.525,
+    "votes": 191
+   },
+   "left_ink_pt": 22345.29,
+   "right_ink_pt": 22278.81,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "bucket": "tiny_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": 1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 226835,
+    "right_ink_cells": 226835,
+    "left_matched": 226835,
+    "right_matched": 226835,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 6337,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 6339,
+    "right_candidates": 6338,
+    "matched": 6337,
+    "coverage": 0.9998,
+    "min_len_pt": 6.81,
+    "votes": 4327
+   },
+   "left_ink_pt": 248759.02,
+   "right_ink_pt": 247188.59,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "bucket": "tiny_change",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 239700,
+    "right_ink_cells": 239700,
+    "left_matched": 239700,
+    "right_matched": 239700,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 4744,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 4746,
+    "right_candidates": 4744,
+    "matched": 4744,
+    "coverage": 1.0,
+    "min_len_pt": 6.604,
+    "votes": 2701
+   },
+   "left_ink_pt": 169083.94,
+   "right_ink_pt": 166542.41,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "bucket": "unchanged",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": -1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 634747,
+    "right_ink_cells": 634747,
+    "left_matched": 634747,
+    "right_matched": 634747,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 5815,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 5817,
+    "right_candidates": 5815,
+    "matched": 5815,
+    "coverage": 1.0,
+    "min_len_pt": 11.738,
+    "votes": 6125
+   },
+   "left_ink_pt": 479946.5,
+   "right_ink_pt": 475821.12,
+   "page_rotation": [
+    270,
+    270
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "bucket": "unchanged",
+   "discipline": "SS",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -0.0
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 222171,
+    "right_ink_cells": 222171,
+    "left_matched": 222171,
+    "right_matched": 222171,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 6097,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 6097,
+    "right_candidates": 6097,
+    "matched": 6097,
+    "coverage": 1.0,
+    "min_len_pt": 6.776,
+    "votes": 4374
+   },
+   "left_ink_pt": 239172.38,
+   "right_ink_pt": 239172.38,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "bucket": "unchanged",
+   "discipline": "SS",
+   "method": "bbox_anchor",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.46984,
+    "ty": -0.4764
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.8141,
+   "coverage": {
+    "left_ink_cells": 179072,
+    "right_ink_cells": 180358,
+    "left_matched": 179072,
+    "right_matched": 180351,
+    "left_cov": 1.0,
+    "right_cov": 0.99996,
+    "sym_cov": 0.99998
+   },
+   "residual": {
+    "n": 4252,
+    "median": 0.6691,
+    "p90": 0.6691
+   },
+   "anchors": {
+    "left_candidates": 4254,
+    "right_candidates": 4254,
+    "matched": 4252,
+    "coverage": 0.9995,
+    "min_len_pt": 5.717,
+    "votes": 2230
+   },
+   "left_ink_pt": 121334.62,
+   "right_ink_pt": 121335.78,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  },
+  {
+   "pair_id": "tx_rotated_page_37",
+   "bucket": "rotated_page",
+   "discipline": "TX",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.14537,
+    "ty": -0.29238
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9138,
+   "coverage": {
+    "left_ink_cells": 1641459,
+    "right_ink_cells": 1609624,
+    "left_matched": 1631015,
+    "right_matched": 1603433,
+    "left_cov": 0.99364,
+    "right_cov": 0.99615,
+    "sym_cov": 0.99488
+   },
+   "residual": {
+    "n": 14426,
+    "median": 0.2935,
+    "p90": 0.5438
+   },
+   "anchors": {
+    "left_candidates": 14683,
+    "right_candidates": 14666,
+    "matched": 14426,
+    "coverage": 0.9836,
+    "min_len_pt": 19.131,
+    "votes": 12968
+   },
+   "left_ink_pt": 1435842.5,
+   "right_ink_pt": 1432423.75,
+   "page_rotation": [
+    270,
+    270
+   ],
+   "gt_label": "LOCAL_CHANGE"
+  },
+  {
+   "pair_id": "tx_small_change_16",
+   "bucket": "small_change",
+   "discipline": "TX",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -3e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 323550,
+    "right_ink_cells": 324845,
+    "left_matched": 323550,
+    "right_matched": 324845,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 5010,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 5010,
+    "right_candidates": 5014,
+    "matched": 5010,
+    "coverage": 1.0,
+    "min_len_pt": 9.679,
+    "votes": 2739
+   },
+   "left_ink_pt": 299956.06,
+   "right_ink_pt": 303062.03,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "bucket": "tiny_change",
+   "discipline": "TX",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 1.0,
+   "coverage": {
+    "left_ink_cells": 207453,
+    "right_ink_cells": 207453,
+    "left_matched": 207453,
+    "right_matched": 207453,
+    "left_cov": 1.0,
+    "right_cov": 1.0,
+    "sym_cov": 1.0
+   },
+   "residual": {
+    "n": 5676,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 5688,
+    "right_candidates": 5680,
+    "matched": 5676,
+    "coverage": 0.9993,
+    "min_len_pt": 6.255,
+    "votes": 4329
+   },
+   "left_ink_pt": 219360.25,
+   "right_ink_pt": 212643.11,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "CROP_DIFFERENCE"
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "bucket": "unchanged",
+   "discipline": "TX",
+   "method": "vote",
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": 1e-05
+   },
+   "success": true,
+   "failure_reason": null,
+   "confidence": 0.9999,
+   "coverage": {
+    "left_ink_cells": 200881,
+    "right_ink_cells": 200907,
+    "left_matched": 200881,
+    "right_matched": 200885,
+    "left_cov": 1.0,
+    "right_cov": 0.99989,
+    "sym_cov": 0.99995
+   },
+   "residual": {
+    "n": 5937,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "anchors": {
+    "left_candidates": 5939,
+    "right_candidates": 5939,
+    "matched": 5937,
+    "coverage": 0.9997,
+    "min_len_pt": 5.534,
+    "votes": 3719
+   },
+   "left_ink_pt": 160582.28,
+   "right_ink_pt": 160598.75,
+   "page_rotation": [
+    0,
+    0
+   ],
+   "gt_label": "NO_CHANGE"
+  }
+ ]
+}

@@ -1,0 +1,2048 @@
+{
+ "probe": "controls.crop_boundary",
+ "research_only": true,
+ "runs": 120,
+ "runs_with_published_regions": 0,
+ "rows": [
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99992,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.98874,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.96568,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -5e-05,
+    "ty": 3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99983,
+    "theta_deg": 0.0,
+    "tx": 0.21545,
+    "ty": 0.14221
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_01",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -5e-05,
+    "ty": 3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.9957,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99966,
+    "theta_deg": 0.0,
+    "tx": 0.17136,
+    "ty": 0.25958
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_02",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99569,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99804,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99798,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -6e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.98608,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.96269,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99928,
+    "theta_deg": 0.0,
+    "tx": 1.1217,
+    "ty": 0.38062
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -6e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_03",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99707,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.99417,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.99417,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 10,
+   "sym_cov": 0.9908,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.0,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 6,
+   "sym_cov": 0.95342,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99951,
+    "theta_deg": 0.0,
+    "tx": 0.40393,
+    "ty": 0.46008
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.0,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_unchanged_04",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0053,
+    "ty": 0.03199
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.99993,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.99982,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.99871,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 4,
+   "sym_cov": 0.99427,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.9998,
+    "theta_deg": 0.0,
+    "tx": 0.15729,
+    "ty": 0.06689
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_unchanged_05",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99997,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.04441,
+    "ty": 0.0225
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 2,
+   "sym_cov": 0.99788,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99998,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_unchanged_06",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 4,
+   "sym_cov": 0.99617,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": -3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.996,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 5e-05,
+    "ty": 6e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 5,
+   "sym_cov": 0.99547,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -5e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 11,
+   "sym_cov": 0.99336,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 9e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 12,
+   "sym_cov": 0.86818,
+   "transform": {
+    "scale": 0.99997,
+    "theta_deg": 0.0,
+    "tx": 0.04517,
+    "ty": 0.07654
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": -3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 5e-05,
+    "ty": 6e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -5e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 9e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_07",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": 4e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99965,
+    "theta_deg": 0.0,
+    "tx": 0.17697,
+    "ty": 0.27148
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_08",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.99605,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.99598,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.99203,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 11,
+   "sym_cov": 0.98258,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99983,
+    "theta_deg": 0.0,
+    "tx": 0.13733,
+    "ty": 0.0687
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "tx_tiny_change_09",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 0.99999,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 4,
+   "sym_cov": 0.99736,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.99717,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 5,
+   "sym_cov": 0.99701,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 7,
+   "sym_cov": 0.98233,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 8,
+   "sym_cov": 0.961,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 1,
+   "sym_cov": 0.99993,
+   "transform": {
+    "scale": 0.99988,
+    "theta_deg": 0.0,
+    "tx": 0.06415,
+    "ty": 0.10559
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": 1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 2e-05,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_10",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99983,
+    "theta_deg": 0.0,
+    "tx": 0.08688,
+    "ty": 0.13708
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 3e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ss_tiny_change_11",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -2e-05,
+    "ty": -1e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shift",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 0.0,
+    "ty": -3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shift",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shift",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shift",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 9,
+   "sym_cov": 0.99803,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shift",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 3,
+   "sym_cov": 0.98533,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shrink",
+   "fraction": 0.0025,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 0.99967,
+    "theta_deg": 0.0,
+    "tx": 0.09042,
+    "ty": 0.27545
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shrink",
+   "fraction": 0.01,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -1e-05,
+    "ty": -3e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shrink",
+   "fraction": 0.02,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": -2e-05
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shrink",
+   "fraction": 0.05,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": -0.0,
+    "ty": 0.0
+   },
+   "published_ink_pt": []
+  },
+  {
+   "pair_id": "ar_tiny_change_12",
+   "kind": "shrink",
+   "fraction": 0.1,
+   "route": "MODE_1_APPLICABLE",
+   "verdict": "NO_GRAPHIC_CHANGE",
+   "published": 0,
+   "suppressed_crop_artifact": 0,
+   "sym_cov": 1.0,
+   "transform": {
+    "scale": 1.0,
+    "theta_deg": 0.0,
+    "tx": 1e-05,
+    "ty": 2e-05
+   },
+   "published_ink_pt": []
+  }
+ ]
+}

@@ -1,0 +1,303 @@
+{
+ "mode": "MODE_1",
+ "params": {
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "merge_pt": 2.4,
+  "min_region_ink_pt": 8.0,
+  "border_pt": 3.0,
+  "text_overlap_drop": 0.65
+ },
+ "left": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+  "page_index": 19,
+  "block_id": "Y6MH-ERWY-XAA",
+  "bbox_vis": [
+   170.9,
+   15.36,
+   1307.16,
+   893.37
+  ],
+  "label": ""
+ },
+ "right": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+  "page_index": 19,
+  "block_id": "97EW-XRY3-6RK",
+  "bbox_vis": [
+   152.63,
+   15.84,
+   1297.8,
+   918.92
+  ],
+  "label": ""
+ },
+ "registration": {
+  "method": "vote",
+  "transform": {
+   "scale": 1.0,
+   "theta_deg": 0.0,
+   "tx": -0.02996,
+   "ty": 0.0
+  },
+  "frame": [
+   152.626,
+   15.836,
+   1297.796,
+   918.922
+  ],
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "coverage": {
+   "left_ink_cells": 187007,
+   "right_ink_cells": 187765,
+   "left_matched": 187007,
+   "right_matched": 187765,
+   "left_cov": 1.0,
+   "right_cov": 1.0,
+   "sym_cov": 1.0
+  },
+  "residual": {
+   "n": 5052,
+   "median": 0.03,
+   "p90": 0.03
+  },
+  "anchors": {
+   "left_candidates": 5354,
+   "right_candidates": 5359,
+   "matched": 5052,
+   "coverage": 0.9436,
+   "min_len_pt": 5.834,
+   "votes": 2509
+  },
+  "success": true,
+  "failure_reason": null,
+  "confidence": 0.9917,
+  "hypotheses": [
+   {
+    "hypothesis": "bbox_anchor",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -18.27056,
+     "ty": 0.47402
+    },
+    "sym_cov": 0.5825
+   },
+   {
+    "hypothesis": "bbox_anchor+lsq",
+    "transform": {
+     "scale": 0.99984,
+     "theta_deg": -0.02442,
+     "tx": -18.46875,
+     "ty": 0.43271
+    },
+    "sym_cov": 0.5846
+   },
+   {
+    "hypothesis": "bbox_fit",
+    "transform": {
+     "scale": 1.00783,
+     "theta_deg": 0.0,
+     "tx": -19.60938,
+     "ty": 9.45332
+    },
+    "sym_cov": 0.4075
+   },
+   {
+    "hypothesis": "bbox_fit+lsq",
+    "transform": {
+     "scale": 1.00707,
+     "theta_deg": -0.02112,
+     "tx": -18.54022,
+     "ty": 10.04294
+    },
+    "sym_cov": 0.4164
+   },
+   {
+    "hypothesis": "vote",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -0.02996,
+     "ty": 0.0
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "vote+lsq",
+    "transform": {
+     "scale": 1.00003,
+     "theta_deg": 0.00016,
+     "tx": -0.04547,
+     "ty": -0.01434
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "phase_corr",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -0.02509,
+     "ty": 0.02095
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "phase_corr+lsq",
+    "transform": {
+     "scale": 1.00003,
+     "theta_deg": 0.00016,
+     "tx": -0.04547,
+     "ty": -0.01434
+    },
+    "sym_cov": 1.0
+   },
+   {
+    "hypothesis": "rot90",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 90.0,
+     "tx": 1089.84008,
+     "ty": -372.72002
+    },
+    "sym_cov": 0.3305
+   },
+   {
+    "hypothesis": "rot180",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 180.0,
+     "tx": 1208.87998,
+     "ty": 1091.99999
+    },
+    "sym_cov": 0.1497
+   },
+   {
+    "hypothesis": "rot270",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 270.0,
+     "tx": 347.15985,
+     "ty": 1189.32003
+    },
+    "sym_cov": 0.3808
+   }
+  ],
+  "left_segments_merged": 58321,
+  "right_segments_merged": 58332,
+  "left_ink_pt": 189108.31,
+  "right_ink_pt": 189106.34
+ },
+ "extraction": {
+  "left": {
+   "n_paths_seen": 58597,
+   "n_paths_kept": 58558,
+   "n_invisible_paths": 34,
+   "segments_dropped_invisible": 204,
+   "n_page_images": 5,
+   "page_rotation": 0
+  },
+  "right": {
+   "n_paths_seen": 58589,
+   "n_paths_kept": 58551,
+   "n_invisible_paths": 34,
+   "segments_dropped_invisible": 204,
+   "n_page_images": 5,
+   "page_rotation": 0
+  },
+  "left_segments": 58868,
+  "right_segments": 58883,
+  "image_coverage": [
+   0.0013,
+   0.0012
+  ],
+  "text_as_curves": [
+   false,
+   false
+  ],
+  "flags": {
+   "raster_backed_side": false,
+   "text_as_curves_asymmetry": false
+  }
+ },
+ "diff": {
+  "left_ink_cells": 187007,
+  "right_ink_cells": 187765,
+  "matched_cells": 187007,
+  "left_only_cells": 0,
+  "right_only_cells": 0,
+  "changed_ink_fraction": 0.0,
+  "published_ink_fraction": 0.0,
+  "n_regions_raw": 0,
+  "n_regions_published": 0,
+  "n_regions_suppressed": 0,
+  "left_texts": 103,
+  "right_texts": 103
+ },
+ "change_regions": [],
+ "suppressed_regions": [],
+ "route": "MODE_1_APPLICABLE",
+ "route_reason": "registration and local diff within gates",
+ "verdict": "NO_GRAPHIC_CHANGE",
+ "pair_id": "ss_small_change_20",
+ "bucket": "small_change",
+ "discipline": "SS",
+ "latency_s": 5.783,
+ "extraction_quality": {
+  "left": {
+   "block_id": "Y6MH-ERWY-XAA",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v001/02_work/document.pdf",
+   "page_index": 19,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 412336,
+   "predicted_cells": 461083,
+   "precision": 0.9742,
+   "recall": 1.0,
+   "missed_cells": 0,
+   "missed_largest_component": 0,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 216952,
+   "edge_ring_cells": 30186,
+   "excluded_image_cells": 1035,
+   "text_spans": 103,
+   "page_rotation": 0,
+   "segments": 58868,
+   "fill_polygons": 1494,
+   "invisible_paths": 34,
+   "segments_dropped_invisible": 204,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "right": {
+   "block_id": "97EW-XRY3-6RK",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/SS/documents/13АВ-РД-АК-К6 (Книга 1)/versions/v002/02_work/document.pdf",
+   "page_index": 19,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 414466,
+   "predicted_cells": 462212,
+   "precision": 0.976,
+   "recall": 1.0,
+   "missed_cells": 1,
+   "missed_largest_component": 1,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 216411,
+   "edge_ring_cells": 30690,
+   "excluded_image_cells": 1035,
+   "text_spans": 103,
+   "page_rotation": 0,
+   "segments": 58883,
+   "fill_polygons": 1494,
+   "invisible_paths": 34,
+   "segments_dropped_invisible": 204,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "latency_s": 0.457
+ }
+}

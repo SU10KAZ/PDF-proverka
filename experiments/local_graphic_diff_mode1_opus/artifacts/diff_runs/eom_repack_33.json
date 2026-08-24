@@ -1,0 +1,618 @@
+{
+ "mode": "MODE_1",
+ "params": {
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "merge_pt": 2.4,
+  "min_region_ink_pt": 8.0,
+  "border_pt": 3.0,
+  "text_overlap_drop": 0.65
+ },
+ "left": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v001/02_work/document.pdf",
+  "page_index": 14,
+  "block_id": "9WUU-LG3K-6RP",
+  "bbox_vis": [
+   651.66,
+   784.32,
+   1177.59,
+   827.04
+  ],
+  "label": ""
+ },
+ "right": {
+  "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v002/02_work/document.pdf",
+  "page_index": 16,
+  "block_id": "A9A7-CRCA-4EJ",
+  "bbox_vis": [
+   652.67,
+   783.36,
+   1177.68,
+   827.04
+  ],
+  "label": ""
+ },
+ "registration": {
+  "method": "bbox_anchor",
+  "transform": {
+   "scale": 1.0,
+   "theta_deg": 0.0,
+   "tx": 1.00891,
+   "ty": -0.95967
+  },
+  "frame": [
+   652.668,
+   783.36,
+   1177.682,
+   827.04
+  ],
+  "cell_pt": 0.6,
+  "tol_pt": 1.2,
+  "coverage": {
+   "left_ink_cells": 4797,
+   "right_ink_cells": 2078,
+   "left_matched": 1616,
+   "right_matched": 1606,
+   "left_cov": 0.33688,
+   "right_cov": 0.77286,
+   "sym_cov": 0.46865
+  },
+  "residual": {
+   "n": 0,
+   "median": null,
+   "p90": null
+  },
+  "anchors": {
+   "left_candidates": 201,
+   "right_candidates": 12,
+   "matched": 0,
+   "coverage": 0.0,
+   "min_len_pt": 2.107,
+   "votes": 0
+  },
+  "success": false,
+  "failure_reason": "LOW_MATCHED_INK",
+  "confidence": 0.4687,
+  "hypotheses": [
+   {
+    "hypothesis": "bbox_anchor",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": 1.00891,
+     "ty": -0.95967
+    },
+    "sym_cov": 0.4687
+   },
+   {
+    "hypothesis": "bbox_fit",
+    "transform": {
+     "scale": 0.99825,
+     "theta_deg": 0.0,
+     "tx": 2.15007,
+     "ty": 0.93113
+    },
+    "sym_cov": 0.4681
+   },
+   {
+    "hypothesis": "phase_corr",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 0.0,
+     "tx": -1.52173,
+     "ty": -13.44016
+    },
+    "sym_cov": 0.3654
+   },
+   {
+    "hypothesis": "rot90",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 90.0,
+     "tx": 1720.85513,
+     "ty": -109.42685
+    },
+    "sym_cov": 0.0046
+   },
+   {
+    "hypothesis": "rot180",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 180.0,
+     "tx": 1829.80224,
+     "ty": 1610.87987
+    },
+    "sym_cov": 0.2088
+   },
+   {
+    "hypothesis": "rot270",
+    "transform": {
+     "scale": 1.0,
+     "theta_deg": 270.0,
+     "tx": 109.49552,
+     "ty": 1719.82698
+    },
+    "sym_cov": 0.0046
+   }
+  ],
+  "left_segments_merged": 4976,
+  "right_segments_merged": 12,
+  "left_ink_pt": 2690.98,
+  "right_ink_pt": 1257.03
+ },
+ "extraction": {
+  "left": {
+   "n_paths_seen": 921,
+   "n_paths_kept": 876,
+   "n_invisible_paths": 45,
+   "segments_dropped_invisible": 180,
+   "n_page_images": 0,
+   "page_rotation": 0
+  },
+  "right": {
+   "n_paths_seen": 68,
+   "n_paths_kept": 22,
+   "n_invisible_paths": 44,
+   "segments_dropped_invisible": 176,
+   "n_page_images": 138,
+   "page_rotation": 0
+  },
+  "left_segments": 5041,
+  "right_segments": 12,
+  "image_coverage": [
+   0.0,
+   0.0
+  ],
+  "text_as_curves": [
+   true,
+   false
+  ],
+  "flags": {
+   "raster_backed_side": false,
+   "text_as_curves_asymmetry": true
+  }
+ },
+ "diff": {
+  "left_ink_cells": 4797,
+  "right_ink_cells": 2078,
+  "matched_cells": 1616,
+  "left_only_cells": 3181,
+  "right_only_cells": 472,
+  "changed_ink_fraction": 0.53135,
+  "published_ink_fraction": 0.31142,
+  "n_regions_raw": 8,
+  "n_regions_published": 5,
+  "n_regions_suppressed": 3,
+  "left_texts": 0,
+  "right_texts": 23
+ },
+ "change_regions": [
+  {
+   "left_only_cells": 636,
+   "right_only_cells": 116,
+   "ink_pt": 451.2,
+   "left_only_ink_pt": 381.6,
+   "right_only_ink_pt": 69.6,
+   "bbox": [
+    773.27,
+    783.96,
+    841.67,
+    827.16
+   ],
+   "text_overlap": 0.636,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 752,
+    "unmatched_cells_on_page": 785,
+    "probe_rect": [
+     766.43,
+     777.12,
+     848.51,
+     834.0
+    ]
+   },
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o4",
+      "n_segments": 1,
+      "bbox": [
+       838.76,
+       784.56,
+       838.76,
+       826.08
+      ]
+     },
+     {
+      "object_id": "o5",
+      "n_segments": 1,
+      "bbox": [
+       810.2,
+       784.56,
+       810.2,
+       826.08
+      ]
+     },
+     {
+      "object_id": "o14",
+      "n_segments": 692,
+      "bbox": [
+       775.47,
+       816.32,
+       802.38,
+       823.49
+      ]
+     },
+     {
+      "object_id": "o15",
+      "n_segments": 453,
+      "bbox": [
+       815.39,
+       816.32,
+       833.7,
+       824.55
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 501,
+   "right_only_cells": 111,
+   "ink_pt": 367.2,
+   "left_only_ink_pt": 300.6,
+   "right_only_ink_pt": 66.6,
+   "bbox": [
+    715.07,
+    783.96,
+    770.87,
+    827.16
+   ],
+   "text_overlap": 0.645,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 612,
+    "unmatched_cells_on_page": 673,
+    "probe_rect": [
+     709.49,
+     778.38,
+     776.45,
+     832.74
+    ]
+   },
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o6",
+      "n_segments": 1,
+      "bbox": [
+       767.72,
+       784.56,
+       767.72,
+       826.08
+      ]
+     },
+     {
+      "object_id": "o7",
+      "n_segments": 1,
+      "bbox": [
+       739.4,
+       784.56,
+       739.4,
+       826.08
+      ]
+     },
+     {
+      "object_id": "o12",
+      "n_segments": 338,
+      "bbox": [
+       717.17,
+       816.32,
+       733.19,
+       823.49
+      ]
+     },
+     {
+      "object_id": "o13",
+      "n_segments": 606,
+      "bbox": [
+       742.82,
+       816.32,
+       764.4,
+       823.49
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 478,
+   "right_only_cells": 109,
+   "ink_pt": 352.2,
+   "left_only_ink_pt": 286.8,
+   "right_only_ink_pt": 65.4,
+   "bbox": [
+    659.27,
+    783.96,
+    713.87,
+    827.16
+   ],
+   "text_overlap": 0.647,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 587,
+    "unmatched_cells_on_page": 673,
+    "probe_rect": [
+     653.81,
+     778.5,
+     719.33,
+     832.62
+    ]
+   },
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o8",
+      "n_segments": 1,
+      "bbox": [
+       711.08,
+       784.56,
+       711.08,
+       826.08
+      ]
+     },
+     {
+      "object_id": "o9",
+      "n_segments": 1,
+      "bbox": [
+       682.76,
+       784.56,
+       682.76,
+       826.08
+      ]
+     },
+     {
+      "object_id": "o10",
+      "n_segments": 433,
+      "bbox": [
+       661.8,
+       816.33,
+       675.12,
+       823.49
+      ]
+     },
+     {
+      "object_id": "o11",
+      "n_segments": 571,
+      "bbox": [
+       685.35,
+       816.33,
+       708.29,
+       825.63
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  },
+  {
+   "left_only_cells": 61,
+   "right_only_cells": 70,
+   "ink_pt": 78.6,
+   "left_only_ink_pt": 36.6,
+   "right_only_ink_pt": 42.0,
+   "bbox": [
+    1145.27,
+    783.96,
+    1153.67,
+    827.16
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 131,
+    "unmatched_cells_on_page": 148,
+    "probe_rect": [
+     1140.95,
+     779.64,
+     1157.99,
+     831.48
+    ]
+   },
+   "moved_with": null,
+   "change_type": "GEOMETRY_CHANGED",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o1",
+      "n_segments": 1,
+      "bbox": [
+       1147.92,
+       804.96,
+       1176.48,
+       804.96
+      ]
+     },
+     {
+      "object_id": "o2",
+      "n_segments": 1,
+      "bbox": [
+       1147.92,
+       785.04,
+       1147.92,
+       827.04
+      ]
+     }
+    ],
+    "nearby_text": [
+     "Лист",
+     "4"
+    ]
+   }
+  },
+  {
+   "left_only_cells": 56,
+   "right_only_cells": 3,
+   "ink_pt": 35.4,
+   "left_only_ink_pt": 33.6,
+   "right_only_ink_pt": 1.8,
+   "bbox": [
+    652.67,
+    783.36,
+    657.47,
+    827.16
+   ],
+   "text_overlap": 0.0,
+   "border_ambiguity": true,
+   "border_resolution": "REAL_BEYOND_BORDER",
+   "border_probe": {
+    "unmatched_cells_in_block": 59,
+    "unmatched_cells_on_page": 127,
+    "probe_rect": [
+     648.29,
+     778.98,
+     661.85,
+     831.54
+    ]
+   },
+   "moved_with": null,
+   "change_type": "REMOVED_GRAPHIC",
+   "object_context": {
+    "objects": [
+     {
+      "object_id": "o3",
+      "n_segments": 1,
+      "bbox": [
+       654.44,
+       784.56,
+       654.44,
+       826.08
+      ]
+     }
+    ],
+    "nearby_text": []
+   }
+  }
+ ],
+ "suppressed_regions": [
+  {
+   "left_only_cells": 1227,
+   "right_only_cells": 0,
+   "ink_pt": 736.2,
+   "left_only_ink_pt": 736.2,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    995.87,
+    798.36,
+    1100.87,
+    815.16
+   ],
+   "text_overlap": 0.993,
+   "suppressed_by": "TEXT_REGION"
+  },
+  {
+   "left_only_cells": 179,
+   "right_only_cells": 63,
+   "ink_pt": 145.2,
+   "left_only_ink_pt": 107.4,
+   "right_only_ink_pt": 37.8,
+   "bbox": [
+    1154.27,
+    783.96,
+    1178.27,
+    827.16
+   ],
+   "text_overlap": 0.669,
+   "suppressed_by": "TEXT_REGION"
+  },
+  {
+   "left_only_cells": 43,
+   "right_only_cells": 0,
+   "ink_pt": 25.8,
+   "left_only_ink_pt": 25.8,
+   "right_only_ink_pt": 0.0,
+   "bbox": [
+    1160.27,
+    808.56,
+    1169.87,
+    821.16
+   ],
+   "text_overlap": 0.93,
+   "suppressed_by": "TEXT_REGION"
+  }
+ ],
+ "route": "VISION_REQUIRED",
+ "route_reason": "text is drawn as curves on one side only: its outlines enter the geometry and cannot be told from graphics deterministically",
+ "verdict": "VISION_REQUIRED",
+ "pair_id": "eom_repack_33",
+ "bucket": "repack",
+ "discipline": "EOM",
+ "latency_s": 0.901,
+ "extraction_quality": {
+  "left": {
+   "block_id": "9WUU-LG3K-6RP",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v001/02_work/document.pdf",
+   "page_index": 14,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 14074,
+   "predicted_cells": 15626,
+   "precision": 1.0,
+   "recall": 1.0,
+   "missed_cells": 0,
+   "missed_largest_component": 0,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 0,
+   "edge_ring_cells": 8496,
+   "excluded_image_cells": 0,
+   "text_spans": 0,
+   "page_rotation": 0,
+   "segments": 5041,
+   "fill_polygons": 53,
+   "invisible_paths": 45,
+   "segments_dropped_invisible": 180,
+   "text_as_curves_suspected": true,
+   "raster_backed": false
+  },
+  "right": {
+   "block_id": "A9A7-CRCA-4EJ",
+   "pdf": "/home/coder/projects/PDF-proverka/projects_v2/objects/214_Alia_ASTERUS/disciplines/EOM/documents/13АВ-РД-ЭМ2-ПА V1/versions/v002/02_work/document.pdf",
+   "page_index": 16,
+   "cell_pt": 0.4,
+   "tol_pt": 1.0,
+   "visible_cells": 8940,
+   "predicted_cells": 11837,
+   "precision": 1.0,
+   "recall": 1.0,
+   "missed_cells": 0,
+   "missed_largest_component": 0,
+   "missed_big_components": 0,
+   "missed_share_in_big": 0.0,
+   "excluded_text_cells": 20783,
+   "edge_ring_cells": 8502,
+   "excluded_image_cells": 0,
+   "text_spans": 23,
+   "page_rotation": 0,
+   "segments": 12,
+   "fill_polygons": 0,
+   "invisible_paths": 44,
+   "segments_dropped_invisible": 176,
+   "text_as_curves_suspected": false,
+   "raster_backed": false
+  },
+  "latency_s": 0.605
+ }
+}

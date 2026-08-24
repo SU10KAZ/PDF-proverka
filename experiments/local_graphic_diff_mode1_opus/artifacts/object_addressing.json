@@ -1,0 +1,632 @@
+{
+ "probe": "object_addressing",
+ "research_only": true,
+ "regions": 57,
+ "median_objects_per_region": 3,
+ "median_largest_object_segments": 2877,
+ "regions_with_mega_object": 36,
+ "regions_with_text_anchor": 48,
+ "rows": [
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 114.6,
+   "objs": 6,
+   "max_obj_segments": 2877,
+   "texts": [
+    "50"
+   ]
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 97.8,
+   "objs": 6,
+   "max_obj_segments": 2877,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 94.2,
+   "objs": 3,
+   "max_obj_segments": 637,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 78.6,
+   "objs": 6,
+   "max_obj_segments": 2877,
+   "texts": [
+    "23270"
+   ]
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 57.0,
+   "objs": 5,
+   "max_obj_segments": 2877,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 55.8,
+   "objs": 3,
+   "max_obj_segments": 2877,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 52.2,
+   "objs": 1,
+   "max_obj_segments": 637,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 25.8,
+   "objs": 5,
+   "max_obj_segments": 2877,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 21.0,
+   "objs": 6,
+   "max_obj_segments": 2877,
+   "texts": [
+    "23270"
+   ]
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 13.8,
+   "objs": 6,
+   "max_obj_segments": 3284,
+   "texts": [
+    "250",
+    "50",
+    "-1,569"
+   ]
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 12.6,
+   "objs": 2,
+   "max_obj_segments": 3284,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 9.0,
+   "objs": 1,
+   "max_obj_segments": 1329,
+   "texts": []
+  },
+  {
+   "pair": "ar_medium_change_24",
+   "ink": 8.4,
+   "objs": 5,
+   "max_obj_segments": 2877,
+   "texts": []
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 508.2,
+   "objs": 3,
+   "max_obj_segments": 24369,
+   "texts": [
+    "ЛПП",
+    "+51,780"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 85.2,
+   "objs": 1,
+   "max_obj_segments": 21089,
+   "texts": [
+    "п",
+    "ОВ",
+    "_",
+    "ОВ",
+    "_"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 72.0,
+   "objs": 1,
+   "max_obj_segments": 24369,
+   "texts": [
+    "ВК",
+    "ВК",
+    "/",
+    "ОВ",
+    "/"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 61.8,
+   "objs": 4,
+   "max_obj_segments": 21089,
+   "texts": [
+    "СС",
+    "/",
+    "ЭОМ",
+    "/",
+    "ВК"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 54.0,
+   "objs": 1,
+   "max_obj_segments": 24369,
+   "texts": [
+    "ЭОМ",
+    "/",
+    "ВК",
+    "680",
+    "ОВв"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 48.6,
+   "objs": 2,
+   "max_obj_segments": 24369,
+   "texts": [
+    "см",
+    "-3",
+    "ТС"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 41.4,
+   "objs": 1,
+   "max_obj_segments": 21089,
+   "texts": [
+    "ПД",
+    "С",
+    "2.1158.13",
+    "-5",
+    "см"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 31.8,
+   "objs": 1,
+   "max_obj_segments": 21089,
+   "texts": [
+    "см",
+    "-3",
+    ".",
+    "+51,450",
+    "прим"
+   ]
+  },
+  {
+   "pair": "ar_small_change_21",
+   "ink": 9.0,
+   "objs": 1,
+   "max_obj_segments": 24369,
+   "texts": [
+    "ЛПП",
+    "+51,780",
+    "150"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_29",
+   "ink": 45.6,
+   "objs": 6,
+   "max_obj_segments": 46152,
+   "texts": [
+    "К1.2.28",
+    "К1.1.39",
+    "К1.2.27",
+    "230В;3.31кВт (13 эт.), К1.1.39"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_29",
+   "ink": 26.4,
+   "objs": 1,
+   "max_obj_segments": 46152,
+   "texts": [
+    "ВК"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_29",
+   "ink": 9.6,
+   "objs": 1,
+   "max_obj_segments": 46152,
+   "texts": [
+    "ВК"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_30",
+   "ink": 37.2,
+   "objs": 1,
+   "max_obj_segments": 47695,
+   "texts": [
+    "ВК"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_30",
+   "ink": 14.4,
+   "objs": 1,
+   "max_obj_segments": 47695,
+   "texts": [
+    "ВК"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_31",
+   "ink": 81.6,
+   "objs": 6,
+   "max_obj_segments": 42462,
+   "texts": [
+    "36,5°",
+    "1.14"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_31",
+   "ink": 33.6,
+   "objs": 1,
+   "max_obj_segments": 42462,
+   "texts": [
+    "ВК",
+    "К1.1.39"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_31",
+   "ink": 13.2,
+   "objs": 1,
+   "max_obj_segments": 42462,
+   "texts": [
+    "ВК"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_31",
+   "ink": 12.6,
+   "objs": 3,
+   "max_obj_segments": 42462,
+   "texts": [
+    "К1.2.28",
+    "К1.2.27",
+    "К1.1.39"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_31",
+   "ink": 9.0,
+   "objs": 2,
+   "max_obj_segments": 42462,
+   "texts": [
+    "36,5°"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_32",
+   "ink": 33.0,
+   "objs": 1,
+   "max_obj_segments": 44455,
+   "texts": [
+    "ВК"
+   ]
+  },
+  {
+   "pair": "eom_dense_small_change_32",
+   "ink": 32.4,
+   "objs": 1,
+   "max_obj_segments": 44455,
+   "texts": [
+    "ВК"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 306.6,
+   "objs": 3,
+   "max_obj_segments": 30,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A2.47"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 306.0,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A2.73"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 301.8,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A1.47"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 300.6,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A2.124"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 300.6,
+   "objs": 3,
+   "max_obj_segments": 29,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A2.99"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 300.6,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A1.175"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 299.4,
+   "objs": 3,
+   "max_obj_segments": 30,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "упр. лифтом",
+    "3A2.159",
+    "3A2.158"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 299.4,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A2.21"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 295.8,
+   "objs": 3,
+   "max_obj_segments": 30,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A1.149"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 291.0,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A1.123"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 291.0,
+   "objs": 3,
+   "max_obj_segments": 29,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A1.97"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 291.0,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A1.73"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 289.8,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "3A1.21"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 289.8,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "2A2.194"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 289.8,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "2A2.168"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 289.8,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "2A2.142"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 289.8,
+   "objs": 3,
+   "max_obj_segments": 28,
+   "texts": [
+    "BGB",
+    "АМ-1",
+    "Пкр4.1",
+    "МДУ-1С",
+    "2A2.116"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_25",
+   "ink": 38.4,
+   "objs": 3,
+   "max_obj_segments": 13,
+   "texts": [
+    "2SC2.91",
+    "№4.МОП.10",
+    "№4.МОП.11",
+    "2SC2.92",
+    "РМ-1"
+   ]
+  },
+  {
+   "pair": "ss_medium_change_26",
+   "ink": 446.4,
+   "objs": 4,
+   "max_obj_segments": 17,
+   "texts": [
+    "(см. раздел 13АВ-РД-КК-К4-5)",
+    "Линии АЛС прокладываются в нише СБ/СПЗ",
+    "пом. №4.МОП.9",
+    "1A1.21"
+   ]
+  },
+  {
+   "pair": "ss_small_change_18",
+   "ink": 209.4,
+   "objs": 6,
+   "max_obj_segments": 10480,
+   "texts": [
+    "откл. тепл. завес",
+    "кондиционирования",
+    "2SC2.34...37",
+    "5.Х.2",
+    "5.Т.4"
+   ]
+  },
+  {
+   "pair": "ss_small_change_18",
+   "ink": 183.6,
+   "objs": 6,
+   "max_obj_segments": 10480,
+   "texts": [
+    "освещением",
+    "упр. аварийным",
+    "2SC2.30...33",
+    "5.Т.4"
+   ]
+  },
+  {
+   "pair": "ss_small_change_18",
+   "ink": 173.4,
+   "objs": 6,
+   "max_obj_segments": 10504,
+   "texts": [
+    "откл. тепл. завес",
+    "5.Т.4",
+    "2SC2.20..23"
+   ]
+  },
+  {
+   "pair": "ss_small_change_18",
+   "ink": 43.8,
+   "objs": 6,
+   "max_obj_segments": 10480,
+   "texts": [
+    "РМ-4",
+    "2SC2.30...33",
+    "РМ-4",
+    "2SC2.34...37",
+    "5.Т.3"
+   ]
+  }
+ ]
+}
