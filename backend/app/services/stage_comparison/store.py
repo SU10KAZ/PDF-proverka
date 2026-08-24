@@ -23,6 +23,7 @@ from . import text_comparison
 from . import text_differences
 from . import text_ai_reviewer
 from . import project_change_summary
+from . import high_level_project_changes
 from .graphic_comparison import compare_prepared_blocks, validate_ledger
 from .graphic_comparison.policy import EXPERIMENTALLY_CALIBRATED_V1
 from backend.app.services.common.blocks_json import load_blocks_json
@@ -378,6 +379,7 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "text_ai_review": get_text_ai_review_state(session_id, pair_id),
         "text_final_comparison": get_text_final_comparison_state(session_id, pair_id),
         "project_change_summary": get_project_change_summary_state(session_id, pair_id),
+        "high_level_project_changes": get_high_level_project_changes_state(session_id, pair_id),
         "graphic_change_ledger": get_graphic_change_ledger_state(session_id, pair_id),
     }
 
@@ -839,6 +841,40 @@ def get_project_change_summary_state(session_id: str, pair_id: str) -> dict | No
     return project_change_summary.public_view(payload, stale=stale)
 
 
+def _current_high_level_signature(
+    session_id: str, pair_id: str,
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]], str | None]:
+    summary_payload = _read_json(paths_mod.project_change_summary_path(session_id, pair_id))
+    _final, _groups, current_stage5_signature = _current_project_change_signature(
+        session_id, pair_id
+    )
+    if (
+        not isinstance(summary_payload, dict)
+        or summary_payload.get("version") != project_change_summary.VERSION
+        or summary_payload.get("kind") != project_change_summary.KIND
+        or current_stage5_signature is None
+        or summary_payload.get("source_signature") != current_stage5_signature
+    ):
+        return summary_payload, [], None
+    semantic_groups = high_level_project_changes.build_semantic_groups(summary_payload)
+    return summary_payload, semantic_groups, high_level_project_changes.source_signature(
+        summary_payload, semantic_groups
+    )
+
+
+def get_high_level_project_changes_state(session_id: str, pair_id: str) -> dict | None:
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.high_level_project_changes_path(session_id, pair_id))
+    _summary, _groups, expected = _current_high_level_signature(session_id, pair_id)
+    stale = (
+        expected is None or payload.get("source_signature") != expected
+        if isinstance(payload, dict) else True
+    )
+    return high_level_project_changes.public_view(payload, stale=stale)
+
+
 def _apply_sheet_link_repair(
     session_id: str, pair_id: str, source_groups: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
@@ -1069,6 +1105,134 @@ async def run_project_change_summary(
             raise ValueError("text_final_comparison_changed_during_summary")
         _atomic_write_json(paths_mod.project_change_summary_path(session_id, pair_id), artifact)
     return project_change_summary.public_view(artifact, stale=False) or {}
+
+
+def _high_level_ai_chunks(groups: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
+    """Keep each request compact without splitting a coherent semantic group."""
+    chunks: list[list[dict[str, Any]]] = []
+    current: list[dict[str, Any]] = []
+    evidence_count = 0
+    for group in groups:
+        group_count = len(group.get("evidence_ids") or [])
+        if current and (len(current) >= 4 or evidence_count + group_count > 32):
+            chunks.append(current)
+            current, evidence_count = [], 0
+        current.append(group)
+        evidence_count += group_count
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+async def run_high_level_project_changes(
+    session_id: str, pair_id: str, *, allow_ai: bool = True,
+) -> dict:
+    """Build the additive Stage 5.3 artifact without rewriting Stage 4 or 5."""
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        summary_payload, semantic_groups, signature = _current_high_level_signature(
+            session_id, pair_id
+        )
+        if not isinstance(summary_payload, dict) or signature is None:
+            raise ValueError("project_change_summary_required")
+        existing = _read_json(paths_mod.high_level_project_changes_path(session_id, pair_id))
+        if (
+            isinstance(existing, dict)
+            and existing.get("version") == high_level_project_changes.VERSION
+            and existing.get("source_signature") == signature
+            and existing.get("status") == "completed"
+        ):
+            return high_level_project_changes.public_view(existing, stale=False) or {}
+
+    decisions, ai_required = high_level_project_changes.deterministic_decisions(semantic_groups)
+    usage = {"input_tokens": 0, "output_tokens": 0, "cached_tokens": 0, "duration_ms": 0}
+    model_calls = fresh_model_calls = 0
+    for chunk in _high_level_ai_chunks(ai_required):
+        if not allow_ai:
+            decisions.extend(
+                high_level_project_changes.fallback_decision(group, "disabled_for_run")
+                for group in chunk
+            )
+            continue
+        result = None
+        error = ""
+        try:
+            result = await run_codex_json_messages(
+                [{"role": "user", "content": high_level_project_changes.prompt_for_groups(chunk)}],
+                timeout=240,
+                stage="stage_comparison_high_level_project_changes",
+                project_id=f"{session_id}:{pair_id}:" + ",".join(group["group_id"] for group in chunk),
+                model=high_level_project_changes.PRODUCTION_MODEL,
+                reasoning_effort=high_level_project_changes.PRODUCTION_REASONING_EFFORT,
+                output_schema=high_level_project_changes.RESPONSE_SCHEMA,
+                allowed_tools="",
+            )
+        except Exception as exc:  # noqa: BLE001 - persisted fail-closed result
+            error = f"provider_exception:{type(exc).__name__}:{exc}"
+        model_calls += 1
+        fresh_model_calls += 1
+        if result is not None:
+            for key, value in (
+                ("input_tokens", result.input_tokens), ("output_tokens", result.output_tokens),
+                ("cached_tokens", result.cached_tokens), ("duration_ms", result.duration_ms),
+            ):
+                usage[key] += int(value or 0)
+            if result.is_error or result.json_data is None:
+                error = result.error_message or "ai_provider_failure"
+            else:
+                try:
+                    decisions.extend(high_level_project_changes.validate_ai_response(
+                        result.json_data, chunk
+                    ))
+                except high_level_project_changes.HighLevelValidationError as exc:
+                    # A single invalid claim must not discard other independently
+                    # valid semantic groups from the same compact request.
+                    raw_groups = {
+                        str(item.get("group_id") or ""): item
+                        for item in (result.json_data.get("groups") or [])
+                        if isinstance(item, dict)
+                    } if isinstance(result.json_data, dict) else {}
+                    for group in chunk:
+                        raw_group = raw_groups.get(group["group_id"])
+                        if raw_group is None:
+                            decisions.append(high_level_project_changes.fallback_decision(
+                                group, f"validation_failed:{exc}",
+                            ))
+                            continue
+                        try:
+                            decisions.extend(high_level_project_changes.validate_ai_response(
+                                {"groups": [raw_group]}, [group]
+                            ))
+                        except high_level_project_changes.HighLevelValidationError as group_exc:
+                            decisions.append(high_level_project_changes.fallback_decision(
+                                group, f"validation_failed:{group_exc}",
+                            ))
+        elif not error:
+            error = "ai_provider_failure:no_result"
+        if error:
+            decisions.extend(
+                high_level_project_changes.fallback_decision(group, error)
+                for group in chunk
+            )
+
+    artifact = high_level_project_changes.build_artifact(
+        pair_id=pair_id, generated_at=_utc_now(), source_signature_value=signature,
+        project_summary=summary_payload, semantic_groups=semantic_groups,
+        decisions=decisions, usage=usage, model_calls=model_calls,
+        fresh_model_calls=fresh_model_calls,
+    )
+    with _lock:
+        _latest_summary, _latest_groups, latest_signature = _current_high_level_signature(
+            session_id, pair_id
+        )
+        if latest_signature != signature:
+            raise ValueError("project_change_summary_changed_during_high_level_synthesis")
+        _atomic_write_json(
+            paths_mod.high_level_project_changes_path(session_id, pair_id), artifact
+        )
+    return high_level_project_changes.public_view(artifact, stale=False) or {}
 
 
 async def run_text_ai_review(session_id: str, pair_id: str) -> dict:
@@ -2177,7 +2341,9 @@ __all__ = [
     "get_text_ai_review_state",
     "get_text_final_comparison_state",
     "get_project_change_summary_state",
+    "get_high_level_project_changes_state",
     "run_project_change_summary",
+    "run_high_level_project_changes",
     "get_graphic_change_ledger_state",
     "run_graphic_comparison",
     "run_text_ai_review",

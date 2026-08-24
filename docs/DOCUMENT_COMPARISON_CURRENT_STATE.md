@@ -384,6 +384,37 @@ API:
 - `POST .../pairs/{pair_id}/sheet-link-repairs/{repair_id}/undo` — безопасно
   отменить актуальную починку и пересчитать этапы 2–5.
 
+## Этап 5.3: верхнеуровневый синтез
+
+Этап 5.3 является аддитивным слоем поверх `project_change_summary.json` и пишет
+`high_level_project_changes.json`. Старые Stage 4/5 artifacts не
+перезаписываются. Перед AI evidence детерминированно группируются по semantic
+family, parameter/system/subject и sheet context; служебные и non-material
+группы модели не отправляются.
+
+Backend отдельно проверяет same-version counterparts между листами. Чистое
+одностороннее `ADDED/REMOVED`, сомнительная sheet link или отсутствие строки не
+могут стать strong conclusion без встречного подтверждения. Validator проверяет
+числа, designations, evidence coverage, type compatibility, detail-vs-new-object
+и запрет promotion служебного evidence. Невалидный group уходит в material
+review, не отбрасывая валидные соседние groups AI batch.
+
+Artifact разделяет `high_level_changes`, нейтральный
+`detail_level_increased`, `material_review`, collapsed `non_material_review` и
+`service_structure_summary`. Каждая запись хранит полные provenance details.
+Контракт уже содержит `evidence_sources: ["TEXT"]`, чтобы позже добавить
+`GRAPHIC/BOTH` без изменения текстового evidence.
+
+UI показывает Stage 5.3 первым. Заметен только REVIEW, способный изменить итог;
+detail, service и low-value review свернуты. Если artifact отсутствует, старый
+Stage 5 экран остаётся доступен без migration.
+
+API:
+
+- `POST .../pairs/{pair_id}/high-level-project-changes` — синтезировать Stage 5.3;
+- `GET .../pairs/{pair_id}/high-level-project-changes` — получить artifact и
+  признак актуальности.
+
 Инженерные решения, которые нельзя ломать:
 
 - состояние вида НЕ реактивно, `transform` пишется прямо в DOM внутри

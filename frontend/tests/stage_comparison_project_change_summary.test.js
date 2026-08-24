@@ -62,4 +62,40 @@ describe('Stage 5 project change summary', () => {
     expect(html).toContain('confidence {{ change.confidence }}');
     expect(app).toContain("String(change.rule || '').startsWith('CONTENT_')");
   });
+
+  it('loads additive Stage 5.3 output and renders it before atomic Stage 5 groups', () => {
+    expect(app).toContain('const scHighLevelProjectChanges = ref(null)');
+    expect(app).toContain('data.high_level_project_changes || null');
+    expect(app).toContain("scPairUrl(scActivePair.value.id, '/high-level-project-changes')");
+    expect(html.indexOf('v-if="scHighLevelProjectChangesAvailable"')).toBeLessThan(
+      html.indexOf('v-if="scProjectChangeSummaryAvailable && !scHighLevelProjectChangesAvailable"'),
+    );
+  });
+
+  it('shows only material review prominently and leaves low-value review collapsed', () => {
+    expect(html).toContain('Требуют проверки и могут изменить итоговый вывод');
+    expect(html).toContain('scHighLevelProjectChanges.material_review');
+    expect(html).toContain('Остальные REVIEW, не влияющие на итоговый вывод');
+    expect(html).toContain('scHighLevelProjectChanges.non_material_review');
+    expect(html).not.toContain(
+      'v-if="scHighLevelProjectChanges.non_material_review.length" class="sc-project-group__service sc-high-level-debug" open',
+    );
+  });
+
+  it('renders detail growth neutrally and keeps service information collapsed', () => {
+    expect(html).toContain('Увеличена детализация РД');
+    expect(html).toContain('scHighLevelProjectChanges.detail_level_increased');
+    expect(html).toContain('scHighLevelProjectChanges.service_structure_summary.evidence_count');
+    expect(html).not.toContain(
+      'v-if="scHighLevelProjectChanges.service_structure_summary.evidence_count" class="sc-project-group__service" open',
+    );
+  });
+
+  it('preserves before/after provenance and source navigation for high-level changes', () => {
+    expect(html).toContain('v-for="evidence in change.details"');
+    expect(html).toContain('Было в П');
+    expect(html).toContain('Стало в РД');
+    expect(html).toContain("scOpenDifferenceSource(evidence, evidence, 'left')");
+    expect(html).toContain("scOpenDifferenceSource(evidence, evidence, 'right')");
+  });
 });

@@ -1,0 +1,2314 @@
+{
+  "schema_version": "1.0",
+  "kind": "stage_5_3_high_level_benchmark_result",
+  "generated_at": "2026-08-24T14:58:07+00:00",
+  "dataset": "benchmarks/stage_5_3_high_level_ground_truth.json",
+  "metrics": {
+    "overall": {
+      "cases": 48,
+      "passed_cases": 48,
+      "high_level_precision": 1.0,
+      "high_level_recall": 1.0,
+      "false_project_change": 0,
+      "missed_project_change": 0,
+      "over_fragmentation": 0,
+      "over_merge": 0,
+      "detail_as_change_error": 0,
+      "service_as_project_error": 0,
+      "unsupported_claims": 0,
+      "material_review_precision": 1.0,
+      "evidence_route_accuracy": 1.0
+    },
+    "calibration": {
+      "cases": 22,
+      "passed_cases": 22,
+      "high_level_precision": 1.0,
+      "high_level_recall": 1.0,
+      "false_project_change": 0,
+      "missed_project_change": 0,
+      "over_fragmentation": 0,
+      "over_merge": 0,
+      "detail_as_change_error": 0,
+      "service_as_project_error": 0,
+      "unsupported_claims": 0,
+      "material_review_precision": 1.0,
+      "evidence_route_accuracy": 1.0
+    },
+    "holdout": {
+      "cases": 26,
+      "passed_cases": 26,
+      "high_level_precision": 1.0,
+      "high_level_recall": 1.0,
+      "false_project_change": 0,
+      "missed_project_change": 0,
+      "over_fragmentation": 0,
+      "over_merge": 0,
+      "detail_as_change_error": 0,
+      "service_as_project_error": 0,
+      "unsupported_claims": 0,
+      "material_review_precision": 1.0,
+      "evidence_route_accuracy": 1.0
+    }
+  },
+  "failed_case_ids": [],
+  "cases": [
+    {
+      "id": "c01_areas_20",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "скорректированы площади группы помещений"
+      },
+      "actual": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Скорректированы площади 20 помещений."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c01_areas_20:areas:1": "PUBLISH",
+          "c01_areas_20:areas:2": "PUBLISH",
+          "c01_areas_20:areas:3": "PUBLISH",
+          "c01_areas_20:areas:4": "PUBLISH",
+          "c01_areas_20:areas:5": "PUBLISH",
+          "c01_areas_20:areas:6": "PUBLISH",
+          "c01_areas_20:areas:7": "PUBLISH",
+          "c01_areas_20:areas:8": "PUBLISH",
+          "c01_areas_20:areas:9": "PUBLISH",
+          "c01_areas_20:areas:10": "PUBLISH",
+          "c01_areas_20:areas:11": "PUBLISH",
+          "c01_areas_20:areas:12": "PUBLISH",
+          "c01_areas_20:areas:13": "PUBLISH",
+          "c01_areas_20:areas:14": "PUBLISH",
+          "c01_areas_20:areas:15": "PUBLISH",
+          "c01_areas_20:areas:16": "PUBLISH",
+          "c01_areas_20:areas:17": "PUBLISH",
+          "c01_areas_20:areas:18": "PUBLISH",
+          "c01_areas_20:areas:19": "PUBLISH",
+          "c01_areas_20:areas:20": "PUBLISH"
+        },
+        "actual_routes": {
+          "c01_areas_20:areas:1": "PUBLISH",
+          "c01_areas_20:areas:10": "PUBLISH",
+          "c01_areas_20:areas:11": "PUBLISH",
+          "c01_areas_20:areas:12": "PUBLISH",
+          "c01_areas_20:areas:13": "PUBLISH",
+          "c01_areas_20:areas:14": "PUBLISH",
+          "c01_areas_20:areas:15": "PUBLISH",
+          "c01_areas_20:areas:16": "PUBLISH",
+          "c01_areas_20:areas:17": "PUBLISH",
+          "c01_areas_20:areas:18": "PUBLISH",
+          "c01_areas_20:areas:19": "PUBLISH",
+          "c01_areas_20:areas:2": "PUBLISH",
+          "c01_areas_20:areas:20": "PUBLISH",
+          "c01_areas_20:areas:3": "PUBLISH",
+          "c01_areas_20:areas:4": "PUBLISH",
+          "c01_areas_20:areas:5": "PUBLISH",
+          "c01_areas_20:areas:6": "PUBLISH",
+          "c01_areas_20:areas:7": "PUBLISH",
+          "c01_areas_20:areas:8": "PUBLISH",
+          "c01_areas_20:areas:9": "PUBLISH"
+        },
+        "route_matches": 20,
+        "total": 20
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c02_loads_8",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "скорректированы нагрузки группы потребителей"
+      },
+      "actual": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Скорректированы расчётные нагрузки группы потребителей."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c02_loads_8:loads:1": "PUBLISH",
+          "c02_loads_8:loads:2": "PUBLISH",
+          "c02_loads_8:loads:3": "PUBLISH",
+          "c02_loads_8:loads:4": "PUBLISH",
+          "c02_loads_8:loads:5": "PUBLISH",
+          "c02_loads_8:loads:6": "PUBLISH",
+          "c02_loads_8:loads:7": "PUBLISH",
+          "c02_loads_8:loads:8": "PUBLISH"
+        },
+        "actual_routes": {
+          "c02_loads_8:loads:1": "PUBLISH",
+          "c02_loads_8:loads:2": "PUBLISH",
+          "c02_loads_8:loads:3": "PUBLISH",
+          "c02_loads_8:loads:4": "PUBLISH",
+          "c02_loads_8:loads:5": "PUBLISH",
+          "c02_loads_8:loads:6": "PUBLISH",
+          "c02_loads_8:loads:7": "PUBLISH",
+          "c02_loads_8:loads:8": "PUBLISH"
+        },
+        "route_matches": 8,
+        "total": 8
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c03_formula",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён расчётный подход"
+      },
+      "actual": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён расчётный подход."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c03_formula:formula:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c03_formula:formula:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c04_method",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён метод расчёта"
+      },
+      "actual": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён расчётный подход."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c04_method:method:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c04_method:method:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c05_reserve",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён принцип работы системы"
+      },
+      "actual": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён принцип работы системы."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c05_reserve:reserve:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c05_reserve:reserve:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c06_mode",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён режим работы"
+      },
+      "actual": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён принцип работы системы."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c06_mode:mode:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c06_mode:mode:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c07_room_purpose",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "SPACE_PROGRAM_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменено назначение помещения"
+      },
+      "actual": {
+        "publish_types": [
+          "SPACE_PROGRAM_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменена программа и состав помещений."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c07_room_purpose:purpose:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c07_room_purpose:purpose:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c08_room_count",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "SPACE_PROGRAM_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён состав помещений"
+      },
+      "actual": {
+        "publish_types": [
+          "SPACE_PROGRAM_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменена программа и состав помещений."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c08_room_count:rooms:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c08_room_count:rooms:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c09_equipment_type",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён тип оборудования"
+      },
+      "actual": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён тип оборудования или материала."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c09_equipment_type:equipment:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c09_equipment_type:equipment:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c10_material",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён материал"
+      },
+      "actual": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён тип оборудования или материала."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "c10_material:material:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "c10_material:material:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c11_paraphrase",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "подавить перефразировку"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c11_paraphrase:paraphrase:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "c11_paraphrase:paraphrase:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c12_punctuation",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "служебное изменение"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c12_punctuation:punctuation:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "c12_punctuation:punctuation:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c13_address",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "служебное изменение"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c13_address:address:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "c13_address:address:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c14_date",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "служебное изменение"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c14_date:date:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "c14_date:date:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c15_detail_vent",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "title_meaning": "увеличена детализация"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c15_detail_vent:detail:1": "DETAIL"
+        },
+        "actual_routes": {
+          "c15_detail_vent:detail:1": "DETAIL"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c16_detail_power",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "title_meaning": "увеличена детализация"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c16_detail_power:detail:1": "DETAIL"
+        },
+        "actual_routes": {
+          "c16_detail_power:detail:1": "DETAIL"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c17_ambiguous_review",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "material review"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c17_ambiguous_review:review:1": "REVIEW"
+        },
+        "actual_routes": {
+          "c17_ambiguous_review:review:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c18_weak_review",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "non-material review"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c18_weak_review:review:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "c18_weak_review:review:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c19_uncertain_link",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "source link uncertain"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c19_uncertain_link:link:1": "REVIEW"
+        },
+        "actual_routes": {
+          "c19_uncertain_link:link:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c20_added_ladder",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "one-sided addition requires review"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c20_added_ladder:ladder:1": "REVIEW"
+        },
+        "actual_routes": {
+          "c20_added_ladder:ladder:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c21_removed_insulation",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "one-sided removal requires review"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c21_removed_insulation:insulation:1": "REVIEW"
+        },
+        "actual_routes": {
+          "c21_removed_insulation:insulation:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "c22_designation",
+      "split": "calibration",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "designation only"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "c22_designation:rename:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "c22_designation:rename:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h01_areas_3",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "площади агрегированы"
+      },
+      "actual": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Скорректированы площади 3 помещений."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h01_areas_3:areas:1": "PUBLISH",
+          "h01_areas_3:areas:2": "PUBLISH",
+          "h01_areas_3:areas:3": "PUBLISH"
+        },
+        "actual_routes": {
+          "h01_areas_3:areas:1": "PUBLISH",
+          "h01_areas_3:areas:2": "PUBLISH",
+          "h01_areas_3:areas:3": "PUBLISH"
+        },
+        "route_matches": 3,
+        "total": 3
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h02_pressure",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён параметр оборудования"
+      },
+      "actual": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён тип оборудования или материала."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h02_pressure:pressure:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h02_pressure:pressure:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h03_assumption",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён расчётный подход"
+      },
+      "actual": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён расчётный подход."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h03_assumption:assumption:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h03_assumption:assumption:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h04_coefficient",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменён расчётный подход"
+      },
+      "actual": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён расчётный подход."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h04_coefficient:coefficient:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h04_coefficient:coefficient:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h05_sequence",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменена работа системы"
+      },
+      "actual": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён принцип работы системы."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h05_sequence:sequence:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h05_sequence:sequence:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h06_sources",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "SYSTEM_STRUCTURE_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменена структура системы"
+      },
+      "actual": {
+        "publish_types": [
+          "SYSTEM_STRUCTURE_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменена структура проектной системы или элемента."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h06_sources:sources:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h06_sources:sources:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h07_purpose",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "SPACE_PROGRAM_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменено назначение"
+      },
+      "actual": {
+        "publish_types": [
+          "SPACE_PROGRAM_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменена программа и состав помещений."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h07_purpose:purpose:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h07_purpose:purpose:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h08_floors",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "QUANTITY_OR_CAPACITY_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "изменено количество этажей"
+      },
+      "actual": {
+        "publish_types": [
+          "QUANTITY_OR_CAPACITY_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменено количество или проектная мощность."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h08_floors:floors:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h08_floors:floors:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h09_pump_type",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "заменён тип оборудования"
+      },
+      "actual": {
+        "publish_types": [
+          "EQUIPMENT_OR_MATERIAL_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Изменён тип оборудования или материала."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h09_pump_type:pump:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h09_pump_type:pump:1": "PUBLISH"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h10_word_order",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "нет смены смысла"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h10_word_order:order:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "h10_word_order:order:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h11_link_typo",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "служебная опечатка"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h11_link_typo:typo:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "h11_link_typo:typo:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h12_title",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "структура документа"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h12_title:title:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "h12_title:title:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h13_contents",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "структура документа"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h13_contents:contents:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "h13_contents:contents:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h14_detail_devices",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "title_meaning": "детализация"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h14_detail_devices:detail:1": "DETAIL"
+        },
+        "actual_routes": {
+          "h14_detail_devices:detail:1": "DETAIL"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h15_ocr_parameter",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "material review"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h15_ocr_parameter:ocr:1": "REVIEW"
+        },
+        "actual_routes": {
+          "h15_ocr_parameter:ocr:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h16_ocr_marker",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "non-material review"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h16_ocr_marker:marker:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "h16_ocr_marker:marker:1": "SUPPRESS"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h17_link_load",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "source link uncertain"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h17_link_load:link:1": "REVIEW"
+        },
+        "actual_routes": {
+          "h17_link_load:link:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h18_added_equipment",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "one-sided addition"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h18_added_equipment:equipment:1": "REVIEW"
+        },
+        "actual_routes": {
+          "h18_added_equipment:equipment:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h19_removed_room",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "title_meaning": "one-sided removal"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 1,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h19_removed_room:room:1": "REVIEW"
+        },
+        "actual_routes": {
+          "h19_removed_room:room:1": "REVIEW"
+        },
+        "route_matches": 1,
+        "total": 1
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h20_counterpart",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "same-version counterpart suppresses removal"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 2,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h20_counterpart:removed:1": "SUPPRESS",
+          "h20_counterpart:same:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "h20_counterpart:removed:1": "SUPPRESS",
+          "h20_counterpart:same:1": "SUPPRESS"
+        },
+        "route_matches": 2,
+        "total": 2
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h21_two_changes",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED",
+          "CALCULATION_APPROACH_CHANGED"
+        ],
+        "change_count": 2,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "разные изменения не склеены"
+      },
+      "actual": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED",
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 2,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 2,
+        "titles": [
+          "Изменён расчётный подход.",
+          "Скорректирован набор проектных параметров."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h21_two_changes:area:1": "PUBLISH",
+          "h21_two_changes:formula:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h21_two_changes:formula:1": "PUBLISH",
+          "h21_two_changes:area:1": "PUBLISH"
+        },
+        "route_matches": 2,
+        "total": 2
+      },
+      "counts": {
+        "true_project_changes": 2,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h22_service_plus_project",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "evidence_routes": {
+          "service": "SUPPRESS",
+          "load": "PUBLISH"
+        },
+        "title_meaning": "service не загрязняет project"
+      },
+      "actual": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 2,
+        "titles": [
+          "Скорректированы расчётные нагрузки группы потребителей."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h22_service_plus_project:service:1": "SUPPRESS",
+          "h22_service_plus_project:load:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h22_service_plus_project:load:1": "PUBLISH",
+          "h22_service_plus_project:service:1": "SUPPRESS"
+        },
+        "route_matches": 2,
+        "total": 2
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h23_detail_plus_change",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "evidence_routes": {
+          "detail": "DETAIL",
+          "mode": "PUBLISH"
+        },
+        "title_meaning": "детализация отделена от изменения"
+      },
+      "actual": {
+        "publish_types": [
+          "SYSTEM_OPERATION_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 1,
+        "material_review_count": 0,
+        "semantic_groups": 2,
+        "titles": [
+          "Изменён принцип работы системы."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h23_detail_plus_change:detail:1": "DETAIL",
+          "h23_detail_plus_change:mode:1": "PUBLISH"
+        },
+        "actual_routes": {
+          "h23_detail_plus_change:mode:1": "PUBLISH",
+          "h23_detail_plus_change:detail:1": "DETAIL"
+        },
+        "route_matches": 2,
+        "total": 2
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h24_review_plus_noise",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "evidence_routes": {
+          "review": "REVIEW",
+          "noise": "SUPPRESS"
+        },
+        "title_meaning": "только material review показан"
+      },
+      "actual": {
+        "publish_types": [],
+        "change_count": 0,
+        "detail_count": 0,
+        "material_review_count": 1,
+        "semantic_groups": 2,
+        "titles": []
+      },
+      "evidence": {
+        "expected_routes": {
+          "h24_review_plus_noise:review:1": "REVIEW",
+          "h24_review_plus_noise:noise:1": "SUPPRESS"
+        },
+        "actual_routes": {
+          "h24_review_plus_noise:review:1": "REVIEW",
+          "h24_review_plus_noise:noise:1": "SUPPRESS"
+        },
+        "route_matches": 2,
+        "total": 2
+      },
+      "counts": {
+        "true_project_changes": 0,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 1,
+        "material_review_predicted": 1,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h25_method_and_parameters",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED",
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 2,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "метод отделён от значений"
+      },
+      "actual": {
+        "publish_types": [
+          "CALCULATION_APPROACH_CHANGED",
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 2,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 2,
+        "titles": [
+          "Изменён расчётный подход.",
+          "Скорректированы расчётные нагрузки группы потребителей."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h25_method_and_parameters:method:1": "PUBLISH",
+          "h25_method_and_parameters:values:1": "PUBLISH",
+          "h25_method_and_parameters:values:2": "PUBLISH",
+          "h25_method_and_parameters:values:3": "PUBLISH",
+          "h25_method_and_parameters:values:4": "PUBLISH"
+        },
+        "actual_routes": {
+          "h25_method_and_parameters:method:1": "PUBLISH",
+          "h25_method_and_parameters:values:1": "PUBLISH",
+          "h25_method_and_parameters:values:2": "PUBLISH",
+          "h25_method_and_parameters:values:3": "PUBLISH",
+          "h25_method_and_parameters:values:4": "PUBLISH"
+        },
+        "route_matches": 5,
+        "total": 5
+      },
+      "counts": {
+        "true_project_changes": 2,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    },
+    {
+      "id": "h26_cross_sheet_loads",
+      "split": "holdout",
+      "expected": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "title_meaning": "cross-sheet parameter aggregation"
+      },
+      "actual": {
+        "publish_types": [
+          "PARAMETER_SET_CHANGED"
+        ],
+        "change_count": 1,
+        "detail_count": 0,
+        "material_review_count": 0,
+        "semantic_groups": 1,
+        "titles": [
+          "Скорректированы расчётные нагрузки группы потребителей."
+        ]
+      },
+      "evidence": {
+        "expected_routes": {
+          "h26_cross_sheet_loads:loads_a:1": "PUBLISH",
+          "h26_cross_sheet_loads:loads_a:2": "PUBLISH",
+          "h26_cross_sheet_loads:loads_b:1": "PUBLISH",
+          "h26_cross_sheet_loads:loads_b:2": "PUBLISH"
+        },
+        "actual_routes": {
+          "h26_cross_sheet_loads:loads_a:1": "PUBLISH",
+          "h26_cross_sheet_loads:loads_a:2": "PUBLISH",
+          "h26_cross_sheet_loads:loads_b:1": "PUBLISH",
+          "h26_cross_sheet_loads:loads_b:2": "PUBLISH"
+        },
+        "route_matches": 4,
+        "total": 4
+      },
+      "counts": {
+        "true_project_changes": 1,
+        "false_project_changes": 0,
+        "missed_project_changes": 0,
+        "over_fragmentation": 0,
+        "over_merge": 0,
+        "detail_as_change_error": 0,
+        "service_as_project_error": 0,
+        "material_review_tp": 0,
+        "material_review_predicted": 0,
+        "unsupported_claims": 0
+      },
+      "passed": true
+    }
+  ]
+}

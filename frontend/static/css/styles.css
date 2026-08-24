@@ -4956,6 +4956,21 @@ tr.row-rejected td.sc-cell-goto {
     color: var(--text-muted);
 }
 .sc-project-summary__stats b { color: var(--text); }
+.sc-project-summary__stats .is-review { border-color: #f59e0b; background: #fffbeb; }
+.sc-high-level-list {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card-bg);
+}
+.sc-high-level-change { margin-top: 0; border-left: 4px solid var(--teal); }
+.sc-high-level-change > summary > span { display: grid; gap: 3px; }
+.sc-high-level-change > summary > span small { color: var(--text-muted); font-weight: 500; }
+.sc-high-level-review { border: 1px solid #f59e0b; border-radius: 10px; }
+.sc-high-level-detail { border: 1px solid #93c5fd; border-radius: 10px; background: #eff6ff; }
+.sc-high-level-debug { border-radius: 10px; }
 .sc-project-group {
     overflow: hidden;
     border: 1px solid var(--border);

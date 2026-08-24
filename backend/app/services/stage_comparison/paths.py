@@ -85,6 +85,10 @@ def project_change_summary_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "project_change_summary.json"
 
 
+def high_level_project_changes_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "high_level_project_changes.json"
+
+
 def graphic_change_ledger_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "graphic_change_ledger.json"
 
@@ -111,6 +115,7 @@ __all__ = [
     "text_ai_review_path",
     "text_final_comparison_path",
     "project_change_summary_path",
+    "high_level_project_changes_path",
     "graphic_change_ledger_path",
     "index_json_path",
 ]

@@ -11852,6 +11852,7 @@ const app = createApp({
         const scTextAiReviewLoading = ref(false);
         const scTextAiReviewError = ref('');
         const scProjectChangeSummary = ref(null);
+        const scHighLevelProjectChanges = ref(null);
         const scProjectChangeSummaryLoading = ref(false);
         const scProjectChangeSummaryError = ref('');
         const scTextDifferenceFilter = ref('all');
@@ -12286,6 +12287,11 @@ const app = createApp({
             && !scProjectChangeSummary.value.stale
             && Array.isArray(scProjectChangeSummary.value.sheet_groups)
         ));
+        const scHighLevelProjectChangesAvailable = computed(() => Boolean(
+            scHighLevelProjectChanges.value
+            && !scHighLevelProjectChanges.value.stale
+            && Array.isArray(scHighLevelProjectChanges.value.high_level_changes)
+        ));
         const scCanRunProjectChangeSummary = computed(() => Boolean(
             scActivePair.value
             && scTextAiReviewCompleted.value
@@ -12303,6 +12309,12 @@ const app = createApp({
                 scProjectChangeSummary.value?.summary?.project_changes || 0
             ),
             review: Number(scProjectChangeSummary.value?.summary?.review || 0),
+        }));
+        const scHighLevelProjectChangeTotals = computed(() => ({
+            atomic_evidence: Number(scHighLevelProjectChanges.value?.summary?.atomic_evidence || 0),
+            high_level_changes: Number(scHighLevelProjectChanges.value?.summary?.high_level_changes || 0),
+            material_review: Number(scHighLevelProjectChanges.value?.summary?.material_review || 0),
+            non_material_review: Number(scHighLevelProjectChanges.value?.summary?.non_material_review || 0),
         }));
         const scTextResultSummary = computed(() => {
             const finalResult = scTextFinalComparison.value;
@@ -13169,6 +13181,7 @@ const app = createApp({
             scTextFinalComparison.value = data.text_final_comparison || null;
             scTextAiReviewError.value = '';
             scProjectChangeSummary.value = data.project_change_summary || null;
+            scHighLevelProjectChanges.value = data.high_level_project_changes || null;
             scProjectChangeSummaryError.value = '';
             scTextDifferenceFilter.value = 'all';
             scTextDifferenceSearch.value = '';
@@ -13354,6 +13367,9 @@ const app = createApp({
             if (scProjectChangeSummary.value) {
                 scProjectChangeSummary.value = {...scProjectChangeSummary.value, stale: true};
             }
+            if (scHighLevelProjectChanges.value) {
+                scHighLevelProjectChanges.value = {...scHighLevelProjectChanges.value, stale: true};
+            }
             try {
                 const response = await fetch(
                     scPairUrl(scActivePair.value.id, '/text-comparison'),
@@ -13380,6 +13396,9 @@ const app = createApp({
             if (scProjectChangeSummary.value) {
                 scProjectChangeSummary.value = {...scProjectChangeSummary.value, stale: true};
             }
+            if (scHighLevelProjectChanges.value) {
+                scHighLevelProjectChanges.value = {...scHighLevelProjectChanges.value, stale: true};
+            }
             try {
                 const response = await fetch(
                     scPairUrl(scActivePair.value.id, '/text-differences'),
@@ -13402,6 +13421,9 @@ const app = createApp({
             scTextAiReviewError.value = '';
             if (scProjectChangeSummary.value) {
                 scProjectChangeSummary.value = {...scProjectChangeSummary.value, stale: true};
+            }
+            if (scHighLevelProjectChanges.value) {
+                scHighLevelProjectChanges.value = {...scHighLevelProjectChanges.value, stale: true};
             }
             try {
                 const response = await fetch(
@@ -13429,21 +13451,30 @@ const app = createApp({
             scProjectChangeSummaryLoading.value = true;
             scProjectChangeSummaryError.value = '';
             try {
+                if (!scProjectChangeSummaryAvailable.value) {
+                    const response = await fetch(
+                        scPairUrl(scActivePair.value.id, '/text-change-summary'),
+                        {method: 'POST'},
+                    );
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                    scProjectChangeSummary.value = data;
+                    if (data.sheet_link_repair_applied) {
+                        const pairResponse = await fetch(scPairUrl(scActivePair.value.id, ''));
+                        const pairData = await pairResponse.json().catch(() => ({}));
+                        if (!pairResponse.ok) {
+                            throw new Error(pairData.detail || ('HTTP ' + pairResponse.status));
+                        }
+                        scActivatePairData(pairData);
+                    }
+                }
                 const response = await fetch(
-                    scPairUrl(scActivePair.value.id, '/text-change-summary'),
+                    scPairUrl(scActivePair.value.id, '/high-level-project-changes'),
                     {method: 'POST'},
                 );
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
-                scProjectChangeSummary.value = data;
-                if (data.sheet_link_repair_applied) {
-                    const pairResponse = await fetch(scPairUrl(scActivePair.value.id, ''));
-                    const pairData = await pairResponse.json().catch(() => ({}));
-                    if (!pairResponse.ok) {
-                        throw new Error(pairData.detail || ('HTTP ' + pairResponse.status));
-                    }
-                    scActivatePairData(pairData);
-                }
+                scHighLevelProjectChanges.value = data;
             } catch (error) {
                 scProjectChangeSummaryError.value = scTextOperationErrorMessage(error);
             } finally {
@@ -16089,6 +16120,8 @@ const app = createApp({
             scTextDifferences, scTextDifferencesLoading, scTextDifferencesError,
             scTextAiReview, scTextFinalComparison, scTextAiReviewLoading, scTextAiReviewError,
             scProjectChangeSummary, scProjectChangeSummaryLoading, scProjectChangeSummaryError,
+            scHighLevelProjectChanges, scHighLevelProjectChangesAvailable,
+            scHighLevelProjectChangeTotals,
             scProjectChangeSummaryAvailable, scCanRunProjectChangeSummary,
             scProjectChangeGroups, scProjectChangeSummaryTotals, scSummaryEvidenceCount,
             scTextAllDifferenceGroups, scTextDifferenceGroups, scTextResultAvailable,

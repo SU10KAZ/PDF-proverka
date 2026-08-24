@@ -5974,11 +5974,11 @@
                                 ? 'ИИ проверяет…'
                                 : (scTextFinalComparison ? 'Повторить ИИ-проверку' : 'Запустить ИИ-проверку') }}
                         </button>
-                        <button v-else-if="!scProjectChangeSummaryAvailable"
+                        <button v-else-if="!scHighLevelProjectChangesAvailable"
                                 type="button" class="btn btn-primary"
                                 :disabled="!scCanRunProjectChangeSummary"
                                 @click="scRunProjectChangeSummary()">
-                            {{ scProjectChangeSummaryLoading ? 'Агрегация…' : 'Сформировать основные изменения' }}
+                            {{ scProjectChangeSummaryLoading ? 'Синтез…' : 'Сформировать основные изменения' }}
                         </button>
                     </div>
                     <button v-else-if="scActivePair && !scAcceptedSheetLinksReady"
@@ -5999,7 +5999,141 @@
                     Связи или исходные документы изменились. Пересчитайте расхождения.
                 </div>
 
-                <section v-if="scProjectChangeSummaryAvailable" class="sc-project-summary">
+                <section v-if="scHighLevelProjectChangesAvailable" class="sc-project-summary sc-high-level-summary">
+                    <header class="sc-project-summary__head">
+                        <div>
+                            <strong>Основные изменения проекта</strong>
+                            <small>
+                                {{ scHighLevelProjectChangeTotals.atomic_evidence }} исходных фактов
+                                сведены к проектным решениям; каждый вывод раскрывается до evidence.
+                            </small>
+                        </div>
+                        <div class="sc-project-summary__stats">
+                            <span>Подтверждено: <b>{{ scHighLevelProjectChangeTotals.high_level_changes }}</b></span>
+                            <span class="is-review">Может изменить итог: <b>{{ scHighLevelProjectChangeTotals.material_review }}</b></span>
+                        </div>
+                    </header>
+
+                    <section class="sc-high-level-list">
+                        <p v-if="!scHighLevelProjectChanges.high_level_changes.length"
+                           class="sc-project-group__none">
+                            Подтверждённых верхнеуровневых изменений по текстовым evidence не найдено.
+                        </p>
+                        <details v-for="change in scHighLevelProjectChanges.high_level_changes"
+                                 :key="change.change_id" class="sc-project-change sc-high-level-change">
+                            <summary>
+                                <span>
+                                    <b>{{ change.title }}</b>
+                                    <small>{{ change.type }} · {{ change.status }}</small>
+                                </span>
+                                <small>Evidence: {{ change.count }}</small>
+                            </summary>
+                            <div class="sc-project-change__details">
+                                <p>{{ change.reason }}</p>
+                                <article v-for="evidence in change.details" :key="evidence.evidence_id">
+                                    <strong>{{ evidence.summary }}</strong>
+                                    <div v-if="evidence.before"><small>Было в П</small><pre>{{ evidence.before }}</pre></div>
+                                    <div v-if="evidence.after"><small>Стало в РД</small><pre>{{ evidence.after }}</pre></div>
+                                    <small>
+                                        Листы: П {{ (evidence.left_pages || []).join(', ') || '—' }}
+                                        ↔ РД {{ (evidence.right_pages || []).join(', ') || '—' }}
+                                    </small>
+                                    <div class="sc-project-change__source-actions">
+                                        <button v-if="evidence.left_pages.length" type="button" class="btn btn-sm"
+                                                @click="scOpenDifferenceSource(evidence, evidence, 'left')">Открыть лист П</button>
+                                        <button v-if="evidence.right_pages.length" type="button" class="btn btn-sm"
+                                                @click="scOpenDifferenceSource(evidence, evidence, 'right')">Открыть лист РД</button>
+                                    </div>
+                                </article>
+                            </div>
+                        </details>
+                    </section>
+
+                    <section v-if="scHighLevelProjectChanges.material_review.length"
+                             class="sc-project-group__review sc-high-level-review">
+                        <h3>
+                            ⚠ Требуют проверки и могут изменить итоговый вывод
+                            ({{ scHighLevelProjectChanges.material_review.length }})
+                        </h3>
+                        <details v-for="item in scHighLevelProjectChanges.material_review"
+                                 :key="item.change_id" class="sc-project-change">
+                            <summary>
+                                <span>{{ item.title }}</span>
+                                <small>Evidence: {{ item.count }}</small>
+                            </summary>
+                            <div class="sc-project-change__details">
+                                <p v-if="item.reason === 'SOURCE_LINK_UNCERTAIN'">
+                                    SOURCE_LINK_UNCERTAIN — сначала проверьте сопоставление листов.
+                                </p>
+                                <p v-else>{{ item.reason }}</p>
+                                <article v-for="evidence in item.details" :key="evidence.evidence_id">
+                                    <strong>{{ evidence.summary }}</strong>
+                                    <div v-if="evidence.before"><small>Было в П</small><pre>{{ evidence.before }}</pre></div>
+                                    <div v-if="evidence.after"><small>Стало в РД</small><pre>{{ evidence.after }}</pre></div>
+                                </article>
+                            </div>
+                        </details>
+                    </section>
+
+                    <details v-if="scHighLevelProjectChanges.detail_level_increased.length"
+                             class="sc-project-group__service sc-high-level-detail">
+                        <summary>
+                            Увеличена детализация РД
+                            ({{ scHighLevelProjectChanges.detail_level_increased.length }})
+                        </summary>
+                        <div>
+                            <details v-for="item in scHighLevelProjectChanges.detail_level_increased"
+                                     :key="item.change_id">
+                                <summary>{{ item.title }}</summary>
+                                <div class="sc-project-change__details">
+                                    <article v-for="evidence in item.details" :key="evidence.evidence_id">
+                                        <strong>{{ evidence.summary }}</strong>
+                                    </article>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+                    <details v-if="scHighLevelProjectChanges.service_structure_summary.evidence_count"
+                             class="sc-project-group__service">
+                        <summary>
+                            Служебные и структурные изменения
+                            ({{ scHighLevelProjectChanges.service_structure_summary.evidence_count }})
+                        </summary>
+                        <div>
+                            <details v-for="item in scHighLevelProjectChanges.service_structure_summary.items"
+                                     :key="item.change_id">
+                                <summary>{{ item.title }} ({{ item.count }})</summary>
+                                <div class="sc-project-change__details">
+                                    <article v-for="evidence in item.details" :key="evidence.evidence_id">
+                                        <strong>{{ evidence.summary }}</strong>
+                                    </article>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+
+                    <details v-if="scHighLevelProjectChanges.non_material_review.length"
+                             class="sc-project-group__service sc-high-level-debug">
+                        <summary>
+                            Остальные REVIEW, не влияющие на итоговый вывод
+                            ({{ scHighLevelProjectChangeTotals.non_material_review }})
+                        </summary>
+                        <div>
+                            <details v-for="item in scHighLevelProjectChanges.non_material_review"
+                                     :key="item.change_id">
+                                <summary>{{ item.title }} ({{ item.count }})</summary>
+                                <div class="sc-project-change__details">
+                                    <article v-for="evidence in item.details" :key="evidence.evidence_id">
+                                        <strong>{{ evidence.summary }}</strong>
+                                    </article>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+                </section>
+
+                <section v-if="scProjectChangeSummaryAvailable && !scHighLevelProjectChangesAvailable" class="sc-project-summary">
                     <header class="sc-project-summary__head">
                         <div>
                             <strong>Основные изменения проекта</strong>
@@ -6101,7 +6235,8 @@
                     </article>
                 </section>
 
-                <section v-else-if="scTextAiReviewCompleted" class="sc-shell-card sc-project-summary__pending">
+                <section v-if="scTextAiReviewCompleted && !scProjectChangeSummaryAvailable && !scHighLevelProjectChangesAvailable"
+                         class="sc-shell-card sc-project-summary__pending">
                     <strong>Основные изменения ещё не сформированы</strong>
                     <button type="button" class="btn btn-primary"
                             :disabled="!scCanRunProjectChangeSummary"
