@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graphic_change_ledger_v2.schema.json",
+  "title": "GraphicChangeLedger Mode 2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "comparison_scope", "route", "mode", "policy", "quality", "changes", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "graphic-change-ledger.v2"},
+    "comparison_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left_blocks", "right_blocks"],
+      "properties": {
+        "left_blocks": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/block"}},
+        "right_blocks": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/block"}}
+      }
+    },
+    "route": {"const": "MODE_2_REQUIRED"},
+    "mode": {"const": "MODE_2"},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter", "confidence_mapping"],
+      "properties": {
+        "adapter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["adapter_id", "adapter_version", "source_schema_version"],
+          "properties": {
+            "adapter_id": {"type": "string", "minLength": 1},
+            "adapter_version": {"type": "string", "minLength": 1},
+            "source_schema_version": {"type": "string", "minLength": 1}
+          }
+        },
+        "confidence_mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["policy_id", "input", "output", "thresholds"],
+          "properties": {
+            "policy_id": {"const": "system-graph-ledger-confidence-v1"},
+            "input": {"const": "numeric_0_to_1"},
+            "output": {"const": ["HIGH", "MEDIUM", "LOW"]},
+            "thresholds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["high_minimum_inclusive", "medium_minimum_inclusive"],
+              "properties": {
+                "high_minimum_inclusive": {"const": 0.85},
+                "medium_minimum_inclusive": {"const": 0.6}
+              }
+            }
+          }
+        }
+      }
+    },
+    "quality": {"type": "object"},
+    "changes": {"type": "array", "items": {"$ref": "#/$defs/structural_change"}},
+    "diagnostics": {"type": "object"}
+  },
+  "$defs": {
+    "bbox": {
+      "type": "array",
+      "prefixItems": [{"type": "number"}, {"type": "number"}, {"type": "number"}, {"type": "number"}],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "string_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["block_id", "page_index", "block_type", "bbox_visual_pt"],
+      "properties": {
+        "block_id": {"type": "string", "minLength": 1},
+        "page_index": {"type": "integer", "minimum": 0},
+        "block_type": {"const": "system_graph"},
+        "bbox_visual_pt": {"$ref": "#/$defs/bbox"},
+        "source": {"type": "object"}
+      }
+    },
+    "region": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["block_id", "page_index", "bbox_visual_pt"],
+          "properties": {
+            "block_id": {"type": "string", "minLength": 1},
+            "page_index": {"type": "integer", "minimum": 0},
+            "bbox_visual_pt": {"$ref": "#/$defs/bbox"},
+            "ink_pt": {"type": "number"}
+          }
+        }
+      ]
+    },
+    "grounding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "type", "bbox_visual_pt", "source_tokens", "confidence", "evidence"],
+      "properties": {
+        "kind": {"enum": ["NODE", "EDGE"]},
+        "id": {"type": "string", "minLength": 1},
+        "type": {"type": "string", "minLength": 1},
+        "bbox_visual_pt": {"$ref": "#/$defs/bbox"},
+        "source_tokens": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "object"}}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "source_graph", "node_ids", "edge_ids", "source_tokens", "confidence", "graph_provenance", "grounding"],
+      "properties": {
+        "kind": {"const": "SYSTEM_GRAPH"},
+        "source_graph": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["side", "schema_version", "profile_id", "block_id", "page_index"],
+          "properties": {
+            "side": {"enum": ["LEFT", "RIGHT"]},
+            "schema_version": {"type": "string", "minLength": 1},
+            "profile_id": {"type": "string", "minLength": 1},
+            "block_id": {"type": "string", "minLength": 1},
+            "page_index": {"type": "integer", "minimum": 0}
+          }
+        },
+        "node_ids": {"$ref": "#/$defs/string_ids"},
+        "edge_ids": {"$ref": "#/$defs/string_ids"},
+        "source_tokens": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "graph_provenance": {"type": "object"},
+        "grounding": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/grounding"}}
+      },
+      "anyOf": [
+        {"properties": {"node_ids": {"minItems": 1}}},
+        {"properties": {"edge_ids": {"minItems": 1}}}
+      ]
+    },
+    "address_hint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "side", "block_id", "page_index", "bbox_visual_pt", "node_ids", "edge_ids"],
+      "properties": {
+        "kind": {"const": "SYSTEM_GRAPH_LOCATION"},
+        "side": {"enum": ["LEFT", "RIGHT"]},
+        "block_id": {"type": "string", "minLength": 1},
+        "page_index": {"type": "integer", "minimum": 0},
+        "bbox_visual_pt": {"$ref": "#/$defs/bbox"},
+        "node_ids": {"$ref": "#/$defs/string_ids"},
+        "edge_ids": {"$ref": "#/$defs/string_ids"}
+      }
+    },
+    "structural": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "source_level", "subject", "left_nodes", "right_nodes", "left_edges", "right_edges", "relation"],
+      "properties": {
+        "level": {"enum": ["SYSTEM", "GROUP", "NODE", "EDGE"]},
+        "source_level": {"enum": ["A", "B", "C"]},
+        "subject": {},
+        "left_nodes": {"$ref": "#/$defs/string_ids"},
+        "right_nodes": {"$ref": "#/$defs/string_ids"},
+        "left_edges": {"$ref": "#/$defs/string_ids"},
+        "right_edges": {"$ref": "#/$defs/string_ids"},
+        "relation": {"type": "object"},
+        "equivalence": {"const": "representation_expansion"}
+      }
+    },
+    "structural_change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["change_id", "mode", "type", "summary", "raw_confidence", "mapped_confidence", "left_region", "right_region", "evidence", "address_hints", "confidence", "provenance", "structural"],
+      "properties": {
+        "change_id": {"type": "string", "minLength": 1},
+        "mode": {"const": "MODE_2"},
+        "type": {"enum": ["SYSTEM_BACKBONE_CHANGED", "FUNCTIONAL_GROUP_CHANGED", "NODE_ADDED", "NODE_REMOVED", "NODE_TYPE_CHANGED", "CONNECTION_CHANGED", "GROUP_COUNT_CHANGED", "DETAIL_LEVEL_INCREASED", "UNCERTAIN_STRUCTURAL_CHANGE"]},
+        "summary": {"type": "string", "minLength": 1},
+        "raw_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "mapped_confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+        "left_region": {"$ref": "#/$defs/region"},
+        "right_region": {"$ref": "#/$defs/region"},
+        "evidence": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"$ref": "#/$defs/evidence"}},
+        "address_hints": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"$ref": "#/$defs/address_hint"}},
+        "confidence": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+        "provenance": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["VECTOR", "VISION", "BOTH"]}},
+        "structural": {"$ref": "#/$defs/structural"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"const": "NODE_ADDED"}}, "required": ["type"]},
+          "then": {"properties": {"structural": {"properties": {"level": {"const": "NODE"}, "left_nodes": {"maxItems": 0}, "right_nodes": {"minItems": 1}}}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "NODE_REMOVED"}}, "required": ["type"]},
+          "then": {"properties": {"structural": {"properties": {"level": {"const": "NODE"}, "left_nodes": {"minItems": 1}, "right_nodes": {"maxItems": 0}}}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "NODE_TYPE_CHANGED"}}, "required": ["type"]},
+          "then": {"properties": {"structural": {"properties": {"level": {"const": "NODE"}, "left_nodes": {"minItems": 1}, "right_nodes": {"minItems": 1}}}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "CONNECTION_CHANGED"}}, "required": ["type"]},
+          "then": {"properties": {"structural": {"properties": {"level": {"const": "EDGE"}}}}}
+        },
+        {
+          "if": {"properties": {"type": {"enum": ["FUNCTIONAL_GROUP_CHANGED", "GROUP_COUNT_CHANGED"]}}, "required": ["type"]},
+          "then": {"properties": {"structural": {"properties": {"level": {"const": "GROUP"}}}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "SYSTEM_BACKBONE_CHANGED"}}, "required": ["type"]},
+          "then": {"properties": {"structural": {"properties": {"level": {"const": "SYSTEM"}}}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "DETAIL_LEVEL_INCREASED"}}, "required": ["type"]},
+          "then": {"properties": {"structural": {"required": ["equivalence"], "properties": {"left_nodes": {"minItems": 1}, "right_nodes": {"minItems": 1}, "equivalence": {"const": "representation_expansion"}}}}},
+          "else": {"properties": {"structural": {"not": {"required": ["equivalence"]}}}}
+        }
+      ]
+    }
+  }
+}
