@@ -3,7 +3,17 @@ set -euo pipefail
 
 # ── каталоги состояния и linger (было с 12F1 phase B) ───────────────────────
 install -d -o coder -g coder -m 0700 /var/lib/auditmanager
-install -d -o coder -g coder -m 0700 /var/lib/auditmanager/distributed_workers
+# Каталог общего состояния готовит manage_distributed_worker_state.py prepare:
+# 2770, группа web-ocr-agent-gateway, setgid + default ACL (доверенный рецепт
+# /var/lib/auditmanager/shared-state-contract). `install -d` на СУЩЕСТВУЮЩЕМ
+# каталоге переустанавливает владельца и режим — 24.08.2026 повторный запуск
+# этого скрипта сбросил 2770 coder:web-ocr-agent-gateway в 0700 coder:coder.
+# Взорвалось отложенно: работающий бэкенд проверку не повторяет, и портал не
+# поднялся при ближайшем рестарте (SharedStatePermissionError). Поэтому здесь
+# каталог только СОЗДАЁТСЯ, если его нет; права существующего не трогаем.
+if [ ! -d /var/lib/auditmanager/distributed_workers ]; then
+  install -d -o coder -g coder -m 0700 /var/lib/auditmanager/distributed_workers
+fi
 loginctl enable-linger coder
 
 stat -c '%n %U:%G %a' \
