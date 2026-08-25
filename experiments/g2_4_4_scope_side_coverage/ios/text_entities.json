@@ -1,0 +1,1098 @@
+{
+  "schema_version": "text-entities.v1",
+  "kind": "stage_comparison_text_entities",
+  "producer_version": "stage5-3-text-entity-producer-v1",
+  "normalizer_version": "entity-normalizer-v1",
+  "source_signature": "6f0dc1855aa94ce9c94cee4085be9bbe13ff6c5abc76bfcf7db8c2370ec9988e",
+  "source_artifact": {
+    "kind": "stage_comparison_high_level_project_changes",
+    "schema_version": "1.0",
+    "version": 1,
+    "pair_id": "p26c08b83a6",
+    "source_signature": "545e810b3d02bd442e49b7931d43407b5149609a89e3398251af72e35ea095b3",
+    "artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+    "evidence_index_digest": null,
+    "evidence_index_version": null
+  },
+  "entities": [
+    {
+      "entity_id": "txt_ent_018fe788a0d2c9050ba1",
+      "canonical_name": "PANEL_A_5",
+      "display_names": [
+        "ЩРа-5"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_2084aeff6feccf5e29c5",
+      "canonical_name": "PANEL_A_2",
+      "display_names": [
+        "ЩРа-2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_2c516deef70a87a63a2f",
+      "canonical_name": "PANEL_2",
+      "display_names": [
+        "ЩР-2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_503cca149105a4ce88d1",
+      "canonical_name": "PANEL_6",
+      "display_names": [
+        "ЩР-6"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_4f7238b8c9ed"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_5cf071af70ea69ee"
+      ],
+      "fragment_ids": [
+        "txt_63a519a22fad5c82"
+      ],
+      "source_change_ids": [
+        "hlc_b25b8f0ec770f4be"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_5cf071af70ea69ee",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_5cf071af70ea69ee",
+            "field": "stage5_title",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_701536055e00ac4bf992",
+      "canonical_name": "PANEL_A_4",
+      "display_names": [
+        "ЩРа-4"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_77c26be9e51798a0ed1c",
+      "canonical_name": "VRU_1",
+      "display_names": [
+        "ВРУ-1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_e49035bd602be7cb"
+      ],
+      "fragment_ids": [
+        "txt_1a8cb31c00db083c",
+        "txt_a3b4d3bf49288e1d",
+        "txt_cd90f2b5fe0a0e4f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_e49035bd602be7cb",
+            "field": "after",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_e49035bd602be7cb",
+            "field": "before",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_e49035bd602be7cb",
+            "field": "summary",
+            "rule": "VRU_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_7922a7bbe18f285a94d7",
+      "canonical_name": "PANEL_1",
+      "display_names": [
+        "ЩР-1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "summary",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_835046700b4ba03e4431",
+      "canonical_name": "VRU_4",
+      "display_names": [
+        "ВРУ-4"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_2af3fec3531a1839"
+      ],
+      "fragment_ids": [
+        "txt_fe1382206759393b",
+        "txt_ffdd4acd472e7149"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_2af3fec3531a1839",
+            "field": "after",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_2af3fec3531a1839",
+            "field": "summary",
+            "rule": "VRU_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_8711b577ec2dd2cb8d14",
+      "canonical_name": "MSB",
+      "display_names": [
+        "ГРЩ"
+      ],
+      "entity_type": "SYSTEM",
+      "domain_subtype": "MAIN_SWITCHBOARD",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4,
+        29,
+        31
+      ],
+      "evidence_ids": [
+        "ev_6b149f847c6443f7",
+        "ev_6ff5660f5421faad",
+        "ev_af2f35ca1df8b79a"
+      ],
+      "fragment_ids": [
+        "txt_00eed8316df0bd01",
+        "txt_0431a31e9fb70042",
+        "txt_04b781e9913315af",
+        "txt_0d55429f0324202b",
+        "txt_1fe8c18b2ad9fc44",
+        "txt_294bf5824a0ff8f0",
+        "txt_43ec860581bcd387",
+        "txt_4596f6653eb9ae35",
+        "txt_4b8674967b38f441",
+        "txt_4de7426a206ed0fc",
+        "txt_5e0e0376fb848247",
+        "txt_650614f8d4cdae1c",
+        "txt_65f425ef0dd1ffa3",
+        "txt_671011068f6689c6",
+        "txt_6842651c21973f03",
+        "txt_692912a86e3f9c6a",
+        "txt_6b9044525b2046b6",
+        "txt_6bd194b2ea79cd7d",
+        "txt_6c3aa2b285a3aed6",
+        "txt_6ccde7c7e76decd7",
+        "txt_74b85c9e4cafacbf",
+        "txt_77365d7f135d2a56",
+        "txt_7a44583d42f19e53",
+        "txt_7b5bd0a7fec0ccbb",
+        "txt_80a246412ed54434",
+        "txt_86a175ed792d722c",
+        "txt_88d9544bb6ba1b2d",
+        "txt_9e544445fe10fdf7",
+        "txt_a11b8450ee7021db",
+        "txt_ad073fb238dbf485",
+        "txt_b4f4a3481a0ec56d",
+        "txt_d10ccd33b6a81693",
+        "txt_d48d5e01501dabcb",
+        "txt_d4ffe014619224f6",
+        "txt_d748ea3e9e36c4e2",
+        "txt_e32a90cafb77caaa",
+        "txt_e6c5e472ca207828",
+        "txt_e9a9782a446d75db",
+        "txt_efb68ebdbe80176a",
+        "txt_f28b8baba9cf7962",
+        "txt_f4419295348e6dcd",
+        "txt_f489f8a4a70ca59d"
+      ],
+      "source_change_ids": [
+        "hlc_434f8823f7f0b747",
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_6b149f847c6443f7",
+            "field": "after",
+            "rule": "MSB_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_6b149f847c6443f7",
+            "field": "summary",
+            "rule": "MSB_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_6ff5660f5421faad",
+            "field": "after",
+            "rule": "MSB_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_af2f35ca1df8b79a",
+            "field": "before",
+            "rule": "MSB_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_af2f35ca1df8b79a",
+            "field": "summary",
+            "rule": "MSB_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_980e1f1d8eafad772bbd",
+      "canonical_name": "PANEL_A_1",
+      "display_names": [
+        "ЩРа-1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_c32229d4652a8f65854a",
+      "canonical_name": "MSB_TП",
+      "display_names": [
+        "ГРЩ ТП"
+      ],
+      "entity_type": "SYSTEM",
+      "domain_subtype": "MAIN_SWITCHBOARD",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e"
+      ],
+      "pages": [
+        3
+      ],
+      "evidence_ids": [
+        "ev_b9db67e604bed43e"
+      ],
+      "fragment_ids": [
+        "txt_d9b65aa1ca6b4296"
+      ],
+      "source_change_ids": [
+        "hlc_af2dcf088860ad8f"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_b9db67e604bed43e",
+            "field": "before",
+            "rule": "MSB_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_b9db67e604bed43e",
+            "field": "summary",
+            "rule": "MSB_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_c5349147debf95f6c089",
+      "canonical_name": "PANEL_3",
+      "display_names": [
+        "ЩР-3"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_c7b0622c86b2c013c70e",
+      "canonical_name": "PANEL_5",
+      "display_names": [
+        "ЩР-5"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "summary",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_cb136bf0edcb12e338f0",
+      "canonical_name": "PANEL_A_3",
+      "display_names": [
+        "ЩРа-3"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_e5ba3ad5bf37f2027e98",
+      "canonical_name": "PANEL_A_6",
+      "display_names": [
+        "ЩРа-6"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_4f7238b8c9ed"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_5cf071af70ea69ee"
+      ],
+      "fragment_ids": [
+        "txt_63a519a22fad5c82"
+      ],
+      "source_change_ids": [
+        "hlc_b25b8f0ec770f4be"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_5cf071af70ea69ee",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_5cf071af70ea69ee",
+            "field": "stage5_title",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_e96e110724d8363d454a",
+      "canonical_name": "VRU_2",
+      "display_names": [
+        "ВРУ-2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_30a2b5d50df35878"
+      ],
+      "fragment_ids": [
+        "txt_10f0c2e2ba1ffda6",
+        "txt_465c42ab474f3f18"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_30a2b5d50df35878",
+            "field": "after",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_30a2b5d50df35878",
+            "field": "before",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_30a2b5d50df35878",
+            "field": "summary",
+            "rule": "VRU_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_f08de3c083058ecfddc9",
+      "canonical_name": "VRU_3",
+      "display_names": [
+        "ВРУ-3"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_2af3fec3531a1839",
+        "ev_dbd8b93316caa87e"
+      ],
+      "fragment_ids": [
+        "txt_68ba5628a0f374ce",
+        "txt_79ec0d971f7d0b3f",
+        "txt_fe1382206759393b",
+        "txt_ffdd4acd472e7149"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_2af3fec3531a1839",
+            "field": "before",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_2af3fec3531a1839",
+            "field": "summary",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_dbd8b93316caa87e",
+            "field": "after",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_dbd8b93316caa87e",
+            "field": "before",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_dbd8b93316caa87e",
+            "field": "summary",
+            "rule": "VRU_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_f4fa6c385930ea5b470c",
+      "canonical_name": "VRU_A",
+      "display_names": [
+        "ВРУ-A",
+        "ВРУ-А",
+        "ВРУ-а"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4,
+        29,
+        31
+      ],
+      "evidence_ids": [
+        "ev_6ff5660f5421faad",
+        "ev_efc17de17321be59"
+      ],
+      "fragment_ids": [
+        "txt_00eed8316df0bd01",
+        "txt_0431a31e9fb70042",
+        "txt_04b781e9913315af",
+        "txt_0d55429f0324202b",
+        "txt_1fe8c18b2ad9fc44",
+        "txt_294bf5824a0ff8f0",
+        "txt_43ec860581bcd387",
+        "txt_4596f6653eb9ae35",
+        "txt_4b8674967b38f441",
+        "txt_4de7426a206ed0fc",
+        "txt_5e0e0376fb848247",
+        "txt_650614f8d4cdae1c",
+        "txt_65f425ef0dd1ffa3",
+        "txt_671011068f6689c6",
+        "txt_6842651c21973f03",
+        "txt_692912a86e3f9c6a",
+        "txt_6b9044525b2046b6",
+        "txt_6bd194b2ea79cd7d",
+        "txt_6c3aa2b285a3aed6",
+        "txt_6ccde7c7e76decd7",
+        "txt_74b85c9e4cafacbf",
+        "txt_77365d7f135d2a56",
+        "txt_7a44583d42f19e53",
+        "txt_80a246412ed54434",
+        "txt_86a175ed792d722c",
+        "txt_88d9544bb6ba1b2d",
+        "txt_9e544445fe10fdf7",
+        "txt_a11b8450ee7021db",
+        "txt_ad073fb238dbf485",
+        "txt_b4f4a3481a0ec56d",
+        "txt_b6c4adf81e6b0f74",
+        "txt_d10ccd33b6a81693",
+        "txt_d48d5e01501dabcb",
+        "txt_d4ffe014619224f6",
+        "txt_d748ea3e9e36c4e2",
+        "txt_e32a90cafb77caaa",
+        "txt_e9a9782a446d75db",
+        "txt_efb68ebdbe80176a",
+        "txt_f28b8baba9cf7962",
+        "txt_f31d470d8a5b17da",
+        "txt_f4419295348e6dcd",
+        "txt_f489f8a4a70ca59d"
+      ],
+      "source_change_ids": [
+        "hlc_434f8823f7f0b747",
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_6ff5660f5421faad",
+            "field": "after",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_efc17de17321be59",
+            "field": "after",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_efc17de17321be59",
+            "field": "before",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_efc17de17321be59",
+            "field": "summary",
+            "rule": "VRU_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_fe34c81c526f51fd6d5c",
+      "canonical_name": "PANEL_4",
+      "display_names": [
+        "ЩР-4"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_03d40f1e1f2e",
+        "link_2e943e8b0029",
+        "link_3b1c7c47e1ab",
+        "link_4f7238b8c9ed",
+        "link_8369ee399ae9"
+      ],
+      "pages": [
+        4
+      ],
+      "evidence_ids": [
+        "ev_f9464ad3b067a5ba"
+      ],
+      "fragment_ids": [
+        "txt_65304da3f1bd5b9a",
+        "txt_65cedc6c503d844a",
+        "txt_66a74784e58353a3",
+        "txt_81ce1444aad9bbc1",
+        "txt_c06b44684a761a1f"
+      ],
+      "source_change_ids": [
+        "hlc_d3913c0ab7b930d2"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "be3d6e98f6cfb09d179fca7eec49e9250ea62a7612f2cdcbcc0b1c0cab771d74",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f9464ad3b067a5ba",
+            "field": "before",
+            "rule": "PANEL_DESIGNATION"
+          }
+        ]
+      }
+    }
+  ],
+  "quality_report": {
+    "source_evidence": 96,
+    "total_source_candidates": 46,
+    "produced_entities": 19,
+    "dropped_noise": 0,
+    "ambiguous": 0,
+    "duplicated": 27,
+    "unresolved_context": 0
+  }
+}

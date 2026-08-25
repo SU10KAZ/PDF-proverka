@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graphic_coverage.schema.json",
+  "title": "Graphic semantic coverage manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "builder_version", "coverage_policy", "versions", "source_signature", "source_artifacts", "coverage", "summary"],
+  "properties": {
+    "schema_version": {"const": "graphic-coverage.v1"},
+    "kind": {"const": "stage_comparison_graphic_coverage"},
+    "builder_version": {"const": "graphic-coverage-builder-v1"},
+    "coverage_policy": {
+      "type": "object",
+      "required": ["version", "dimensions", "routes"],
+      "properties": {"version": {"const": "graphic-coverage-policy-v1"}}
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_join", "side_bridge"],
+      "properties": {
+        "scope_join": {"type": "string", "minLength": 1},
+        "side_bridge": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_artifacts": {"type": "object"},
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["coverage_id", "scope_ref", "subject", "dimension", "side", "state", "reason_codes", "source_refs"],
+        "properties": {
+          "coverage_id": {"type": "string", "pattern": "^coverage_[a-f0-9]{20}$"},
+          "scope_ref": {"type": "string", "pattern": "^scope_[a-f0-9]{20}$"},
+          "subject": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "id"],
+            "properties": {
+              "kind": {"enum": ["SCOPE", "TEXT_ENTITY", "GRAPH_ENTITY"]},
+              "id": {"type": ["string", "null"]}
+            }
+          },
+          "dimension": {"enum": ["STRUCTURE", "CONNECTION", "TYPE", "QUANTITY", "PARAMETER", "METHOD", "PRINCIPLE", "SPACE"]},
+          "side": {"enum": ["LEFT", "RIGHT", "BOTH"]},
+          "state": {"enum": ["CHECKED", "NOT_CHECKED", "CHECK_BLOCKED", "NOT_APPLICABLE"]},
+          "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "source_refs": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["block_scope_refs", "block_pair_refs", "ledger_digests", "comparison_digests", "graph_node_ids", "entity_link_ids"],
+            "properties": {
+              "block_scope_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "block_pair_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "ledger_digests": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "comparison_digests": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "graph_node_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "entity_link_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+            }
+          }
+        }
+      }
+    },
+    "summary": {"type": "object"}
+  }
+}

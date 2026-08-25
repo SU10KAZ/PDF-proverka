@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "side_entity_links.schema.json",
+  "title": "Independent LEFT/RIGHT TEXT to GRAPHIC links",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "side_bridge_version", "entity_bridge_version", "source_signature", "source_signatures", "sides", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "side-entity-links.v1"},
+    "kind": {"const": "side_aware_text_graphic_entity_links"},
+    "side_bridge_version": {"const": "side-partitioned-entity-bridge-v1"},
+    "entity_bridge_version": {"type": "string", "minLength": 1},
+    "source_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_signatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_entities", "side_graph_entities"],
+      "properties": {
+        "text_entities": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "side_graph_entities": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "sides": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["LEFT", "RIGHT"],
+      "properties": {
+        "LEFT": {"$ref": "entity_links_v2.schema.json"},
+        "RIGHT": {"$ref": "entity_links_v2.schema.json"}
+      }
+    },
+    "diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["LEFT", "RIGHT"],
+      "properties": {
+        "LEFT": {"type": "object"},
+        "RIGHT": {"type": "object"}
+      }
+    }
+  }
+}

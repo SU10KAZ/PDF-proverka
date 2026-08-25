@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "comparison_scope.schema.json",
+  "title": "Deterministic TEXT to GRAPHIC scope join",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "scope_join_version", "page_convention", "versions", "source_signature", "source_artifacts", "scopes", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "text-graphic-scope-join.v1"},
+    "kind": {"const": "stage_comparison_text_graphic_scope_join"},
+    "scope_join_version": {"const": "explicit-page-base-scope-join-v1"},
+    "page_convention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "text", "graphic", "canonical", "text_to_canonical"],
+      "properties": {
+        "version": {"const": "pdf-page-1based-to-index-0based-v1"},
+        "text": {"const": "pdf_page_1based"},
+        "graphic": {"const": "page_index_0based"},
+        "canonical": {"const": "page_index_0based"},
+        "text_to_canonical": {"const": "pdf_page_1based - 1"}
+      }
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_bridge", "side_bridge"],
+      "properties": {
+        "entity_bridge": {"type": "string", "minLength": 1},
+        "side_bridge": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_artifacts": {"type": "object"},
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["scope_ref", "scope_level", "status", "reason_codes", "text_scope", "graphic_scope_group", "child_block_scopes"],
+        "properties": {
+          "scope_ref": {"type": "string", "pattern": "^scope_[a-f0-9]{20}$"},
+          "scope_level": {"const": "SHEET"},
+          "status": {"enum": ["RESOLVED", "UNRESOLVED_SCOPE"]},
+          "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "text_scope": {"type": ["object", "null"]},
+          "graphic_scope_group": {"type": ["object", "null"]},
+          "child_block_scopes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["scope_ref", "block_pair"],
+              "properties": {
+                "scope_ref": {"type": "string", "pattern": "^block_scope_[a-f0-9]{20}$"},
+                "block_pair": {"type": "object"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_sheet_groups", "graphic_scope_groups", "resolved_scopes", "unresolved_scopes", "resolved_child_block_scopes"],
+      "properties": {
+        "text_sheet_groups": {"type": "integer", "minimum": 0},
+        "graphic_scope_groups": {"type": "integer", "minimum": 0},
+        "resolved_scopes": {"type": "integer", "minimum": 0},
+        "unresolved_scopes": {"type": "integer", "minimum": 0},
+        "resolved_child_block_scopes": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

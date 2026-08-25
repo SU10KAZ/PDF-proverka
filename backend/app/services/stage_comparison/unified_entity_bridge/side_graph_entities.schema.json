@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "side_graph_entities.schema.json",
+  "title": "Explicit LEFT/RIGHT GRAPH_ENTITIES",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "adapter_version", "source_signature", "sides", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "side-graph-entities.v1"},
+    "kind": {"const": "side_aware_system_graph_entities"},
+    "adapter_version": {"const": "side-graph-entity-wrapper-v1"},
+    "source_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "sides": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["LEFT", "RIGHT"],
+      "properties": {
+        "LEFT": {"$ref": "graph_entities.schema.json"},
+        "RIGHT": {"$ref": "graph_entities.schema.json"}
+      }
+    },
+    "diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["LEFT", "RIGHT"],
+      "properties": {
+        "LEFT": {"$ref": "#/$defs/side_diagnostics"},
+        "RIGHT": {"$ref": "#/$defs/side_diagnostics"}
+      }
+    }
+  },
+  "$defs": {
+    "side_diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_graphs", "entities", "invalid_source_graphs"],
+      "properties": {
+        "source_graphs": {"type": "integer", "minimum": 0},
+        "entities": {"type": "integer", "minimum": 0},
+        "invalid_source_graphs": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

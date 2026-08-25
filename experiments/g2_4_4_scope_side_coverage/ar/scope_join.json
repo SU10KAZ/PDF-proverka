@@ -1,0 +1,719 @@
+{
+  "schema_version": "text-graphic-scope-join.v1",
+  "kind": "stage_comparison_text_graphic_scope_join",
+  "scope_join_version": "explicit-page-base-scope-join-v1",
+  "page_convention": {
+    "version": "pdf-page-1based-to-index-0based-v1",
+    "text": "pdf_page_1based",
+    "graphic": "page_index_0based",
+    "canonical": "page_index_0based",
+    "text_to_canonical": "pdf_page_1based - 1"
+  },
+  "versions": {
+    "entity_bridge": "deterministic-entity-bridge-v1",
+    "side_bridge": "side-partitioned-entity-bridge-v1"
+  },
+  "source_signature": "7dd5dd2b800ff2fcaa361771171a8c89961d59847c97342a3a6242d8757b5e9c",
+  "source_artifacts": {
+    "stage53": {
+      "pair_id": "p570d156f57",
+      "schema_version": "1.0",
+      "version": 1,
+      "source_signature": "b86cc27fbdef348104146fddc8c808b24d54c7eb6704f41bf89d787183687cc3",
+      "artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364"
+    },
+    "text_entities": {
+      "schema_version": "text-entities.v1",
+      "source_signature": "80fc1f9994ae1287675d538d0c5a9932c17d50b828e0c7d61d5f9a8ea23677d5"
+    },
+    "side_graph_entities": {
+      "schema_version": "side-graph-entities.v1",
+      "source_signature": "d23514421d42fdd63366cfd157d8d37689bd2ead77cbdfb577e9f19947123570",
+      "left_graph_entities_signature": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258",
+      "right_graph_entities_signature": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258"
+    },
+    "graphic_scope_groups": []
+  },
+  "scopes": [
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_6976a3842ce3",
+        "left": {
+          "pdf_pages_1based": [
+            9
+          ],
+          "canonical_page_indexes_0based": [
+            8
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            8
+          ],
+          "canonical_page_indexes_0based": [
+            7
+          ]
+        },
+        "evidence_ids": [
+          "ev_064e9054da721ceb",
+          "ev_10dd5a29a079de0c",
+          "ev_165f439d1d02c358",
+          "ev_1f4b14ffac1e5296",
+          "ev_201db0b975d48774",
+          "ev_29a391739ea030a3",
+          "ev_29bc05c643a15527",
+          "ev_2cada3eee45044bc",
+          "ev_31b2bdbc20f44ea6",
+          "ev_33f3ecc83ef19427",
+          "ev_34fe4d8ace18749a",
+          "ev_3b4b3ff8f824f06a",
+          "ev_447c75bf6678c748",
+          "ev_4e23e72ebfd951d7",
+          "ev_65d3b7f57fa13c8f",
+          "ev_68a43f884b58c071",
+          "ev_70423450eada2009",
+          "ev_7a9bdbaf0e42a48b",
+          "ev_87a716fdeec6f5b5",
+          "ev_8cb1a40dbe3a39cf",
+          "ev_93f9f26743dbaf54",
+          "ev_9c7d1123d08e0254",
+          "ev_9f6dac57529dc107",
+          "ev_9fcb84d01243b7e0",
+          "ev_b8f0c6659f664074",
+          "ev_bbef38944bbe26f0",
+          "ev_bc20b2107398c376",
+          "ev_be36867b9f34cac9",
+          "ev_c89794c4690e1b2c",
+          "ev_cabf166ee2fdcb76",
+          "ev_cb68dfcd8f55f567",
+          "ev_d7e37043306bb8d7",
+          "ev_ecb5f3d18f9bd6f3",
+          "ev_ef3d1400dfbcf94f"
+        ],
+        "source_change_ids": [
+          "hlc_001ef423949cd9fe",
+          "hlc_0f501d3a475ea526",
+          "hlc_262bb613b4ed654c",
+          "hlc_5a9affb290844970",
+          "hlc_640673152dfc499e",
+          "hlc_7917121075d26d4b",
+          "hlc_860a124fd2e119ed",
+          "hlc_d817e57d3fba02ba",
+          "hlc_f87d2d49bb34c80e"
+        ],
+        "text_entity_ids": [],
+        "pair_review_required": false,
+        "source_link_uncertain": true
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_da35e872b7f4",
+        "left": {
+          "pdf_pages_1based": [
+            10
+          ],
+          "canonical_page_indexes_0based": [
+            9
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            9
+          ],
+          "canonical_page_indexes_0based": [
+            8
+          ]
+        },
+        "evidence_ids": [
+          "ev_1bd940a4de104815",
+          "ev_3793bf0afec71506",
+          "ev_5d70dcc425b26245",
+          "ev_61c520b40174056e",
+          "ev_ae7743a7cc318a7e",
+          "ev_df918da664918bb7"
+        ],
+        "source_change_ids": [
+          "hlc_001ef423949cd9fe",
+          "hlc_0691b1c042b25dd6",
+          "hlc_6bea8ebfc130d85c",
+          "hlc_eff5f37cbd600d47"
+        ],
+        "text_entity_ids": [],
+        "pair_review_required": false,
+        "source_link_uncertain": true
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_5bac0a5098c7",
+        "left": {
+          "pdf_pages_1based": [
+            7
+          ],
+          "canonical_page_indexes_0based": [
+            6
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            6
+          ],
+          "canonical_page_indexes_0based": [
+            5
+          ]
+        },
+        "evidence_ids": [
+          "ev_07012fcf8a78d5f2",
+          "ev_0ad66c824639c182",
+          "ev_0b07ffe41f61cf43",
+          "ev_0b690b56b8c4ca0e",
+          "ev_1037e3ace5f64762",
+          "ev_1188edba2f2da125",
+          "ev_123022fa63160bf1",
+          "ev_1547e83347f37515",
+          "ev_192cd96d865a2fb5",
+          "ev_1af53d0300317b2a",
+          "ev_1d6acab38002563d",
+          "ev_2168b0cfc9061d3b",
+          "ev_27b5747488630d5b",
+          "ev_27cd8b9a234a1cf6",
+          "ev_2a173f42b3853000",
+          "ev_2ee7b158ff630995",
+          "ev_309bfdd79fd0daa1",
+          "ev_3437a50add5565ea",
+          "ev_3959e8f8d4a710e6",
+          "ev_40bba659b327c5cf",
+          "ev_4454be7d92ce6923",
+          "ev_490af6ddc004ce0f",
+          "ev_49503811fbb150e4",
+          "ev_58c52f4a8dd0518b",
+          "ev_5a62f11c63ef66ea",
+          "ev_60d49ffe30c415f9",
+          "ev_685849ef3a99ec96",
+          "ev_68af638de36e01eb",
+          "ev_6bea702e1e841fb0",
+          "ev_6fe92fca00743a8b",
+          "ev_77b4d59534a3752d",
+          "ev_7d839de08655e7c9",
+          "ev_7fa40d7dd892bd04",
+          "ev_82f184c854a00e08",
+          "ev_86333dc5be304b53",
+          "ev_8d49d2dc6dc3c3c7",
+          "ev_8d560e91def2d9f6",
+          "ev_95ea80eda4f8edf4",
+          "ev_96a8b139ca4b0684",
+          "ev_96e02f00aa74ec27",
+          "ev_9a2d848107f1fa19",
+          "ev_9cacc5280c06678e",
+          "ev_9fa13640d7450316",
+          "ev_a4410d0daf41f0ff",
+          "ev_a4a186da419549f0",
+          "ev_a4b99cf5afc0776d",
+          "ev_a8acdc877b524d0b",
+          "ev_aa0a661d0890ff89",
+          "ev_ae89d54ca426415d",
+          "ev_ae93a00ec6196caf",
+          "ev_b2089bbb7f72265f",
+          "ev_b2ea4b28dc6902ee",
+          "ev_b68cc37081a9e96f",
+          "ev_b6f28c60ef7a3f5e",
+          "ev_bb3e9ceab4013fad",
+          "ev_c11206a10eb6cecf",
+          "ev_c24a9a9a88a1fc7a",
+          "ev_c6c11a015afa4e40",
+          "ev_cdc36a5b86b58d9d",
+          "ev_cfa581038173c08b",
+          "ev_d2f813b2e9757028",
+          "ev_d4c26c2553674e19",
+          "ev_d6066cd05ce71266",
+          "ev_da5214a676459e33",
+          "ev_dd6b5d5ab9bdab65",
+          "ev_e33c19de5eb1c061",
+          "ev_e4e2c61f95a2a10f",
+          "ev_ee3f45d063431b62",
+          "ev_f01152d483eb4950",
+          "ev_f1d3e0871a3bfcbd",
+          "ev_f20a60ad83db1059",
+          "ev_f3504a5dc0e25242"
+        ],
+        "source_change_ids": [
+          "hlc_001ef423949cd9fe",
+          "hlc_0b497e13e27ea4a4",
+          "hlc_150a5d10541e7822",
+          "hlc_289536a35b5f5722",
+          "hlc_2cece3c61281e7f4",
+          "hlc_46dd1eb45d6fab8c",
+          "hlc_5363f98f0f74c1ea",
+          "hlc_65b7e4e7eed7ffbd",
+          "hlc_7917121075d26d4b",
+          "hlc_81baf0fc55420526",
+          "hlc_860a124fd2e119ed",
+          "hlc_8b6063e980e77df1",
+          "hlc_8cbde3a6d6c0f4e6",
+          "hlc_a95030b3a8533021",
+          "hlc_ae65a08d8bbf7bf7",
+          "hlc_eff5f37cbd600d47"
+        ],
+        "text_entity_ids": [
+          "txt_ent_1c64ae82d791622759a7",
+          "txt_ent_31a34f79941d3d417818",
+          "txt_ent_35c436241d8511bfa3d2",
+          "txt_ent_437e4b39bdcd2203e7fa",
+          "txt_ent_4855d0d69aaa8afaaadd",
+          "txt_ent_518ca1133c8699ceb058",
+          "txt_ent_55ef63b9709fcbef8718",
+          "txt_ent_56b71d2c707bfe4abfab",
+          "txt_ent_5ccdf5feff5345db7cff",
+          "txt_ent_60381590152961d84a70",
+          "txt_ent_6565e138da012de91f72",
+          "txt_ent_66a063dacc406533dc14",
+          "txt_ent_6b6415670733acfd5213",
+          "txt_ent_6b6dbcd09f96ed579a0e",
+          "txt_ent_6c4ae128fb23aff390ec",
+          "txt_ent_77e5fba3ede9e5177282",
+          "txt_ent_8d77ce028dd96cccd7d3",
+          "txt_ent_9093370917226b17cc38",
+          "txt_ent_9ca198147b79d86fbcf0",
+          "txt_ent_c470bd1308c1edd7af0b",
+          "txt_ent_cf4ac6e945e63ef333ff",
+          "txt_ent_d17ec764106e7e2e752b",
+          "txt_ent_d30636a2bb3d06abd853",
+          "txt_ent_d707f0f82ccb98ba4dfd",
+          "txt_ent_e63732a16623958c9429",
+          "txt_ent_e7c048464a7167310959",
+          "txt_ent_eb6a6065351084134eed"
+        ],
+        "pair_review_required": false,
+        "source_link_uncertain": true
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_93f2698d3cc6",
+        "left": {
+          "pdf_pages_1based": [
+            11
+          ],
+          "canonical_page_indexes_0based": [
+            10
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            10
+          ],
+          "canonical_page_indexes_0based": [
+            9
+          ]
+        },
+        "evidence_ids": [
+          "ev_a40931e3b3eb29b2",
+          "ev_f455af1fdf7dca36"
+        ],
+        "source_change_ids": [
+          "hlc_001ef423949cd9fe"
+        ],
+        "text_entity_ids": [],
+        "pair_review_required": false,
+        "source_link_uncertain": false
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_8b7b6a4bcb55",
+        "left": {
+          "pdf_pages_1based": [
+            8
+          ],
+          "canonical_page_indexes_0based": [
+            7
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            7
+          ],
+          "canonical_page_indexes_0based": [
+            6
+          ]
+        },
+        "evidence_ids": [
+          "ev_0d5fbd40fa1fc84f",
+          "ev_0e37143c34711c9f",
+          "ev_238868576d865b74",
+          "ev_2e5750545b8384b8",
+          "ev_46c53e713034c5fe",
+          "ev_4a42607e2fb93b7b",
+          "ev_57cc62711478026e",
+          "ev_595b4b2f6df9da41",
+          "ev_5b9c07beaa02edeb",
+          "ev_6190fc2396480197",
+          "ev_7075003b17613d14",
+          "ev_737c345c712ac78a",
+          "ev_7d9c77f33cc81f7c",
+          "ev_8768fc32bf426489",
+          "ev_8aa55f1a1d2c6edc",
+          "ev_8ff57db8b44b375b",
+          "ev_9505484293594d57",
+          "ev_a170b139f57a1689",
+          "ev_b599f7c5fd2811d6",
+          "ev_c24fe44c90a96b3e",
+          "ev_d92672f3b4f63a6f",
+          "ev_e1e7d7e7b739e93e",
+          "ev_ee7786c60d515d98",
+          "ev_f6b9cb678ceae1bc",
+          "ev_ff09f4605d338af1"
+        ],
+        "source_change_ids": [
+          "hlc_001ef423949cd9fe",
+          "hlc_289536a35b5f5722",
+          "hlc_2cece3c61281e7f4",
+          "hlc_638f1a5576e6d483",
+          "hlc_7917121075d26d4b",
+          "hlc_8b6063e980e77df1",
+          "hlc_95dafc8ea4e42e75",
+          "hlc_a95030b3a8533021",
+          "hlc_eff5f37cbd600d47"
+        ],
+        "text_entity_ids": [
+          "txt_ent_1c64ae82d791622759a7",
+          "txt_ent_31a34f79941d3d417818",
+          "txt_ent_35c436241d8511bfa3d2",
+          "txt_ent_437e4b39bdcd2203e7fa",
+          "txt_ent_4855d0d69aaa8afaaadd",
+          "txt_ent_518ca1133c8699ceb058",
+          "txt_ent_55ef63b9709fcbef8718",
+          "txt_ent_56b71d2c707bfe4abfab",
+          "txt_ent_5ccdf5feff5345db7cff",
+          "txt_ent_60381590152961d84a70",
+          "txt_ent_66a063dacc406533dc14",
+          "txt_ent_6b6415670733acfd5213",
+          "txt_ent_6b6dbcd09f96ed579a0e",
+          "txt_ent_6c4ae128fb23aff390ec",
+          "txt_ent_77e5fba3ede9e5177282",
+          "txt_ent_8d77ce028dd96cccd7d3",
+          "txt_ent_9093370917226b17cc38",
+          "txt_ent_9ca198147b79d86fbcf0",
+          "txt_ent_c470bd1308c1edd7af0b",
+          "txt_ent_cf4ac6e945e63ef333ff",
+          "txt_ent_d17ec764106e7e2e752b",
+          "txt_ent_d707f0f82ccb98ba4dfd",
+          "txt_ent_e63732a16623958c9429",
+          "txt_ent_e7c048464a7167310959",
+          "txt_ent_eb6a6065351084134eed"
+        ],
+        "pair_review_required": false,
+        "source_link_uncertain": true
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_ba08ed80436a",
+        "left": {
+          "pdf_pages_1based": [
+            6
+          ],
+          "canonical_page_indexes_0based": [
+            5
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            5
+          ],
+          "canonical_page_indexes_0based": [
+            4
+          ]
+        },
+        "evidence_ids": [
+          "ev_02ba1eccee5c2717",
+          "ev_05f1a34621a04749",
+          "ev_0774eecd911a7ee7",
+          "ev_08987d92838b2047",
+          "ev_0ad085dab989e780",
+          "ev_0b3717b78860467f",
+          "ev_1139a4e2c62ad205",
+          "ev_13e50e1b18a1ede4",
+          "ev_156035b043a4eea9",
+          "ev_1ab35d744be0cb07",
+          "ev_1b5d322153b542be",
+          "ev_1c79906fc074fd59",
+          "ev_1dc1c85144e1a79b",
+          "ev_22e2fdae64a7db37",
+          "ev_231ebde90598f24e",
+          "ev_2438c60286262844",
+          "ev_264b14d72e384cee",
+          "ev_26559ec8e4e72ef8",
+          "ev_291cbc816ecebbcd",
+          "ev_2988677dcc6f4049",
+          "ev_2a6bfbd0acd208ca",
+          "ev_2ebca56358490394",
+          "ev_2efaa8fd3f83ddfa",
+          "ev_2f786c18e1f500e7",
+          "ev_2fcdad5f587d7de8",
+          "ev_303a2d85b23166a2",
+          "ev_32bf288463809bb0",
+          "ev_3324ba7a3208003e",
+          "ev_38617cffabfa99d6",
+          "ev_419cab6b98720dbd",
+          "ev_42183b2d5fd79beb",
+          "ev_447ef1d1aa8ff77c",
+          "ev_478606d99516ce9f",
+          "ev_48245c0d202f9e74",
+          "ev_483b5058e8d5cf2a",
+          "ev_4ad945e6c3882519",
+          "ev_4e57e3fa2b0d806d",
+          "ev_4ee8a9d87fdde95a",
+          "ev_50cf78e6109caeb3",
+          "ev_527d848f48b0d102",
+          "ev_54628f069a9a88c1",
+          "ev_58c5d08d97eafaa2",
+          "ev_590b37f4ae5ccf87",
+          "ev_59b03465db20bf02",
+          "ev_5a4de12244d78d28",
+          "ev_5a8a574e5b636b9e",
+          "ev_5f8413c1ddd87e8d",
+          "ev_6f36e15f5d4f8c0e",
+          "ev_71b8727b5b0251a5",
+          "ev_71fc8914297e82e4",
+          "ev_728161ca9cf34a21",
+          "ev_730c03f36a66c1a4",
+          "ev_75c82653f1356181",
+          "ev_7804f6ca8957f70b",
+          "ev_7d77fdd079652342",
+          "ev_801a89b1026fe442",
+          "ev_8196e7b430b3f655",
+          "ev_8279f672301d3e46",
+          "ev_89121a2fe7dc38b2",
+          "ev_89b86e07b6bc2585",
+          "ev_8f16161bd6fc975c",
+          "ev_907130ab5a4f00e1",
+          "ev_92bd6c79888c9f30",
+          "ev_93914c5dbe539bb2",
+          "ev_9a928c6cbfaeb575",
+          "ev_9c84a91eebc8e7bf",
+          "ev_9d95db4e1045b24c",
+          "ev_a16b7e074b748648",
+          "ev_a2058fef6aa45792",
+          "ev_a35f1bcc686c3b6e",
+          "ev_a5056c3595a8cd18",
+          "ev_a609042b577cf534",
+          "ev_abe13216e997e591",
+          "ev_ad4ed56f847a2c85",
+          "ev_adb4a881c8fd2ab2",
+          "ev_af6abad72bb40115",
+          "ev_b0add6ade75ef3a3",
+          "ev_b160e62c1a164a76",
+          "ev_b1affb28fbef2219",
+          "ev_b28c0792562d89ae",
+          "ev_b41180b98da8fff1",
+          "ev_b7e5139c82333a7c",
+          "ev_b977b772375e0d1f",
+          "ev_b9929138512f6419",
+          "ev_be8c57ad37c8f5e5",
+          "ev_bee675efb19ffd2f",
+          "ev_bf9d899f588d59f6",
+          "ev_c0846f27cc13f7c7",
+          "ev_c235578f277054f4",
+          "ev_c26495671ed1e0db",
+          "ev_c5c32b92e0a86cf5",
+          "ev_c89cbbdb22683ace",
+          "ev_d0e6e7ff81feac75",
+          "ev_d1ebbd936890535b",
+          "ev_d25a1f7f2cd9337a",
+          "ev_d84b50ea58df9e20",
+          "ev_da829a700f3fd4bb",
+          "ev_db6536e35eea3895",
+          "ev_e4d8748572132b30",
+          "ev_e6713bf1ec617f95",
+          "ev_e87e2e2e0108c86c",
+          "ev_e9316687bf7cf387",
+          "ev_ea413d851be26ad0",
+          "ev_edba757e187e2033",
+          "ev_f218826b8ef14f24",
+          "ev_f60354be5b7c5a3b",
+          "ev_f6840bc6c18993d6",
+          "ev_f97e634f8b5c935c",
+          "ev_f9cef2d6bd62cac3",
+          "ev_fa297350ae5bb0a7",
+          "ev_fc4ace812d66414d",
+          "ev_fc66d6b498d9ee5a",
+          "ev_fcfbcc379333062d"
+        ],
+        "source_change_ids": [
+          "hlc_001ef423949cd9fe",
+          "hlc_1d55df1e3ab50110",
+          "hlc_22148cd84c9d3754",
+          "hlc_3fa0473a12379931",
+          "hlc_6bea8ebfc130d85c",
+          "hlc_78243ba30fcf16c1",
+          "hlc_860a124fd2e119ed",
+          "hlc_a95030b3a8533021",
+          "hlc_ae6b7bfd16884c7d",
+          "hlc_eff5f37cbd600d47"
+        ],
+        "text_entity_ids": [
+          "txt_ent_31a34f79941d3d417818",
+          "txt_ent_4855d0d69aaa8afaaadd",
+          "txt_ent_518ca1133c8699ceb058",
+          "txt_ent_56b71d2c707bfe4abfab",
+          "txt_ent_5ccdf5feff5345db7cff",
+          "txt_ent_60381590152961d84a70",
+          "txt_ent_6b6dbcd09f96ed579a0e",
+          "txt_ent_6c4ae128fb23aff390ec",
+          "txt_ent_77e5fba3ede9e5177282",
+          "txt_ent_8d77ce028dd96cccd7d3",
+          "txt_ent_9ca198147b79d86fbcf0",
+          "txt_ent_c470bd1308c1edd7af0b",
+          "txt_ent_d17ec764106e7e2e752b",
+          "txt_ent_d707f0f82ccb98ba4dfd",
+          "txt_ent_e7c048464a7167310959",
+          "txt_ent_eb6a6065351084134eed"
+        ],
+        "pair_review_required": false,
+        "source_link_uncertain": true
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_6d1433843c45",
+        "left": {
+          "pdf_pages_1based": [
+            14
+          ],
+          "canonical_page_indexes_0based": [
+            13
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            13
+          ],
+          "canonical_page_indexes_0based": [
+            12
+          ]
+        },
+        "evidence_ids": [
+          "ev_04b98fed838ae02e",
+          "ev_0f9473b7581fb2a1",
+          "ev_1f3fa50db4edfa01",
+          "ev_39c71b7ee2e8316f",
+          "ev_66435674d5afdada",
+          "ev_ae525c774a2cb4d0",
+          "ev_b8798c2bbe188d6b"
+        ],
+        "source_change_ids": [
+          "hlc_001ef423949cd9fe",
+          "hlc_b74a7943ec981ba5",
+          "hlc_d3421a4b595914e7"
+        ],
+        "text_entity_ids": [],
+        "pair_review_required": true,
+        "source_link_uncertain": true
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "scope_level": "SHEET",
+      "status": "UNRESOLVED_SCOPE",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages"
+      ],
+      "text_scope": {
+        "sheet_group_id": "link_8d695a3d3dee",
+        "left": {
+          "pdf_pages_1based": [
+            4
+          ],
+          "canonical_page_indexes_0based": [
+            3
+          ]
+        },
+        "right": {
+          "pdf_pages_1based": [
+            4
+          ],
+          "canonical_page_indexes_0based": [
+            3
+          ]
+        },
+        "evidence_ids": [
+          "ev_189399a48d41bb01",
+          "ev_18c204307c7da0dc"
+        ],
+        "source_change_ids": [
+          "hlc_eff5f37cbd600d47"
+        ],
+        "text_entity_ids": [],
+        "pair_review_required": false,
+        "source_link_uncertain": true
+      },
+      "graphic_scope_group": null,
+      "child_block_scopes": []
+    }
+  ],
+  "diagnostics": {
+    "text_sheet_groups": 8,
+    "graphic_scope_groups": 0,
+    "resolved_scopes": 0,
+    "unresolved_scopes": 8,
+    "resolved_child_block_scopes": 0
+  }
+}
