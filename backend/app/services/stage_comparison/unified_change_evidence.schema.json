@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unified_change_evidence.schema.json",
+  "title": "Unified TEXT/GRAPHIC Change Evidence",
+  "description": "Interop envelope only; it does not define merge, taxonomy, identity, conflict, or combined-confidence decisions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "change_id", "source", "evidence_sources", "evidence"],
+  "properties": {
+    "schema_version": {"const": "unified-change-evidence.v1"},
+    "kind": {"const": "unified_change_evidence"},
+    "change_id": {"type": "string", "minLength": 1},
+    "source": {"enum": ["TEXT", "GRAPHIC", "BOTH"]},
+    "evidence_sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {"enum": ["TEXT", "GRAPHIC"]}
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/evidence"}
+    }
+  },
+  "$defs": {
+    "source_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema_version"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "stage_comparison_high_level_project_changes",
+            "graphic_change_ledger"
+          ]
+        },
+        "schema_version": {
+          "enum": [
+            "1.0",
+            "graphic-change-ledger.v1",
+            "graphic-change-ledger.v2"
+          ]
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "required": ["kind", "side"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1},
+        "side": {"enum": ["LEFT", "RIGHT", "BOTH"]}
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "raw", "source_scale"],
+      "properties": {
+        "level": {"enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"]},
+        "raw": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "number", "minimum": 0, "maximum": 1}
+          ]
+        },
+        "source_scale": {"type": "string", "minLength": 1}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "evidence_source", "source_artifact", "source_change_id", "provenance", "locations", "source_ids", "confidence"],
+      "properties": {
+        "evidence_id": {"type": "string", "minLength": 1},
+        "evidence_source": {"enum": ["TEXT", "GRAPHIC"]},
+        "source_artifact": {"$ref": "#/$defs/source_artifact"},
+        "source_change_id": {"type": "string", "minLength": 1},
+        "provenance": {"type": "object", "minProperties": 1},
+        "locations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/location"}
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "confidence": {"$ref": "#/$defs/confidence"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"evidence_source": {"const": "TEXT"}},
+            "required": ["evidence_source"]
+          },
+          "then": {
+            "properties": {
+              "source_artifact": {
+                "properties": {
+                  "kind": {"const": "stage_comparison_high_level_project_changes"},
+                  "schema_version": {"const": "1.0"}
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"evidence_source": {"const": "GRAPHIC"}},
+            "required": ["evidence_source"]
+          },
+          "then": {
+            "properties": {
+              "source_artifact": {
+                "properties": {
+                  "kind": {"const": "graphic_change_ledger"},
+                  "schema_version": {
+                    "enum": [
+                      "graphic-change-ledger.v1",
+                      "graphic-change-ledger.v2"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
