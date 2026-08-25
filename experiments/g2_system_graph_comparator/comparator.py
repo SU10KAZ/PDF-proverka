@@ -42,6 +42,9 @@ def render_comparison_report(result: dict) -> str:
 - Level A: `{result['backbone']['status']}`.
 - Level B: `{result['functional_groups']['status']}`.
 - Matched pairs: {result['matching']['metrics']['matched_pairs']}.
+- Ambiguous left nodes: {result['comparison_quality']['ambiguous_nodes']}.
+- Certain changes allowed: `{result['comparison_quality']['certain_changes_allowed']}`.
+- Quality blocks: `{result['comparison_quality']['blocked_changes_reason']}`.
 - Geometry identity weight: `{result['provenance']['geometry_identity_weight']}`.
 - Contract valid: `{result['validation']['valid']}`.
 
@@ -79,9 +82,9 @@ Reserve recognition and unresolved individual outgoing correspondences remain
 
 ## Verification
 
-- Comparator negative/real suite: `10 passed`.
-- G2.2 profile/source-kind regressions: `23 passed`.
-- Classic Vectograf: `57 passed, 23 skipped`.
+- Comparator negative/real/hardening suite: `16 passed`.
+- G2.2 profile/source-kind regressions: `22 passed`.
+- Classic Vectograf/evidence/singleline: `95 passed, 23 skipped`.
 - Stage Comparison: `300 passed`.
 
 ## Boundaries

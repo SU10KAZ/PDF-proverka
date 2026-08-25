@@ -13,6 +13,7 @@ from typing import Any, Iterable, Optional
 
 from .graph_identity_matcher import (
     MATCHER_VERSION,
+    empty_matching_result,
     functional_role,
     identity_values,
     match_graph_nodes,
@@ -20,9 +21,13 @@ from .graph_identity_matcher import (
     section_identity,
 )
 from .system_graph import validate_system_graph
+from .system_graph_comparison_policy import (
+    DEFAULT_COMPARISON_POLICY,
+    SystemGraphComparisonPolicy,
+)
 
 
-COMPARATOR_VERSION = "system-graph-comparator-v1"
+COMPARATOR_VERSION = "system-graph-comparator-v2"
 COMPARISON_SCHEMA_VERSION = "system-graph-comparison.v1"
 
 CHANGE_TYPES = frozenset(
@@ -41,15 +46,7 @@ CHANGE_TYPES = frozenset(
 BACKBONE_STATUSES = frozenset(
     {"BACKBONE_PRESERVED", "BACKBONE_CHANGED", "UNCERTAIN_BACKBONE"}
 )
-FUNCTIONAL_GROUP_TYPES = frozenset(
-    {"METERING_GROUP", "COMPENSATION_GROUP", "SERVICE_GROUP"}
-)
-_SOURCE_REPRESENTATION_RANK = {
-    "UNKNOWN_SOURCE": 0,
-    "EXTERNAL_FEEDER": 1,
-    "UPSTREAM_TP_CONNECTION": 1,
-    "TRANSFORMER_EXPLICIT": 2,
-}
+FUNCTIONAL_GROUP_TYPES = frozenset(DEFAULT_COMPARISON_POLICY.functional_group_types)
 
 
 def _node_index(graph: dict) -> dict[str, dict]:
@@ -77,13 +74,20 @@ def _unique_strings(values: Iterable[Any]) -> list[str]:
     return output
 
 
+def _bounded_confidence(value: Any) -> float:
+    try:
+        return max(0.0, min(1.0, float(value or 0.0)))
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def _node_evidence(node: dict) -> dict:
     return {
         "node_id": str(node.get("id")),
         "node_type": str(node.get("type")),
         "canonical_identity": node.get("canonical_identity"),
         "label": node.get("label"),
-        "confidence": float(node.get("confidence", 0.0) or 0.0),
+        "confidence": _bounded_confidence(node.get("confidence")),
         "source_tokens": _unique_strings(node.get("source_tokens") or []),
     }
 
@@ -94,7 +98,7 @@ def _edge_evidence(edge: dict) -> dict:
         "edge_type": str(edge.get("type")),
         "from": str(edge.get("from")),
         "to": str(edge.get("to")),
-        "confidence": float(edge.get("confidence", 0.0) or 0.0),
+        "confidence": _bounded_confidence(edge.get("confidence")),
         "source_tokens": _unique_strings(edge.get("source_tokens") or []),
     }
 
@@ -189,7 +193,7 @@ class _Changes:
             "level": level,
             "subject": subject,
             "summary": summary,
-            "confidence": round(max(0.0, min(1.0, float(confidence))), 3),
+            "confidence": round(_bounded_confidence(confidence), 3),
             "left_nodes": left_node_ids,
             "right_nodes": right_node_ids,
             "evidence": evidence,
@@ -206,22 +210,129 @@ def _nodes_by_type(graph: dict, node_type: str) -> list[dict]:
     ]
 
 
-def _feed_edges(graph: dict) -> list[dict]:
-    return [edge for edge in graph.get("edges") or [] if edge.get("type") == "FEEDS"]
+def _confidence_stats(items: Iterable[dict]) -> dict:
+    values = []
+    for item in items:
+        try:
+            values.append(_bounded_confidence(item.get("confidence")))
+        except AttributeError:
+            values.append(0.0)
+    return {
+        "minimum": round(min(values or [1.0]), 3),
+        "average": round(sum(values) / len(values), 3) if values else 1.0,
+        "items": len(values),
+        "below_0_5": sum(value < 0.5 for value in values),
+    }
 
 
-def _source_to_section_paths(graph: dict) -> list[dict]:
+def _evidence_complete(graph: dict) -> bool:
+    for item in list(graph.get("nodes") or []) + list(graph.get("edges") or []):
+        if not isinstance(item, dict):
+            return False
+        if not isinstance(item.get("evidence"), list) or not item.get("evidence"):
+            return False
+        if not isinstance(item.get("source_tokens"), list) or not item.get("source_tokens"):
+            return False
+    return True
+
+
+def _comparison_quality_precheck(
+    left: dict,
+    right: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> dict:
+    left_validation = validate_system_graph(left)
+    right_validation = validate_system_graph(right)
+    left_coverage = _bounded_confidence(
+        (left.get("quality") or {}).get("identity_coverage")
+    )
+    right_coverage = _bounded_confidence(
+        (right.get("quality") or {}).get("identity_coverage")
+    )
+    left_node_confidence = _confidence_stats(left.get("nodes") or [])
+    right_node_confidence = _confidence_stats(right.get("nodes") or [])
+    left_edge_confidence = _confidence_stats(left.get("edges") or [])
+    right_edge_confidence = _confidence_stats(right.get("edges") or [])
+    left_evidence_complete = _evidence_complete(left)
+    right_evidence_complete = _evidence_complete(right)
+    reasons = []
+    if not left_validation["valid"]:
+        reasons.append("left_graph_invalid")
+    if not right_validation["valid"]:
+        reasons.append("right_graph_invalid")
+    if left_coverage < comparison_policy.minimum_identity_coverage:
+        reasons.append("left_identity_coverage_below_threshold")
+    if right_coverage < comparison_policy.minimum_identity_coverage:
+        reasons.append("right_identity_coverage_below_threshold")
+    if left_node_confidence["average"] < comparison_policy.minimum_average_node_confidence:
+        reasons.append("left_node_confidence_below_threshold")
+    if right_node_confidence["average"] < comparison_policy.minimum_average_node_confidence:
+        reasons.append("right_node_confidence_below_threshold")
+    if left_edge_confidence["average"] < comparison_policy.minimum_average_edge_confidence:
+        reasons.append("left_edge_confidence_below_threshold")
+    if right_edge_confidence["average"] < comparison_policy.minimum_average_edge_confidence:
+        reasons.append("right_edge_confidence_below_threshold")
+    if not left_evidence_complete:
+        reasons.append("left_evidence_incomplete")
+    if not right_evidence_complete:
+        reasons.append("right_evidence_incomplete")
+    return {
+        "left_graph_valid": left_validation["valid"],
+        "right_graph_valid": right_validation["valid"],
+        "left_identity_coverage": round(left_coverage, 3),
+        "right_identity_coverage": round(right_coverage, 3),
+        "left_node_confidence": left_node_confidence,
+        "right_node_confidence": right_node_confidence,
+        "left_edge_confidence": left_edge_confidence,
+        "right_edge_confidence": right_edge_confidence,
+        "left_evidence_complete": left_evidence_complete,
+        "right_evidence_complete": right_evidence_complete,
+        "blocked_changes_reason": reasons,
+        "certain_changes_allowed": not reasons,
+        "policy": comparison_policy.public_contract(),
+    }
+
+
+def _complete_comparison_quality(quality: dict, matching: dict) -> dict:
+    return {
+        **quality,
+        "matched_nodes": int((matching.get("metrics") or {}).get("matched_pairs", 0)),
+        "ambiguous_nodes": int(
+            (matching.get("metrics") or {}).get("ambiguous_left_nodes", 0)
+        ),
+        "ambiguous_right_nodes": int(
+            (matching.get("metrics") or {}).get("ambiguous_right_nodes", 0)
+        ),
+    }
+
+
+def _feed_edges(
+    graph: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> list[dict]:
+    return [
+        edge
+        for edge in graph.get("edges") or []
+        if edge.get("type") == comparison_policy.feed_edge_type
+    ]
+
+
+def _source_to_section_paths(
+    graph: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> list[dict]:
     nodes = _node_index(graph)
     incoming = collections.defaultdict(list)
-    for edge in _feed_edges(graph):
+    for edge in _feed_edges(graph, comparison_policy):
         incoming[str(edge.get("to"))].append(edge)
     paths = []
-    for bus in _nodes_by_type(graph, "BUS_SECTION"):
+    for bus in _nodes_by_type(graph, comparison_policy.section_node_type):
         bus_id = str(bus["id"])
         inputs = [
             nodes.get(str(edge.get("from")))
             for edge in incoming.get(bus_id, [])
-            if (nodes.get(str(edge.get("from"))) or {}).get("type") == "INPUT_DEVICE"
+            if (nodes.get(str(edge.get("from"))) or {}).get("type")
+            == comparison_policy.input_node_type
         ]
         for input_node in [node for node in inputs if node]:
             visited, queue = set(), [(str(input_node["id"]), [], [])]
@@ -232,7 +343,7 @@ def _source_to_section_paths(graph: dict) -> list[dict]:
                 visited.add(current)
                 node = nodes.get(current) or {}
                 next_nodes = path_nodes + [current]
-                if node.get("type") == "SOURCE":
+                if node.get("type") == comparison_policy.source_node_type:
                     paths.append(
                         {
                             "source_id": current,
@@ -260,13 +371,20 @@ def _source_to_section_paths(graph: dict) -> list[dict]:
     return list(unique.values())
 
 
-def _backbone_snapshot(graph: dict) -> dict:
-    sources = _nodes_by_type(graph, "SOURCE")
-    sections = _nodes_by_type(graph, "BUS_SECTION")
-    inputs = _nodes_by_type(graph, "INPUT_DEVICE")
-    ties = _nodes_by_type(graph, "SECTION_DEVICE")
-    tie_edges = [edge for edge in graph.get("edges") or [] if edge.get("type") == "TIES_SECTIONS"]
-    paths = _source_to_section_paths(graph)
+def _backbone_snapshot(
+    graph: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> dict:
+    sources = _nodes_by_type(graph, comparison_policy.source_node_type)
+    sections = _nodes_by_type(graph, comparison_policy.section_node_type)
+    inputs = _nodes_by_type(graph, comparison_policy.input_node_type)
+    ties = _nodes_by_type(graph, comparison_policy.section_device_node_type)
+    tie_edges = [
+        edge
+        for edge in graph.get("edges") or []
+        if edge.get("type") == comparison_policy.tie_edge_type
+    ]
+    paths = _source_to_section_paths(graph, comparison_policy)
     node_index = _node_index(graph)
     path_signatures = []
     for path in paths:
@@ -305,7 +423,7 @@ def _backbone_snapshot(graph: dict) -> dict:
     ]
     if not numeric_confidence:
         numeric_confidence = [
-            float(node.get("confidence", 0.0) or 0.0)
+            _bounded_confidence(node.get("confidence"))
             for node in sources + sections + inputs + ties
         ]
     return {
@@ -321,7 +439,8 @@ def _backbone_snapshot(graph: dict) -> dict:
         "edge_ids": [
             str(edge["id"])
             for edge in graph.get("edges") or []
-            if edge.get("type") in {"FEEDS", "TIES_SECTIONS"}
+            if edge.get("type")
+            in {comparison_policy.feed_edge_type, comparison_policy.tie_edge_type}
             and (
                 str(edge.get("from"))
                 in {str(node["id"]) for node in sources + inputs + ties}
@@ -342,12 +461,19 @@ def _backbone_snapshot(graph: dict) -> dict:
     }
 
 
-def _compare_backbone(left: dict, right: dict, changes: _Changes) -> dict:
-    left_snapshot, right_snapshot = _backbone_snapshot(left), _backbone_snapshot(right)
+def _compare_backbone(
+    left: dict,
+    right: dict,
+    changes: _Changes,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> dict:
+    left_snapshot = _backbone_snapshot(left, comparison_policy)
+    right_snapshot = _backbone_snapshot(right, comparison_policy)
     reliable = (
         left_snapshot["contract_valid"]
         and right_snapshot["contract_valid"]
-        and min(left_snapshot["confidence"], right_snapshot["confidence"]) >= 0.5
+        and min(left_snapshot["confidence"], right_snapshot["confidence"])
+        >= comparison_policy.certain_change_threshold
     )
     preserved = (
         left_snapshot["counts"] == right_snapshot["counts"]
@@ -369,7 +495,7 @@ def _compare_backbone(left: dict, right: dict, changes: _Changes) -> dict:
             reason={
                 "left_contract_valid": left_snapshot["contract_valid"],
                 "right_contract_valid": right_snapshot["contract_valid"],
-                "minimum_backbone_confidence": 0.5,
+                "minimum_backbone_confidence": comparison_policy.certain_change_threshold,
             },
         )
     elif preserved:
@@ -409,28 +535,31 @@ def _compare_backbone(left: dict, right: dict, changes: _Changes) -> dict:
     }
 
 
-def _functional_anchor(node: dict) -> bool:
-    node_type = str(node.get("type") or "")
-    if node_type in {"METERING_GROUP", "COMPENSATION_GROUP"}:
-        return True
-    return node_type == "SERVICE_GROUP" and (node.get("attrs") or {}).get("member_count") is not None
+def _functional_anchor(
+    node: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> bool:
+    return comparison_policy.functional_anchor(node)
 
 
-def _functional_snapshot(graph: dict) -> dict:
+def _functional_snapshot(
+    graph: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> dict:
     groups = collections.defaultdict(list)
     for node in graph.get("nodes") or []:
-        if not isinstance(node, dict) or not _functional_anchor(node):
+        if not isinstance(node, dict) or not _functional_anchor(node, comparison_policy):
             continue
         groups[str(node["type"])].append(
             {
                 "node_id": str(node["id"]),
                 "section": section_identity(graph, node),
-                "confidence": float(node.get("confidence", 0.0) or 0.0),
+                "confidence": _bounded_confidence(node.get("confidence")),
             }
         )
     reserve = [
         node
-        for node in _nodes_by_type(graph, "OUTGOING_DEVICE")
+        for node in _nodes_by_type(graph, comparison_policy.repeated_node_type)
         if str((node.get("attrs") or {}).get("status") or "") == "RESERVE"
     ]
     return {
@@ -444,21 +573,31 @@ def _functional_snapshot(graph: dict) -> dict:
             "count": len(reserve),
             "node_ids": [str(node["id"]) for node in reserve],
             "confidence": round(
-                min([float(node.get("confidence", 0.0) or 0.0) for node in reserve] or [1.0]),
+                min([_bounded_confidence(node.get("confidence")) for node in reserve] or [1.0]),
                 3,
             ),
         },
         "functional_zones": sorted(
             normalize_identity(node.get("canonical_identity") or node.get("label"))
-            for node in _nodes_by_type(graph, "BUS_SECTION")
+            for node in _nodes_by_type(graph, comparison_policy.section_node_type)
         ),
     }
 
 
-def _compare_functional_groups(left: dict, right: dict, changes: _Changes) -> dict:
-    left_snapshot, right_snapshot = _functional_snapshot(left), _functional_snapshot(right)
-    preserved, changed = [], []
-    for group_type in sorted(FUNCTIONAL_GROUP_TYPES):
+def _compare_functional_groups(
+    left: dict,
+    right: dict,
+    changes: _Changes,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> dict:
+    left_snapshot = _functional_snapshot(left, comparison_policy)
+    right_snapshot = _functional_snapshot(right, comparison_policy)
+    preserved, changed, uncertain = [], [], []
+    graph_quality = min(
+        _bounded_confidence((left.get("quality") or {}).get("identity_coverage")),
+        _bounded_confidence((right.get("quality") or {}).get("identity_coverage")),
+    )
+    for group_type in sorted(comparison_policy.functional_group_types):
         left_groups = left_snapshot["groups"].get(group_type, [])
         right_groups = right_snapshot["groups"].get(group_type, [])
         left_sections = [item["section"] for item in left_groups]
@@ -472,36 +611,48 @@ def _compare_functional_groups(left: dict, right: dict, changes: _Changes) -> di
                 }
             )
             continue
-        changed.append(group_type)
+        group_confidence = min(
+            [item["confidence"] for item in left_groups + right_groups]
+            + [graph_quality]
+        )
+        certain = group_confidence >= comparison_policy.certain_change_threshold
+        if certain:
+            changed.append(group_type)
+            change_type = "FUNCTIONAL_GROUP_CHANGED"
+            summary = (
+                f"Функциональная группа {group_type} изменилась: "
+                f"{left_sections} → {right_sections}."
+            )
+        else:
+            uncertain.append(group_type)
+            change_type = "UNCERTAIN_STRUCTURAL_CHANGE"
+            summary = (
+                f"Функциональная группа {group_type} различается, но качество "
+                f"identity недостаточно для уверенного вывода: "
+                f"{left_sections} → {right_sections}."
+            )
         changes.add(
-            "FUNCTIONAL_GROUP_CHANGED",
+            change_type,
             "B",
             {"kind": "functional_group", "function": group_type},
-            f"Функциональная группа {group_type} изменилась: "
-            f"{left_sections} → {right_sections}.",
+            summary,
             left_nodes=[item["node_id"] for item in left_groups],
             right_nodes=[item["node_id"] for item in right_groups],
-            confidence=min(
-                [item["confidence"] for item in left_groups + right_groups] or [0.0]
-            ),
+            confidence=group_confidence,
             reason={
                 "left_sections": left_sections,
                 "right_sections": right_sections,
                 "label_changes_are_not_function_changes": True,
+                "minimum_change_confidence": comparison_policy.certain_change_threshold,
             },
         )
 
     left_reserve, right_reserve = left_snapshot["reserve"], right_snapshot["reserve"]
-    uncertain = []
     if left_reserve["count"] != right_reserve["count"]:
-        graph_quality = min(
-            float((left.get("quality") or {}).get("identity_coverage", 0.0) or 0.0),
-            float((right.get("quality") or {}).get("identity_coverage", 0.0) or 0.0),
-        )
         reserve_confidence = min(
             left_reserve["confidence"], right_reserve["confidence"], graph_quality
         )
-        if reserve_confidence >= 0.6:
+        if reserve_confidence >= comparison_policy.certain_change_threshold:
             changed.append("RESERVE")
             change_type = "FUNCTIONAL_GROUP_CHANGED"
             summary = (
@@ -528,7 +679,7 @@ def _compare_functional_groups(left: dict, right: dict, changes: _Changes) -> di
                 "left_count": left_reserve["count"],
                 "right_count": right_reserve["count"],
                 "absence_is_bounded_by_identity_coverage": graph_quality,
-                "minimum_change_confidence": 0.6,
+                "minimum_change_confidence": comparison_policy.certain_change_threshold,
             },
         )
     else:
@@ -553,10 +704,14 @@ def _compare_functional_groups(left: dict, right: dict, changes: _Changes) -> di
     }
 
 
-def _feed_path_from_source(graph: dict, source_id: str) -> dict:
+def _feed_path_from_source(
+    graph: dict,
+    source_id: str,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> dict:
     nodes = _node_index(graph)
     outgoing = collections.defaultdict(list)
-    for edge in _feed_edges(graph):
+    for edge in _feed_edges(graph, comparison_policy):
         outgoing[str(edge.get("from"))].append(edge)
     queue = [(source_id, [source_id], [])]
     candidates = []
@@ -564,7 +719,11 @@ def _feed_path_from_source(graph: dict, source_id: str) -> dict:
         current, node_ids, edge_ids = queue.pop(0)
         if len(node_ids) > 12:
             continue
-        if current != source_id and (nodes.get(current) or {}).get("type") == "BUS_SECTION":
+        if (
+            current != source_id
+            and (nodes.get(current) or {}).get("type")
+            == comparison_policy.section_node_type
+        ):
             candidates.append({"node_ids": node_ids, "edge_ids": edge_ids})
             continue
         for edge in outgoing.get(current, []):
@@ -582,28 +741,92 @@ def _detail_level_pass(
     right: dict,
     matching: dict,
     changes: _Changes,
-) -> tuple[list[dict], set[str], set[str]]:
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> tuple[list[dict], set[str], set[str], list[dict]]:
     left_nodes, right_nodes = _node_index(left), _node_index(right)
-    detail_matches, consumed_left, consumed_right = [], set(), set()
+    left_edges, right_edges = _edge_index(left), _edge_index(right)
+    detail_matches, consumed_left, consumed_right, rejections = [], set(), set(), []
+    mapping = {item["left_id"]: item["right_id"] for item in matching["matches"]}
     for match in matching["matches"]:
         left_node = left_nodes[match["left_id"]]
         right_node = right_nodes[match["right_id"]]
-        if left_node.get("type") != "SOURCE" or right_node.get("type") != "SOURCE":
+        if (
+            left_node.get("type") != comparison_policy.source_node_type
+            or right_node.get("type") != comparison_policy.source_node_type
+        ):
             continue
-        left_path = _feed_path_from_source(left, match["left_id"])
-        right_path = _feed_path_from_source(right, match["right_id"])
-        left_rank = _SOURCE_REPRESENTATION_RANK.get(
-            str(left_node.get("source_representation") or "UNKNOWN_SOURCE"), 0
-        )
-        right_rank = _SOURCE_REPRESENTATION_RANK.get(
-            str(right_node.get("source_representation") or "UNKNOWN_SOURCE"), 0
-        )
+        left_path = _feed_path_from_source(left, match["left_id"], comparison_policy)
+        right_path = _feed_path_from_source(right, match["right_id"], comparison_policy)
+        left_representation = left_node.get("source_representation")
+        right_representation = right_node.get("source_representation")
+        left_rank = comparison_policy.representation_rank(left_representation)
+        right_rank = comparison_policy.representation_rank(right_representation)
         matched_left_ids = {item["left_id"] for item in matching["matches"]}
         matched_right_ids = {item["right_id"] for item in matching["matches"]}
         left_expansion = [node_id for node_id in left_path["node_ids"][1:-1] if node_id not in matched_left_ids]
         right_expansion = [node_id for node_id in right_path["node_ids"][1:-1] if node_id not in matched_right_ids]
-        increased = right_rank > left_rank or len(right_expansion) > len(left_expansion)
+        transition_allowed = comparison_policy.detail_transition_allowed(
+            left_representation, right_representation
+        )
+        increased = transition_allowed or len(right_expansion) > len(left_expansion)
         if not increased:
+            continue
+        boundary_preserved = (
+            bool(left_path["node_ids"])
+            and bool(right_path["node_ids"])
+            and mapping.get(left_path["node_ids"][0]) == right_path["node_ids"][0]
+            and mapping.get(left_path["node_ids"][-1]) == right_path["node_ids"][-1]
+        )
+        left_inputs = [
+            node_id
+            for node_id in left_path["node_ids"]
+            if (left_nodes.get(node_id) or {}).get("type")
+            == comparison_policy.input_node_type
+        ]
+        right_inputs = [
+            node_id
+            for node_id in right_path["node_ids"]
+            if (right_nodes.get(node_id) or {}).get("type")
+            == comparison_policy.input_node_type
+        ]
+        input_boundary_preserved = (
+            len(left_inputs) == 1
+            and len(right_inputs) == 1
+            and mapping.get(left_inputs[0]) == right_inputs[0]
+        )
+        relations_preserved = all(
+            (left_edges.get(edge_id) or {}).get("type")
+            == comparison_policy.feed_edge_type
+            for edge_id in left_path["edge_ids"]
+        ) and all(
+            (right_edges.get(edge_id) or {}).get("type")
+            == comparison_policy.feed_edge_type
+            for edge_id in right_path["edge_ids"]
+        )
+        unsafe_right_nodes = [
+            node_id
+            for node_id in right_expansion
+            if not comparison_policy.representation_detail_node(right_nodes[node_id])
+        ]
+        semantic_equivalence = (
+            boundary_preserved
+            and input_boundary_preserved
+            and relations_preserved
+            and not unsafe_right_nodes
+            and (transition_allowed or bool(right_expansion))
+        )
+        if not semantic_equivalence:
+            rejections.append(
+                {
+                    "left_source": match["left_id"],
+                    "right_source": match["right_id"],
+                    "boundary_preserved": boundary_preserved,
+                    "input_boundary_preserved": input_boundary_preserved,
+                    "relations_preserved": relations_preserved,
+                    "unsafe_right_nodes": unsafe_right_nodes,
+                    "reason": "detail_equivalence_not_proven",
+                }
+            )
             continue
         left_ids = left_path["node_ids"]
         right_ids = right_path["node_ids"]
@@ -615,8 +838,8 @@ def _detail_level_pass(
             "coarse_left_nodes": [match["left_id"]],
             "expanded_right_nodes": right_ids[:-1],
             "cardinality": "one_to_many" if len(right_ids[:-1]) > 1 else "one_to_one",
-            "left_representation": left_node.get("source_representation"),
-            "right_representation": right_node.get("source_representation"),
+            "left_representation": left_representation,
+            "right_representation": right_representation,
             "match_confidence": match["confidence"],
         }
         detail_matches.append(record)
@@ -625,7 +848,7 @@ def _detail_level_pass(
             "A",
             {
                 "kind": "source_path",
-                "functional_role": functional_role(left, left_node),
+                "functional_role": functional_role(left, left_node, comparison_policy),
             },
             "Источник показан подробнее без смены функционального пути: "
             f"{left_node.get('label') or left_node['id']} "
@@ -641,10 +864,14 @@ def _detail_level_pass(
                 "classification": "coarse_node_to_expanded_subgraph",
                 "left_representation_rank": left_rank,
                 "right_representation_rank": right_rank,
+                "boundary_preserved": boundary_preserved,
+                "input_boundary_preserved": input_boundary_preserved,
+                "relations_preserved": relations_preserved,
+                "unsafe_right_nodes": [],
                 "not_node_added": True,
             },
         )
-    return detail_matches, consumed_left, consumed_right
+    return detail_matches, consumed_left, consumed_right, rejections
 
 
 def _effective_node_type(node: dict) -> str:
@@ -652,11 +879,19 @@ def _effective_node_type(node: dict) -> str:
 
 
 def _compare_matched_node_types(
-    left: dict, right: dict, matching: dict, changes: _Changes
+    left: dict,
+    right: dict,
+    matching: dict,
+    changes: _Changes,
+    comparison_policy: SystemGraphComparisonPolicy,
 ) -> None:
     left_nodes, right_nodes = _node_index(left), _node_index(right)
     for match in matching["matches"]:
-        if float(match.get("confidence", 0.0)) < 0.68:
+        if (
+            match.get("decision") != "HIGH_MATCH"
+            or float(match.get("confidence", 0.0))
+            < comparison_policy.high_match_threshold
+        ):
             continue
         left_node, right_node = left_nodes[match["left_id"]], right_nodes[match["right_id"]]
         left_type, right_type = _effective_node_type(left_node), _effective_node_type(right_node)
@@ -800,21 +1035,38 @@ def _compare_connections(
         )
 
 
-def _repeated_outgoing_scope(left: dict, right: dict, changes: _Changes) -> dict:
-    left_nodes = _nodes_by_type(left, "OUTGOING_DEVICE")
-    right_nodes = _nodes_by_type(right, "OUTGOING_DEVICE")
-    repeated = min(len(left_nodes), len(right_nodes)) >= 3
+def _repeated_outgoing_scope(
+    left: dict,
+    right: dict,
+    changes: _Changes,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> dict:
+    left_nodes = _nodes_by_type(left, comparison_policy.repeated_node_type)
+    right_nodes = _nodes_by_type(right, comparison_policy.repeated_node_type)
+    repeated = (
+        min(len(left_nodes), len(right_nodes))
+        >= comparison_policy.repeated_group_min_size
+    )
     if repeated and len(left_nodes) != len(right_nodes):
         identity_confidence = min(
-            float((left.get("quality") or {}).get("identity_coverage", 0.0) or 0.0),
-            float((right.get("quality") or {}).get("identity_coverage", 0.0) or 0.0),
+            _bounded_confidence((left.get("quality") or {}).get("identity_coverage")),
+            _bounded_confidence((right.get("quality") or {}).get("identity_coverage")),
         )
+        certain = identity_confidence >= comparison_policy.certain_change_threshold
         changes.add(
-            "GROUP_COUNT_CHANGED",
+            "GROUP_COUNT_CHANGED" if certain else "UNCERTAIN_STRUCTURAL_CHANGE",
             "C",
-            {"kind": "repeated_node_group", "node_type": "OUTGOING_DEVICE"},
-            "Количество отходящих аппаратов изменилось: "
-            f"{len(left_nodes)} → {len(right_nodes)}.",
+            {
+                "kind": "repeated_node_group",
+                "node_type": comparison_policy.repeated_node_type,
+            },
+            (
+                "Количество элементов повторяющейся группы изменилось: "
+                if certain
+                else "Количество распознанных элементов группы различается, "
+                "но identity quality недостаточно для уверенного изменения: "
+            )
+            + f"{len(left_nodes)} → {len(right_nodes)}.",
             left_nodes=[str(node["id"]) for node in left_nodes],
             right_nodes=[str(node["id"]) for node in right_nodes],
             confidence=identity_confidence,
@@ -822,6 +1074,7 @@ def _repeated_outgoing_scope(left: dict, right: dict, changes: _Changes) -> dict
                 "left_count": len(left_nodes),
                 "right_count": len(right_nodes),
                 "individual_unmatched_nodes_are_not_automatically_added_or_removed": True,
+                "minimum_change_confidence": comparison_policy.certain_change_threshold,
             },
         )
     return {
@@ -833,16 +1086,21 @@ def _repeated_outgoing_scope(left: dict, right: dict, changes: _Changes) -> dict
     }
 
 
-def _terminal_ids(graph: dict, outgoing_ids: set[str]) -> set[str]:
+def _terminal_ids(
+    graph: dict,
+    outgoing_ids: set[str],
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> set[str]:
     return {
         str(edge.get("to"))
         for edge in graph.get("edges") or []
-        if edge.get("type") == "TERMINATES_AT" and str(edge.get("from")) in outgoing_ids
+        if edge.get("type") == comparison_policy.terminal_edge_type
+        and str(edge.get("from")) in outgoing_ids
     }
 
 
 def _strong_individual_identity(node: dict) -> bool:
-    return bool(identity_values(node)) and float(node.get("confidence", 0.0) or 0.0) >= 0.7
+    return bool(identity_values(node)) and _bounded_confidence(node.get("confidence")) >= 0.7
 
 
 def _compare_unmatched_nodes(
@@ -854,19 +1112,24 @@ def _compare_unmatched_nodes(
     consumed_left: set[str],
     consumed_right: set[str],
     outgoing_scope: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
 ) -> None:
     left_nodes, right_nodes = _node_index(left), _node_index(right)
     managed_left, managed_right = set(consumed_left), set(consumed_right)
     if outgoing_scope["repeated"]:
         managed_left.update(outgoing_scope["left_ids"])
         managed_right.update(outgoing_scope["right_ids"])
-        managed_left.update(_terminal_ids(left, outgoing_scope["left_ids"]))
-        managed_right.update(_terminal_ids(right, outgoing_scope["right_ids"]))
+        managed_left.update(
+            _terminal_ids(left, outgoing_scope["left_ids"], comparison_policy)
+        )
+        managed_right.update(
+            _terminal_ids(right, outgoing_scope["right_ids"], comparison_policy)
+        )
     for node_id, node in left_nodes.items():
-        if _functional_anchor(node):
+        if _functional_anchor(node, comparison_policy):
             managed_left.add(node_id)
     for node_id, node in right_nodes.items():
-        if _functional_anchor(node):
+        if _functional_anchor(node, comparison_policy):
             managed_right.add(node_id)
 
     remaining_left = [
@@ -879,31 +1142,33 @@ def _compare_unmatched_nodes(
         for node_id in matching["unmatched_right"]
         if node_id not in managed_right
     ]
+    ambiguous_left = set(matching.get("ambiguous_left_ids") or [])
+    ambiguous_right = set(matching.get("ambiguous_right_ids") or [])
     weak_left, weak_right = [], []
     for node_id in remaining_left:
         node = left_nodes[node_id]
-        if _strong_individual_identity(node):
+        if _strong_individual_identity(node) and node_id not in ambiguous_left:
             changes.add(
                 "NODE_REMOVED",
                 "C",
                 {"kind": "individual_node", "identity": sorted(identity_values(node))},
                 f"Узел {node.get('label') or node_id} отсутствует справа.",
                 left_nodes=[node_id],
-                confidence=float(node.get("confidence", 0.0) or 0.0),
+                confidence=_bounded_confidence(node.get("confidence")),
                 reason={"strong_identity": True, "no_right_match": True},
             )
         else:
             weak_left.append(node_id)
     for node_id in remaining_right:
         node = right_nodes[node_id]
-        if _strong_individual_identity(node):
+        if _strong_individual_identity(node) and node_id not in ambiguous_right:
             changes.add(
                 "NODE_ADDED",
                 "C",
                 {"kind": "individual_node", "identity": sorted(identity_values(node))},
                 f"Справа появился узел {node.get('label') or node_id}.",
                 right_nodes=[node_id],
-                confidence=float(node.get("confidence", 0.0) or 0.0),
+                confidence=_bounded_confidence(node.get("confidence")),
                 reason={"strong_identity": True, "no_left_match": True},
             )
         else:
@@ -927,8 +1192,8 @@ def _compare_unmatched_nodes(
             left_nodes=uncertain_left,
             right_nodes=uncertain_right,
             confidence=min(
-                float((left.get("quality") or {}).get("identity_coverage", 0.0) or 0.0),
-                float((right.get("quality") or {}).get("identity_coverage", 0.0) or 0.0),
+                _bounded_confidence((left.get("quality") or {}).get("identity_coverage")),
+                _bounded_confidence((right.get("quality") or {}).get("identity_coverage")),
                 0.49,
             ),
             reason={
@@ -938,6 +1203,88 @@ def _compare_unmatched_nodes(
                 "not_converted_to_removed_added": True,
             },
         )
+
+
+def _fail_closed_levels(
+    left: dict,
+    right: dict,
+    changes: _Changes,
+    comparison_quality: dict,
+    comparison_policy: SystemGraphComparisonPolicy,
+) -> tuple[dict, dict]:
+    left_backbone = _backbone_snapshot(left, comparison_policy)
+    right_backbone = _backbone_snapshot(right, comparison_policy)
+    left_functional = _functional_snapshot(left, comparison_policy)
+    right_functional = _functional_snapshot(right, comparison_policy)
+    left_ids = [
+        str(node.get("id"))
+        for node in left.get("nodes") or []
+        if isinstance(node, dict) and node.get("id") is not None
+    ]
+    right_ids = [
+        str(node.get("id"))
+        for node in right.get("nodes") or []
+        if isinstance(node, dict) and node.get("id") is not None
+    ]
+    left_edge_ids = [
+        str(edge.get("id"))
+        for edge in left.get("edges") or []
+        if isinstance(edge, dict) and edge.get("id") is not None
+    ]
+    right_edge_ids = [
+        str(edge.get("id"))
+        for edge in right.get("edges") or []
+        if isinstance(edge, dict) and edge.get("id") is not None
+    ]
+    quality_confidence = min(
+        comparison_quality["left_identity_coverage"],
+        comparison_quality["right_identity_coverage"],
+        comparison_quality["left_node_confidence"]["average"],
+        comparison_quality["right_node_confidence"]["average"],
+        comparison_quality["left_edge_confidence"]["average"],
+        comparison_quality["right_edge_confidence"]["average"],
+    )
+    changes.add(
+        "UNCERTAIN_STRUCTURAL_CHANGE",
+        "A",
+        {"kind": "comparison_quality_gate"},
+        "Качество входных SYSTEM_GRAPH недостаточно для уверенных структурных изменений.",
+        left_nodes=left_ids,
+        right_nodes=right_ids,
+        left_edges=left_edge_ids,
+        right_edges=right_edge_ids,
+        confidence=quality_confidence,
+        reason={
+            "blocked_changes_reason": comparison_quality["blocked_changes_reason"],
+            "certain_changes_suppressed": True,
+        },
+    )
+    backbone = {
+        "status": "UNCERTAIN_BACKBONE",
+        "left": left_backbone,
+        "right": right_backbone,
+        "comparison_basis": [
+            "source_count",
+            "input_count",
+            "section_count",
+            "source_to_section_paths",
+            "section_link_connectivity",
+        ],
+        "geometry_used": False,
+        "blocked_by_quality_gate": True,
+    }
+    functional = {
+        "status": "FUNCTIONS_UNCERTAIN",
+        "preserved": [],
+        "changed": [],
+        "uncertain": ["comparison_quality_gate"],
+        "functional_zones_preserved": None,
+        "left": left_functional,
+        "right": right_functional,
+        "geometry_used": False,
+        "blocked_by_quality_gate": True,
+    }
+    return backbone, functional
 
 
 def _graph_ref(graph: dict) -> dict:
@@ -991,37 +1338,93 @@ def validate_comparison_result(result: Any) -> dict:
         errors.append("bbox_identity_must_be_false")
     if provenance.get("manual_cases") is not False:
         errors.append("manual_cases_must_be_false")
+    comparison_quality = result.get("comparison_quality") or {}
+    for field in (
+        "left_graph_valid",
+        "right_graph_valid",
+        "left_identity_coverage",
+        "right_identity_coverage",
+        "matched_nodes",
+        "ambiguous_nodes",
+        "blocked_changes_reason",
+        "certain_changes_allowed",
+    ):
+        if field not in comparison_quality:
+            errors.append(f"comparison_quality:missing_{field}")
+    if comparison_quality.get("blocked_changes_reason"):
+        certain_types = [
+            change.get("type")
+            for change in result.get("changes") or []
+            if change.get("type") != "UNCERTAIN_STRUCTURAL_CHANGE"
+        ]
+        if certain_types:
+            errors.append("comparison_quality:certain_change_not_fail_closed")
     return {"valid": not errors, "errors": errors}
 
 
-def compare_system_graphs(left: dict, right: dict) -> dict:
+def compare_system_graphs(
+    left: dict,
+    right: dict,
+    comparison_policy: SystemGraphComparisonPolicy = DEFAULT_COMPARISON_POLICY,
+) -> dict:
     """Compare two ready SYSTEM_GRAPH dictionaries without geometric identity."""
     changes = _Changes(left, right)
-    matching = match_graph_nodes(left, right)
-    backbone = _compare_backbone(left, right, changes)
-    functional = _compare_functional_groups(left, right, changes)
-    detail_matches, consumed_left, consumed_right = _detail_level_pass(
-        left, right, matching, changes
-    )
-    matching["detail_matches"] = detail_matches
-    _compare_matched_node_types(left, right, matching, changes)
-    _compare_connections(
-        left,
-        right,
-        matching,
-        changes,
-        detail_matches=detail_matches,
-    )
-    outgoing_scope = _repeated_outgoing_scope(left, right, changes)
-    _compare_unmatched_nodes(
-        left,
-        right,
-        matching,
-        changes,
-        consumed_left=consumed_left,
-        consumed_right=consumed_right,
-        outgoing_scope=outgoing_scope,
-    )
+    quality_precheck = _comparison_quality_precheck(left, right, comparison_policy)
+    if quality_precheck["left_graph_valid"] and quality_precheck["right_graph_valid"]:
+        matching = match_graph_nodes(left, right, comparison_policy)
+    else:
+        matching = empty_matching_result(left, right)
+    comparison_quality = _complete_comparison_quality(quality_precheck, matching)
+
+    if comparison_quality["blocked_changes_reason"]:
+        backbone, functional = _fail_closed_levels(
+            left,
+            right,
+            changes,
+            comparison_quality,
+            comparison_policy,
+        )
+        matching["detail_matches"] = []
+        matching["detail_rejections"] = []
+    else:
+        backbone = _compare_backbone(left, right, changes, comparison_policy)
+        functional = _compare_functional_groups(
+            left, right, changes, comparison_policy
+        )
+        detail_matches, consumed_left, consumed_right, detail_rejections = (
+            _detail_level_pass(
+                left,
+                right,
+                matching,
+                changes,
+                comparison_policy,
+            )
+        )
+        matching["detail_matches"] = detail_matches
+        matching["detail_rejections"] = detail_rejections
+        _compare_matched_node_types(
+            left, right, matching, changes, comparison_policy
+        )
+        _compare_connections(
+            left,
+            right,
+            matching,
+            changes,
+            detail_matches=detail_matches,
+        )
+        outgoing_scope = _repeated_outgoing_scope(
+            left, right, changes, comparison_policy
+        )
+        _compare_unmatched_nodes(
+            left,
+            right,
+            matching,
+            changes,
+            consumed_left=consumed_left,
+            consumed_right=consumed_right,
+            outgoing_scope=outgoing_scope,
+            comparison_policy=comparison_policy,
+        )
 
     ordered = sorted(
         changes.items,
@@ -1041,6 +1444,7 @@ def compare_system_graphs(left: dict, right: dict) -> dict:
         "backbone": backbone,
         "functional_groups": functional,
         "matching": matching,
+        "comparison_quality": comparison_quality,
         "changes": ordered,
         "summary": {
             "changes_total": len(ordered),
@@ -1054,6 +1458,7 @@ def compare_system_graphs(left: dict, right: dict) -> dict:
         "provenance": {
             "comparator_version": COMPARATOR_VERSION,
             "matcher_version": MATCHER_VERSION,
+            "comparison_policy_id": comparison_policy.policy_id,
             "input_kind": "ready_system_graph_json",
             "bbox_identity": False,
             "geometry_identity_weight": 0.0,
@@ -1073,6 +1478,8 @@ __all__ = [
     "CHANGE_TYPES",
     "COMPARATOR_VERSION",
     "COMPARISON_SCHEMA_VERSION",
+    "DEFAULT_COMPARISON_POLICY",
+    "SystemGraphComparisonPolicy",
     "compare_system_graphs",
     "validate_comparison_result",
 ]

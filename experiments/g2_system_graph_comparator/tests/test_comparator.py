@@ -137,6 +137,56 @@ def _types(result: dict) -> list[str]:
     return [change["type"] for change in result["changes"]]
 
 
+def _duplicate_branch_graph(prefix: str, *, reversed_parents: bool) -> dict:
+    bus_id = f"{prefix}-BUS"
+    outgoing_a = f"{prefix}-OUT-A"
+    outgoing_b = f"{prefix}-OUT-B"
+    load_a = f"{prefix}-LOAD-A"
+    load_b = f"{prefix}-LOAD-B"
+    bus = _node(bus_id, "BUS_SECTION", canonical="SECTION#1", label="BUS")
+    first = _node(
+        outgoing_a,
+        "OUTGOING_DEVICE",
+        canonical="DUPLICATE-FEEDER",
+        label="QF",
+        section=bus_id,
+    )
+    second = _node(
+        outgoing_b,
+        "OUTGOING_DEVICE",
+        canonical="DUPLICATE-FEEDER",
+        label="QF",
+        section=bus_id,
+    )
+    terminal_a = _node(
+        load_a,
+        "LOAD",
+        canonical="LOAD#A",
+        label="A",
+        section=bus_id,
+        attrs={"type_candidate": "MOTOR"},
+    )
+    terminal_b = _node(
+        load_b,
+        "LOAD",
+        canonical="LOAD#B",
+        label="B",
+        section=bus_id,
+        attrs={"type_candidate": "PANEL"},
+    )
+    parents = [second, first] if reversed_parents else [first, second]
+    return _graph(
+        [bus, *parents, terminal_a, terminal_b],
+        (
+            ("FEEDS", bus_id, outgoing_a),
+            ("FEEDS", bus_id, outgoing_b),
+            ("TERMINATES_AT", outgoing_a, load_a),
+            ("TERMINATES_AT", outgoing_b, load_b),
+        ),
+        block_id=prefix,
+    )
+
+
 def test_identical_graph_with_different_bbox_is_no_change():
     left = _basic_path(block_id="left")
     right = copy.deepcopy(left)
@@ -340,3 +390,151 @@ def test_comparator_has_no_manual_case_or_integration_dependencies():
         "graphic_comparison",
     ):
         assert forbidden not in source
+
+
+def test_node_and_edge_array_order_does_not_change_result():
+    left = _basic_path(block_id="left")
+    right = copy.deepcopy(left)
+    right["block"]["block_id"] = "right"
+    right["nodes"].reverse()
+    right["edges"].reverse()
+
+    result = compare_system_graphs(left, right)
+
+    assert result["status"] == "NO_CHANGE"
+    assert result["changes"] == []
+    assert result["matching"]["policy"]["algorithm"] == "deterministic_global_assignment"
+
+
+def test_duplicate_branch_order_cannot_override_terminal_canonical_identity():
+    left = _duplicate_branch_graph("LEFT", reversed_parents=False)
+    right = _duplicate_branch_graph("RIGHT", reversed_parents=True)
+
+    result = compare_system_graphs(left, right)
+    terminal_pairs = {
+        item["left_id"]: item["right_id"]
+        for item in result["matching"]["matches"]
+        if "LOAD" in item["left_id"]
+    }
+
+    assert terminal_pairs == {
+        "LEFT-LOAD-A": "RIGHT-LOAD-A",
+        "LEFT-LOAD-B": "RIGHT-LOAD-B",
+    }
+    assert "NODE_TYPE_CHANGED" not in _types(result)
+    assert all(item["decision"] == "HIGH_MATCH" for item in result["matching"]["matches"])
+    assert result["matching"]["ambiguous_left_ids"]
+
+
+def test_renamed_unique_function_is_not_removed_and_added():
+    left = _graph(
+        [
+            _node("BUS-L", "BUS_SECTION", canonical="SECTION#1"),
+            _node(
+                "LOAD-L",
+                "LOAD",
+                canonical="PUMP-A",
+                label="P-1",
+                section="BUS-L",
+            ),
+        ],
+        block_id="left",
+    )
+    right = _graph(
+        [
+            _node("BUS-R", "BUS_SECTION", canonical="SECTION#1"),
+            _node(
+                "LOAD-R",
+                "LOAD",
+                canonical="PUMP-001",
+                label="Насос",
+                section="BUS-R",
+            ),
+        ],
+        block_id="right",
+    )
+
+    result = compare_system_graphs(left, right)
+    renamed_match = next(
+        item for item in result["matching"]["matches"] if item["left_id"] == "LOAD-L"
+    )
+
+    assert result["status"] == "NO_CHANGE"
+    assert not ({"NODE_ADDED", "NODE_REMOVED"} & set(_types(result)))
+    assert renamed_match["right_id"] == "LOAD-R"
+    assert renamed_match["method"] == "unique_functional_identity"
+    assert renamed_match["decision"] == "HIGH_MATCH"
+
+
+def test_new_function_inside_source_path_is_not_detail():
+    left = _basic_path(
+        representation="UPSTREAM_TP_CONNECTION",
+        block_id="left",
+    )
+    right_nodes = copy.deepcopy(left["nodes"])
+    right_nodes.append(
+        _node(
+            "NEW-FUNCTION",
+            "SERVICE_GROUP",
+            canonical="PROTECTIVE-STAGE#1",
+            label="Protection stage",
+            attrs={"subclass": "PROTECTIVE_STAGE"},
+        )
+    )
+    right = _graph(
+        right_nodes,
+        (
+            ("FEEDS", "SOURCE", "NEW-FUNCTION"),
+            ("FEEDS", "NEW-FUNCTION", "INPUT"),
+            ("FEEDS", "INPUT", "BUS"),
+        ),
+        block_id="right",
+    )
+
+    result = compare_system_graphs(left, right)
+
+    assert "DETAIL_LEVEL_INCREASED" not in _types(result)
+    assert "NODE_ADDED" in _types(result)
+    assert result["matching"]["detail_rejections"][0]["unsafe_right_nodes"] == [
+        "NEW-FUNCTION"
+    ]
+
+
+def test_invalid_graph_is_fail_closed_to_uncertain_only():
+    left = _basic_path(block_id="left")
+    right = _basic_path(block_id="right")
+    left["nodes"][0]["evidence"] = []
+    right["nodes"].append(
+        _node("CERTAIN-NEW-NODE", "LOAD", canonical="CERTAIN-NEW-NODE")
+    )
+
+    result = compare_system_graphs(left, right)
+
+    assert result["status"] == "UNCERTAIN"
+    assert set(_types(result)) == {"UNCERTAIN_STRUCTURAL_CHANGE"}
+    assert result["comparison_quality"]["left_graph_valid"] is False
+    assert "left_graph_invalid" in result["comparison_quality"]["blocked_changes_reason"]
+    assert result["comparison_quality"]["certain_changes_allowed"] is False
+    assert result["validation"]["valid"] is True
+
+
+def test_zero_identity_coverage_is_fail_closed_to_uncertain_only():
+    left = _basic_path(block_id="left")
+    right = _basic_path(block_id="right")
+    right["nodes"].append(
+        _node("CERTAIN-NEW-NODE", "LOAD", canonical="CERTAIN-NEW-NODE")
+    )
+    left["quality"]["identity_coverage"] = 0.0
+    right["quality"]["identity_coverage"] = 0.0
+
+    result = compare_system_graphs(left, right)
+
+    assert result["status"] == "UNCERTAIN"
+    assert set(_types(result)) == {"UNCERTAIN_STRUCTURAL_CHANGE"}
+    assert result["comparison_quality"]["left_identity_coverage"] == 0.0
+    assert result["comparison_quality"]["right_identity_coverage"] == 0.0
+    assert result["comparison_quality"]["matched_nodes"] == 3
+    assert result["comparison_quality"]["blocked_changes_reason"] == [
+        "left_identity_coverage_below_threshold",
+        "right_identity_coverage_below_threshold",
+    ]

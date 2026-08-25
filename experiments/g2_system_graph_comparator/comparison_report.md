@@ -5,7 +5,10 @@
 - Overall: `CHANGED`.
 - Level A: `BACKBONE_PRESERVED`.
 - Level B: `FUNCTIONS_UNCERTAIN`.
-- Matched pairs: 50.
+- Matched pairs: 16.
+- Ambiguous left nodes: 46.
+- Certain changes allowed: `True`.
+- Quality blocks: `[]`.
 - Geometry identity weight: `0.0`.
 - Contract valid: `True`.
 
@@ -16,7 +19,7 @@
 | A | `DETAIL_LEVEL_INCREASED` | 0.940 | Источник показан подробнее без смены функционального пути: ТП1 (UPSTREAM_TP_CONNECTION) → Т1 (TRANSFORMER_EXPLICIT). |
 | A | `DETAIL_LEVEL_INCREASED` | 0.940 | Источник показан подробнее без смены функционального пути: ТП2 (UPSTREAM_TP_CONNECTION) → Т2 (TRANSFORMER_EXPLICIT). |
 | B | `UNCERTAIN_STRUCTURAL_CHANGE` | 0.350 | Число распознанных резервных отходящих различается, но уверенности идентификации недостаточно для утверждения об изменении: 2 → 0. |
-| C | `GROUP_COUNT_CHANGED` | 0.867 | Количество отходящих аппаратов изменилось: 30 → 27. |
+| C | `GROUP_COUNT_CHANGED` | 0.867 | Количество элементов повторяющейся группы изменилось: 30 → 27. |
 | C | `NODE_TYPE_CHANGED` | 0.920 | Тип сопоставленного узла изменился: QF3 (CIRCUIT_BREAKER) → QS1 (SWITCH_DISCONNECTOR). |
 | C | `UNCERTAIN_STRUCTURAL_CHANGE` | 0.490 | Для части узлов соответствие недостаточно надёжно; удаление или добавление не утверждается. |
 
@@ -50,9 +53,9 @@ Reserve recognition and unresolved individual outgoing correspondences remain
 
 ## Verification
 
-- Comparator negative/real suite: `10 passed`.
-- G2.2 profile/source-kind regressions: `23 passed`.
-- Classic Vectograf: `57 passed, 23 skipped`.
+- Comparator negative/real/hardening suite: `16 passed`.
+- G2.2 profile/source-kind regressions: `22 passed`.
+- Classic Vectograf/evidence/singleline: `95 passed, 23 skipped`.
 - Stage Comparison: `300 passed`.
 
 ## Boundaries
