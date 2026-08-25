@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 
-POLICY_VERSION = "graphic-coverage-policy-v1"
+POLICY_VERSION = "graphic-coverage-policy-v2"
 
 DIMENSIONS = (
     "STRUCTURE",
@@ -18,6 +18,7 @@ DIMENSIONS = (
 MODE2_OBSERVABLE_DIMENSIONS = frozenset(
     {"STRUCTURE", "CONNECTION", "TYPE", "QUANTITY"}
 )
+ENTITY_OBSERVABLE_DIMENSIONS = frozenset({"STRUCTURE", "CONNECTION", "TYPE"})
 UNSUPPORTED_SEMANTIC_DIMENSIONS = frozenset(
     {"PARAMETER", "METHOD", "PRINCIPLE", "SPACE"}
 )
@@ -30,6 +31,8 @@ def public_policy() -> dict:
         "routes": {
             "MODE_2": {
                 "observable": sorted(MODE2_OBSERVABLE_DIMENSIONS),
+                "entity_observable": sorted(ENTITY_OBSERVABLE_DIMENSIONS),
+                "quantity_subject": "repeated_group_only; individual entities are not applicable",
                 "not_applicable": sorted(UNSUPPORTED_SEMANTIC_DIMENSIONS),
                 "basis": "SYSTEM_GRAPH comparison and its existing quality gate",
             },
@@ -44,6 +47,7 @@ def public_policy() -> dict:
 
 __all__ = [
     "DIMENSIONS",
+    "ENTITY_OBSERVABLE_DIMENSIONS",
     "MODE2_OBSERVABLE_DIMENSIONS",
     "POLICY_VERSION",
     "UNSUPPORTED_SEMANTIC_DIMENSIONS",

@@ -24,6 +24,11 @@ from backend.app.services.stage_comparison.graphic_comparison.contract import (
 )
 
 from .entity_bridge import BRIDGE_VERSION
+from .page_identity import (
+    PAGE_CONVENTION_VERSION,
+    graphic_page_index_0based_to_canonical_index,
+    text_pdf_page_1based_to_canonical_index,
+)
 from .side_entity_contract import (
     SIDE_BRIDGE_VERSION,
     validate_side_graph_entities,
@@ -37,7 +42,6 @@ from .text_entity_producer import (
 SCHEMA_VERSION = "text-graphic-scope-join.v1"
 KIND = "stage_comparison_text_graphic_scope_join"
 SCOPE_JOIN_VERSION = "explicit-page-base-scope-join-v1"
-PAGE_CONVENTION_VERSION = "pdf-page-1based-to-index-0based-v1"
 SCOPE_STATES = frozenset({"RESOLVED", "UNRESOLVED_SCOPE"})
 
 _BUCKETS = (
@@ -78,26 +82,8 @@ def _validate_stage53(stage53: Any) -> dict[str, Any]:
     return stage53
 
 
-def pdf_page_to_canonical_index(pdf_page_1based: Any) -> int:
-    """Convert a production TEXT PDF page number to canonical 0-based index."""
-    if (
-        not isinstance(pdf_page_1based, int)
-        or isinstance(pdf_page_1based, bool)
-        or pdf_page_1based < 1
-    ):
-        raise ScopeJoinValidationError("pdf_page_1based: positive integer required")
-    return pdf_page_1based - 1
-
-
-def graphic_page_to_canonical_index(page_index_0based: Any) -> int:
-    """Validate and return a production GRAPHIC 0-based page index."""
-    if (
-        not isinstance(page_index_0based, int)
-        or isinstance(page_index_0based, bool)
-        or page_index_0based < 0
-    ):
-        raise ScopeJoinValidationError("page_index_0based: non-negative integer required")
-    return page_index_0based
+pdf_page_to_canonical_index = text_pdf_page_1based_to_canonical_index
+graphic_page_to_canonical_index = graphic_page_index_0based_to_canonical_index
 
 
 def _changes(stage53: dict[str, Any]) -> list[dict[str, Any]]:
@@ -309,6 +295,11 @@ def normalize_graphic_scope_groups(value: Any) -> list[dict[str, Any]]:
             }
             pairs.append(pair)
         pairs.sort(key=lambda item: item["block_pair_ref"])
+        pair_refs = [item["block_pair_ref"] for item in pairs]
+        if len(pair_refs) != len(set(pair_refs)):
+            raise ScopeJoinValidationError(
+                "graphic_scope_groups: duplicate block pair evidence"
+            )
         group_id = _stable_id("graphic_scope_", pairs)
         if group_id in seen_group_ids:
             raise ScopeJoinValidationError("graphic_scope_groups: duplicate group")
@@ -320,6 +311,38 @@ def normalize_graphic_scope_groups(value: Any) -> list[dict[str, Any]]:
             }
         )
     return sorted(output, key=lambda item: item["graphic_scope_group_id"])
+
+
+def produce_graphic_scope_groups(block_pairs: Any) -> list[dict[str, Any]]:
+    """Group production block pairs by their explicit canonical page pair.
+
+    Callers must pass the complete flat set of available ledger/comparison
+    pairs.  Several blocks on the same LEFT/RIGHT page pair become children of
+    one graphic scope; no geometry, filename, array position, or fuzzy matcher
+    is used.
+    """
+    if not isinstance(block_pairs, list):
+        raise ScopeJoinValidationError("block_pairs: array required")
+    grouped: dict[tuple[int, int], list[tuple[str, dict[str, Any]]]] = defaultdict(list)
+    for pair in block_pairs:
+        normalized = normalize_graphic_scope_groups([{"block_pairs": [pair]}])
+        normalized_pair = normalized[0]["block_pairs"][0]
+        key = (
+            normalized_pair["left"]["canonical_page_index"],
+            normalized_pair["right"]["canonical_page_index"],
+        )
+        grouped[key].append((normalized_pair["block_pair_ref"], pair))
+    groups = [
+        {
+            "block_pairs": [
+                pair for _, pair in sorted(pairs, key=lambda item: item[0])
+            ]
+        }
+        for _, pairs in sorted(grouped.items())
+    ]
+    # Validate the complete grouping, including duplicate group/child IDs.
+    normalize_graphic_scope_groups(groups)
+    return groups
 
 
 def _source_artifacts(
@@ -708,6 +731,7 @@ __all__ = [
     "graphic_page_to_canonical_index",
     "normalize_graphic_scope_groups",
     "pdf_page_to_canonical_index",
+    "produce_graphic_scope_groups",
     "query_text_scope",
     "schema_path",
     "scope_join_is_stale",

@@ -14,7 +14,7 @@
       "additionalProperties": false,
       "required": ["version", "text", "graphic", "canonical", "text_to_canonical"],
       "properties": {
-        "version": {"const": "pdf-page-1based-to-index-0based-v1"},
+        "version": {"const": "pdf-page-1based-to-index-0based-v2"},
         "text": {"const": "pdf_page_1based"},
         "graphic": {"const": "page_index_0based"},
         "canonical": {"const": "page_index_0based"},

@@ -3,7 +3,7 @@
   "kind": "stage_comparison_text_graphic_scope_join",
   "scope_join_version": "explicit-page-base-scope-join-v1",
   "page_convention": {
-    "version": "pdf-page-1based-to-index-0based-v1",
+    "version": "pdf-page-1based-to-index-0based-v2",
     "text": "pdf_page_1based",
     "graphic": "page_index_0based",
     "canonical": "page_index_0based",
@@ -13,7 +13,7 @@
     "entity_bridge": "deterministic-entity-bridge-v1",
     "side_bridge": "side-partitioned-entity-bridge-v1"
   },
-  "source_signature": "556ba8fbe4a8d065b2c504c5c38f1d2d7e5b49238fac295b586586fdadf21db7",
+  "source_signature": "1c00c4073d8c53ccd672d2d62e62bc9abd1d2c5faf74ec80bcd3a5cfd5ca1bff",
   "source_artifacts": {
     "stage53": {
       "pair_id": "p26c08b83a6",
@@ -27,10 +27,10 @@
       "source_signature": "6f0dc1855aa94ce9c94cee4085be9bbe13ff6c5abc76bfcf7db8c2370ec9988e"
     },
     "side_graph_entities": {
-      "schema_version": "side-graph-entities.v1",
-      "source_signature": "9b7a3411d709956b2017fd07c41a22f3ffdf96da399ebb57898557c7aacbfd73",
-      "left_graph_entities_signature": "5971ab2a329b0066c17e462b084792e8d4ea9f8f9d14572951374d711d156648",
-      "right_graph_entities_signature": "9c5756fdb95ca39fcbfb41463f259cdf2e0c855b24d2712e2340417ff9b827fe"
+      "schema_version": "side-graph-entities.v2",
+      "source_signature": "8803c27cce6059afd85fe5ee1c14917f6c4c578454c7d64358236a8ee9d34d88",
+      "left_graph_entities_signature": "eb923e87e33a959275541a138b263e2021d05e6b08bc1cdb764fd6499ee77ba6",
+      "right_graph_entities_signature": "0fb37c219a9f5a4c1444ecb97c1fbdea22624c2f3d67c31396bda8a871ff30ea"
     },
     "graphic_scope_groups": [
       {

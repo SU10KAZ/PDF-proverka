@@ -1077,17 +1077,17 @@ def validate_entity_links_artifact(payload: Any) -> dict[str, Any]:
     artifacts = payload["input_artifacts"]
     if not isinstance(artifacts, dict) or set(artifacts) != {"text", "graphic"}:
         raise BridgeValidationError("entity links artifact.input_artifacts: invalid")
-    expected_artifacts = {
-        "text": {
-            "kind": "stage_comparison_text_entities",
-            "schema_version": "text-entities.v1",
-        },
-        "graphic": {
-            "kind": "system_graph_entities",
-            "schema_version": "graph-entities.v1",
-        },
+    expected_text = {
+        "kind": "stage_comparison_text_entities",
+        "schema_version": "text-entities.v1",
     }
-    if artifacts != expected_artifacts:
+    graphic = artifacts.get("graphic") if isinstance(artifacts, dict) else None
+    if (
+        artifacts.get("text") != expected_text
+        or not isinstance(graphic, dict)
+        or graphic.get("kind") != "system_graph_entities"
+        or graphic.get("schema_version") not in {"graph-entities.v1", "graph-entities.v2"}
+    ):
         raise BridgeValidationError("entity links artifact.input_artifacts: unsupported")
     legacy = {
         "schema_version": SCHEMA_VERSION,

@@ -1,9 +1,9 @@
 {
-  "schema_version": "graphic-coverage.v1",
+  "schema_version": "graphic-coverage.v2",
   "kind": "stage_comparison_graphic_coverage",
-  "builder_version": "graphic-coverage-builder-v1",
+  "builder_version": "graphic-coverage-builder-v2",
   "coverage_policy": {
-    "version": "graphic-coverage-policy-v1",
+    "version": "graphic-coverage-policy-v2",
     "dimensions": [
       "STRUCTURE",
       "CONNECTION",
@@ -22,6 +22,12 @@
           "STRUCTURE",
           "TYPE"
         ],
+        "entity_observable": [
+          "CONNECTION",
+          "STRUCTURE",
+          "TYPE"
+        ],
+        "quantity_subject": "repeated_group_only; individual entities are not applicable",
         "not_applicable": [
           "METHOD",
           "PARAMETER",
@@ -50,7 +56,7 @@
     "scope_join": "explicit-page-base-scope-join-v1",
     "side_bridge": "side-partitioned-entity-bridge-v1"
   },
-  "source_signature": "a83c02600a328d24926252e21798b64d6d43710f635cbac7b3f8e62b4fe0e428",
+  "source_signature": "e20ea58ff54b7e5be11761ed9339ffe00bcc24bfd5df88d8aa44cb788ec8c63f",
   "source_artifacts": {
     "stage53": {
       "pair_id": "p570d156f57",
@@ -64,21 +70,1079 @@
       "source_signature": "80fc1f9994ae1287675d538d0c5a9932c17d50b828e0c7d61d5f9a8ea23677d5"
     },
     "side_graph_entities": {
-      "schema_version": "side-graph-entities.v1",
-      "source_signature": "d23514421d42fdd63366cfd157d8d37689bd2ead77cbdfb577e9f19947123570",
-      "left_graph_entities_signature": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258",
-      "right_graph_entities_signature": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258"
+      "schema_version": "side-graph-entities.v2",
+      "source_signature": "3dab40764f84ac9941ceaa80c374ffa1abbada473651659ac08f5a570a9f0221",
+      "left_graph_entities_signature": "b04b5c9552bfe928607e85fa95f1deba9133fb7e9827b2be558ff632b4469b8e",
+      "right_graph_entities_signature": "b04b5c9552bfe928607e85fa95f1deba9133fb7e9827b2be558ff632b4469b8e"
     },
     "side_entity_links": {
       "schema_version": "side-entity-links.v1",
-      "source_signature": "052a6d4137d8847715168ef5e80d5fe5dc73c3392caefad6bd7348fc340eab76"
+      "source_signature": "a994ac24189ef166e9cdadd134b57e04efd91b98589b570ed314bf992ecd5fe0"
     },
     "scope_join": {
       "schema_version": "text-graphic-scope-join.v1",
-      "source_signature": "7dd5dd2b800ff2fcaa361771171a8c89961d59847c97342a3a6242d8757b5e9c"
+      "source_signature": "67933e1a150f34327e3cb5c5970b8cf5144fe4f43fc9f790fd232b42c89cc02e"
     },
     "graphic_scope_groups": []
   },
+  "scope_processing": [
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_2dbfabd7ebd705398b29",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_6973adfafed4b0f9a33a",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_9fac3bc12143beb17223",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_ab6251b2444303c63fba",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d13ef21f88bfa86c63ff",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_d533f766e8c12cba0265",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_da01213982693939a192",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "CONNECTION",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "METHOD",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "PARAMETER",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "PRINCIPLE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "QUANTITY",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "SPACE",
+      "processing_state": "SCOPE_NOT_APPLICABLE",
+      "reason_codes": [
+        "dimension_not_observable_by_system_graph_mode2"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "STRUCTURE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    },
+    {
+      "scope_ref": "scope_f96467e9ff9c57040781",
+      "dimension": "TYPE",
+      "processing_state": "SCOPE_NOT_PROCESSED",
+      "reason_codes": [
+        "no_graphic_scope_group_on_canonical_pages",
+        "no_system_graph_for_sheet"
+      ],
+      "source_refs": {
+        "block_scope_refs": [],
+        "block_pair_refs": [],
+        "ledger_digests": [],
+        "comparison_digests": [],
+        "graph_node_ids": [],
+        "entity_link_ids": []
+      }
+    }
+  ],
   "coverage": [
     {
       "coverage_id": "coverage_000d02c9d780dd961ded",
@@ -111,9 +1175,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -136,29 +1200,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_0078ab3517a3228be4f2",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -288,9 +1329,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -390,29 +1431,6 @@
       }
     },
     {
-      "coverage_id": "coverage_026c83392e95f5b34f19",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_0278ea401777d4886d5f",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -421,9 +1439,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -501,29 +1519,6 @@
       }
     },
     {
-      "coverage_id": "coverage_029b2d051e3421fcbe1b",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_02bf51dde67037498300",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -576,9 +1571,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -598,9 +1593,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -642,9 +1637,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -920,28 +1915,6 @@
       }
     },
     {
-      "coverage_id": "coverage_06046f9e71c61483ce16",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_061491998ec2d7339410",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -1082,9 +2055,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1126,9 +2099,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1192,9 +2165,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1214,9 +2187,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1280,9 +2253,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1478,9 +2451,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1566,9 +2539,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1654,9 +2627,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -1984,9 +2957,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -2622,9 +3595,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -2666,9 +3639,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3076,29 +4049,6 @@
       }
     },
     {
-      "coverage_id": "coverage_14c2356eb46dce5296da",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_14dc04d91faf4630ad7d",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -3173,9 +4123,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3220,28 +4170,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_165e597b0929632355e8",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3305,9 +4233,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3415,9 +4343,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3481,9 +4409,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3789,9 +4717,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3921,9 +4849,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3943,9 +4871,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -3987,9 +4915,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -4119,9 +5047,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -4295,9 +5223,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -4320,28 +5248,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "subject_not_reliably_checked_on_both_sides"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_1f7509cf4a3aa5041600",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -4383,9 +5289,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -4595,28 +5501,6 @@
       }
     },
     {
-      "coverage_id": "coverage_216cfa417796604fbc15",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_2185154125cf98374682",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -4669,9 +5553,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -4823,9 +5707,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -5021,9 +5905,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -5197,9 +6081,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -5593,9 +6477,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -5923,9 +6807,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6033,9 +6917,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6099,9 +6983,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6231,9 +7115,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6363,9 +7247,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6385,9 +7269,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6407,9 +7291,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6465,29 +7349,6 @@
       }
     },
     {
-      "coverage_id": "coverage_2e12e0635cc5fb197d40",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_2e1e330e003a6d9d2802",
       "scope_ref": "scope_9fac3bc12143beb17223",
       "subject": {
@@ -6518,9 +7379,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6804,9 +7665,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -6980,9 +7841,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -7222,28 +8083,6 @@
       },
       "dimension": "PARAMETER",
       "side": "LEFT",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_33322201b69c7af6af23",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
@@ -7544,29 +8383,6 @@
       }
     },
     {
-      "coverage_id": "coverage_35c34627b55c424d6be0",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_35df4c63c46b44d91022",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -7641,9 +8457,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -7773,9 +8589,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -7839,9 +8655,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -7883,9 +8699,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -8059,9 +8875,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -8103,9 +8919,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -8403,28 +9219,6 @@
       }
     },
     {
-      "coverage_id": "coverage_3b3c37d82f123e00d2c0",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_3b420a725a82db70a5f4",
       "scope_ref": "scope_9fac3bc12143beb17223",
       "subject": {
@@ -8433,9 +9227,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -8587,9 +9381,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -8675,9 +9469,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -9269,9 +10063,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -9335,9 +10129,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -9401,9 +10195,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -9514,29 +10308,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "subject_not_reliably_checked_on_both_sides"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_45575b8a941274b5928b",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -9908,9 +10679,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -10150,9 +10921,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -10326,9 +11097,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -10384,29 +11155,6 @@
       }
     },
     {
-      "coverage_id": "coverage_4b3e70776494c20e2930",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_4b862deeddb3e316c5f3",
       "scope_ref": "scope_9fac3bc12143beb17223",
       "subject": {
@@ -10415,9 +11163,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -10781,28 +11529,6 @@
       }
     },
     {
-      "coverage_id": "coverage_4e0ee57d64e79808d38e",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_4e1abe3ed3de9b3fff9f",
       "scope_ref": "scope_9fac3bc12143beb17223",
       "subject": {
@@ -11141,9 +11867,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11221,29 +11947,6 @@
       }
     },
     {
-      "coverage_id": "coverage_50d28e17e9c8ca3a7d77",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_50fdfbea8c89fcb892b4",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -11299,29 +12002,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_5130494c5bb1195ac165",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11429,9 +12109,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11495,9 +12175,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11715,9 +12395,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11781,9 +12461,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11825,9 +12505,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11891,9 +12571,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -11913,9 +12593,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12397,9 +13077,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12441,9 +13121,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12507,9 +13187,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12573,9 +13253,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12617,9 +13297,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12661,9 +13341,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12903,9 +13583,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -12972,29 +13652,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_5c9270976f9e29a1f493",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13080,9 +13737,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13102,9 +13759,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13124,9 +13781,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13215,29 +13872,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_5e1246fbd30ea2cb2bb8",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13433,9 +14067,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13631,9 +14265,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13873,9 +14507,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13895,9 +14529,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -13983,9 +14617,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -14129,29 +14763,6 @@
       }
     },
     {
-      "coverage_id": "coverage_64515bff0c5448931cf4",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_64856da1f0af51b9da89",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -14204,9 +14815,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -14350,28 +14961,6 @@
       }
     },
     {
-      "coverage_id": "coverage_6598f052957b560f5bae",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_65a3e1561d89f8204f96",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -14482,28 +15071,6 @@
       }
     },
     {
-      "coverage_id": "coverage_662022211c966fb612c5",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_66431d21a3123d7e3cd4",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -14512,9 +15079,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -14644,9 +15211,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -14666,9 +15233,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -15634,9 +16201,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -15766,9 +16333,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -15901,29 +16468,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_71f5eea4a1205c54989c",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -16515,9 +17059,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -16713,31 +17257,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_778206372e786e4eb345",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -16911,9 +17433,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17024,29 +17546,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_78e6889f35fe5c96c99b",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17176,9 +17675,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17462,9 +17961,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17506,9 +18005,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17641,28 +18140,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_7cc06db917a7627811bd",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17858,9 +18335,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17946,9 +18423,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -17968,9 +18445,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -18144,31 +18621,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_7f92062d1434251d1640",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -18191,29 +18646,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_on_either_side"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_7fe89849ee4960ddaeb3",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -18302,28 +18734,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_80e0a4de006b4a26318f",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -18599,29 +19009,6 @@
       }
     },
     {
-      "coverage_id": "coverage_825b0630fcb40b7472b0",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_82764484487d9804fad8",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -18696,9 +19083,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -19158,9 +19545,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -19180,28 +19567,6 @@
       },
       "dimension": "PRINCIPLE",
       "side": "RIGHT",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_856f7c09103710f6e454",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
@@ -19268,9 +19633,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -19356,9 +19721,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -19576,9 +19941,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -19708,9 +20073,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -19752,9 +20117,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -19774,9 +20139,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -20016,9 +20381,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -20228,28 +20593,6 @@
       }
     },
     {
-      "coverage_id": "coverage_8c7bd7d90b697a1e55ca",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_8cdb10eba1c13106ddeb",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -20258,9 +20601,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -20632,9 +20975,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -20679,28 +21022,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_on_either_side"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_8fe8ad2a786ae6ecfd59",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -20808,9 +21129,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -20830,9 +21151,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -21160,9 +21481,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -21284,28 +21605,6 @@
       }
     },
     {
-      "coverage_id": "coverage_95068d4ea75e4af26f5c",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_95318c9564ecb6d338af",
       "scope_ref": "scope_9fac3bc12143beb17223",
       "subject": {
@@ -21336,9 +21635,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -21402,9 +21701,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -21622,9 +21921,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -21688,31 +21987,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_97bcbfb7aa753eace182",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -21732,9 +22009,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -21952,9 +22229,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -22150,9 +22427,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -22282,9 +22559,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -22480,9 +22757,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -22736,29 +23013,6 @@
       }
     },
     {
-      "coverage_id": "coverage_9f8f59f20f1d24584bbc",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "STRUCTURE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_9fac5838bfc97b8442bd",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -22789,9 +23043,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -23075,9 +23329,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -23097,9 +23351,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -23265,29 +23519,6 @@
       }
     },
     {
-      "coverage_id": "coverage_a374498f2760ebd20260",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_a3ae1f87c501d921883c",
       "scope_ref": "scope_9fac3bc12143beb17223",
       "subject": {
@@ -23406,9 +23637,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -23750,28 +23981,6 @@
       }
     },
     {
-      "coverage_id": "coverage_a72a83e632d964fb02a5",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_a73dca38ee2e328591f1",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -23956,9 +24165,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -24022,9 +24231,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -24223,28 +24432,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_aa36fa89c2b460b70265",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -24462,9 +24649,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -24550,9 +24737,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -25048,29 +25235,6 @@
       }
     },
     {
-      "coverage_id": "coverage_b038db914ce0bed5de10",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_b03fb7600dc567bd4585",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -25159,50 +25323,6 @@
       }
     },
     {
-      "coverage_id": "coverage_b0d1eb6550ad92d71a88",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_b11dc769b97ef1f23e95",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_b12280bd62f6ed7eb583",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -25255,9 +25375,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -25475,9 +25595,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -25585,9 +25705,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -25775,29 +25895,6 @@
       }
     },
     {
-      "coverage_id": "coverage_b516c831b7b4fff3b7f9",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_b53444787af4ad25d8d6",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -25828,9 +25925,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -25938,31 +26035,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_b5fb07df99580709f500",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -26117,29 +26192,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "subject_not_reliably_checked_on_both_sides"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_b79c5c0848d3742d14a7",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -26423,9 +26475,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -26503,28 +26555,6 @@
       }
     },
     {
-      "coverage_id": "coverage_b9a183c80a5648e2eb8a",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_ba18c207a26e7f63964b",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -26555,9 +26585,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -26599,9 +26629,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -26863,9 +26893,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -27215,9 +27245,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -27471,29 +27501,6 @@
       }
     },
     {
-      "coverage_id": "coverage_bf1e516d3b7d2aaab0f0",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_bf34cff5ebcc67841a46",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -27678,9 +27685,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -27744,9 +27751,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -27802,29 +27809,6 @@
       }
     },
     {
-      "coverage_id": "coverage_c1e7c943593636025b49",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_c20f7ede0a3ffb1b6154",
       "scope_ref": "scope_d13ef21f88bfa86c63ff",
       "subject": {
@@ -27833,9 +27817,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -27943,9 +27927,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -28100,29 +28084,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_c40f3a482ae3f09b71ad",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "QUANTITY",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -28362,32 +28323,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_c51ea30a941b83d9f2a5",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -28517,9 +28455,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -28542,28 +28480,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_c58ec4fbb18cba0363b0",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -28671,9 +28587,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -28935,32 +28851,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_c93b70e5420efcaf94c3",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29068,9 +28961,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29266,9 +29159,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29313,29 +29206,6 @@
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_cb0d73079dd763294425",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29421,9 +29291,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29487,9 +29357,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29575,9 +29445,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29644,29 +29514,6 @@
       "state": "NOT_CHECKED",
       "reason_codes": [
         "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_cd19a0f8ad79972b436d",
-      "scope_ref": "scope_2dbfabd7ebd705398b29",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "TYPE",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29840,9 +29687,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -29972,9 +29819,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -30016,9 +29863,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -30148,9 +29995,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -30192,28 +30039,6 @@
       },
       "dimension": "SPACE",
       "side": "LEFT",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_d10d1d96a32dda73f3af",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "METHOD",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
@@ -30404,28 +30229,6 @@
       }
     },
     {
-      "coverage_id": "coverage_d1d70f2d9cb64d95af54",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_d1ff231ac86f73cf4d4a",
       "scope_ref": "scope_9fac3bc12143beb17223",
       "subject": {
@@ -30434,9 +30237,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -30632,9 +30435,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -30654,9 +30457,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -30852,9 +30655,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -31160,9 +30963,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -31226,9 +31029,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -31556,9 +31359,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -31688,9 +31491,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -31710,9 +31513,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -31776,9 +31579,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -31820,9 +31623,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32040,9 +31843,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32282,9 +32085,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32326,9 +32129,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32524,9 +32327,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32568,9 +32371,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32634,9 +32437,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32744,9 +32547,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32810,9 +32613,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -32876,9 +32679,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33052,9 +32855,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33338,9 +33141,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33448,31 +33251,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_e5ff0450db681644f9b9",
-      "scope_ref": "scope_da01213982693939a192",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PARAMETER",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33536,31 +33317,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_e6ea8e4f77c2ef99e363",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "SPACE",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33646,9 +33405,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33778,9 +33537,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33822,9 +33581,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -33976,9 +33735,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -34232,28 +33991,6 @@
       }
     },
     {
-      "coverage_id": "coverage_eb85a80509fae282b679",
-      "scope_ref": "scope_f96467e9ff9c57040781",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_ebee8de359b3443a50d3",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -34262,32 +33999,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_ec21e2670125eb9275a0",
-      "scope_ref": "scope_6973adfafed4b0f9a33a",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -34615,9 +34329,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -34681,9 +34395,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -34835,9 +34549,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35077,9 +34791,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35113,29 +34827,6 @@
       }
     },
     {
-      "coverage_id": "coverage_f2070bbc2672d0e406a8",
-      "scope_ref": "scope_d533f766e8c12cba0265",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_f22fea86b25e03ca56a2",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -35144,9 +34835,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35276,9 +34967,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35298,9 +34989,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35672,32 +35363,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_f520f2284fed85cf5aff",
-      "scope_ref": "scope_9fac3bc12143beb17223",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "CONNECTION",
-      "side": "BOTH",
-      "state": "NOT_CHECKED",
-      "reason_codes": [
-        "no_graphic_scope_group_on_canonical_pages",
-        "no_system_graph_for_sheet"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35717,9 +35385,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35827,9 +35495,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -35959,9 +35627,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -36127,28 +35795,6 @@
       }
     },
     {
-      "coverage_id": "coverage_f7f62e9b254391bbff33",
-      "scope_ref": "scope_d13ef21f88bfa86c63ff",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
       "coverage_id": "coverage_f7fb686ddffb9a92112e",
       "scope_ref": "scope_d533f766e8c12cba0265",
       "subject": {
@@ -36223,9 +35869,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -36267,9 +35913,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -36311,9 +35957,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -36333,9 +35979,9 @@
       },
       "dimension": "QUANTITY",
       "side": "RIGHT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -36355,9 +36001,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -36509,9 +36155,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -36839,28 +36485,6 @@
       },
       "dimension": "PRINCIPLE",
       "side": "LEFT",
-      "state": "NOT_APPLICABLE",
-      "reason_codes": [
-        "dimension_not_observable_by_system_graph_mode2"
-      ],
-      "source_refs": {
-        "block_scope_refs": [],
-        "block_pair_refs": [],
-        "ledger_digests": [],
-        "comparison_digests": [],
-        "graph_node_ids": [],
-        "entity_link_ids": []
-      }
-    },
-    {
-      "coverage_id": "coverage_fb64fc84ce83423f7796",
-      "scope_ref": "scope_ab6251b2444303c63fba",
-      "subject": {
-        "kind": "SCOPE",
-        "id": null
-      },
-      "dimension": "PRINCIPLE",
-      "side": "BOTH",
       "state": "NOT_APPLICABLE",
       "reason_codes": [
         "dimension_not_observable_by_system_graph_mode2"
@@ -37323,9 +36947,9 @@
       },
       "dimension": "QUANTITY",
       "side": "BOTH",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "subject_not_reliably_checked_on_both_sides"
+        "dimension_not_observable_on_either_side"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -37411,9 +37035,9 @@
       },
       "dimension": "QUANTITY",
       "side": "LEFT",
-      "state": "NOT_CHECKED",
+      "state": "NOT_APPLICABLE",
       "reason_codes": [
-        "scope_join_unresolved"
+        "quantity_not_observable_for_individual_entity"
       ],
       "source_refs": {
         "block_scope_refs": [],
@@ -37426,16 +37050,15 @@
     }
   ],
   "summary": {
-    "records": 1696,
+    "records": 1632,
     "by_state": {
       "CHECKED": 0,
       "CHECK_BLOCKED": 0,
-      "NOT_APPLICABLE": 848,
-      "NOT_CHECKED": 848
+      "NOT_APPLICABLE": 1020,
+      "NOT_CHECKED": 612
     },
     "by_subject_kind": {
       "GRAPH_ENTITY": 0,
-      "SCOPE": 64,
       "TEXT_ENTITY": 1632
     }
   }

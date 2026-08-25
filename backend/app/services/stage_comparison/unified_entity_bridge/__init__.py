@@ -12,6 +12,7 @@ from .entity_bridge import (
 from .graph_entity_adapter import build_graph_entities, validate_graph_entities
 from .comparison_scope import (
     build_scope_join,
+    produce_graphic_scope_groups,
     query_text_scope,
     validate_scope_join,
 )
@@ -19,6 +20,7 @@ from .entity_normalizer import normalize_entity_name, normalize_functional_role
 from .graphic_coverage import (
     build_graphic_coverage,
     coverage,
+    saved_coverage_bundle_is_stale,
     validate_graphic_coverage,
 )
 from .side_entity_contract import (
@@ -45,8 +47,10 @@ __all__ = [
     "graphic_entities_from_system_graph",
     "normalize_entity_name",
     "normalize_functional_role",
+    "produce_graphic_scope_groups",
     "query_text_entity_side",
     "query_text_scope",
+    "saved_coverage_bundle_is_stale",
     "validate_entity_links",
     "validate_entity_links_artifact",
     "validate_graph_entities",

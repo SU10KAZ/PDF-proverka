@@ -19,6 +19,7 @@ from .comparison_scope import (
 )
 from .graphic_coverage_policy import (
     DIMENSIONS,
+    ENTITY_OBSERVABLE_DIMENSIONS,
     MODE2_OBSERVABLE_DIMENSIONS,
     POLICY_VERSION,
     public_policy,
@@ -33,13 +34,21 @@ from .side_entity_contract import (
 from .text_entity_producer import validate_text_entities
 
 
-SCHEMA_VERSION = "graphic-coverage.v1"
+SCHEMA_VERSION = "graphic-coverage.v2"
 KIND = "stage_comparison_graphic_coverage"
-COVERAGE_BUILDER_VERSION = "graphic-coverage-builder-v1"
+COVERAGE_BUILDER_VERSION = "graphic-coverage-builder-v2"
 COVERAGE_STATES = frozenset(
     {"CHECKED", "NOT_CHECKED", "CHECK_BLOCKED", "NOT_APPLICABLE"}
 )
-SUBJECT_KINDS = frozenset({"SCOPE", "TEXT_ENTITY", "GRAPH_ENTITY"})
+SUBJECT_KINDS = frozenset({"TEXT_ENTITY", "GRAPH_ENTITY"})
+SCOPE_PROCESSING_STATES = frozenset(
+    {
+        "SCOPE_PROCESSED",
+        "SCOPE_CHECK_BLOCKED",
+        "SCOPE_NOT_PROCESSED",
+        "SCOPE_NOT_APPLICABLE",
+    }
+)
 
 
 class GraphicCoverageValidationError(ValueError):
@@ -225,6 +234,7 @@ def _match_sets(comparison: dict[str, Any], side: str) -> tuple[set[str], set[st
 def _graph_entity_records(
     scope: dict[str, Any],
     dimension: str,
+    scope_state: tuple[str, list[str]],
     side_graph_entities: dict[str, Any],
     raw_pairs: dict[str, dict[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -233,40 +243,74 @@ def _graph_entity_records(
         return records
     for side in SIDES:
         side_key = side.lower()
-        pair_by_block = {
-            child["block_pair"][side_key]["block_id"]: child
-            for child in scope["child_block_scopes"]
-        }
         for entity in side_graph_entities["sides"][side]["entities"]:
             block_id = entity["graph_scope"]["block_id"]
-            child = pair_by_block.get(block_id)
-            if child is None:
+            page_index = entity["graph_scope"]["page_index"]
+            children = [
+                child
+                for child in scope["child_block_scopes"]
+                if child["block_pair"][side_key]["block_id"] == block_id
+                and child["block_pair"][side_key]["page_index_0based"] == page_index
+            ]
+            if not children:
                 continue
-            pair_ref = child["block_pair"]["block_pair_ref"]
-            raw = raw_pairs[pair_ref]
+            children.sort(key=lambda item: item["scope_ref"])
+            pair_refs = [
+                child["block_pair"]["block_pair_ref"] for child in children
+            ]
+            external_neighbours = sorted(
+                {
+                    item["neighbour_node_id"]
+                    for item in entity["external_connections"]
+                }
+            )
             refs = {
-                "block_scope_refs": [child["scope_ref"]],
-                "block_pair_refs": [pair_ref],
-                "ledger_digests": [child["block_pair"]["ledger_digest"]],
-                "comparison_digests": (
-                    [child["block_pair"]["comparison_digest"]]
-                    if child["block_pair"]["comparison_digest"] is not None
-                    else []
+                "block_scope_refs": sorted(child["scope_ref"] for child in children),
+                "block_pair_refs": sorted(pair_refs),
+                "ledger_digests": sorted(
+                    {child["block_pair"]["ledger_digest"] for child in children}
                 ),
-                "graph_node_ids": entity["graph_node_ids"],
+                "comparison_digests": sorted(
+                    {
+                        child["block_pair"]["comparison_digest"]
+                        for child in children
+                        if child["block_pair"]["comparison_digest"] is not None
+                    }
+                ),
+                "graph_node_ids": sorted(
+                    set(entity["graph_node_ids"]) | set(external_neighbours)
+                ),
                 "entity_link_ids": [],
             }
-            if dimension not in MODE2_OBSERVABLE_DIMENSIONS:
+            modes = {child["block_pair"]["mode"] for child in children}
+            if dimension == "QUANTITY":
+                state, reasons = "NOT_APPLICABLE", [
+                    "quantity_not_observable_for_individual_entity"
+                ]
+            elif dimension not in ENTITY_OBSERVABLE_DIMENSIONS:
                 state, reasons = "NOT_APPLICABLE", [
                     "dimension_not_observable_by_system_graph_mode2"
                 ]
-            elif child["block_pair"]["mode"] != "MODE_2":
-                state, reasons = "NOT_APPLICABLE", [
-                    "mode1_local_graphic_delta_not_semantic_coverage"
+            elif scope_state[0] == "CHECK_BLOCKED":
+                state, reasons = "CHECK_BLOCKED", [
+                    "scope_check_blocked_propagated_to_subject",
+                    *scope_state[1],
                 ]
             elif scope["status"] != "RESOLVED":
                 state, reasons = "NOT_CHECKED", ["scope_join_unresolved"]
+            elif modes == {"MODE_1"}:
+                state, reasons = "NOT_APPLICABLE", [
+                    "mode1_local_graphic_delta_not_semantic_coverage"
+                ]
+            elif len(children) != 1:
+                state, reasons = "CHECK_BLOCKED", [
+                    "MULTIPLE_RELEVANT_BLOCK_PAIRS",
+                    "subject_block_pair_scope_not_unique",
+                ]
             else:
+                child = children[0]
+                pair_ref = child["block_pair"]["block_pair_ref"]
+                raw = raw_pairs[pair_ref]
                 passed, blocked, _ = _quality(raw)
                 if not passed:
                     state, reasons = "CHECK_BLOCKED", [
@@ -282,9 +326,25 @@ def _graph_entity_records(
                             "comparator_identity_ambiguous_for_graph_entity"
                         ]
                     elif node_ids and node_ids <= high:
-                        state, reasons = "CHECKED", [
-                            "all_graph_entity_nodes_high_matched_by_comparator"
-                        ]
+                        unresolved_neighbours = set(external_neighbours) - high
+                        unresolved_neighbours.update(
+                            set(external_neighbours) & ambiguous
+                        )
+                        if (
+                            dimension in {"CONNECTION", "STRUCTURE"}
+                            and unresolved_neighbours
+                        ):
+                            state, reasons = "NOT_CHECKED", [
+                                "NEIGHBOUR_IDENTITY_UNRESOLVED"
+                            ]
+                        else:
+                            state, reasons = "CHECKED", [
+                                (
+                                    "graph_entity_and_all_external_neighbours_high_matched"
+                                    if dimension in {"CONNECTION", "STRUCTURE"}
+                                    else "all_graph_entity_nodes_high_matched_by_comparator"
+                                )
+                            ]
                     else:
                         state, reasons = "NOT_CHECKED", [
                             "graph_entity_not_fully_high_matched_by_comparator"
@@ -332,7 +392,11 @@ def _text_side_record(
         "graph_node_ids": [],
         "entity_link_ids": sorted(item["entity_link_id"] for item in candidates),
     }
-    if dimension not in MODE2_OBSERVABLE_DIMENSIONS:
+    if dimension == "QUANTITY":
+        state, reasons = "NOT_APPLICABLE", [
+            "quantity_not_observable_for_individual_entity"
+        ]
+    elif dimension not in ENTITY_OBSERVABLE_DIMENSIONS:
         state, reasons = "NOT_APPLICABLE", [
             "dimension_not_observable_by_system_graph_mode2"
         ]
@@ -423,6 +487,53 @@ def _combine_text_sides(
     return "NOT_CHECKED", ["subject_not_reliably_checked_on_both_sides"]
 
 
+def _scope_source_refs(scope: dict[str, Any]) -> dict[str, list[str]]:
+    return {
+        "block_scope_refs": sorted(
+            child["scope_ref"] for child in scope["child_block_scopes"]
+        ),
+        "block_pair_refs": sorted(
+            child["block_pair"]["block_pair_ref"]
+            for child in scope["child_block_scopes"]
+        ),
+        "ledger_digests": sorted(
+            {
+                child["block_pair"]["ledger_digest"]
+                for child in scope["child_block_scopes"]
+            }
+        ),
+        "comparison_digests": sorted(
+            {
+                child["block_pair"]["comparison_digest"]
+                for child in scope["child_block_scopes"]
+                if child["block_pair"]["comparison_digest"] is not None
+            }
+        ),
+        "graph_node_ids": [],
+        "entity_link_ids": [],
+    }
+
+
+def _scope_processing_record(
+    scope: dict[str, Any],
+    dimension: str,
+    scope_state: tuple[str, list[str]],
+) -> dict[str, Any]:
+    processing_state = {
+        "CHECKED": "SCOPE_PROCESSED",
+        "CHECK_BLOCKED": "SCOPE_CHECK_BLOCKED",
+        "NOT_CHECKED": "SCOPE_NOT_PROCESSED",
+        "NOT_APPLICABLE": "SCOPE_NOT_APPLICABLE",
+    }[scope_state[0]]
+    return {
+        "scope_ref": scope["scope_ref"],
+        "dimension": dimension,
+        "processing_state": processing_state,
+        "reason_codes": sorted(set(scope_state[1])),
+        "source_refs": _scope_source_refs(scope),
+    }
+
+
 def build_graphic_coverage(
     stage53: Any,
     text_entities: Any,
@@ -444,47 +555,23 @@ def build_graphic_coverage(
         raise GraphicCoverageValidationError("side entity links stale for coverage sources")
 
     records: list[dict[str, Any]] = []
+    scope_processing: list[dict[str, Any]] = []
     for scope in scopes_artifact["scopes"]:
         scope_states: dict[str, tuple[str, list[str]]] = {}
         for dimension in DIMENSIONS:
             state = _scope_dimension_state(scope, dimension, raw_pairs)
             scope_states[dimension] = state
-            records.append(
-                _record(
-                    scope_ref=scope["scope_ref"],
-                    subject_kind="SCOPE",
-                    subject_id=None,
-                    dimension=dimension,
-                    side="BOTH",
-                    state=state[0],
-                    reason_codes=state[1],
-                    source_refs={
-                        "block_scope_refs": [
-                            child["scope_ref"]
-                            for child in scope["child_block_scopes"]
-                        ],
-                        "block_pair_refs": [
-                            child["block_pair"]["block_pair_ref"]
-                            for child in scope["child_block_scopes"]
-                        ],
-                        "ledger_digests": [
-                            child["block_pair"]["ledger_digest"]
-                            for child in scope["child_block_scopes"]
-                        ],
-                        "comparison_digests": [
-                            child["block_pair"]["comparison_digest"]
-                            for child in scope["child_block_scopes"]
-                            if child["block_pair"]["comparison_digest"] is not None
-                        ],
-                        "graph_node_ids": [],
-                        "entity_link_ids": [],
-                    },
-                )
-            )
+            scope_processing.append(_scope_processing_record(scope, dimension, state))
         graph_for_scope: list[dict[str, Any]] = []
         for dimension in DIMENSIONS:
             graph_for_scope.extend(
-                _graph_entity_records(scope, dimension, graphics, raw_pairs)
+                _graph_entity_records(
+                    scope,
+                    dimension,
+                    scope_states[dimension],
+                    graphics,
+                    raw_pairs,
+                )
             )
         records.extend(graph_for_scope)
         graph_index = {
@@ -544,6 +631,7 @@ def build_graphic_coverage(
                 )
 
     records.sort(key=lambda item: item["coverage_id"])
+    scope_processing.sort(key=lambda item: (item["scope_ref"], item["dimension"]))
     sources = _source_artifacts(scopes_artifact, text, graphics, links, normalized_groups)
     state_counts = Counter(item["state"] for item in records)
     subject_counts = Counter(item["subject"]["kind"] for item in records)
@@ -558,6 +646,7 @@ def build_graphic_coverage(
         },
         "source_signature": _coverage_signature(sources),
         "source_artifacts": sources,
+        "scope_processing": scope_processing,
         "coverage": records,
         "summary": {
             "records": len(records),
@@ -570,6 +659,30 @@ def build_graphic_coverage(
     return validate_graphic_coverage(payload)
 
 
+def _validate_source_refs(value: Any, where: str) -> None:
+    expected_ref_keys = {
+        "block_scope_refs",
+        "block_pair_refs",
+        "ledger_digests",
+        "comparison_digests",
+        "graph_node_ids",
+        "entity_link_ids",
+    }
+    if not isinstance(value, dict) or set(value) != expected_ref_keys:
+        raise GraphicCoverageValidationError(
+            f"graphic coverage {where}.source_refs: invalid fields"
+        )
+    for values in value.values():
+        if (
+            not isinstance(values, list)
+            or any(not isinstance(item, str) or not item for item in values)
+            or len(values) != len(set(values))
+        ):
+            raise GraphicCoverageValidationError(
+                f"graphic coverage {where}.source_refs: invalid references"
+            )
+
+
 def validate_graphic_coverage(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict) or set(payload) != {
         "schema_version",
@@ -579,6 +692,7 @@ def validate_graphic_coverage(payload: Any) -> dict[str, Any]:
         "versions",
         "source_signature",
         "source_artifacts",
+        "scope_processing",
         "coverage",
         "summary",
     }:
@@ -594,6 +708,37 @@ def validate_graphic_coverage(payload: Any) -> dict[str, Any]:
         raise GraphicCoverageValidationError("graphic coverage: unsupported contract")
     if payload["source_signature"] != _coverage_signature(payload["source_artifacts"]):
         raise GraphicCoverageValidationError("graphic coverage.source_signature: invalid")
+    if not isinstance(payload["scope_processing"], list):
+        raise GraphicCoverageValidationError(
+            "graphic coverage.scope_processing: array required"
+        )
+    processing_keys: set[tuple[str, str]] = set()
+    for item in payload["scope_processing"]:
+        if not isinstance(item, dict) or set(item) != {
+            "scope_ref",
+            "dimension",
+            "processing_state",
+            "reason_codes",
+            "source_refs",
+        }:
+            raise GraphicCoverageValidationError(
+                "graphic coverage.scope_processing: invalid fields"
+            )
+        key = (item["scope_ref"], item["dimension"])
+        if (
+            not isinstance(item["scope_ref"], str)
+            or not item["scope_ref"]
+            or item["dimension"] not in DIMENSIONS
+            or item["processing_state"] not in SCOPE_PROCESSING_STATES
+            or key in processing_keys
+            or not isinstance(item["reason_codes"], list)
+            or not item["reason_codes"]
+        ):
+            raise GraphicCoverageValidationError(
+                "graphic coverage.scope_processing: invalid value"
+            )
+        processing_keys.add(key)
+        _validate_source_refs(item["source_refs"], "scope_processing")
     if not isinstance(payload["coverage"], list):
         raise GraphicCoverageValidationError("graphic coverage.coverage: array required")
     ids: set[str] = set()
@@ -625,6 +770,8 @@ def validate_graphic_coverage(payload: Any) -> dict[str, Any]:
             or not isinstance(subject, dict)
             or set(subject) != {"kind", "id"}
             or subject["kind"] not in SUBJECT_KINDS
+            or not isinstance(subject["id"], str)
+            or not subject["id"]
             or item["dimension"] not in DIMENSIONS
             or item["side"] not in {*SIDES, "BOTH"}
             or item["state"] not in COVERAGE_STATES
@@ -632,28 +779,7 @@ def validate_graphic_coverage(payload: Any) -> dict[str, Any]:
             or not item["reason_codes"]
         ):
             raise GraphicCoverageValidationError("graphic coverage record: invalid value")
-        refs = item["source_refs"]
-        expected_ref_keys = {
-            "block_scope_refs",
-            "block_pair_refs",
-            "ledger_digests",
-            "comparison_digests",
-            "graph_node_ids",
-            "entity_link_ids",
-        }
-        if not isinstance(refs, dict) or set(refs) != expected_ref_keys:
-            raise GraphicCoverageValidationError(
-                "graphic coverage record.source_refs: invalid fields"
-            )
-        for values in refs.values():
-            if (
-                not isinstance(values, list)
-                or any(not isinstance(value, str) or not value for value in values)
-                or len(values) != len(set(values))
-            ):
-                raise GraphicCoverageValidationError(
-                    "graphic coverage record.source_refs: invalid references"
-                )
+        _validate_source_refs(item["source_refs"], "coverage record")
         ids.add(item["coverage_id"])
         keys.add(key)
     state_counts = Counter(item["state"] for item in payload["coverage"])
@@ -696,6 +822,52 @@ def graphic_coverage_is_stale(
     return validated["source_signature"] != _coverage_signature(sources)
 
 
+def saved_coverage_bundle_is_stale(
+    artifact: Any,
+    text_entities: Any,
+    side_graph_entities: Any,
+    side_entity_links: Any,
+    scope_join: Any,
+) -> bool:
+    """Check a saved coverage bundle without unavailable adjacent raw inputs."""
+    try:
+        validated = validate_graphic_coverage(artifact)
+        text = validate_text_entities(text_entities)
+        graphics = validate_side_graph_entities(side_graph_entities)
+        links = validate_side_entity_links(side_entity_links)
+        scopes = validate_scope_join(scope_join)
+    except (GraphicCoverageValidationError, TypeError, ValueError):
+        return True
+    if side_entity_links_are_stale(links, text, graphics):
+        return True
+    scope_sources = scopes["source_artifacts"]
+    text_source = scope_sources.get("text_entities") or {}
+    graph_source = scope_sources.get("side_graph_entities") or {}
+    stage_source = scope_sources.get("stage53") or {}
+    if (
+        text_source.get("schema_version") != text["schema_version"]
+        or text_source.get("source_signature") != text["source_signature"]
+        or graph_source.get("schema_version") != graphics["schema_version"]
+        or graph_source.get("source_signature") != graphics["source_signature"]
+        or graph_source.get("left_graph_entities_signature")
+        != graphics["sides"]["LEFT"]["source_signature"]
+        or graph_source.get("right_graph_entities_signature")
+        != graphics["sides"]["RIGHT"]["source_signature"]
+        or stage_source.get("pair_id") != text["source_artifact"]["pair_id"]
+        or stage_source.get("artifact_digest")
+        != text["source_artifact"]["artifact_digest"]
+    ):
+        return True
+    sources = _source_artifacts(
+        scopes,
+        text,
+        graphics,
+        links,
+        validated["source_artifacts"].get("graphic_scope_groups") or [],
+    )
+    return validated["source_signature"] != _coverage_signature(sources)
+
+
 def coverage(
     manifest: Any,
     scope_ref: str,
@@ -705,6 +877,10 @@ def coverage(
 ) -> dict[str, Any]:
     """Query ``coverage(scope, subject, dimension, side?)`` deterministically."""
     payload = validate_graphic_coverage(manifest)
+    if not isinstance(subject_id, str) or not subject_id.strip():
+        raise GraphicCoverageValidationError(
+            "semantic coverage query requires a non-empty subject_id"
+        )
     if dimension not in DIMENSIONS:
         raise GraphicCoverageValidationError("coverage dimension: unsupported")
     requested_side = side or "BOTH"
@@ -744,6 +920,7 @@ __all__ = [
     "build_graphic_coverage",
     "coverage",
     "graphic_coverage_is_stale",
+    "saved_coverage_bundle_is_stale",
     "schema_path",
     "validate_graphic_coverage",
 ]

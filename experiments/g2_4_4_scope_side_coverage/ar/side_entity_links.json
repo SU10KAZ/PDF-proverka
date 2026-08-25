@@ -3,10 +3,10 @@
   "kind": "side_aware_text_graphic_entity_links",
   "side_bridge_version": "side-partitioned-entity-bridge-v1",
   "entity_bridge_version": "deterministic-entity-bridge-v1",
-  "source_signature": "052a6d4137d8847715168ef5e80d5fe5dc73c3392caefad6bd7348fc340eab76",
+  "source_signature": "a994ac24189ef166e9cdadd134b57e04efd91b98589b570ed314bf992ecd5fe0",
   "source_signatures": {
     "text_entities": "80fc1f9994ae1287675d538d0c5a9932c17d50b828e0c7d61d5f9a8ea23677d5",
-    "side_graph_entities": "d23514421d42fdd63366cfd157d8d37689bd2ead77cbdfb577e9f19947123570"
+    "side_graph_entities": "3dab40764f84ac9941ceaa80c374ffa1abbada473651659ac08f5a570a9f0221"
   },
   "sides": {
     "LEFT": {
@@ -16,7 +16,7 @@
       "normalizer_version": "entity-normalizer-v1",
       "source_signatures": {
         "text_entities": "80fc1f9994ae1287675d538d0c5a9932c17d50b828e0c7d61d5f9a8ea23677d5",
-        "graph_entities": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258"
+        "graph_entities": "b04b5c9552bfe928607e85fa95f1deba9133fb7e9827b2be558ff632b4469b8e"
       },
       "input_artifacts": {
         "text": {
@@ -25,7 +25,7 @@
         },
         "graphic": {
           "kind": "system_graph_entities",
-          "schema_version": "graph-entities.v1"
+          "schema_version": "graph-entities.v2"
         }
       },
       "input_entity_ids": {
@@ -115,7 +115,7 @@
       "normalizer_version": "entity-normalizer-v1",
       "source_signatures": {
         "text_entities": "80fc1f9994ae1287675d538d0c5a9932c17d50b828e0c7d61d5f9a8ea23677d5",
-        "graph_entities": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258"
+        "graph_entities": "b04b5c9552bfe928607e85fa95f1deba9133fb7e9827b2be558ff632b4469b8e"
       },
       "input_artifacts": {
         "text": {
@@ -124,7 +124,7 @@
         },
         "graphic": {
           "kind": "system_graph_entities",
-          "schema_version": "graph-entities.v1"
+          "schema_version": "graph-entities.v2"
         }
       },
       "input_entity_ids": {

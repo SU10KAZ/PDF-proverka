@@ -23,6 +23,7 @@ from backend.app.services.stage_comparison.unified_entity_bridge import (  # noq
     build_side_entity_links,
     build_side_graph_entities,
     build_text_entities,
+    produce_graphic_scope_groups,
 )
 
 
@@ -78,14 +79,8 @@ def main() -> int:
         current_text_evidence_index=evidence_index,
         current_system_graphs={"LEFT": left_graphs, "RIGHT": right_graphs},
     )
-    graphic_groups = (
-        [
-            {
-                "block_pairs": [
-                    {"ledger": ledger, "comparison_result": comparison}
-                ]
-            }
-        ]
+    graphic_groups = produce_graphic_scope_groups(
+        [{"ledger": ledger, "comparison_result": comparison}]
         if ledger is not None
         else []
     )
@@ -114,6 +109,8 @@ def main() -> int:
     }
     if ledger is not None:
         outputs["graphic_change_ledger.json"] = ledger
+    if comparison is not None:
+        outputs["comparison_result.json"] = comparison
     for filename, artifact in outputs.items():
         _write_json(args.output_dir / filename, artifact)
 

@@ -20,9 +20,9 @@ from backend.app.pipeline.stages.block_grounding.system_graph import (
 from .entity_normalizer import NORMALIZER_VERSION, canonical_entity_name
 
 
-SCHEMA_VERSION = "graph-entities.v1"
+SCHEMA_VERSION = "graph-entities.v2"
 KIND = "system_graph_entities"
-ADAPTER_VERSION = "system-graph-entity-adapter-v1"
+ADAPTER_VERSION = "system-graph-entity-adapter-v2"
 
 ENTITY_TYPES = frozenset(
     {"SYSTEM", "EQUIPMENT", "FUNCTIONAL_NODE", "ROOM", "MATERIAL", "GROUP", "OTHER"}
@@ -331,13 +331,45 @@ def _build_graph_entity(
             for parent in context[node_id]["parent_node_ids"]
         }
     )
-    incident = [
-        edge
-        for edge in edges
-        if edge.get("from") in group or edge.get("to") in group
-    ]
+    incident = sorted(
+        [
+            edge
+            for edge in edges
+            if edge.get("from") in group or edge.get("to") in group
+        ],
+        key=lambda edge: (
+            str(edge.get("id") or ""),
+            str(edge.get("type") or ""),
+            str(edge.get("from") or ""),
+            str(edge.get("to") or ""),
+        ),
+    )
     edge_ids = sorted(
         {str(edge.get("id")) for edge in incident if str(edge.get("id") or "").strip()}
+    )
+    external_connections = []
+    for edge in incident:
+        source_id = str(edge.get("from") or "")
+        target_id = str(edge.get("to") or "")
+        source_inside = source_id in group
+        target_inside = target_id in group
+        if source_inside == target_inside:
+            continue
+        external_connections.append(
+            {
+                "edge_id": str(edge.get("id") or ""),
+                "edge_type": str(edge.get("type") or ""),
+                "direction": "OUTGOING" if source_inside else "INCOMING",
+                "neighbour_node_id": target_id if source_inside else source_id,
+            }
+        )
+    external_connections.sort(
+        key=lambda item: (
+            item["edge_id"],
+            item["edge_type"],
+            item["direction"],
+            item["neighbour_node_id"],
+        )
     )
     merge_edge = next(
         (edge for edge in edges if str(edge.get("id") or "") == merge_edge_id), None
@@ -362,14 +394,16 @@ def _build_graph_entity(
     )
     entity_id = _stable_id(
         "gfx_ent_",
-        metadata["graph_digest"],
-        metadata["graph_index"],
+        metadata["schema_version"],
+        metadata["profile_id"],
+        metadata["block_id"],
+        metadata["page_index"],
+        metadata["discipline"],
         canonical,
         section,
         parent_ids,
         sorted(node_types),
         member_ids,
-        edge_ids,
     )
     return {
         "entity_id": entity_id,
@@ -395,6 +429,7 @@ def _build_graph_entity(
             "source_path": source_path,
         },
         "edge_ids": edge_ids,
+        "external_connections": external_connections,
         "source_tokens": source_tokens,
         "locations": [
             {
@@ -586,6 +621,7 @@ def validate_graph_entities(payload: Any) -> dict[str, Any]:
             "section_context",
             "graph_scope",
             "edge_ids",
+            "external_connections",
             "source_tokens",
             "locations",
             "evidence_refs",
@@ -641,6 +677,51 @@ def validate_graph_entities(payload: Any) -> dict[str, Any]:
                 or len(values) != len(set(values))
             ):
                 raise GraphEntityValidationError(f"{where}.{key}: invalid")
+        external_connections = entity.get("external_connections")
+        if not isinstance(external_connections, list):
+            raise GraphEntityValidationError(
+                f"{where}.external_connections: array required"
+            )
+        connection_keys: set[tuple[str, str, str, str]] = set()
+        for connection in external_connections:
+            if not isinstance(connection, dict) or set(connection) != {
+                "edge_id",
+                "edge_type",
+                "direction",
+                "neighbour_node_id",
+            }:
+                raise GraphEntityValidationError(
+                    f"{where}.external_connections: invalid fields"
+                )
+            connection_key = (
+                connection["edge_id"],
+                connection["edge_type"],
+                connection["direction"],
+                connection["neighbour_node_id"],
+            )
+            if (
+                any(not isinstance(value, str) or not value for value in connection_key)
+                or connection["direction"] not in {"INCOMING", "OUTGOING"}
+                or connection["edge_id"] not in entity["edge_ids"]
+                or connection["neighbour_node_id"] in node_ids
+                or connection_key in connection_keys
+            ):
+                raise GraphEntityValidationError(
+                    f"{where}.external_connections: invalid value"
+                )
+            connection_keys.add(connection_key)
+        if external_connections != sorted(
+            external_connections,
+            key=lambda item: (
+                item["edge_id"],
+                item["edge_type"],
+                item["direction"],
+                item["neighbour_node_id"],
+            ),
+        ):
+            raise GraphEntityValidationError(
+                f"{where}.external_connections: deterministic order required"
+            )
         if not isinstance(entity.get("locations"), list) or not entity["locations"]:
             raise GraphEntityValidationError(f"{where}.locations: invalid")
         if not isinstance(entity.get("evidence_refs"), list) or not entity["evidence_refs"]:
@@ -663,14 +744,16 @@ def validate_graph_entities(payload: Any) -> dict[str, Any]:
         node_types = sorted(str(entity["domain_subtype"]).split("+"))
         expected_entity_id = _stable_id(
             "gfx_ent_",
-            source_metadata["graph_digest"],
-            graph_index,
+            source_metadata["schema_version"],
+            source_metadata["profile_id"],
+            source_metadata["block_id"],
+            source_metadata["page_index"],
+            source_metadata["discipline"],
             entity["canonical_name"],
             entity["section_context"],
             parent["parent_node_ids"],
             node_types,
             node_ids,
-            entity["edge_ids"],
         )
         if entity_id != expected_entity_id:
             raise GraphEntityValidationError(f"{where}.entity_id: not stable")

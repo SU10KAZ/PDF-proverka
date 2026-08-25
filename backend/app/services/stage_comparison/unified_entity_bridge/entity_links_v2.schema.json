@@ -50,7 +50,7 @@
           "required": ["kind", "schema_version"],
           "properties": {
             "kind": {"const": "system_graph_entities"},
-            "schema_version": {"const": "graph-entities.v1"}
+            "schema_version": {"enum": ["graph-entities.v1", "graph-entities.v2"]}
           }
         }
       }

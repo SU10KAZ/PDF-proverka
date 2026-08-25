@@ -23,6 +23,7 @@ from .graph_entity_adapter import (
     is_stale as graph_entities_are_stale,
     validate_graph_entities,
 )
+from .page_identity import text_pdf_page_1based_to_canonical_index
 from .text_entity_producer import (
     is_stale as text_entities_are_stale,
     validate_text_entities,
@@ -30,9 +31,9 @@ from .text_entity_producer import (
 
 
 SIDES = ("LEFT", "RIGHT")
-GRAPH_SCHEMA_VERSION = "side-graph-entities.v1"
+GRAPH_SCHEMA_VERSION = "side-graph-entities.v2"
 GRAPH_KIND = "side_aware_system_graph_entities"
-SIDE_GRAPH_ADAPTER_VERSION = "side-graph-entity-wrapper-v1"
+SIDE_GRAPH_ADAPTER_VERSION = "side-graph-entity-wrapper-v2"
 LINK_SCHEMA_VERSION = "side-entity-links.v1"
 LINK_KIND = "side_aware_text_graphic_entity_links"
 SIDE_BRIDGE_VERSION = "side-partitioned-entity-bridge-v1"
@@ -371,7 +372,9 @@ def _presence_for_side(
         "evidence_ids": sorted(set(present_evidence + absent_evidence + unknown_evidence)),
         "fragment_ids": sorted(fragment_ids),
         "pdf_pages_1based": sorted(pdf_pages),
-        "canonical_page_indexes_0based": sorted(page - 1 for page in pdf_pages),
+        "canonical_page_indexes_0based": sorted(
+            text_pdf_page_1based_to_canonical_index(page) for page in pdf_pages
+        ),
     }
 
 

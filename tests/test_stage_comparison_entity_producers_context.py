@@ -427,7 +427,45 @@ def test_entity_artifact_schemas_are_versioned():
     graph_schema = json.loads(graph_schema_path().read_text(encoding="utf-8"))
 
     assert text_schema["properties"]["schema_version"]["const"] == "text-entities.v1"
-    assert graph_schema["properties"]["schema_version"]["const"] == "graph-entities.v1"
+    assert graph_schema["properties"]["schema_version"]["const"] == "graph-entities.v2"
+
+
+def test_graph_entity_ids_ignore_node_and_edge_array_order():
+    graph = _graph(
+        [
+            _node("section", "BUS_SECTION", "РП1", canonical_identity="SECTION_1"),
+            _node("load", "LOAD", "ЩР1", canonical_identity="PANEL_1", section="section"),
+        ],
+        [_edge("feed", "FEEDS", "section", "load")],
+    )
+    permuted = copy.deepcopy(graph)
+    permuted["nodes"].reverse()
+    permuted["edges"].reverse()
+
+    first = build_graph_entities([graph])
+    second = build_graph_entities([permuted])
+    first_ids = {
+        tuple(entity["graph_node_ids"]): entity["entity_id"]
+        for entity in first["entities"]
+    }
+    second_ids = {
+        tuple(entity["graph_node_ids"]): entity["entity_id"]
+        for entity in second["entities"]
+    }
+
+    assert first_ids == second_ids
+    assert first["source_signature"] != second["source_signature"]
+    section = next(
+        entity for entity in first["entities"] if entity["graph_node_ids"] == ["section"]
+    )
+    assert section["external_connections"] == [
+        {
+            "edge_id": "feed",
+            "edge_type": "FEEDS",
+            "direction": "OUTGOING",
+            "neighbour_node_id": "load",
+        }
+    ]
 
 
 def test_real_ios_vru_a_deduplicates_representations_but_stays_ambiguous():

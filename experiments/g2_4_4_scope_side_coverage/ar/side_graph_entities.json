@@ -1,15 +1,15 @@
 {
-  "schema_version": "side-graph-entities.v1",
+  "schema_version": "side-graph-entities.v2",
   "kind": "side_aware_system_graph_entities",
-  "adapter_version": "side-graph-entity-wrapper-v1",
-  "source_signature": "d23514421d42fdd63366cfd157d8d37689bd2ead77cbdfb577e9f19947123570",
+  "adapter_version": "side-graph-entity-wrapper-v2",
+  "source_signature": "3dab40764f84ac9941ceaa80c374ffa1abbada473651659ac08f5a570a9f0221",
   "sides": {
     "LEFT": {
-      "schema_version": "graph-entities.v1",
+      "schema_version": "graph-entities.v2",
       "kind": "system_graph_entities",
-      "adapter_version": "system-graph-entity-adapter-v1",
+      "adapter_version": "system-graph-entity-adapter-v2",
       "normalizer_version": "entity-normalizer-v1",
-      "source_signature": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258",
+      "source_signature": "b04b5c9552bfe928607e85fa95f1deba9133fb7e9827b2be558ff632b4469b8e",
       "source_graphs": [],
       "entities": [],
       "quality_report": {
@@ -26,11 +26,11 @@
       }
     },
     "RIGHT": {
-      "schema_version": "graph-entities.v1",
+      "schema_version": "graph-entities.v2",
       "kind": "system_graph_entities",
-      "adapter_version": "system-graph-entity-adapter-v1",
+      "adapter_version": "system-graph-entity-adapter-v2",
       "normalizer_version": "entity-normalizer-v1",
-      "source_signature": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258",
+      "source_signature": "b04b5c9552bfe928607e85fa95f1deba9133fb7e9827b2be558ff632b4469b8e",
       "source_graphs": [],
       "entities": [],
       "quality_report": {

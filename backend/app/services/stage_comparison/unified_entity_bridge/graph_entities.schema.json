@@ -15,9 +15,9 @@
     "quality_report"
   ],
   "properties": {
-    "schema_version": {"const": "graph-entities.v1"},
+    "schema_version": {"const": "graph-entities.v2"},
     "kind": {"const": "system_graph_entities"},
-    "adapter_version": {"const": "system-graph-entity-adapter-v1"},
+    "adapter_version": {"const": "system-graph-entity-adapter-v2"},
     "normalizer_version": {"const": "entity-normalizer-v1"},
     "source_signature": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "source_graphs": {
@@ -97,6 +97,17 @@
         "id": {"type": "string", "minLength": 1}
       }
     },
+    "external_connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["edge_id", "edge_type", "direction", "neighbour_node_id"],
+      "properties": {
+        "edge_id": {"type": "string", "minLength": 1},
+        "edge_type": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["INCOMING", "OUTGOING"]},
+        "neighbour_node_id": {"type": "string", "minLength": 1}
+      }
+    },
     "graph_scope": {
       "type": "object",
       "additionalProperties": false,
@@ -135,6 +146,7 @@
         "section_context",
         "graph_scope",
         "edge_ids",
+        "external_connections",
         "source_tokens",
         "locations",
         "evidence_refs",
@@ -174,6 +186,11 @@
         "section_context": {"$ref": "#/$defs/nullable_string"},
         "graph_scope": {"$ref": "#/$defs/graph_scope"},
         "edge_ids": {"$ref": "#/$defs/string_array"},
+        "external_connections": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/external_connection"}
+        },
         "source_tokens": {"$ref": "#/$defs/string_array"},
         "locations": {
           "type": "array",
@@ -204,7 +221,7 @@
             "graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
             "profile_version": {"$ref": "#/$defs/nullable_string"},
             "extractor_version": {"$ref": "#/$defs/nullable_string"},
-            "adapter_version": {"const": "system-graph-entity-adapter-v1"},
+            "adapter_version": {"const": "system-graph-entity-adapter-v2"},
             "normalizer_version": {"const": "entity-normalizer-v1"},
             "aggregation_rule": {
               "enum": ["SINGLE_GRAPH_NODE", "TERMINATES_AT_REPRESENTATION_PAIR"]

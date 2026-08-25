@@ -6,9 +6,9 @@
   "additionalProperties": false,
   "required": ["schema_version", "kind", "adapter_version", "source_signature", "sides", "diagnostics"],
   "properties": {
-    "schema_version": {"const": "side-graph-entities.v1"},
+    "schema_version": {"const": "side-graph-entities.v2"},
     "kind": {"const": "side_aware_system_graph_entities"},
-    "adapter_version": {"const": "side-graph-entity-wrapper-v1"},
+    "adapter_version": {"const": "side-graph-entity-wrapper-v2"},
     "source_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "sides": {
       "type": "object",

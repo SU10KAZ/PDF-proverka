@@ -21,14 +21,17 @@ from backend.app.services.stage_comparison.unified_entity_bridge.comparison_scop
     build_scope_join,
     graphic_page_to_canonical_index,
     pdf_page_to_canonical_index,
+    produce_graphic_scope_groups,
     query_text_scope,
     schema_path as scope_schema_path,
     scope_join_is_stale,
 )
 from backend.app.services.stage_comparison.unified_entity_bridge.graphic_coverage import (
+    GraphicCoverageValidationError,
     build_graphic_coverage,
     coverage,
     graphic_coverage_is_stale,
+    saved_coverage_bundle_is_stale,
     schema_path as coverage_schema_path,
 )
 from backend.app.services.stage_comparison.unified_entity_bridge.side_entity_contract import (
@@ -209,6 +212,37 @@ def _base(stage: dict, left_graphs=(), right_graphs=()):
     return text, graphs, links
 
 
+def _processing(manifest: dict, scope_ref: str, dimension: str) -> dict:
+    return next(
+        item
+        for item in manifest["scope_processing"]
+        if item["scope_ref"] == scope_ref and item["dimension"] == dimension
+    )
+
+
+def _semantic_states(manifest: dict) -> list[tuple]:
+    return sorted(
+        (
+            item["subject"]["kind"],
+            item["subject"]["id"],
+            item["dimension"],
+            item["side"],
+            item["state"],
+        )
+        for item in manifest["coverage"]
+    )
+
+
+def _build_for_pairs(real_ios, pairs: list[dict]):
+    stage, _, _, _, text, graphs, links, _, _, _ = real_ios
+    groups = [{"block_pairs": pairs}]
+    scopes = build_scope_join(stage, text, graphs, groups)
+    manifest = build_graphic_coverage(
+        stage, text, graphs, links, scopes, groups
+    )
+    return scopes, manifest
+
+
 @pytest.fixture(scope="module")
 def real_ios():
     stage = _read(IOS_STAGE53_PATH)
@@ -243,6 +277,12 @@ def test_page_base_is_explicit_and_text_page_one_does_not_match_graphic_index_on
     text_scope = next(item for item in scopes["scopes"] if item["text_scope"])
     assert text_scope["status"] == "UNRESOLVED_SCOPE"
     assert text_scope["graphic_scope_group"] is None
+
+
+@pytest.mark.parametrize("text_page,graphic_index", [(1, 0), (2, 1), (3, 2)])
+def test_canonical_page_matrix(text_page, graphic_index):
+    assert pdf_page_to_canonical_index(text_page) == graphic_index
+    assert graphic_page_to_canonical_index(graphic_index) == graphic_index
 
 
 def test_one_sheet_with_multiple_explicit_block_children_is_valid():
@@ -342,11 +382,14 @@ def test_no_system_graph_is_not_checked_and_unsupported_dimension_is_not_applica
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, [])
     scope_ref = next(item["scope_ref"] for item in scopes["scopes"] if item["text_scope"])
 
-    assert coverage(manifest, scope_ref, None, "STRUCTURE")["state"] == "NOT_CHECKED"
-    assert "no_system_graph_for_sheet" in coverage(
-        manifest, scope_ref, None, "STRUCTURE"
+    text_entity_id = text["entities"][0]["entity_id"]
+    assert coverage(manifest, scope_ref, text_entity_id, "STRUCTURE")["state"] == (
+        "NOT_CHECKED"
+    )
+    assert "no_system_graph_for_sheet" in _processing(
+        manifest, scope_ref, "STRUCTURE"
     )["reason_codes"]
-    assert coverage(manifest, scope_ref, None, "PARAMETER")["state"] == (
+    assert coverage(manifest, scope_ref, text_entity_id, "PARAMETER")["state"] == (
         "NOT_APPLICABLE"
     )
 
@@ -360,7 +403,8 @@ def test_mode1_local_delta_does_not_claim_system_graph_semantic_coverage():
     scope_ref = next(
         item["scope_ref"] for item in scopes["scopes"] if item["status"] == "RESOLVED"
     )
-    result = coverage(manifest, scope_ref, None, "STRUCTURE")
+    text_entity_id = text["entities"][0]["entity_id"]
+    result = coverage(manifest, scope_ref, text_entity_id, "STRUCTURE", "LEFT")
 
     assert result["state"] == "NOT_APPLICABLE"
     assert result["reason_codes"] == [
@@ -391,7 +435,8 @@ def test_low_quality_mode2_is_check_blocked(real_ios):
     scope_ref = next(
         item["scope_ref"] for item in scopes["scopes"] if item["status"] == "RESOLVED"
     )
-    result = coverage(manifest, scope_ref, None, "STRUCTURE")
+    graph_entity_id = graphs["sides"]["LEFT"]["entities"][0]["entity_id"]
+    result = coverage(manifest, scope_ref, graph_entity_id, "STRUCTURE", "LEFT")
 
     assert result["state"] == "CHECK_BLOCKED"
     assert "left_identity_coverage_below_threshold" in result["reason_codes"]
@@ -469,6 +514,247 @@ def test_real_ios_scope_and_subject_coverage_are_conservative(real_ios):
     assert graphs["diagnostics"]["RIGHT"]["entities"] == 52
 
 
+def test_matched_sections_with_unresolved_neighbours_are_not_connection_or_structure_checked(
+    real_ios,
+):
+    _, _, _, _, _, graphs, _, _, _, manifest = real_ios
+    names = {
+        side: {
+            entity["entity_id"]: entity["canonical_name"]
+            for entity in graphs["sides"][side]["entities"]
+        }
+        for side in ("LEFT", "RIGHT")
+    }
+    records = [
+        item
+        for item in manifest["coverage"]
+        if item["subject"]["kind"] == "GRAPH_ENTITY"
+        and names[item["side"]].get(item["subject"]["id"])
+        in {"SECTION_1", "SECTION_2"}
+        and item["dimension"] in {"CONNECTION", "STRUCTURE"}
+    ]
+
+    assert len(records) == 8
+    assert {item["state"] for item in records} == {"NOT_CHECKED"}
+    assert {tuple(item["reason_codes"]) for item in records} == {
+        ("NEIGHBOUR_IDENTITY_UNRESOLVED",)
+    }
+
+
+def test_real_ios_has_zero_checked_graph_subjects_with_unresolved_neighbours(real_ios):
+    _, _, _, comparison, _, graphs, _, _, _, manifest = real_ios
+    checked = [
+        item
+        for item in manifest["coverage"]
+        if item["subject"]["kind"] == "GRAPH_ENTITY"
+        and item["dimension"] in {"CONNECTION", "STRUCTURE"}
+        and item["state"] == "CHECKED"
+    ]
+    violations = []
+    for side in ("LEFT", "RIGHT"):
+        side_key = "left_id" if side == "LEFT" else "right_id"
+        detail_key = "left_nodes" if side == "LEFT" else "right_nodes"
+        high = {
+            item[side_key]
+            for item in comparison["matching"]["matches"]
+            if item["decision"] == "HIGH_MATCH"
+        }
+        high.update(
+            node_id
+            for item in comparison["matching"]["detail_matches"]
+            if item["match_confidence"] >= 0.85
+            for node_id in item[detail_key]
+        )
+        entities = {
+            item["entity_id"]: item for item in graphs["sides"][side]["entities"]
+        }
+        for record in checked:
+            if record["side"] != side:
+                continue
+            entity = entities[record["subject"]["id"]]
+            neighbours = {
+                edge["neighbour_node_id"]
+                for edge in entity["external_connections"]
+            }
+            if not set(entity["graph_node_ids"]) <= high or not neighbours <= high:
+                violations.append(record["coverage_id"])
+
+    assert checked
+    assert violations == []
+
+
+def test_same_block_in_two_good_pairs_is_order_and_hash_independent(real_ios):
+    good = copy.deepcopy(real_ios[7][0]["block_pairs"][0])
+    duplicate = copy.deepcopy(good)
+    duplicate["ledger"]["diagnostics"]["coverage_provenance_salt"] = "alpha"
+    _, first = _build_for_pairs(real_ios, [good, duplicate])
+
+    changed_good = copy.deepcopy(good)
+    changed_duplicate = copy.deepcopy(duplicate)
+    changed_good["ledger"]["diagnostics"]["coverage_provenance_salt"] = "beta"
+    changed_duplicate["ledger"]["diagnostics"]["coverage_provenance_salt"] = "gamma"
+    _, second = _build_for_pairs(real_ios, [changed_duplicate, changed_good])
+
+    assert _semantic_states(first) == _semantic_states(second)
+    relevant = [
+        item
+        for item in first["coverage"]
+        if item["subject"]["kind"] == "GRAPH_ENTITY"
+        and item["dimension"] in {"STRUCTURE", "CONNECTION", "TYPE"}
+    ]
+    assert relevant
+    assert {item["state"] for item in relevant} == {"CHECK_BLOCKED"}
+    assert all(
+        "MULTIPLE_RELEVANT_BLOCK_PAIRS" in item["reason_codes"]
+        for item in relevant
+    )
+
+
+def test_good_and_blocked_pairs_with_same_block_propagate_blocked_independent_of_order(
+    real_ios,
+):
+    stage, left, right, _, _, _, _, groups, _, _ = real_ios
+    good = copy.deepcopy(groups[0]["block_pairs"][0])
+    low_left = copy.deepcopy(left)
+    low_right = copy.deepcopy(right)
+    low_left["quality"]["identity_coverage"] = 0.1
+    low_right["quality"]["identity_coverage"] = 0.1
+    blocked_comparison = compare_system_graphs(low_left, low_right)
+    blocked_ledger = adapt_system_graph_comparison_to_ledger(
+        blocked_comparison, low_left, low_right
+    )
+    blocked = {
+        "ledger": blocked_ledger,
+        "comparison_result": blocked_comparison,
+    }
+
+    _, first = _build_for_pairs(real_ios, [good, blocked])
+    _, second = _build_for_pairs(real_ios, [blocked, good])
+
+    assert _semantic_states(first) == _semantic_states(second)
+    observable_subjects = [
+        item
+        for item in first["coverage"]
+        if item["dimension"] in {"STRUCTURE", "CONNECTION", "TYPE"}
+    ]
+    assert observable_subjects
+    assert "CHECKED" not in {item["state"] for item in observable_subjects}
+    assert "CHECK_BLOCKED" in {item["state"] for item in observable_subjects}
+
+
+def test_mode1_and_mode2_same_block_is_order_independent(real_ios):
+    left = real_ios[1]
+    right = real_ios[2]
+    mode2 = copy.deepcopy(real_ios[7][0]["block_pairs"][0])
+    mode1 = _mode1_group(
+        left["block"]["block_id"],
+        right["block"]["block_id"],
+        left_page=left["block"]["page_index"],
+        right_page=right["block"]["page_index"],
+    )["block_pairs"][0]
+
+    _, first = _build_for_pairs(real_ios, [mode1, mode2])
+    _, second = _build_for_pairs(real_ios, [mode2, mode1])
+
+    assert _semantic_states(first) == _semantic_states(second)
+    graph_structure = [
+        item
+        for item in first["coverage"]
+        if item["subject"]["kind"] == "GRAPH_ENTITY"
+        and item["dimension"] == "STRUCTURE"
+    ]
+    assert graph_structure
+    assert {item["state"] for item in graph_structure} == {"CHECK_BLOCKED"}
+
+
+def test_individual_entity_quantity_is_not_applicable(real_ios):
+    manifest = real_ios[-1]
+    quantity = [
+        item
+        for item in manifest["coverage"]
+        if item["dimension"] == "QUANTITY"
+    ]
+
+    assert quantity
+    assert {item["state"] for item in quantity} == {"NOT_APPLICABLE"}
+    assert all(
+        item["reason_codes"] == ["quantity_not_observable_for_individual_entity"]
+        or item["reason_codes"] == ["dimension_not_observable_on_either_side"]
+        for item in quantity
+    )
+
+
+def test_scope_only_semantic_query_is_rejected(real_ios):
+    scopes = real_ios[-2]
+    manifest = real_ios[-1]
+    scope_ref = scopes["scopes"][0]["scope_ref"]
+
+    with pytest.raises(GraphicCoverageValidationError, match="requires.*subject_id"):
+        coverage(manifest, scope_ref, None, "STRUCTURE")
+
+
+def test_node_permutation_keeps_entity_ids_and_semantic_coverage(real_ios):
+    stage, left, right, _, text, graphs, _, groups, _, manifest = real_ios
+    permuted_left = copy.deepcopy(left)
+    permuted_right = copy.deepcopy(right)
+    permuted_left["nodes"].reverse()
+    permuted_left["edges"].reverse()
+    permuted_right["nodes"].reverse()
+    permuted_right["edges"].reverse()
+    permuted_graphs = build_side_graph_entities(
+        left_graphs=[permuted_left], right_graphs=[permuted_right]
+    )
+    permuted_links = build_side_entity_links(text, permuted_graphs)
+    permuted_scopes = build_scope_join(stage, text, permuted_graphs, groups)
+    permuted_manifest = build_graphic_coverage(
+        stage,
+        text,
+        permuted_graphs,
+        permuted_links,
+        permuted_scopes,
+        groups,
+    )
+
+    for side in ("LEFT", "RIGHT"):
+        original_ids = {
+            tuple(item["graph_node_ids"]): item["entity_id"]
+            for item in graphs["sides"][side]["entities"]
+        }
+        permuted_ids = {
+            tuple(item["graph_node_ids"]): item["entity_id"]
+            for item in permuted_graphs["sides"][side]["entities"]
+        }
+        assert original_ids == permuted_ids
+    assert _semantic_states(manifest) == _semantic_states(permuted_manifest)
+
+
+def test_saved_bundle_stale_check_needs_no_raw_comparison_or_graph_inputs(real_ios):
+    _, _, _, _, text, graphs, links, _, scopes, manifest = real_ios
+
+    assert saved_coverage_bundle_is_stale(
+        manifest, text, graphs, links, scopes
+    ) is False
+    changed_graphs = copy.deepcopy(graphs)
+    changed_graphs["source_signature"] = "0" * 64
+    assert saved_coverage_bundle_is_stale(
+        manifest, text, changed_graphs, links, scopes
+    ) is True
+
+
+def test_production_scope_group_producer_groups_all_pairs_by_canonical_page_pair():
+    pairs = [
+        _mode1_group("left-a", "right-a")["block_pairs"][0],
+        _mode1_group("left-b", "right-b")["block_pairs"][0],
+        _mode1_group(
+            "left-c", "right-c", left_page=1, right_page=2
+        )["block_pairs"][0],
+    ]
+
+    groups = produce_graphic_scope_groups(list(reversed(pairs)))
+
+    assert sorted(len(group["block_pairs"]) for group in groups) == [1, 2]
+
+
 def test_real_ar_without_graphs_has_only_not_checked_semantic_coverage():
     stage = _read(AR_STAGE53_PATH)
     text, graphs, links = _base(stage)
@@ -476,16 +762,17 @@ def test_real_ar_without_graphs_has_only_not_checked_semantic_coverage():
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, [])
     semantic_scope_records = [
         item
-        for item in manifest["coverage"]
-        if item["subject"]["kind"] == "SCOPE"
-        and item["dimension"] in {"STRUCTURE", "CONNECTION", "TYPE", "QUANTITY"}
+        for item in manifest["scope_processing"]
+        if item["dimension"] in {"STRUCTURE", "CONNECTION", "TYPE"}
     ]
 
     assert len(text["entities"]) == 27
     assert graphs["sides"]["LEFT"]["entities"] == []
     assert graphs["sides"]["RIGHT"]["entities"] == []
     assert scopes["diagnostics"]["resolved_scopes"] == 0
-    assert {item["state"] for item in semantic_scope_records} == {"NOT_CHECKED"}
+    assert {item["processing_state"] for item in semantic_scope_records} == {
+        "SCOPE_NOT_PROCESSED"
+    }
     assert manifest["summary"]["by_state"]["CHECKED"] == 0
 
 
@@ -501,8 +788,8 @@ def test_g244_contract_schemas_are_versioned():
     ]
 
     assert [schema["properties"]["schema_version"]["const"] for schema in schemas] == [
-        "side-graph-entities.v1",
+        "side-graph-entities.v2",
         "side-entity-links.v1",
         "text-graphic-scope-join.v1",
-        "graphic-coverage.v1",
+        "graphic-coverage.v2",
     ]
