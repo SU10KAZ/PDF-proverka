@@ -93,6 +93,18 @@ def graphic_change_ledger_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "graphic_change_ledger.json"
 
 
+def text_entities_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "text_entities.json"
+
+
+def graph_entities_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "graph_entities.json"
+
+
+def entity_links_path(session_id: str, pair_id: str) -> Path:
+    return pair_dir(session_id, pair_id) / "entity_links.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -117,5 +129,8 @@ __all__ = [
     "project_change_summary_path",
     "high_level_project_changes_path",
     "graphic_change_ledger_path",
+    "text_entities_path",
+    "graph_entities_path",
+    "entity_links_path",
     "index_json_path",
 ]

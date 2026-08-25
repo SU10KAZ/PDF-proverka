@@ -1,0 +1,99 @@
+{
+  "schema_version": "entity-bridge.v2",
+  "kind": "text_graphic_entity_links",
+  "bridge_version": "deterministic-entity-bridge-v1",
+  "normalizer_version": "entity-normalizer-v1",
+  "source_signatures": {
+    "text_entities": "80fc1f9994ae1287675d538d0c5a9932c17d50b828e0c7d61d5f9a8ea23677d5",
+    "graph_entities": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258"
+  },
+  "input_artifacts": {
+    "text": {
+      "kind": "stage_comparison_text_entities",
+      "schema_version": "text-entities.v1"
+    },
+    "graphic": {
+      "kind": "system_graph_entities",
+      "schema_version": "graph-entities.v1"
+    }
+  },
+  "input_entity_ids": {
+    "text": [
+      "txt_ent_1c64ae82d791622759a7",
+      "txt_ent_31a34f79941d3d417818",
+      "txt_ent_35c436241d8511bfa3d2",
+      "txt_ent_437e4b39bdcd2203e7fa",
+      "txt_ent_4855d0d69aaa8afaaadd",
+      "txt_ent_518ca1133c8699ceb058",
+      "txt_ent_55ef63b9709fcbef8718",
+      "txt_ent_56b71d2c707bfe4abfab",
+      "txt_ent_5ccdf5feff5345db7cff",
+      "txt_ent_60381590152961d84a70",
+      "txt_ent_6565e138da012de91f72",
+      "txt_ent_66a063dacc406533dc14",
+      "txt_ent_6b6415670733acfd5213",
+      "txt_ent_6b6dbcd09f96ed579a0e",
+      "txt_ent_6c4ae128fb23aff390ec",
+      "txt_ent_77e5fba3ede9e5177282",
+      "txt_ent_8d77ce028dd96cccd7d3",
+      "txt_ent_9093370917226b17cc38",
+      "txt_ent_9ca198147b79d86fbcf0",
+      "txt_ent_c470bd1308c1edd7af0b",
+      "txt_ent_cf4ac6e945e63ef333ff",
+      "txt_ent_d17ec764106e7e2e752b",
+      "txt_ent_d30636a2bb3d06abd853",
+      "txt_ent_d707f0f82ccb98ba4dfd",
+      "txt_ent_e63732a16623958c9429",
+      "txt_ent_e7c048464a7167310959",
+      "txt_ent_eb6a6065351084134eed"
+    ],
+    "graphic": []
+  },
+  "links": [],
+  "diagnostics": {
+    "text_entity_count": 27,
+    "graphic_entity_count": 0,
+    "candidate_link_count": 0,
+    "relation_counts": {
+      "SAME_ENTITY": 0,
+      "POSSIBLE_ENTITY": 0,
+      "UNKNOWN": 0
+    },
+    "confidence_counts": {
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "unresolved_text_entity_ids": [
+      "txt_ent_1c64ae82d791622759a7",
+      "txt_ent_31a34f79941d3d417818",
+      "txt_ent_35c436241d8511bfa3d2",
+      "txt_ent_437e4b39bdcd2203e7fa",
+      "txt_ent_4855d0d69aaa8afaaadd",
+      "txt_ent_518ca1133c8699ceb058",
+      "txt_ent_55ef63b9709fcbef8718",
+      "txt_ent_56b71d2c707bfe4abfab",
+      "txt_ent_5ccdf5feff5345db7cff",
+      "txt_ent_60381590152961d84a70",
+      "txt_ent_6565e138da012de91f72",
+      "txt_ent_66a063dacc406533dc14",
+      "txt_ent_6b6415670733acfd5213",
+      "txt_ent_6b6dbcd09f96ed579a0e",
+      "txt_ent_6c4ae128fb23aff390ec",
+      "txt_ent_77e5fba3ede9e5177282",
+      "txt_ent_8d77ce028dd96cccd7d3",
+      "txt_ent_9093370917226b17cc38",
+      "txt_ent_9ca198147b79d86fbcf0",
+      "txt_ent_c470bd1308c1edd7af0b",
+      "txt_ent_cf4ac6e945e63ef333ff",
+      "txt_ent_d17ec764106e7e2e752b",
+      "txt_ent_d30636a2bb3d06abd853",
+      "txt_ent_d707f0f82ccb98ba4dfd",
+      "txt_ent_e63732a16623958c9429",
+      "txt_ent_e7c048464a7167310959",
+      "txt_ent_eb6a6065351084134eed"
+    ],
+    "unresolved_graphic_entity_ids": []
+  }
+}

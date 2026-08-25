@@ -1,0 +1,1183 @@
+{
+  "schema_version": "text-entities.v1",
+  "kind": "stage_comparison_text_entities",
+  "producer_version": "stage5-3-text-entity-producer-v1",
+  "normalizer_version": "entity-normalizer-v1",
+  "source_signature": "80fc1f9994ae1287675d538d0c5a9932c17d50b828e0c7d61d5f9a8ea23677d5",
+  "source_artifact": {
+    "kind": "stage_comparison_high_level_project_changes",
+    "schema_version": "1.0",
+    "version": 1,
+    "pair_id": "p570d156f57",
+    "source_signature": "b86cc27fbdef348104146fddc8c808b24d54c7eb6704f41bf89d787183687cc3",
+    "artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+    "evidence_index_digest": null,
+    "evidence_index_version": null
+  },
+  "entities": [
+    {
+      "entity_id": "txt_ent_1c64ae82d791622759a7",
+      "canonical_name": "ROOM_7_K_6",
+      "display_names": [
+        "Помещение 7.К.6"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_f20a60ad83db1059"
+      ],
+      "fragment_ids": [
+        "txt_2bd8bf8cb0040303"
+      ],
+      "source_change_ids": [
+        "hlc_2cece3c61281e7f4"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_f20a60ad83db1059",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_31a34f79941d3d417818",
+      "canonical_name": "ROOM_3_K_16",
+      "display_names": [
+        "Помещение 3.К.16"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_da5214a676459e33"
+      ],
+      "fragment_ids": [
+        "txt_69fb01c810d1f1c0"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_da5214a676459e33",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_35c436241d8511bfa3d2",
+      "canonical_name": "ROOM_7_K_4",
+      "display_names": [
+        "Помещение 7.К.4"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_2168b0cfc9061d3b"
+      ],
+      "fragment_ids": [
+        "txt_d8af00aac5997fa7"
+      ],
+      "source_change_ids": [
+        "hlc_2cece3c61281e7f4"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_2168b0cfc9061d3b",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_437e4b39bdcd2203e7fa",
+      "canonical_name": "ROOM_7_ПOH_2",
+      "display_names": [
+        "Помещение 7.ПОН.2"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_b6f28c60ef7a3f5e"
+      ],
+      "fragment_ids": [
+        "txt_4f8764188ec1dfd4"
+      ],
+      "source_change_ids": [
+        "hlc_8b6063e980e77df1"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_b6f28c60ef7a3f5e",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_4855d0d69aaa8afaaadd",
+      "canonical_name": "ROOM_3_K_15",
+      "display_names": [
+        "Помещение 3.К.15"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_b2ea4b28dc6902ee"
+      ],
+      "fragment_ids": [
+        "txt_22a1f6809fdd4e82"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_b2ea4b28dc6902ee",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_518ca1133c8699ceb058",
+      "canonical_name": "ROOM_3_K_9",
+      "display_names": [
+        "Помещение 3.К.9"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_49503811fbb150e4"
+      ],
+      "fragment_ids": [
+        "txt_6a7ac6be26738386"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_49503811fbb150e4",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_55ef63b9709fcbef8718",
+      "canonical_name": "ROOM_7_K_2",
+      "display_names": [
+        "Помещение 7.К.2"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_0ad66c824639c182"
+      ],
+      "fragment_ids": [
+        "txt_0f4dba16651cf72f"
+      ],
+      "source_change_ids": [
+        "hlc_8b6063e980e77df1"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_0ad66c824639c182",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_56b71d2c707bfe4abfab",
+      "canonical_name": "ROOM_3_K_1",
+      "display_names": [
+        "Помещение 3.К.1"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_cdc36a5b86b58d9d"
+      ],
+      "fragment_ids": [
+        "txt_9d7efc8aad29e861"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_cdc36a5b86b58d9d",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_5ccdf5feff5345db7cff",
+      "canonical_name": "ROOM_3_K_7",
+      "display_names": [
+        "Помещение 3.К.7"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_1af53d0300317b2a"
+      ],
+      "fragment_ids": [
+        "txt_dbca3f187c83dc39"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_1af53d0300317b2a",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_60381590152961d84a70",
+      "canonical_name": "ROOM_3_K_5",
+      "display_names": [
+        "Помещение 3.К.5"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_490af6ddc004ce0f"
+      ],
+      "fragment_ids": [
+        "txt_d3ac19121a544bd6"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_490af6ddc004ce0f",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_6565e138da012de91f72",
+      "canonical_name": "ROOM_2_K_1",
+      "display_names": [
+        "Помещение 2.К.1"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_c24a9a9a88a1fc7a"
+      ],
+      "fragment_ids": [
+        "txt_08cf6ef3e5fd2670",
+        "txt_670a57c3be6569f4"
+      ],
+      "source_change_ids": [
+        "hlc_8cbde3a6d6c0f4e6"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_c24a9a9a88a1fc7a",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_66a063dacc406533dc14",
+      "canonical_name": "ROOM_7_K_3",
+      "display_names": [
+        "Помещение 7.К.3"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_2a173f42b3853000"
+      ],
+      "fragment_ids": [
+        "txt_92cfb87311c6221b"
+      ],
+      "source_change_ids": [
+        "hlc_8b6063e980e77df1"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_2a173f42b3853000",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_6b6415670733acfd5213",
+      "canonical_name": "ROOM_7_ПOH_3",
+      "display_names": [
+        "Помещение 7.ПОН.3"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_309bfdd79fd0daa1"
+      ],
+      "fragment_ids": [
+        "txt_7c8122d5813b52c3"
+      ],
+      "source_change_ids": [
+        "hlc_8b6063e980e77df1"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_309bfdd79fd0daa1",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_6b6dbcd09f96ed579a0e",
+      "canonical_name": "ROOM_3_K_8",
+      "display_names": [
+        "Помещение 3.К.8"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_ae89d54ca426415d"
+      ],
+      "fragment_ids": [
+        "txt_7efb2d17f9c73783"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_ae89d54ca426415d",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_6c4ae128fb23aff390ec",
+      "canonical_name": "ROOM_3_K_12",
+      "display_names": [
+        "Помещение 3.К.12"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_07012fcf8a78d5f2"
+      ],
+      "fragment_ids": [
+        "txt_5f50849a843755f9"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_07012fcf8a78d5f2",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_77e5fba3ede9e5177282",
+      "canonical_name": "ROOM_3_K_11",
+      "display_names": [
+        "Помещение 3.К.11"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_27cd8b9a234a1cf6"
+      ],
+      "fragment_ids": [
+        "txt_259ae768843fa677"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_27cd8b9a234a1cf6",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_8d77ce028dd96cccd7d3",
+      "canonical_name": "ROOM_3_K_6",
+      "display_names": [
+        "Помещение 3.К.6"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_ee3f45d063431b62"
+      ],
+      "fragment_ids": [
+        "txt_6b1a1de29abae202"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_ee3f45d063431b62",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_9093370917226b17cc38",
+      "canonical_name": "ROOM_7_K_5",
+      "display_names": [
+        "Помещение 7.К.5"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_95ea80eda4f8edf4"
+      ],
+      "fragment_ids": [
+        "txt_e74f2200c2142d0d"
+      ],
+      "source_change_ids": [
+        "hlc_2cece3c61281e7f4"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_95ea80eda4f8edf4",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_9ca198147b79d86fbcf0",
+      "canonical_name": "ROOM_3_K_2",
+      "display_names": [
+        "Помещение 3.К.2"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_0b690b56b8c4ca0e"
+      ],
+      "fragment_ids": [
+        "txt_0631554a9c59e386"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_0b690b56b8c4ca0e",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_c470bd1308c1edd7af0b",
+      "canonical_name": "ROOM_3_K_14",
+      "display_names": [
+        "Помещение 3.К.14"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_d2f813b2e9757028"
+      ],
+      "fragment_ids": [
+        "txt_bd9e71fd599d7964"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_d2f813b2e9757028",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_cf4ac6e945e63ef333ff",
+      "canonical_name": "ROOM_7_K_1",
+      "display_names": [
+        "Помещение 7.К.1"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_40bba659b327c5cf"
+      ],
+      "fragment_ids": [
+        "txt_c3812b29b374a500"
+      ],
+      "source_change_ids": [
+        "hlc_8b6063e980e77df1"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_40bba659b327c5cf",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_d17ec764106e7e2e752b",
+      "canonical_name": "ROOM_3_K_13",
+      "display_names": [
+        "Помещение 3.К.13"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_7d839de08655e7c9"
+      ],
+      "fragment_ids": [
+        "txt_7504f45eccb35524"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_7d839de08655e7c9",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_d30636a2bb3d06abd853",
+      "canonical_name": "VRU_1",
+      "display_names": [
+        "ВРУ1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "PANEL",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_c11206a10eb6cecf"
+      ],
+      "fragment_ids": [
+        "txt_0a9d101db83a7af5",
+        "txt_a9752d4dad25a29f"
+      ],
+      "source_change_ids": [
+        "hlc_0b497e13e27ea4a4"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_c11206a10eb6cecf",
+            "field": "after",
+            "rule": "VRU_DESIGNATION"
+          },
+          {
+            "evidence_id": "ev_c11206a10eb6cecf",
+            "field": "summary",
+            "rule": "VRU_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_d707f0f82ccb98ba4dfd",
+      "canonical_name": "ROOM_3_K_4",
+      "display_names": [
+        "Помещение 3.К.4"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_d4c26c2553674e19"
+      ],
+      "fragment_ids": [
+        "txt_fa63d561733322a2"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_d4c26c2553674e19",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_e63732a16623958c9429",
+      "canonical_name": "ROOM_7_ПOH_4",
+      "display_names": [
+        "Помещение 7.ПОН.4"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_d6066cd05ce71266"
+      ],
+      "fragment_ids": [
+        "txt_53aca13c238d8785"
+      ],
+      "source_change_ids": [
+        "hlc_8b6063e980e77df1"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_d6066cd05ce71266",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_e7c048464a7167310959",
+      "canonical_name": "ROOM_3_K_10",
+      "display_names": [
+        "Помещение 3.К.10"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_e33c19de5eb1c061"
+      ],
+      "fragment_ids": [
+        "txt_a5a1f205ab9d1d44"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_e33c19de5eb1c061",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    },
+    {
+      "entity_id": "txt_ent_eb6a6065351084134eed",
+      "canonical_name": "ROOM_3_K_3",
+      "display_names": [
+        "Помещение 3.К.3"
+      ],
+      "entity_type": "ROOM",
+      "domain_subtype": "ROOM",
+      "system": null,
+      "parent_context": {},
+      "sheet_groups": [
+        "link_5bac0a5098c7",
+        "link_8b7b6a4bcb55",
+        "link_ba08ed80436a"
+      ],
+      "pages": [
+        6,
+        7
+      ],
+      "evidence_ids": [
+        "ev_9cacc5280c06678e"
+      ],
+      "fragment_ids": [
+        "txt_e5171f12e430bdb4"
+      ],
+      "source_change_ids": [
+        "hlc_a95030b3a8533021"
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_artifact_digest": "5a7a9e8d1e832c5cb48bc55c60aa2401bb045f962b39c90eca28b832efec4364",
+        "evidence_index_digest": null,
+        "producer_version": "stage5-3-text-entity-producer-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "mentions": [
+          {
+            "evidence_id": "ev_9cacc5280c06678e",
+            "field": "summary",
+            "rule": "ROOM_DESIGNATION"
+          }
+        ]
+      }
+    }
+  ],
+  "quality_report": {
+    "source_evidence": 261,
+    "total_source_candidates": 30,
+    "produced_entities": 27,
+    "dropped_noise": 2,
+    "ambiguous": 0,
+    "duplicated": 1,
+    "unresolved_context": 0
+  }
+}

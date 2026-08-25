@@ -67,6 +67,12 @@ async def test_run_persists_only_additive_artifact_and_leaves_stage5_unchanged(t
 
     assert result["summary"]["high_level_changes"] == 1
     assert paths.high_level_project_changes_path("session-1", "pair-1").exists()
+    assert paths.text_entities_path("session-1", "pair-1").exists()
+    text_entities = json.loads(
+        paths.text_entities_path("session-1", "pair-1").read_text(encoding="utf-8")
+    )
+    assert text_entities["kind"] == "stage_comparison_text_entities"
+    assert text_entities["source_artifact"]["pair_id"] == "pair-1"
     assert paths.project_change_summary_path("session-1", "pair-1").read_bytes() == before
 
 
@@ -81,6 +87,7 @@ def test_old_run_without_stage53_artifact_remains_readable(tmp_path, monkeypatch
         store, "_current_high_level_signature", lambda *_: (summary, groups, signature),
     )
     assert store.get_high_level_project_changes_state("session-1", "pair-1") is None
+    assert store.get_text_entities_state("session-1", "pair-1") is None
 
 
 def test_high_level_api_routes_do_not_reuse_stage5_response(monkeypatch):
@@ -91,9 +98,13 @@ def test_high_level_api_routes_do_not_reuse_stage5_response(monkeypatch):
 
     monkeypatch.setattr(store, "run_high_level_project_changes", run)
     monkeypatch.setattr(store, "get_high_level_project_changes_state", lambda *_: expected)
+    monkeypatch.setattr(store, "get_text_entities_state", lambda *_: None)
     app = FastAPI()
     app.include_router(router_mod.router)
     client = TestClient(app)
     base = "/api/stage-comparison/sessions/session/pairs/pair/high-level-project-changes"
     assert client.post(base).json() == expected
     assert client.get(base).json() == expected
+    assert client.get(base.rsplit("/", 1)[0] + "/text-entities").json()["status"] == (
+        "not_started"
+    )

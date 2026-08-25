@@ -425,6 +425,22 @@ async def get_high_level_project_changes(session_id: str, pair_id: str):
     return payload or {"version": 1, "pair_id": pair_id, "status": "not_started"}
 
 
+@router.get("/sessions/{session_id}/pairs/{pair_id}/text-entities")
+async def get_text_entities(session_id: str, pair_id: str):
+    """Return an existing lightweight artifact; GET never starts a producer."""
+    try:
+        payload = await run_in_threadpool(
+            store.get_text_entities_state, session_id, pair_id
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    return payload or {
+        "schema_version": "text-entities.v1",
+        "pair_id": pair_id,
+        "status": "not_started",
+    }
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/page-thumb")
 async def get_page_thumb(
     request: Request,

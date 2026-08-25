@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entity_links_v2.schema.json",
+  "title": "Artifact-to-Artifact TEXT/GRAPHIC Entity Links",
+  "description": "Production Entity Bridge envelope over TEXT_ENTITIES and GRAPH_ENTITIES. It does not synthesize changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "bridge_version",
+    "normalizer_version",
+    "source_signatures",
+    "input_artifacts",
+    "input_entity_ids",
+    "links",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema_version": {"const": "entity-bridge.v2"},
+    "kind": {"const": "text_graphic_entity_links"},
+    "bridge_version": {"const": "deterministic-entity-bridge-v1"},
+    "normalizer_version": {"const": "entity-normalizer-v1"},
+    "source_signatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_entities", "graph_entities"],
+      "properties": {
+        "text_entities": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "graph_entities": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "input_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "graphic"],
+      "properties": {
+        "text": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "schema_version"],
+          "properties": {
+            "kind": {"const": "stage_comparison_text_entities"},
+            "schema_version": {"const": "text-entities.v1"}
+          }
+        },
+        "graphic": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "schema_version"],
+          "properties": {
+            "kind": {"const": "system_graph_entities"},
+            "schema_version": {"const": "graph-entities.v1"}
+          }
+        }
+      }
+    },
+    "input_entity_ids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "graphic"],
+      "properties": {
+        "text": {"$ref": "entity_links.schema.json#/$defs/string_array"},
+        "graphic": {"$ref": "entity_links.schema.json#/$defs/string_array"}
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {"$ref": "entity_links.schema.json#/$defs/entity_link"}
+    },
+    "diagnostics": {"$ref": "entity_links.schema.json#/$defs/diagnostics"}
+  }
+}

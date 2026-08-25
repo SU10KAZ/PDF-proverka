@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graph_entities.schema.json",
+  "title": "SYSTEM_GRAPH Entities",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "adapter_version",
+    "normalizer_version",
+    "source_signature",
+    "source_graphs",
+    "entities",
+    "quality_report"
+  ],
+  "properties": {
+    "schema_version": {"const": "graph-entities.v1"},
+    "kind": {"const": "system_graph_entities"},
+    "adapter_version": {"const": "system-graph-entity-adapter-v1"},
+    "normalizer_version": {"const": "entity-normalizer-v1"},
+    "source_signature": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_graphs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source_graph"}
+    },
+    "entities": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entity"}
+    },
+    "quality_report": {"$ref": "#/$defs/quality_report"}
+  },
+  "$defs": {
+    "nullable_string": {"type": ["string", "null"]},
+    "string_array": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "graph_index",
+        "kind",
+        "schema_version",
+        "graph_digest",
+        "profile_id",
+        "profile_version",
+        "extractor_version",
+        "block_id",
+        "page_index",
+        "discipline",
+        "valid",
+        "validation_errors"
+      ],
+      "properties": {
+        "graph_index": {"type": "integer", "minimum": 0},
+        "kind": {"const": "SYSTEM_GRAPH"},
+        "schema_version": {"type": ["string", "null"]},
+        "graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "profile_id": {"$ref": "#/$defs/nullable_string"},
+        "profile_version": {"$ref": "#/$defs/nullable_string"},
+        "extractor_version": {"$ref": "#/$defs/nullable_string"},
+        "block_id": {"$ref": "#/$defs/nullable_string"},
+        "page_index": {"type": ["integer", "null"]},
+        "discipline": {"$ref": "#/$defs/nullable_string"},
+        "valid": {"type": "boolean"},
+        "validation_errors": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "block_id", "page_index", "bbox"],
+      "properties": {
+        "node_id": {"type": "string", "minLength": 1},
+        "block_id": {"$ref": "#/$defs/nullable_string"},
+        "page_index": {"type": ["integer", "null"]},
+        "bbox": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {"type": "number"}
+        }
+      }
+    },
+    "evidence_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": {"enum": ["NODE", "EDGE"]},
+        "id": {"type": "string", "minLength": 1}
+      }
+    },
+    "graph_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_graph_index",
+        "graph_digest",
+        "profile_id",
+        "block_id",
+        "page_index",
+        "discipline",
+        "source_path"
+      ],
+      "properties": {
+        "source_graph_index": {"type": "integer", "minimum": 0},
+        "graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "profile_id": {"$ref": "#/$defs/nullable_string"},
+        "block_id": {"$ref": "#/$defs/nullable_string"},
+        "page_index": {"type": ["integer", "null"]},
+        "discipline": {"$ref": "#/$defs/nullable_string"},
+        "source_path": {"$ref": "#/$defs/string_array"}
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_id",
+        "graph_node_ids",
+        "canonical_name",
+        "display_labels",
+        "entity_type",
+        "domain_subtype",
+        "functional_role",
+        "system",
+        "parent_context",
+        "section_context",
+        "graph_scope",
+        "edge_ids",
+        "source_tokens",
+        "locations",
+        "evidence_refs",
+        "confidence",
+        "provenance"
+      ],
+      "properties": {
+        "entity_id": {"type": "string", "pattern": "^gfx_ent_[0-9a-f]{20}$"},
+        "graph_node_ids": {
+          "allOf": [
+            {"$ref": "#/$defs/string_array"},
+            {"minItems": 1}
+          ]
+        },
+        "canonical_name": {"type": "string", "minLength": 1},
+        "display_labels": {
+          "allOf": [
+            {"$ref": "#/$defs/string_array"},
+            {"minItems": 1}
+          ]
+        },
+        "entity_type": {
+          "enum": ["SYSTEM", "EQUIPMENT", "FUNCTIONAL_NODE", "ROOM", "MATERIAL", "GROUP", "OTHER"]
+        },
+        "domain_subtype": {"type": "string", "minLength": 1},
+        "functional_role": {"type": "string", "minLength": 1},
+        "system": {"$ref": "#/$defs/nullable_string"},
+        "parent_context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["parent_group", "parent_node_ids"],
+          "properties": {
+            "parent_group": {"$ref": "#/$defs/nullable_string"},
+            "parent_node_ids": {"$ref": "#/$defs/string_array"}
+          }
+        },
+        "section_context": {"$ref": "#/$defs/nullable_string"},
+        "graph_scope": {"$ref": "#/$defs/graph_scope"},
+        "edge_ids": {"$ref": "#/$defs/string_array"},
+        "source_tokens": {"$ref": "#/$defs/string_array"},
+        "locations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/location"}
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/evidence_ref"}
+        },
+        "confidence": {"enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"]},
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_graph_index",
+            "graph_digest",
+            "profile_version",
+            "extractor_version",
+            "adapter_version",
+            "normalizer_version",
+            "aggregation_rule",
+            "aggregation_edge_id"
+          ],
+          "properties": {
+            "source_graph_index": {"type": "integer", "minimum": 0},
+            "graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "profile_version": {"$ref": "#/$defs/nullable_string"},
+            "extractor_version": {"$ref": "#/$defs/nullable_string"},
+            "adapter_version": {"const": "system-graph-entity-adapter-v1"},
+            "normalizer_version": {"const": "entity-normalizer-v1"},
+            "aggregation_rule": {
+              "enum": ["SINGLE_GRAPH_NODE", "TERMINATES_AT_REPRESENTATION_PAIR"]
+            },
+            "aggregation_edge_id": {"$ref": "#/$defs/nullable_string"}
+          }
+        }
+      }
+    },
+    "quality_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_source_graphs",
+        "valid_source_graphs",
+        "invalid_source_graphs",
+        "total_source_candidates",
+        "source_nodes",
+        "produced_entities",
+        "dropped_noise",
+        "ambiguous",
+        "duplicated",
+        "unresolved_context"
+      ],
+      "properties": {
+        "total_source_graphs": {"type": "integer", "minimum": 0},
+        "valid_source_graphs": {"type": "integer", "minimum": 0},
+        "invalid_source_graphs": {"type": "integer", "minimum": 0},
+        "total_source_candidates": {"type": "integer", "minimum": 0},
+        "source_nodes": {"type": "integer", "minimum": 0},
+        "produced_entities": {"type": "integer", "minimum": 0},
+        "dropped_noise": {"type": "integer", "minimum": 0},
+        "ambiguous": {"type": "integer", "minimum": 0},
+        "duplicated": {"type": "integer", "minimum": 0},
+        "unresolved_context": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

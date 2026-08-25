@@ -27,6 +27,7 @@ from .entity_normalizer import (
 
 
 SCHEMA_VERSION = "entity-bridge.v1"
+ARTIFACT_SCHEMA_VERSION = "entity-bridge.v2"
 KIND = "text_graphic_entity_links"
 BRIDGE_VERSION = "deterministic-entity-bridge-v1"
 
@@ -705,6 +706,148 @@ def build_entity_links(
     return validate_entity_links(payload)
 
 
+def _text_entities_from_artifact(artifact: dict[str, Any]) -> list[dict[str, Any]]:
+    output = []
+    for entity in artifact["entities"]:
+        parent = entity.get("parent_context") or {}
+        values = {
+            "system": entity.get("system"),
+            "parent_group": parent.get("parent_group"),
+            "section": parent.get("section"),
+            "room": parent.get("room"),
+        }
+        output.append(
+            {
+                "id": entity["entity_id"],
+                "name": entity["display_names"][0],
+                "normalized_name": entity["canonical_name"],
+                "type": entity["entity_type"],
+                "sheet": entity["sheet_groups"][0] if entity["sheet_groups"] else None,
+                "page": entity["pages"][0] if entity["pages"] else None,
+                "fragments": list(entity["fragment_ids"]),
+                "values": {key: value for key, value in values.items() if value is not None},
+            }
+        )
+    return output
+
+
+def _graphic_entities_from_artifact(artifact: dict[str, Any]) -> list[dict[str, Any]]:
+    output = []
+    for entity in artifact["entities"]:
+        parent = entity.get("parent_context") or {}
+        attributes = {
+            "functional_role": entity.get("functional_role"),
+            "system": entity.get("system"),
+            "parent_group": parent.get("parent_group"),
+            "section": entity.get("section_context"),
+        }
+        output.append(
+            {
+                "id": entity["entity_id"],
+                "node_type": entity["entity_type"],
+                "canonical_identity": entity["canonical_name"],
+                "labels": list(entity["display_labels"]),
+                "attributes": {
+                    key: value for key, value in attributes.items() if value is not None
+                },
+                "evidence": copy.deepcopy(entity["evidence_refs"]),
+                "graph_scope": copy.deepcopy(entity["graph_scope"]),
+                "conflicts": (
+                    [{"kind": "GRAPH_ENTITY_IDENTITY_UNCERTAIN"}]
+                    if entity["confidence"] == "UNKNOWN"
+                    else []
+                ),
+            }
+        )
+    return output
+
+
+def build_entity_links_from_artifacts(
+    text_entities_artifact: Any,
+    graph_entities_artifact: Any,
+    *,
+    current_stage53_artifact: Any = None,
+    current_text_evidence_index: Any = None,
+    current_system_graphs: Iterable[Any] | None = None,
+) -> dict[str, Any]:
+    """Run the production bridge from versioned entity artifacts.
+
+    Optional current sources make the stale check explicit at the point of use.
+    The low-level list API remains unchanged for G2.4.2 callers.
+    """
+    from .graph_entity_adapter import (
+        is_stale as graph_entities_are_stale,
+        validate_graph_entities,
+    )
+    from .text_entity_producer import (
+        is_stale as text_entities_are_stale,
+        validate_text_entities,
+    )
+
+    text_artifact = validate_text_entities(text_entities_artifact)
+    graph_artifact = validate_graph_entities(graph_entities_artifact)
+    if current_stage53_artifact is not None and text_entities_are_stale(
+        text_artifact, current_stage53_artifact, current_text_evidence_index
+    ):
+        raise BridgeValidationError("TEXT_ENTITIES stale for current Stage 5.3")
+    if current_system_graphs is not None and graph_entities_are_stale(
+        graph_artifact, list(current_system_graphs)
+    ):
+        raise BridgeValidationError("GRAPH_ENTITIES stale for current SYSTEM_GRAPH")
+
+    low_level = build_entity_links(
+        _text_entities_from_artifact(text_artifact),
+        _graphic_entities_from_artifact(graph_artifact),
+    )
+    payload = {
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
+        "kind": KIND,
+        "bridge_version": BRIDGE_VERSION,
+        "normalizer_version": NORMALIZER_VERSION,
+        "source_signatures": {
+            "text_entities": text_artifact["source_signature"],
+            "graph_entities": graph_artifact["source_signature"],
+        },
+        "input_artifacts": {
+            "text": {
+                "kind": text_artifact["kind"],
+                "schema_version": text_artifact["schema_version"],
+            },
+            "graphic": {
+                "kind": graph_artifact["kind"],
+                "schema_version": graph_artifact["schema_version"],
+            },
+        },
+        "input_entity_ids": low_level["input_entity_ids"],
+        "links": low_level["links"],
+        "diagnostics": low_level["diagnostics"],
+    }
+    return validate_entity_links_artifact(payload)
+
+
+def entity_links_are_stale(
+    links_artifact: Any,
+    text_entities_artifact: Any,
+    graph_entities_artifact: Any,
+) -> bool:
+    """Return true unless links target the exact current entity artifacts."""
+    if not all(
+        isinstance(value, dict)
+        for value in (links_artifact, text_entities_artifact, graph_entities_artifact)
+    ):
+        return True
+    return (
+        links_artifact.get("schema_version") != ARTIFACT_SCHEMA_VERSION
+        or links_artifact.get("bridge_version") != BRIDGE_VERSION
+        or links_artifact.get("normalizer_version") != NORMALIZER_VERSION
+        or links_artifact.get("source_signatures")
+        != {
+            "text_entities": text_entities_artifact.get("source_signature"),
+            "graph_entities": graph_entities_artifact.get("source_signature"),
+        }
+    )
+
+
 def graphic_entities_from_system_graph(graph: Any) -> list[dict[str, Any]]:
     """Adapt valid SYSTEM_GRAPH nodes without changing or interpreting the graph."""
     validation = validate_system_graph(graph)
@@ -897,11 +1040,82 @@ def validate_entity_links(payload: Any) -> dict[str, Any]:
     return payload
 
 
+def validate_entity_links_artifact(payload: Any) -> dict[str, Any]:
+    """Validate the artifact-to-artifact v2 envelope and v1 matcher payload."""
+    if not isinstance(payload, dict):
+        raise BridgeValidationError("entity links artifact: object required")
+    required = {
+        "schema_version",
+        "kind",
+        "bridge_version",
+        "normalizer_version",
+        "source_signatures",
+        "input_artifacts",
+        "input_entity_ids",
+        "links",
+        "diagnostics",
+    }
+    if set(payload) != required:
+        raise BridgeValidationError("entity links artifact: invalid envelope fields")
+    if (
+        payload["schema_version"] != ARTIFACT_SCHEMA_VERSION
+        or payload["kind"] != KIND
+        or payload["bridge_version"] != BRIDGE_VERSION
+        or payload["normalizer_version"] != NORMALIZER_VERSION
+    ):
+        raise BridgeValidationError("entity links artifact: unsupported contract")
+    signatures = payload["source_signatures"]
+    if (
+        not isinstance(signatures, dict)
+        or set(signatures) != {"text_entities", "graph_entities"}
+        or any(
+            not isinstance(value, str) or len(value) != 64
+            for value in signatures.values()
+        )
+    ):
+        raise BridgeValidationError("entity links artifact.source_signatures: invalid")
+    artifacts = payload["input_artifacts"]
+    if not isinstance(artifacts, dict) or set(artifacts) != {"text", "graphic"}:
+        raise BridgeValidationError("entity links artifact.input_artifacts: invalid")
+    expected_artifacts = {
+        "text": {
+            "kind": "stage_comparison_text_entities",
+            "schema_version": "text-entities.v1",
+        },
+        "graphic": {
+            "kind": "system_graph_entities",
+            "schema_version": "graph-entities.v1",
+        },
+    }
+    if artifacts != expected_artifacts:
+        raise BridgeValidationError("entity links artifact.input_artifacts: unsupported")
+    legacy = {
+        "schema_version": SCHEMA_VERSION,
+        "kind": KIND,
+        "bridge_version": BRIDGE_VERSION,
+        "normalizer_version": NORMALIZER_VERSION,
+        "input_entity_ids": payload["input_entity_ids"],
+        "links": payload["links"],
+        "diagnostics": payload["diagnostics"],
+    }
+    validate_entity_links(legacy)
+    try:
+        json.dumps(payload, ensure_ascii=False, allow_nan=False)
+    except (TypeError, ValueError) as error:
+        raise BridgeValidationError("entity links artifact: not JSON-compatible") from error
+    return payload
+
+
 def schema_path() -> Path:
     return Path(__file__).with_name("entity_links.schema.json")
 
 
+def artifact_schema_path() -> Path:
+    return Path(__file__).with_name("entity_links_v2.schema.json")
+
+
 __all__ = [
+    "ARTIFACT_SCHEMA_VERSION",
     "BRIDGE_VERSION",
     "BridgeValidationError",
     "CONFIDENCE_LEVELS",
@@ -909,7 +1123,11 @@ __all__ = [
     "RELATIONS",
     "SCHEMA_VERSION",
     "build_entity_links",
+    "build_entity_links_from_artifacts",
+    "entity_links_are_stale",
     "graphic_entities_from_system_graph",
+    "artifact_schema_path",
     "schema_path",
     "validate_entity_links",
+    "validate_entity_links_artifact",
 ]

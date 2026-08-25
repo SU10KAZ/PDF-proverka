@@ -24,6 +24,7 @@ from . import text_differences
 from . import text_ai_reviewer
 from . import project_change_summary
 from . import high_level_project_changes
+from .unified_entity_bridge import text_entity_producer
 from .graphic_comparison import compare_prepared_blocks, validate_ledger
 from .graphic_comparison.policy import EXPERIMENTALLY_CALIBRATED_V1
 from backend.app.services.common.blocks_json import load_blocks_json
@@ -380,6 +381,7 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "text_final_comparison": get_text_final_comparison_state(session_id, pair_id),
         "project_change_summary": get_project_change_summary_state(session_id, pair_id),
         "high_level_project_changes": get_high_level_project_changes_state(session_id, pair_id),
+        "text_entities": get_text_entities_state(session_id, pair_id),
         "graphic_change_ledger": get_graphic_change_ledger_state(session_id, pair_id),
     }
 
@@ -875,6 +877,23 @@ def get_high_level_project_changes_state(session_id: str, pair_id: str) -> dict 
     return high_level_project_changes.public_view(payload, stale=stale)
 
 
+def get_text_entities_state(session_id: str, pair_id: str) -> dict | None:
+    """Read the additive TEXT_ENTITIES artifact without triggering extraction."""
+    pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+    if pair is None:
+        raise KeyError("pair_not_found")
+    payload = _read_json(paths_mod.text_entities_path(session_id, pair_id))
+    source = _read_json(paths_mod.high_level_project_changes_path(session_id, pair_id))
+    if not isinstance(payload, dict):
+        return None
+    try:
+        text_entity_producer.validate_text_entities(payload)
+    except text_entity_producer.TextEntityValidationError:
+        return None
+    stale = text_entity_producer.is_stale(payload, source)
+    return {**payload, "stale": stale}
+
+
 def _apply_sheet_link_repair(
     session_id: str, pair_id: str, source_groups: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
@@ -1144,6 +1163,25 @@ async def run_high_level_project_changes(
             and existing.get("source_signature") == signature
             and existing.get("status") == "completed"
         ):
+            entity_artifact = text_entity_producer.build_text_entities(existing)
+            existing_entities = _read_json(
+                paths_mod.text_entities_path(session_id, pair_id)
+            )
+            try:
+                entities_valid = (
+                    text_entity_producer.validate_text_entities(existing_entities)
+                    is existing_entities
+                )
+            except text_entity_producer.TextEntityValidationError:
+                entities_valid = False
+            if (
+                not entities_valid
+                or text_entity_producer.is_stale(existing_entities, existing)
+            ):
+                _atomic_write_json(
+                    paths_mod.text_entities_path(session_id, pair_id),
+                    entity_artifact,
+                )
             return high_level_project_changes.public_view(existing, stale=False) or {}
 
     decisions, ai_required = high_level_project_changes.deterministic_decisions(semantic_groups)
@@ -1223,6 +1261,7 @@ async def run_high_level_project_changes(
         decisions=decisions, usage=usage, model_calls=model_calls,
         fresh_model_calls=fresh_model_calls,
     )
+    entity_artifact = text_entity_producer.build_text_entities(artifact)
     with _lock:
         _latest_summary, _latest_groups, latest_signature = _current_high_level_signature(
             session_id, pair_id
@@ -1231,6 +1270,9 @@ async def run_high_level_project_changes(
             raise ValueError("project_change_summary_changed_during_high_level_synthesis")
         _atomic_write_json(
             paths_mod.high_level_project_changes_path(session_id, pair_id), artifact
+        )
+        _atomic_write_json(
+            paths_mod.text_entities_path(session_id, pair_id), entity_artifact
         )
     return high_level_project_changes.public_view(artifact, stale=False) or {}
 
@@ -2342,6 +2384,7 @@ __all__ = [
     "get_text_final_comparison_state",
     "get_project_change_summary_state",
     "get_high_level_project_changes_state",
+    "get_text_entities_state",
     "run_project_change_summary",
     "run_high_level_project_changes",
     "get_graphic_change_ledger_state",

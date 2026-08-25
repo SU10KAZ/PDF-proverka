@@ -1,0 +1,693 @@
+{
+  "schema_version": "entity-bridge.v2",
+  "kind": "text_graphic_entity_links",
+  "bridge_version": "deterministic-entity-bridge-v1",
+  "normalizer_version": "entity-normalizer-v1",
+  "source_signatures": {
+    "text_entities": "6f0dc1855aa94ce9c94cee4085be9bbe13ff6c5abc76bfcf7db8c2370ec9988e",
+    "graph_entities": "9c5756fdb95ca39fcbfb41463f259cdf2e0c855b24d2712e2340417ff9b827fe"
+  },
+  "input_artifacts": {
+    "text": {
+      "kind": "stage_comparison_text_entities",
+      "schema_version": "text-entities.v1"
+    },
+    "graphic": {
+      "kind": "system_graph_entities",
+      "schema_version": "graph-entities.v1"
+    }
+  },
+  "input_entity_ids": {
+    "text": [
+      "txt_ent_018fe788a0d2c9050ba1",
+      "txt_ent_2084aeff6feccf5e29c5",
+      "txt_ent_2c516deef70a87a63a2f",
+      "txt_ent_503cca149105a4ce88d1",
+      "txt_ent_701536055e00ac4bf992",
+      "txt_ent_77c26be9e51798a0ed1c",
+      "txt_ent_7922a7bbe18f285a94d7",
+      "txt_ent_835046700b4ba03e4431",
+      "txt_ent_8711b577ec2dd2cb8d14",
+      "txt_ent_980e1f1d8eafad772bbd",
+      "txt_ent_c32229d4652a8f65854a",
+      "txt_ent_c5349147debf95f6c089",
+      "txt_ent_c7b0622c86b2c013c70e",
+      "txt_ent_cb136bf0edcb12e338f0",
+      "txt_ent_e5ba3ad5bf37f2027e98",
+      "txt_ent_e96e110724d8363d454a",
+      "txt_ent_f08de3c083058ecfddc9",
+      "txt_ent_f4fa6c385930ea5b470c",
+      "txt_ent_fe34c81c526f51fd6d5c"
+    ],
+    "graphic": [
+      "gfx_ent_03deb49c564cda5875a3",
+      "gfx_ent_079edf8e1479cdc0d8f2",
+      "gfx_ent_0a50a0aefafd606dc3cd",
+      "gfx_ent_0b62574cdb3c13549b80",
+      "gfx_ent_15873897d86c788b53f9",
+      "gfx_ent_1697928e0001516ed846",
+      "gfx_ent_1a536859a7aff05e9f14",
+      "gfx_ent_1e424e3b70341b875f11",
+      "gfx_ent_2536ec44c65c9cab8eb7",
+      "gfx_ent_25578eedbdd1c4988363",
+      "gfx_ent_27a1568ee39b21b406f7",
+      "gfx_ent_28001950c15887e3b61f",
+      "gfx_ent_283f18445a83f82cfcb4",
+      "gfx_ent_2d4f0cc549f85ad919fb",
+      "gfx_ent_2f84f9cc0b5a72ca5c61",
+      "gfx_ent_30d21564ab209144210c",
+      "gfx_ent_433a79afe6f94fd6a954",
+      "gfx_ent_44c4e36fb78f19ce5ca8",
+      "gfx_ent_44ff5529d29b717643e6",
+      "gfx_ent_4b2a20dfd794f8ec6a6f",
+      "gfx_ent_5549153bb51e61d487cd",
+      "gfx_ent_67c28bc8a1aacbcad2d8",
+      "gfx_ent_6ae466338ee4ea886d52",
+      "gfx_ent_7040e57ade8e0fa6bcde",
+      "gfx_ent_7149c5ba9e189dc29cd6",
+      "gfx_ent_723418ac869f96956320",
+      "gfx_ent_7241b4d84e8b127c935f",
+      "gfx_ent_73218f0b2eca20c1b97a",
+      "gfx_ent_7f30daccfbc4d7d36458",
+      "gfx_ent_85d30acdec131a081da7",
+      "gfx_ent_88e867480332bc75b0eb",
+      "gfx_ent_89a805db2e85fb6ca60c",
+      "gfx_ent_917a159671abbc30c21e",
+      "gfx_ent_ac6dc46a94b6e592950b",
+      "gfx_ent_b0e1299edf5e66f241e3",
+      "gfx_ent_b63e4279e2a477949763",
+      "gfx_ent_c129edd907fe934664f5",
+      "gfx_ent_c1efd478548fbdfeb756",
+      "gfx_ent_c4b588bfb1d0e43b0278",
+      "gfx_ent_cd3a30be6e10e4a33dc1",
+      "gfx_ent_ce0dde709a73be383fe3",
+      "gfx_ent_db0046a476df8165d8b6",
+      "gfx_ent_dbdc31decbb8bcaf53f8",
+      "gfx_ent_dcdb025a001c0c478e9e",
+      "gfx_ent_e656e9dc0d721f7ec0bd",
+      "gfx_ent_e7d15091b83d4ae63195",
+      "gfx_ent_e825fff861ea77e90042",
+      "gfx_ent_f479bce340559bc9e1e9",
+      "gfx_ent_f5ea6bc9dfc79b19bb5f",
+      "gfx_ent_fb659fdfadc67908a73c",
+      "gfx_ent_fcb7a2a9356b4c7aaf5c",
+      "gfx_ent_fd14867133824b45f22a"
+    ]
+  },
+  "links": [
+    {
+      "entity_link_id": "eln_830cae3b3754e36356f5",
+      "text_entity_id": "txt_ent_77c26be9e51798a0ed1c",
+      "graphic_entity_id": "gfx_ent_ce0dde709a73be383fe3",
+      "relation": "SAME_ENTITY",
+      "confidence": "HIGH",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-1",
+            "VRU_1"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-1",
+              "canonical": "VRU_1"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_1",
+              "canonical": "VRU_1"
+            }
+          ],
+          "context": {}
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_22161d17ec03f43cdcc3",
+      "text_entity_id": "txt_ent_835046700b4ba03e4431",
+      "graphic_entity_id": "gfx_ent_2536ec44c65c9cab8eb7",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-4",
+            "VRU_4"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-4",
+              "canonical": "VRU_4"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_4",
+              "canonical": "VRU_4"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_835046700b4ba03e4431",
+            "gfx_ent_2536ec44c65c9cab8eb7",
+            "gfx_ent_f479bce340559bc9e1e9"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_835046700b4ba03e4431"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_2536ec44c65c9cab8eb7",
+              "gfx_ent_f479bce340559bc9e1e9"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_8ff3d80f81c0d01b4811",
+      "text_entity_id": "txt_ent_835046700b4ba03e4431",
+      "graphic_entity_id": "gfx_ent_f479bce340559bc9e1e9",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-4",
+            "VRU_4"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-4",
+              "canonical": "VRU_4"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_4",
+              "canonical": "VRU_4"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_835046700b4ba03e4431",
+            "gfx_ent_2536ec44c65c9cab8eb7",
+            "gfx_ent_f479bce340559bc9e1e9"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_835046700b4ba03e4431"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_2536ec44c65c9cab8eb7",
+              "gfx_ent_f479bce340559bc9e1e9"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_b05e83cb5316440db3e4",
+      "text_entity_id": "txt_ent_e96e110724d8363d454a",
+      "graphic_entity_id": "gfx_ent_27a1568ee39b21b406f7",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-2",
+            "VRU_2"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-2",
+              "canonical": "VRU_2"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_2",
+              "canonical": "VRU_2"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_e96e110724d8363d454a",
+            "gfx_ent_27a1568ee39b21b406f7",
+            "gfx_ent_723418ac869f96956320"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_e96e110724d8363d454a"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_27a1568ee39b21b406f7",
+              "gfx_ent_723418ac869f96956320"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_63b36990adc2baffb4fe",
+      "text_entity_id": "txt_ent_e96e110724d8363d454a",
+      "graphic_entity_id": "gfx_ent_723418ac869f96956320",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-2",
+            "VRU_2"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-2",
+              "canonical": "VRU_2"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_2",
+              "canonical": "VRU_2"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_e96e110724d8363d454a",
+            "gfx_ent_27a1568ee39b21b406f7",
+            "gfx_ent_723418ac869f96956320"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_e96e110724d8363d454a"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_27a1568ee39b21b406f7",
+              "gfx_ent_723418ac869f96956320"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_2b2b2f19224b98af0721",
+      "text_entity_id": "txt_ent_f08de3c083058ecfddc9",
+      "graphic_entity_id": "gfx_ent_1a536859a7aff05e9f14",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-3",
+            "VRU_3"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-3",
+              "canonical": "VRU_3"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_3",
+              "canonical": "VRU_3"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_f08de3c083058ecfddc9",
+            "gfx_ent_1a536859a7aff05e9f14",
+            "gfx_ent_28001950c15887e3b61f",
+            "gfx_ent_7f30daccfbc4d7d36458"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_f08de3c083058ecfddc9"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_1a536859a7aff05e9f14",
+              "gfx_ent_28001950c15887e3b61f",
+              "gfx_ent_7f30daccfbc4d7d36458"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_0cba9586087ea20e185d",
+      "text_entity_id": "txt_ent_f08de3c083058ecfddc9",
+      "graphic_entity_id": "gfx_ent_28001950c15887e3b61f",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-3",
+            "VRU_3"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-3",
+              "canonical": "VRU_3"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_3",
+              "canonical": "VRU_3"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_f08de3c083058ecfddc9",
+            "gfx_ent_1a536859a7aff05e9f14",
+            "gfx_ent_28001950c15887e3b61f",
+            "gfx_ent_7f30daccfbc4d7d36458"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_f08de3c083058ecfddc9"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_1a536859a7aff05e9f14",
+              "gfx_ent_28001950c15887e3b61f",
+              "gfx_ent_7f30daccfbc4d7d36458"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_d9c408a3b79fa2252907",
+      "text_entity_id": "txt_ent_f08de3c083058ecfddc9",
+      "graphic_entity_id": "gfx_ent_7f30daccfbc4d7d36458",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-3",
+            "VRU_3"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-3",
+              "canonical": "VRU_3"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_3",
+              "canonical": "VRU_3"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_f08de3c083058ecfddc9",
+            "gfx_ent_1a536859a7aff05e9f14",
+            "gfx_ent_28001950c15887e3b61f",
+            "gfx_ent_7f30daccfbc4d7d36458"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_f08de3c083058ecfddc9"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_1a536859a7aff05e9f14",
+              "gfx_ent_28001950c15887e3b61f",
+              "gfx_ent_7f30daccfbc4d7d36458"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_edc7c4ab3e9e61ffde44",
+      "text_entity_id": "txt_ent_f4fa6c385930ea5b470c",
+      "graphic_entity_id": "gfx_ent_283f18445a83f82cfcb4",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-A",
+            "VRU_A"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-A",
+              "canonical": "VRU_A"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_A",
+              "canonical": "VRU_A"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_f4fa6c385930ea5b470c",
+            "gfx_ent_283f18445a83f82cfcb4",
+            "gfx_ent_dbdc31decbb8bcaf53f8"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_f4fa6c385930ea5b470c"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_283f18445a83f82cfcb4",
+              "gfx_ent_dbdc31decbb8bcaf53f8"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_1eb2316e5fd15562a088",
+      "text_entity_id": "txt_ent_f4fa6c385930ea5b470c",
+      "graphic_entity_id": "gfx_ent_dbdc31decbb8bcaf53f8",
+      "relation": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-A",
+            "VRU_A"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-A",
+              "canonical": "VRU_A"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU_A",
+              "canonical": "VRU_A"
+            }
+          ],
+          "context": {}
+        },
+        {
+          "rule": "AMBIGUOUS_CARDINALITY",
+          "level": 0,
+          "outcome": "AMBIGUITY",
+          "tokens": [
+            "txt_ent_f4fa6c385930ea5b470c",
+            "gfx_ent_283f18445a83f82cfcb4",
+            "gfx_ent_dbdc31decbb8bcaf53f8"
+          ],
+          "normalization": [],
+          "context": {
+            "direction": "ONE_TEXT_TO_MULTIPLE_GRAPHIC",
+            "text_entity_ids": [
+              "txt_ent_f4fa6c385930ea5b470c"
+            ],
+            "graphic_entity_ids": [
+              "gfx_ent_283f18445a83f82cfcb4",
+              "gfx_ent_dbdc31decbb8bcaf53f8"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "diagnostics": {
+    "text_entity_count": 19,
+    "graphic_entity_count": 52,
+    "candidate_link_count": 10,
+    "relation_counts": {
+      "SAME_ENTITY": 1,
+      "POSSIBLE_ENTITY": 0,
+      "UNKNOWN": 9
+    },
+    "confidence_counts": {
+      "HIGH": 1,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "UNKNOWN": 9
+    },
+    "unresolved_text_entity_ids": [
+      "txt_ent_018fe788a0d2c9050ba1",
+      "txt_ent_2084aeff6feccf5e29c5",
+      "txt_ent_2c516deef70a87a63a2f",
+      "txt_ent_503cca149105a4ce88d1",
+      "txt_ent_701536055e00ac4bf992",
+      "txt_ent_7922a7bbe18f285a94d7",
+      "txt_ent_835046700b4ba03e4431",
+      "txt_ent_8711b577ec2dd2cb8d14",
+      "txt_ent_980e1f1d8eafad772bbd",
+      "txt_ent_c32229d4652a8f65854a",
+      "txt_ent_c5349147debf95f6c089",
+      "txt_ent_c7b0622c86b2c013c70e",
+      "txt_ent_cb136bf0edcb12e338f0",
+      "txt_ent_e5ba3ad5bf37f2027e98",
+      "txt_ent_e96e110724d8363d454a",
+      "txt_ent_f08de3c083058ecfddc9",
+      "txt_ent_f4fa6c385930ea5b470c",
+      "txt_ent_fe34c81c526f51fd6d5c"
+    ],
+    "unresolved_graphic_entity_ids": [
+      "gfx_ent_03deb49c564cda5875a3",
+      "gfx_ent_079edf8e1479cdc0d8f2",
+      "gfx_ent_0a50a0aefafd606dc3cd",
+      "gfx_ent_0b62574cdb3c13549b80",
+      "gfx_ent_15873897d86c788b53f9",
+      "gfx_ent_1697928e0001516ed846",
+      "gfx_ent_1a536859a7aff05e9f14",
+      "gfx_ent_1e424e3b70341b875f11",
+      "gfx_ent_2536ec44c65c9cab8eb7",
+      "gfx_ent_25578eedbdd1c4988363",
+      "gfx_ent_27a1568ee39b21b406f7",
+      "gfx_ent_28001950c15887e3b61f",
+      "gfx_ent_283f18445a83f82cfcb4",
+      "gfx_ent_2d4f0cc549f85ad919fb",
+      "gfx_ent_2f84f9cc0b5a72ca5c61",
+      "gfx_ent_30d21564ab209144210c",
+      "gfx_ent_433a79afe6f94fd6a954",
+      "gfx_ent_44c4e36fb78f19ce5ca8",
+      "gfx_ent_44ff5529d29b717643e6",
+      "gfx_ent_4b2a20dfd794f8ec6a6f",
+      "gfx_ent_5549153bb51e61d487cd",
+      "gfx_ent_67c28bc8a1aacbcad2d8",
+      "gfx_ent_6ae466338ee4ea886d52",
+      "gfx_ent_7040e57ade8e0fa6bcde",
+      "gfx_ent_7149c5ba9e189dc29cd6",
+      "gfx_ent_723418ac869f96956320",
+      "gfx_ent_7241b4d84e8b127c935f",
+      "gfx_ent_73218f0b2eca20c1b97a",
+      "gfx_ent_7f30daccfbc4d7d36458",
+      "gfx_ent_85d30acdec131a081da7",
+      "gfx_ent_88e867480332bc75b0eb",
+      "gfx_ent_89a805db2e85fb6ca60c",
+      "gfx_ent_917a159671abbc30c21e",
+      "gfx_ent_ac6dc46a94b6e592950b",
+      "gfx_ent_b0e1299edf5e66f241e3",
+      "gfx_ent_b63e4279e2a477949763",
+      "gfx_ent_c129edd907fe934664f5",
+      "gfx_ent_c1efd478548fbdfeb756",
+      "gfx_ent_c4b588bfb1d0e43b0278",
+      "gfx_ent_cd3a30be6e10e4a33dc1",
+      "gfx_ent_db0046a476df8165d8b6",
+      "gfx_ent_dbdc31decbb8bcaf53f8",
+      "gfx_ent_dcdb025a001c0c478e9e",
+      "gfx_ent_e656e9dc0d721f7ec0bd",
+      "gfx_ent_e7d15091b83d4ae63195",
+      "gfx_ent_e825fff861ea77e90042",
+      "gfx_ent_f479bce340559bc9e1e9",
+      "gfx_ent_f5ea6bc9dfc79b19bb5f",
+      "gfx_ent_fb659fdfadc67908a73c",
+      "gfx_ent_fcb7a2a9356b4c7aaf5c",
+      "gfx_ent_fd14867133824b45f22a"
+    ]
+  }
+}

@@ -1,0 +1,5572 @@
+{
+  "schema_version": "graph-entities.v1",
+  "kind": "system_graph_entities",
+  "adapter_version": "system-graph-entity-adapter-v1",
+  "normalizer_version": "entity-normalizer-v1",
+  "source_signature": "9c5756fdb95ca39fcbfb41463f259cdf2e0c855b24d2712e2340417ff9b827fe",
+  "source_graphs": [
+    {
+      "graph_index": 0,
+      "kind": "SYSTEM_GRAPH",
+      "schema_version": "system-graph.v1",
+      "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+      "profile_id": "dense_sectioned_board",
+      "profile_version": "dense-sectioned-board-v1",
+      "extractor_version": "vector-evidence-v1",
+      "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+      "page_index": 0,
+      "discipline": "ЭОМ",
+      "valid": true,
+      "validation_errors": []
+    }
+  ],
+  "entities": [
+    {
+      "entity_id": "gfx_ent_03deb49c564cda5875a3",
+      "graph_node_ids": [
+        "SERVICE_GROUP:ОПН@1043"
+      ],
+      "canonical_name": "ОПН",
+      "display_labels": [
+        "ОПН"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1043->BUS1"
+      ],
+      "source_tokens": [
+        "ОПН",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "SERVICE_GROUP:ОПН@1043",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1035.6,
+            1162.848,
+            1049.653,
+            1171.62
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SERVICE_GROUP:ОПН@1043"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1043->BUS1"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_079edf8e1479cdc0d8f2",
+      "graph_node_ids": [
+        "SOURCE1:PATH1"
+      ],
+      "canonical_name": "SOURCE_PATH_ELEMENT_BUS_1",
+      "display_labels": [
+        "Шинопровод"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "SOURCE1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "SOURCE1"
+        ]
+      },
+      "edge_ids": [
+        "FEEDS:SOURCE1->SOURCE1:PATH1",
+        "FEEDS:SOURCE1:PATH1->INPUT1"
+      ],
+      "source_tokens": [
+        "Шинопровод",
+        "Т1",
+        "QF1",
+        "2500А"
+      ],
+      "locations": [
+        {
+          "node_id": "SOURCE1:PATH1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1116.688,
+            1302.919,
+            1125.46,
+            1345.64
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SOURCE1:PATH1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE1->SOURCE1:PATH1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE1:PATH1->INPUT1"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_0a50a0aefafd606dc3cd",
+      "graph_node_ids": [
+        "OUT:2QF12@1952"
+      ],
+      "canonical_name": "ДР_2",
+      "display_labels": [
+        "ДР2-ХМ2",
+        "2QF12",
+        "ДР2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "OUTGOING_DEVICE",
+      "functional_role": "OUTGOING_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF12@1952->BUS2",
+        "FEEDS:BUS2->OUT:2QF12@1952",
+        "TERMINATES_AT:OUT:2QF12@1952->LOAD:2QF12@1952"
+      ],
+      "source_tokens": [
+        "2QF12",
+        "ДР2-ХМ2",
+        "ДР2",
+        "2ГРЩ-ДР2",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "OUT:2QF12@1952",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1941.84,
+            860.568,
+            1961.736,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF12@1952"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF12@1952->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF12@1952"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF12@1952->LOAD:2QF12@1952"
+        }
+      ],
+      "confidence": "UNKNOWN",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_0b62574cdb3c13549b80",
+      "graph_node_ids": [
+        "LOAD:1QF1@460"
+      ],
+      "canonical_name": "ДР_1",
+      "display_labels": [
+        "ДР1-ХМ1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD",
+      "functional_role": "LOAD",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "TERMINATES_AT:OUT:1QF1@460->LOAD:1QF1@460"
+      ],
+      "source_tokens": [
+        "1QF1",
+        "ДР1-ХМ1",
+        "ДР1",
+        "1ГРЩ-ДР1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF1@460",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            453.0,
+            860.568,
+            467.624,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF1@460"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF1@460->LOAD:1QF1@460"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_15873897d86c788b53f9",
+      "graph_node_ids": [
+        "SERVICE_GROUP:BUS2"
+      ],
+      "canonical_name": "SERVICE_GROUP_BUS_2",
+      "display_labels": [
+        "SERVICE_GROUP:BUS2"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS2->BUS2"
+      ],
+      "source_tokens": [
+        "ОПН",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "SERVICE_GROUP:BUS2",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1359.0,
+            1162.848,
+            1373.053,
+            1171.62
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SERVICE_GROUP:BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS2->BUS2"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_1697928e0001516ed846",
+      "graph_node_ids": [
+        "LOAD:2QF13@1999"
+      ],
+      "canonical_name": "ЭБ_ГВС",
+      "display_labels": [
+        "ЯСН"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD",
+      "functional_role": "LOAD",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "TERMINATES_AT:OUT:2QF13@1999->LOAD:2QF13@1999"
+      ],
+      "source_tokens": [
+        "2QF13",
+        "ЯСН",
+        "ЭБ-ГВС",
+        "2ГРЩ-ЭБ.ГВС"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF13@1999",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1989.12,
+            860.568,
+            2009.016,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF13@1999"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF13@1999->LOAD:2QF13@1999"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_1a536859a7aff05e9f14",
+      "graph_node_ids": [
+        "LOAD:2QF2@1358",
+        "OUT:2QF2@1358"
+      ],
+      "canonical_name": "VRU_3",
+      "display_labels": [
+        "2ГРЩ-ВРУ3",
+        "2QF2",
+        "ВРУ3"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF2@1358->BUS2",
+        "FEEDS:BUS2->OUT:2QF2@1358",
+        "TERMINATES_AT:OUT:2QF2@1358->LOAD:2QF2@1358"
+      ],
+      "source_tokens": [
+        "2QF2",
+        "2ГРЩ-ВРУ3",
+        "ВРУ3",
+        "2QF1",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF2@1358",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1349.4,
+            860.568,
+            1366.375,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF2@1358",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1349.4,
+            860.568,
+            1366.375,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF2@1358"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF2@1358"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF2@1358->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF2@1358"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF2@1358->LOAD:2QF2@1358"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF2@1358->LOAD:2QF2@1358"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_1e424e3b70341b875f11",
+      "graph_node_ids": [
+        "LOAD:2QF9@1781",
+        "OUT:2QF9@1781"
+      ],
+      "canonical_name": "ХП",
+      "display_labels": [
+        "2ГРЩ-ШУ.ХП",
+        "2QF9",
+        "ХП"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF9@1781->BUS2",
+        "FEEDS:BUS2->OUT:2QF9@1781",
+        "TERMINATES_AT:OUT:2QF9@1781->LOAD:2QF9@1781"
+      ],
+      "source_tokens": [
+        "2QF9",
+        "2ГРЩ-ШУ.ХП",
+        "ХП",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF9@1781",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1772.64,
+            860.568,
+            1789.615,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF9@1781",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1772.64,
+            860.568,
+            1789.615,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF9@1781"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF9@1781"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF9@1781->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF9@1781"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF9@1781->LOAD:2QF9@1781"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF9@1781->LOAD:2QF9@1781"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_2536ec44c65c9cab8eb7",
+      "graph_node_ids": [
+        "LOAD:2QF1@1299",
+        "OUT:2QF1@1299"
+      ],
+      "canonical_name": "VRU_4",
+      "display_labels": [
+        "2ГРЩ-ВРУ4",
+        "2QF1",
+        "ВРУ4"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF1@1299->BUS2",
+        "FEEDS:BUS2->OUT:2QF1@1299",
+        "TERMINATES_AT:OUT:2QF1@1299->LOAD:2QF1@1299"
+      ],
+      "source_tokens": [
+        "2QF1",
+        "2ГРЩ-ВРУ4",
+        "ВРУ4",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF1@1299",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1291.56,
+            860.568,
+            1307.359,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF1@1299",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1291.56,
+            860.568,
+            1307.359,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF1@1299"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF1@1299"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF1@1299->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF1@1299"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF1@1299->LOAD:2QF1@1299"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF1@1299->LOAD:2QF1@1299"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_25578eedbdd1c4988363",
+      "graph_node_ids": [
+        "METERING_GROUP:BUS2"
+      ],
+      "canonical_name": "METERING_GROUP_BUS_2",
+      "display_labels": [
+        "METERING_GROUP:BUS2"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "METERING_GROUP",
+      "functional_role": "METERING_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "MEASURES:METERING_GROUP:BUS2->BUS2"
+      ],
+      "source_tokens": [
+        "Мультиметр",
+        "PW2",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "METERING_GROUP:BUS2",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1304.88,
+            1019.928,
+            1349.961,
+            1047.66
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "METERING_GROUP:BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "MEASURES:METERING_GROUP:BUS2->BUS2"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_27a1568ee39b21b406f7",
+      "graph_node_ids": [
+        "LOAD:2QF4@1492",
+        "OUT:2QF4@1492"
+      ],
+      "canonical_name": "VRU_2",
+      "display_labels": [
+        "2ГРЩ-ВРУ2",
+        "2QF4",
+        "ВРУ2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF4@1492->BUS2",
+        "FEEDS:BUS2->OUT:2QF4@1492",
+        "TERMINATES_AT:OUT:2QF4@1492->LOAD:2QF4@1492"
+      ],
+      "source_tokens": [
+        "2QF4",
+        "2ГРЩ-ВРУ2",
+        "ВРУ2",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF4@1492",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1483.08,
+            860.568,
+            1500.642,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF4@1492",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1483.08,
+            860.568,
+            1500.642,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF4@1492"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF4@1492"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF4@1492->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF4@1492"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF4@1492->LOAD:2QF4@1492"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF4@1492->LOAD:2QF4@1492"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_28001950c15887e3b61f",
+      "graph_node_ids": [
+        "LOAD:2QF3@1434",
+        "OUT:2QF3@1434"
+      ],
+      "canonical_name": "VRU_3",
+      "display_labels": [
+        "2ГРЩ-ВРУ3",
+        "2QF3",
+        "ВРУ3"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF3@1434->BUS2",
+        "FEEDS:BUS2->OUT:2QF3@1434",
+        "TERMINATES_AT:OUT:2QF3@1434->LOAD:2QF3@1434"
+      ],
+      "source_tokens": [
+        "2QF3",
+        "2ГРЩ-ВРУ3",
+        "ВРУ3",
+        "2QF1",
+        "2QF2",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF3@1434",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1425.24,
+            860.568,
+            1442.215,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF3@1434",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1425.24,
+            860.568,
+            1442.215,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF3@1434"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF3@1434"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF3@1434->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF3@1434"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF3@1434->LOAD:2QF3@1434"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF3@1434->LOAD:2QF3@1434"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_283f18445a83f82cfcb4",
+      "graph_node_ids": [
+        "LOAD:2QF5@1550",
+        "OUT:2QF5@1550"
+      ],
+      "canonical_name": "VRU_A",
+      "display_labels": [
+        "2ГРЩ-ВРУа",
+        "2QF5",
+        "ВРУА"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF5@1550->BUS2",
+        "FEEDS:BUS2->OUT:2QF5@1550",
+        "TERMINATES_AT:OUT:2QF5@1550->LOAD:2QF5@1550"
+      ],
+      "source_tokens": [
+        "2QF5",
+        "2ГРЩ-ВРУа",
+        "ВРУА",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF5@1550",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1541.04,
+            860.568,
+            1558.015,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF5@1550",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1541.04,
+            860.568,
+            1558.015,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF5@1550"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF5@1550"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF5@1550->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF5@1550"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF5@1550->LOAD:2QF5@1550"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF5@1550->LOAD:2QF5@1550"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_2d4f0cc549f85ad919fb",
+      "graph_node_ids": [
+        "COMPENSATION_GROUP:BUS2"
+      ],
+      "canonical_name": "COMPENSATION_GROUP_BUS_2",
+      "display_labels": [
+        "COMPENSATION_GROUP:BUS2"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "COMPENSATION_GROUP",
+      "functional_role": "COMPENSATION_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS2->BUS2"
+      ],
+      "source_tokens": [
+        "АУКРМ-2",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "COMPENSATION_GROUP:BUS2",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1739.967,
+            1052.568,
+            1772.758,
+            1061.341
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "COMPENSATION_GROUP:BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS2->BUS2"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_2f84f9cc0b5a72ca5c61",
+      "graph_node_ids": [
+        "LOAD:1QF13@1206"
+      ],
+      "canonical_name": "ШНО",
+      "display_labels": [
+        "ШУ-ХВС"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD",
+      "functional_role": "LOAD",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "TERMINATES_AT:OUT:1QF13@1206->LOAD:1QF13@1206"
+      ],
+      "source_tokens": [
+        "1QF13",
+        "ШУ-ХВС",
+        "ШНО",
+        "1ГРЩ-ШНO"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF13@1206",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1197.12,
+            860.568,
+            1215.84,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF13@1206"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF13@1206->LOAD:1QF13@1206"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_30d21564ab209144210c",
+      "graph_node_ids": [
+        "BUS1"
+      ],
+      "canonical_name": "SECTION_1",
+      "display_labels": [
+        "РП1"
+      ],
+      "entity_type": "SYSTEM",
+      "domain_subtype": "BUS_SECTION",
+      "functional_role": "BUS_SECTION",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": null,
+        "parent_node_ids": []
+      },
+      "section_context": null,
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS1->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF10@1049->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF11@1106->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF12@1164->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF13@1206->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF1@460->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF2@513->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF3@558->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF4@608->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF5@692->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF6@764->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF7@845->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF8@909->BUS1",
+        "BELONGS_TO_SECTION:OUT:1QF9@979->BUS1",
+        "FEEDS:BUS1->OUT:1QF10@1049",
+        "FEEDS:BUS1->OUT:1QF11@1106",
+        "FEEDS:BUS1->OUT:1QF12@1164",
+        "FEEDS:BUS1->OUT:1QF13@1206",
+        "FEEDS:BUS1->OUT:1QF1@460",
+        "FEEDS:BUS1->OUT:1QF2@513",
+        "FEEDS:BUS1->OUT:1QF3@558",
+        "FEEDS:BUS1->OUT:1QF4@608",
+        "FEEDS:BUS1->OUT:1QF5@692",
+        "FEEDS:BUS1->OUT:1QF6@764",
+        "FEEDS:BUS1->OUT:1QF7@845",
+        "FEEDS:BUS1->OUT:1QF8@909",
+        "FEEDS:BUS1->OUT:1QF9@979",
+        "FEEDS:INPUT1->BUS1",
+        "MEASURES:METERING_GROUP:BUS1->BUS1",
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS1->BUS1",
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU1@1091->BUS1",
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1043->BUS1",
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS1"
+      ],
+      "source_tokens": [
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1",
+        "QF1",
+        "2500А",
+        "QS1",
+        "ОПН",
+        "FU1",
+        "ДР1-ХМ1",
+        "ДР1",
+        "1ГРЩ-ДР1",
+        "ХМ1",
+        "1ГРЩ-ХМ1",
+        "ВРУ4",
+        "1ГРЩ-ВРУ4",
+        "ВРУ3",
+        "1ГРЩ-ВРУ3",
+        "ВРУ1",
+        "1ГРЩ-ВРУ1",
+        "ВРУ2",
+        "1ГРЩ-ВРУ2",
+        "ВРУа",
+        "ВРУА",
+        "1ГРЩ-ВРУа",
+        "ВРУ-ИТП",
+        "ИТП",
+        "1ГРЩ-ВРУ.ИТП",
+        "ШУ-ХЦ",
+        "ХЦ",
+        "1ГРЩ-ШУХЦ-",
+        "ШУ-АПТ",
+        "АПТ",
+        "1ГРЩ-ЩУ.АПТ",
+        "1ГРЩ-ШУ.ХП",
+        "ХП",
+        "ШУ-ХВС",
+        "ШНО",
+        "1ГРЩ-ШНO",
+        "Wh1",
+        "1ТТ1...1ТТ3",
+        "1ТТ4...1ТТ6",
+        "1ТТ7...1ТТ9",
+        "2ТТ1...2ТТ3",
+        "Wh2",
+        "2ТТ4...2ТТ6",
+        "2ТТ7...2ТТ9",
+        "Мультиметр",
+        "PW1",
+        "АУКРМ-1",
+        "FU2"
+      ],
+      "locations": [
+        {
+          "node_id": "BUS1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            315.0,
+            817.16,
+            2065.56,
+            1362.8
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS1->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF10@1049->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF11@1106->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF12@1164->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF13@1206->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF1@460->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF2@513->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF3@558->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF4@608->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF5@692->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF6@764->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF7@845->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF8@909->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF9@979->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF10@1049"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF11@1106"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF12@1164"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF13@1206"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF1@460"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF2@513"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF3@558"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF4@608"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF5@692"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF6@764"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF7@845"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF8@909"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF9@979"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:INPUT1->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "MEASURES:METERING_GROUP:BUS1->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS1->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU1@1091->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1043->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS1"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_433a79afe6f94fd6a954",
+      "graph_node_ids": [
+        "LOAD:1QF12@1164",
+        "OUT:1QF12@1164"
+      ],
+      "canonical_name": "ХП",
+      "display_labels": [
+        "1ГРЩ-ШУ.ХП",
+        "1QF12",
+        "ХП"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF12@1164->BUS1",
+        "FEEDS:BUS1->OUT:1QF12@1164",
+        "TERMINATES_AT:OUT:1QF12@1164->LOAD:1QF12@1164"
+      ],
+      "source_tokens": [
+        "1QF12",
+        "1ГРЩ-ШУ.ХП",
+        "ХП",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF12@1164",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1155.0,
+            860.568,
+            1173.72,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF12@1164",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1155.0,
+            860.568,
+            1173.72,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF12@1164"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF12@1164"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF12@1164->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF12@1164"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF12@1164->LOAD:1QF12@1164"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF12@1164->LOAD:1QF12@1164"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_44c4e36fb78f19ce5ca8",
+      "graph_node_ids": [
+        "INPUT1"
+      ],
+      "canonical_name": "INPUT_BUS_1",
+      "display_labels": [
+        "QF1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "INPUT_DEVICE",
+      "functional_role": "INPUT_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "SOURCE1:PATH1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "FEEDS:INPUT1->BUS1",
+        "FEEDS:SOURCE1:PATH1->INPUT1"
+      ],
+      "source_tokens": [
+        "QF1",
+        "2500А",
+        "Шинопровод",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "INPUT1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1132.44,
+            1141.488,
+            1154.099,
+            1158.9
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "INPUT1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:INPUT1->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE1:PATH1->INPUT1"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_44ff5529d29b717643e6",
+      "graph_node_ids": [
+        "COMPENSATION_GROUP:BUS1"
+      ],
+      "canonical_name": "COMPENSATION_GROUP_BUS_1",
+      "display_labels": [
+        "COMPENSATION_GROUP:BUS1"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "COMPENSATION_GROUP",
+      "functional_role": "COMPENSATION_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS1->BUS1"
+      ],
+      "source_tokens": [
+        "АУКРМ-1",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "COMPENSATION_GROUP:BUS1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            635.847,
+            1097.808,
+            667.462,
+            1106.58
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "COMPENSATION_GROUP:BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS1->BUS1"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_4b2a20dfd794f8ec6a6f",
+      "graph_node_ids": [
+        "LOAD:1QF10@1049",
+        "OUT:1QF10@1049"
+      ],
+      "canonical_name": "ХЦ",
+      "display_labels": [
+        "ШУ-ХЦ",
+        "1QF10",
+        "ХЦ"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF10@1049->BUS1",
+        "FEEDS:BUS1->OUT:1QF10@1049",
+        "TERMINATES_AT:OUT:1QF10@1049->LOAD:1QF10@1049"
+      ],
+      "source_tokens": [
+        "1QF10",
+        "ШУ-ХЦ",
+        "ХЦ",
+        "1ГРЩ-ШУХЦ-",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF10@1049",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1039.2,
+            860.568,
+            1057.92,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF10@1049",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1039.2,
+            860.568,
+            1057.92,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF10@1049"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF10@1049"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF10@1049->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF10@1049"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF10@1049->LOAD:1QF10@1049"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF10@1049->LOAD:1QF10@1049"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_5549153bb51e61d487cd",
+      "graph_node_ids": [
+        "SOURCE2"
+      ],
+      "canonical_name": "SOURCE_PATH_BUS_2",
+      "display_labels": [
+        "Т2"
+      ],
+      "entity_type": "SYSTEM",
+      "domain_subtype": "SOURCE",
+      "functional_role": "SOURCE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "FEEDS:SOURCE2->SOURCE2:PATH1"
+      ],
+      "source_tokens": [
+        "Т2",
+        "Шинопровод"
+      ],
+      "locations": [
+        {
+          "node_id": "SOURCE2",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1313.76,
+            1369.368,
+            1322.541,
+            1378.14
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SOURCE2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE2->SOURCE2:PATH1"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_67c28bc8a1aacbcad2d8",
+      "graph_node_ids": [
+        "OUT:1QF3@558"
+      ],
+      "canonical_name": "1_QF_3",
+      "display_labels": [
+        "1QF3"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "OUTGOING_DEVICE",
+      "functional_role": "OUTGOING_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF3@558->BUS1",
+        "FEEDS:BUS1->OUT:1QF3@558",
+        "TERMINATES_AT:OUT:1QF3@558->UNKNOWN_TERMINAL:1QF3@558"
+      ],
+      "source_tokens": [
+        "1QF3",
+        "1QF1",
+        "1QF2",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "OUT:1QF3@558",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            550.08,
+            860.568,
+            565.879,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF3@558"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF3@558->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF3@558"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF3@558->UNKNOWN_TERMINAL:1QF3@558"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_6ae466338ee4ea886d52",
+      "graph_node_ids": [
+        "SERVICE_GROUP:BUS1"
+      ],
+      "canonical_name": "SERVICE_GROUP_BUS_1",
+      "display_labels": [
+        "SERVICE_GROUP:BUS1"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS1->BUS1"
+      ],
+      "source_tokens": [
+        "ОПН",
+        "FU1",
+        "FU2",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "SERVICE_GROUP:BUS1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1035.6,
+            1162.848,
+            1326.638,
+            1176.54
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SERVICE_GROUP:BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS1->BUS1"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_7040e57ade8e0fa6bcde",
+      "graph_node_ids": [
+        "LOAD:2QF12@1952"
+      ],
+      "canonical_name": "ДР_2",
+      "display_labels": [
+        "ДР2-ХМ2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD",
+      "functional_role": "LOAD",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "TERMINATES_AT:OUT:2QF12@1952->LOAD:2QF12@1952"
+      ],
+      "source_tokens": [
+        "2QF12",
+        "ДР2-ХМ2",
+        "ДР2",
+        "2ГРЩ-ДР2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF12@1952",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1941.84,
+            860.568,
+            1961.736,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF12@1952"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF12@1952->LOAD:2QF12@1952"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_7149c5ba9e189dc29cd6",
+      "graph_node_ids": [
+        "UNKNOWN_TERMINAL:2QF10@1835"
+      ],
+      "canonical_name": "UNKNOWN_TERMINAL_2_QF_10_1835",
+      "display_labels": [
+        "UNKNOWN_TERMINAL_2_QF_10_1835"
+      ],
+      "entity_type": "OTHER",
+      "domain_subtype": "UNKNOWN_NODE",
+      "functional_role": "UNKNOWN_NODE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "TERMINATES_AT:OUT:2QF10@1835->UNKNOWN_TERMINAL:2QF10@1835"
+      ],
+      "source_tokens": [
+        "2QF10"
+      ],
+      "locations": [
+        {
+          "node_id": "UNKNOWN_TERMINAL:2QF10@1835",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1825.44,
+            860.568,
+            1845.336,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "UNKNOWN_TERMINAL:2QF10@1835"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF10@1835->UNKNOWN_TERMINAL:2QF10@1835"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_723418ac869f96956320",
+      "graph_node_ids": [
+        "LOAD:1QF7@845",
+        "OUT:1QF7@845"
+      ],
+      "canonical_name": "VRU_2",
+      "display_labels": [
+        "ВРУ2",
+        "1QF7"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF7@845->BUS1",
+        "FEEDS:BUS1->OUT:1QF7@845",
+        "TERMINATES_AT:OUT:1QF7@845->LOAD:1QF7@845"
+      ],
+      "source_tokens": [
+        "1QF7",
+        "ВРУ2",
+        "1ГРЩ-ВРУ2",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF7@845",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            836.64,
+            860.568,
+            852.439,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF7@845",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            836.64,
+            860.568,
+            852.439,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF7@845"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF7@845"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF7@845->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF7@845"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF7@845->LOAD:1QF7@845"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF7@845->LOAD:1QF7@845"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_7241b4d84e8b127c935f",
+      "graph_node_ids": [
+        "LOAD:2QF7@1665",
+        "OUT:2QF7@1665"
+      ],
+      "canonical_name": "ХЦ",
+      "display_labels": [
+        "2ГРЩ-ШУХЦ-",
+        "2QF7",
+        "ХЦ"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF7@1665->BUS2",
+        "FEEDS:BUS2->OUT:2QF7@1665",
+        "TERMINATES_AT:OUT:2QF7@1665->LOAD:2QF7@1665"
+      ],
+      "source_tokens": [
+        "2QF7",
+        "2ГРЩ-ШУХЦ-",
+        "ХЦ",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF7@1665",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1656.84,
+            860.568,
+            1673.815,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF7@1665",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1656.84,
+            860.568,
+            1673.815,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF7@1665"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF7@1665"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF7@1665->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF7@1665"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF7@1665->LOAD:2QF7@1665"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF7@1665->LOAD:2QF7@1665"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_73218f0b2eca20c1b97a",
+      "graph_node_ids": [
+        "UNKNOWN_TERMINAL:1QF3@558"
+      ],
+      "canonical_name": "UNKNOWN_TERMINAL_1_QF_3_558",
+      "display_labels": [
+        "UNKNOWN_TERMINAL_1_QF_3_558"
+      ],
+      "entity_type": "OTHER",
+      "domain_subtype": "UNKNOWN_NODE",
+      "functional_role": "UNKNOWN_NODE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "TERMINATES_AT:OUT:1QF3@558->UNKNOWN_TERMINAL:1QF3@558"
+      ],
+      "source_tokens": [
+        "1QF3"
+      ],
+      "locations": [
+        {
+          "node_id": "UNKNOWN_TERMINAL:1QF3@558",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            550.08,
+            860.568,
+            565.879,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "UNKNOWN_TERMINAL:1QF3@558"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF3@558->UNKNOWN_TERMINAL:1QF3@558"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_7f30daccfbc4d7d36458",
+      "graph_node_ids": [
+        "LOAD:1QF5@692",
+        "OUT:1QF5@692"
+      ],
+      "canonical_name": "VRU_3",
+      "display_labels": [
+        "ВРУ3",
+        "1QF5"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF5@692->BUS1",
+        "FEEDS:BUS1->OUT:1QF5@692",
+        "TERMINATES_AT:OUT:1QF5@692->LOAD:1QF5@692"
+      ],
+      "source_tokens": [
+        "1QF5",
+        "ВРУ3",
+        "1ГРЩ-ВРУ3",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF5@692",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            684.36,
+            860.568,
+            700.159,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF5@692",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            684.36,
+            860.568,
+            700.159,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF5@692"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF5@692"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF5@692->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF5@692"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF5@692->LOAD:1QF5@692"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF5@692->LOAD:1QF5@692"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_85d30acdec131a081da7",
+      "graph_node_ids": [
+        "OUT:1QF1@460"
+      ],
+      "canonical_name": "ДР_1",
+      "display_labels": [
+        "ДР1-ХМ1",
+        "1QF1",
+        "ДР1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "OUTGOING_DEVICE",
+      "functional_role": "OUTGOING_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF1@460->BUS1",
+        "FEEDS:BUS1->OUT:1QF1@460",
+        "TERMINATES_AT:OUT:1QF1@460->LOAD:1QF1@460"
+      ],
+      "source_tokens": [
+        "1QF1",
+        "ДР1-ХМ1",
+        "ДР1",
+        "1ГРЩ-ДР1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "OUT:1QF1@460",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            453.0,
+            860.568,
+            467.624,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF1@460"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF1@460->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF1@460"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF1@460->LOAD:1QF1@460"
+        }
+      ],
+      "confidence": "UNKNOWN",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_88e867480332bc75b0eb",
+      "graph_node_ids": [
+        "LOAD:1QF2@513",
+        "OUT:1QF2@513"
+      ],
+      "canonical_name": "ХМ_1",
+      "display_labels": [
+        "ХМ1",
+        "1QF2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF2@513->BUS1",
+        "FEEDS:BUS1->OUT:1QF2@513",
+        "TERMINATES_AT:OUT:1QF2@513->LOAD:1QF2@513"
+      ],
+      "source_tokens": [
+        "1QF2",
+        "ХМ1",
+        "1ГРЩ-ХМ1",
+        "1QF1",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF2@513",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            505.08,
+            860.568,
+            520.879,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF2@513",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            505.08,
+            860.568,
+            520.879,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF2@513"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF2@513"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF2@513->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF2@513"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF2@513->LOAD:1QF2@513"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF2@513->LOAD:1QF2@513"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_89a805db2e85fb6ca60c",
+      "graph_node_ids": [
+        "INPUT2"
+      ],
+      "canonical_name": "INPUT_BUS_2",
+      "display_labels": [
+        "QF2"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "INPUT_DEVICE",
+      "functional_role": "INPUT_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "SOURCE2:PATH1"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "FEEDS:INPUT2->BUS2",
+        "FEEDS:SOURCE2:PATH1->INPUT2"
+      ],
+      "source_tokens": [
+        "QF2",
+        "2500А",
+        "Секц.",
+        "SF/SA",
+        "Шинопровод",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "INPUT2",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1273.56,
+            1141.248,
+            1295.219,
+            1158.901
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "INPUT2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:INPUT2->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE2:PATH1->INPUT2"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_917a159671abbc30c21e",
+      "graph_node_ids": [
+        "BUS2"
+      ],
+      "canonical_name": "SECTION_2",
+      "display_labels": [
+        "РП2"
+      ],
+      "entity_type": "SYSTEM",
+      "domain_subtype": "BUS_SECTION",
+      "functional_role": "BUS_SECTION",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": null,
+        "parent_node_ids": []
+      },
+      "section_context": null,
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS2->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF10@1835->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF11@1897->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF12@1952->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF13@1999->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF14@2053->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF1@1299->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF2@1358->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF3@1434->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF4@1492->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF5@1550->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF6@1607->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF7@1665->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF8@1723->BUS2",
+        "BELONGS_TO_SECTION:OUT:2QF9@1781->BUS2",
+        "FEEDS:BUS2->OUT:2QF10@1835",
+        "FEEDS:BUS2->OUT:2QF11@1897",
+        "FEEDS:BUS2->OUT:2QF12@1952",
+        "FEEDS:BUS2->OUT:2QF13@1999",
+        "FEEDS:BUS2->OUT:2QF14@2053",
+        "FEEDS:BUS2->OUT:2QF1@1299",
+        "FEEDS:BUS2->OUT:2QF2@1358",
+        "FEEDS:BUS2->OUT:2QF3@1434",
+        "FEEDS:BUS2->OUT:2QF4@1492",
+        "FEEDS:BUS2->OUT:2QF5@1550",
+        "FEEDS:BUS2->OUT:2QF6@1607",
+        "FEEDS:BUS2->OUT:2QF7@1665",
+        "FEEDS:BUS2->OUT:2QF8@1723",
+        "FEEDS:BUS2->OUT:2QF9@1781",
+        "FEEDS:INPUT2->BUS2",
+        "MEASURES:METERING_GROUP:BUS2->BUS2",
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS2->BUS2",
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU2@1320->BUS2",
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1366->BUS2",
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS2"
+      ],
+      "source_tokens": [
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2",
+        "QF2",
+        "2500А",
+        "Секц.",
+        "SF/SA",
+        "QS1",
+        "ОПН",
+        "FU2",
+        "2ГРЩ-ВРУ4",
+        "ВРУ4",
+        "2ГРЩ-ВРУ3",
+        "ВРУ3",
+        "2ГРЩ-ВРУ2",
+        "ВРУ2",
+        "2ГРЩ-ВРУа",
+        "ВРУА",
+        "2ГРЩ-ВРУ.ИТП",
+        "ИТП",
+        "2ГРЩ-ШУХЦ-",
+        "ХЦ",
+        "2ГРЩ-ЩУ.АПТ",
+        "АПТ",
+        "2ГРЩ-ШУ.ХП",
+        "ХП",
+        "ХМ2",
+        "2ГРЩ-ХМ2",
+        "ДР2-ХМ2",
+        "ДР2",
+        "2ГРЩ-ДР2",
+        "ЯСН",
+        "ЭБ-ГВС",
+        "2ГРЩ-ЭБ.ГВС",
+        "Мультиметр",
+        "PW2",
+        "АУКРМ-2"
+      ],
+      "locations": [
+        {
+          "node_id": "BUS2",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            315.0,
+            817.16,
+            2065.56,
+            943.98
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:COMPENSATION_GROUP:BUS2->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF10@1835->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF11@1897->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF12@1952->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF13@1999->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF14@2053->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF1@1299->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF2@1358->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF3@1434->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF4@1492->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF5@1550->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF6@1607->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF7@1665->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF8@1723->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF9@1781->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF10@1835"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF11@1897"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF12@1952"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF13@1999"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF14@2053"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF1@1299"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF2@1358"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF3@1434"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF4@1492"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF5@1550"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF6@1607"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF7@1665"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF8@1723"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF9@1781"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:INPUT2->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "MEASURES:METERING_GROUP:BUS2->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:BUS2->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU2@1320->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1366->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS2"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_ac6dc46a94b6e592950b",
+      "graph_node_ids": [
+        "METERING_GROUP:BUS1"
+      ],
+      "canonical_name": "METERING_GROUP_BUS_1",
+      "display_labels": [
+        "METERING_GROUP:BUS1"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "METERING_GROUP",
+      "functional_role": "METERING_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "MEASURES:METERING_GROUP:BUS1->BUS1"
+      ],
+      "source_tokens": [
+        "Wh1",
+        "1ТТ1...1ТТ3",
+        "1ТТ4...1ТТ6",
+        "1ТТ7...1ТТ9",
+        "2ТТ1...2ТТ3",
+        "Wh2",
+        "2ТТ4...2ТТ6",
+        "2ТТ7...2ТТ9",
+        "Мультиметр",
+        "PW1",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "METERING_GROUP:BUS1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1065.6,
+            996.648,
+            1325.152,
+            1080.42
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "METERING_GROUP:BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "MEASURES:METERING_GROUP:BUS1->BUS1"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_b0e1299edf5e66f241e3",
+      "graph_node_ids": [
+        "LOAD:2QF6@1607",
+        "OUT:2QF6@1607"
+      ],
+      "canonical_name": "ИТП",
+      "display_labels": [
+        "2ГРЩ-ВРУ.ИТП",
+        "2QF6",
+        "ИТП"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF6@1607->BUS2",
+        "FEEDS:BUS2->OUT:2QF6@1607",
+        "TERMINATES_AT:OUT:2QF6@1607->LOAD:2QF6@1607"
+      ],
+      "source_tokens": [
+        "2QF6",
+        "2ГРЩ-ВРУ.ИТП",
+        "ИТП",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF6@1607",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1598.88,
+            860.568,
+            1615.854,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF6@1607",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1598.88,
+            860.568,
+            1615.854,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF6@1607"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF6@1607"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF6@1607->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF6@1607"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF6@1607->LOAD:2QF6@1607"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF6@1607->LOAD:2QF6@1607"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_b63e4279e2a477949763",
+      "graph_node_ids": [
+        "LOAD:2QF11@1897",
+        "OUT:2QF11@1897"
+      ],
+      "canonical_name": "ХМ_2",
+      "display_labels": [
+        "ХМ2",
+        "2QF11"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF11@1897->BUS2",
+        "FEEDS:BUS2->OUT:2QF11@1897",
+        "TERMINATES_AT:OUT:2QF11@1897->LOAD:2QF11@1897"
+      ],
+      "source_tokens": [
+        "2QF11",
+        "ХМ2",
+        "2ГРЩ-ХМ2",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF11@1897",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1887.84,
+            860.568,
+            1906.56,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF11@1897",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1887.84,
+            860.568,
+            1906.56,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF11@1897"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF11@1897"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF11@1897->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF11@1897"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF11@1897->LOAD:2QF11@1897"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF11@1897->LOAD:2QF11@1897"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_c129edd907fe934664f5",
+      "graph_node_ids": [
+        "SOURCE2:PATH1"
+      ],
+      "canonical_name": "SOURCE_PATH_ELEMENT_BUS_2",
+      "display_labels": [
+        "Шинопровод"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "SOURCE2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "SOURCE2"
+        ]
+      },
+      "edge_ids": [
+        "FEEDS:SOURCE2->SOURCE2:PATH1",
+        "FEEDS:SOURCE2:PATH1->INPUT2"
+      ],
+      "source_tokens": [
+        "Шинопровод",
+        "Т2",
+        "QF2",
+        "2500А",
+        "Секц.",
+        "SF/SA"
+      ],
+      "locations": [
+        {
+          "node_id": "SOURCE2:PATH1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1286.368,
+            1302.919,
+            1295.141,
+            1345.64
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SOURCE2:PATH1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE2->SOURCE2:PATH1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE2:PATH1->INPUT2"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_c1efd478548fbdfeb756",
+      "graph_node_ids": [
+        "LOAD:2QF8@1723",
+        "OUT:2QF8@1723"
+      ],
+      "canonical_name": "АПТ",
+      "display_labels": [
+        "2ГРЩ-ЩУ.АПТ",
+        "2QF8",
+        "АПТ"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF8@1723->BUS2",
+        "FEEDS:BUS2->OUT:2QF8@1723",
+        "TERMINATES_AT:OUT:2QF8@1723->LOAD:2QF8@1723"
+      ],
+      "source_tokens": [
+        "2QF8",
+        "2ГРЩ-ЩУ.АПТ",
+        "АПТ",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF8@1723",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1714.68,
+            860.568,
+            1731.655,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF8@1723",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1714.68,
+            860.568,
+            1731.655,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF8@1723"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF8@1723"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF8@1723->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF8@1723"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF8@1723->LOAD:2QF8@1723"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF8@1723->LOAD:2QF8@1723"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_c4b588bfb1d0e43b0278",
+      "graph_node_ids": [
+        "LOAD:1QF11@1106",
+        "OUT:1QF11@1106"
+      ],
+      "canonical_name": "АПТ",
+      "display_labels": [
+        "ШУ-АПТ",
+        "1QF11",
+        "АПТ"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF11@1106->BUS1",
+        "FEEDS:BUS1->OUT:1QF11@1106",
+        "TERMINATES_AT:OUT:1QF11@1106->LOAD:1QF11@1106"
+      ],
+      "source_tokens": [
+        "1QF11",
+        "ШУ-АПТ",
+        "АПТ",
+        "1ГРЩ-ЩУ.АПТ",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF11@1106",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1097.04,
+            860.568,
+            1114.585,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF11@1106",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1097.04,
+            860.568,
+            1114.585,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF11@1106"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF11@1106"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF11@1106->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF11@1106"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF11@1106->LOAD:1QF11@1106"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF11@1106->LOAD:1QF11@1106"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_cd3a30be6e10e4a33dc1",
+      "graph_node_ids": [
+        "OUT:1QF13@1206"
+      ],
+      "canonical_name": "ШНО",
+      "display_labels": [
+        "ШУ-ХВС",
+        "1QF13",
+        "ХВС",
+        "ШНО"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "OUTGOING_DEVICE",
+      "functional_role": "OUTGOING_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF13@1206->BUS1",
+        "FEEDS:BUS1->OUT:1QF13@1206",
+        "TERMINATES_AT:OUT:1QF13@1206->LOAD:1QF13@1206"
+      ],
+      "source_tokens": [
+        "1QF13",
+        "ШУ-ХВС",
+        "ШНО",
+        "1ГРЩ-ШНO",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "OUT:1QF13@1206",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1197.12,
+            860.568,
+            1215.84,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF13@1206"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF13@1206->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF13@1206"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF13@1206->LOAD:1QF13@1206"
+        }
+      ],
+      "confidence": "UNKNOWN",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_ce0dde709a73be383fe3",
+      "graph_node_ids": [
+        "LOAD:1QF6@764",
+        "OUT:1QF6@764"
+      ],
+      "canonical_name": "VRU_1",
+      "display_labels": [
+        "ВРУ1",
+        "1QF6"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF6@764->BUS1",
+        "FEEDS:BUS1->OUT:1QF6@764",
+        "TERMINATES_AT:OUT:1QF6@764->LOAD:1QF6@764"
+      ],
+      "source_tokens": [
+        "1QF6",
+        "ВРУ1",
+        "1ГРЩ-ВРУ1",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF6@764",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            756.36,
+            860.568,
+            772.159,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF6@764",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            756.36,
+            860.568,
+            772.159,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF6@764"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF6@764"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF6@764->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF6@764"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF6@764->LOAD:1QF6@764"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF6@764->LOAD:1QF6@764"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_db0046a476df8165d8b6",
+      "graph_node_ids": [
+        "LOAD:2QF14@2053",
+        "OUT:2QF14@2053"
+      ],
+      "canonical_name": "ЭБ_ГВС",
+      "display_labels": [
+        "2ГРЩ-ЭБ.ГВС",
+        "2QF14",
+        "ЭБ-ГВС"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF14@2053->BUS2",
+        "FEEDS:BUS2->OUT:2QF14@2053",
+        "TERMINATES_AT:OUT:2QF14@2053->LOAD:2QF14@2053"
+      ],
+      "source_tokens": [
+        "2QF14",
+        "2ГРЩ-ЭБ.ГВС",
+        "ЭБ-ГВС",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:2QF14@2053",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            2042.64,
+            860.568,
+            2063.123,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:2QF14@2053",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            2042.64,
+            860.568,
+            2063.123,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:2QF14@2053"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF14@2053"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF14@2053->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF14@2053"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF14@2053->LOAD:2QF14@2053"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:2QF14@2053->LOAD:2QF14@2053"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_dbdc31decbb8bcaf53f8",
+      "graph_node_ids": [
+        "LOAD:1QF8@909",
+        "OUT:1QF8@909"
+      ],
+      "canonical_name": "VRU_A",
+      "display_labels": [
+        "ВРУа",
+        "1QF8",
+        "ВРУА"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF8@909->BUS1",
+        "FEEDS:BUS1->OUT:1QF8@909",
+        "TERMINATES_AT:OUT:1QF8@909->LOAD:1QF8@909"
+      ],
+      "source_tokens": [
+        "1QF8",
+        "ВРУа",
+        "ВРУА",
+        "1ГРЩ-ВРУа",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF8@909",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            900.84,
+            858.888,
+            916.639,
+            867.66
+          ]
+        },
+        {
+          "node_id": "OUT:1QF8@909",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            900.84,
+            858.888,
+            916.639,
+            867.66
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF8@909"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF8@909"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF8@909->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF8@909"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF8@909->LOAD:1QF8@909"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF8@909->LOAD:1QF8@909"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_dcdb025a001c0c478e9e",
+      "graph_node_ids": [
+        "LOAD:1QF9@979",
+        "OUT:1QF9@979"
+      ],
+      "canonical_name": "ИТП",
+      "display_labels": [
+        "ВРУ-ИТП",
+        "1QF9",
+        "ИТП"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF9@979->BUS1",
+        "FEEDS:BUS1->OUT:1QF9@979",
+        "TERMINATES_AT:OUT:1QF9@979->LOAD:1QF9@979"
+      ],
+      "source_tokens": [
+        "1QF9",
+        "ВРУ-ИТП",
+        "ИТП",
+        "1ГРЩ-ВРУ.ИТП",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF9@979",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            971.28,
+            858.888,
+            987.079,
+            867.66
+          ]
+        },
+        {
+          "node_id": "OUT:1QF9@979",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            971.28,
+            858.888,
+            987.079,
+            867.66
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF9@979"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF9@979"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF9@979->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF9@979"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF9@979->LOAD:1QF9@979"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF9@979->LOAD:1QF9@979"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_e656e9dc0d721f7ec0bd",
+      "graph_node_ids": [
+        "SERVICE_GROUP:FU2@1320"
+      ],
+      "canonical_name": "FU_2",
+      "display_labels": [
+        "FU2"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU2@1320->BUS2"
+      ],
+      "source_tokens": [
+        "FU2",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "SERVICE_GROUP:FU2@1320",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1313.76,
+            1167.768,
+            1326.638,
+            1176.54
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SERVICE_GROUP:FU2@1320"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU2@1320->BUS2"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_e7d15091b83d4ae63195",
+      "graph_node_ids": [
+        "OUT:2QF10@1835"
+      ],
+      "canonical_name": "2_QF_10",
+      "display_labels": [
+        "2QF10"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "OUTGOING_DEVICE",
+      "functional_role": "OUTGOING_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF10@1835->BUS2",
+        "FEEDS:BUS2->OUT:2QF10@1835",
+        "TERMINATES_AT:OUT:2QF10@1835->UNKNOWN_TERMINAL:2QF10@1835"
+      ],
+      "source_tokens": [
+        "2QF10",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "OUT:2QF10@1835",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1825.44,
+            860.568,
+            1845.336,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF10@1835"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF10@1835->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF10@1835"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF10@1835->UNKNOWN_TERMINAL:2QF10@1835"
+        }
+      ],
+      "confidence": "LOW",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_e825fff861ea77e90042",
+      "graph_node_ids": [
+        "OUT:2QF13@1999"
+      ],
+      "canonical_name": "ЭБ_ГВС",
+      "display_labels": [
+        "ЯСН",
+        "2QF13",
+        "ЭБ-ГВС"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "OUTGOING_DEVICE",
+      "functional_role": "OUTGOING_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": [
+          "BUS2"
+        ]
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS2",
+          "INPUT2",
+          "SOURCE2",
+          "SOURCE2:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:2QF13@1999->BUS2",
+        "FEEDS:BUS2->OUT:2QF13@1999",
+        "TERMINATES_AT:OUT:2QF13@1999->LOAD:2QF13@1999"
+      ],
+      "source_tokens": [
+        "2QF13",
+        "ЯСН",
+        "ЭБ-ГВС",
+        "2ГРЩ-ЭБ.ГВС",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "OUT:2QF13@1999",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1989.12,
+            860.568,
+            2009.016,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "OUT:2QF13@1999"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:2QF13@1999->BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS2->OUT:2QF13@1999"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:2QF13@1999->LOAD:2QF13@1999"
+        }
+      ],
+      "confidence": "UNKNOWN",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_f479bce340559bc9e1e9",
+      "graph_node_ids": [
+        "LOAD:1QF4@608",
+        "OUT:1QF4@608"
+      ],
+      "canonical_name": "VRU_4",
+      "display_labels": [
+        "ВРУ4",
+        "1QF4"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "LOAD+OUTGOING_DEVICE",
+      "functional_role": "CONSUMER_FEEDER",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": [
+          "BUS1"
+        ]
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": [
+          "BUS1",
+          "INPUT1",
+          "SOURCE1",
+          "SOURCE1:PATH1"
+        ]
+      },
+      "edge_ids": [
+        "BELONGS_TO_SECTION:OUT:1QF4@608->BUS1",
+        "FEEDS:BUS1->OUT:1QF4@608",
+        "TERMINATES_AT:OUT:1QF4@608->LOAD:1QF4@608"
+      ],
+      "source_tokens": [
+        "1QF4",
+        "ВРУ4",
+        "1ГРЩ-ВРУ4",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "LOAD:1QF4@608",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            600.12,
+            860.568,
+            616.507,
+            869.34
+          ]
+        },
+        {
+          "node_id": "OUT:1QF4@608",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            600.12,
+            860.568,
+            616.507,
+            869.34
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "LOAD:1QF4@608"
+        },
+        {
+          "kind": "NODE",
+          "id": "OUT:1QF4@608"
+        },
+        {
+          "kind": "EDGE",
+          "id": "BELONGS_TO_SECTION:OUT:1QF4@608->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:BUS1->OUT:1QF4@608"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TERMINATES_AT:OUT:1QF4@608->LOAD:1QF4@608"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "TERMINATES_AT_REPRESENTATION_PAIR",
+        "aggregation_edge_id": "TERMINATES_AT:OUT:1QF4@608->LOAD:1QF4@608"
+      }
+    },
+    {
+      "entity_id": "gfx_ent_f5ea6bc9dfc79b19bb5f",
+      "graph_node_ids": [
+        "SECTION_DEVICE:BUS1-BUS2"
+      ],
+      "canonical_name": "SECTION_TIE_BUS_1_BUS_2",
+      "display_labels": [
+        "QS1"
+      ],
+      "entity_type": "EQUIPMENT",
+      "domain_subtype": "SECTION_DEVICE",
+      "functional_role": "SECTION_DEVICE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": null,
+        "parent_node_ids": []
+      },
+      "section_context": null,
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS1",
+        "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS2"
+      ],
+      "source_tokens": [
+        "QS1",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "SECTION_DEVICE:BUS1-BUS2",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1206.36,
+            1118.928,
+            1218.65,
+            1127.7
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SECTION_DEVICE:BUS1-BUS2"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "TIES_SECTIONS:SECTION_DEVICE:BUS1-BUS2->BUS2"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_fb659fdfadc67908a73c",
+      "graph_node_ids": [
+        "SOURCE1"
+      ],
+      "canonical_name": "SOURCE_PATH_BUS_1",
+      "display_labels": [
+        "Т1"
+      ],
+      "entity_type": "SYSTEM",
+      "domain_subtype": "SOURCE",
+      "functional_role": "SOURCE",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "FEEDS:SOURCE1->SOURCE1:PATH1"
+      ],
+      "source_tokens": [
+        "Т1",
+        "Шинопровод"
+      ],
+      "locations": [
+        {
+          "node_id": "SOURCE1",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1144.08,
+            1369.368,
+            1151.686,
+            1378.14
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SOURCE1"
+        },
+        {
+          "kind": "EDGE",
+          "id": "FEEDS:SOURCE1->SOURCE1:PATH1"
+        }
+      ],
+      "confidence": "HIGH",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_fcb7a2a9356b4c7aaf5c",
+      "graph_node_ids": [
+        "SERVICE_GROUP:ОПН@1366"
+      ],
+      "canonical_name": "ОПН",
+      "display_labels": [
+        "ОПН"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS2",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS2",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1366->BUS2"
+      ],
+      "source_tokens": [
+        "ОПН",
+        "2QF1",
+        "2QF2",
+        "2QF3",
+        "2QF4",
+        "2QF5",
+        "2QF6",
+        "2QF7",
+        "2QF8",
+        "2QF9",
+        "2QF10",
+        "2QF11",
+        "2QF12",
+        "2QF13",
+        "2QF14",
+        "РП2"
+      ],
+      "locations": [
+        {
+          "node_id": "SERVICE_GROUP:ОПН@1366",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1359.0,
+            1162.848,
+            1373.053,
+            1171.62
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SERVICE_GROUP:ОПН@1366"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:ОПН@1366->BUS2"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    },
+    {
+      "entity_id": "gfx_ent_fd14867133824b45f22a",
+      "graph_node_ids": [
+        "SERVICE_GROUP:FU1@1091"
+      ],
+      "canonical_name": "FU_1",
+      "display_labels": [
+        "FU1"
+      ],
+      "entity_type": "GROUP",
+      "domain_subtype": "SERVICE_GROUP",
+      "functional_role": "SERVICE_GROUP",
+      "system": "ЭОМ",
+      "parent_context": {
+        "parent_group": "BUS1",
+        "parent_node_ids": []
+      },
+      "section_context": "BUS1",
+      "graph_scope": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_id": "dense_sectioned_board",
+        "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+        "page_index": 0,
+        "discipline": "ЭОМ",
+        "source_path": []
+      },
+      "edge_ids": [
+        "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU1@1091->BUS1"
+      ],
+      "source_tokens": [
+        "FU1",
+        "1QF1",
+        "1QF2",
+        "1QF3",
+        "1QF4",
+        "1QF5",
+        "1QF6",
+        "1QF7",
+        "1QF8",
+        "1QF9",
+        "1QF10",
+        "1QF11",
+        "1QF12",
+        "1QF13",
+        "РП1"
+      ],
+      "locations": [
+        {
+          "node_id": "SERVICE_GROUP:FU1@1091",
+          "block_id": "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
+          "page_index": 0,
+          "bbox": [
+            1084.8,
+            1167.768,
+            1096.502,
+            1176.54
+          ]
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "NODE",
+          "id": "SERVICE_GROUP:FU1@1091"
+        },
+        {
+          "kind": "EDGE",
+          "id": "PROTECTS_OR_SWITCHES:SERVICE_GROUP:FU1@1091->BUS1"
+        }
+      ],
+      "confidence": "MEDIUM",
+      "provenance": {
+        "source_graph_index": 0,
+        "graph_digest": "b05d5d00f19013ccc691227fd6f236cbcc8213070f71d1372b211cd935a9e84c",
+        "profile_version": "dense-sectioned-board-v1",
+        "extractor_version": "vector-evidence-v1",
+        "adapter_version": "system-graph-entity-adapter-v1",
+        "normalizer_version": "entity-normalizer-v1",
+        "aggregation_rule": "SINGLE_GRAPH_NODE",
+        "aggregation_edge_id": null
+      }
+    }
+  ],
+  "quality_report": {
+    "total_source_graphs": 1,
+    "valid_source_graphs": 1,
+    "invalid_source_graphs": 0,
+    "total_source_candidates": 73,
+    "source_nodes": 73,
+    "produced_entities": 52,
+    "dropped_noise": 0,
+    "ambiguous": 0,
+    "duplicated": 21,
+    "unresolved_context": 0
+  }
+}

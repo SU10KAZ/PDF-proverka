@@ -1,0 +1,21 @@
+{
+  "schema_version": "graph-entities.v1",
+  "kind": "system_graph_entities",
+  "adapter_version": "system-graph-entity-adapter-v1",
+  "normalizer_version": "entity-normalizer-v1",
+  "source_signature": "45e850fd6c5f7d2ac5776bb9f423cafd8ba75b7944f47b7435f0db4ef2ffb258",
+  "source_graphs": [],
+  "entities": [],
+  "quality_report": {
+    "total_source_graphs": 0,
+    "valid_source_graphs": 0,
+    "invalid_source_graphs": 0,
+    "total_source_candidates": 0,
+    "source_nodes": 0,
+    "produced_entities": 0,
+    "dropped_noise": 0,
+    "ambiguous": 0,
+    "duplicated": 0,
+    "unresolved_context": 0
+  }
+}
