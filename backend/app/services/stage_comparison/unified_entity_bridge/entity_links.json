@@ -1,0 +1,131 @@
+{
+  "schema_version": "entity-bridge.v1",
+  "kind": "text_graphic_entity_links",
+  "bridge_version": "deterministic-entity-bridge-v1",
+  "normalizer_version": "entity-normalizer-v1",
+  "input_entity_ids": {
+    "text": [
+      "text-vru-a",
+      "text-panel-1",
+      "text-room-101"
+    ],
+    "graphic": [
+      "VRU-A",
+      "PANEL-1",
+      "ROOM-101"
+    ]
+  },
+  "links": [
+    {
+      "entity_link_id": "eln_cfaa1ea009434dc6db5c",
+      "text_entity_id": "text-panel-1",
+      "graphic_entity_id": "PANEL-1",
+      "relation": "SAME_ENTITY",
+      "confidence": "HIGH",
+      "evidence": [
+        {
+          "rule": "NORMALIZED_DESIGNATION_MATCH",
+          "level": 2,
+          "outcome": "MATCH",
+          "tokens": [
+            "ЩР-1",
+            "ЩР1"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ЩР-1",
+              "canonical": "PANEL_1"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "ЩР1",
+              "canonical": "PANEL_1"
+            }
+          ],
+          "context": {}
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_140accde0a4cef71bc3a",
+      "text_entity_id": "text-room-101",
+      "graphic_entity_id": "ROOM-101",
+      "relation": "SAME_ENTITY",
+      "confidence": "HIGH",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "Помещение 101",
+            "ROOM-101"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "Помещение 101",
+              "canonical": "ROOM_101"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "ROOM-101",
+              "canonical": "ROOM_101"
+            }
+          ],
+          "context": {}
+        }
+      ]
+    },
+    {
+      "entity_link_id": "eln_b3e09f8334bba504738a",
+      "text_entity_id": "text-vru-a",
+      "graphic_entity_id": "VRU-A",
+      "relation": "SAME_ENTITY",
+      "confidence": "HIGH",
+      "evidence": [
+        {
+          "rule": "EXACT_CANONICAL_IDENTITY_MATCH",
+          "level": 1,
+          "outcome": "MATCH",
+          "tokens": [
+            "ВРУ-А",
+            "VRU-A"
+          ],
+          "normalization": [
+            {
+              "source": "TEXT",
+              "original": "ВРУ-А",
+              "canonical": "VRU_A"
+            },
+            {
+              "source": "GRAPHIC",
+              "original": "VRU-A",
+              "canonical": "VRU_A"
+            }
+          ],
+          "context": {}
+        }
+      ]
+    }
+  ],
+  "diagnostics": {
+    "text_entity_count": 3,
+    "graphic_entity_count": 3,
+    "candidate_link_count": 3,
+    "relation_counts": {
+      "SAME_ENTITY": 3,
+      "POSSIBLE_ENTITY": 0,
+      "UNKNOWN": 0
+    },
+    "confidence_counts": {
+      "HIGH": 3,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "unresolved_text_entity_ids": [],
+    "unresolved_graphic_entity_ids": []
+  }
+}
