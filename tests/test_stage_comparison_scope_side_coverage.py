@@ -33,6 +33,7 @@ from backend.app.services.stage_comparison.unified_entity_bridge.graphic_coverag
     graphic_coverage_is_stale,
     saved_coverage_bundle_is_stale,
     schema_path as coverage_schema_path,
+    validate_graphic_coverage,
 )
 from backend.app.services.stage_comparison.unified_entity_bridge.parent_page_relation import (
     RELATION_AMBIGUOUS,
@@ -300,6 +301,112 @@ def real_ios():
     return stage, left, right, comparison, text, graphs, links, groups, scopes, manifest
 
 
+@pytest.mark.parametrize(
+    "binding_state",
+    [
+        "DOCUMENT_BINDING_PROVEN",
+        "DOCUMENT_BINDING_UNPROVEN",
+        "DOCUMENT_BINDING_AMBIGUOUS",
+        "DOCUMENT_BINDING_MISMATCH",
+        "DOCUMENT_BINDING_ERROR",
+    ],
+)
+def test_coverage_validator_requires_proven_binding_for_checked_records(
+    real_ios, binding_state
+):
+    manifest = copy.deepcopy(real_ios[-1])
+    assert any(item["state"] == "CHECKED" for item in manifest["coverage"])
+    manifest["source_artifacts"]["document_binding"]["state"] = binding_state
+
+    if binding_state == "DOCUMENT_BINDING_PROVEN":
+        assert validate_graphic_coverage(manifest) is manifest
+    else:
+        with pytest.raises(
+            GraphicCoverageValidationError,
+            match="CHECKED record requires proven document binding",
+        ):
+            validate_graphic_coverage(manifest)
+
+
+def test_parent_relation_revocation_makes_scope_and_coverage_stale(real_ios):
+    stage, _, _, _, text, graphs, links, original_groups, _, _ = real_ios
+    groups = copy.deepcopy(original_groups)
+    left_excerpt = _document("LEFT_EXCERPT")
+    right_excerpt = _document("RIGHT_EXCERPT")
+    for pair in groups[0]["block_pairs"]:
+        pair["left_document"] = left_excerpt
+        pair["right_document"] = right_excerpt
+    left_proven = make_parent_page_relation(
+        state=RELATION_PROVEN,
+        excerpt={"document": left_excerpt, "page_index_0based": 0},
+        parent={"document": PAIR_DOCUMENTS["LEFT"], "page_index_0based": 0},
+        reason_codes=["external_deterministic_page_proof"],
+        evidence={"producer_id": "test-proof-producer", "evidence_id": "left-proof"},
+    )
+    right_proven = make_parent_page_relation(
+        state=RELATION_PROVEN,
+        excerpt={"document": right_excerpt, "page_index_0based": 0},
+        parent={"document": PAIR_DOCUMENTS["RIGHT"], "page_index_0based": 0},
+        reason_codes=["external_deterministic_page_proof"],
+        evidence={"producer_id": "test-proof-producer", "evidence_id": "right-proof"},
+    )
+    proven_relations = [left_proven, right_proven]
+    scopes = build_scope_join(
+        stage,
+        text,
+        graphs,
+        groups,
+        pair_documents=PAIR_DOCUMENTS,
+        parent_page_relations=proven_relations,
+    )
+    manifest = build_graphic_coverage(
+        stage,
+        text,
+        graphs,
+        links,
+        scopes,
+        groups,
+        parent_page_relations=proven_relations,
+    )
+    assert scopes["document_binding"]["state"] == "DOCUMENT_BINDING_PROVEN"
+    assert manifest["summary"]["by_state"]["CHECKED"] > 0
+
+    left_revoked = make_parent_page_relation(
+        state=RELATION_UNPROVEN,
+        excerpt={"document": left_excerpt, "page_index_0based": 0},
+        parent={"document": PAIR_DOCUMENTS["LEFT"], "page_index_0based": 0},
+        reason_codes=["external_proof_revoked"],
+    )
+    current_relations = [left_revoked, right_proven]
+
+    assert scope_join_is_stale(
+        scopes,
+        stage,
+        text,
+        graphs,
+        groups,
+        parent_page_relations=current_relations,
+    )
+    assert graphic_coverage_is_stale(
+        manifest,
+        stage,
+        text,
+        graphs,
+        links,
+        scopes,
+        groups,
+        parent_page_relations=current_relations,
+    )
+    assert saved_coverage_bundle_is_stale(
+        manifest,
+        text,
+        graphs,
+        links,
+        scopes,
+        parent_page_relations=current_relations,
+    )
+
+
 def test_page_base_is_explicit_and_text_page_one_does_not_match_graphic_index_one():
     stage = _stage53(left_page=1, right_page=1)
     text, graphs, _ = _base(stage)
@@ -551,7 +658,7 @@ def test_no_system_graph_is_not_checked_and_unsupported_dimension_is_not_applica
     assert coverage(manifest, scope_ref, text_entity_id, "STRUCTURE")["state"] == (
         "NOT_CHECKED"
     )
-    assert "no_system_graph_for_sheet" in _processing(
+    assert "no_graphic_block_scope_on_sheet" in _processing(
         manifest, scope_ref, "STRUCTURE"
     )["reason_codes"]
     assert coverage(manifest, scope_ref, text_entity_id, "PARAMETER")["state"] == (
@@ -980,3 +1087,6 @@ def test_g244_contract_schemas_are_versioned():
     assert parent_schema["properties"]["relation_version"]["const"] == (
         "parent-page-relation.v1"
     )
+    assert "parent_page_relations" in schemas[2]["properties"][
+        "source_artifacts"
+    ]["required"]

@@ -56,7 +56,28 @@
       }
     },
     "source_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-    "source_artifacts": {"type": "object"},
+    "source_artifacts": {
+      "type": "object",
+      "required": ["parent_page_relations"],
+      "properties": {
+        "parent_page_relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["relation_version", "state", "reason_codes", "excerpt", "parent", "evidence"],
+            "properties": {
+              "relation_version": {"const": "parent-page-relation.v1"},
+              "state": {"enum": ["PROVEN", "AMBIGUOUS", "UNPROVEN", "MISMATCH"]},
+              "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "excerpt": {"type": "object"},
+              "parent": {"type": ["object", "null"]},
+              "evidence": {"type": ["object", "null"]}
+            }
+          }
+        }
+      }
+    },
     "scopes": {
       "type": "array",
       "items": {

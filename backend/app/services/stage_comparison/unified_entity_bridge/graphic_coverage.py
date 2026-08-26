@@ -210,7 +210,7 @@ def _scope_dimension_state(
         return "NOT_APPLICABLE", ["dimension_not_observable_by_system_graph_mode2"]
     if scope["status"] != "RESOLVED":
         reason = (
-            "no_system_graph_for_sheet"
+            "no_graphic_block_scope_on_sheet"
             if "no_graphic_scope_group_on_canonical_pages" in scope["reason_codes"]
             else "scope_join_unresolved"
         )
@@ -560,6 +560,8 @@ def build_graphic_coverage(
     side_entity_links: Any,
     scope_join: Any,
     graphic_scope_groups: Any,
+    *,
+    parent_page_relations: Any = None,
 ) -> dict[str, Any]:
     text = validate_text_entities(text_entities)
     graphics = validate_side_graph_entities(side_graph_entities)
@@ -567,7 +569,12 @@ def build_graphic_coverage(
     scopes_artifact = validate_scope_join(scope_join)
     normalized_groups, raw_pairs = _raw_pair_lookup(graphic_scope_groups)
     if scope_join_is_stale(
-        scopes_artifact, stage53, text, graphics, graphic_scope_groups
+        scopes_artifact,
+        stage53,
+        text,
+        graphics,
+        graphic_scope_groups,
+        parent_page_relations=parent_page_relations,
     ):
         raise GraphicCoverageValidationError("scope join stale for coverage sources")
     if side_entity_links_are_stale(links, text, graphics):
@@ -767,13 +774,13 @@ def validate_graphic_coverage(payload: Any) -> dict[str, Any]:
         raise GraphicCoverageValidationError(
             f"graphic coverage.document_binding: {error}"
         ) from error
-    if binding["state"] == BINDING_MISMATCH and any(
+    if binding["state"] != BINDING_PROVEN and any(
         item.get("state") == "CHECKED"
         for item in payload.get("coverage") or []
         if isinstance(item, dict)
     ):
         raise GraphicCoverageValidationError(
-            "graphic coverage: CHECKED record under a proven document binding mismatch"
+            "graphic coverage: CHECKED record requires proven document binding"
         )
     if payload["source_signature"] != _coverage_signature(payload["source_artifacts"]):
         raise GraphicCoverageValidationError("graphic coverage.source_signature: invalid")
@@ -873,6 +880,8 @@ def graphic_coverage_is_stale(
     side_entity_links: Any,
     scope_join: Any,
     graphic_scope_groups: Any,
+    *,
+    parent_page_relations: Any = None,
 ) -> bool:
     try:
         validated = validate_graphic_coverage(artifact)
@@ -883,7 +892,14 @@ def graphic_coverage_is_stale(
         normalized, _ = _raw_pair_lookup(graphic_scope_groups)
     except (GraphicCoverageValidationError, TypeError, ValueError):
         return True
-    if scope_join_is_stale(scopes, stage53, text, graphics, graphic_scope_groups):
+    if scope_join_is_stale(
+        scopes,
+        stage53,
+        text,
+        graphics,
+        graphic_scope_groups,
+        parent_page_relations=parent_page_relations,
+    ):
         return True
     if side_entity_links_are_stale(links, text, graphics):
         return True
@@ -897,6 +913,8 @@ def saved_coverage_bundle_is_stale(
     side_graph_entities: Any,
     side_entity_links: Any,
     scope_join: Any,
+    *,
+    parent_page_relations: Any = None,
 ) -> bool:
     """Check a saved coverage bundle without unavailable adjacent raw inputs."""
     try:
@@ -909,6 +927,17 @@ def saved_coverage_bundle_is_stale(
         return True
     if side_entity_links_are_stale(links, text, graphics):
         return True
+    if parent_page_relations is not None:
+        try:
+            from .parent_page_relation import normalize_parent_page_relations
+
+            current_relations = normalize_parent_page_relations(parent_page_relations)
+        except (TypeError, ValueError):
+            return True
+        if current_relations != scopes["source_artifacts"].get(
+            "parent_page_relations", []
+        ):
+            return True
     scope_sources = scopes["source_artifacts"]
     text_source = scope_sources.get("text_entities") or {}
     graph_source = scope_sources.get("side_graph_entities") or {}
