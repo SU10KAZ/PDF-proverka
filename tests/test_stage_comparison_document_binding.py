@@ -370,15 +370,20 @@ def test_ios_foreign_document_yields_mismatch_and_no_checked_record(
     )
 
     assert scope_join["document_binding"]["state"] == BINDING_MISMATCH
+    assert not [item for item in scope_join["scopes"] if item["status"] == "RESOLVED"]
+    assert any(
+        "graphic_page_identity_unresolved" in item["reason_codes"]
+        for item in scope_join["scopes"]
+    )
     assert coverage["summary"]["by_state"]["CHECKED"] == 0
     assert not [item for item in coverage["coverage"] if item["state"] == "CHECKED"]
     assert any(
         "document_binding_mismatch" in item["reason_codes"]
-        for item in coverage["coverage"]
+        for item in coverage["scope_processing"]
     )
 
 
-def test_ios_without_descriptors_is_unproven_and_keeps_current_numbers(ios_corpus):
+def test_ios_without_descriptors_is_unproven_and_forbids_checked_coverage(ios_corpus):
     groups = _group(ios_corpus["ledger"], ios_corpus["comparison"])
 
     scope_join, coverage = _build(
@@ -390,12 +395,11 @@ def test_ios_without_descriptors_is_unproven_and_keeps_current_numbers(ios_corpu
     )
 
     assert scope_join["document_binding"]["state"] == BINDING_UNPROVEN
-    assert coverage["summary"]["by_state"] == {
-        "CHECKED": 76,
-        "CHECK_BLOCKED": 0,
-        "NOT_APPLICABLE": 1785,
-        "NOT_CHECKED": 995,
-    }
+    assert coverage["summary"]["by_state"]["CHECKED"] == 0
+    assert any(
+        "document_binding_unproven" in item["reason_codes"]
+        for item in coverage["scope_processing"]
+    )
 
 
 def test_ar_pair_without_any_graphic_is_unproven_and_unchanged():

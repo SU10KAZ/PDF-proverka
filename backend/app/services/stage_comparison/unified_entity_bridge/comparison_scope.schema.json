@@ -6,9 +6,9 @@
   "additionalProperties": false,
   "required": ["schema_version", "kind", "scope_join_version", "document_binding", "page_convention", "versions", "source_signature", "source_artifacts", "scopes", "diagnostics"],
   "properties": {
-    "schema_version": {"const": "text-graphic-scope-join.v2"},
+    "schema_version": {"const": "text-graphic-scope-join.v3"},
     "kind": {"const": "stage_comparison_text_graphic_scope_join"},
-    "scope_join_version": {"const": "explicit-page-base-scope-join-v2"},
+    "scope_join_version": {"const": "document-version-page-scope-join-v3"},
     "document_binding": {
       "type": "object",
       "additionalProperties": false,
@@ -34,22 +34,25 @@
     "page_convention": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["version", "text", "graphic", "canonical", "text_to_canonical"],
+      "required": ["version", "text", "graphic", "canonical", "text_to_canonical", "identity", "cross_document"],
       "properties": {
-        "version": {"const": "pdf-page-1based-to-index-0based-v2"},
+        "version": {"const": "document-version-page-identity-v3"},
         "text": {"const": "pdf_page_1based"},
         "graphic": {"const": "page_index_0based"},
         "canonical": {"const": "page_index_0based"},
-        "text_to_canonical": {"const": "pdf_page_1based - 1"}
+        "text_to_canonical": {"const": "pdf_page_1based - 1"},
+        "identity": {"const": "document + version + canonical page"},
+        "cross_document": {"const": "PROVEN parent page relation only"}
       }
     },
     "versions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["entity_bridge", "side_bridge"],
+      "required": ["entity_bridge", "side_bridge", "parent_page_relation"],
       "properties": {
         "entity_bridge": {"type": "string", "minLength": 1},
-        "side_bridge": {"type": "string", "minLength": 1}
+        "side_bridge": {"type": "string", "minLength": 1},
+        "parent_page_relation": {"const": "parent-page-relation.v1"}
       }
     },
     "source_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},

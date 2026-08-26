@@ -24,7 +24,9 @@ from backend.app.services.stage_comparison.graphic_comparison.contract import (
 )
 
 from .document_binding import (
+    BINDING_PROVEN,
     DocumentBindingValidationError,
+    compare_document_identity,
     normalize_document_descriptor,
     normalize_pair_documents,
     validate_document_binding,
@@ -36,6 +38,15 @@ from .page_identity import (
     graphic_page_index_0based_to_canonical_index,
     text_pdf_page_1based_to_canonical_index,
 )
+from .parent_page_relation import (
+    ParentPageRelationValidationError,
+    RELATION_AMBIGUOUS,
+    RELATION_MISMATCH,
+    RELATION_PROVEN,
+    RELATION_UNPROVEN,
+    RELATION_VERSION,
+    normalize_parent_page_relations,
+)
 from .side_entity_contract import (
     SIDE_BRIDGE_VERSION,
     validate_side_graph_entities,
@@ -46,9 +57,9 @@ from .text_entity_producer import (
 )
 
 
-SCHEMA_VERSION = "text-graphic-scope-join.v2"
+SCHEMA_VERSION = "text-graphic-scope-join.v3"
 KIND = "stage_comparison_text_graphic_scope_join"
-SCOPE_JOIN_VERSION = "explicit-page-base-scope-join-v2"
+SCOPE_JOIN_VERSION = "document-version-page-scope-join-v3"
 SCOPE_STATES = frozenset({"RESOLVED", "UNRESOLVED_SCOPE"})
 
 _BUCKETS = (
@@ -385,9 +396,11 @@ def _source_artifacts(
     side_graph_entities: dict[str, Any],
     graphic_groups: list[dict[str, Any]],
     pair_documents: dict[str, Any] | None = None,
+    parent_page_relations: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     return {
         "pair_documents": pair_documents,
+        "parent_page_relations": parent_page_relations or [],
         "stage53": {
             "pair_id": stage53["pair_id"],
             "schema_version": stage53["schema_version"],
@@ -420,23 +433,125 @@ def _scope_signature(sources: dict[str, Any]) -> str:
             "page_convention_version": PAGE_CONVENTION_VERSION,
             "entity_bridge_version": BRIDGE_VERSION,
             "side_bridge_version": SIDE_BRIDGE_VERSION,
+            "parent_page_relation_version": RELATION_VERSION,
             "source_artifacts": sources,
         }
     )
 
 
+def _resolve_pair_side_page(
+    pair_side: dict[str, Any],
+    selected_document: dict[str, Any] | None,
+    parent_page_relations: list[dict[str, Any]],
+) -> tuple[int | None, list[str], str | None]:
+    graphic_document = pair_side.get("document")
+    if graphic_document is None:
+        return None, ["graphic_document_version_identity_absent"], None
+    if selected_document is None:
+        return None, ["selected_text_document_version_identity_absent"], None
+    identity_state, identity_reasons = compare_document_identity(
+        selected_document, graphic_document
+    )
+    if identity_state == BINDING_PROVEN:
+        return (
+            pair_side["canonical_page_index"],
+            ["exact_document_version_page_identity"],
+            "EXACT",
+        )
+
+    local_page = pair_side["canonical_page_index"]
+    matching_relations = []
+    for relation in parent_page_relations:
+        child = relation["excerpt"]
+        child_state, _ = compare_document_identity(
+            child["document"], graphic_document
+        )
+        if child_state == BINDING_PROVEN and child["page_index_0based"] == local_page:
+            matching_relations.append(relation)
+
+    candidates: set[int] = set()
+    reasons = [*identity_reasons]
+    state_reasons = {
+        RELATION_AMBIGUOUS: "parent_page_relation_ambiguous",
+        RELATION_UNPROVEN: "parent_page_relation_unproven",
+        RELATION_MISMATCH: "parent_page_relation_mismatch",
+    }
+    for relation in matching_relations:
+        if relation["state"] != RELATION_PROVEN:
+            reasons.append(state_reasons[relation["state"]])
+            reasons.extend(relation["reason_codes"])
+            continue
+        parent = relation["parent"]
+        parent_state, parent_reasons = compare_document_identity(
+            selected_document, parent["document"]
+        )
+        if parent_state == BINDING_PROVEN:
+            candidates.add(parent["page_index_0based"])
+        else:
+            reasons.append("parent_page_relation_target_mismatch")
+            reasons.extend(parent_reasons)
+    if len(candidates) == 1:
+        return (
+            next(iter(candidates)),
+            ["proven_parent_page_relation"],
+            "PARENT_RELATION",
+        )
+    if len(candidates) > 1:
+        reasons.append("multiple_proven_parent_page_targets")
+    if not matching_relations:
+        reasons.append("proven_parent_page_relation_absent")
+    reasons.append("cross_document_page_identity_unresolved")
+    return None, sorted(set(reasons)), None
+
+
+def _resolve_graphic_group_pages(
+    group: dict[str, Any],
+    pair_documents: dict[str, Any] | None,
+    parent_page_relations: list[dict[str, Any]],
+) -> dict[str, Any]:
+    pages = {"LEFT": [], "RIGHT": []}
+    reasons: list[str] = []
+    methods: set[str] = set()
+    for pair in group["block_pairs"]:
+        for side in ("LEFT", "RIGHT"):
+            page, side_reasons, method = _resolve_pair_side_page(
+                pair[side.lower()],
+                (pair_documents or {}).get(side),
+                parent_page_relations,
+            )
+            reasons.extend(f"{side.lower()}:{item}" for item in side_reasons)
+            if page is not None:
+                pages[side].append(page)
+            if method is not None:
+                methods.add(method)
+    expected_pages = len(group["block_pairs"])
+    resolved = all(len(pages[side]) == expected_pages for side in ("LEFT", "RIGHT"))
+    return {
+        "resolved": resolved,
+        "pages": pages,
+        "methods": sorted(methods),
+        "reason_codes": sorted(set(reasons)),
+    }
+
+
 def _group_candidates(
-    text_group: dict[str, Any], graphic_groups: list[dict[str, Any]]
+    text_group: dict[str, Any],
+    graphic_groups: list[dict[str, Any]],
+    resolutions: dict[str, dict[str, Any]],
 ) -> list[str]:
     left_pages = set(text_group["left"]["canonical_page_indexes_0based"])
     right_pages = set(text_group["right"]["canonical_page_indexes_0based"])
     return [
         group["graphic_scope_group_id"]
         for group in graphic_groups
-        if all(
-            pair["left"]["canonical_page_index"] in left_pages
-            and pair["right"]["canonical_page_index"] in right_pages
-            for pair in group["block_pairs"]
+        if resolutions[group["graphic_scope_group_id"]]["resolved"]
+        and all(
+            page in left_pages
+            for page in resolutions[group["graphic_scope_group_id"]]["pages"]["LEFT"]
+        )
+        and all(
+            page in right_pages
+            for page in resolutions[group["graphic_scope_group_id"]]["pages"]["RIGHT"]
         )
     ]
 
@@ -449,6 +564,7 @@ def build_scope_join(
     *,
     current_text_evidence_index: Any = None,
     pair_documents: Any = None,
+    parent_page_relations: Any = None,
 ) -> dict[str, Any]:
     stage = _validate_stage53(stage53)
     text = validate_text_entities(text_entities)
@@ -460,9 +576,22 @@ def build_scope_join(
     ):
         raise ScopeJoinValidationError("TEXT_ENTITIES stale for current Stage 5.3")
     groups = normalize_graphic_scope_groups(graphic_scope_groups)
+    try:
+        documents = normalize_pair_documents(pair_documents)
+        relations = normalize_parent_page_relations(parent_page_relations)
+    except (DocumentBindingValidationError, ParentPageRelationValidationError) as error:
+        raise ScopeJoinValidationError(f"scope join source identity: {error}") from error
     text_groups = _stage_groups(stage, text)
+    group_resolutions = {
+        group["graphic_scope_group_id"]: _resolve_graphic_group_pages(
+            group, documents, relations
+        )
+        for group in groups
+    }
     candidates_by_text = {
-        group["sheet_group_id"]: _group_candidates(group, groups)
+        group["sheet_group_id"]: _group_candidates(
+            group, groups, group_resolutions
+        )
         for group in text_groups
     }
     text_candidates_by_graphic: dict[str, list[str]] = defaultdict(list)
@@ -484,7 +613,14 @@ def build_scope_join(
         )
         if resolved_id is not None:
             state = "RESOLVED"
-            reasons = ["exact_canonical_page_membership_unique"]
+            methods = group_resolutions[resolved_id]["methods"]
+            reasons = [
+                (
+                    "proven_parent_page_relation_unique"
+                    if "PARENT_RELATION" in methods
+                    else "exact_document_version_page_identity_unique"
+                )
+            ]
             graphic_scope = graphic_by_id[resolved_id]
             resolved_graphics.add(resolved_id)
         else:
@@ -492,6 +628,16 @@ def build_scope_join(
             graphic_scope = None
             if not candidates:
                 reasons = ["no_graphic_scope_group_on_canonical_pages"]
+                unresolved_identity = sorted(
+                    {
+                        reason
+                        for resolution in group_resolutions.values()
+                        if not resolution["resolved"]
+                        for reason in resolution["reason_codes"]
+                    }
+                )
+                if unresolved_identity:
+                    reasons = ["graphic_page_identity_unresolved", *unresolved_identity]
             elif len(candidates) > 1:
                 reasons = ["multiple_graphic_scope_groups_on_sheet"]
             else:
@@ -532,19 +678,25 @@ def build_scope_join(
         if group_id in resolved_graphics:
             continue
         candidates = sorted(text_candidates_by_graphic[group_id])
-        reason = (
-            "no_text_scope_candidate"
-            if not candidates
-            else "graphic_scope_group_matches_multiple_sheet_groups"
-        )
+        resolution = group_resolutions[group_id]
+        if not resolution["resolved"]:
+            reasons = ["graphic_page_identity_unresolved", *resolution["reason_codes"]]
+        else:
+            reasons = [
+                (
+                    "no_text_scope_candidate"
+                    if not candidates
+                    else "graphic_scope_group_matches_multiple_sheet_groups"
+                )
+            ]
         scopes.append(
             {
                 "scope_ref": _stable_id(
-                    "scope_", stage["pair_id"], None, group, reason
+                    "scope_", stage["pair_id"], None, group, reasons
                 ),
                 "scope_level": "SHEET",
                 "status": "UNRESOLVED_SCOPE",
-                "reason_codes": [reason],
+                "reason_codes": reasons,
                 "text_scope": None,
                 "graphic_scope_group": group,
                 "child_block_scopes": [],
@@ -552,12 +704,8 @@ def build_scope_join(
         )
 
     scopes.sort(key=lambda item: item["scope_ref"])
-    try:
-        documents = normalize_pair_documents(pair_documents)
-        binding = verify_document_binding(documents, groups)
-    except DocumentBindingValidationError as error:
-        raise ScopeJoinValidationError(f"scope join.pair_documents: {error}") from error
-    sources = _source_artifacts(stage, text, graphics, groups, documents)
+    binding = verify_document_binding(documents, groups, relations)
+    sources = _source_artifacts(stage, text, graphics, groups, documents, relations)
     payload = {
         "schema_version": SCHEMA_VERSION,
         "kind": KIND,
@@ -569,10 +717,13 @@ def build_scope_join(
             "graphic": "page_index_0based",
             "canonical": "page_index_0based",
             "text_to_canonical": "pdf_page_1based - 1",
+            "identity": "document + version + canonical page",
+            "cross_document": "PROVEN parent page relation only",
         },
         "versions": {
             "entity_bridge": BRIDGE_VERSION,
             "side_bridge": SIDE_BRIDGE_VERSION,
+            "parent_page_relation": RELATION_VERSION,
         },
         "source_signature": _scope_signature(sources),
         "source_artifacts": sources,
@@ -622,12 +773,23 @@ def validate_scope_join(payload: Any) -> dict[str, Any]:
         raise ScopeJoinValidationError(
             "scope join.document_binding: pair documents disagree with source artifacts"
         )
+    try:
+        relations = normalize_parent_page_relations(
+            payload["source_artifacts"].get("parent_page_relations")
+        )
+    except ParentPageRelationValidationError as error:
+        raise ScopeJoinValidationError(
+            f"scope join.parent_page_relations: {error}"
+        ) from error
+    if relations != payload["source_artifacts"].get("parent_page_relations"):
+        raise ScopeJoinValidationError("scope join.parent_page_relations: non-canonical")
     page = payload["page_convention"]
     if not isinstance(page, dict) or page.get("version") != PAGE_CONVENTION_VERSION:
         raise ScopeJoinValidationError("scope join.page_convention: invalid")
     if payload.get("versions") != {
         "entity_bridge": BRIDGE_VERSION,
         "side_bridge": SIDE_BRIDGE_VERSION,
+        "parent_page_relation": RELATION_VERSION,
     }:
         raise ScopeJoinValidationError("scope join.versions: invalid")
     if payload["source_signature"] != _scope_signature(payload["source_artifacts"]):
@@ -697,6 +859,7 @@ def scope_join_is_stale(
     graphic_scope_groups: Any,
     *,
     current_text_evidence_index: Any = None,
+    parent_page_relations: Any = None,
 ) -> bool:
     try:
         current_stage = _validate_stage53(stage53)
@@ -704,6 +867,11 @@ def scope_join_is_stale(
         current_graphics = validate_side_graph_entities(side_graph_entities)
         groups = normalize_graphic_scope_groups(graphic_scope_groups)
         validated = validate_scope_join(artifact)
+        relations = (
+            normalize_parent_page_relations(parent_page_relations)
+            if parent_page_relations is not None
+            else validated["source_artifacts"].get("parent_page_relations", [])
+        )
     except (ScopeJoinValidationError, TypeError, ValueError):
         return True
     # Document binding is part of the saved evidence, not of the current call:
@@ -714,6 +882,7 @@ def scope_join_is_stale(
         current_graphics,
         groups,
         validated["document_binding"]["pair_documents"],
+        relations,
     )
     return (
         current_text["source_artifact"]["artifact_digest"] != _digest(current_stage)

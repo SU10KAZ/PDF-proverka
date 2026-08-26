@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 
-PAGE_CONVENTION_VERSION = "pdf-page-1based-to-index-0based-v2"
+PAGE_CONVENTION_VERSION = "document-version-page-identity-v3"
 
 
 class PageIdentityValidationError(ValueError):

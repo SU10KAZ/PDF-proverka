@@ -18,7 +18,11 @@ from .comparison_scope import (
     validate_scope_join,
 )
 from .document_binding import (
+    BINDING_AMBIGUOUS,
+    BINDING_ERROR,
     BINDING_MISMATCH,
+    BINDING_PROVEN,
+    BINDING_UNPROVEN,
     DocumentBindingValidationError,
     validate_document_binding,
 )
@@ -39,16 +43,21 @@ from .side_entity_contract import (
 from .text_entity_producer import validate_text_entities
 
 
-SCHEMA_VERSION = "graphic-coverage.v3"
+SCHEMA_VERSION = "graphic-coverage.v4"
 KIND = "stage_comparison_graphic_coverage"
-COVERAGE_BUILDER_VERSION = "graphic-coverage-builder-v3"
+COVERAGE_BUILDER_VERSION = "graphic-coverage-builder-v4"
 COVERAGE_STATES = frozenset(
     {"CHECKED", "NOT_CHECKED", "CHECK_BLOCKED", "NOT_APPLICABLE"}
 )
 SUBJECT_KINDS = frozenset({"TEXT_ENTITY", "GRAPH_ENTITY"})
 #: Reason attached to every record demoted because the graphic blocks are
 #: proven to belong to different documents than the Stage 5.3 pair.
-_BINDING_MISMATCH_REASON = "document_binding_mismatch"
+_BINDING_BLOCK_REASONS = {
+    BINDING_UNPROVEN: "document_binding_unproven",
+    BINDING_AMBIGUOUS: "document_binding_ambiguous",
+    BINDING_MISMATCH: "document_binding_mismatch",
+    BINDING_ERROR: "document_binding_error",
+}
 SCOPE_PROCESSING_STATES = frozenset(
     {
         "SCOPE_PROCESSED",
@@ -570,9 +579,15 @@ def build_graphic_coverage(
         raise GraphicCoverageValidationError(
             f"graphic coverage.document_binding: {error}"
         ) from error
-    # Fail closed on a proven contradiction only.  UNPROVEN keeps the previous
-    # behaviour untouched: absence of evidence is not evidence of absence.
-    binding_mismatch = binding["state"] == BINDING_MISMATCH
+    # This manifest joins GRAPHIC evidence into the TEXT source domain.  Only a
+    # proven document/version binding may produce CHECKED cross-source records.
+    # Direct PAGE-to-PAGE graphic comparison is a separate service and remains
+    # valid without any parent-document relation.
+    binding_block_reason = _BINDING_BLOCK_REASONS.get(binding["state"])
+    if binding["state"] != BINDING_PROVEN and binding_block_reason is None:
+        raise GraphicCoverageValidationError(
+            f"graphic coverage.document_binding: unsupported state {binding['state']}"
+        )
 
     records: list[dict[str, Any]] = []
     scope_processing: list[dict[str, Any]] = []
@@ -580,11 +595,13 @@ def build_graphic_coverage(
         scope_states: dict[str, tuple[str, list[str]]] = {}
         for dimension in DIMENSIONS:
             state = _scope_dimension_state(scope, dimension, raw_pairs)
-            if binding_mismatch and state[0] == "CHECKED":
+            if binding_block_reason is not None and state[0] == "CHECKED":
                 state = (
                     "CHECK_BLOCKED",
-                    [_BINDING_MISMATCH_REASON, *state[1]],
+                    [binding_block_reason, *state[1]],
                 )
+            elif binding_block_reason is not None and state[0] != "NOT_APPLICABLE":
+                state = (state[0], [binding_block_reason, *state[1]])
             scope_states[dimension] = state
             scope_processing.append(_scope_processing_record(scope, dimension, state))
         graph_for_scope: list[dict[str, Any]] = []
@@ -655,15 +672,15 @@ def build_graphic_coverage(
                     )
                 )
 
-    if binding_mismatch:
+    if binding_block_reason is not None:
         # Belt and braces: the scope-state demotion above already cascades to
-        # every subject, but the invariant "no CHECKED under a proven document
-        # mismatch" must hold by construction, not by branch analysis.
+        # every subject, but the invariant "no CHECKED without a proven
+        # cross-source binding" must hold by construction.
         for item in records:
             if item["state"] == "CHECKED":
                 item["state"] = "CHECK_BLOCKED"
                 item["reason_codes"] = sorted(
-                    {_BINDING_MISMATCH_REASON, *item["reason_codes"]}
+                    {binding_block_reason, *item["reason_codes"]}
                 )
 
     records.sort(key=lambda item: item["coverage_id"])

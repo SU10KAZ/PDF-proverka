@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "parent_page_relation.schema.json",
+  "title": "Externally proven excerpt-to-parent page relation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "relation_version",
+    "state",
+    "reason_codes",
+    "excerpt",
+    "parent",
+    "evidence"
+  ],
+  "properties": {
+    "relation_version": {"const": "parent-page-relation.v1"},
+    "state": {"enum": ["PROVEN", "AMBIGUOUS", "UNPROVEN", "MISMATCH"]},
+    "reason_codes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "excerpt": {"$ref": "#/$defs/page_reference"},
+    "parent": {
+      "oneOf": [
+        {"$ref": "#/$defs/page_reference"},
+        {"type": "null"}
+      ]
+    },
+    "evidence": {
+      "oneOf": [
+        {"$ref": "#/$defs/evidence"},
+        {"type": "null"}
+      ]
+    }
+  },
+  "if": {"properties": {"state": {"const": "PROVEN"}}},
+  "then": {
+    "properties": {
+      "parent": {"$ref": "#/$defs/page_reference"},
+      "evidence": {"$ref": "#/$defs/evidence"}
+    }
+  },
+  "$defs": {
+    "document_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_code",
+        "version_id",
+        "storage_identity",
+        "source_path",
+        "provenance"
+      ],
+      "properties": {
+        "document_code": {"type": ["string", "null"], "minLength": 1},
+        "version_id": {"type": "string", "minLength": 1},
+        "storage_identity": {"type": ["string", "null"], "minLength": 1},
+        "source_path": {"type": ["string", "null"], "minLength": 1},
+        "provenance": {"enum": ["ARTIFACT", "CLI_ARGUMENT"]}
+      },
+      "anyOf": [
+        {"properties": {"document_code": {"type": "string"}}},
+        {"properties": {"storage_identity": {"type": "string"}}}
+      ]
+    },
+    "page_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document", "page_index_0based"],
+      "properties": {
+        "document": {"$ref": "#/$defs/document_reference"},
+        "page_index_0based": {"type": "integer", "minimum": 0}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer_id", "evidence_id"],
+      "properties": {
+        "producer_id": {"type": "string", "minLength": 1},
+        "evidence_id": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

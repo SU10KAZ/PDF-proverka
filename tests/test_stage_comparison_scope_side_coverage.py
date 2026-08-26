@@ -34,6 +34,13 @@ from backend.app.services.stage_comparison.unified_entity_bridge.graphic_coverag
     saved_coverage_bundle_is_stale,
     schema_path as coverage_schema_path,
 )
+from backend.app.services.stage_comparison.unified_entity_bridge.parent_page_relation import (
+    RELATION_AMBIGUOUS,
+    RELATION_PROVEN,
+    RELATION_UNPROVEN,
+    make_parent_page_relation,
+    schema_path as parent_relation_schema_path,
+)
 from backend.app.services.stage_comparison.unified_entity_bridge.side_entity_contract import (
     build_side_entity_links,
     build_side_graph_entities,
@@ -60,6 +67,22 @@ AR_STAGE53_PATH = (
     / "comparison/sessions/121d764109184c13/pairs/p570d156f57"
     / "high_level_project_changes.json"
 )
+
+
+def _document(code: str) -> dict:
+    return {
+        "document_code": code,
+        "version_id": "v001",
+        "storage_identity": None,
+        "source_path": None,
+        "provenance": "ARTIFACT",
+    }
+
+
+PAIR_DOCUMENTS = {
+    "LEFT": _document("CONTROLLED_LEFT"),
+    "RIGHT": _document("CONTROLLED_RIGHT"),
+}
 
 
 def _read(path: Path) -> dict:
@@ -187,6 +210,8 @@ def _mode1_group(
     *,
     left_page: int = 0,
     right_page: int = 0,
+    left_document: dict | None = None,
+    right_document: dict | None = None,
 ) -> dict:
     return {
         "block_pairs": [
@@ -198,6 +223,8 @@ def _mode1_group(
                     right_page=right_page,
                 ),
                 "comparison_result": None,
+                "left_document": left_document or PAIR_DOCUMENTS["LEFT"],
+                "right_document": right_document or PAIR_DOCUMENTS["RIGHT"],
             }
         ]
     }
@@ -236,7 +263,9 @@ def _semantic_states(manifest: dict) -> list[tuple]:
 def _build_for_pairs(real_ios, pairs: list[dict]):
     stage, _, _, _, text, graphs, links, _, _, _ = real_ios
     groups = [{"block_pairs": pairs}]
-    scopes = build_scope_join(stage, text, graphs, groups)
+    scopes = build_scope_join(
+        stage, text, graphs, groups, pair_documents=PAIR_DOCUMENTS
+    )
     manifest = build_graphic_coverage(
         stage, text, graphs, links, scopes, groups
     )
@@ -258,7 +287,15 @@ def real_ios():
             ]
         }
     ]
-    scopes = build_scope_join(stage, text, graphs, groups)
+    groups[0]["block_pairs"][0].update(
+        {
+            "left_document": PAIR_DOCUMENTS["LEFT"],
+            "right_document": PAIR_DOCUMENTS["RIGHT"],
+        }
+    )
+    scopes = build_scope_join(
+        stage, text, graphs, groups, pair_documents=PAIR_DOCUMENTS
+    )
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, groups)
     return stage, left, right, comparison, text, graphs, links, groups, scopes, manifest
 
@@ -270,7 +307,9 @@ def test_page_base_is_explicit_and_text_page_one_does_not_match_graphic_index_on
         "left-page-two", "right-page-two", left_page=1, right_page=1
     )
 
-    scopes = build_scope_join(stage, text, graphs, [wrong_page_group])
+    scopes = build_scope_join(
+        stage, text, graphs, [wrong_page_group], pair_documents=PAIR_DOCUMENTS
+    )
 
     assert pdf_page_to_canonical_index(1) == 0
     assert graphic_page_to_canonical_index(1) == 1
@@ -285,6 +324,126 @@ def test_canonical_page_matrix(text_page, graphic_index):
     assert graphic_page_to_canonical_index(graphic_index) == graphic_index
 
 
+def test_excerpt_local_page_zero_is_not_parent_page_one_without_relation():
+    stage = _stage53(left_page=1, right_page=1)
+    text, graphs, _ = _base(stage)
+    excerpt = _document("LEFT_EXCERPT")
+    group = _mode1_group(
+        "left-excerpt",
+        "right-full",
+        left_document=excerpt,
+    )
+
+    scopes = build_scope_join(
+        stage,
+        text,
+        graphs,
+        [group],
+        pair_documents=PAIR_DOCUMENTS,
+    )
+    text_scope = next(item for item in scopes["scopes"] if item["text_scope"])
+
+    assert text_scope["status"] == "UNRESOLVED_SCOPE"
+    assert "graphic_page_identity_unresolved" in text_scope["reason_codes"]
+    assert "left:proven_parent_page_relation_absent" in text_scope["reason_codes"]
+
+
+def test_explicit_proven_parent_relation_resolves_parent_page():
+    stage = _stage53(left_page=1, right_page=1)
+    text, graphs, _ = _base(stage)
+    excerpt = _document("LEFT_EXCERPT")
+    group = _mode1_group(
+        "left-excerpt",
+        "right-full",
+        left_document=excerpt,
+    )
+    relation = make_parent_page_relation(
+        state=RELATION_PROVEN,
+        excerpt={"document": excerpt, "page_index_0based": 0},
+        parent={"document": PAIR_DOCUMENTS["LEFT"], "page_index_0based": 0},
+        reason_codes=["external_deterministic_page_proof"],
+        evidence={"producer_id": "test-proof-producer", "evidence_id": "proof-1"},
+    )
+
+    scopes = build_scope_join(
+        stage,
+        text,
+        graphs,
+        [group],
+        pair_documents=PAIR_DOCUMENTS,
+        parent_page_relations=[relation],
+    )
+    resolved = next(item for item in scopes["scopes"] if item["status"] == "RESOLVED")
+
+    assert resolved["reason_codes"] == ["proven_parent_page_relation_unique"]
+    assert scopes["document_binding"]["state"] == "DOCUMENT_BINDING_PROVEN"
+
+
+@pytest.mark.parametrize("relation_state", [RELATION_UNPROVEN, RELATION_AMBIGUOUS])
+def test_non_proven_parent_relation_keeps_scope_unresolved(relation_state):
+    stage = _stage53(left_page=1, right_page=1)
+    text, graphs, _ = _base(stage)
+    excerpt = _document("LEFT_EXCERPT")
+    group = _mode1_group(
+        "left-excerpt",
+        "right-full",
+        left_document=excerpt,
+    )
+    relation = make_parent_page_relation(
+        state=relation_state,
+        excerpt={"document": excerpt, "page_index_0based": 0},
+        parent={"document": PAIR_DOCUMENTS["LEFT"], "page_index_0based": 0},
+        reason_codes=["external_proof_not_conclusive"],
+    )
+
+    scopes = build_scope_join(
+        stage,
+        text,
+        graphs,
+        [group],
+        pair_documents=PAIR_DOCUMENTS,
+        parent_page_relations=[relation],
+    )
+    text_scope = next(item for item in scopes["scopes"] if item["text_scope"])
+
+    assert text_scope["status"] == "UNRESOLVED_SCOPE"
+    assert f"left:parent_page_relation_{relation_state.lower()}" in text_scope[
+        "reason_codes"
+    ]
+
+
+def test_ambiguous_document_binding_has_distinct_coverage_reason():
+    stage = _stage53()
+    text, graphs, links = _base(stage)
+    groups = [
+        {
+            "block_pairs": [
+                _mode1_group(
+                    "left-a",
+                    "right-a",
+                    left_document=_document("LEFT_A"),
+                    right_document=_document("RIGHT_A"),
+                )["block_pairs"][0],
+                _mode1_group(
+                    "left-b",
+                    "right-b",
+                    left_document=_document("LEFT_B"),
+                    right_document=_document("RIGHT_B"),
+                )["block_pairs"][0],
+            ]
+        }
+    ]
+
+    scopes = build_scope_join(stage, text, graphs, groups)
+    manifest = build_graphic_coverage(stage, text, graphs, links, scopes, groups)
+
+    assert scopes["document_binding"]["state"] == "DOCUMENT_BINDING_AMBIGUOUS"
+    assert any(
+        "document_binding_ambiguous" in item["reason_codes"]
+        for item in manifest["scope_processing"]
+    )
+
+
 def test_one_sheet_with_multiple_explicit_block_children_is_valid():
     stage = _stage53()
     text, graphs, _ = _base(stage)
@@ -295,7 +454,9 @@ def test_one_sheet_with_multiple_explicit_block_children_is_valid():
         ]
     }
 
-    scopes = build_scope_join(stage, text, graphs, [group])
+    scopes = build_scope_join(
+        stage, text, graphs, [group], pair_documents=PAIR_DOCUMENTS
+    )
     resolved = next(item for item in scopes["scopes"] if item["status"] == "RESOLVED")
 
     assert scopes["diagnostics"]["resolved_scopes"] == 1
@@ -311,6 +472,7 @@ def test_block_on_other_page_does_not_join_and_ambiguous_groups_fail_closed():
         text,
         graphs,
         [_mode1_group("left-other", "right-other", left_page=2, right_page=2)],
+        pair_documents=PAIR_DOCUMENTS,
     )
     ambiguous = build_scope_join(
         stage,
@@ -320,6 +482,7 @@ def test_block_on_other_page_does_not_join_and_ambiguous_groups_fail_closed():
             _mode1_group("left-a", "right-a"),
             _mode1_group("left-b", "right-b"),
         ],
+        pair_documents=PAIR_DOCUMENTS,
     )
 
     assert next(item for item in other_page["scopes"] if item["text_scope"])[
@@ -378,7 +541,9 @@ def test_text_side_presence_and_thin_text_scope_query_are_evidence_backed():
 def test_no_system_graph_is_not_checked_and_unsupported_dimension_is_not_applicable():
     stage = _stage53()
     text, graphs, links = _base(stage)
-    scopes = build_scope_join(stage, text, graphs, [])
+    scopes = build_scope_join(
+        stage, text, graphs, [], pair_documents=PAIR_DOCUMENTS
+    )
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, [])
     scope_ref = next(item["scope_ref"] for item in scopes["scopes"] if item["text_scope"])
 
@@ -398,7 +563,9 @@ def test_mode1_local_delta_does_not_claim_system_graph_semantic_coverage():
     stage = _stage53()
     text, graphs, links = _base(stage)
     groups = [_mode1_group("left-local", "right-local")]
-    scopes = build_scope_join(stage, text, graphs, groups)
+    scopes = build_scope_join(
+        stage, text, graphs, groups, pair_documents=PAIR_DOCUMENTS
+    )
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, groups)
     scope_ref = next(
         item["scope_ref"] for item in scopes["scopes"] if item["status"] == "RESOLVED"
@@ -430,7 +597,15 @@ def test_low_quality_mode2_is_check_blocked(real_ios):
             ]
         }
     ]
-    scopes = build_scope_join(stage, text, graphs, groups)
+    groups[0]["block_pairs"][0].update(
+        {
+            "left_document": PAIR_DOCUMENTS["LEFT"],
+            "right_document": PAIR_DOCUMENTS["RIGHT"],
+        }
+    )
+    scopes = build_scope_join(
+        stage, text, graphs, groups, pair_documents=PAIR_DOCUMENTS
+    )
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, groups)
     scope_ref = next(
         item["scope_ref"] for item in scopes["scopes"] if item["status"] == "RESOLVED"
@@ -448,7 +623,9 @@ def test_same_inputs_produce_identical_side_scope_and_coverage_artifacts(real_io
 
     graphs_again = build_side_graph_entities(left_graphs=[left], right_graphs=[right])
     links_again = build_side_entity_links(text, graphs_again)
-    scopes_again = build_scope_join(stage, text, graphs_again, groups)
+    scopes_again = build_scope_join(
+        stage, text, graphs_again, groups, pair_documents=PAIR_DOCUMENTS
+    )
     manifest_again = build_graphic_coverage(
         stage, text, graphs_again, links_again, scopes_again, groups
     )
@@ -626,6 +803,8 @@ def test_good_and_blocked_pairs_with_same_block_propagate_blocked_independent_of
     blocked = {
         "ledger": blocked_ledger,
         "comparison_result": blocked_comparison,
+        "left_document": PAIR_DOCUMENTS["LEFT"],
+        "right_document": PAIR_DOCUMENTS["RIGHT"],
     }
 
     _, first = _build_for_pairs(real_ios, [good, blocked])
@@ -705,7 +884,9 @@ def test_node_permutation_keeps_entity_ids_and_semantic_coverage(real_ios):
         left_graphs=[permuted_left], right_graphs=[permuted_right]
     )
     permuted_links = build_side_entity_links(text, permuted_graphs)
-    permuted_scopes = build_scope_join(stage, text, permuted_graphs, groups)
+    permuted_scopes = build_scope_join(
+        stage, text, permuted_graphs, groups, pair_documents=PAIR_DOCUMENTS
+    )
     permuted_manifest = build_graphic_coverage(
         stage,
         text,
@@ -758,7 +939,9 @@ def test_production_scope_group_producer_groups_all_pairs_by_canonical_page_pair
 def test_real_ar_without_graphs_has_only_not_checked_semantic_coverage():
     stage = _read(AR_STAGE53_PATH)
     text, graphs, links = _base(stage)
-    scopes = build_scope_join(stage, text, graphs, [])
+    scopes = build_scope_join(
+        stage, text, graphs, [], pair_documents=PAIR_DOCUMENTS
+    )
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, [])
     semantic_scope_records = [
         item
@@ -790,8 +973,10 @@ def test_g244_contract_schemas_are_versioned():
     assert [schema["properties"]["schema_version"]["const"] for schema in schemas] == [
         "side-graph-entities.v2",
         "side-entity-links.v1",
-        # Bumped by G2.4.4.2: the scope join now carries document provenance and
-        # coverage carries the resulting binding verdict.
-        "text-graphic-scope-join.v2",
-        "graphic-coverage.v3",
+        "text-graphic-scope-join.v3",
+        "graphic-coverage.v4",
     ]
+    parent_schema = json.loads(parent_relation_schema_path().read_text(encoding="utf-8"))
+    assert parent_schema["properties"]["relation_version"]["const"] == (
+        "parent-page-relation.v1"
+    )
