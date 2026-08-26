@@ -14,20 +14,20 @@
       "additionalProperties": false,
       "required": ["binding_version", "state", "reason_codes", "pair_documents", "sides"],
       "properties": {
-        "binding_version": {"const": "document-binding-v1"},
-        "state": {"enum": ["DOCUMENT_BINDING_PROVEN", "DOCUMENT_BINDING_MISMATCH", "DOCUMENT_BINDING_UNPROVEN"]},
+        "binding_version": {"const": "document-binding-v2"},
+        "state": {"enum": ["DOCUMENT_BINDING_PROVEN", "DOCUMENT_BINDING_MISMATCH", "DOCUMENT_BINDING_UNPROVEN", "DOCUMENT_BINDING_AMBIGUOUS", "DOCUMENT_BINDING_ERROR"]},
         "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "pair_documents": {
           "type": ["object", "null"],
           "additionalProperties": false,
           "required": ["LEFT", "RIGHT"],
-          "properties": {"LEFT": {"type": "object", "additionalProperties": false, "required": ["document_code", "source_path", "provenance"], "properties": {"document_code": {"type": ["string", "null"], "minLength": 1}, "source_path": {"type": ["string", "null"], "minLength": 1}, "provenance": {"enum": ["ARTIFACT", "CLI_ARGUMENT", "ABSENT"]}}}, "RIGHT": {"type": "object", "additionalProperties": false, "required": ["document_code", "source_path", "provenance"], "properties": {"document_code": {"type": ["string", "null"], "minLength": 1}, "source_path": {"type": ["string", "null"], "minLength": 1}, "provenance": {"enum": ["ARTIFACT", "CLI_ARGUMENT", "ABSENT"]}}}}
+          "properties": {"LEFT": {"$ref": "#/$defs/document_reference"}, "RIGHT": {"$ref": "#/$defs/document_reference"}}
         },
         "sides": {
           "type": "object",
           "additionalProperties": false,
           "required": ["LEFT", "RIGHT"],
-          "properties": {"LEFT": {"type": "object", "additionalProperties": false, "required": ["state", "reason_codes", "expected_document_code", "expected_source_path", "expected_provenance", "observed_document_codes", "unbound_block_pairs"], "properties": {"state": {"enum": ["DOCUMENT_BINDING_PROVEN", "DOCUMENT_BINDING_MISMATCH", "DOCUMENT_BINDING_UNPROVEN"]}, "reason_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "expected_document_code": {"type": ["string", "null"], "minLength": 1}, "expected_source_path": {"type": ["string", "null"], "minLength": 1}, "expected_provenance": {"enum": ["ARTIFACT", "CLI_ARGUMENT", "ABSENT"]}, "observed_document_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "unbound_block_pairs": {"type": "integer", "minimum": 0}}}, "RIGHT": {"type": "object", "additionalProperties": false, "required": ["state", "reason_codes", "expected_document_code", "expected_source_path", "expected_provenance", "observed_document_codes", "unbound_block_pairs"], "properties": {"state": {"enum": ["DOCUMENT_BINDING_PROVEN", "DOCUMENT_BINDING_MISMATCH", "DOCUMENT_BINDING_UNPROVEN"]}, "reason_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "expected_document_code": {"type": ["string", "null"], "minLength": 1}, "expected_source_path": {"type": ["string", "null"], "minLength": 1}, "expected_provenance": {"enum": ["ARTIFACT", "CLI_ARGUMENT", "ABSENT"]}, "observed_document_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "unbound_block_pairs": {"type": "integer", "minimum": 0}}}}
+          "properties": {"LEFT": {"$ref": "#/$defs/binding_side"}, "RIGHT": {"$ref": "#/$defs/binding_side"}}
         }
       }
     },
@@ -92,6 +92,32 @@
         "resolved_scopes": {"type": "integer", "minimum": 0},
         "unresolved_scopes": {"type": "integer", "minimum": 0},
         "resolved_child_block_scopes": {"type": "integer", "minimum": 0}
+      }
+    }
+  },
+  "$defs": {
+    "document_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_code", "version_id", "storage_identity", "source_path", "provenance"],
+      "properties": {
+        "document_code": {"type": ["string", "null"], "minLength": 1},
+        "version_id": {"type": ["string", "null"], "minLength": 1},
+        "storage_identity": {"type": ["string", "null"], "minLength": 1},
+        "source_path": {"type": ["string", "null"], "minLength": 1},
+        "provenance": {"enum": ["ARTIFACT", "CLI_ARGUMENT", "ABSENT"]}
+      }
+    },
+    "binding_side": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason_codes", "expected_document", "observed_documents", "unbound_block_pairs"],
+      "properties": {
+        "state": {"enum": ["DOCUMENT_BINDING_PROVEN", "DOCUMENT_BINDING_MISMATCH", "DOCUMENT_BINDING_UNPROVEN", "DOCUMENT_BINDING_AMBIGUOUS", "DOCUMENT_BINDING_ERROR"]},
+        "reason_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "expected_document": {"$ref": "#/$defs/document_reference"},
+        "observed_documents": {"type": "array", "items": {"$ref": "#/$defs/document_reference"}},
+        "unbound_block_pairs": {"type": "integer", "minimum": 0}
       }
     }
   }

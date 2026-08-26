@@ -10,12 +10,16 @@ from .entity_bridge import (
     validate_entity_links_artifact,
 )
 from .document_binding import (
+    BINDING_AMBIGUOUS,
+    BINDING_ERROR,
     BINDING_MISMATCH,
     BINDING_PROVEN,
     BINDING_STATES,
     BINDING_UNPROVEN,
     DocumentBindingValidationError,
+    compare_document_identity,
     document_descriptor_for_block,
+    document_identity_is_complete,
     normalize_document_descriptor,
     normalize_pair_documents,
     pair_documents_from_pair_artifact,
@@ -47,6 +51,8 @@ from .side_entity_contract import (
 from .text_entity_producer import build_text_entities, validate_text_entities
 
 __all__ = [
+    "BINDING_AMBIGUOUS",
+    "BINDING_ERROR",
     "BINDING_MISMATCH",
     "BINDING_PROVEN",
     "BINDING_STATES",
@@ -62,7 +68,9 @@ __all__ = [
     "build_side_graph_entities",
     "build_text_entities",
     "coverage",
+    "compare_document_identity",
     "document_descriptor_for_block",
+    "document_identity_is_complete",
     "entity_links_are_stale",
     "graphic_entities_from_system_graph",
     "normalize_document_descriptor",

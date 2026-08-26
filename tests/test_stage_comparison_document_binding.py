@@ -18,6 +18,7 @@ from backend.app.services.stage_comparison.unified_entity_bridge import (
     build_side_entity_links,
     build_side_graph_entities,
     build_text_entities,
+    compare_document_identity,
     document_descriptor_for_block,
     normalize_graphic_scope_groups,
     pair_documents_from_pair_artifact,
@@ -57,10 +58,18 @@ def _require(*paths: Path) -> None:
             pytest.skip("real comparison corpus is not installed")
 
 
-def _descriptor(code: str, path: str | None = None) -> dict:
+def _descriptor(
+    code: str,
+    path: str | None = None,
+    *,
+    version_id: str = "v001",
+    storage_identity: str | None = None,
+) -> dict:
     return normalize_document_descriptor(
         {
             "document_code": code,
+            "version_id": version_id,
+            "storage_identity": storage_identity,
             "source_path": path,
             "provenance": PROVENANCE_ARTIFACT,
         },
@@ -150,6 +159,7 @@ def _owner_descriptor(block_owners, block_id):
         payload,
         block_id,
         document_code=code,
+        version_id="v001",
         source_path=str(document / "versions/v001/02_work/document.pdf"),
     )
 
@@ -175,7 +185,51 @@ def test_binding_proven_when_every_block_matches_its_pair_document():
     )
 
     assert result["state"] == BINDING_PROVEN
-    assert result["sides"]["LEFT"]["observed_document_codes"] == ["DOC_L"]
+    assert result["sides"]["LEFT"]["observed_documents"] == [_descriptor("DOC_L")]
+
+
+def test_same_document_code_and_same_version_is_proven():
+    state, reasons = compare_document_identity(
+        _descriptor("DOC", version_id="v017"),
+        _descriptor("DOC", version_id="v017"),
+    )
+
+    assert state == BINDING_PROVEN
+    assert reasons == ["document_and_version_identity_equal"]
+
+
+def test_same_document_code_different_version_is_not_same_identity():
+    state, reasons = compare_document_identity(
+        _descriptor("DOC", version_id="v017"),
+        _descriptor("DOC", version_id="v018"),
+    )
+
+    assert state == BINDING_MISMATCH
+    assert reasons == ["version_id_differs"]
+
+
+def test_source_path_is_not_semantic_identity():
+    state, _ = compare_document_identity(
+        _descriptor("DOC", "/old/location.pdf"),
+        _descriptor("DOC", "/new/location.pdf"),
+    )
+
+    assert state == BINDING_PROVEN
+
+
+def test_different_identity_channels_do_not_prove_a_match():
+    state, reasons = compare_document_identity(
+        _descriptor("DOC", version_id="v001"),
+        _descriptor(
+            "IGNORED",
+            version_id="v001",
+            storage_identity="stored-document-1",
+        )
+        | {"document_code": None},
+    )
+
+    assert state == BINDING_UNPROVEN
+    assert reasons == ["document_identity_not_comparable"]
 
 
 def test_binding_mismatch_is_not_the_same_as_unproven():
@@ -199,7 +253,7 @@ def test_binding_mismatch_is_not_the_same_as_unproven():
     assert mismatch["state"] != unproven["state"]
 
 
-def test_missing_document_code_is_unproven_never_mismatch():
+def test_missing_document_identity_is_unproven_never_mismatch():
     groups = [{"block_pairs": [{"left": {}, "right": {}}]}]
 
     result = verify_document_binding(
@@ -207,7 +261,7 @@ def test_missing_document_code_is_unproven_never_mismatch():
     )
 
     assert result["state"] == BINDING_UNPROVEN
-    assert "left:block_document_code_absent" in result["reason_codes"]
+    assert "left:block_document_version_identity_incomplete" in result["reason_codes"]
 
 
 def test_no_graphic_groups_is_unproven_not_mismatch():
@@ -243,7 +297,12 @@ def test_verdict_is_independent_of_block_pair_order():
 def test_descriptor_rejects_code_without_provenance_and_unknown_fields():
     with pytest.raises(DocumentBindingValidationError):
         normalize_document_descriptor(
-            {"document_code": "A", "provenance": PROVENANCE_ABSENT}, "where"
+            {
+                "document_code": "A",
+                "version_id": "v001",
+                "provenance": PROVENANCE_ABSENT,
+            },
+            "where",
         )
     with pytest.raises(DocumentBindingValidationError):
         normalize_document_descriptor({"document_code": "A", "nope": 1}, "where")
