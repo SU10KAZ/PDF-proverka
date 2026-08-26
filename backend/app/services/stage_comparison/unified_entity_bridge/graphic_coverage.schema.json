@@ -6,9 +6,9 @@
   "additionalProperties": false,
   "required": ["schema_version", "kind", "builder_version", "coverage_policy", "versions", "source_signature", "source_artifacts", "scope_processing", "coverage", "summary"],
   "properties": {
-    "schema_version": {"const": "graphic-coverage.v2"},
+    "schema_version": {"const": "graphic-coverage.v3"},
     "kind": {"const": "stage_comparison_graphic_coverage"},
-    "builder_version": {"const": "graphic-coverage-builder-v2"},
+    "builder_version": {"const": "graphic-coverage-builder-v3"},
     "coverage_policy": {
       "type": "object",
       "required": ["version", "dimensions", "routes"],

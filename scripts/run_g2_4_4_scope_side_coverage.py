@@ -19,6 +19,7 @@ from backend.app.services.stage_comparison.graphic_comparison import (  # noqa: 
 )
 from backend.app.services.stage_comparison.unified_entity_bridge import (  # noqa: E402
     build_graphic_coverage,
+    pair_documents_from_pair_artifact,
     build_scope_join,
     build_side_entity_links,
     build_side_graph_entities,
@@ -50,6 +51,11 @@ def main() -> int:
     parser.add_argument("--comparison", type=Path, help="SYSTEM_GRAPH comparison JSON")
     parser.add_argument("--ledger", type=Path, help="Existing GraphicChangeLedger JSON")
     parser.add_argument("--evidence-index", type=Path)
+    parser.add_argument(
+        "--pair",
+        type=Path,
+        help="pair.json of the Stage 5.3 pair; proves the graphic blocks belong to it",
+    )
     parser.add_argument("--output-dir", required=True, type=Path)
     args = parser.parse_args()
 
@@ -59,6 +65,11 @@ def main() -> int:
     right_graphs = [_read_json(path) for path in args.right_graph]
     comparison = _read_json(args.comparison) if args.comparison else None
     ledger = _read_json(args.ledger) if args.ledger else None
+    pair_documents = (
+        pair_documents_from_pair_artifact(_read_json(args.pair), stage53)
+        if args.pair
+        else None
+    )
     if comparison is not None and ledger is None:
         if len(left_graphs) != 1 or len(right_graphs) != 1:
             parser.error("automatic Mode 2 ledger requires one LEFT and one RIGHT graph")
@@ -90,6 +101,7 @@ def main() -> int:
         side_graph_entities,
         graphic_groups,
         current_text_evidence_index=evidence_index,
+        pair_documents=pair_documents,
     )
     graphic_coverage = build_graphic_coverage(
         stage53,

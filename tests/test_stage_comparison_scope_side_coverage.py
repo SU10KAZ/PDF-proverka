@@ -790,6 +790,8 @@ def test_g244_contract_schemas_are_versioned():
     assert [schema["properties"]["schema_version"]["const"] for schema in schemas] == [
         "side-graph-entities.v2",
         "side-entity-links.v1",
-        "text-graphic-scope-join.v1",
-        "graphic-coverage.v2",
+        # Bumped by G2.4.4.2: the scope join now carries document provenance and
+        # coverage carries the resulting binding verdict.
+        "text-graphic-scope-join.v2",
+        "graphic-coverage.v3",
     ]

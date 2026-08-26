@@ -17,6 +17,11 @@ from .comparison_scope import (
     scope_join_is_stale,
     validate_scope_join,
 )
+from .document_binding import (
+    BINDING_MISMATCH,
+    DocumentBindingValidationError,
+    validate_document_binding,
+)
 from .graphic_coverage_policy import (
     DIMENSIONS,
     ENTITY_OBSERVABLE_DIMENSIONS,
@@ -34,13 +39,16 @@ from .side_entity_contract import (
 from .text_entity_producer import validate_text_entities
 
 
-SCHEMA_VERSION = "graphic-coverage.v2"
+SCHEMA_VERSION = "graphic-coverage.v3"
 KIND = "stage_comparison_graphic_coverage"
-COVERAGE_BUILDER_VERSION = "graphic-coverage-builder-v2"
+COVERAGE_BUILDER_VERSION = "graphic-coverage-builder-v3"
 COVERAGE_STATES = frozenset(
     {"CHECKED", "NOT_CHECKED", "CHECK_BLOCKED", "NOT_APPLICABLE"}
 )
 SUBJECT_KINDS = frozenset({"TEXT_ENTITY", "GRAPH_ENTITY"})
+#: Reason attached to every record demoted because the graphic blocks are
+#: proven to belong to different documents than the Stage 5.3 pair.
+_BINDING_MISMATCH_REASON = "document_binding_mismatch"
 SCOPE_PROCESSING_STATES = frozenset(
     {
         "SCOPE_PROCESSED",
@@ -102,6 +110,8 @@ def _source_artifacts(
     graphic_groups: list[dict[str, Any]],
 ) -> dict[str, Any]:
     return {
+        "document_binding": scope_join["document_binding"],
+        "pair_documents": scope_join["source_artifacts"].get("pair_documents"),
         "stage53": scope_join["source_artifacts"]["stage53"],
         "text_entities": {
             "schema_version": text_entities["schema_version"],
@@ -554,12 +564,27 @@ def build_graphic_coverage(
     if side_entity_links_are_stale(links, text, graphics):
         raise GraphicCoverageValidationError("side entity links stale for coverage sources")
 
+    try:
+        binding = validate_document_binding(scopes_artifact["document_binding"])
+    except DocumentBindingValidationError as error:
+        raise GraphicCoverageValidationError(
+            f"graphic coverage.document_binding: {error}"
+        ) from error
+    # Fail closed on a proven contradiction only.  UNPROVEN keeps the previous
+    # behaviour untouched: absence of evidence is not evidence of absence.
+    binding_mismatch = binding["state"] == BINDING_MISMATCH
+
     records: list[dict[str, Any]] = []
     scope_processing: list[dict[str, Any]] = []
     for scope in scopes_artifact["scopes"]:
         scope_states: dict[str, tuple[str, list[str]]] = {}
         for dimension in DIMENSIONS:
             state = _scope_dimension_state(scope, dimension, raw_pairs)
+            if binding_mismatch and state[0] == "CHECKED":
+                state = (
+                    "CHECK_BLOCKED",
+                    [_BINDING_MISMATCH_REASON, *state[1]],
+                )
             scope_states[dimension] = state
             scope_processing.append(_scope_processing_record(scope, dimension, state))
         graph_for_scope: list[dict[str, Any]] = []
@@ -628,6 +653,17 @@ def build_graphic_coverage(
                             )
                         },
                     )
+                )
+
+    if binding_mismatch:
+        # Belt and braces: the scope-state demotion above already cascades to
+        # every subject, but the invariant "no CHECKED under a proven document
+        # mismatch" must hold by construction, not by branch analysis.
+        for item in records:
+            if item["state"] == "CHECKED":
+                item["state"] = "CHECK_BLOCKED"
+                item["reason_codes"] = sorted(
+                    {_BINDING_MISMATCH_REASON, *item["reason_codes"]}
                 )
 
     records.sort(key=lambda item: item["coverage_id"])
@@ -706,6 +742,22 @@ def validate_graphic_coverage(payload: Any) -> dict[str, Any]:
         != {"scope_join": SCOPE_JOIN_VERSION, "side_bridge": SIDE_BRIDGE_VERSION}
     ):
         raise GraphicCoverageValidationError("graphic coverage: unsupported contract")
+    try:
+        binding = validate_document_binding(
+            (payload.get("source_artifacts") or {}).get("document_binding")
+        )
+    except DocumentBindingValidationError as error:
+        raise GraphicCoverageValidationError(
+            f"graphic coverage.document_binding: {error}"
+        ) from error
+    if binding["state"] == BINDING_MISMATCH and any(
+        item.get("state") == "CHECKED"
+        for item in payload.get("coverage") or []
+        if isinstance(item, dict)
+    ):
+        raise GraphicCoverageValidationError(
+            "graphic coverage: CHECKED record under a proven document binding mismatch"
+        )
     if payload["source_signature"] != _coverage_signature(payload["source_artifacts"]):
         raise GraphicCoverageValidationError("graphic coverage.source_signature: invalid")
     if not isinstance(payload["scope_processing"], list):

@@ -1,7 +1,45 @@
 {
-  "schema_version": "text-graphic-scope-join.v1",
+  "schema_version": "text-graphic-scope-join.v2",
   "kind": "stage_comparison_text_graphic_scope_join",
-  "scope_join_version": "explicit-page-base-scope-join-v1",
+  "scope_join_version": "explicit-page-base-scope-join-v2",
+  "document_binding": {
+    "binding_version": "document-binding-v1",
+    "state": "DOCUMENT_BINDING_UNPROVEN",
+    "reason_codes": [
+      "left:no_graphic_block_pairs_on_side",
+      "left:pair_document_code_absent",
+      "no_graphic_scope_groups",
+      "right:no_graphic_block_pairs_on_side",
+      "right:pair_document_code_absent"
+    ],
+    "pair_documents": null,
+    "sides": {
+      "LEFT": {
+        "state": "DOCUMENT_BINDING_UNPROVEN",
+        "reason_codes": [
+          "no_graphic_block_pairs_on_side",
+          "pair_document_code_absent"
+        ],
+        "expected_document_code": null,
+        "expected_source_path": null,
+        "expected_provenance": "ABSENT",
+        "observed_document_codes": [],
+        "unbound_block_pairs": 0
+      },
+      "RIGHT": {
+        "state": "DOCUMENT_BINDING_UNPROVEN",
+        "reason_codes": [
+          "no_graphic_block_pairs_on_side",
+          "pair_document_code_absent"
+        ],
+        "expected_document_code": null,
+        "expected_source_path": null,
+        "expected_provenance": "ABSENT",
+        "observed_document_codes": [],
+        "unbound_block_pairs": 0
+      }
+    }
+  },
   "page_convention": {
     "version": "pdf-page-1based-to-index-0based-v2",
     "text": "pdf_page_1based",
@@ -13,8 +51,9 @@
     "entity_bridge": "deterministic-entity-bridge-v1",
     "side_bridge": "side-partitioned-entity-bridge-v1"
   },
-  "source_signature": "67933e1a150f34327e3cb5c5970b8cf5144fe4f43fc9f790fd232b42c89cc02e",
+  "source_signature": "ee0b54d1d68ea4b58f84cb42b5f8b26e746ab0fd42bbde872ffa602cf191ba12",
   "source_artifacts": {
+    "pair_documents": null,
     "stage53": {
       "pair_id": "p570d156f57",
       "schema_version": "1.0",

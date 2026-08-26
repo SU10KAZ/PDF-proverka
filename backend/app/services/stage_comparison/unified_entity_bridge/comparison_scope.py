@@ -23,6 +23,13 @@ from backend.app.services.stage_comparison.graphic_comparison.contract import (
     validate_ledger,
 )
 
+from .document_binding import (
+    DocumentBindingValidationError,
+    normalize_document_descriptor,
+    normalize_pair_documents,
+    validate_document_binding,
+    verify_document_binding,
+)
 from .entity_bridge import BRIDGE_VERSION
 from .page_identity import (
     PAGE_CONVENTION_VERSION,
@@ -39,9 +46,9 @@ from .text_entity_producer import (
 )
 
 
-SCHEMA_VERSION = "text-graphic-scope-join.v1"
+SCHEMA_VERSION = "text-graphic-scope-join.v2"
 KIND = "stage_comparison_text_graphic_scope_join"
-SCOPE_JOIN_VERSION = "explicit-page-base-scope-join-v1"
+SCOPE_JOIN_VERSION = "explicit-page-base-scope-join-v2"
 SCOPE_STATES = frozenset({"RESOLVED", "UNRESOLVED_SCOPE"})
 
 _BUCKETS = (
@@ -224,8 +231,25 @@ def normalize_graphic_scope_groups(value: Any) -> list[dict[str, Any]]:
                 "comparison_result",
                 "left_block_id",
                 "right_block_id",
+                "left_document",
+                "right_document",
             }:
                 raise ScopeJoinValidationError(f"{where}: invalid fields")
+            # Document provenance is additive: a pair without descriptors keeps
+            # byte-identical ids, so enriching one pair never renumbers others.
+            try:
+                documents = {
+                    side: (
+                        normalize_document_descriptor(
+                            raw_pair[f"{side}_document"], f"{where}.{side}_document"
+                        )
+                        if f"{side}_document" in raw_pair
+                        else None
+                    )
+                    for side in ("left", "right")
+                }
+            except DocumentBindingValidationError as error:
+                raise ScopeJoinValidationError(f"{where}: {error}") from error
             ledger = raw_pair["ledger"]
             try:
                 validate_ledger(ledger)
@@ -274,12 +298,22 @@ def normalize_graphic_scope_groups(value: Any) -> list[dict[str, Any]]:
                     "canonical_page_index": graphic_page_to_canonical_index(
                         left["page_index"]
                     ),
+                    **(
+                        {"document": documents["left"]}
+                        if documents["left"] is not None
+                        else {}
+                    ),
                 },
                 "right": {
                     "block_id": right["block_id"],
                     "page_index_0based": right["page_index"],
                     "canonical_page_index": graphic_page_to_canonical_index(
                         right["page_index"]
+                    ),
+                    **(
+                        {"document": documents["right"]}
+                        if documents["right"] is not None
+                        else {}
                     ),
                 },
                 "mode": ledger.get("mode"),
@@ -350,8 +384,10 @@ def _source_artifacts(
     text_entities: dict[str, Any],
     side_graph_entities: dict[str, Any],
     graphic_groups: list[dict[str, Any]],
+    pair_documents: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
+        "pair_documents": pair_documents,
         "stage53": {
             "pair_id": stage53["pair_id"],
             "schema_version": stage53["schema_version"],
@@ -412,6 +448,7 @@ def build_scope_join(
     graphic_scope_groups: Any,
     *,
     current_text_evidence_index: Any = None,
+    pair_documents: Any = None,
 ) -> dict[str, Any]:
     stage = _validate_stage53(stage53)
     text = validate_text_entities(text_entities)
@@ -515,11 +552,17 @@ def build_scope_join(
         )
 
     scopes.sort(key=lambda item: item["scope_ref"])
-    sources = _source_artifacts(stage, text, graphics, groups)
+    try:
+        documents = normalize_pair_documents(pair_documents)
+        binding = verify_document_binding(documents, groups)
+    except DocumentBindingValidationError as error:
+        raise ScopeJoinValidationError(f"scope join.pair_documents: {error}") from error
+    sources = _source_artifacts(stage, text, graphics, groups, documents)
     payload = {
         "schema_version": SCHEMA_VERSION,
         "kind": KIND,
         "scope_join_version": SCOPE_JOIN_VERSION,
+        "document_binding": binding,
         "page_convention": {
             "version": PAGE_CONVENTION_VERSION,
             "text": "pdf_page_1based",
@@ -556,6 +599,7 @@ def validate_scope_join(payload: Any) -> dict[str, Any]:
         "schema_version",
         "kind",
         "scope_join_version",
+        "document_binding",
         "page_convention",
         "versions",
         "source_signature",
@@ -570,6 +614,14 @@ def validate_scope_join(payload: Any) -> dict[str, Any]:
         or payload["scope_join_version"] != SCOPE_JOIN_VERSION
     ):
         raise ScopeJoinValidationError("scope join: unsupported contract")
+    try:
+        binding = validate_document_binding(payload["document_binding"])
+    except DocumentBindingValidationError as error:
+        raise ScopeJoinValidationError(f"scope join.document_binding: {error}") from error
+    if binding["pair_documents"] != payload["source_artifacts"].get("pair_documents"):
+        raise ScopeJoinValidationError(
+            "scope join.document_binding: pair documents disagree with source artifacts"
+        )
     page = payload["page_convention"]
     if not isinstance(page, dict) or page.get("version") != PAGE_CONVENTION_VERSION:
         raise ScopeJoinValidationError("scope join.page_convention: invalid")
@@ -654,7 +706,15 @@ def scope_join_is_stale(
         validated = validate_scope_join(artifact)
     except (ScopeJoinValidationError, TypeError, ValueError):
         return True
-    sources = _source_artifacts(current_stage, current_text, current_graphics, groups)
+    # Document binding is part of the saved evidence, not of the current call:
+    # re-deriving it from the artifact keeps an enriched join from reading stale.
+    sources = _source_artifacts(
+        current_stage,
+        current_text,
+        current_graphics,
+        groups,
+        validated["document_binding"]["pair_documents"],
+    )
     return (
         current_text["source_artifact"]["artifact_digest"] != _digest(current_stage)
         or (

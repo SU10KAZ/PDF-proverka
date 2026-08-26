@@ -1,7 +1,7 @@
 {
-  "schema_version": "graphic-coverage.v2",
+  "schema_version": "graphic-coverage.v3",
   "kind": "stage_comparison_graphic_coverage",
-  "builder_version": "graphic-coverage-builder-v2",
+  "builder_version": "graphic-coverage-builder-v3",
   "coverage_policy": {
     "version": "graphic-coverage-policy-v2",
     "dimensions": [
@@ -53,11 +53,50 @@
     }
   },
   "versions": {
-    "scope_join": "explicit-page-base-scope-join-v1",
+    "scope_join": "explicit-page-base-scope-join-v2",
     "side_bridge": "side-partitioned-entity-bridge-v1"
   },
-  "source_signature": "74a717abb98a1784f4a5d43a8a17199804396927fb787e5daa7a81fe4673f7af",
+  "source_signature": "08e14915ead5aa03ac35cbc66a76175b14f22cc69f5604e7867a2c286f80c484",
   "source_artifacts": {
+    "document_binding": {
+      "binding_version": "document-binding-v1",
+      "state": "DOCUMENT_BINDING_UNPROVEN",
+      "reason_codes": [
+        "document_binding_not_provable_from_available_data",
+        "left:block_document_code_absent",
+        "left:pair_document_code_absent",
+        "right:block_document_code_absent",
+        "right:pair_document_code_absent"
+      ],
+      "pair_documents": null,
+      "sides": {
+        "LEFT": {
+          "state": "DOCUMENT_BINDING_UNPROVEN",
+          "reason_codes": [
+            "block_document_code_absent",
+            "pair_document_code_absent"
+          ],
+          "expected_document_code": null,
+          "expected_source_path": null,
+          "expected_provenance": "ABSENT",
+          "observed_document_codes": [],
+          "unbound_block_pairs": 1
+        },
+        "RIGHT": {
+          "state": "DOCUMENT_BINDING_UNPROVEN",
+          "reason_codes": [
+            "block_document_code_absent",
+            "pair_document_code_absent"
+          ],
+          "expected_document_code": null,
+          "expected_source_path": null,
+          "expected_provenance": "ABSENT",
+          "observed_document_codes": [],
+          "unbound_block_pairs": 1
+        }
+      }
+    },
+    "pair_documents": null,
     "stage53": {
       "pair_id": "p26c08b83a6",
       "schema_version": "1.0",
@@ -80,8 +119,8 @@
       "source_signature": "083e9c9f0d92ce445b18dd2b7de9986daa08a0595074fbfdf514af750c768818"
     },
     "scope_join": {
-      "schema_version": "text-graphic-scope-join.v1",
-      "source_signature": "1c00c4073d8c53ccd672d2d62e62bc9abd1d2c5faf74ec80bcd3a5cfd5ca1bff"
+      "schema_version": "text-graphic-scope-join.v2",
+      "source_signature": "67a6e321297cc4e8d295bd88433d9ac448f90c18b1e0cc8cf27f3d1de1df7ba1"
     },
     "graphic_scope_groups": [
       {
