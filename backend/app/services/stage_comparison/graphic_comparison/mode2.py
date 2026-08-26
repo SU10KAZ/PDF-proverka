@@ -112,8 +112,14 @@ def resolve_selected_page_source(value: Any, side: str) -> dict[str, Any]:
         raise DirectPageComparisonError(f"side: one of {SIDES} required")
     if not isinstance(value, dict):
         raise DirectPageComparisonError(f"{side}: source object required")
-    allowed = {"document", "pdf_path", "blocks_path", "page_index", "block_id"}
-    required = {"document", "pdf_path", "blocks_path", "page_index"}
+    allowed = {
+        "document",
+        "pdf_path",
+        "blocks_path",
+        "page_index_0based",
+        "block_id",
+    }
+    required = {"document", "pdf_path", "blocks_path", "page_index_0based"}
     if set(value) - allowed or not required <= set(value):
         raise DirectPageComparisonError(f"{side}: invalid source fields")
 
@@ -128,7 +134,9 @@ def resolve_selected_page_source(value: Any, side: str) -> dict[str, Any]:
         raise DirectPageComparisonError(
             f"{side}: PDF and blocks.json must belong to one prepared version directory"
         )
-    page_index = _page_index(value["page_index"], f"{side}.page_index")
+    page_index = _page_index(
+        value["page_index_0based"], f"{side}.page_index_0based"
+    )
     payload = load_blocks_json(blocks_path)
     if payload is None:
         raise DirectPageComparisonError(f"{side}.blocks_path: invalid blocks.json")

@@ -45,7 +45,7 @@ def _source(document_dir: Path, block_id: str) -> dict:
         "document": _document(document_dir.name, pdf_path),
         "pdf_path": pdf_path,
         "blocks_path": work / "blocks.json",
-        "page_index": 0,
+        "page_index_0based": 0,
         "block_id": block_id,
     }
 
@@ -82,7 +82,7 @@ def test_page_source_auto_selection_fails_closed_when_graphic_is_ambiguous(tmp_p
         "document": _document("DOC", pdf_path),
         "pdf_path": pdf_path,
         "blocks_path": blocks_path,
-        "page_index": 0,
+        "page_index_0based": 0,
     }
 
     with pytest.raises(DirectPageComparisonError, match="block_id required"):
@@ -122,7 +122,7 @@ def test_page_source_rejects_block_from_another_local_page(tmp_path):
         "document": _document("DOC", pdf_path),
         "pdf_path": pdf_path,
         "blocks_path": blocks_path,
-        "page_index": 0,
+        "page_index_0based": 0,
         "block_id": "other-page",
     }
 

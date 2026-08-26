@@ -38,7 +38,7 @@ DENSE_CORPUS = (
     ),
     (
         "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/"
-        "stage_1/documents/Страница_21_из_АА-БЭ-03-ДС3-ИОС1.1_—_копия/"
+        "stage_2/documents/Страница_21_из_АА-БЭ-03-ДС3-ИОС1.1_—_копия/"
         "versions/v001/02_work/blocks.json",
         "blk_039909ec039649a1b8209f059c95167b",
     ),
@@ -49,7 +49,7 @@ DENSE_CORPUS = (
     ),
     (
         "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison/"
-        "stage_2/documents/Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1/"
+        "stage_1/documents/Страница_52_из_АА_БЭ-03-ДС3-ИОС1.1/"
         "versions/v001/02_work/blocks.json",
         "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6",
     ),
