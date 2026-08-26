@@ -29,6 +29,12 @@ BINDING_UNPROVEN = "DOCUMENT_BINDING_UNPROVEN"
 BINDING_AMBIGUOUS = "DOCUMENT_BINDING_AMBIGUOUS"
 BINDING_ERROR = "DOCUMENT_BINDING_ERROR"
 
+# Reserved for persisted artifacts emitted by an external extraction/validation
+# boundary.  The production verifier below is deliberately fail-fast: malformed
+# canonical inputs raise ``DocumentBindingValidationError`` (or the strict
+# parent-relation validation error) and never manufacture an ERROR verdict.
+RESERVED_BINDING_STATES = frozenset({BINDING_ERROR})
+
 BINDING_STATES = frozenset(
     {
         BINDING_PROVEN,
@@ -324,27 +330,110 @@ def _observed_documents(
     return observed, any_pair
 
 
-def _proven_parent_document(
-    expected: dict[str, Any], observation: dict[str, Any], relations: list[dict[str, Any]]
+def _semantic_document_identity(value: dict[str, Any]) -> tuple[Any, ...]:
+    """Identity fields only; locator/provenance never create ambiguity."""
+    return (
+        value.get("document_code"),
+        value.get("storage_identity"),
+        value.get("version_id"),
+    )
+
+
+def _shares_direct_document_identity(
+    expected: dict[str, Any], observed: dict[str, Any]
 ) -> bool:
+    """Return whether at least one comparable document channel agrees."""
+    return bool(
+        expected.get("storage_identity")
+        and observed.get("storage_identity")
+        and expected["storage_identity"] == observed["storage_identity"]
+    ) or bool(
+        expected.get("document_code")
+        and observed.get("document_code")
+        and expected["document_code"] == observed["document_code"]
+    )
+
+
+def _parent_relation_verdict(
+    expected: dict[str, Any], observation: dict[str, Any], relations: list[dict[str, Any]]
+) -> tuple[str | None, list[str]]:
+    """Evaluate explicit claims applicable to one observed excerpt page."""
+    applicable = []
     for relation in relations:
-        if relation.get("state") != "PROVEN":
-            continue
         excerpt = relation.get("excerpt") or {}
-        parent = relation.get("parent") or {}
         excerpt_state, _ = compare_document_identity(
             excerpt.get("document"), observation["document"]
         )
-        parent_state, _ = compare_document_identity(
-            expected, parent.get("document")
-        )
         if (
             excerpt_state == BINDING_PROVEN
-            and parent_state == BINDING_PROVEN
             and excerpt.get("page_index_0based") == observation["page_index_0based"]
         ):
-            return True
-    return False
+            applicable.append(relation)
+    if not applicable:
+        return None, []
+
+    verdicts: list[tuple[str, list[str]]] = []
+    for relation in applicable:
+        relation_state = relation["state"]
+        if relation_state == "PROVEN":
+            parent_state, parent_reasons = compare_document_identity(
+                expected, relation["parent"]["document"]
+            )
+            if parent_state == BINDING_PROVEN:
+                verdicts.append(
+                    (BINDING_PROVEN, ["proven_parent_page_relation_binds_document"])
+                )
+            elif parent_state == BINDING_MISMATCH:
+                verdicts.append(
+                    (
+                        BINDING_MISMATCH,
+                        ["claimed_parent_document_identity_differs", *parent_reasons],
+                    )
+                )
+            else:
+                verdicts.append(
+                    (
+                        BINDING_UNPROVEN,
+                        ["claimed_parent_document_identity_not_comparable", *parent_reasons],
+                    )
+                )
+        elif relation_state == "MISMATCH":
+            verdicts.append(
+                (BINDING_MISMATCH, ["parent_page_relation_contradicted_by_evidence"])
+            )
+        elif relation_state == "AMBIGUOUS":
+            verdicts.append(
+                (BINDING_AMBIGUOUS, ["parent_page_relation_ambiguous"])
+            )
+        else:
+            verdicts.append((BINDING_UNPROVEN, ["parent_page_relation_unproven"]))
+
+    states = {state for state, _ in verdicts}
+    reasons = sorted({reason for _, values in verdicts for reason in values})
+    if len(states) > 1:
+        return BINDING_AMBIGUOUS, ["conflicting_parent_page_relation_evidence", *reasons]
+    return verdicts[0][0], reasons
+
+
+def _observation_verdict(
+    expected: dict[str, Any], observation: dict[str, Any], relations: list[dict[str, Any]]
+) -> tuple[str, list[str]]:
+    direct_state, direct_reasons = compare_document_identity(
+        expected, observation["document"]
+    )
+    relation_state, relation_reasons = _parent_relation_verdict(
+        expected, observation, relations
+    )
+    if relation_state is not None:
+        return relation_state, relation_reasons
+    if direct_state != BINDING_MISMATCH:
+        return direct_state, direct_reasons
+    if _shares_direct_document_identity(expected, observation["document"]):
+        return BINDING_MISMATCH, direct_reasons
+    return BINDING_UNPROVEN, [
+        "direct_document_identity_differs_parent_relation_absent",
+        *direct_reasons,
+    ]
 
 
 def _verify_side(
@@ -372,26 +461,27 @@ def _verify_side(
 
     verdicts = []
     for observation in complete:
-        verdict = compare_document_identity(
-            expected_reference, observation["document"]
+        verdicts.append(
+            _observation_verdict(
+                expected_reference, observation, parent_page_relations
+            )
         )
-        if verdict[0] != BINDING_PROVEN and _proven_parent_document(
-            expected_reference, observation, parent_page_relations
-        ):
-            verdict = (BINDING_PROVEN, ["proven_parent_page_relation_binds_document"])
-        verdicts.append(verdict)
     for _, item_reasons in verdicts:
         reasons.extend(item_reasons)
     if any(state == BINDING_MISMATCH for state, _ in verdicts):
         state = BINDING_MISMATCH
+    elif any(state == BINDING_AMBIGUOUS for state, _ in verdicts):
+        state = BINDING_AMBIGUOUS
     elif not document_identity_is_complete(expected_reference):
         distinct = {
-            json.dumps(item["document"], sort_keys=True, separators=(",", ":"))
+            _semantic_document_identity(item["document"])
             for item in complete
         }
         state = BINDING_AMBIGUOUS if len(distinct) > 1 else BINDING_UNPROVEN
         if state == BINDING_AMBIGUOUS:
             reasons.append("multiple_observed_document_version_identities")
+    elif any(state == BINDING_UNPROVEN for state, _ in verdicts):
+        state = BINDING_UNPROVEN
     elif missing or not complete:
         if not complete and not missing:
             reasons.append("no_graphic_block_pairs_on_side")
@@ -418,12 +508,17 @@ def verify_document_binding(
     Returns one of ``DOCUMENT_BINDING_PROVEN`` / ``DOCUMENT_BINDING_MISMATCH`` /
     ``DOCUMENT_BINDING_UNPROVEN`` with the reason codes behind the verdict.
 
-    ``MISMATCH`` is reported only when a block's document code is known *and*
-    differs from the pair's document code on the same side.  Every other
-    incomplete situation is ``UNPROVEN``.
+    A different owner document without an explicit direct/parent claim is
+    ``UNPROVEN``. ``MISMATCH`` is reserved for a concrete direct identity or
+    parent relation that the evidence contradicts.
     """
     documents = normalize_pair_documents(pair_documents)
-    relations = parent_page_relations if isinstance(parent_page_relations, list) else []
+    # Public production entry points must protect themselves even when called
+    # without ``build_scope_join``.  The local import avoids the intentional
+    # parent-relation -> document-binding dependency at module import time.
+    from .parent_page_relation import normalize_parent_page_relations
+
+    relations = normalize_parent_page_relations(parent_page_relations)
     sides: dict[str, Any] = {}
     any_pair = False
     for side in SIDES:
@@ -437,9 +532,6 @@ def verify_document_binding(
     if not any_pair:
         state = BINDING_UNPROVEN
         reasons.append("no_graphic_scope_groups")
-    elif any(sides[side]["state"] == BINDING_ERROR for side in SIDES):
-        state = BINDING_ERROR
-        reasons.append("document_binding_verification_error")
     elif any(sides[side]["state"] == BINDING_MISMATCH for side in SIDES):
         state = BINDING_MISMATCH
         reasons.append("document_binding_contradicted_by_data")
@@ -543,6 +635,7 @@ __all__ = [
     "PROVENANCE_ARTIFACT",
     "PROVENANCE_CLI_ARGUMENT",
     "PROVENANCE_SOURCES",
+    "RESERVED_BINDING_STATES",
     "document_descriptor_for_block",
     "document_identity_is_complete",
     "compare_document_identity",

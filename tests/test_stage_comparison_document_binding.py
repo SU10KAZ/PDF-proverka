@@ -26,6 +26,7 @@ from backend.app.services.stage_comparison.unified_entity_bridge import (
     verify_document_binding,
 )
 from backend.app.services.stage_comparison.unified_entity_bridge.document_binding import (
+    BINDING_AMBIGUOUS,
     BINDING_MISMATCH,
     BINDING_PROVEN,
     BINDING_UNPROVEN,
@@ -34,11 +35,13 @@ from backend.app.services.stage_comparison.unified_entity_bridge.document_bindin
     PROVENANCE_ARTIFACT,
     normalize_document_descriptor,
 )
+from backend.app.services.stage_comparison.unified_entity_bridge.parent_page_relation import (
+    ParentPageRelationValidationError,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION = ROOT / "comparison/sessions/121d764109184c13/pairs"
-DENSE = ROOT / "experiments/g2_dense_sectioned_board"
-IOS = ROOT / "experiments/g2_4_4_scope_side_coverage/ios"
+IOS = ROOT / "experiments/g2_4_4_3_correct_sides/ios"
 STORE = ROOT / (
     "projects_v2/objects/272_Sadovnicheskaya_76_Balchug_Esteyt/comparison"
 )
@@ -118,14 +121,14 @@ def _build(stage53, groups, left_graph, right_graph, pair_documents):
 def ios_corpus():
     _require(
         SESSION / "p26c08b83a6/high_level_project_changes.json",
-        DENSE / "left_system_graph.json",
+        IOS / "left_system_graph.json",
         IOS / "comparison_result.json",
     )
     return {
         "stage53": _read(SESSION / "p26c08b83a6/high_level_project_changes.json"),
         "pair": _read(SESSION / "p26c08b83a6/pair.json"),
-        "left_graph": _read(DENSE / "left_system_graph.json"),
-        "right_graph": _read(DENSE / "right_system_graph.json"),
+        "left_graph": _read(IOS / "left_system_graph.json"),
+        "right_graph": _read(IOS / "right_system_graph.json"),
         "comparison": _read(IOS / "comparison_result.json"),
         "ledger": _read(IOS / "graphic_change_ledger.json"),
     }
@@ -237,7 +240,9 @@ def test_binding_mismatch_is_not_the_same_as_unproven():
         {
             "block_pairs": [
                 {
-                    "left": {"document": _descriptor("FOREIGN")},
+                    "left": {
+                        "document": _descriptor("DOC_L", version_id="v002")
+                    },
                     "right": {"document": _descriptor("DOC_R")},
                 }
             ]
@@ -251,6 +256,81 @@ def test_binding_mismatch_is_not_the_same_as_unproven():
     assert mismatch["state"] == BINDING_MISMATCH
     assert unproven["state"] == BINDING_UNPROVEN
     assert mismatch["state"] != unproven["state"]
+
+
+def test_different_owner_document_without_parent_claim_is_unproven():
+    groups = [
+        {
+            "block_pairs": [
+                {
+                    "left": {"document": _descriptor("LEFT_EXCERPT")},
+                    "right": {"document": _descriptor("RIGHT_EXCERPT")},
+                }
+            ]
+        }
+    ]
+
+    result = verify_document_binding(
+        {"LEFT": _descriptor("LEFT_FULL"), "RIGHT": _descriptor("RIGHT_FULL")},
+        groups,
+    )
+
+    assert result["state"] == BINDING_UNPROVEN
+    assert (
+        "left:direct_document_identity_differs_parent_relation_absent"
+        in result["reason_codes"]
+    )
+
+
+def test_public_verifier_rejects_unnormalized_proven_parent_relation():
+    groups = [
+        {
+            "block_pairs": [
+                {
+                    "left": {
+                        "document": _descriptor("LEFT_EXCERPT"),
+                        "canonical_page_index": 0,
+                    },
+                    "right": {
+                        "document": _descriptor("RIGHT_FULL"),
+                        "canonical_page_index": 0,
+                    },
+                }
+            ]
+        }
+    ]
+    raw_relation_without_version_or_evidence = {
+        "state": "PROVEN",
+        "excerpt": {"document": _descriptor("LEFT_EXCERPT"), "page_index_0based": 0},
+        "parent": {"document": _descriptor("LEFT_FULL"), "page_index_0based": 0},
+    }
+
+    with pytest.raises(ParentPageRelationValidationError):
+        verify_document_binding(
+            {"LEFT": _descriptor("LEFT_FULL"), "RIGHT": _descriptor("RIGHT_FULL")},
+            groups,
+            [raw_relation_without_version_or_evidence],
+        )
+
+
+def test_ambiguous_identity_ignores_locator_and_provenance():
+    same_identity = _descriptor("EXCERPT", "/first.pdf")
+    relocated = _descriptor("EXCERPT", "/second.pdf") | {
+        "provenance": "CLI_ARGUMENT"
+    }
+    groups = [
+        {
+            "block_pairs": [
+                {"left": {"document": same_identity}, "right": {}},
+                {"left": {"document": relocated}, "right": {}},
+            ]
+        }
+    ]
+
+    result = verify_document_binding(None, groups)
+
+    assert result["sides"]["LEFT"]["state"] == BINDING_UNPROVEN
+    assert result["state"] != BINDING_AMBIGUOUS
 
 
 def test_missing_document_identity_is_unproven_never_mismatch():
@@ -330,6 +410,13 @@ def test_pair_artifact_must_describe_the_same_pair_as_stage53():
 def test_ios_binding_proven_against_the_documents_that_own_the_blocks(
     ios_corpus, block_owners
 ):
+    scope = ios_corpus["ledger"]["comparison_scope"]
+    assert scope["left_blocks"][0]["block_id"] == (
+        "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6"
+    )
+    assert scope["right_blocks"][0]["block_id"] == (
+        "blk_039909ec039649a1b8209f059c95167b"
+    )
     left = _owner_descriptor(block_owners, block_owners["left_block"])
     right = _owner_descriptor(block_owners, block_owners["right_block"])
     groups = _group(ios_corpus["ledger"], ios_corpus["comparison"], left, right)
@@ -352,7 +439,7 @@ def test_ios_binding_proven_against_the_documents_that_own_the_blocks(
     }
 
 
-def test_ios_foreign_document_yields_mismatch_and_no_checked_record(
+def test_ios_excerpt_owner_without_parent_relation_is_unproven_and_no_checked_record(
     ios_corpus, block_owners
 ):
     left = _owner_descriptor(block_owners, block_owners["left_block"])
@@ -369,7 +456,7 @@ def test_ios_foreign_document_yields_mismatch_and_no_checked_record(
         pair_documents_from_pair_artifact(ios_corpus["pair"], ios_corpus["stage53"]),
     )
 
-    assert scope_join["document_binding"]["state"] == BINDING_MISMATCH
+    assert scope_join["document_binding"]["state"] == BINDING_UNPROVEN
     assert not [item for item in scope_join["scopes"] if item["status"] == "RESOLVED"]
     assert any(
         "graphic_page_identity_unresolved" in item["reason_codes"]
@@ -378,7 +465,7 @@ def test_ios_foreign_document_yields_mismatch_and_no_checked_record(
     assert coverage["summary"]["by_state"]["CHECKED"] == 0
     assert not [item for item in coverage["coverage"] if item["state"] == "CHECKED"]
     assert any(
-        "document_binding_mismatch" in item["reason_codes"]
+        "document_binding_unproven" in item["reason_codes"]
         for item in coverage["scope_processing"]
     )
 
