@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "direct_page_mode2.schema.json",
+  "title": "Direct LEFT-to-RIGHT page SYSTEM_GRAPH comparison",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mode",
+    "direction",
+    "sources",
+    "left_graph",
+    "right_graph",
+    "comparison_result",
+    "graphic_change_ledger",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema_version": {"const": "direct-page-system-graph-comparison.v1"},
+    "mode": {"const": "MODE_2"},
+    "direction": {"const": "LEFT_TO_RIGHT"},
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["LEFT", "RIGHT"],
+      "properties": {
+        "LEFT": {"$ref": "#/$defs/source_reference"},
+        "RIGHT": {"$ref": "#/$defs/source_reference"}
+      }
+    },
+    "left_graph": {"type": "object"},
+    "right_graph": {"type": "object"},
+    "comparison_result": {"type": "object"},
+    "graphic_change_ledger": {"type": "object"},
+    "diagnostics": {"type": "object"}
+  },
+  "$defs": {
+    "document_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_code",
+        "version_id",
+        "storage_identity",
+        "source_path",
+        "provenance"
+      ],
+      "properties": {
+        "document_code": {"type": ["string", "null"], "minLength": 1},
+        "version_id": {"type": "string", "minLength": 1},
+        "storage_identity": {"type": ["string", "null"], "minLength": 1},
+        "source_path": {"type": ["string", "null"], "minLength": 1},
+        "provenance": {"enum": ["ARTIFACT", "CLI_ARGUMENT"]}
+      },
+      "anyOf": [
+        {"required": ["document_code"], "properties": {"document_code": {"type": "string"}}},
+        {"required": ["storage_identity"], "properties": {"storage_identity": {"type": "string"}}}
+      ]
+    },
+    "source_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_kind",
+        "document",
+        "page_index_0based",
+        "block_id",
+        "locators"
+      ],
+      "properties": {
+        "selection_kind": {"const": "PAGE"},
+        "document": {"$ref": "#/$defs/document_reference"},
+        "page_index_0based": {"type": "integer", "minimum": 0},
+        "block_id": {"type": "string", "minLength": 1},
+        "locators": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pdf_path", "blocks_path"],
+          "properties": {
+            "pdf_path": {"type": "string", "minLength": 1},
+            "blocks_path": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  }
+}
