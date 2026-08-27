@@ -34,6 +34,7 @@ import base64
 import json
 import logging
 import os
+import random
 import re
 import tempfile
 import time
@@ -98,6 +99,156 @@ DEFAULT_EFFORT = "low"
 DEFAULT_MAX_TOKENS = 16000
 DEFAULT_PARALLELISM = 3
 DEFAULT_TIMEOUT_S = 200
+
+# ── Транзиентные отказы OpenRouter ──────────────────────────────────
+# 26.08.2026 пять аудитов остановились на единичном сбое GPT-ноги:
+# две Codex-ноги отвечали, а httpx возвращал транспортное исключение с
+# пустым str(exc). Порог STAGE01_LEG_FAILURE_THRESHOLD=1 затем честно
+# останавливал весь этап. Повтор нужен НИЖЕ этого порога: иначе
+# один обрыв из сотни вызовов всегда уничтожает результат документа.
+_OPENROUTER_RETRY_ATTEMPTS_ENV = "STAGE01_OPENROUTER_TRANSIENT_RETRIES"
+_OPENROUTER_RETRY_DELAY_ENV = "STAGE01_OPENROUTER_RETRY_BASE_DELAY_S"
+_DEFAULT_OPENROUTER_RETRIES = 2
+_DEFAULT_OPENROUTER_RETRY_BASE_DELAY_S = 2.0
+_RETRYABLE_OPENROUTER_STATUSES = {408, 409, 429}
+
+logger = logging.getLogger(__name__)
+
+
+def _openrouter_retry_attempts() -> int:
+    """Сколько ДОПОЛНИТЕЛЬНЫХ попыток после первой."""
+    raw = (os.environ.get(_OPENROUTER_RETRY_ATTEMPTS_ENV) or "").strip()
+    if not raw:
+        return _DEFAULT_OPENROUTER_RETRIES
+    try:
+        return max(0, min(5, int(raw)))
+    except ValueError:
+        return _DEFAULT_OPENROUTER_RETRIES
+
+
+def _openrouter_retry_base_delay() -> float:
+    raw = (os.environ.get(_OPENROUTER_RETRY_DELAY_ENV) or "").strip()
+    if not raw:
+        return _DEFAULT_OPENROUTER_RETRY_BASE_DELAY_S
+    try:
+        return max(0.0, min(60.0, float(raw)))
+    except ValueError:
+        return _DEFAULT_OPENROUTER_RETRY_BASE_DELAY_S
+
+
+def _openrouter_exception_detail(exc: BaseException) -> str:
+    """Имя класса обязательно: str(ReadError/ReadTimeout) бывает пустым."""
+    message = str(exc).strip()
+    name = f"{type(exc).__module__}.{type(exc).__name__}"
+    return f"{name}: {message}" if message else name
+
+
+def _openrouter_status_retryable(status_code: int) -> bool:
+    return status_code in _RETRYABLE_OPENROUTER_STATUSES or status_code >= 500
+
+
+def _openrouter_retry_after(response: Any, fallback: float) -> float:
+    """Числовой Retry-After от шлюза, с ограниченным временем ожидания."""
+    try:
+        raw = (response.headers.get("Retry-After") or "").strip()
+        if raw:
+            return max(0.0, min(60.0, float(raw)))
+    except (AttributeError, TypeError, ValueError):
+        pass
+    return fallback
+
+
+async def _post_openrouter_with_transient_retry(
+    client: httpx.AsyncClient,
+    *,
+    headers: dict[str, str],
+    payload: dict[str, Any],
+    timeout: int,
+    label: str,
+) -> tuple[Any | None, dict[str, Any]]:
+    """Повторить только временный транспортный/шлюзовый отказ.
+
+    400/401/402/403/404/422 и прочие фатальные 4xx возвращаются сразу. Для
+    httpx.TimeoutException разрешён лишь один повтор: два полных таймаута
+    по 200 с помещаются во внешний block_hard_timeout=500 с, три — уже нет.
+    """
+    attempts_allowed = 1 + _openrouter_retry_attempts()
+    base_delay = _openrouter_retry_base_delay()
+    history: list[str] = []
+
+    for attempt in range(1, attempts_allowed + 1):
+        response = None
+        failure = ""
+        timeout_failure = False
+        try:
+            response = await client.post(
+                OPENROUTER_URL,
+                headers=headers,
+                json=payload,
+                timeout=timeout,
+            )
+        except httpx.TransportError as exc:
+            failure = _openrouter_exception_detail(exc)
+            timeout_failure = isinstance(exc, httpx.TimeoutException)
+        except Exception as exc:  # неизвестный тип автоматически не повторяем
+            failure = _openrouter_exception_detail(exc)
+            history.append(failure)
+            return None, {
+                "attempts": attempt,
+                "retry_count": attempt - 1,
+                "retry_errors": history,
+                "error": failure,
+            }
+
+        if response is not None and not _openrouter_status_retryable(
+            int(response.status_code)
+        ):
+            if attempt > 1:
+                logger.warning(
+                    "openrouter_transient_retry: %s — успех с попытки %d/%d",
+                    label, attempt, attempts_allowed,
+                )
+            return response, {
+                "attempts": attempt,
+                "retry_count": attempt - 1,
+                "retry_errors": history,
+            }
+
+        if response is not None:
+            failure = f"HTTP {int(response.status_code)}"
+        history.append(failure)
+
+        # Полный транспортный таймаут повторяем не больше одного раза.
+        exhausted = attempt >= attempts_allowed or (timeout_failure and attempt >= 2)
+        if exhausted:
+            return response, {
+                "attempts": attempt,
+                "retry_count": attempt - 1,
+                "retry_errors": history,
+                "error": failure,
+            }
+
+        # Экспоненциальная пауза + джиттер разводят параллельные аудиты.
+        delay = base_delay * (2 ** (attempt - 1))
+        delay += random.uniform(0.0, delay * 0.5)
+        if response is not None:
+            delay = _openrouter_retry_after(response, delay)
+        logger.warning(
+            "openrouter_transient_retry: %s — попытка %d/%d провалена (%s), "
+            "повтор через %.1f с",
+            label, attempt, attempts_allowed, failure, delay,
+        )
+        if delay > 0:
+            await asyncio.sleep(delay)
+
+    return None, {  # pragma: no cover - цикл всегда завершается выше
+        "attempts": attempts_allowed,
+        "retry_count": max(0, attempts_allowed - 1),
+        "retry_errors": history,
+        "error": history[-1] if history else "unknown transport error",
+    }
+
+
 # Жёсткий потолок на ОДИН блок (backstop поверх per-transport timeout). Нужен,
 # т.к. httpx read-timeout меряет паузу между чтениями, а не общее время: при
 # «капающем» keepalive от провайдера (OpenRouter во время долгого reasoning)
@@ -1402,18 +1553,40 @@ async def call_gpt_for_block(
         }
 
     started = time.monotonic()
-    try:
-        resp = await client.post(OPENROUTER_URL, headers=headers, json=payload, timeout=timeout)
-    except Exception as exc:
-        return {"ok": False, "error": f"httpx: {exc}", "elapsed_ms": int((time.monotonic() - started) * 1000)}
+    resp, request_meta = await _post_openrouter_with_transient_retry(
+        client,
+        headers=headers,
+        payload=payload,
+        timeout=timeout,
+        label=f"{project_id or '-'}:{block.get('block_id') or '-'}",
+    )
     elapsed_ms = int((time.monotonic() - started) * 1000)
 
-    if resp.status_code >= 400:
+    if resp is None:
+        attempts = int(request_meta.get("attempts") or 1)
+        detail = str(request_meta.get("error") or "unknown transport error")
         return {
+            **request_meta,
+            "ok": False,
+            "error": f"httpx: {detail}; attempts={attempts}",
+            "elapsed_ms": elapsed_ms,
+        }
+
+    if resp.status_code >= 400:
+        attempts = int(request_meta.get("attempts") or 1)
+        request_id = (
+            resp.headers.get("x-request-id")
+            or resp.headers.get("x-generation-id")
+            or ""
+        )
+        body = resp.text[:500].strip() or "<empty body>"
+        return {
+            **request_meta,
             "ok": False,
             "http_status": resp.status_code,
-            "error": resp.text[:500],
+            "error": f"HTTP {resp.status_code}: {body}; attempts={attempts}",
             "elapsed_ms": elapsed_ms,
+            "request_id": request_id or None,
         }
 
     data = resp.json()
@@ -1452,6 +1625,9 @@ async def call_gpt_for_block(
         "parsed": parsed,
         "from_cache": False,
         "context_source": context_source,
+        "attempts": int(request_meta.get("attempts") or 1),
+        "retry_count": int(request_meta.get("retry_count") or 0),
+        "retry_errors": list(request_meta.get("retry_errors") or []),
     }
 
     # ─── Сохранить в cache СРАЗУ после успешного 2xx ────────────────
