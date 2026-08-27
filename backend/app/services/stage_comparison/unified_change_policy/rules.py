@@ -11,6 +11,7 @@ from typing import Any, Mapping
 
 from .confidence import normalize_confidence
 from .contract import (
+    GRAPHIC_COVERAGE_DIMENSION_MAP,
     UNKNOWN_DIMENSION,
     Direction,
     Outcome,
@@ -82,7 +83,11 @@ def check_subject_identity(subject_relation: Any) -> dict[str, Any]:
 
 
 def check_entity_link_strength(links_by_side: Any) -> dict[str, Any]:
-    """M3 requires SAME_ENTITY/HIGH independently on LEFT and RIGHT."""
+    """Observe SAME_ENTITY/HIGH independently on LEFT and RIGHT.
+
+    M3 is diagnostic in G2.4.5 v1.  It neither derives nor upgrades the M2
+    subject-identity fact supplied by the caller.
+    """
     if not isinstance(links_by_side, Mapping):
         return _gate("M3", GateState.REVIEW_REQUIRED, "entity_links_absent")
     missing = []
@@ -161,8 +166,16 @@ def check_source_validity(
     source_valid: bool,
     coverage_by_side: Any,
     document_binding_state: Any,
+    graphic_dimension: Any,
 ) -> dict[str, Any]:
-    """M7: cross-source GRAPHIC use requires binding and per-side CHECKED."""
+    """M7: GRAPHIC must observe this dimension and be checked on both sides."""
+    dimension = resolve_dimension(graphic_dimension)
+    if GRAPHIC_COVERAGE_DIMENSION_MAP.get(dimension) is None:
+        return _gate(
+            "M7",
+            GateState.NOT_APPLICABLE,
+            "graphic_route_cannot_observe_dimension",
+        )
     if source_valid is not True:
         return _gate("M7", GateState.REVIEW_REQUIRED, "source_self_reports_review")
     if document_binding_state != "DOCUMENT_BINDING_PROVEN":
@@ -234,6 +247,7 @@ def evaluate_candidate_gates(
             source_valid=source_valid,
             coverage_by_side=coverage_by_side,
             document_binding_state=document_binding_state,
+            graphic_dimension=right_dimension,
         ),
         check_cardinality_safety(text_count, graphic_count),
     ]
@@ -285,16 +299,16 @@ def evaluate_source_relation(
     *,
     text_state: Any,
     graphic_state: Any,
+    scope_compatible: bool | None,
+    subject_relation: Any,
+    document_binding_state: Any,
     text_outcome: Any = Outcome.MATERIAL_CHANGE,
     graphic_outcome: Any = Outcome.MATERIAL_CHANGE,
-    scope_compatible: bool | None = True,
-    subject_relation: Any = SubjectRelation.SAME_ENTITY,
     text_dimension: Any = UNKNOWN_DIMENSION,
     graphic_dimension: Any = UNKNOWN_DIMENSION,
     text_direction: Any = Direction.ALTERED,
     graphic_direction: Any = Direction.ALTERED,
     coverage_by_side: Any = None,
-    document_binding_state: Any = "DOCUMENT_BINDING_PROVEN",
     text_count: int = 1,
     graphic_count: int = 1,
 ) -> dict[str, Any]:
@@ -367,6 +381,7 @@ def evaluate_source_relation(
         source_valid=True,
         coverage_by_side=coverage_by_side,
         document_binding_state=document_binding_state,
+        graphic_dimension=right_dimension,
     )
     if coverage_gate["state"] != GateState.PASS.value:
         return _result(None, Outcome.REVIEW_REQUIRED, *coverage_gate["reason_codes"])

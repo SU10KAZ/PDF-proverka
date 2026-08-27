@@ -96,19 +96,21 @@ CONFIDENCE_LEVELS = tuple(item.value for item in ConfidenceLevel)
 CONFIDENCE_BASES = tuple(item.value for item in ConfidenceBasis)
 
 
-# G2.4.4 intentionally has no OPERATION record.  This explicit mapping keeps
-# that limitation visible instead of silently pretending the two contracts are
-# identical.  A future coverage producer may replace the null mapping.
+# Keep the G2.4.5 dimensions explicitly mapped to what the current GRAPHIC
+# semantic route can actually observe.  A shared name is not evidence of
+# support: graphic-coverage-policy-v2 observes only structural topology, type,
+# and repeated-group quantity.  A future coverage producer may replace a null
+# mapping only when it emits coverage for that dimension.
 GRAPHIC_COVERAGE_DIMENSION_MAP = {
-    Dimension.PRINCIPLE.value: Dimension.PRINCIPLE.value,
-    Dimension.METHOD.value: Dimension.METHOD.value,
+    Dimension.PRINCIPLE.value: None,
+    Dimension.METHOD.value: None,
     Dimension.OPERATION.value: None,
     Dimension.STRUCTURE.value: Dimension.STRUCTURE.value,
     Dimension.CONNECTION.value: Dimension.CONNECTION.value,
     Dimension.TYPE.value: Dimension.TYPE.value,
-    Dimension.PARAMETER.value: Dimension.PARAMETER.value,
+    Dimension.PARAMETER.value: None,
     Dimension.QUANTITY.value: Dimension.QUANTITY.value,
-    Dimension.SPACE.value: Dimension.SPACE.value,
+    Dimension.SPACE.value: None,
 }
 
 

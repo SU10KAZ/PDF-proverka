@@ -39,7 +39,8 @@ from backend.app.services.stage_comparison.unified_change_policy import (
     stable_change_id,
 )
 from backend.app.services.stage_comparison.unified_entity_bridge.graphic_coverage_policy import (
-    DIMENSIONS as GRAPHIC_COVERAGE_DIMENSIONS,
+    MODE2_OBSERVABLE_DIMENSIONS,
+    UNSUPPORTED_SEMANTIC_DIMENSIONS,
 )
 
 
@@ -55,8 +56,8 @@ def _candidate(**overrides):
             "LEFT": {"relation": "SAME_ENTITY", "confidence": "HIGH"},
             "RIGHT": {"relation": "SAME_ENTITY", "confidence": "HIGH"},
         },
-        "left_dimension": "PARAMETER",
-        "right_dimension": "PARAMETER",
+        "left_dimension": "STRUCTURE",
+        "right_dimension": "STRUCTURE",
         "left_direction": "INCREASED",
         "right_direction": "INCREASED",
         "left_outcome": "MATERIAL_CHANGE",
@@ -109,8 +110,13 @@ def test_closed_policy_enums_and_graphic_coverage_mapping():
     assert set(GRAPHIC_COVERAGE_DIMENSION_MAP) == set(DIMENSIONS)
     assert GRAPHIC_COVERAGE_DIMENSION_MAP["OPERATION"] is None
     assert {
+        dimension
+        for dimension, mapped in GRAPHIC_COVERAGE_DIMENSION_MAP.items()
+        if mapped is None
+    } == {"OPERATION", *UNSUPPORTED_SEMANTIC_DIMENSIONS}
+    assert {
         value for value in GRAPHIC_COVERAGE_DIMENSION_MAP.values() if value is not None
-    } == set(GRAPHIC_COVERAGE_DIMENSIONS)
+    } == set(MODE2_OBSERVABLE_DIMENSIONS)
 
 
 def test_dimension_is_explicit_on_each_atom_and_unknown_is_not_guessed_from_text():
@@ -165,6 +171,9 @@ def test_same_entity_with_different_dimensions_is_not_the_same_change():
     evaluation = evaluate_source_relation(
         text_state="VALID",
         graphic_state="VALID",
+        scope_compatible=True,
+        subject_relation="SAME_ENTITY",
+        document_binding_state="DOCUMENT_BINDING_PROVEN",
         text_dimension="PARAMETER",
         graphic_dimension="CONNECTION",
     )
@@ -188,6 +197,7 @@ def test_coverage_is_side_specific_and_check_blocked_never_passes(coverage, expe
         source_valid=True,
         coverage_by_side=coverage,
         document_binding_state="DOCUMENT_BINDING_PROVEN",
+        graphic_dimension="STRUCTURE",
     )
     assert gate["state"] == expected_state
 
@@ -197,6 +207,7 @@ def test_non_proven_binding_blocks_cross_source_graphic_evidence():
         source_valid=True,
         coverage_by_side=CHECKED_BOTH,
         document_binding_state="DOCUMENT_BINDING_UNPROVEN",
+        graphic_dimension="STRUCTURE",
     )
     assert gate["state"] == GateState.FAIL.value
     assert gate["reason_codes"] == ["document_binding_not_proven"]
@@ -243,6 +254,7 @@ def test_individual_gate_failures_are_structured():
         source_valid=False,
         coverage_by_side=CHECKED_BOTH,
         document_binding_state="DOCUMENT_BINDING_PROVEN",
+        graphic_dimension="STRUCTURE",
     )["state"] == GateState.REVIEW_REQUIRED.value
     assert check_cardinality_safety(1, 2)["state"] == GateState.FAIL.value
 
@@ -289,3 +301,72 @@ def test_policy_package_exposes_no_merge_executor():
         "backend.app.services.stage_comparison.unified_change_policy"
     )
     assert not any("merge" in name.casefold() for name in module.__all__)
+
+
+@pytest.mark.parametrize(
+    "dimension", ["OPERATION", "PARAMETER", "METHOD", "PRINCIPLE", "SPACE"]
+)
+def test_graphic_checked_claim_cannot_override_unobservable_dimension(dimension):
+    gate = check_source_validity(
+        source_valid=True,
+        coverage_by_side=CHECKED_BOTH,
+        document_binding_state="DOCUMENT_BINDING_PROVEN",
+        graphic_dimension=dimension,
+    )
+
+    assert gate == {
+        "gate": "M7",
+        "state": GateState.NOT_APPLICABLE.value,
+        "reason_codes": ["graphic_route_cannot_observe_dimension"],
+    }
+
+
+@pytest.mark.parametrize(
+    ("text_direction", "graphic_direction"),
+    [("ALTERED", "ALTERED"), ("ADDED", "REMOVED")],
+)
+def test_operation_graphic_evidence_cannot_corroborate_or_contradict(
+    text_direction, graphic_direction
+):
+    result = evaluate_source_relation(
+        text_state="VALID",
+        graphic_state="VALID",
+        scope_compatible=True,
+        subject_relation="SAME_ENTITY",
+        document_binding_state="DOCUMENT_BINDING_PROVEN",
+        text_dimension="OPERATION",
+        graphic_dimension="OPERATION",
+        text_direction=text_direction,
+        graphic_direction=graphic_direction,
+        coverage_by_side=CHECKED_BOTH,
+    )
+
+    assert result["relation_status"] is None
+    assert result["outcome"] == "REVIEW_REQUIRED"
+    assert result["reason_codes"] == ["graphic_route_cannot_observe_dimension"]
+
+
+@pytest.mark.parametrize(
+    "omitted", ["scope_compatible", "subject_relation", "document_binding_state"]
+)
+def test_source_relation_requires_provenance_and_identity_inputs(omitted):
+    facts = {
+        "text_state": "VALID",
+        "graphic_state": "VALID",
+        "scope_compatible": True,
+        "subject_relation": "SAME_ENTITY",
+        "document_binding_state": "DOCUMENT_BINDING_PROVEN",
+    }
+    facts.pop(omitted)
+
+    with pytest.raises(TypeError):
+        evaluate_source_relation(**facts)
+
+
+def test_m3_observes_links_but_does_not_upgrade_m2_subject_identity():
+    gates = _candidate(subject_relation="UNKNOWN")
+
+    assert gates["gates"]["M2"]["state"] == GateState.REVIEW_REQUIRED.value
+    assert gates["gates"]["M3"]["state"] == GateState.PASS.value
+    assert "M2" in gates["live_decision_gates"]
+    assert "M3" in gates["observation_only_gates"]
