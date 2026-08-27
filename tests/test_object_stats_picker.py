@@ -15,6 +15,8 @@
 """
 from __future__ import annotations
 
+import time
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -40,6 +42,8 @@ def _clean_cache():
     object_stats.invalidate()
     yield
     object_stats.invalidate()
+    with object_stats._refresh_lock:
+        object_stats._refreshing = False
 
 
 def _stub_cards(monkeypatch, mapping):
@@ -103,6 +107,64 @@ def test_broken_object_is_soft_failed(monkeypatch):
     s = object_stats.compute_object_stats("o1")
     assert s["error"] is True
     assert s["not_started"] == 0
+
+
+def test_stale_cache_is_served_immediately_and_refreshed_in_background(monkeypatch):
+    """Протухший кеш отдаётся сразу — открытие списка не ждёт обхода файлов."""
+    import threading
+    started = threading.Event()
+    release = threading.Event()
+
+    _stub_objects(monkeypatch, ["o1"])
+    monkeypatch.setattr(object_stats, "_object_cards",
+                        lambda oid: [_card("A", findings=1)])
+    object_stats.list_object_stats()                       # холодный старт — синхронно
+    first = object_stats.list_object_stats()
+    assert first["o1"]["total"] == 1
+
+    # кеш протух, а пересчёт «завис» — ответ всё равно должен вернуться сразу
+    object_stats._cache["ts"] = 0.0
+
+    def slow(_oid):
+        started.set()
+        release.wait(5)
+        return [_card("A"), _card("B")]
+
+    monkeypatch.setattr(object_stats, "_object_cards", slow)
+    stale = object_stats.list_object_stats()
+    assert stale["o1"]["total"] == 1                        # старое значение, без ожидания
+    assert started.wait(5)                                  # фоновый пересчёт запустился
+    release.set()
+    for _ in range(50):
+        if object_stats.list_object_stats()["o1"]["total"] == 2:
+            break
+        time.sleep(0.05)
+    assert object_stats.list_object_stats()["o1"]["total"] == 2
+
+
+def test_background_refresh_is_single_flight(monkeypatch):
+    """Пока идёт пересчёт, второй поток не запускается."""
+    import threading
+    release = threading.Event()
+    calls = []
+
+    _stub_objects(monkeypatch, ["o1"])
+    monkeypatch.setattr(object_stats, "_object_cards", lambda oid: [_card("A")])
+    object_stats.list_object_stats()
+
+    def slow(_oid):
+        calls.append(1)
+        release.wait(5)
+        return [_card("A")]
+
+    monkeypatch.setattr(object_stats, "_object_cards", slow)
+    object_stats._cache["ts"] = 0.0
+    object_stats.list_object_stats()
+    object_stats._cache["ts"] = 0.0
+    object_stats.list_object_stats()
+    time.sleep(0.2)
+    release.set()
+    assert len(calls) == 1
 
 
 def test_stats_are_cached_until_invalidated(monkeypatch):

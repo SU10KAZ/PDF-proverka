@@ -147,8 +147,15 @@ describe('Оформление счётчиков', () => {
 });
 
 describe('Загрузка счётчиков', () => {
-    it('идёт лениво — при открытии списка объектов', () => {
+    it('идёт вместе со списком объектов — цифры не «доезжают» при открытии', () => {
+        const loadObjects = appJs.match(/async function loadObjects\(\) \{[\s\S]*?\n        \}/)[0];
+        expect(loadObjects).toMatch(/loadObjectStats\(\)/);
+    });
+
+    it('повторяется и при открытии списка — но не чаще раза в минуту', () => {
         expect(appJs).toMatch(/if \(willOpen && which === 'object'\) loadObjectStats\(\);/);
+        const fn = extractFunction('loadObjectStats');
+        expect(fn).toMatch(/Date\.now\(\) - _objectStatsAt\) < 60000/);
     });
 
     it('берёт числа у бэкенда, а не считает их во фронте', () => {

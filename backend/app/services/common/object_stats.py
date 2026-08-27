@@ -14,18 +14,30 @@
 `app.js` (`latestProjectCards` / `isProjectUnanalyzed` / `isProjectExpertResolved`),
 чтобы цифра в переключателе совпадала с цифрой на Главной после переключения.
 
-Стоимость: полный список проектов каждого объекта (~0,2–0,6 с на объект на
-тёплой ФС), поэтому результат кешируется на `_TTL` секунд. Фронт дёргает
-endpoint лениво — при открытии выпадашки, не при загрузке страницы.
+Скорость (жалоба Андрея Ивановича 27.08.2026: цифры появлялись через ~5 с):
+
+  * считаем ДЁШЕВО. Полный `v2_projects_list` строит на каждый документ весь
+    `ProjectStatus` — сводку версий, список входных файлов, pipeline summary,
+    индекс блоков; на 540 документах это ~1,5–2,7 с тёплой ФС и ~5 с холодной.
+    Здесь читаются только три файла на документ (замечания, оптимизации,
+    вердикты эксперта) — остальное для двух цифр не нужно;
+  * никто не ждёт расчёта. Протухший кеш отдаётся СРАЗУ, а обновление идёт
+    фоновым потоком (stale-while-revalidate); синхронно считаем только на
+    холодном старте и по `?force=true`. Кеш прогревается на старте backend
+    (`warm_async`), поэтому первое открытие списка уже застаёт готовые цифры.
 """
 from __future__ import annotations
 
 import re
+import threading
 import time
+from pathlib import Path
 from typing import Optional
 
-_TTL = 60.0
+_TTL = 120.0
 _cache: dict[str, object] = {"ts": 0.0, "data": None}
+_refresh_lock = threading.Lock()
+_refreshing = False
 
 # Суффикс версии в имени карточки («X V2», «X_V2») — зеркало
 # `_VERSION_SUFFIX_RE` во фронте и `base_project_key` на бэкенде.
@@ -77,13 +89,55 @@ def _is_expert_resolved(card: dict) -> bool:
     return card.get("expert_review_status") == "complete"
 
 
+def _v2_lean_cards(object_id: str) -> list[dict]:
+    """Только поля, нужные для двух цифр, — без построения полного ProjectStatus.
+
+    Берём те же источники и те же helper'ы, что `read_canary._v2_project_status`
+    (замечания, `optimization.json → meta`, `04_review/expert_review.json`),
+    чтобы цифры не разъехались с карточками на Главной, но не читаем всё
+    остальное: сводку версий, входные файлы, pipeline summary, индекс блоков.
+    """
+    from backend.app.services.storage import read_canary as rc
+
+    a = rc._adapter()
+    if not a.is_available():
+        raise FileNotFoundError(f"projects_v2 недоступен: {a.objects_root}")
+    folder, _name = rc._current_object_folder(a, object_id=object_id)
+    if not folder:
+        return []          # объекта нет в v2 → пусто, без кросс-объектной свалки
+    hidden = rc._v2_load_hidden_set()
+    cards: list[dict] = []
+    for doc in a.list_documents(object_folder=folder):
+        if rc._v2_doc_hidden(doc, hidden):
+            continue
+        doc_dir = Path(doc["doc_dir"])
+        vid = doc.get("current_version") or "v1"
+        fdata = a.read_findings(doc_dir, vid) or {}
+        fitems = (fdata.get("findings", fdata.get("items", []))
+                  if isinstance(fdata, dict) else [])
+        fcount = len(fitems) if isinstance(fitems, list) else 0
+        ocount, _by_type, _savings = rc._v2_optimization(a, doc_dir, vid)
+        expert, freview, oreview = rc._v2_review_statuses(
+            a, doc_dir, vid, fcount, ocount)
+        cards.append({
+            "project_id": doc["document_code"],
+            "base_project_key": rc._base_project_key(doc["document_code"]),
+            "version_no": rc._vno(vid),
+            "findings_count": fcount,
+            "optimization_count": ocount,
+            "findings_review_status": freview,
+            "optimization_review_status": oreview,
+            "expert_review_status": expert,
+        })
+    return cards
+
+
 def _object_cards(object_id: str) -> list[dict]:
-    """Карточки проектов объекта в том же виде, что отдаёт GET /api/projects."""
+    """Карточки проектов объекта: поля те же, что у GET /api/projects."""
     from backend.app.services.storage.storage_read_facade import production_uses_v2
 
     if production_uses_v2():
-        from backend.app.services.storage import read_canary
-        return read_canary.v2_projects_list(object_id=object_id).get("projects") or []
+        return _v2_lean_cards(object_id)
     from backend.app.services.common import project_service
     with project_service.pinned_object(object_id):
         return [p.model_dump() for p in project_service.list_projects()]
@@ -108,18 +162,59 @@ def compute_object_stats(object_id: str) -> dict:
     }
 
 
-def list_object_stats(force: bool = False) -> dict[str, dict]:
-    """{object_id: сводка} по всем объектам. TTL-кеш на `_TTL` секунд."""
-    now = time.time()
-    cached = _cache.get("data")
-    if not force and cached is not None and (now - float(_cache["ts"])) < _TTL:
-        return cached   # type: ignore[return-value]
+def _compute_all() -> dict[str, dict]:
     from backend.app.services.common import object_service
-    stats = {obj["id"]: compute_object_stats(obj["id"])
-             for obj in object_service.list_objects()}
-    _cache["ts"] = now
+    return {obj["id"]: compute_object_stats(obj["id"])
+            for obj in object_service.list_objects()}
+
+
+def _refresh_now() -> dict[str, dict]:
+    stats = _compute_all()
+    _cache["ts"] = time.time()
     _cache["data"] = stats
     return stats
+
+
+def _refresh_in_background() -> None:
+    """Пересчёт в отдельном потоке. Одновременно — не больше одного."""
+    global _refreshing
+    with _refresh_lock:
+        if _refreshing:
+            return
+        _refreshing = True
+
+    def _run():
+        global _refreshing
+        try:
+            _refresh_now()
+        except Exception as exc:      # фоновое обновление не должно ронять сервис
+            print(f"[object_stats] фоновое обновление: {exc}")
+        finally:
+            with _refresh_lock:
+                _refreshing = False
+
+    threading.Thread(target=_run, name="object-stats-refresh", daemon=True).start()
+
+
+def list_object_stats(force: bool = False) -> dict[str, dict]:
+    """{object_id: сводка} по всем объектам.
+
+    Свежий кеш отдаётся как есть; ПРОТУХШИЙ — тоже сразу, а пересчёт уходит в
+    фон (stale-while-revalidate): открытие списка объектов не должно ждать
+    обхода файлов. Синхронно считаем только когда кеша ещё нет или запрошен
+    `force`.
+    """
+    cached = _cache.get("data")
+    if force or cached is None:
+        return _refresh_now()
+    if (time.time() - float(_cache["ts"])) >= _TTL:
+        _refresh_in_background()
+    return cached   # type: ignore[return-value]
+
+
+def warm_async() -> None:
+    """Прогреть кеш в фоне (зовётся на старте backend)."""
+    _refresh_in_background()
 
 
 def invalidate(_object_id: Optional[str] = None) -> None:

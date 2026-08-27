@@ -4711,12 +4711,19 @@ const app = createApp({
             return s && !s.error ? (s[key] || 0) : null;
         }
 
-        async function loadObjectStats() {
+        // Метка последнего успешного ответа: открытие списка не должно слать
+        // запрос чаще, чем бэкенд обновляет кеш (у него TTL 2 минуты).
+        let _objectStatsAt = 0;
+
+        async function loadObjectStats(force) {
             if (objectStatsLoading.value) return;
+            if (!force && _objectStatsAt && (Date.now() - _objectStatsAt) < 60000
+                && Object.keys(objectStats.value).length) return;
             objectStatsLoading.value = true;
             try {
                 const data = await api('/objects/stats');
                 objectStats.value = data.stats || {};
+                _objectStatsAt = Date.now();
             } catch (e) {
                 console.error('Failed to load object stats:', e);
             } finally {
@@ -4803,6 +4810,10 @@ const app = createApp({
                 // Показать имя выбранного объекта в шапке (не «Объект»-плейсхолдер).
                 const cur = objectsList.value.find(o => o.id === currentObjectId.value);
                 if (cur) objectName.value = cur.name;
+                // Счётчики тянем сразу после списка, не дожидаясь открытия
+                // выпадашки: на бэкенде они уже прогреты, ответ отдаётся из
+                // кеша, зато цифры не «доезжают» на глазах у инженера.
+                loadObjectStats();
             } catch (e) {
                 console.error('Failed to load objects:', e);
             }

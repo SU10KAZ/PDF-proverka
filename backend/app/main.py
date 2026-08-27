@@ -134,6 +134,12 @@ async def lifespan(app: FastAPI):
     _auto_resume_task = _asyncio.create_task(
         pipeline_manager.auto_resume_interrupted_batch()
     )
+    # Счётчики объектов для переключателя в шапке: прогреваем кеш фоновым
+    # потоком, иначе первое открытие списка ждёт обхода файлов всех объектов
+    # (жалоба 27.08: цифры появлялись через ~5 с). Старт не задерживает —
+    # поток демонический, ошибка внутри гасится в самом сервисе.
+    from backend.app.services.common import object_stats
+    object_stats.warm_async()
     # Журнал действий: мост logging (WARNING+ всех модулей → журнал) и метка
     # старта сервера — по ним в анализе видны рестарты/падения.
     action_log_core.install_logging_bridge()
