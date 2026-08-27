@@ -164,11 +164,13 @@
                          :class="{'dash-object-picker__item--active': obj.id === currentObjectId}"
                          @click="switchObject(obj.id)">
                         <span class="dash-object-picker__name">{{ obj.name }}</span>
-                        <span class="dash-object-picker__counts" v-if="objectStatOf(obj.id, 'total') !== null">
-                            <span class="obj-badge obj-badge--todo"
-                                  title="Не запускались на проверку — проектов, у которых на последней версии аудит ни разу не запускался">{{ objectStatOf(obj.id, 'not_started') }}</span>
-                            <span class="obj-badge obj-badge--proc"
-                                  title="Нет решений эксперта — проектов, которые эксперт не отработал полностью на последней версии">{{ objectStatOf(obj.id, 'no_decisions') }}</span>
+                        <!-- Только две цифры: слов и столбца «Всего» тут быть не должно
+                             (постановка Андрея Ивановича 2026-08-27) — ни подписей,
+                             ни title-подсказок. Оранжевая — «не запускались на
+                             проверку», бирюзовая — «нет решений эксперта». -->
+                        <span class="dash-object-picker__counts" v-if="objectStatOf(obj.id, 'not_started') !== null">
+                            <span class="obj-badge obj-badge--todo">{{ objectStatOf(obj.id, 'not_started') }}</span>
+                            <span class="obj-badge obj-badge--proc">{{ objectStatOf(obj.id, 'no_decisions') }}</span>
                         </span>
                         <!-- Галочка рендерится всегда (пустая у неактивных), иначе
                              столбцы счётчиков съезжают на строке текущего объекта. -->

@@ -96,6 +96,16 @@ describe('Разметка выпадашки', () => {
         const item = html.match(/<div v-for="obj in sortedObjectsList"[\s\S]*?<\/div>\s*<div class="dash-object-picker__add"/)[0];
         expect(item).not.toMatch(/dash-object-picker__check" v-if=/);
     });
+
+    it('у цифр нет ни подписей, ни всплывающих слов, ни столбца «Всего»', () => {
+        const item = html.match(/<div v-for="obj in sortedObjectsList"[\s\S]*?<\/div>\s*<div class="dash-object-picker__add"/)[0];
+        const badges = item.match(/<span class="obj-badge[^>]*>/g);
+        expect(badges).toHaveLength(2);
+        for (const b of badges) expect(b).not.toMatch(/title=/);
+        const visible = item.replace(/<!--[\s\S]*?-->/g, '');   // без html-комментариев
+        expect(visible).not.toMatch(/Не запускались|Нет решений|Всего/);
+        expect(visible).not.toMatch(/'total'/);
+    });
 });
 
 describe('Оформление счётчиков', () => {
@@ -133,7 +143,7 @@ describe('Загрузка счётчиков', () => {
     });
 
     it('счётчиков нет — бейджи не показываются (объект недоступен)', () => {
-        expect(html).toMatch(/v-if="objectStatOf\(obj\.id, 'total'\) !== null"/);
+        expect(html).toMatch(/v-if="objectStatOf\(obj\.id, 'not_started'\) !== null"/);
         expect(extractFunction('objectStatOf')).toMatch(/s && !s\.error/);
     });
 });
