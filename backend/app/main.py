@@ -445,10 +445,15 @@ async def serve_spa():
         if _static_mount_dir
         else None
     )
+    screview_path = (
+        (_static_mount_dir / "js" / "stage-comparison-review.js")
+        if _static_mount_dir
+        else None
+    )
     css_ver = int(css_path.stat().st_mtime) if css_path and css_path.exists() else 0
     js_mtimes = [
         int(p.stat().st_mtime)
-        for p in (js_path, vapi_path, pauth_path, scdiff_path)
+        for p in (js_path, vapi_path, pauth_path, scdiff_path, screview_path)
         if p and p.exists()
     ]
     js_ver = max(js_mtimes) if js_mtimes else 0

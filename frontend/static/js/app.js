@@ -11920,6 +11920,35 @@ const app = createApp({
         const scTextDifferenceFilter = ref('all');
         const scTextDifferenceSearch = ref('');
         const scTextExpandedBuckets = reactive({});
+        // Production comparison/review lives alongside the legacy Stage 3/5
+        // views. The UMD module contains contract-normalization only; all API
+        // and viewer effects stay in this setup scope.
+        const SC_PRODUCTION_REVIEW = window.StageComparisonReview;
+        const scProductionState = ref(null);
+        const scProductionChanges = ref(null);
+        const scProductionQuestions = ref(null);
+        const scProductionFinalReport = ref(null);
+        const scProductionLoading = ref(false);
+        const scProductionRunLoading = ref(false);
+        const scProductionDecisionsSaving = ref(false);
+        const scProductionAnswersSaving = ref(false);
+        const scProductionError = ref('');
+        const scProductionSaveMessage = ref('');
+        const scProductionInputMode = ref('DOCUMENT');
+        const scProductionDecisionDrafts = reactive({});
+        const scProductionQuestionDrafts = reactive({});
+        const scProductionSuggestionActions = reactive({});
+        const scProductionSuggestionApplications = reactive({});
+        const scProductionEvidence = ref(null);
+        const scProductionEvidenceVisible = ref(false);
+        const scProductionEvidenceLoadingId = ref('');
+        const scProductionEvidenceError = ref('');
+        let scProductionEvidenceTimer = 0;
+        let scProductionEvidenceToken = 0;
+        onUnmounted(() => {
+            scProductionEvidenceToken += 1;
+            if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
+        });
         const scTextDifferenceFilterOptions = [
             {key: 'all', label: 'Все'},
             {key: 'changed', label: 'Изменилось'},
@@ -12040,6 +12069,65 @@ const app = createApp({
             scStageUploadBusy.stage_1 || scStageUploadBusy.stage_2
         );
         const scPairs = computed(() => (scSession.value && scSession.value.pairs) || []);
+        const scProductionRows = computed(() => SC_PRODUCTION_REVIEW
+            ? SC_PRODUCTION_REVIEW.normalizeRows(scProductionChanges.value)
+            : []);
+        const scProductionAvailable = computed(() => Boolean(
+            scProductionState.value || scProductionChanges.value || scProductionQuestions.value
+        ));
+        const scProductionHasRun = computed(() => Boolean(
+            scProductionChanges.value && scProductionChanges.value.input_signature
+            || scProductionFinalReport.value && scProductionFinalReport.value.input_signature
+            || scProductionState.value && !['', 'NOT_STARTED', 'PENDING'].includes(
+                String(scProductionState.value.status || '').toUpperCase()
+            )
+        ));
+        const scProductionCounts = computed(() => {
+            if (!SC_PRODUCTION_REVIEW) {
+                return {total: 0, APPROVED: 0, REJECTED: 0, PENDING_REVIEW: 0};
+            }
+            return SC_PRODUCTION_REVIEW.reviewCounts(scProductionRows.value.map(row => ({
+                ...row,
+                decision: (scProductionDecisionDrafts[row.target_id] || {}).decision || row.decision,
+            })));
+        });
+        const scProductionQuestionRows = computed(() => SC_PRODUCTION_REVIEW
+            ? SC_PRODUCTION_REVIEW.normalizeQuestions(scProductionQuestions.value)
+            : []);
+        const scProductionQuestionCounts = computed(() => SC_PRODUCTION_REVIEW
+            ? SC_PRODUCTION_REVIEW.normalizeQuestionCounts(scProductionQuestions.value)
+            : {SHEET: 0, ENTITY: 0, CHANGE: 0, total: 0});
+        const scProductionFinalRows = computed(() => SC_PRODUCTION_REVIEW
+            ? SC_PRODUCTION_REVIEW.normalizeFinalRows(scProductionFinalReport.value)
+            : []);
+        const scProductionSheetSuggestions = computed(() => SC_PRODUCTION_REVIEW
+            ? SC_PRODUCTION_REVIEW.normalizeSheetSuggestions(scProductionState.value)
+            : []);
+        const scProductionStale = computed(() => [
+            scProductionState.value,
+            scProductionChanges.value,
+            scProductionQuestions.value,
+            scProductionFinalReport.value,
+        ].some(value => Boolean(value && value.stale)));
+        const scProductionSuggestionSemantics = computed(() => {
+            const questions = scProductionQuestions.value;
+            const state = scProductionState.value;
+            return questions && questions.suggestion_action_semantics
+                || state && state.suggestion_action_semantics
+                || {state: 'UNKNOWN', scope_applied: null, pipeline_rerun: null};
+        });
+        const scProductionMutating = computed(() => Boolean(
+            scProductionLoading.value
+            || scProductionRunLoading.value
+            || scProductionDecisionsSaving.value
+            || scProductionAnswersSaving.value
+        ));
+        const scProductionHasDirtyDecisions = computed(() => scProductionRows.value.some(row =>
+            scProductionDecisionIsDirty(row)
+        ));
+        const scProductionHasDirtyAnswers = computed(() => scProductionQuestionRows.value.some(row =>
+            scProductionQuestionIsDirty(row)
+        ));
         const scPairingSaved = computed(() => Boolean(
             scSession.value && scSession.value.document_pairing
             && !scPairingDirty.value && !scPairingSaving.value
@@ -13228,6 +13316,7 @@ const app = createApp({
 
         function scActivatePairData(data) {
             if (!data || !data.pair) return;
+            scResetProductionReview();
             scResetTextSearch('left', true);
             scResetTextSearch('right', true);
             scRememberPair(data.pair);
@@ -13282,6 +13371,7 @@ const app = createApp({
             scZoomFit();
             scTab.value = 'links';
             scFocusLeftPage(1);
+            void scLoadProductionReview({silent: true});
         }
 
         async function scCreatePairForDocuments(leftPdf, rightPdf) {
@@ -13376,6 +13466,1074 @@ const app = createApp({
             if (!scSession.value) return '';
             return `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}`
                 + `/pairs/${encodeURIComponent(pairId)}${suffix}`;
+        }
+
+        // ─── Production comparison: atomic review + human questions ───────
+        function scClearReactiveRecord(record) {
+            Object.keys(record).forEach(key => delete record[key]);
+        }
+
+        function scResetProductionReview() {
+            scProductionState.value = null;
+            scProductionChanges.value = null;
+            scProductionQuestions.value = null;
+            scProductionFinalReport.value = null;
+            scProductionError.value = '';
+            scProductionSaveMessage.value = '';
+            scProductionEvidence.value = null;
+            scProductionEvidenceVisible.value = false;
+            scProductionEvidenceLoadingId.value = '';
+            scProductionEvidenceError.value = '';
+            scProductionLoading.value = false;
+            scProductionRunLoading.value = false;
+            scProductionDecisionsSaving.value = false;
+            scProductionAnswersSaving.value = false;
+            scClearReactiveRecord(scProductionSuggestionActions);
+            scClearReactiveRecord(scProductionSuggestionApplications);
+            scClearReactiveRecord(scProductionDecisionDrafts);
+            scClearReactiveRecord(scProductionQuestionDrafts);
+            scProductionEvidenceToken += 1;
+            if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
+            scProductionEvidenceTimer = 0;
+        }
+
+        function scProductionUrl(suffix) {
+            if (!scActivePair.value) return '';
+            return scPairUrl(scActivePair.value.id, `/production${suffix}`);
+        }
+
+        async function scProductionRequest(suffix, options) {
+            const settings = options || {};
+            const response = await fetch(scProductionUrl(suffix), settings.fetch || {});
+            const data = await response.json().catch(() => ({}));
+            if (settings.optional && response.status === 404) return null;
+            if (!response.ok) {
+                const error = new Error(data.detail || data.message || ('HTTP ' + response.status));
+                error.status = response.status;
+                throw error;
+            }
+            return data;
+        }
+
+        function scProductionAuthor() {
+            return currentUserName() || usersLoggedInUsername.value || 'Инженер';
+        }
+
+        function scProductionDecisionDraftIsDirtyValue(draft) {
+            return Boolean(draft && (
+                draft.decision !== draft.initial_decision
+                || draft.comment !== draft.initial_comment
+                || draft.reason_code !== draft.initial_reason_code
+            ));
+        }
+
+        function scProductionDecisionRowSignature(row) {
+            return JSON.stringify({
+                target_id: row.target_id,
+                target_kind: row.target_kind,
+                object_ref: row.object_ref,
+                left_pages: row.left_pages,
+                right_pages: row.right_pages,
+                change_label: row.change_label,
+                before: row.before,
+                after: row.after,
+                source: row.source,
+                status: row.status,
+                target_input_signature: row.target_input_signature,
+            });
+        }
+
+        function scInitProductionDecisionDrafts(options) {
+            const settings = options || {};
+            const previous = {...scProductionDecisionDrafts};
+            const preserveDirty = Boolean(settings.preserveDirty);
+            scClearReactiveRecord(scProductionDecisionDrafts);
+            scProductionRows.value.forEach(row => {
+                const existing = previous[row.target_id];
+                const rowSignature = scProductionDecisionRowSignature(row);
+                if (preserveDirty && scProductionDecisionDraftIsDirtyValue(existing)
+                    && existing.row_signature === rowSignature) {
+                    scProductionDecisionDrafts[row.target_id] = {...existing};
+                    return;
+                }
+                scProductionDecisionDrafts[row.target_id] = {
+                    decision: row.decision,
+                    comment: row.comment,
+                    reason_code: row.reason_code,
+                    initial_decision: row.decision,
+                    initial_comment: row.comment,
+                    initial_reason_code: row.reason_code,
+                    row_signature: rowSignature,
+                    base_artifact_input_signature: settings.inputSignature || '',
+                    base_artifact_revision: Number(settings.revision),
+                    base_target_input_signature: row.target_input_signature || '',
+                    base_decision_revision: row.decision_revision,
+                };
+            });
+        }
+
+        function scProductionDecisionDraft(row) {
+            return scProductionDecisionDrafts[row.target_id] || {
+                decision: row.decision,
+                comment: row.comment,
+                reason_code: row.reason_code,
+            };
+        }
+
+        function scProductionDecisionIsDirty(row) {
+            return scProductionDecisionDraftIsDirtyValue(scProductionDecisionDrafts[row.target_id]);
+        }
+
+        function scSetProductionDecision(row, value) {
+            const draft = scProductionDecisionDrafts[row.target_id];
+            if (!draft || scProductionMutating.value || scProductionStale.value) return;
+            // REVIEW_EVIDENCE is a prompt for a typed CHANGE resolution, not a
+            // final atomic change. It may be rejected, but it cannot become an
+            // approved final-report row by clicking this table.
+            if (row.target_kind === 'REVIEW_EVIDENCE' && value === 'APPROVED') return;
+            // A second click clears the choice: an unselected row is explicitly
+            // PENDING_REVIEW, never an implicit approval/rejection.
+            draft.decision = draft.decision === value ? 'PENDING_REVIEW' : value;
+            scProductionSaveMessage.value = '';
+        }
+
+        function scSetProductionDecisionField(row, field, value) {
+            const draft = scProductionDecisionDrafts[row.target_id];
+            if (!draft || scProductionMutating.value || scProductionStale.value
+                || !['comment', 'reason_code'].includes(field)) return;
+            draft[field] = String(value || '');
+            scProductionSaveMessage.value = '';
+        }
+
+        function scProductionDraftText(value) {
+            if (value === null || value === undefined) return '';
+            if (typeof value === 'string') return value;
+            if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+            try { return JSON.stringify(value); } catch (_) { return String(value); }
+        }
+
+        function scProductionQuestionTypedSeed(row) {
+            const context = row.context && typeof row.context === 'object' ? row.context : {};
+            const saved = row.typed_resolution && typeof row.typed_resolution === 'object'
+                ? row.typed_resolution
+                : {};
+            const fromSavedOrContext = field => saved[field] !== undefined
+                ? saved[field]
+                : context[field];
+            const dimension = fromSavedOrContext('dimension');
+            const outcome = fromSavedOrContext('outcome');
+            return {
+                dimension: dimension === 'UNKNOWN_DIMENSION' ? '' : scProductionDraftText(dimension),
+                subject_ref: scProductionDraftText(fromSavedOrContext('subject_ref')),
+                project_entity_ref: scProductionDraftText(fromSavedOrContext('project_entity_ref')),
+                facet_ref: scProductionDraftText(fromSavedOrContext('facet_ref')),
+                direction: scProductionDraftText(fromSavedOrContext('direction')),
+                outcome: outcome === 'REVIEW_REQUIRED' ? '' : scProductionDraftText(outcome),
+                before_value: scProductionDraftText(saved.before_value),
+                after_value: scProductionDraftText(saved.after_value),
+                selected_change_ids: Array.isArray(saved.selected_change_ids)
+                    ? saved.selected_change_ids.join(', ')
+                    : '',
+            };
+        }
+
+        function scProductionQuestionExplicitSeed(row) {
+            const context = row.context && typeof row.context === 'object' ? row.context : {};
+            const saved = row.explicit_candidate && typeof row.explicit_candidate === 'object'
+                ? row.explicit_candidate
+                : {};
+            const leftPages = Array.isArray(saved.left_pages)
+                ? saved.left_pages
+                : Array.isArray(context.left_pages) ? context.left_pages : [];
+            const rightPages = Array.isArray(saved.right_pages)
+                ? saved.right_pages
+                : Array.isArray(context.right_pages) ? context.right_pages : [];
+            const inferredRelationType = leftPages.length === 1 && rightPages.length === 1
+                ? 'MATCHED'
+                : leftPages.length === 1 && rightPages.length > 1
+                    ? 'SPLIT'
+                    : leftPages.length > 1 && rightPages.length === 1
+                        ? 'MERGED'
+                        : 'UNCERTAIN';
+            return {
+                right_entity_ref: scProductionDraftText(saved.right_entity_ref),
+                project_entity_ref: scProductionDraftText(saved.project_entity_ref),
+                left_pages: leftPages.join(', '),
+                right_pages: rightPages.join(', '),
+                relation_type: scProductionDraftText(
+                    saved.relation_type || context.relation_type || inferredRelationType,
+                ),
+            };
+        }
+
+        function scProductionQuestionDraftSnapshot(draft) {
+            return JSON.stringify({
+                answer: draft && draft.answer || '',
+                comment: draft && draft.comment || '',
+                typed_resolution: draft && draft.typed_resolution || {},
+                explicit_candidate: draft && draft.explicit_candidate || {},
+            });
+        }
+
+        function scProductionQuestionDraftIsDirtyValue(draft) {
+            return Boolean(draft && scProductionQuestionDraftSnapshot(draft) !== draft.initial_snapshot);
+        }
+
+        function scInitProductionQuestionDrafts(options) {
+            const settings = options || {};
+            const previous = {...scProductionQuestionDrafts};
+            const preserveDirty = Boolean(settings.preserveDirty);
+            scClearReactiveRecord(scProductionQuestionDrafts);
+            scProductionQuestionRows.value.forEach(row => {
+                const existing = previous[row.question_id];
+                const questionSignature = row.input_signature || '';
+                if (preserveDirty && scProductionQuestionDraftIsDirtyValue(existing)
+                    && existing.question_signature === questionSignature) {
+                    scProductionQuestionDrafts[row.question_id] = {
+                        ...existing,
+                        typed_resolution: {...existing.typed_resolution},
+                        explicit_candidate: {...existing.explicit_candidate},
+                    };
+                    return;
+                }
+                const typedResolution = scProductionQuestionTypedSeed(row);
+                const draft = {
+                    answer: row.answer || '',
+                    comment: row.comment || '',
+                    typed_resolution: typedResolution,
+                    initial_typed_resolution: {...typedResolution},
+                    explicit_candidate: scProductionQuestionExplicitSeed(row),
+                    question_signature: questionSignature,
+                    base_artifact_input_signature: settings.inputSignature || '',
+                    base_artifact_revision: Number(settings.revision),
+                };
+                draft.initial_snapshot = scProductionQuestionDraftSnapshot(draft);
+                scProductionQuestionDrafts[row.question_id] = draft;
+            });
+        }
+
+        function scProductionQuestionDraft(row) {
+            return scProductionQuestionDrafts[row.question_id] || {
+                answer: row.answer || '', comment: row.comment || '',
+                typed_resolution: scProductionQuestionTypedSeed(row),
+                explicit_candidate: scProductionQuestionExplicitSeed(row),
+            };
+        }
+
+        function scProductionQuestionIsDirty(row) {
+            return scProductionQuestionDraftIsDirtyValue(scProductionQuestionDrafts[row.question_id]);
+        }
+
+        function scSetProductionQuestionField(row, field, value) {
+            const draft = scProductionQuestionDrafts[row.question_id];
+            if (!draft || scProductionMutating.value || scProductionStale.value
+                || !['answer', 'comment'].includes(field)) return;
+            draft[field] = String(value || '');
+            scProductionSaveMessage.value = '';
+        }
+
+        function scSetProductionQuestionTypedField(row, field, value) {
+            const draft = scProductionQuestionDrafts[row.question_id];
+            if (!draft || scProductionMutating.value || scProductionStale.value
+                || !Object.prototype.hasOwnProperty.call(draft.typed_resolution, field)) return;
+            draft.typed_resolution[field] = String(value || '');
+            scProductionSaveMessage.value = '';
+        }
+
+        function scSetProductionQuestionExplicitField(row, field, value) {
+            const draft = scProductionQuestionDrafts[row.question_id];
+            if (!draft || scProductionMutating.value || scProductionStale.value
+                || !Object.prototype.hasOwnProperty.call(draft.explicit_candidate, field)) return;
+            draft.explicit_candidate[field] = String(value || '');
+            scProductionSaveMessage.value = '';
+        }
+
+        function scProductionQuestionNeedsTypedResolution(row) {
+            const answer = scProductionQuestionDraft(row).answer;
+            return row.category === 'CHANGE' && ['YES', 'OTHER'].includes(answer)
+                && Boolean(row.context && row.context.typed_resolution_contract);
+        }
+
+        function scProductionQuestionNeedsExplicitCandidate(row) {
+            return scProductionQuestionDraft(row).answer === 'OTHER'
+                && ['ENTITY', 'SHEET'].includes(row.category);
+        }
+
+        function scProductionQuestionTypedFields(row) {
+            const contract = row.context && row.context.typed_resolution_contract || {};
+            const accepted = Array.isArray(contract.accepted_fields) ? contract.accepted_fields : [];
+            const order = [
+                'dimension', 'subject_ref', 'project_entity_ref', 'facet_ref', 'direction',
+                'outcome', 'before_value', 'after_value', 'selected_change_ids',
+            ];
+            return order.filter(field => accepted.includes(field));
+        }
+
+        function scProductionQuestionFieldLabel(field) {
+            return ({
+                dimension: 'Измерение',
+                subject_ref: 'Субъект',
+                project_entity_ref: 'Объект проекта',
+                facet_ref: 'Аспект',
+                direction: 'Направление',
+                outcome: 'Результат',
+                before_value: 'Было',
+                after_value: 'Стало',
+                selected_change_ids: 'ID выбранных изменений',
+            })[field] || field;
+        }
+
+        function scProductionQuestionFieldRequired(row, field) {
+            const contract = row.context && row.context.typed_resolution_contract || {};
+            return Array.isArray(contract.required_fields) && contract.required_fields.includes(field);
+        }
+
+        function scHydrateProductionSuggestionActions(payload) {
+            if (!payload || typeof payload !== 'object'
+                || !Object.prototype.hasOwnProperty.call(payload, 'suggestion_actions')) return;
+            const actions = payload.suggestion_actions;
+            if (!actions || typeof actions !== 'object' || Array.isArray(actions)) return;
+            scClearReactiveRecord(scProductionSuggestionActions);
+            Object.entries(actions).forEach(([suggestionId, action]) => {
+                if (suggestionId && typeof action === 'string' && action) {
+                    scProductionSuggestionActions[suggestionId] = action;
+                }
+            });
+        }
+
+        function scApplyProductionState(data) {
+            const payload = data && data.state ? data.state : data;
+            if (!payload || typeof payload !== 'object') return;
+            scProductionState.value = payload;
+            scHydrateProductionSuggestionActions(data);
+            scHydrateProductionSuggestionActions(payload);
+            const mode = String(payload.input_mode || '').toUpperCase();
+            if (mode === 'PAGE' || mode === 'DOCUMENT') scProductionInputMode.value = mode;
+        }
+
+        function scApplyProductionChanges(data, options) {
+            const payload = data && data.production_changes ? data.production_changes : data;
+            if (!payload || !Array.isArray(payload.rows)) return;
+            scProductionChanges.value = payload;
+            scInitProductionDecisionDrafts({
+                preserveDirty: Boolean(options && options.preserveDirty),
+                inputSignature: payload.input_signature,
+                revision: payload.revision,
+            });
+        }
+
+        function scApplyProductionQuestions(data, options) {
+            const payload = data && (data.review_questions || data.production_review_questions)
+                ? (data.review_questions || data.production_review_questions)
+                : data;
+            if (!payload || !Array.isArray(payload.questions)) return;
+            scProductionQuestions.value = payload;
+            scHydrateProductionSuggestionActions(data);
+            scHydrateProductionSuggestionActions(payload);
+            scInitProductionQuestionDrafts({
+                preserveDirty: Boolean(options && options.preserveDirty),
+                inputSignature: payload.input_signature,
+                revision: payload.revision,
+            });
+        }
+
+        async function scLoadProductionReview(options) {
+            if (!scActivePair.value || !SC_PRODUCTION_REVIEW) return;
+            const pairId = scActivePair.value.id;
+            const settings = options || {};
+            const preserveDrafts = settings.preserveDrafts !== false;
+            scProductionLoading.value = true;
+            if (!settings.silent) scProductionError.value = '';
+            const suffixes = ['/state', '/changes', '/questions', '/final-report'];
+            const settled = await Promise.all(suffixes.map(async suffix => {
+                try {
+                    return {suffix, data: await scProductionRequest(suffix, {optional: true})};
+                } catch (error) {
+                    return {suffix, error};
+                }
+            }));
+            try {
+                if (!scActivePair.value || scActivePair.value.id !== pairId) return;
+                let firstError = null;
+                settled.forEach(result => {
+                    if (result.error) {
+                        firstError = firstError || result.error;
+                        return;
+                    }
+                    if (result.suffix === '/state' && result.data) {
+                        scApplyProductionState(result.data);
+                    } else if (result.suffix === '/changes' && result.data) {
+                        scApplyProductionChanges(result.data, {preserveDirty: preserveDrafts});
+                    } else if (result.suffix === '/questions' && result.data) {
+                        scApplyProductionQuestions(result.data, {preserveDirty: preserveDrafts});
+                    } else if (result.suffix === '/final-report' && result.data) {
+                        scProductionFinalReport.value = result.data.final_report || result.data;
+                    }
+                });
+                if (firstError) scProductionError.value = String(firstError.message || firstError);
+            } finally {
+                if (scActivePair.value && scActivePair.value.id === pairId) {
+                    scProductionLoading.value = false;
+                }
+            }
+        }
+
+        async function scDiscardProductionDrafts() {
+            if (!scActivePair.value || scProductionMutating.value) return;
+            scProductionError.value = '';
+            await scLoadProductionReview({silent: true, preserveDrafts: false});
+            if (!scProductionError.value) {
+                scProductionSaveMessage.value = 'Локальные черновики сброшены; загружена текущая версия.';
+            }
+        }
+
+        function scProductionRunBody() {
+            const pageMode = scProductionInputMode.value === 'PAGE';
+            return {
+                input_mode: pageMode ? 'PAGE' : 'DOCUMENT',
+                left_pages: pageMode && !scViewerEmpty.left ? [Number(scCurrentPage.left)] : [],
+                right_pages: pageMode && !scViewerEmpty.right ? [Number(scCurrentPage.right)] : [],
+                left_block_ids: [],
+                right_block_ids: [],
+            };
+        }
+
+        async function scRunProductionComparison() {
+            if (!scActivePair.value || scProductionMutating.value) return;
+            scProductionRunLoading.value = true;
+            scProductionError.value = '';
+            scProductionSaveMessage.value = '';
+            try {
+                const data = await scProductionRequest('/run', {
+                    fetch: {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(scProductionRunBody()),
+                    },
+                });
+                if (data && (data.state || data.status)) {
+                    scApplyProductionState(data);
+                }
+                await scLoadProductionReview({silent: true, preserveDrafts: false});
+            } catch (error) {
+                scProductionError.value = String(error.message || error);
+            } finally {
+                scProductionRunLoading.value = false;
+            }
+        }
+
+        async function scSaveProductionDecisions() {
+            if (!scActivePair.value || scProductionMutating.value || scProductionStale.value) return;
+            const dirtyRows = scProductionRows.value.filter(scProductionDecisionIsDirty);
+            if (!dirtyRows.length) return;
+            let baseVersion;
+            try {
+                baseVersion = scProductionDraftBaseVersion(
+                    dirtyRows.map(row => scProductionDecisionDrafts[row.target_id]),
+                    'решений',
+                );
+            } catch (error) {
+                scProductionError.value = String(error.message || error);
+                return;
+            }
+            const updates = dirtyRows.map(row => {
+                const draft = scProductionDecisionDrafts[row.target_id];
+                return {
+                    target_id: row.target_id,
+                    decision: draft.decision,
+                    author: draft.decision === 'PENDING_REVIEW' ? null : scProductionAuthor(),
+                    comment: draft.comment.trim() || null,
+                    reason_code: draft.reason_code.trim() || null,
+                };
+            });
+            if (!updates.length) return;
+            scProductionDecisionsSaving.value = true;
+            scProductionError.value = '';
+            try {
+                const data = await scProductionRequest('/decisions', {
+                    fetch: {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            updates,
+                            expected_input_signature: baseVersion.input_signature,
+                            expected_revision: baseVersion.revision,
+                        }),
+                    },
+                });
+                scApplyProductionChanges(data, {preserveDirty: false});
+                const report = await scProductionRequest('/final-report', {optional: true});
+                scProductionFinalReport.value = report && (report.final_report || report);
+                scProductionSaveMessage.value = 'Решения сохранены. Итоговый отчёт обновлён.';
+            } catch (error) {
+                scProductionError.value = error && error.status === 409
+                    ? `${String(error.message || error)} Черновики сохранены локально; сбросьте их после сверки.`
+                    : String(error.message || error);
+            } finally {
+                scProductionDecisionsSaving.value = false;
+            }
+        }
+
+        function scProductionCommaList(value) {
+            return [...new Set(String(value || '').split(/[;,\n]/)
+                .map(item => item.trim()).filter(Boolean))];
+        }
+
+        function scProductionPageList(value) {
+            const raw = scProductionCommaList(value);
+            const pages = raw.map(Number);
+            if (pages.some(page => !Number.isInteger(page) || page < 1)) {
+                throw new Error('Номера листов должны быть положительными целыми числами.');
+            }
+            return [...new Set(pages)].sort((left, right) => left - right);
+        }
+
+        function scProductionValidateSheetRelationType(leftPages, rightPages, relationType) {
+            const inferred = leftPages.length === 1 && rightPages.length === 1
+                ? 'MATCHED'
+                : leftPages.length === 1 && rightPages.length > 1
+                    ? 'SPLIT'
+                    : leftPages.length > 1 && rightPages.length === 1
+                    ? 'MERGED'
+                        : 'UNCERTAIN';
+            const selected = relationType || inferred;
+            if (inferred === 'UNCERTAIN' || selected === 'UNCERTAIN') {
+                throw new Error(
+                    'Точная связь должна иметь cardinality 1→1, 1→N или N→1; UNCERTAIN не закрывает вопрос.',
+                );
+            }
+            if (selected !== 'UNCERTAIN' && selected !== inferred) {
+                throw new Error(
+                    `Тип связи ${selected} не соответствует cardinality; ожидается ${inferred}.`,
+                );
+            }
+            return selected;
+        }
+
+        function scProductionDraftBaseVersion(drafts, label) {
+            const values = (drafts || []).filter(Boolean);
+            const signatures = new Set(values.map(draft => draft.base_artifact_input_signature));
+            const revisions = new Set(values.map(draft => draft.base_artifact_revision));
+            const signature = signatures.size === 1 ? [...signatures][0] : '';
+            const revision = revisions.size === 1 ? [...revisions][0] : NaN;
+            if (!signature || !Number.isInteger(revision) || revision < 0) {
+                throw new Error(
+                    `Черновики ${label} относятся к разным версиям. Сбросьте их и повторите ввод.`,
+                );
+            }
+            return {input_signature: signature, revision};
+        }
+
+        function scProductionQuestionAnswerPayload(row) {
+            const draft = scProductionQuestionDrafts[row.question_id];
+            if (!draft || !draft.answer) {
+                throw new Error(`Выберите ответ на вопрос ${row.question_id}.`);
+            }
+            const payload = {
+                question_id: row.question_id,
+                answer: draft.answer,
+                author: scProductionAuthor(),
+                comment: draft.comment.trim() || null,
+            };
+            if (draft.answer === 'OTHER' && row.category === 'ENTITY') {
+                const rightEntityRef = draft.explicit_candidate.right_entity_ref.trim();
+                if (!rightEntityRef) {
+                    throw new Error(`Укажите точный RIGHT entity ref для ${row.question_id}.`);
+                }
+                payload.explicit_candidate = {right_entity_ref: rightEntityRef};
+                const projectEntityRef = draft.explicit_candidate.project_entity_ref.trim();
+                if (projectEntityRef) payload.explicit_candidate.project_entity_ref = projectEntityRef;
+            } else if (draft.answer === 'OTHER' && row.category === 'SHEET') {
+                const leftPages = scProductionPageList(draft.explicit_candidate.left_pages);
+                const rightPages = scProductionPageList(draft.explicit_candidate.right_pages);
+                if (!leftPages.length || !rightPages.length) {
+                    throw new Error(`Укажите листы LEFT и RIGHT для ${row.question_id}.`);
+                }
+                const relationType = scProductionValidateSheetRelationType(
+                    leftPages,
+                    rightPages,
+                    draft.explicit_candidate.relation_type,
+                );
+                payload.explicit_candidate = {
+                    left_pages: leftPages,
+                    right_pages: rightPages,
+                    relation_type: relationType,
+                };
+            } else if (row.category === 'CHANGE' && ['YES', 'OTHER'].includes(draft.answer)) {
+                const fields = scProductionQuestionTypedFields(row);
+                const typed = {};
+                const initialTyped = draft.initial_typed_resolution || {};
+                const typedChanged = fields.some(field => (
+                    String(draft.typed_resolution[field] || '').trim()
+                    !== String(initialTyped[field] || '').trim()
+                ));
+                const hasSavedTyped = Boolean(
+                    row.typed_resolution && typeof row.typed_resolution === 'object'
+                    && Object.keys(row.typed_resolution).length
+                );
+                if (draft.answer === 'OTHER' && !typedChanged && !hasSavedTyped) {
+                    throw new Error(
+                        `Для ответа «Другой вариант» измените хотя бы одно точное поле ${row.question_id}.`,
+                    );
+                }
+                if (typedChanged || hasSavedTyped) {
+                    fields.forEach(field => {
+                        const value = String(draft.typed_resolution[field] || '').trim();
+                        if (!value) return;
+                        typed[field] = field === 'selected_change_ids'
+                            ? scProductionCommaList(value)
+                            : value;
+                    });
+                }
+                const required = row.context && row.context.typed_resolution_contract
+                    && row.context.typed_resolution_contract.required_fields || [];
+                const missing = required.filter(field => (
+                    field === 'selected_change_ids'
+                        ? !Array.isArray(typed[field]) || !typed[field].length
+                        : !typed[field]
+                ));
+                if (missing.length) {
+                    throw new Error(
+                        `Заполните для ${row.question_id}: ${missing.map(scProductionQuestionFieldLabel).join(', ')}.`,
+                    );
+                }
+                const allowedChangeIds = new Set(
+                    Array.isArray(row.context && row.context.change_ids)
+                        ? row.context.change_ids.map(String)
+                        : [],
+                );
+                if (Array.isArray(typed.selected_change_ids)
+                    && (!allowedChangeIds.size
+                        || typed.selected_change_ids.some(changeId => !allowedChangeIds.has(changeId)))) {
+                    throw new Error(
+                        `Для ${row.question_id} можно выбрать только: ${[...allowedChangeIds].join(', ')}.`,
+                    );
+                }
+                if (Array.isArray(typed.selected_change_ids)
+                    && typed.selected_change_ids.length >= allowedChangeIds.size) {
+                    throw new Error(
+                        `Для ${row.question_id} выберите непустую строгую часть предложенных изменений.`,
+                    );
+                }
+                if (draft.answer === 'OTHER' && !Object.keys(typed).length) {
+                    throw new Error(`Для ответа «Другой вариант» задайте точное изменение ${row.question_id}.`);
+                }
+                if (Object.keys(typed).length) payload.typed_resolution = typed;
+            }
+            return payload;
+        }
+
+        async function scPutProductionAnswers(answers, options) {
+            const settings = options || {};
+            const expectedInputSignature = Object.prototype.hasOwnProperty.call(
+                settings, 'expectedInputSignature',
+            ) ? settings.expectedInputSignature : scProductionQuestions.value
+                && scProductionQuestions.value.input_signature;
+            const expectedRevision = Object.prototype.hasOwnProperty.call(
+                settings, 'expectedRevision',
+            ) ? settings.expectedRevision : scProductionQuestions.value
+                && Number(scProductionQuestions.value.revision);
+            const data = await scProductionRequest('/answers', {
+                fetch: {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        answers,
+                        expected_input_signature: expectedInputSignature || undefined,
+                        expected_revision: Number.isInteger(expectedRevision)
+                            ? expectedRevision
+                            : undefined,
+                    }),
+                },
+            });
+            if (data && data.state) scApplyProductionState(data);
+            scApplyProductionQuestions(data, {
+                preserveDirty: Boolean(options && options.preserveDirty),
+            });
+            return data;
+        }
+
+        async function scSaveProductionAnswers() {
+            if (!scActivePair.value || scProductionMutating.value || scProductionStale.value) return;
+            const dirtyRows = scProductionQuestionRows.value.filter(scProductionQuestionIsDirty);
+            if (!dirtyRows.length) return;
+            let answers;
+            let baseVersion;
+            try {
+                answers = dirtyRows.map(scProductionQuestionAnswerPayload);
+                baseVersion = scProductionDraftBaseVersion(
+                    dirtyRows.map(row => scProductionQuestionDrafts[row.question_id]),
+                    'ответов',
+                );
+            } catch (error) {
+                scProductionError.value = String(error.message || error);
+                return;
+            }
+            if (!answers.length) return;
+            scProductionAnswersSaving.value = true;
+            scProductionError.value = '';
+            try {
+                await scPutProductionAnswers(answers, {
+                    preserveDirty: false,
+                    expectedInputSignature: baseVersion.input_signature,
+                    expectedRevision: baseVersion.revision,
+                });
+                // Only dependent production artifacts are re-read. The legacy
+                // pipeline and model-based stages are never restarted here.
+                await scLoadProductionReview({silent: true, preserveDrafts: true});
+                scProductionSaveMessage.value = 'Ответы сохранены; зависимая часть результата обновлена.';
+            } catch (error) {
+                scProductionError.value = error && error.status === 409
+                    ? `${String(error.message || error)} Черновики сохранены локально; сбросьте их после сверки.`
+                    : String(error.message || error);
+            } finally {
+                scProductionAnswersSaving.value = false;
+            }
+        }
+
+        async function scHandleProductionSheetSuggestion(suggestion, action) {
+            if (!suggestion || scProductionMutating.value || scProductionStale.value) return;
+            if (!suggestion.question_id) {
+                scProductionError.value = 'Для рекомендации нет version-bound вопроса; действие не сохранено.';
+                return;
+            }
+            const expectedInputSignature = scProductionQuestions.value
+                && scProductionQuestions.value.input_signature;
+            const expectedRevision = scProductionQuestions.value
+                && Number(scProductionQuestions.value.revision);
+            if (!expectedInputSignature || !Number.isInteger(expectedRevision)) {
+                scProductionError.value = 'Версия вопросов не загружена; обновите production-результат.';
+                return;
+            }
+            const previousRunId = String(scProductionState.value
+                && scProductionState.value.run_id || '');
+            scProductionAnswersSaving.value = true;
+            scProductionError.value = '';
+            scProductionSaveMessage.value = '';
+            try {
+                const data = await scPutProductionAnswers([{
+                    question_id: suggestion.question_id,
+                    answer: action,
+                    author: scProductionAuthor(),
+                    comment: null,
+                }], {
+                    preserveDirty: true,
+                    expectedInputSignature,
+                    expectedRevision,
+                });
+                await scLoadProductionReview({silent: true, preserveDrafts: true});
+                const reloaded = scProductionSuggestionApplication(suggestion);
+                const returned = scProductionSuggestionApplication(suggestion, data);
+                const application = reloaded.action === action ? reloaded : returned;
+                if (application.action !== action) {
+                    throw new Error(
+                        'Сервер не подтвердил сохранение действия; production-состояние обновлено без него.',
+                    );
+                }
+                application.new_generation = Boolean(
+                    previousRunId && application.generation_run_id
+                    && previousRunId !== application.generation_run_id,
+                );
+                scProductionSuggestionApplications[suggestion.id] = application;
+                if (action === 'REPLACE') {
+                    scApplyProductionReplacementView(application);
+                }
+                scProductionSaveMessage.value = scProductionSuggestionStatus(suggestion);
+            } catch (error) {
+                scProductionError.value = error && error.status === 409
+                    ? `${String(error.message || error)} Черновики сохранены локально; обновите данные после сверки.`
+                    : String(error.message || error);
+            } finally {
+                scProductionAnswersSaving.value = false;
+            }
+        }
+
+        function scProductionSuggestionApplication(suggestion, payload) {
+            if (!SC_PRODUCTION_REVIEW || !SC_PRODUCTION_REVIEW.normalizeSuggestionApplication) {
+                return {action: '', scope_applied: null, pipeline_rerun: null, groups: []};
+            }
+            const source = payload || {
+                state: scProductionState.value,
+                application: scProductionQuestions.value && scProductionQuestions.value.application,
+                suggestion_actions: scProductionQuestions.value
+                    && scProductionQuestions.value.suggestion_actions,
+                suggestion_action_semantics: scProductionQuestions.value
+                    && scProductionQuestions.value.suggestion_action_semantics,
+            };
+            return SC_PRODUCTION_REVIEW.normalizeSuggestionApplication(
+                source, suggestion && suggestion.id,
+            );
+        }
+
+        function scProductionSuggestionGroupLabel(application) {
+            const groups = application && Array.isArray(application.groups)
+                ? application.groups
+                : [];
+            return groups.map(group => (
+                `LEFT ${(group.left_pages || []).join(', ')} → RIGHT ${(group.right_pages || []).join(', ')}`
+            )).join('; ');
+        }
+
+        function scProductionSuggestionStatus(suggestion) {
+            if (!suggestion) return '';
+            const persistedAction = scProductionSuggestionActions[suggestion.id] || '';
+            const saved = scProductionSuggestionApplications[suggestion.id];
+            const authoritative = scProductionSuggestionApplication(suggestion);
+            const savedMatchesGeneration = saved && saved.action === persistedAction
+                && (!authoritative.generation_run_id
+                    || saved.generation_run_id === authoritative.generation_run_id);
+            // The same generation can receive newer answer semantics without
+            // a pipeline rerun.  Never let the local UI cache shadow that
+            // authoritative outcome; retain only the transient "new run" cue.
+            const application = {...authoritative};
+            if (savedMatchesGeneration && saved.new_generation) {
+                application.new_generation = true;
+            }
+            const action = application.action || persistedAction;
+            if (!action) return '';
+            const groupLabel = scProductionSuggestionGroupLabel(application);
+            const runLabel = application.generation_run_id
+                ? application.new_generation
+                    ? ` Новый run: ${application.generation_run_id}.`
+                    : ` Run: ${application.generation_run_id}.`
+                : '';
+            if (action === 'IGNORE') {
+                if (application.scope_applied === false && application.pipeline_rerun === false) {
+                    return 'Рекомендация проигнорирована; область не менялась, pipeline не перезапускался.';
+                }
+                if (application.scope_applied === false && application.pipeline_rerun === true) {
+                    return `Рекомендация проигнорирована; pipeline пересчитан для возврата к исходной области.${runLabel}`;
+                }
+                return 'Решение «Игнорировать» сохранено; сервер не вернул полный статус области и pipeline.';
+            }
+            if (application.scope_applied === true && application.pipeline_rerun === true) {
+                return `Область применена; production pipeline пересчитан.${runLabel}`
+                    + (groupLabel ? ` Эффективная группа: ${groupLabel}.` : '');
+            }
+            if (application.scope_applied === true) {
+                return 'Область применена; повторный запуск pipeline сервером не подтверждён.'
+                    + (groupLabel ? ` Эффективная группа: ${groupLabel}.` : '');
+            }
+            if (application.pipeline_rerun === true) {
+                return `Pipeline пересчитан, но применение области сервером не подтверждено.${runLabel}`;
+            }
+            if (application.scope_applied === false) {
+                return 'Действие сохранено, но сервер не применил предложенную область.';
+            }
+            return 'Действие сохранено; сервер не вернул статус применения области и pipeline.';
+        }
+
+        function scApplyProductionReplacementView(application) {
+            if (!application || application.action !== 'REPLACE'
+                || application.scope_applied !== true
+                || !Array.isArray(application.groups) || application.groups.length !== 1) return false;
+            const group = application.groups[0];
+            const leftPages = Array.isArray(group.left_pages) ? group.left_pages : [];
+            const rightPages = Array.isArray(group.right_pages) ? group.right_pages : [];
+            if (!leftPages.length || !rightPages.length
+                || leftPages.some(page => page > scPageCount('left'))
+                || rightPages.some(page => page > scPageCount('right'))) return false;
+            scOpenSheetMapRow({
+                key: `production-replacement-${application.generation_run_id || 'current'}`,
+                leftPages,
+                rightPages,
+            });
+            return true;
+        }
+
+        function scProductionSuggestionActionLabel(action) {
+            return ({
+                COMPARE_ADDITIONALLY: 'Сравнить дополнительно',
+                REPLACE: 'Заменить',
+                ADD_TO_GROUP: 'Добавить в группу',
+                IGNORE: 'Игнорировать',
+            })[action] || action;
+        }
+
+        function scProductionStateStatusLabel(status) {
+            return ({
+                NOT_STARTED: 'не запущен',
+                PENDING: 'ожидает запуска',
+                RUNNING: 'выполняется',
+                COMPLETED: 'готово',
+                READY: 'готово',
+                PARTIAL: 'частично готово',
+                FAILED: 'ошибка',
+            })[String(status || '').toUpperCase()] || status;
+        }
+
+        function scProductionQuestionCategoryLabel(category) {
+            return ({SHEET: 'Лист', ENTITY: 'Объект', CHANGE: 'Изменение'})[
+                String(category || '').toUpperCase()
+            ] || category;
+        }
+
+        function scProductionChangeStatusLabel(status) {
+            return ({
+                CONFIRMED: 'подтверждено системой',
+                REVIEW_REQUIRED: 'требует проверки',
+                MATERIAL_CHANGE: 'изменение',
+            })[String(status || '').toUpperCase()] || status;
+        }
+
+        function scProductionDecisionLabel(value) {
+            return ({
+                APPROVED: 'APPROVED',
+                REJECTED: 'REJECTED',
+                PENDING_REVIEW: 'PENDING_REVIEW',
+            })[String(value || '').toUpperCase()] || 'PENDING_REVIEW';
+        }
+
+        function scProductionEvidenceOverlaysFor(side, page) {
+            if (!scProductionEvidence.value || !scProductionEvidenceVisible.value) return [];
+            const value = scProductionEvidence.value.sides[side];
+            if (!value) return [];
+            return (value.overlays || []).filter(overlay => Number(overlay.page) === Number(page));
+        }
+
+        function scProductionEvidenceOverlayStyle(overlay) {
+            const normalized = overlay.units === 'normalized';
+            const unit = normalized ? '%' : 'px';
+            const factor = normalized ? 100 : 1;
+            const style = {
+                left: `${Number(overlay.x || 0) * factor}${unit}`,
+                top: `${Number(overlay.y || 0) * factor}${unit}`,
+                width: `${Number(overlay.width || 0) * factor}${unit}`,
+                height: `${Number(overlay.height || 0) * factor}${unit}`,
+            };
+            if (overlay.kind === 'POLYGON' && Array.isArray(overlay.polygon)) {
+                style.clipPath = `polygon(${overlay.polygon.map(point =>
+                    `${Number(point.x || 0) * 100}% ${Number(point.y || 0) * 100}%`
+                ).join(', ')})`;
+            }
+            return style;
+        }
+
+        function scProductionEvidencePages(side) {
+            const evidence = scProductionEvidence.value && scProductionEvidence.value.sides[side];
+            return evidence && Array.isArray(evidence.pages) ? evidence.pages : [];
+        }
+
+        function scProductionEvidenceSideNotice(side) {
+            const evidence = scProductionEvidence.value && scProductionEvidence.value.sides[side];
+            if (!evidence || !evidence.has_evidence) return 'доказательство не привязано';
+            if (evidence.page === null) return 'страница не указана';
+            const pageLabel = evidence.pages.length > 1
+                ? `стр. ${evidence.page} (доступны ${evidence.pages.join(', ')})`
+                : `стр. ${evidence.page}`;
+            const pageHasCoordinates = (evidence.overlays || []).some(overlay =>
+                Number(overlay.page) === Number(evidence.page)
+            );
+            if (!pageHasCoordinates) return `${pageLabel}, координат нет`;
+            return `${pageLabel}, область подсвечена`;
+        }
+
+        function scFocusProductionEvidenceSide(side, evidenceSide) {
+            if (!SC_PRODUCTION_REVIEW || !evidenceSide) return;
+            const focus = SC_PRODUCTION_REVIEW.evidenceFocus(evidenceSide);
+            if (!focus) return;
+            const dims = scPageDims[side];
+            const cx = focus.units === 'normalized'
+                ? focus.x
+                : (dims.w ? focus.x / dims.w : null);
+            const cy = focus.units === 'normalized'
+                ? focus.y
+                : (dims.h ? focus.y / dims.h : null);
+            if (!Number.isFinite(cx) || !Number.isFinite(cy)) return;
+            const width = focus.units === 'normalized'
+                ? focus.width
+                : (dims.w ? focus.width / dims.w : 0);
+            const height = focus.units === 'normalized'
+                ? focus.height
+                : (dims.h ? focus.height / dims.h : 0);
+            const view = scViews[side];
+            view.cx = Math.min(1, Math.max(0, cx));
+            view.cy = Math.min(1, Math.max(0, cy));
+            view.zoom = Math.min(12, Math.max(
+                SC_SEARCH_FOCUS_ZOOM,
+                0.3 / Math.max(width || 0.01, height || 0.01),
+            ));
+        }
+
+        async function scShowProductionEvidencePage(side, page) {
+            const evidence = scProductionEvidence.value && scProductionEvidence.value.sides[side];
+            const normalizedPage = Number(page);
+            if (!evidence || !evidence.pages.includes(normalizedPage)) return;
+            evidence.page = normalizedPage;
+            scSetViewerEmpty(side, false);
+            scCurrentPage[side] = normalizedPage;
+            scSyncView.value = false;
+            scProductionEvidenceVisible.value = true;
+            await nextTick();
+            scFocusProductionEvidenceSide(side, evidence);
+            scMeasurePane(side);
+            scScheduleView();
+            if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
+            const token = scProductionEvidenceToken;
+            scProductionEvidenceTimer = setTimeout(() => {
+                if (token === scProductionEvidenceToken) scProductionEvidenceVisible.value = false;
+            }, 12000);
+        }
+
+        async function scOpenProductionEvidence(row) {
+            if (!row || !scActivePair.value || scProductionEvidenceLoadingId.value) return;
+            scProductionEvidenceLoadingId.value = row.target_id;
+            scProductionEvidenceError.value = '';
+            const token = ++scProductionEvidenceToken;
+            try {
+                const data = await scProductionRequest(
+                    `/changes/${encodeURIComponent(row.target_id)}/evidence`,
+                );
+                if (token !== scProductionEvidenceToken) return;
+                const evidence = SC_PRODUCTION_REVIEW.normalizeEvidence(data);
+                scProductionEvidence.value = evidence;
+                scProductionEvidenceVisible.value = true;
+                scTab.value = 'links';
+                if (scViewMode.value !== 'paged') scSetViewMode('paged');
+                // Set both sides in the same turn. Do not use scFocusLeftPage:
+                // it intentionally follows a legacy sheet link and could replace
+                // the exact RIGHT evidence page returned by the API.
+                for (const side of ['left', 'right']) {
+                    const page = evidence.sides[side].page;
+                    if (Number.isInteger(page) && page > 0) {
+                        scSetViewerEmpty(side, false);
+                        scCurrentPage[side] = page;
+                    } else {
+                        // Do not leave an unrelated previously opened page
+                        // visible when this finding has no exact page binding.
+                        scSetViewerEmpty(side, true);
+                    }
+                }
+                if (evidence.sides.left.coordinates_available
+                    || evidence.sides.right.coordinates_available) {
+                    scSyncView.value = false;
+                }
+                await nextTick();
+                // The legacy scSyncView watcher copies LEFT to RIGHT while it
+                // detaches the panes. Focus only after that watcher has flushed,
+                // so each evidence keeps its own exact centre.
+                scFocusProductionEvidenceSide('left', evidence.sides.left);
+                scFocusProductionEvidenceSide('right', evidence.sides.right);
+                scMeasurePane('left');
+                scMeasurePane('right');
+                scScheduleView();
+                if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
+                scProductionEvidenceTimer = setTimeout(() => {
+                    if (token === scProductionEvidenceToken) scProductionEvidenceVisible.value = false;
+                }, 12000);
+            } catch (error) {
+                scProductionEvidenceError.value = String(error.message || error);
+            } finally {
+                if (token === scProductionEvidenceToken) scProductionEvidenceLoadingId.value = '';
+            }
+        }
+
+        function scCloseProductionEvidence() {
+            scProductionEvidenceToken += 1;
+            scProductionEvidence.value = null;
+            scProductionEvidenceVisible.value = false;
+            if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
+            scProductionEvidenceTimer = 0;
         }
 
         async function scProcessPair(pair) {
@@ -16176,6 +17334,41 @@ const app = createApp({
             scPairs, scSelectedPdf,
             scActivePair, scPairData, scPairLoading,
             scProcessing, scProcessingError,
+            // Production atomic comparison/review (legacy refs stay exported below)
+            scProductionState, scProductionChanges, scProductionQuestions,
+            scProductionFinalReport, scProductionAvailable, scProductionHasRun,
+            scProductionLoading, scProductionRunLoading,
+            scProductionDecisionsSaving, scProductionAnswersSaving,
+            scProductionError, scProductionSaveMessage, scProductionInputMode,
+            scProductionRows, scProductionCounts,
+            scProductionQuestionRows, scProductionQuestionCounts,
+            scProductionFinalRows, scProductionSheetSuggestions,
+            scProductionStale, scProductionSuggestionSemantics, scProductionMutating,
+            scProductionHasDirtyDecisions, scProductionHasDirtyAnswers,
+            scProductionDecisionDrafts, scProductionQuestionDrafts,
+            scProductionSuggestionActions, scProductionSuggestionApplications,
+            scProductionEvidence, scProductionEvidenceVisible,
+            scProductionEvidenceLoadingId, scProductionEvidenceError,
+            scLoadProductionReview, scDiscardProductionDrafts,
+            scRunProductionComparison, scProductionRunBody,
+            scProductionDecisionDraft, scProductionDecisionIsDirty,
+            scSetProductionDecision, scSetProductionDecisionField,
+            scSaveProductionDecisions,
+            scProductionQuestionDraft, scProductionQuestionIsDirty,
+            scSetProductionQuestionField, scSetProductionQuestionTypedField,
+            scSetProductionQuestionExplicitField,
+            scProductionQuestionNeedsTypedResolution,
+            scProductionQuestionNeedsExplicitCandidate,
+            scProductionQuestionTypedFields, scProductionQuestionFieldLabel,
+            scProductionQuestionFieldRequired, scSaveProductionAnswers,
+            scHandleProductionSheetSuggestion, scProductionSuggestionActionLabel,
+            scProductionSuggestionStatus,
+            scProductionStateStatusLabel, scProductionQuestionCategoryLabel,
+            scProductionChangeStatusLabel, scProductionDecisionLabel,
+            scOpenProductionEvidence, scCloseProductionEvidence,
+            scProductionEvidenceOverlaysFor, scProductionEvidenceOverlayStyle,
+            scProductionEvidencePages, scProductionEvidenceSideNotice,
+            scShowProductionEvidencePage,
             scMatchState, scMatchSummary, scSuggestions, scLeftSuggestion,
             scTextComparison, scTextComparisonLoading, scTextComparisonError,
             scSelectedTextMetric, scSelectedTextHints, scRunTextComparison,

@@ -5557,6 +5557,27 @@
                     Выберите пару документов на вкладке «Загрузка документации»
                 </div>
                 <template v-else>
+                    <section v-if="scProductionEvidence" class="sc-production-evidence-banner" role="status">
+                        <div>
+                            <strong>Доказательство {{ scProductionEvidence.target_id }}</strong>
+                            <span>LEFT: {{ scProductionEvidenceSideNotice('left') }}</span>
+                            <span>RIGHT: {{ scProductionEvidenceSideNotice('right') }}</span>
+                            <span v-for="side in ['left', 'right']" :key="'evidence-pages-' + side"
+                                  v-show="scProductionEvidencePages(side).length > 1"
+                                  class="sc-production-evidence-pages">
+                                {{ side.toUpperCase() }}:
+                                <button v-for="page in scProductionEvidencePages(side)" :key="side + '-' + page"
+                                        type="button"
+                                        :class="{active: scProductionEvidence.sides[side].page === page}"
+                                        @click="scShowProductionEvidencePage(side, page)">{{ page }}</button>
+                            </span>
+                            <small v-if="!scProductionEvidenceVisible">
+                                Временная подсветка завершена. Нажмите строку изменения повторно, чтобы показать её снова.
+                            </small>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                                @click="scCloseProductionEvidence()">Закрыть</button>
+                    </section>
                     <section v-if="scMatchState && scMatchState.suggestions" class="sc-sheet-map">
                         <div class="sc-sheet-map__head">
                             <strong>Карта листов</strong>
@@ -5896,6 +5917,12 @@
                                        :class="{'is-elsewhere': overlay.status === 'MOVED'}"
                                        :title="overlay.title" :aria-label="overlay.title"
                                        :style="scTextComparisonOverlayStyle(overlay)"></i>
+                                    <i v-for="overlay in scProductionEvidenceOverlaysFor(side, scCurrentPage[side])"
+                                       :key="'production-evidence-' + overlay.id"
+                                       class="sc-production-evidence-overlay"
+                                       :class="'is-' + String(overlay.source || 'unknown').toLowerCase()"
+                                       aria-hidden="true"
+                                       :style="scProductionEvidenceOverlayStyle(overlay)"></i>
                                     <i v-for="(highlight, index) in scTextSearchHighlightsFor(side, scCurrentPage[side])"
                                        :key="side + '-search-' + scCurrentPage[side] + '-' + index"
                                        class="sc-text-highlight"
@@ -6017,6 +6044,355 @@
                 <div v-if="scTextDifferences && scTextDifferences.stale" class="sc-shell-error sc-differences__stale">
                     Связи или исходные документы изменились. Пересчитайте расхождения.
                 </div>
+
+                <!-- Production LEFT → RIGHT comparison. Legacy summaries and the
+                     Stage 3 discrepancy ledger remain below this panel. -->
+                <section v-if="scActivePair" class="sc-production-review" aria-labelledby="sc-production-title">
+                    <header class="sc-production-review__head">
+                        <div>
+                            <strong id="sc-production-title">Production comparison LEFT → RIGHT</strong>
+                            <small>
+                                Атомарные изменения: одна строка — одно независимое решение эксперта.
+                                <template v-if="scProductionState && scProductionState.status">
+                                    Статус: {{ scProductionStateStatusLabel(scProductionState.status) }}.
+                                </template>
+                            </small>
+                        </div>
+                        <div class="sc-production-review__run">
+                            <label>
+                                <span>Режим</span>
+                                <select v-model="scProductionInputMode"
+                                        :disabled="scProductionMutating">
+                                    <option value="DOCUMENT">Документ ↔ документ</option>
+                                    <option value="PAGE">Текущие страницы</option>
+                                </select>
+                            </label>
+                            <button type="button" class="btn btn-secondary"
+                                    :disabled="scProductionLoading || scProductionMutating"
+                                    @click="scLoadProductionReview()">
+                                {{ scProductionLoading ? 'Обновление…' : 'Обновить' }}
+                            </button>
+                            <button v-if="scProductionHasDirtyDecisions || scProductionHasDirtyAnswers"
+                                    type="button" class="btn btn-secondary"
+                                    :disabled="scProductionMutating"
+                                    title="Отбросить локальные несохранённые изменения и взять текущую серверную версию"
+                                    @click="scDiscardProductionDrafts()">
+                                Сбросить черновики
+                            </button>
+                            <button type="button" class="btn btn-primary"
+                                    :disabled="scProductionMutating"
+                                    @click="scRunProductionComparison()">
+                                {{ scProductionRunLoading ? 'Production-анализ…' : 'Запустить production' }}
+                            </button>
+                        </div>
+                    </header>
+
+                    <div v-if="scProductionError" class="sc-shell-error">{{ scProductionError }}</div>
+                    <div v-if="scProductionStale" class="sc-shell-error sc-production-stale" role="alert">
+                        Production-результат устарел: исходные документы или область изменились.
+                        Решения заблокированы до повторного запуска.
+                    </div>
+                    <div v-if="scProductionEvidenceError" class="sc-shell-error">
+                        Не удалось открыть доказательство: {{ scProductionEvidenceError }}
+                    </div>
+                    <div v-if="scProductionSaveMessage" class="sc-production-review__saved">
+                        {{ scProductionSaveMessage }}
+                    </div>
+
+                    <section v-if="scProductionSheetSuggestions.length"
+                             class="sc-production-suggestions" aria-label="Рекомендации по листам">
+                        <header>
+                            <strong>Рекомендации Sheet Matcher</strong>
+                            <small>
+                                Действие отправляется по текущей версии результата. IGNORE оставляет исходную область;
+                                для остальных действий применение области и пересчёт подтверждает сервер.
+                            </small>
+                        </header>
+                        <article v-for="suggestion in scProductionSheetSuggestions" :key="suggestion.id">
+                            <div>
+                                <b>{{ suggestion.message }}</b>
+                                <small>Уверенность: {{ suggestion.confidence }}</small>
+                                <small v-if="scProductionSuggestionStatus(suggestion)" role="status">
+                                    {{ scProductionSuggestionStatus(suggestion) }}
+                                </small>
+                            </div>
+                            <div class="sc-production-suggestions__actions">
+                                <button v-for="action in ['COMPARE_ADDITIONALLY', 'REPLACE', 'ADD_TO_GROUP', 'IGNORE']"
+                                        :key="suggestion.id + '-' + action" type="button" class="btn btn-sm"
+                                        :class="{'is-active': scProductionSuggestionActions[suggestion.id] === action}"
+                                        :disabled="scProductionMutating || scProductionStale"
+                                        @click="scHandleProductionSheetSuggestion(suggestion, action)">
+                                    {{ scProductionSuggestionActionLabel(action) }}
+                                </button>
+                            </div>
+                        </article>
+                    </section>
+
+                    <section v-if="scProductionQuestionRows.length || scProductionQuestionCounts.total"
+                             class="sc-production-questions" aria-labelledby="sc-production-questions-title">
+                        <header>
+                            <div>
+                                <strong id="sc-production-questions-title">Требуется уточнение</strong>
+                                <small>Готовые результаты ниже доступны независимо от этих вопросов.</small>
+                            </div>
+                            <div class="sc-production-questions__counts">
+                                <span>Листы <b>{{ scProductionQuestionCounts.SHEET }}</b></span>
+                                <span>Объекты <b>{{ scProductionQuestionCounts.ENTITY }}</b></span>
+                                <span>Изменения <b>{{ scProductionQuestionCounts.CHANGE }}</b></span>
+                            </div>
+                        </header>
+                        <div class="sc-production-questions__list">
+                            <article v-for="question in scProductionQuestionRows" :key="question.question_id">
+                                <div class="sc-production-question__prompt">
+                                    <span>{{ scProductionQuestionCategoryLabel(question.category) }}</span>
+                                    <b>{{ question.prompt }}</b>
+                                    <small>{{ question.question_id }} · {{ question.status }}</small>
+                                </div>
+                                <label>
+                                    <span>Ответ</span>
+                                    <select v-if="question.options.length"
+                                            :value="scProductionQuestionDraft(question).answer"
+                                            :disabled="scProductionMutating || scProductionStale"
+                                            @change="scSetProductionQuestionField(question, 'answer', $event.target.value)">
+                                        <option value="">Выберите ответ</option>
+                                        <option v-for="option in question.options" :key="option.value"
+                                                :value="option.value">{{ option.label }}</option>
+                                    </select>
+                                    <input v-else type="text"
+                                           :value="scProductionQuestionDraft(question).answer"
+                                           placeholder="Введите ответ"
+                                           :disabled="scProductionMutating || scProductionStale"
+                                           @input="scSetProductionQuestionField(question, 'answer', $event.target.value)">
+                                </label>
+                                <label>
+                                    <span>Комментарий</span>
+                                    <textarea rows="2" :value="scProductionQuestionDraft(question).comment"
+                                              placeholder="Необязательно"
+                                              :disabled="scProductionMutating || scProductionStale"
+                                              @input="scSetProductionQuestionField(question, 'comment', $event.target.value)"></textarea>
+                                </label>
+                                <div v-if="scProductionQuestionNeedsTypedResolution(question)"
+                                     class="sc-production-question__details">
+                                    <strong>Точное разрешение изменения</strong>
+                                    <small>Поля со звёздочкой обязательны для закрытия вопроса.</small>
+                                    <div>
+                                        <label v-for="field in scProductionQuestionTypedFields(question)"
+                                               :key="question.question_id + '-' + field">
+                                            <span>
+                                                {{ scProductionQuestionFieldLabel(field) }}
+                                                <b v-if="scProductionQuestionFieldRequired(question, field)">*</b>
+                                            </span>
+                                            <select v-if="field === 'dimension'"
+                                                    :value="scProductionQuestionDraft(question).typed_resolution[field]"
+                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
+                                                <option value="">Выберите измерение</option>
+                                                <option v-for="dimension in ['PRINCIPLE', 'METHOD', 'OPERATION', 'STRUCTURE', 'CONNECTION', 'TYPE', 'PARAMETER', 'QUANTITY', 'SPACE']"
+                                                        :key="dimension" :value="dimension">{{ dimension }}</option>
+                                            </select>
+                                            <select v-else-if="field === 'direction'"
+                                                    :value="scProductionQuestionDraft(question).typed_resolution[field]"
+                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
+                                                <option value="">Выберите направление</option>
+                                                <option v-for="direction in ['ADDED', 'REMOVED', 'REPLACED', 'INCREASED', 'DECREASED', 'ALTERED']"
+                                                        :key="direction" :value="direction">{{ direction }}</option>
+                                            </select>
+                                            <select v-else-if="field === 'outcome'"
+                                                    :value="scProductionQuestionDraft(question).typed_resolution[field]"
+                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    @change="scSetProductionQuestionTypedField(question, field, $event.target.value)">
+                                                <option value="">Выберите результат</option>
+                                                <option v-for="outcome in ['MATERIAL_CHANGE', 'DETAIL_ONLY']"
+                                                        :key="outcome" :value="outcome">{{ outcome }}</option>
+                                            </select>
+                                            <input v-else type="text"
+                                                   :value="scProductionQuestionDraft(question).typed_resolution[field]"
+                                                   :placeholder="field === 'selected_change_ids' ? 'ID через запятую' : ''"
+                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   @input="scSetProductionQuestionTypedField(question, field, $event.target.value)">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div v-if="scProductionQuestionNeedsExplicitCandidate(question)"
+                                     class="sc-production-question__details">
+                                    <strong>Точный вариант инженера</strong>
+                                    <div v-if="question.category === 'ENTITY'">
+                                        <label>
+                                            <span>RIGHT entity ref *</span>
+                                            <input type="text"
+                                                   :value="scProductionQuestionDraft(question).explicit_candidate.right_entity_ref"
+                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   @input="scSetProductionQuestionExplicitField(question, 'right_entity_ref', $event.target.value)">
+                                        </label>
+                                        <label>
+                                            <span>Project entity ref</span>
+                                            <input type="text"
+                                                   :value="scProductionQuestionDraft(question).explicit_candidate.project_entity_ref"
+                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   @input="scSetProductionQuestionExplicitField(question, 'project_entity_ref', $event.target.value)">
+                                        </label>
+                                    </div>
+                                    <div v-else>
+                                        <label>
+                                            <span>LEFT листы *</span>
+                                            <input type="text" placeholder="Например: 1, 2"
+                                                   :value="scProductionQuestionDraft(question).explicit_candidate.left_pages"
+                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   @input="scSetProductionQuestionExplicitField(question, 'left_pages', $event.target.value)">
+                                        </label>
+                                        <label>
+                                            <span>RIGHT листы *</span>
+                                            <input type="text" placeholder="Например: 3, 4"
+                                                   :value="scProductionQuestionDraft(question).explicit_candidate.right_pages"
+                                                   :disabled="scProductionMutating || scProductionStale"
+                                                   @input="scSetProductionQuestionExplicitField(question, 'right_pages', $event.target.value)">
+                                        </label>
+                                        <label>
+                                            <span>Тип связи</span>
+                                            <select :value="scProductionQuestionDraft(question).explicit_candidate.relation_type"
+                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    @change="scSetProductionQuestionExplicitField(question, 'relation_type', $event.target.value)">
+                                                <option v-for="relationType in ['MATCHED', 'SPLIT', 'MERGED']"
+                                                        :key="relationType" :value="relationType">{{ relationType }}</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        <footer>
+                            <button type="button" class="btn btn-primary"
+                                    :disabled="!scProductionHasDirtyAnswers || scProductionMutating || scProductionStale"
+                                    @click="scSaveProductionAnswers()">
+                                {{ scProductionAnswersSaving ? 'Сохранение…' : 'Сохранить ответы' }}
+                            </button>
+                        </footer>
+                    </section>
+
+                    <div v-if="scProductionRows.length" class="sc-production-review__toolbar">
+                        <div class="expert-review-counter">
+                            Всего: <b>{{ scProductionCounts.total }}</b>
+                            Подтверждено: <b class="is-approved">{{ scProductionCounts.APPROVED }}</b>
+                            Отклонено: <b class="is-rejected">{{ scProductionCounts.REJECTED }}</b>
+                            Ожидает: <b>{{ scProductionCounts.PENDING_REVIEW }}</b>
+                        </div>
+                        <button type="button" class="btn-expert-save"
+                                :disabled="!scProductionHasDirtyDecisions || scProductionMutating || scProductionStale"
+                                @click="scSaveProductionDecisions()">
+                            {{ scProductionDecisionsSaving ? 'Сохранение…' : 'Сохранить решения' }}
+                        </button>
+                    </div>
+
+                    <div v-if="scProductionRows.length" class="table-container sc-production-review__table-wrap">
+                        <table class="findings-table sc-production-review__table">
+                            <thead>
+                                <tr>
+                                    <th class="sc-production-col-id">ID</th>
+                                    <th>Объект</th>
+                                    <th>Листы</th>
+                                    <th>Изменение</th>
+                                    <th>Было</th>
+                                    <th>Стало</th>
+                                    <th>Источник</th>
+                                    <th>Статус / уверенность</th>
+                                    <th>Решение эксперта</th>
+                                    <th>Причина / комментарий</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="row in scProductionRows" :key="row.target_id"
+                                    :class="{
+                                        'row-accepted': scProductionDecisionDraft(row).decision === 'APPROVED',
+                                        'row-rejected': scProductionDecisionDraft(row).decision === 'REJECTED',
+                                        'is-dirty': scProductionDecisionIsDirty(row),
+                                    }">
+                                    <td class="id-cell">
+                                        <button type="button" class="sc-production-evidence-link"
+                                                :disabled="Boolean(scProductionEvidenceLoadingId)"
+                                                :title="'Открыть точное доказательство ' + row.target_id"
+                                                @click="scOpenProductionEvidence(row)">
+                                            {{ scProductionEvidenceLoadingId === row.target_id ? '…' : row.target_id }}
+                                        </button>
+                                        <span v-if="row.presentation_group_id" class="sc-production-group-marker"
+                                              title="Визуальная группа; решение сохраняется только для этой строки">
+                                            {{ row.presentation_group_label }}
+                                        </span>
+                                        <span v-if="row.target_kind === 'REVIEW_EVIDENCE'"
+                                              class="sc-production-review-evidence-marker">
+                                            REVIEW_EVIDENCE: сначала разрешите CHANGE-вопрос
+                                        </span>
+                                    </td>
+                                    <td>{{ row.object_ref }}</td>
+                                    <td class="sc-production-sheets-cell">
+                                        <button type="button" @click="scOpenProductionEvidence(row)">
+                                            <span>LEFT {{ row.left_pages.join(', ') || '—' }}</span>
+                                            <span>RIGHT {{ row.right_pages.join(', ') || '—' }}</span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="sc-production-change-link"
+                                                @click="scOpenProductionEvidence(row)">{{ row.change_label }}</button>
+                                        <small v-if="row.reason_codes.length">{{ row.reason_codes.join(', ') }}</small>
+                                    </td>
+                                    <td class="sc-production-value"><pre>{{ row.before }}</pre></td>
+                                    <td class="sc-production-value"><pre>{{ row.after }}</pre></td>
+                                    <td><span class="sc-production-source" :class="'is-' + row.source.toLowerCase()">
+                                        {{ row.source }}
+                                    </span></td>
+                                    <td>
+                                        <span class="sc-production-status" :class="'is-' + row.status.toLowerCase()">
+                                            {{ scProductionChangeStatusLabel(row.status) }}
+                                        </span>
+                                        <small>{{ row.confidence }}</small>
+                                    </td>
+                                    <td class="decision-cell">
+                                        <div class="decision-toggle" :aria-label="'Решение по ' + row.target_id">
+                                            <button type="button" class="btn-decision btn-accept"
+                                                    :class="{active: scProductionDecisionDraft(row).decision === 'APPROVED'}"
+                                                    :aria-pressed="String(scProductionDecisionDraft(row).decision === 'APPROVED')"
+                                                    :disabled="scProductionStale || scProductionMutating || row.target_kind === 'REVIEW_EVIDENCE'"
+                                                    :title="row.target_kind === 'REVIEW_EVIDENCE'
+                                                        ? 'Сначала создайте атомарное изменение через типизированный CHANGE-ответ'
+                                                        : 'Подтвердить'"
+                                                    @click="scSetProductionDecision(row, 'APPROVED')">
+                                                <span class="decision-glyph">✓</span>
+                                            </button>
+                                            <button type="button" class="btn-decision btn-reject"
+                                                    :class="{active: scProductionDecisionDraft(row).decision === 'REJECTED'}"
+                                                    :aria-pressed="String(scProductionDecisionDraft(row).decision === 'REJECTED')"
+                                                    :disabled="scProductionStale || scProductionMutating"
+                                                    title="Отклонить"
+                                                    @click="scSetProductionDecision(row, 'REJECTED')">
+                                                <span class="decision-glyph">✕</span>
+                                            </button>
+                                        </div>
+                                        <small class="sc-production-decision-label">
+                                            {{ scProductionDecisionLabel(scProductionDecisionDraft(row).decision) }}
+                                        </small>
+                                    </td>
+                                    <td class="reason-cell sc-production-reason-cell">
+                                        <input type="text" :value="scProductionDecisionDraft(row).reason_code"
+                                               placeholder="Код причины (необязательно)"
+                                               :disabled="scProductionStale || scProductionMutating"
+                                               @input="scSetProductionDecisionField(row, 'reason_code', $event.target.value)">
+                                        <textarea rows="2" :value="scProductionDecisionDraft(row).comment"
+                                                  placeholder="Комментарий эксперта"
+                                                  :disabled="scProductionStale || scProductionMutating"
+                                                  @input="scSetProductionDecisionField(row, 'comment', $event.target.value)"></textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div v-else-if="scProductionLoading" class="loading-state">Загрузка production-результата…</div>
+                    <div v-else-if="scProductionHasRun" class="sc-empty-state">
+                        Production-анализ завершён без атомарных изменений.
+                    </div>
+                    <div v-else class="sc-empty-state">
+                        Production-анализ ещё не запускался. Legacy-результаты ниже остаются доступны.
+                    </div>
+                </section>
 
                 <section v-if="scHighLevelProjectChangesAvailable" class="sc-project-summary sc-high-level-summary">
                     <header class="sc-project-summary__head">
@@ -6452,8 +6828,63 @@
                 </details>
             </div>
 
-            <div v-if="scTab==='report'" class="sc-empty-state sc-empty-state--large">
-                <strong>Отчёт ещё не сформирован</strong>
+            <div v-if="scTab==='report'" class="sc-shell sc-production-report">
+                <section class="sc-shell-card sc-production-report__head">
+                    <div>
+                        <strong>Итоговый отчёт LEFT → RIGHT</strong>
+                        <p>Только подтверждённые экспертом атомарные изменения.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary"
+                            :disabled="!scActivePair || scProductionLoading"
+                            @click="scLoadProductionReview()">
+                        {{ scProductionLoading ? 'Обновление…' : 'Обновить отчёт' }}
+                    </button>
+                </section>
+                <div v-if="scProductionError" class="sc-shell-error">{{ scProductionError }}</div>
+                <div v-if="scProductionStale" class="sc-shell-error sc-production-stale" role="alert">
+                    Итоговый отчёт относится к прежней версии входных данных. Не используйте его до повторного запуска.
+                </div>
+                <div v-if="scProductionFinalRows.length" class="table-container">
+                    <table class="findings-table sc-production-final-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Объект</th>
+                                <th>Изменение</th>
+                                <th>Было</th>
+                                <th>Стало</th>
+                                <th>Источник</th>
+                                <th>Решение эксперта</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="row in scProductionFinalRows" :key="row.target_id" class="row-accepted">
+                                <td class="id-cell"><span class="finding-id-link">{{ row.target_id }}</span></td>
+                                <td>{{ row.object_ref }}</td>
+                                <td>{{ row.change_label }}</td>
+                                <td class="sc-production-value"><pre>{{ row.before }}</pre></td>
+                                <td class="sc-production-value"><pre>{{ row.after }}</pre></td>
+                                <td><span class="sc-production-source" :class="'is-' + row.source.toLowerCase()">
+                                    {{ row.source }}
+                                </span></td>
+                                <td>
+                                    <b class="sc-production-final-approved">✓ APPROVED</b>
+                                    <small v-if="row.author">{{ row.author }}</small>
+                                    <p v-if="row.comment">{{ row.comment }}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else-if="scProductionLoading" class="loading-state">Загрузка итогового отчёта…</div>
+                <div v-else-if="scProductionHasRun" class="sc-empty-state sc-empty-state--large">
+                    <strong>Подтверждённых изменений пока нет</strong>
+                    <span>REJECTED и PENDING_REVIEW в итоговый отчёт не включаются.</span>
+                </div>
+                <div v-else class="sc-empty-state sc-empty-state--large">
+                    <strong>Отчёт ещё не сформирован</strong>
+                    <span>Сначала запустите production-анализ и подтвердите нужные строки.</span>
+                </div>
             </div>
         </div>
 
@@ -6590,6 +7021,7 @@
     <script src="/static/js/distributed-page.js?v={{js_version}}"></script>
     <script src="/static/js/distributed-feature.js?v={{js_version}}"></script>
     <script src="/static/js/stage-comparison-differences.js?v={{js_version}}"></script>
+    <script src="/static/js/stage-comparison-review.js?v={{js_version}}"></script>
     <script src="/static/js/app.js?v={{js_version}}"></script>
 </body>
 </html>
