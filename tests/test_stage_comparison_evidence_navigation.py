@@ -70,6 +70,7 @@ def test_graphic_click_contains_block_node_page_and_bbox():
     assert left["block_id"] == "lb"
     assert left["node_id"] == "QS1"
     assert left["highlight"] == {"kind": "BBOX", "bbox": [10, 20, 30, 40]}
+    assert left["coordinate_space"] == "PDF_VISUAL_PT"
 
 
 def test_both_evidence_is_available_side_by_side():
@@ -102,3 +103,23 @@ def test_missing_graphic_coordinates_are_reported_honestly():
 
     assert payload["sides"]["LEFT"][0]["highlight"] is None
     assert payload["sides"]["LEFT"][0]["coordinates_available"] is False
+
+
+def test_graphic_bbox_is_normalized_when_page_size_is_available():
+    evidence = [{
+        "evidence_ref": "graphic-evidence", "atom_id": "graphic-atom", "source": "GRAPHIC",
+        "source_artifact": {},
+    }]
+    payload = build_evidence_navigation(
+        "change-1",
+        synthesis=_target("GRAPHIC", evidence),
+        graphic_ledger=_graphic_ledger(),
+        page_sizes={
+            "LEFT": {10: {"width": 100, "height": 200}},
+            "RIGHT": {24: {"width": 100, "height": 200}},
+        },
+    )
+
+    left = payload["sides"]["LEFT"][0]
+    assert left["coordinate_space"] == "NORMALIZED_PAGE_TOP_LEFT"
+    assert left["highlight"] == {"kind": "BBOX", "bbox": [.1, .1, .3, .2]}

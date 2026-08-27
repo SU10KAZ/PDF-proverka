@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any, Iterable, Mapping
 
 from .production_artifacts import content_signature, stable_id, utc_now
-from .unified_change_synthesizer import validate_synthesis
+from .unified_change_synthesizer import canonical_synthesis_digest, validate_synthesis
 
 
 DECISIONS_KIND = "stage_comparison_engineer_decisions"
@@ -15,10 +15,22 @@ DECISIONS = frozenset({"PENDING_REVIEW", "APPROVED", "REJECTED"})
 
 
 def _synthesis_signature(synthesis: Mapping[str, Any]) -> str:
-    provenance = synthesis.get("provenance")
-    if isinstance(provenance, Mapping) and provenance.get("input_signature"):
-        return str(provenance["input_signature"])
-    return content_signature(synthesis)
+    return canonical_synthesis_digest(synthesis)
+
+
+def _target_signature(
+    synthesis: Mapping[str, Any],
+    target_kind: str,
+    target: Mapping[str, Any],
+) -> str:
+    """Fingerprint every review-visible semantic field, not only evidence ids."""
+    return content_signature({
+        "synthesis_version": synthesis.get("synthesis_version"),
+        "policy_version": synthesis.get("policy_version"),
+        "identity_version": synthesis.get("identity_version"),
+        "target_kind": target_kind,
+        "target": dict(target),
+    })
 
 
 def _targets(synthesis: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
@@ -29,7 +41,9 @@ def _targets(synthesis: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
             targets[target_id] = {
                 "target_id": target_id,
                 "target_kind": "CHANGE",
-                "input_signature": str(change.get("content_signature") or content_signature(change)),
+                "input_signature": _target_signature(
+                    synthesis, "CHANGE", change,
+                ),
                 "finding": dict(change),
             }
     for item in synthesis.get("review_items") or []:
@@ -38,7 +52,9 @@ def _targets(synthesis: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
             targets[target_id] = {
                 "target_id": target_id,
                 "target_kind": "REVIEW_EVIDENCE",
-                "input_signature": str(item.get("content_signature") or content_signature(item)),
+                "input_signature": _target_signature(
+                    synthesis, "REVIEW_EVIDENCE", item,
+                ),
                 "finding": dict(item),
             }
     return targets
@@ -131,15 +147,19 @@ def build_engineer_decisions(
         if target_id not in decisions:
             raise ValueError("engineer decision references unknown finding")
         previous = decisions[target_id]
-        if any(previous.get(key) != update[key] for key in ("decision", "author", "comment", "reason_code")):
+        changed = any(
+            previous.get(key) != update[key]
+            for key in ("decision", "author", "comment", "reason_code")
+        )
+        if changed:
             history.append({**previous, "superseded_at": now})
-        decisions[target_id] = {
-            **previous,
-            **update,
-            "updated_at": now,
-            "revision": int(previous.get("revision") or 0) + 1,
-            "stale": False,
-        }
+            decisions[target_id] = {
+                **previous,
+                **update,
+                "updated_at": now,
+                "revision": int(previous.get("revision") or 0) + 1,
+                "stale": False,
+            }
 
     ordered = sorted(decisions.values(), key=lambda row: row["target_id"])
     history.sort(key=lambda row: (

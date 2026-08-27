@@ -46,6 +46,8 @@ def _text_locations(
                 "block_id": None,
                 "node_id": None,
                 "highlight": {"kind": "BBOX_SET", "bboxes": bboxes} if bboxes else None,
+                "coordinate_space": "NORMALIZED_PAGE_TOP_LEFT" if bboxes else None,
+                "page_size": None,
                 "coordinates_available": bool(bboxes),
             })
     return output
@@ -54,6 +56,7 @@ def _text_locations(
 def _graphic_locations(
     change: Mapping[str, Any] | None,
     documents: Mapping[str, Any] | None,
+    page_sizes: Mapping[str, Any] | None,
 ) -> dict[str, list[dict[str, Any]]]:
     output = {"LEFT": [], "RIGHT": []}
     if not change:
@@ -76,26 +79,66 @@ def _graphic_locations(
                 "block_id": None,
                 "node_id": nodes_by_side[side][0] if len(nodes_by_side[side]) == 1 else None,
                 "highlight": None,
+                "coordinate_space": None,
+                "page_size": None,
                 "coordinates_available": False,
             })
             continue
         bbox = region.get("bbox_visual_pt")
         polygon = region.get("polygon")
+        page_index = region.get("page_index")
+        page = int(page_index) + 1 if isinstance(page_index, int) else None
+        size = (
+            (page_sizes or {}).get(side, {}).get(page)
+            if page is not None and isinstance((page_sizes or {}).get(side), Mapping)
+            else None
+        )
+        width = size.get("width") if isinstance(size, Mapping) else None
+        height = size.get("height") if isinstance(size, Mapping) else None
         if isinstance(polygon, list) and polygon:
             highlight = {"kind": "POLYGON", "polygon": polygon}
         elif isinstance(bbox, list) and len(bbox) == 4:
             highlight = {"kind": "BBOX", "bbox": bbox}
         else:
             highlight = None
-        page_index = region.get("page_index")
+        normalized_highlight = None
+        if (
+            highlight is not None
+            and isinstance(width, (int, float)) and float(width) > 0
+            and isinstance(height, (int, float)) and float(height) > 0
+        ):
+            if highlight["kind"] == "BBOX":
+                x0, y0, x1, y1 = (float(value) for value in highlight["bbox"])
+                normalized_highlight = {
+                    "kind": "BBOX",
+                    "bbox": [x0 / float(width), y0 / float(height), x1 / float(width), y1 / float(height)],
+                }
+            else:
+                normalized_highlight = {
+                    "kind": "POLYGON",
+                    "polygon": [
+                        [float(point[0]) / float(width), float(point[1]) / float(height)]
+                        for point in highlight["polygon"]
+                    ],
+                }
         output[side].append({
             "source": "GRAPHIC",
             "document_ref": _document_ref(documents, side),
-            "page": int(page_index) + 1 if isinstance(page_index, int) else None,
+            "page": page,
             "fragment_id": None,
             "block_id": region.get("block_id"),
             "node_id": nodes_by_side[side][0] if len(nodes_by_side[side]) == 1 else None,
-            "highlight": highlight,
+            "highlight": normalized_highlight or highlight,
+            "coordinate_space": (
+                "NORMALIZED_PAGE_TOP_LEFT"
+                if normalized_highlight is not None
+                else "PDF_VISUAL_PT" if highlight is not None else None
+            ),
+            "page_size": (
+                {"width": float(width), "height": float(height)}
+                if isinstance(width, (int, float)) and isinstance(height, (int, float))
+                else None
+            ),
             "coordinates_available": highlight is not None,
         })
     return output
@@ -108,6 +151,7 @@ def build_evidence_navigation(
     text_atoms: Mapping[str, Any] | None = None,
     graphic_ledger: Mapping[str, Any] | None = None,
     documents: Mapping[str, Any] | None = None,
+    page_sizes: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     target = _target(synthesis, target_id)
     text_by_atom = {
@@ -131,7 +175,9 @@ def build_evidence_navigation(
         if source == "TEXT":
             located = _text_locations(text_by_atom.get(atom_id, {}), documents)
         elif source == "GRAPHIC":
-            located = _graphic_locations(graphic_by_evidence.get(evidence_ref), documents)
+            located = _graphic_locations(
+                graphic_by_evidence.get(evidence_ref), documents, page_sizes,
+            )
         else:
             continue
         for side in sides:
@@ -165,6 +211,7 @@ def build_evidence_navigation(
             "target": target,
             "trace": trace,
             "documents": documents,
+            "page_sizes": page_sizes,
         }),
         "viewer_action": {
             "open_exact_pages": True,

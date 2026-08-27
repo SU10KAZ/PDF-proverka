@@ -98,3 +98,18 @@ def test_changed_input_marks_old_decision_stale_and_pending():
 
     assert next(row for row in refreshed["decisions"] if row["target_id"] == target)["decision"] == "PENDING_REVIEW"
     assert any(row.get("stale") is True for row in refreshed["history"] if row["target_id"] == target)
+
+
+def test_identical_retry_is_idempotent_for_row_revision():
+    synthesis = _synthesis()
+    target = synthesis["changes"][0]["change_id"]
+    update = {"target_id": target, "decision": "APPROVED", "author": "engineer"}
+    first = build_engineer_decisions(synthesis, updates=[update], generated_at="t1")
+    second = build_engineer_decisions(
+        synthesis, existing=first, updates=[update], generated_at="t2",
+    )
+
+    first_row = next(row for row in first["decisions"] if row["target_id"] == target)
+    second_row = next(row for row in second["decisions"] if row["target_id"] == target)
+    assert second_row["revision"] == first_row["revision"]
+    assert second_row["updated_at"] == first_row["updated_at"]
