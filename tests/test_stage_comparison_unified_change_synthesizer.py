@@ -11,6 +11,7 @@ import pytest
 from backend.app.services.stage_comparison.unified_change_synthesizer import (
     SynthesisValidationError,
     ledger_to_graphic_atoms,
+    schema_path,
     stage53_to_text_atoms,
     synthesize_unified_changes,
     validate_synthesis,
@@ -110,6 +111,13 @@ def _candidate(
 def _only_change(result: dict[str, Any]) -> dict[str, Any]:
     assert len(result["changes"]) == 1
     return result["changes"][0]
+
+
+def _schema_validator():
+    jsonschema = pytest.importorskip("jsonschema")
+    schema = json.loads(schema_path().read_text(encoding="utf-8"))
+    jsonschema.Draft202012Validator.check_schema(schema)
+    return jsonschema.Draft202012Validator(schema)
 
 
 def test_text_only_voltage_change_is_preserved():
@@ -751,6 +759,140 @@ def test_final_validator_rejects_identity_and_evidence_tampering():
         validate_synthesis(bad_id)
     with pytest.raises(SynthesisValidationError, match="content_signature"):
         validate_synthesis(bad_order)
+
+
+def test_json_schema_accepts_real_pilot_producer_output():
+    ledger = json.loads(PILOT_LEDGER.read_text(encoding="utf-8"))
+    adapted = ledger_to_graphic_atoms(
+        ledger, artifact_ref=str(PILOT_LEDGER.relative_to(ROOT))
+    )
+    result = synthesize_unified_changes(graphic_atoms=adapted["atoms"])
+
+    _schema_validator().validate(result)
+
+
+def test_schema_and_python_reject_structurally_invalid_outputs():
+    text = _atom("text-type", "TEXT", dimension="TYPE", direction="REPLACED")
+    graphic = _atom(
+        "graphic-type",
+        "GRAPHIC",
+        project_entity_ref=None,
+        dimension="TYPE",
+        direction="REPLACED",
+    )
+    result = synthesize_unified_changes(
+        text_atoms=[text],
+        graphic_atoms=[graphic],
+        candidates=[_candidate(text["atom_id"], graphic["atom_id"])],
+    )
+    invalid_outputs = []
+
+    forged_id = deepcopy(result)
+    forged_id["changes"][0]["change_id"] = "forged"
+    invalid_outputs.append(forged_id)
+
+    forged_signature = deepcopy(result)
+    forged_signature["changes"][0]["content_signature"] = "forged"
+    invalid_outputs.append(forged_signature)
+
+    both_single_source = deepcopy(result)
+    both_single_source["changes"][0]["relation_status"] = "SINGLE_SOURCE"
+    invalid_outputs.append(both_single_source)
+
+    wrong_evidence_order = deepcopy(result)
+    wrong_evidence_order["changes"][0]["evidence_refs"].reverse()
+    invalid_outputs.append(wrong_evidence_order)
+
+    extra_change_field = deepcopy(result)
+    extra_change_field["changes"][0]["unexpected"] = True
+    invalid_outputs.append(extra_change_field)
+
+    llm_output = deepcopy(result)
+    llm_output["provenance"]["uses_llm"] = True
+    invalid_outputs.append(llm_output)
+
+    validator = _schema_validator()
+    for invalid in invalid_outputs:
+        assert not validator.is_valid(invalid)
+        with pytest.raises(SynthesisValidationError):
+            validate_synthesis(invalid)
+
+
+def test_python_validator_owns_hash_and_cross_reference_semantics():
+    validator = _schema_validator()
+    result = synthesize_unified_changes(
+        text_atoms=[_atom("text-voltage", "TEXT", facet_ref="voltage")]
+    )
+
+    forged_id = deepcopy(result)
+    forged_id["changes"][0]["change_id"] = "uchg_00000000000000000000"
+    forged_signature = deepcopy(result)
+    forged_signature["changes"][0]["content_signature"] = "0" * 64
+
+    # These values have the correct structural shape. JSON Schema cannot
+    # recompute their SHA-256 derivation; validate_synthesis is authoritative.
+    assert validator.is_valid(forged_id)
+    assert validator.is_valid(forged_signature)
+    with pytest.raises(SynthesisValidationError, match="identity mismatch"):
+        validate_synthesis(forged_id)
+    with pytest.raises(SynthesisValidationError, match="content_signature"):
+        validate_synthesis(forged_signature)
+
+    grouped = synthesize_unified_changes(
+        text_atoms=[
+            _atom("text-voltage", "TEXT", facet_ref="voltage"),
+            _atom("text-temperature", "TEXT", facet_ref="temperature_range"),
+        ]
+    )
+    dangling_presentation = deepcopy(grouped)
+    dangling_presentation["presentation_groups"][0]["change_ids"] = sorted(
+        [
+            grouped["presentation_groups"][0]["change_ids"][0],
+            "uchg_00000000000000000000",
+        ]
+    )
+    assert validator.is_valid(dangling_presentation)
+    with pytest.raises(SynthesisValidationError, match="change_ids: invalid"):
+        validate_synthesis(dangling_presentation)
+
+
+def test_contradictory_changes_require_complete_contested_group():
+    text = _atom(
+        "text-added",
+        "TEXT",
+        dimension="STRUCTURE",
+        direction="ADDED",
+    )
+    graphic = _atom(
+        "graphic-removed",
+        "GRAPHIC",
+        project_entity_ref=None,
+        dimension="STRUCTURE",
+        direction="REMOVED",
+    )
+    result = synthesize_unified_changes(
+        text_atoms=[text],
+        graphic_atoms=[graphic],
+        candidates=[_candidate(text["atom_id"], graphic["atom_id"])],
+    )
+    missing_group = deepcopy(result)
+    missing_group["contested_groups"] = []
+
+    # Array membership is semantic and intentionally remains outside Schema.
+    assert _schema_validator().is_valid(missing_group)
+    with pytest.raises(
+        SynthesisValidationError,
+        match="every contradictory change must be represented",
+    ):
+        validate_synthesis(missing_group)
+
+    dangling_group = deepcopy(result)
+    dangling_group["contested_groups"][0]["change_ids"] = sorted(
+        [result["contested_groups"][0]["change_ids"][0], "uchg_00000000000000000000"]
+    )
+    assert _schema_validator().is_valid(dangling_group)
+    with pytest.raises(SynthesisValidationError, match="change_ids: invalid"):
+        validate_synthesis(dangling_group)
 
 
 def test_output_contains_versioned_contract_provenance_and_no_timestamp():

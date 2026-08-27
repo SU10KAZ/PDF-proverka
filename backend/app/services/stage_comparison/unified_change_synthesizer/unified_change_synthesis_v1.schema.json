@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "unified_change_synthesis_v1.schema.json",
   "title": "Unified Change Synthesis v1",
+  "description": "Structural validation only. Derived hashes and cross-array references require validate_synthesis(); see VALIDATION.md.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -25,16 +26,17 @@
     "direction": {"const": "LEFT_TO_RIGHT"},
     "policy_version": {"const": "unified-change-policy-v1"},
     "identity_version": {"const": "unified-change-identity.v1"},
-    "changes": {"type": "array", "items": {"$ref": "#/$defs/change"}},
-    "review_items": {"type": "array", "items": {"$ref": "#/$defs/review_item"}},
-    "contested_groups": {"type": "array", "items": {"$ref": "#/$defs/contested_group"}},
-    "presentation_groups": {"type": "array", "items": {"$ref": "#/$defs/presentation_group"}},
+    "changes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/change"}},
+    "review_items": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/review_item"}},
+    "contested_groups": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/contested_group"}},
+    "presentation_groups": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/presentation_group"}},
     "diagnostics": {"type": "object"},
     "source_artifacts": {
       "type": "array",
+      "uniqueItems": true,
       "items": {"$ref": "#/$defs/source_artifact"}
     },
-    "provenance": {"type": "object"},
+    "provenance": {"$ref": "#/$defs/synthesis_provenance"},
     "validation": {
       "type": "object",
       "additionalProperties": false,
@@ -47,6 +49,7 @@
     }
   },
   "$defs": {
+    "ref": {"type": "string", "minLength": 1},
     "nullable_ref": {"type": ["string", "null"], "minLength": 1},
     "source_artifact": {
       "type": "object",
@@ -69,6 +72,18 @@
         "source_artifact": {"$ref": "#/$defs/source_artifact"}
       }
     },
+    "text_evidence_ref": {
+      "allOf": [
+        {"$ref": "#/$defs/evidence_ref"},
+        {"properties": {"source": {"const": "TEXT"}}}
+      ]
+    },
+    "graphic_evidence_ref": {
+      "allOf": [
+        {"$ref": "#/$defs/evidence_ref"},
+        {"properties": {"source": {"const": "GRAPHIC"}}}
+      ]
+    },
     "confidence": {
       "type": "object",
       "additionalProperties": false,
@@ -78,8 +93,41 @@
         "basis": {"enum": ["SINGLE_SOURCE", "CORROBORATED", "COMPLEMENTARY", "CONTESTED"]}
       }
     },
+    "atomic_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity_version", "scope_ref", "subject_ref", "dimension",
+        "direction_class", "facet_ref", "evidence_scope"
+      ],
+      "properties": {
+        "identity_version": {"const": "unified-change-identity.v1"},
+        "scope_ref": {"$ref": "#/$defs/ref"},
+        "subject_ref": {"$ref": "#/$defs/ref"},
+        "dimension": {"enum": ["PRINCIPLE", "METHOD", "OPERATION", "STRUCTURE", "CONNECTION", "TYPE", "PARAMETER", "QUANTITY", "SPACE"]},
+        "direction_class": {"enum": ["ADDED", "REMOVED", "REPLACED", "INCREASED", "DECREASED", "ALTERED"]},
+        "facet_ref": {"$ref": "#/$defs/nullable_ref"},
+        "evidence_scope": {"$ref": "#/$defs/ref"}
+      }
+    },
+    "change_provenance": {
+      "type": "object",
+      "required": ["identity"],
+      "properties": {
+        "identity": {"$ref": "#/$defs/atomic_identity"}
+      }
+    },
+    "synthesis_provenance": {
+      "type": "object",
+      "required": ["input_contract", "uses_llm"],
+      "properties": {
+        "input_contract": {"const": "unified-change-synthesis-input.v1"},
+        "uses_llm": {"const": false}
+      }
+    },
     "change": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "change_id", "scope_ref", "subject_ref", "project_entity_ref", "facet_ref",
         "dimension", "direction", "outcome", "source_mode", "evidence_refs",
@@ -88,57 +136,177 @@
       ],
       "properties": {
         "change_id": {"type": "string", "pattern": "^uchg_[a-f0-9]{20}$"},
-        "scope_ref": {"type": "string", "minLength": 1},
-        "subject_ref": {"type": "string", "minLength": 1},
+        "scope_ref": {"$ref": "#/$defs/ref"},
+        "subject_ref": {"$ref": "#/$defs/ref"},
         "project_entity_ref": {"$ref": "#/$defs/nullable_ref"},
         "facet_ref": {"$ref": "#/$defs/nullable_ref"},
         "dimension": {"enum": ["PRINCIPLE", "METHOD", "OPERATION", "STRUCTURE", "CONNECTION", "TYPE", "PARAMETER", "QUANTITY", "SPACE"]},
         "direction": {"enum": ["ADDED", "REMOVED", "REPLACED", "INCREASED", "DECREASED", "ALTERED"]},
         "outcome": {"enum": ["MATERIAL_CHANGE", "DETAIL_ONLY", "REVIEW_REQUIRED"]},
         "source_mode": {"enum": ["TEXT", "GRAPHIC", "BOTH"]},
-        "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_ref"}},
+        "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/evidence_ref"}},
         "relation_status": {"enum": ["SINGLE_SOURCE", "CORROBORATING", "CONTRADICTORY"]},
         "confidence": {"$ref": "#/$defs/confidence"},
+        "before_value": {},
+        "after_value": {},
         "review_status": {"enum": ["CONFIRMED", "REVIEW_REQUIRED"]},
         "content_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
-        "provenance": {"type": "object"}
+        "provenance": {"$ref": "#/$defs/change_provenance"}
       },
-      "additionalProperties": true
+      "allOf": [
+        {
+          "if": {"properties": {"source_mode": {"const": "TEXT"}}, "required": ["source_mode"]},
+          "then": {
+            "properties": {
+              "evidence_refs": {"minItems": 1, "maxItems": 1, "prefixItems": [{"$ref": "#/$defs/text_evidence_ref"}], "items": false}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"source_mode": {"const": "GRAPHIC"}}, "required": ["source_mode"]},
+          "then": {
+            "properties": {
+              "evidence_refs": {"minItems": 1, "maxItems": 1, "prefixItems": [{"$ref": "#/$defs/graphic_evidence_ref"}], "items": false}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"source_mode": {"const": "BOTH"}}, "required": ["source_mode"]},
+          "then": {
+            "properties": {
+              "relation_status": {"const": "CORROBORATING"},
+              "evidence_refs": {
+                "minItems": 2,
+                "maxItems": 2,
+                "prefixItems": [
+                  {"$ref": "#/$defs/text_evidence_ref"},
+                  {"$ref": "#/$defs/graphic_evidence_ref"}
+                ],
+                "items": false
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"relation_status": {"const": "SINGLE_SOURCE"}}, "required": ["relation_status"]},
+          "then": {"properties": {"confidence": {"properties": {"basis": {"const": "SINGLE_SOURCE"}}}}}
+        },
+        {
+          "if": {"properties": {"relation_status": {"const": "CORROBORATING"}}, "required": ["relation_status"]},
+          "then": {
+            "properties": {
+              "source_mode": {"const": "BOTH"},
+              "confidence": {"properties": {"basis": {"const": "CORROBORATED"}}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"relation_status": {"const": "CONTRADICTORY"}}, "required": ["relation_status"]},
+          "then": {
+            "properties": {
+              "review_status": {"const": "REVIEW_REQUIRED"},
+              "confidence": {"properties": {"basis": {"const": "CONTESTED"}}}
+            }
+          }
+        }
+      ]
     },
     "review_item": {
       "type": "object",
-      "required": ["review_evidence_id", "atom_id", "source", "dimension", "review_status", "evidence_refs"],
+      "additionalProperties": false,
+      "required": [
+        "review_evidence_id", "atom_id", "source", "scope_ref", "subject_ref",
+        "project_entity_ref", "facet_ref", "dimension", "direction", "outcome",
+        "confidence", "before_value", "after_value", "evidence_refs",
+        "review_status", "reason_codes", "content_signature", "provenance"
+      ],
       "properties": {
         "review_evidence_id": {"type": "string", "pattern": "^ureview_[a-f0-9]{20}$"},
-        "atom_id": {"type": "string", "minLength": 1},
+        "atom_id": {"$ref": "#/$defs/ref"},
         "source": {"enum": ["TEXT", "GRAPHIC"]},
+        "scope_ref": {"$ref": "#/$defs/ref"},
+        "subject_ref": {"$ref": "#/$defs/nullable_ref"},
+        "project_entity_ref": {"$ref": "#/$defs/nullable_ref"},
+        "facet_ref": {"$ref": "#/$defs/nullable_ref"},
         "dimension": {"enum": ["PRINCIPLE", "METHOD", "OPERATION", "STRUCTURE", "CONNECTION", "TYPE", "PARAMETER", "QUANTITY", "SPACE", "UNKNOWN_DIMENSION"]},
+        "direction": {"enum": ["ADDED", "REMOVED", "REPLACED", "INCREASED", "DECREASED", "ALTERED"]},
+        "outcome": {"const": "REVIEW_REQUIRED"},
+        "confidence": {
+          "allOf": [
+            {"$ref": "#/$defs/confidence"},
+            {"properties": {"basis": {"const": "SINGLE_SOURCE"}}}
+          ]
+        },
+        "before_value": {},
+        "after_value": {},
         "review_status": {"const": "REVIEW_REQUIRED"},
-        "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_ref"}}
-      }
+        "evidence_refs": {"type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidence_ref"}},
+        "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "content_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "provenance": {"type": "object"}
+      },
+      "allOf": [
+        {
+          "anyOf": [
+            {"properties": {"dimension": {"const": "UNKNOWN_DIMENSION"}}, "required": ["dimension"]},
+            {
+              "properties": {
+                "source": {"const": "TEXT"},
+                "project_entity_ref": {"const": null},
+                "reason_codes": {"contains": {"const": "engineering_scope_unresolved"}}
+              },
+              "required": ["source", "project_entity_ref", "reason_codes"]
+            }
+          ]
+        },
+        {
+          "if": {"properties": {"source": {"const": "TEXT"}}, "required": ["source"]},
+          "then": {"properties": {"evidence_refs": {"prefixItems": [{"$ref": "#/$defs/text_evidence_ref"}], "items": false}}}
+        },
+        {
+          "if": {"properties": {"source": {"const": "GRAPHIC"}}, "required": ["source"]},
+          "then": {"properties": {"evidence_refs": {"prefixItems": [{"$ref": "#/$defs/graphic_evidence_ref"}], "items": false}}}
+        },
+        {
+          "if": {"properties": {"dimension": {"const": "UNKNOWN_DIMENSION"}}, "required": ["dimension"]},
+          "then": {"properties": {"reason_codes": {"contains": {"const": "dimension_unknown"}}}}
+        }
+      ]
     },
     "contested_group": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["group_id", "change_ids", "evidence_refs", "relation_status", "review_status", "reason_codes", "provenance"],
       "properties": {
         "group_id": {"type": "string", "pattern": "^contest_[a-f0-9]{20}$"},
-        "change_ids": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string"}},
-        "evidence_refs": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/evidence_ref"}},
+        "change_ids": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^uchg_[a-f0-9]{20}$"}},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "prefixItems": [
+            {"$ref": "#/$defs/text_evidence_ref"},
+            {"$ref": "#/$defs/graphic_evidence_ref"}
+          ],
+          "items": false
+        },
         "relation_status": {"const": "CONTRADICTORY"},
         "review_status": {"const": "REVIEW_REQUIRED"},
-        "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "provenance": {"type": "object"}
       }
     },
     "presentation_group": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["group_id", "scope_ref", "subject_ref", "family", "change_ids", "title", "provenance"],
       "properties": {
         "group_id": {"type": "string", "pattern": "^pgroup_[a-f0-9]{20}$"},
         "scope_ref": {"type": "string", "minLength": 1},
         "subject_ref": {"type": "string", "minLength": 1},
         "family": {"const": "PARAMETER"},
-        "change_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+        "change_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^uchg_[a-f0-9]{20}$"}},
         "title": {"type": "string", "minLength": 1},
         "provenance": {"type": "object"}
       }

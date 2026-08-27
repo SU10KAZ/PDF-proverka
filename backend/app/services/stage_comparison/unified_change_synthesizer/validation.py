@@ -136,10 +136,11 @@ def _unique_refs(values: Any, where: str, *, minimum: int = 1) -> list[str]:
     return values
 
 
-def _confidence(value: Any, where: str) -> None:
+def _confidence(value: Any, where: str) -> Mapping[str, Any]:
     item = _fields(value, {"level", "basis"}, where)
     if item["level"] not in CONFIDENCE_LEVELS or item["basis"] not in CONFIDENCE_BASES:
         raise SynthesisValidationError(f"{where}: unsupported confidence")
+    return item
 
 
 def _evidence(values: Any, where: str) -> list[dict[str, Any]]:
@@ -205,11 +206,23 @@ def _validate_change(change: Any, index: int) -> dict[str, Any]:
     expected_mode = "BOTH" if len(evidence_sources) == 2 else next(iter(evidence_sources))
     if item["source_mode"] != expected_mode:
         raise SynthesisValidationError(f"{where}.source_mode: evidence mismatch")
+    expected_evidence_count = 2 if item["source_mode"] == "BOTH" else 1
+    if len(evidence) != expected_evidence_count:
+        raise SynthesisValidationError(
+            f"{where}.evidence_refs: invalid source composition"
+        )
     if item["source_mode"] == "BOTH" and item["relation_status"] != "CORROBORATING":
         raise SynthesisValidationError(f"{where}: BOTH must be corroborating")
     if item["relation_status"] == "CORROBORATING" and item["source_mode"] != "BOTH":
         raise SynthesisValidationError(f"{where}: corroboration needs both sources")
-    _confidence(item["confidence"], f"{where}.confidence")
+    confidence = _confidence(item["confidence"], f"{where}.confidence")
+    expected_basis = {
+        "SINGLE_SOURCE": "SINGLE_SOURCE",
+        "CORROBORATING": "CORROBORATED",
+        "CONTRADICTORY": "CONTESTED",
+    }[item["relation_status"]]
+    if confidence["basis"] != expected_basis:
+        raise SynthesisValidationError(f"{where}.confidence: relation mismatch")
     identity = (item.get("provenance") or {}).get("identity")
     if not isinstance(identity, Mapping) or stable_atomic_change_id(identity) != item[
         "change_id"
@@ -251,8 +264,12 @@ def _validate_review(item: Any, index: int) -> dict[str, Any]:
     _ref(value["facet_ref"], f"{where}.facet_ref", nullable=True)
     if value["direction"] not in DIRECTIONS:
         raise SynthesisValidationError(f"{where}.direction: unsupported")
-    _confidence(value["confidence"], f"{where}.confidence")
+    confidence = _confidence(value["confidence"], f"{where}.confidence")
+    if confidence["basis"] != "SINGLE_SOURCE":
+        raise SynthesisValidationError(f"{where}.confidence: review mismatch")
     reason_codes = _unique_refs(value["reason_codes"], f"{where}.reason_codes")
+    if reason_codes != sorted(reason_codes):
+        raise SynthesisValidationError(f"{where}.reason_codes: order required")
     unknown_dimension = value["dimension"] == UNKNOWN_DIMENSION
     engineering_scope_unresolved = source == "TEXT" and project_entity_ref is None
     if not (unknown_dimension or engineering_scope_unresolved):
@@ -300,8 +317,39 @@ def _validate_contests(
             or item["review_status"] != "REVIEW_REQUIRED"
         ):
             raise SynthesisValidationError(f"{where}: invalid contest state")
-        _evidence(item["evidence_refs"], f"{where}.evidence_refs")
-        _unique_refs(item["reason_codes"], f"{where}.reason_codes")
+        evidence = _evidence(item["evidence_refs"], f"{where}.evidence_refs")
+        expected_evidence = sorted(
+            (
+                evidence_item
+                for change_id in ids
+                for evidence_item in changes[change_id]["evidence_refs"]
+            ),
+            key=lambda evidence_item: (
+                {"TEXT": 0, "GRAPHIC": 1}[evidence_item["source"]],
+                evidence_item["evidence_ref"],
+                evidence_item["atom_id"],
+            ),
+        )
+        if evidence != expected_evidence:
+            raise SynthesisValidationError(f"{where}.evidence_refs: change mismatch")
+        reason_codes = _unique_refs(
+            item["reason_codes"], f"{where}.reason_codes"
+        )
+        if reason_codes != sorted(reason_codes):
+            raise SynthesisValidationError(f"{where}.reason_codes: order required")
+        provenance = item["provenance"]
+        candidate_id = (
+            provenance.get("candidate_id")
+            if isinstance(provenance, Mapping)
+            else None
+        )
+        _ref(candidate_id, f"{where}.provenance.candidate_id")
+        expected_group_id = stable_group_id(
+            "contest_",
+            {"candidate_id": candidate_id, "change_ids": ids},
+        )
+        if item["group_id"] != expected_group_id:
+            raise SynthesisValidationError(f"{where}.group_id: mismatch")
         output.append(dict(item))
     return output
 
@@ -376,6 +424,20 @@ def validate_synthesis(payload: Any) -> dict[str, Any]:
     changes = {item["change_id"]: item for item in changes_list}
     contests = _validate_contests(value["contested_groups"], changes)
     presentations = _validate_presentations(value["presentation_groups"], changes)
+    contradictory_change_ids = {
+        change_id
+        for change_id, change in changes.items()
+        if change["relation_status"] == "CONTRADICTORY"
+    }
+    grouped_contested_change_ids = {
+        change_id
+        for group in contests
+        for change_id in group["change_ids"]
+    }
+    if contradictory_change_ids != grouped_contested_change_ids:
+        raise SynthesisValidationError(
+            "contested_groups: every contradictory change must be represented"
+        )
     if [item["group_id"] for item in contests] != sorted(item["group_id"] for item in contests):
         raise SynthesisValidationError("contested_groups: deterministic order required")
     if [item["group_id"] for item in presentations] != sorted(item["group_id"] for item in presentations):

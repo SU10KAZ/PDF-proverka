@@ -26,7 +26,7 @@ def digest(value: Any) -> str:
 def canonical_atomic_identity(
     atom: Mapping[str, Any],
     *,
-    evidence_scoped: bool = False,
+    evidence_scoped: bool = True,
 ) -> dict[str, Any]:
     """Build the G2.4.6 identity cell without changing G2.4.5.
 
@@ -71,7 +71,13 @@ def stable_atomic_change_id(identity: Mapping[str, Any]) -> str:
         "facet_ref",
         "evidence_scope",
     }
-    if set(identity) != expected or identity.get("identity_version") != IDENTITY_VERSION:
+    evidence_scope = identity.get("evidence_scope")
+    if (
+        set(identity) != expected
+        or identity.get("identity_version") != IDENTITY_VERSION
+        or not isinstance(evidence_scope, str)
+        or not evidence_scope.strip()
+    ):
         raise SynthesisValidationError("atomic identity: invalid fields or version")
     return "uchg_" + digest(dict(identity))[:20]
 
