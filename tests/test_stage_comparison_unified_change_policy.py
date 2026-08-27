@@ -140,6 +140,9 @@ def test_dimension_is_explicit_on_each_atom_and_unknown_is_not_guessed_from_text
     assert atom["dimension"] == UNKNOWN_DIMENSION
     assert atom["confidence"] == "MEDIUM"
 
+    atom["outcome"] = "MATERIAL_CHANGE"
+    assert normalize_evidence_atom(atom)["outcome"] == "REVIEW_REQUIRED"
+
 
 @pytest.mark.parametrize("dimension", DIMENSIONS)
 def test_each_of_the_nine_dimensions_round_trips(dimension):
@@ -203,6 +206,24 @@ def test_unknown_dimension_atoms_do_not_receive_one_unified_change_id():
     assert review_evidence_id(first, "atom-1") != review_evidence_id(
         second, "atom-2"
     )
+
+
+def test_unknown_dimension_single_source_remains_review_required():
+    result = evaluate_source_relation(
+        text_state="VALID",
+        graphic_state="ABSENT",
+        scope_compatible=None,
+        subject_relation="UNKNOWN",
+        document_binding_state="DOCUMENT_BINDING_UNPROVEN",
+        text_dimension=UNKNOWN_DIMENSION,
+    )
+
+    assert result["relation_status"] == "SINGLE_SOURCE"
+    assert result["outcome"] == "REVIEW_REQUIRED"
+    assert result["reason_codes"] == [
+        "dimension_unknown",
+        "second_source_has_no_valid_evidence",
+    ]
 
 
 @pytest.mark.parametrize(

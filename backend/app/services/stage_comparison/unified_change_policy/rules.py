@@ -328,6 +328,14 @@ def evaluate_source_relation(
     }
     if sum(valid) == 1 and (graphic if valid[0] else text) in silent_states:
         outcome = text_result if valid[0] else graphic_result
+        dimension = text_dimension if valid[0] else graphic_dimension
+        if resolve_dimension(dimension) == UNKNOWN_DIMENSION:
+            return _result(
+                SourceRelationStatus.SINGLE_SOURCE,
+                Outcome.REVIEW_REQUIRED,
+                "dimension_unknown",
+                "second_source_has_no_valid_evidence",
+            )
         return _result(
             SourceRelationStatus.SINGLE_SOURCE,
             outcome,

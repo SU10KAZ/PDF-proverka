@@ -525,7 +525,7 @@
         {
           "function": "evaluate_source_relation",
           "inputs": {"text_state": "VALID", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN", "text_outcome": "DETAIL_ONLY"},
-          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "DETAIL_ONLY", "reason_codes": ["second_source_has_no_valid_evidence"]}
+          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "REVIEW_REQUIRED", "reason_codes": ["dimension_unknown", "second_source_has_no_valid_evidence"]}
         }
       ],
       "expected_policy_facts": ["TEXT detail remains separate from material facts"],
@@ -588,7 +588,7 @@
         {
           "function": "evaluate_source_relation",
           "inputs": {"text_state": "VALID", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN", "text_dimension": "UNKNOWN_DIMENSION", "text_direction": "REMOVED"},
-          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "MATERIAL_CHANGE", "reason_codes": ["second_source_has_no_valid_evidence"]}
+          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "REVIEW_REQUIRED", "reason_codes": ["dimension_unknown", "second_source_has_no_valid_evidence"]}
         }
       ],
       "expected_policy_facts": ["Unknown atom dimension is not guessed from aggregate type"],

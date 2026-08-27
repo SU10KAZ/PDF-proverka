@@ -178,11 +178,15 @@ def normalize_evidence_atom(value: Any) -> dict[str, Any]:
             )
     from .confidence import normalize_confidence
 
+    dimension = resolve_dimension(value["dimension"])
+    outcome = _enum_value(value["outcome"], Outcome, "outcome")
+    if dimension == UNKNOWN_DIMENSION:
+        outcome = Outcome.REVIEW_REQUIRED.value
     return {
         **value,
-        "dimension": resolve_dimension(value["dimension"]),
+        "dimension": dimension,
         "direction": _enum_value(value["direction"], Direction, "direction"),
-        "outcome": _enum_value(value["outcome"], Outcome, "outcome"),
+        "outcome": outcome,
         "confidence": normalize_confidence(value["confidence"]),
     }
 

@@ -240,9 +240,10 @@ GRAPHIC absent.
 change with two-sided TEXT proof; GRAPHIC absent and SPACE unobservable.
 
 <!-- policy-case:B3 -->
-**B3 — REPRESENTABLE_IN_V1 → SINGLE_SOURCE / DETAIL_ONLY.** Retained TEXT
+**B3 — REPRESENTABLE_IN_V1 → SINGLE_SOURCE / REVIEW_REQUIRED.** Retained TEXT
 detail provenance is `hlc_78243ba30fcf16c1` / `ev_2988677dcc6f4049` from
-АР-1. It is not claimed to join any GRAPHIC event.
+АР-1. It is not claimed to join any GRAPHIC event, and its unresolved semantic
+dimension keeps the policy outcome review-required.
 
 <!-- policy-case:B4 -->
 **B4 — REPRESENTABLE_IN_V1 → REVIEW_REQUIRED.** The upstream classifier failed
@@ -255,7 +256,7 @@ proven by absence from one fragment.
 <!-- policy-case:B6 -->
 **B6 — REPRESENTABLE_IN_V1 → SINGLE_SOURCE.** The room atom is present only on
 LEFT. Its dimension stays `UNKNOWN_DIMENSION`; the aggregate's dimension is not
-copied onto it.
+copied onto it, so the policy outcome stays review-required.
 
 <!-- policy-case:B7 -->
 **B7 — NOT_REPRESENTABLE_IN_V1.** `NO_HIGH_LEVEL_CHANGE` has no corresponding
