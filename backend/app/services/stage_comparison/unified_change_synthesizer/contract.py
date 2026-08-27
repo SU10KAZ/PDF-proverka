@@ -13,6 +13,7 @@ from ..unified_change_policy import (
     UNKNOWN_DIMENSION,
     Outcome,
     PolicyValidationError,
+    SourceFactState,
     normalize_evidence_atom,
 )
 from ..unified_change_policy.contract import POLICY_VERSION
@@ -194,6 +195,37 @@ def normalize_candidate(value: Any) -> dict[str, Any]:
     return normalized
 
 
+def normalize_source_states(
+    value: Any,
+    *,
+    text_atoms: int,
+    graphic_atoms: int,
+) -> dict[str, str]:
+    """Record source availability without changing the opposite source fact."""
+    if value is None:
+        return {
+            "TEXT": "VALID" if text_atoms else "ABSENT",
+            "GRAPHIC": "VALID" if graphic_atoms else "ABSENT",
+        }
+    if not isinstance(value, Mapping) or set(value) != {"TEXT", "GRAPHIC"}:
+        raise SynthesisValidationError("source_states: TEXT and GRAPHIC required")
+    output: dict[str, str] = {}
+    for source in ("TEXT", "GRAPHIC"):
+        raw = value[source]
+        raw = raw.value if isinstance(raw, SourceFactState) else raw
+        try:
+            output[source] = SourceFactState(raw).value
+        except (TypeError, ValueError) as error:
+            raise SynthesisValidationError(
+                f"source_states.{source}: unsupported"
+            ) from error
+    if text_atoms and output["TEXT"] != SourceFactState.VALID.value:
+        raise SynthesisValidationError("source_states.TEXT: atoms require VALID")
+    if graphic_atoms and output["GRAPHIC"] != SourceFactState.VALID.value:
+        raise SynthesisValidationError("source_states.GRAPHIC: atoms require VALID")
+    return output
+
+
 def canonical_source_artifacts(
     atoms: Iterable[Mapping[str, Any]],
 ) -> list[dict[str, str]]:
@@ -223,5 +255,6 @@ __all__ = [
     "canonical_source_artifacts",
     "normalize_candidate",
     "normalize_source_artifact",
+    "normalize_source_states",
     "normalize_synthesis_atom",
 ]

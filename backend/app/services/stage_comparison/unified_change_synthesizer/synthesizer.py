@@ -22,6 +22,7 @@ from .contract import (
     SynthesisValidationError,
     canonical_source_artifacts,
     normalize_candidate,
+    normalize_source_states,
 )
 from .identity import (
     canonical_atomic_identity,
@@ -327,6 +328,7 @@ def synthesize_unified_changes(
     text_atoms: Iterable[Any] = (),
     graphic_atoms: Iterable[Any] = (),
     candidates: Iterable[Any] = (),
+    source_states: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return the deterministic UNION of both sources with only proven merges."""
     text = normalize_atoms(text_atoms, "TEXT")
@@ -335,6 +337,11 @@ def synthesize_unified_changes(
     atom_ids = [atom["atom_id"] for atom in all_atoms]
     if len(atom_ids) != len(set(atom_ids)):
         raise SynthesisValidationError("inputs: duplicate atom_id across sources")
+    normalized_source_states = normalize_source_states(
+        source_states,
+        text_atoms=len(text),
+        graphic_atoms=len(graphic),
+    )
 
     normalized_candidates = sorted(
         (normalize_candidate(candidate) for candidate in candidates),
@@ -434,6 +441,7 @@ def synthesize_unified_changes(
             "input_version": INPUT_VERSION,
             "atoms": all_atoms,
             "candidates": normalized_candidates,
+            "source_states": normalized_source_states,
         }
     )
     payload = {
@@ -460,6 +468,7 @@ def synthesize_unified_changes(
             "strict_merges": len(merged_atoms) // 2,
             "contested_pairs": len(contested_groups),
             "candidate_evaluations": evaluations,
+            "source_states": normalized_source_states,
         },
         "source_artifacts": canonical_source_artifacts(all_atoms),
         "provenance": {

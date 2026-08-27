@@ -262,8 +262,26 @@ def _graphic_values(change: Mapping[str, Any]) -> tuple[Any, Any]:
     if change_type in {"GROUP_COUNT_CHANGED", "UNCERTAIN_STRUCTURAL_CHANGE"}:
         return relation.get("left_count"), relation.get("right_count")
     if change_type == "NODE_TYPE_CHANGED":
-        return relation.get("left_effective_type"), relation.get(
-            "right_effective_type"
+        tokens_by_side: dict[str, list[str]] = {"LEFT": [], "RIGHT": []}
+        for evidence in change.get("evidence") or []:
+            if not isinstance(evidence, Mapping):
+                continue
+            source = evidence.get("source_graph")
+            side = source.get("side") if isinstance(source, Mapping) else None
+            tokens = evidence.get("source_tokens")
+            if side in tokens_by_side and isinstance(tokens, list):
+                tokens_by_side[side].extend(
+                    token for token in tokens if isinstance(token, str) and token
+                )
+        left_tokens = sorted(set(tokens_by_side["LEFT"]))
+        right_tokens = sorted(set(tokens_by_side["RIGHT"]))
+        return (
+            left_tokens[0]
+            if len(left_tokens) == 1
+            else relation.get("left_effective_type"),
+            right_tokens[0]
+            if len(right_tokens) == 1
+            else relation.get("right_effective_type"),
         )
     if change_type == "NODE_ADDED":
         return None, structural.get("subject")

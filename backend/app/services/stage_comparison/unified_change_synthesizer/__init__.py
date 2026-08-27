@@ -9,6 +9,7 @@ from .contract import (
     SynthesisValidationError,
     normalize_candidate,
     normalize_source_artifact,
+    normalize_source_states,
     normalize_synthesis_atom,
 )
 from .identity import (
@@ -50,6 +51,7 @@ __all__ = [
     "normalize_atoms",
     "normalize_candidate",
     "normalize_source_artifact",
+    "normalize_source_states",
     "normalize_synthesis_atom",
     "schema_path",
     "stable_atomic_change_id",
