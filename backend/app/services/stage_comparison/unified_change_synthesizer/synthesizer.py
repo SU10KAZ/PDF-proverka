@@ -10,7 +10,6 @@ from ..unified_change_policy import (
     confidence_policy,
     contradiction_is_proven,
     evaluate_candidate_gates,
-    should_surface_atom,
 )
 from ..unified_change_policy.contract import POLICY_VERSION
 from .contract import (
@@ -126,8 +125,13 @@ def _single_change(
     }
 
 
-def _review_item(atom: Mapping[str, Any]) -> dict[str, Any]:
+def _review_item(
+    atom: Mapping[str, Any],
+    *,
+    reason_codes: Iterable[str],
+) -> dict[str, Any]:
     evidence = [_evidence(atom)]
+    reasons = sorted(set(reason_codes))
     return {
         "review_evidence_id": stable_review_item_id(atom),
         "atom_id": atom["atom_id"],
@@ -144,11 +148,11 @@ def _review_item(atom: Mapping[str, Any]) -> dict[str, Any]:
         "after_value": atom["after_value"],
         "evidence_refs": evidence,
         "review_status": "REVIEW_REQUIRED",
-        "reason_codes": ["dimension_unknown"],
+        "reason_codes": reasons,
         "content_signature": content_signature(evidence),
         "provenance": {
             "source_atom": atom["provenance"],
-            "synthesis": "UNKNOWN_DIMENSION_REVIEW",
+            "synthesis": "REVIEW_EVIDENCE_PRESERVED",
         },
     }
 
@@ -358,16 +362,19 @@ def synthesize_unified_changes(
         raise SynthesisValidationError("candidates: duplicate atom pair")
 
     surfaced: list[dict[str, Any]] = []
-    excluded_document_atoms: list[str] = []
+    engineering_scope_review_atoms: list[str] = []
+    unknown_dimension_review_atoms: list[str] = []
     review_items: list[dict[str, Any]] = []
     for atom in all_atoms:
-        if atom["source"] == "TEXT" and not should_surface_atom(
-            atom["project_entity_ref"]
-        ):
-            excluded_document_atoms.append(atom["atom_id"])
-            continue
+        reason_codes: list[str] = []
+        if atom["source"] == "TEXT" and atom["project_entity_ref"] is None:
+            reason_codes.append("engineering_scope_unresolved")
+            engineering_scope_review_atoms.append(atom["atom_id"])
         if atom["dimension"] == UNKNOWN_DIMENSION:
-            review_items.append(_review_item(atom))
+            reason_codes.append("dimension_unknown")
+            unknown_dimension_review_atoms.append(atom["atom_id"])
+        if reason_codes:
+            review_items.append(_review_item(atom, reason_codes=reason_codes))
             continue
         surfaced.append(atom)
 
@@ -463,8 +470,16 @@ def synthesize_unified_changes(
             "surfaced_graphic_atoms": sum(
                 atom["source"] == "GRAPHIC" for atom in surfaced
             ),
-            "excluded_document_atoms": sorted(excluded_document_atoms),
-            "unknown_dimension_review_items": len(review_items),
+            "excluded_document_atoms": [],
+            "engineering_scope_review_atoms": sorted(
+                engineering_scope_review_atoms
+            ),
+            "unknown_dimension_review_atoms": sorted(
+                unknown_dimension_review_atoms
+            ),
+            "unknown_dimension_review_items": len(
+                unknown_dimension_review_atoms
+            ),
             "strict_merges": len(merged_atoms) // 2,
             "contested_pairs": len(contested_groups),
             "candidate_evaluations": evaluations,

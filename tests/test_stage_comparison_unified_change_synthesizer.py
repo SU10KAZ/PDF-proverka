@@ -474,7 +474,7 @@ def test_unproven_merge_gates_leave_both_changes(candidate_overrides, failed_gat
     assert evaluation["gates"][failed_gate]["state"] != "PASS"
 
 
-def test_document_only_text_atom_is_not_promoted():
+def test_document_only_text_atom_is_preserved_for_review_without_change_id():
     document = _atom(
         "text-city",
         "TEXT",
@@ -487,7 +487,88 @@ def test_document_only_text_atom_is_not_promoted():
     result = synthesize_unified_changes(text_atoms=[document])
 
     assert result["changes"] == []
-    assert result["diagnostics"]["excluded_document_atoms"] == ["text-city"]
+    assert len(result["review_items"]) == 1
+    review = result["review_items"][0]
+    assert "change_id" not in review
+    assert review["reason_codes"] == ["engineering_scope_unresolved"]
+    assert review["evidence_refs"][0]["evidence_ref"] == "evidence:text-city"
+    assert result["diagnostics"]["engineering_scope_review_atoms"] == [
+        "text-city"
+    ]
+
+
+def test_two_engineering_scope_unresolved_text_atoms_remain_distinct():
+    first = _atom(
+        "text-city-a",
+        "TEXT",
+        project_entity_ref=None,
+        subject_ref="document:stamp",
+        facet_ref="city",
+    )
+    second = _atom(
+        "text-city-b",
+        "TEXT",
+        project_entity_ref=None,
+        subject_ref="document:stamp",
+        facet_ref="city",
+    )
+
+    result = synthesize_unified_changes(text_atoms=[second, first])
+
+    assert result["changes"] == []
+    assert len(result["review_items"]) == 2
+    assert len(
+        {item["review_evidence_id"] for item in result["review_items"]}
+    ) == 2
+    assert {item["atom_id"] for item in result["review_items"]} == {
+        "text-city-a",
+        "text-city-b",
+    }
+
+
+def test_stage53_adapter_keeps_text_fact_without_any_subject_identity():
+    stage53 = {
+        "kind": "stage_comparison_high_level_project_changes",
+        "schema_version": "1.0",
+        "high_level_changes": [
+            {
+                "change_id": "hlc-document",
+                "details": [
+                    {
+                        "evidence_id": "ev-document",
+                        "before": "old note",
+                        "after": "new note",
+                    }
+                ],
+            }
+        ],
+        "detail_level_increased": [],
+        "material_review": [],
+        "non_material_review": [],
+        "unresolved": [],
+    }
+    adapted = stage53_to_text_atoms(
+        stage53,
+        structured_facts={
+            "ev-document": {
+                "scope_ref": "scope-1",
+                "dimension": "PARAMETER",
+                "direction": "ALTERED",
+                "outcome": "MATERIAL_CHANGE",
+                "confidence": "MEDIUM",
+                "facet_ref": "document_note",
+            }
+        },
+        artifact_ref="artifact:stage53",
+    )
+
+    assert len(adapted["atoms"]) == 1
+    assert adapted["atoms"][0]["subject_ref"] is None
+    result = synthesize_unified_changes(text_atoms=adapted["atoms"])
+    review = result["review_items"][0]
+    assert review["subject_ref"] is None
+    assert review["evidence_refs"][0]["evidence_ref"] == "ev-document"
+    assert review["reason_codes"] == ["engineering_scope_unresolved"]
 
 
 def test_stage53_adapter_requires_structured_facts_and_does_not_parse_summary():

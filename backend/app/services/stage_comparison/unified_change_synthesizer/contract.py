@@ -116,7 +116,7 @@ def normalize_synthesis_atom(value: Any) -> dict[str, Any]:
 
     normalized["scope_ref"] = _reference(normalized["scope_ref"], "atom.scope_ref")
     normalized["subject_ref"] = _reference(
-        normalized["subject_ref"], "atom.subject_ref"
+        normalized["subject_ref"], "atom.subject_ref", nullable=True
     )
     normalized["project_entity_ref"] = _reference(
         normalized["project_entity_ref"],

@@ -112,7 +112,7 @@
         "review_evidence_id": {"type": "string", "pattern": "^ureview_[a-f0-9]{20}$"},
         "atom_id": {"type": "string", "minLength": 1},
         "source": {"enum": ["TEXT", "GRAPHIC"]},
-        "dimension": {"const": "UNKNOWN_DIMENSION"},
+        "dimension": {"enum": ["PRINCIPLE", "METHOD", "OPERATION", "STRUCTURE", "CONNECTION", "TYPE", "PARAMETER", "QUANTITY", "SPACE", "UNKNOWN_DIMENSION"]},
         "review_status": {"const": "REVIEW_REQUIRED"},
         "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_ref"}}
       }

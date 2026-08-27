@@ -10,6 +10,7 @@ from ..unified_change_policy import (
     CONFIDENCE_LEVELS,
     DIRECTIONS,
     DIMENSIONS,
+    EVIDENCE_DIMENSIONS,
     OUTCOMES,
     UNKNOWN_DIMENSION,
 )
@@ -231,21 +232,41 @@ def _validate_review(item: Any, index: int) -> dict[str, Any]:
     )
     if value["review_evidence_id"] != expected_id:
         raise SynthesisValidationError(f"{where}.review_evidence_id: mismatch")
+    source = value["source"]
     if (
-        value["source"] not in {"TEXT", "GRAPHIC"}
-        or value["dimension"] != UNKNOWN_DIMENSION
+        source not in {"TEXT", "GRAPHIC"}
+        or source != evidence[0]["source"]
+        or value["dimension"] not in EVIDENCE_DIMENSIONS
         or value["outcome"] != "REVIEW_REQUIRED"
         or value["review_status"] != "REVIEW_REQUIRED"
     ):
         raise SynthesisValidationError(f"{where}: invalid review state")
     _ref(value["scope_ref"], f"{where}.scope_ref")
-    _ref(value["subject_ref"], f"{where}.subject_ref")
-    _ref(value["project_entity_ref"], f"{where}.project_entity_ref", nullable=True)
+    _ref(value["subject_ref"], f"{where}.subject_ref", nullable=True)
+    project_entity_ref = _ref(
+        value["project_entity_ref"],
+        f"{where}.project_entity_ref",
+        nullable=True,
+    )
     _ref(value["facet_ref"], f"{where}.facet_ref", nullable=True)
     if value["direction"] not in DIRECTIONS:
         raise SynthesisValidationError(f"{where}.direction: unsupported")
     _confidence(value["confidence"], f"{where}.confidence")
-    _unique_refs(value["reason_codes"], f"{where}.reason_codes")
+    reason_codes = _unique_refs(value["reason_codes"], f"{where}.reason_codes")
+    unknown_dimension = value["dimension"] == UNKNOWN_DIMENSION
+    engineering_scope_unresolved = source == "TEXT" and project_entity_ref is None
+    if not (unknown_dimension or engineering_scope_unresolved):
+        raise SynthesisValidationError(f"{where}: review reason not established")
+    required_reasons = {
+        reason
+        for applies, reason in (
+            (unknown_dimension, "dimension_unknown"),
+            (engineering_scope_unresolved, "engineering_scope_unresolved"),
+        )
+        if applies
+    }
+    if not required_reasons <= set(reason_codes):
+        raise SynthesisValidationError(f"{where}.reason_codes: incomplete")
     if content_signature(evidence) != value["content_signature"]:
         raise SynthesisValidationError(f"{where}.content_signature: mismatch")
     return dict(value)

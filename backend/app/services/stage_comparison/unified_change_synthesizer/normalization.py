@@ -182,11 +182,10 @@ def stage53_to_text_atoms(
         else:
             project_entity_ref = None
             (ambiguous_entities if entity_ids else document_only).append(evidence_id)
+        # Keep the explicit document subject when one exists, but do not
+        # invent a project subject when engineering identity is unresolved.
+        # The synthesizer preserves either case as review evidence.
         subject_ref = fact.get("subject_ref") or project_entity_ref
-        if subject_ref is None:
-            # The document-only surface rule is applied without inventing a
-            # synthetic project subject.
-            continue
         before_value = (
             fact["before_value"]
             if "before_value" in fact
