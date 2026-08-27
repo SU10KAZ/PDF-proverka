@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "unified_change_synthesis_v1.schema.json",
+  "title": "Unified Change Synthesis v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "synthesis_version",
+    "kind",
+    "direction",
+    "policy_version",
+    "identity_version",
+    "changes",
+    "review_items",
+    "contested_groups",
+    "presentation_groups",
+    "diagnostics",
+    "source_artifacts",
+    "provenance",
+    "validation"
+  ],
+  "properties": {
+    "synthesis_version": {"const": "unified-change-synthesis.v1"},
+    "kind": {"const": "stage_comparison_unified_changes"},
+    "direction": {"const": "LEFT_TO_RIGHT"},
+    "policy_version": {"const": "unified-change-policy-v1"},
+    "identity_version": {"const": "unified-change-identity.v1"},
+    "changes": {"type": "array", "items": {"$ref": "#/$defs/change"}},
+    "review_items": {"type": "array", "items": {"$ref": "#/$defs/review_item"}},
+    "contested_groups": {"type": "array", "items": {"$ref": "#/$defs/contested_group"}},
+    "presentation_groups": {"type": "array", "items": {"$ref": "#/$defs/presentation_group"}},
+    "diagnostics": {"type": "object"},
+    "source_artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source_artifact"}
+    },
+    "provenance": {"type": "object"},
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "valid", "errors"],
+      "properties": {
+        "contract": {"const": "unified-change-synthesis.v1"},
+        "valid": {"const": true},
+        "errors": {"const": []}
+      }
+    }
+  },
+  "$defs": {
+    "nullable_ref": {"type": ["string", "null"], "minLength": 1},
+    "source_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "schema_version", "artifact_ref"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1},
+        "schema_version": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "evidence_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_ref", "atom_id", "source", "source_artifact"],
+      "properties": {
+        "evidence_ref": {"type": "string", "minLength": 1},
+        "atom_id": {"type": "string", "minLength": 1},
+        "source": {"enum": ["TEXT", "GRAPHIC"]},
+        "source_artifact": {"$ref": "#/$defs/source_artifact"}
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "basis"],
+      "properties": {
+        "level": {"enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"]},
+        "basis": {"enum": ["SINGLE_SOURCE", "CORROBORATED", "COMPLEMENTARY", "CONTESTED"]}
+      }
+    },
+    "change": {
+      "type": "object",
+      "required": [
+        "change_id", "scope_ref", "subject_ref", "project_entity_ref", "facet_ref",
+        "dimension", "direction", "outcome", "source_mode", "evidence_refs",
+        "relation_status", "confidence", "before_value", "after_value",
+        "review_status", "content_signature", "provenance"
+      ],
+      "properties": {
+        "change_id": {"type": "string", "pattern": "^uchg_[a-f0-9]{20}$"},
+        "scope_ref": {"type": "string", "minLength": 1},
+        "subject_ref": {"type": "string", "minLength": 1},
+        "project_entity_ref": {"$ref": "#/$defs/nullable_ref"},
+        "facet_ref": {"$ref": "#/$defs/nullable_ref"},
+        "dimension": {"enum": ["PRINCIPLE", "METHOD", "OPERATION", "STRUCTURE", "CONNECTION", "TYPE", "PARAMETER", "QUANTITY", "SPACE"]},
+        "direction": {"enum": ["ADDED", "REMOVED", "REPLACED", "INCREASED", "DECREASED", "ALTERED"]},
+        "outcome": {"enum": ["MATERIAL_CHANGE", "DETAIL_ONLY", "REVIEW_REQUIRED"]},
+        "source_mode": {"enum": ["TEXT", "GRAPHIC", "BOTH"]},
+        "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_ref"}},
+        "relation_status": {"enum": ["SINGLE_SOURCE", "CORROBORATING", "CONTRADICTORY"]},
+        "confidence": {"$ref": "#/$defs/confidence"},
+        "review_status": {"enum": ["CONFIRMED", "REVIEW_REQUIRED"]},
+        "content_signature": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "provenance": {"type": "object"}
+      },
+      "additionalProperties": true
+    },
+    "review_item": {
+      "type": "object",
+      "required": ["review_evidence_id", "atom_id", "source", "dimension", "review_status", "evidence_refs"],
+      "properties": {
+        "review_evidence_id": {"type": "string", "pattern": "^ureview_[a-f0-9]{20}$"},
+        "atom_id": {"type": "string", "minLength": 1},
+        "source": {"enum": ["TEXT", "GRAPHIC"]},
+        "dimension": {"const": "UNKNOWN_DIMENSION"},
+        "review_status": {"const": "REVIEW_REQUIRED"},
+        "evidence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidence_ref"}}
+      }
+    },
+    "contested_group": {
+      "type": "object",
+      "required": ["group_id", "change_ids", "evidence_refs", "relation_status", "review_status", "reason_codes", "provenance"],
+      "properties": {
+        "group_id": {"type": "string", "pattern": "^contest_[a-f0-9]{20}$"},
+        "change_ids": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+        "evidence_refs": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/evidence_ref"}},
+        "relation_status": {"const": "CONTRADICTORY"},
+        "review_status": {"const": "REVIEW_REQUIRED"},
+        "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "provenance": {"type": "object"}
+      }
+    },
+    "presentation_group": {
+      "type": "object",
+      "required": ["group_id", "scope_ref", "subject_ref", "family", "change_ids", "title", "provenance"],
+      "properties": {
+        "group_id": {"type": "string", "pattern": "^pgroup_[a-f0-9]{20}$"},
+        "scope_ref": {"type": "string", "minLength": 1},
+        "subject_ref": {"type": "string", "minLength": 1},
+        "family": {"const": "PARAMETER"},
+        "change_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+        "title": {"type": "string", "minLength": 1},
+        "provenance": {"type": "object"}
+      }
+    }
+  }
+}

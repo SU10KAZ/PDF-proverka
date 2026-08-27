@@ -32,6 +32,8 @@ from .identity import (
     stable_review_item_id,
 )
 from .normalization import normalize_atoms
+from .presentation import build_presentation_groups
+from .validation import validate_synthesis
 
 
 SYNTHESIZER_VERSION = "unified-change-synthesizer-v1"
@@ -320,22 +322,6 @@ def _contested_group(
     }
 
 
-def _basic_validate(payload: Mapping[str, Any]) -> None:
-    change_ids = [change["change_id"] for change in payload["changes"]]
-    review_ids = [item["review_evidence_id"] for item in payload["review_items"]]
-    contest_ids = [item["group_id"] for item in payload["contested_groups"]]
-    if len(change_ids) != len(set(change_ids)):
-        raise SynthesisValidationError("output: duplicate change_id")
-    if len(review_ids) != len(set(review_ids)):
-        raise SynthesisValidationError("output: duplicate review_evidence_id")
-    if len(contest_ids) != len(set(contest_ids)):
-        raise SynthesisValidationError("output: duplicate contested group_id")
-    known = set(change_ids)
-    for group in payload["contested_groups"]:
-        if len(group["change_ids"]) != 2 or not set(group["change_ids"]) <= known:
-            raise SynthesisValidationError("output: invalid contested change refs")
-
-
 def synthesize_unified_changes(
     *,
     text_atoms: Iterable[Any] = (),
@@ -459,7 +445,7 @@ def synthesize_unified_changes(
         "changes": changes,
         "review_items": review_items,
         "contested_groups": contested_groups,
-        "presentation_groups": [],
+        "presentation_groups": build_presentation_groups(changes),
         "diagnostics": {
             "input_text_atoms": len(text),
             "input_graphic_atoms": len(graphic),
@@ -494,8 +480,7 @@ def synthesize_unified_changes(
             "errors": [],
         },
     }
-    _basic_validate(payload)
-    return payload
+    return validate_synthesis(payload)
 
 
 __all__ = [
