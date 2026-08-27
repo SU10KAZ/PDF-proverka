@@ -105,6 +105,91 @@ def entity_links_path(session_id: str, pair_id: str) -> Path:
     return pair_dir(session_id, pair_id) / "entity_links.json"
 
 
+def production_dir(session_id: str, pair_id: str) -> Path:
+    """Private artifacts for the additive production comparison flow."""
+    return pair_dir(session_id, pair_id) / "production"
+
+
+def production_state_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "state.json"
+
+
+def production_sheet_relations_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "sheet_relations.json"
+
+
+def production_text_preparation_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "text_preparation.json"
+
+
+def production_text_differences_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "text_differences.json"
+
+
+def production_text_semantic_validation_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "text_semantic_validation.json"
+
+
+def production_text_atoms_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "text_atoms.json"
+
+
+def production_graphic_ledger_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "graphic_change_ledger.json"
+
+
+def production_source_snapshot_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "source_snapshot.json"
+
+
+def production_entity_relations_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "entity_relations.json"
+
+
+def production_bound_atoms_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "bound_atoms.json"
+
+
+def production_effective_bound_atoms_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "effective_bound_atoms.json"
+
+
+def production_review_questions_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "review_questions.json"
+
+
+def production_review_answers_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "review_answers.json"
+
+
+def production_review_application_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "review_application.json"
+
+
+def production_automatic_synthesis_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "automatic_unified_synthesis.json"
+
+
+def production_unified_synthesis_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "unified_synthesis.json"
+
+
+def production_engineer_decisions_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "engineer_decisions.json"
+
+
+def production_final_report_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "final_report.json"
+
+
+def production_direct_page_mode2_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "direct_page_mode2.json"
+
+
+def production_page_graphic_bundle_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "page_graphic_bundle.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -132,5 +217,26 @@ __all__ = [
     "text_entities_path",
     "graph_entities_path",
     "entity_links_path",
+    "production_dir",
+    "production_state_path",
+    "production_sheet_relations_path",
+    "production_text_preparation_path",
+    "production_text_differences_path",
+    "production_text_semantic_validation_path",
+    "production_text_atoms_path",
+    "production_graphic_ledger_path",
+    "production_source_snapshot_path",
+    "production_entity_relations_path",
+    "production_bound_atoms_path",
+    "production_effective_bound_atoms_path",
+    "production_review_questions_path",
+    "production_review_answers_path",
+    "production_review_application_path",
+    "production_automatic_synthesis_path",
+    "production_unified_synthesis_path",
+    "production_engineer_decisions_path",
+    "production_final_report_path",
+    "production_direct_page_mode2_path",
+    "production_page_graphic_bundle_path",
     "index_json_path",
 ]

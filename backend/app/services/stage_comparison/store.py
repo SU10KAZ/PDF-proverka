@@ -27,6 +27,7 @@ from . import high_level_project_changes
 from .unified_entity_bridge import text_entity_producer
 from .graphic_comparison import compare_prepared_blocks, validate_ledger
 from .graphic_comparison.policy import EXPERIMENTALLY_CALIBRATED_V1
+from .production_artifacts import file_content_identity
 from backend.app.services.common.blocks_json import load_blocks_json
 from backend.app.services.llm.codex_runner import run_codex_json_messages
 
@@ -384,6 +385,19 @@ def get_pair_view(session_id: str, pair_id: str) -> dict | None:
         "text_entities": get_text_entities_state(session_id, pair_id),
         "graphic_change_ledger": get_graphic_change_ledger_state(session_id, pair_id),
     }
+
+
+def get_pair_for_production(session_id: str, pair_id: str) -> dict:
+    """Return the private selected-pair descriptor for backend orchestration.
+
+    HTTP handlers must not expose this value: it intentionally contains the
+    server-side source locators needed by Stage 2 and direct PAGE MODE 2.
+    """
+    with _lock:
+        pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
+        if pair is None:
+            raise KeyError("pair_not_found")
+        return json.loads(json.dumps(pair, ensure_ascii=False))
 
 
 def _empty_sheet_links(pair_id: str) -> dict:
@@ -1727,14 +1741,10 @@ def _graphic_source_signature(
     }
     for side in ("left", "right"):
         pdf_path, blocks_path = _graphic_document_paths(pair.get(side) or {})
-        entries = {}
-        for kind, path in (("pdf", pdf_path), ("blocks", blocks_path)):
-            try:
-                stat = path.stat()
-                entries[kind] = [str(path.resolve()), stat.st_size, stat.st_mtime_ns]
-            except OSError:
-                entries[kind] = [str(path), None, None]
-        source["documents"][side] = entries
+        source["documents"][side] = {
+            "pdf": file_content_identity(pdf_path),
+            "blocks": file_content_identity(blocks_path),
+        }
     raw = json.dumps(source, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -1790,8 +1800,16 @@ def run_graphic_comparison(
     pair_id: str,
     left_block_ids: list[str],
     right_block_ids: list[str],
+    *,
+    persist: bool = True,
 ) -> dict:
-    """Persist an independent GraphicChangeLedger from real prepared blocks."""
+    """Build a GraphicChangeLedger, optionally retaining the legacy artifact.
+
+    The legacy endpoint keeps its historical ``persist=True`` behavior.  The
+    production orchestrator passes ``persist=False`` and publishes its own
+    generation-bound source snapshot instead of reading or overwriting the
+    shared pair ledger.
+    """
     with _lock:
         pair = _load_pair(session_id, pair_id) if _load_session_meta(session_id) else None
         if pair is None:
@@ -1803,7 +1821,11 @@ def run_graphic_comparison(
             pair.get("right") or {}, list(right_block_ids), "right",
         )
         signature = _graphic_source_signature(pair, left_block_ids, right_block_ids)
-        existing = _read_json(paths_mod.graphic_change_ledger_path(session_id, pair_id))
+        existing = (
+            _read_json(paths_mod.graphic_change_ledger_path(session_id, pair_id))
+            if persist
+            else None
+        )
         if isinstance(existing, dict):
             try:
                 validate_ledger(existing)
@@ -1828,7 +1850,10 @@ def run_graphic_comparison(
             raise KeyError("pair_not_found")
         if _graphic_source_signature(latest_pair, left_block_ids, right_block_ids) != signature:
             raise ValueError("graphic_sources_changed_during_comparison")
-        _atomic_write_json(paths_mod.graphic_change_ledger_path(session_id, pair_id), ledger)
+        if persist:
+            _atomic_write_json(
+                paths_mod.graphic_change_ledger_path(session_id, pair_id), ledger
+            )
     return ledger
 
 

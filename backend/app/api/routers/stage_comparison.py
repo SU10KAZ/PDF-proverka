@@ -3,15 +3,20 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Any, Literal
 
 from fastapi import APIRouter, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import Response
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from backend.app.services.stage_comparison import objects as objects_mod
 from backend.app.services.stage_comparison import stage_upload as stage_upload_mod
 from backend.app.services.stage_comparison import store
+from backend.app.services.stage_comparison import production_orchestrator as production
+from backend.app.services.stage_comparison import production_store
+from backend.app.core import portal_auth
+from backend.app.services.common import user_service
 
 
 logger = logging.getLogger(__name__)
@@ -60,6 +65,129 @@ class GraphicComparisonRequest(BaseModel):
 
     left_block_ids: list[str] = Field(default_factory=list)
     right_block_ids: list[str] = Field(default_factory=list)
+
+
+class ProductionRunRequest(BaseModel):
+    """Client-controlled IDs only; source paths and geometry stay server-side."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    input_mode: Literal["PAGE", "DOCUMENT"]
+    left_pages: list[int] = Field(default_factory=list)
+    right_pages: list[int] = Field(default_factory=list)
+    left_block_ids: list[str] = Field(default_factory=list)
+    right_block_ids: list[str] = Field(default_factory=list)
+
+
+class ProductionDecisionUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    target_id: str = Field(min_length=1)
+    decision: Literal["PENDING_REVIEW", "APPROVED", "REJECTED"]
+    # Accepted for old/new UI compatibility but always replaced by the
+    # authenticated server identity before persistence.
+    author: str | None = None
+    comment: str | None = None
+    reason_code: str | None = None
+
+
+class SaveProductionDecisionsRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    updates: list[ProductionDecisionUpdate] = Field(default_factory=list)
+    expected_input_signature: str = Field(min_length=1)
+    expected_revision: int = Field(ge=0)
+
+
+class ProductionExplicitCandidate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    right_entity_ref: str | None = Field(default=None, min_length=1)
+    project_entity_ref: str | None = Field(default=None, min_length=1)
+    left_pages: list[int] = Field(default_factory=list)
+    right_pages: list[int] = Field(default_factory=list)
+    relation_type: Literal["MATCHED", "SPLIT", "MERGED"] | None = None
+
+
+class ProductionTypedResolution(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    dimension: Literal[
+        "PRINCIPLE",
+        "METHOD",
+        "OPERATION",
+        "STRUCTURE",
+        "CONNECTION",
+        "TYPE",
+        "PARAMETER",
+        "QUANTITY",
+        "SPACE",
+    ] | None = None
+    subject_ref: str | None = Field(default=None, min_length=1)
+    project_entity_ref: str | None = Field(default=None, min_length=1)
+    facet_ref: str | None = Field(default=None, min_length=1)
+    direction: Literal[
+        "ADDED",
+        "REMOVED",
+        "REPLACED",
+        "INCREASED",
+        "DECREASED",
+        "ALTERED",
+    ] | None = None
+    outcome: Literal["MATERIAL_CHANGE", "DETAIL_ONLY"] | None = None
+    before_value: Any = None
+    after_value: Any = None
+    # ``None`` is intentional: an omitted contested selection must stay
+    # omitted instead of being synthesized as an empty (and misleading)
+    # typed resolution by Pydantic.
+    selected_change_ids: list[str] | None = None
+
+    @model_validator(mode="after")
+    def reject_semantically_empty_resolution(self):
+        values = self.model_dump(exclude_none=True)
+        if not any(
+            value not in ([], {})
+            and (not isinstance(value, str) or value.strip())
+            for value in values.values()
+        ):
+            raise ValueError("typed_resolution must not be semantically empty")
+        return self
+
+
+class ProductionReviewAnswer(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    question_id: str = Field(min_length=1)
+    answer: str = Field(min_length=1)
+    # See ProductionDecisionUpdate.author.
+    author: str | None = None
+    comment: str | None = None
+    selected_refs: list[str] = Field(default_factory=list)
+    explicit_candidate: ProductionExplicitCandidate | None = None
+    typed_resolution: ProductionTypedResolution | None = None
+
+
+class SaveProductionAnswersRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    answers: list[ProductionReviewAnswer] = Field(default_factory=list)
+    expected_input_signature: str = Field(min_length=1)
+    expected_revision: int = Field(ge=0)
+
+
+def _engineer_author(request: Request) -> str:
+    """Best-effort server identity; a request body can never choose author."""
+    settings = portal_auth.get_settings()
+    username = portal_auth.request_username(request, settings) if settings.enabled else None
+    matched = user_service.get_user_by_login(username) if username else None
+    if matched:
+        return str(matched.get("id") or matched.get("login") or username)
+    if username:
+        return username
+    current = user_service.get_current_user()
+    if current:
+        return str(current.get("id") or current.get("login") or "local-engineer")
+    return "local-engineer"
 
 
 @router.get("/objects")
@@ -186,6 +314,167 @@ async def get_pair(session_id: str, pair_id: str):
     if pair is None:
         raise HTTPException(404, "Пара не найдена")
     return pair
+
+
+# Additive NEW FLOW.  Legacy Stage 5/5.3 endpoints below remain unchanged.
+@router.post("/sessions/{session_id}/pairs/{pair_id}/production/run")
+async def run_production_comparison(
+    session_id: str,
+    pair_id: str,
+    request: ProductionRunRequest,
+):
+    try:
+        return await run_in_threadpool(
+            production.run_production_comparison,
+            session_id,
+            pair_id,
+            **request.model_dump(),
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except (FileNotFoundError, ValueError, OSError, UnicodeDecodeError) as exc:
+        raise HTTPException(
+            400,
+            f"Не удалось запустить production-сравнение ({type(exc).__name__})",
+        ) from exc
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("production stage comparison failed")
+        raise HTTPException(500, "Ошибка production-сравнения") from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/production/state")
+async def get_production_state(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(
+            production.get_production_state, session_id, pair_id
+        )
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/production/changes")
+async def get_production_changes(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(
+            production.get_production_changes, session_id, pair_id
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(409, f"Некорректный production-артефакт: {exc}") from exc
+
+
+@router.put(
+    "/sessions/{session_id}/pairs/{pair_id}/production/decisions"
+)
+async def save_production_decisions(
+    http_request: Request,
+    session_id: str,
+    pair_id: str,
+    request: SaveProductionDecisionsRequest,
+):
+    updates = [
+        update.model_dump(exclude={"author"}) for update in request.updates
+    ]
+    try:
+        return await run_in_threadpool(
+            production.update_engineer_decisions,
+            session_id,
+            pair_id,
+            updates=updates,
+            author=_engineer_author(http_request),
+            expected_input_signature=request.expected_input_signature,
+            expected_revision=request.expected_revision,
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get(
+    "/sessions/{session_id}/pairs/{pair_id}/production/questions"
+)
+async def get_production_questions(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(
+            production.get_review_questions, session_id, pair_id
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.put(
+    "/sessions/{session_id}/pairs/{pair_id}/production/answers"
+)
+async def save_production_answers(
+    http_request: Request,
+    session_id: str,
+    pair_id: str,
+    request: SaveProductionAnswersRequest,
+):
+    answers = [
+        answer.model_dump(exclude={"author"}, exclude_none=True)
+        for answer in request.answers
+    ]
+    try:
+        return await run_in_threadpool(
+            production.update_review_answers,
+            session_id,
+            pair_id,
+            answers=answers,
+            author=_engineer_author(http_request),
+            expected_input_signature=request.expected_input_signature,
+            expected_revision=request.expected_revision,
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.get("/sessions/{session_id}/pairs/{pair_id}/production/final-report")
+async def get_production_final_report(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(
+            production.get_final_report, session_id, pair_id
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.get(
+    "/sessions/{session_id}/pairs/{pair_id}/production/changes/{target_id}/evidence"
+)
+async def get_production_change_evidence(
+    session_id: str,
+    pair_id: str,
+    target_id: str,
+):
+    try:
+        return await run_in_threadpool(
+            production.get_change_evidence, session_id, pair_id, target_id
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except (FileNotFoundError, ValueError, OSError) as exc:
+        raise HTTPException(
+            400, f"Не удалось открыть evidence ({type(exc).__name__})"
+        ) from exc
 
 
 @router.post("/sessions/{session_id}/pairs/{pair_id}/sheet-match-suggestions")

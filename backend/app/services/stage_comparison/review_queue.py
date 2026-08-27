@@ -19,7 +19,12 @@ from .production_artifacts import (
     stable_id,
     utc_now,
 )
-from .unified_change_policy import DIMENSIONS, UNKNOWN_DIMENSION
+from .unified_change_policy import (
+    DIRECTIONS,
+    DIMENSIONS,
+    OUTCOMES,
+    UNKNOWN_DIMENSION,
+)
 
 
 KIND = "stage_comparison_human_review_questions"
@@ -51,6 +56,10 @@ _TYPED_CHANGE_RESOLUTION_FIELDS = frozenset(
         "selected_change_ids",
     }
 )
+_TYPED_ATOM_RESOLUTION_FIELDS = (
+    _TYPED_CHANGE_RESOLUTION_FIELDS - {"selected_change_ids"}
+)
+_TYPED_CONTESTED_RESOLUTION_FIELDS = frozenset({"selected_change_ids"})
 
 
 def _stable_payload(value: Any) -> Any:
@@ -347,6 +356,14 @@ def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any
         project_ref = item.get("project_entity_ref")
         if not isinstance(project_ref, str) or not project_ref.strip():
             required_fields.append("project_entity_ref")
+        provenance = item.get("provenance")
+        source_outcome = (
+            provenance.get("source_atom_outcome")
+            if isinstance(provenance, Mapping)
+            else None
+        )
+        if source_outcome == "REVIEW_REQUIRED":
+            required_fields.append("outcome")
         questions.append(
             _question(
                 identity={"review_evidence_id": review_ref},
@@ -370,13 +387,14 @@ def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any
                     "project_entity_ref": item.get("project_entity_ref"),
                     "direction": item.get("direction"),
                     "outcome": item.get("outcome"),
+                    "source_atom_outcome": source_outcome,
                     "reason_codes": sorted(item.get("reason_codes") or []),
                     "typed_resolution_contract": {
                         "version": CHANGE_TYPED_RESOLUTION_VERSION,
                         "generic_yes_allowed": not required_fields,
                         "required_fields": required_fields,
                         "accepted_fields": sorted(
-                            _TYPED_CHANGE_RESOLUTION_FIELDS
+                            _TYPED_ATOM_RESOLUTION_FIELDS
                         ),
                     },
                 },
@@ -411,7 +429,7 @@ def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any
                         "generic_yes_allowed": False,
                         "required_fields": ["selected_change_ids"],
                         "accepted_fields": sorted(
-                            _TYPED_CHANGE_RESOLUTION_FIELDS
+                            _TYPED_CONTESTED_RESOLUTION_FIELDS
                         ),
                     },
                 },
@@ -493,6 +511,52 @@ def _typed_resolution(decision: Mapping[str, Any]) -> dict[str, Any]:
     return dict(value) if isinstance(value, Mapping) else {}
 
 
+def _accepted_typed_resolution_fields(
+    question: Mapping[str, Any],
+) -> frozenset[str]:
+    """Return the fail-closed typed contract for this exact question kind."""
+    if question.get("category") != "CHANGE":
+        return frozenset()
+    if question.get("question_type") == "CHANGE_REVIEW_EVIDENCE":
+        return _TYPED_ATOM_RESOLUTION_FIELDS
+    if question.get("question_type") == "CHANGE_CONTESTED":
+        return _TYPED_CONTESTED_RESOLUTION_FIELDS
+    return frozenset()
+
+
+def _has_semantic_value(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (Mapping, list, tuple, set, frozenset)):
+        return bool(value)
+    return True
+
+
+def _explicit_sheet_candidate_resolves(decision: Mapping[str, Any]) -> bool:
+    candidate = decision.get("explicit_candidate")
+    if not isinstance(candidate, Mapping):
+        return False
+    left_pages = candidate.get("left_pages")
+    right_pages = candidate.get("right_pages")
+    if not isinstance(left_pages, list) or not isinstance(right_pages, list):
+        return False
+    relation_type = candidate.get("relation_type")
+    return (
+        relation_type == "MATCHED"
+        and len(left_pages) == len(right_pages) == 1
+    ) or (
+        relation_type == "SPLIT"
+        and len(left_pages) == 1
+        and len(right_pages) > 1
+    ) or (
+        relation_type == "MERGED"
+        and len(left_pages) > 1
+        and len(right_pages) == 1
+    )
+
+
 def _change_resolution_requirements(
     question: Mapping[str, Any], decision: Mapping[str, Any]
 ) -> list[str]:
@@ -501,6 +565,25 @@ def _change_resolution_requirements(
     context = context if isinstance(context, Mapping) else {}
     typed = _typed_resolution(decision)
     missing: list[str] = []
+    accepted_fields = _accepted_typed_resolution_fields(question)
+    if any(
+        field not in accepted_fields and _has_semantic_value(value)
+        for field, value in typed.items()
+    ):
+        missing.append("typed_resolution")
+    if isinstance(decision.get("typed_resolution"), Mapping) and not any(
+        _has_semantic_value(value) for value in typed.values()
+    ):
+        missing.append("typed_resolution")
+    if "dimension" in typed and typed.get("dimension") not in DIMENSIONS:
+        missing.append("dimension")
+    if "direction" in typed and typed.get("direction") not in DIRECTIONS:
+        missing.append("direction")
+    if "outcome" in typed and (
+        typed.get("outcome") not in OUTCOMES
+        or typed.get("outcome") == "REVIEW_REQUIRED"
+    ):
+        missing.append("outcome")
     if question.get("question_type") == "CHANGE_CONTESTED":
         allowed = {
             str(value)
@@ -511,9 +594,9 @@ def _change_resolution_requirements(
             _normalized_selected_refs(typed.get("selected_change_ids"))
             or _normalized_selected_refs(decision.get("selected_refs"))
         )
-        if not selected or not selected <= allowed:
+        if not selected or not selected < allowed:
             missing.append("selected_change_ids")
-        return missing
+        return sorted(set(missing))
 
     dimension = context.get("dimension")
     if dimension == UNKNOWN_DIMENSION:
@@ -526,6 +609,10 @@ def _change_resolution_requirements(
         resolved_project = typed.get("project_entity_ref")
         if not isinstance(resolved_project, str) or not resolved_project.strip():
             missing.append("project_entity_ref")
+    if context.get("source_atom_outcome") == "REVIEW_REQUIRED":
+        resolved_outcome = typed.get("outcome")
+        if resolved_outcome not in OUTCOMES or resolved_outcome == "REVIEW_REQUIRED":
+            missing.append("outcome")
     subject_ref = context.get("subject_ref")
     if not isinstance(subject_ref, str) or not subject_ref.strip():
         resolved_subject = typed.get("subject_ref") or resolved_project
@@ -552,8 +639,10 @@ def _decision_resolves_question(
         if category == "ENTITY":
             return _resolved_entity_candidate_ref(decision) is not None
         if category == "SHEET":
-            return isinstance(decision.get("explicit_candidate"), Mapping)
+            return _explicit_sheet_candidate_resolves(decision)
         if category == "CHANGE":
+            if question.get("question_type") == "CHANGE_CONTESTED":
+                return not _change_resolution_requirements(question, decision)
             return bool(_typed_resolution(decision)) and not (
                 _change_resolution_requirements(question, decision)
             )
@@ -754,8 +843,24 @@ def _normalize_explicit_candidate(
                 if len(right_pages) == 1
                 else "UNCERTAIN"
             )
-        if relation_type not in {"MATCHED", "SPLIT", "MERGED", "UNCERTAIN"}:
+        if relation_type not in {"MATCHED", "SPLIT", "MERGED"}:
             raise ValueError("explicit sheet candidate relation_type unsupported")
+        cardinality_valid = (
+            relation_type == "MATCHED"
+            and len(left_pages) == len(right_pages) == 1
+        ) or (
+            relation_type == "SPLIT"
+            and len(left_pages) == 1
+            and len(right_pages) > 1
+        ) or (
+            relation_type == "MERGED"
+            and len(left_pages) > 1
+            and len(right_pages) == 1
+        )
+        if not cardinality_valid:
+            raise ValueError(
+                "explicit sheet candidate relation_type conflicts with cardinality"
+            )
         return {
             "left_pages": left_pages,
             "right_pages": right_pages,
@@ -764,13 +869,16 @@ def _normalize_explicit_candidate(
     raise ValueError("explicit_candidate is supported for ENTITY or SHEET")
 
 
-def _normalize_typed_resolution(answer_payload: Mapping[str, Any]) -> dict[str, Any] | None:
+def _normalize_typed_resolution(
+    question: Mapping[str, Any], answer_payload: Mapping[str, Any]
+) -> dict[str, Any] | None:
     raw = answer_payload.get("typed_resolution")
     if raw is None and isinstance(answer_payload.get("resolution"), Mapping):
         raw = answer_payload.get("resolution")
     if raw is None:
         return None
-    if not isinstance(raw, Mapping) or not set(raw) <= _TYPED_CHANGE_RESOLUTION_FIELDS:
+    accepted_fields = _accepted_typed_resolution_fields(question)
+    if not isinstance(raw, Mapping) or not set(raw) <= accepted_fields:
         raise ValueError("typed_resolution has unsupported fields")
     result = deepcopy(dict(raw))
     for key in (
@@ -787,10 +895,20 @@ def _normalize_typed_resolution(answer_payload: Mapping[str, Any]) -> dict[str, 
             result[key] = value.strip()
     if "dimension" in result and result["dimension"] not in DIMENSIONS:
         raise ValueError("typed_resolution.dimension unsupported")
+    if "direction" in result and result["direction"] not in DIRECTIONS:
+        raise ValueError("typed_resolution.direction unsupported")
+    if "outcome" in result and result["outcome"] not in OUTCOMES:
+        raise ValueError("typed_resolution.outcome unsupported")
+    if result.get("outcome") == "REVIEW_REQUIRED":
+        raise ValueError(
+            "typed_resolution.outcome must resolve rather than preserve review"
+        )
     if "selected_change_ids" in result:
         result["selected_change_ids"] = _normalized_selected_refs(
             result["selected_change_ids"]
         )
+    if not result or not any(_has_semantic_value(value) for value in result.values()):
+        raise ValueError("typed_resolution must not be semantically empty")
     return result
 
 
@@ -819,12 +937,45 @@ def record_human_decision(
     resolved_author = author if author is not None else answer_payload.get("author")
     resolved_comment = comment if comment is not None else answer_payload.get("comment")
     explicit_candidate = _normalize_explicit_candidate(question, answer_payload)
-    typed_resolution = _normalize_typed_resolution(answer_payload)
+    typed_resolution = _normalize_typed_resolution(question, answer_payload)
     raw_selected = _normalized_selected_refs(
         selected_refs
         if selected_refs is not None
         else answer_payload.get("selected_refs")
     )
+    if (
+        question.get("question_type") == "CHANGE_CONTESTED"
+        and code in {"YES", "OTHER"}
+    ):
+        allowed_change_ids = {
+            str(value)
+            for value in (question.get("context") or {}).get("change_ids") or []
+            if isinstance(value, str) and value
+        }
+        typed_selected = set(
+            _normalized_selected_refs(
+                (typed_resolution or {}).get("selected_change_ids")
+            )
+        )
+        legacy_selected = set(raw_selected)
+        if typed_selected and legacy_selected and typed_selected != legacy_selected:
+            raise ValueError(
+                "typed_resolution.selected_change_ids conflicts with selected_refs"
+            )
+        selected_change_ids = typed_selected or legacy_selected
+        if (
+            not selected_change_ids
+            or not selected_change_ids < allowed_change_ids
+        ):
+            raise ValueError(
+                "selected change IDs must select offered changes as a "
+                "non-empty proper subset"
+            )
+    elif (
+        question.get("category") == "CHANGE"
+        and raw_selected
+    ):
+        raise ValueError("selected_refs is unsupported for this question")
     if code.startswith("SELECT_RIGHT:") or code.startswith("SELECT_LEFT:"):
         raw_selected.append(code.split(":", 1)[1])
     if explicit_candidate and question.get("category") == "ENTITY":
@@ -1056,7 +1207,8 @@ def apply_answer_to_relation(
             result["status"] = "NO_MATCH"
         elif answer == "OTHER":
             explicit = decision.get("explicit_candidate")
-            if isinstance(explicit, Mapping):
+            if _explicit_sheet_candidate_resolves(decision):
+                assert isinstance(explicit, Mapping)
                 result["left_pages"] = list(explicit.get("left_pages") or [])
                 result["right_pages"] = list(explicit.get("right_pages") or [])
                 result["relation_type"] = explicit.get("relation_type")
@@ -1076,7 +1228,7 @@ def apply_answer_to_relation(
             result["status"] = "HIGH"
         result["review_required"] = answer == "UNSURE" or (
             answer == "OTHER"
-            and not isinstance(decision.get("explicit_candidate"), Mapping)
+            and not _explicit_sheet_candidate_resolves(decision)
         )
     else:
         raise ValueError("relation answer requires SHEET or ENTITY question")
@@ -1274,7 +1426,14 @@ def apply_human_decisions(
             resolution = "REJECTED"
         elif answer == "YES" and not missing_fields:
             resolution = "CONFIRMED"
-        elif answer == "OTHER" and typed and not missing_fields:
+        elif (
+            answer == "OTHER"
+            and not missing_fields
+            and (
+                bool(typed)
+                or question.get("question_type") == "CHANGE_CONTESTED"
+            )
+        ):
             resolution = "TYPED_RESOLUTION"
         else:
             resolution = "REVIEW_REQUIRED"

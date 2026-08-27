@@ -147,6 +147,13 @@ def build_engineer_decisions(
         if target_id not in decisions:
             raise ValueError("engineer decision references unknown finding")
         previous = decisions[target_id]
+        if (
+            previous.get("target_kind") == "REVIEW_EVIDENCE"
+            and update["decision"] == "APPROVED"
+        ):
+            raise ValueError(
+                "review evidence must be resolved into an atomic change before approval"
+            )
         changed = any(
             previous.get(key) != update[key]
             for key in ("decision", "author", "comment", "reason_code")

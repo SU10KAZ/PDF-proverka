@@ -144,6 +144,37 @@ def _graphic_locations(
     return output
 
 
+def _graphic_change_index(payload: Mapping[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(payload, Mapping):
+        return {}
+    if payload.get("kind") != "stage_comparison_page_graphic_bundle":
+        return {
+            str(change.get("change_id")): change
+            for change in payload.get("changes") or []
+            if isinstance(change, Mapping)
+        }
+    output = {}
+    for group in payload.get("groups") or []:
+        if not isinstance(group, Mapping):
+            continue
+        ledger = group.get("ledger")
+        if not isinstance(ledger, Mapping):
+            continue
+        changes = {
+            str(change.get("change_id") or ""): change
+            for change in ledger.get("changes") or []
+            if isinstance(change, Mapping) and change.get("change_id")
+        }
+        for ref in group.get("change_refs") or []:
+            if not isinstance(ref, Mapping):
+                continue
+            evidence_ref = str(ref.get("evidence_ref") or "")
+            source_change_id = str(ref.get("source_change_id") or "")
+            if evidence_ref and source_change_id in changes:
+                output[evidence_ref] = changes[source_change_id]
+    return output
+
+
 def build_evidence_navigation(
     target_id: str,
     *,
@@ -159,11 +190,7 @@ def build_evidence_navigation(
         for atom in (text_atoms or {}).get("atoms") or []
         if isinstance(atom, Mapping)
     }
-    graphic_by_evidence = {
-        str(change.get("change_id")): change
-        for change in (graphic_ledger or {}).get("changes") or []
-        if isinstance(change, Mapping)
-    }
+    graphic_by_evidence = _graphic_change_index(graphic_ledger)
     sides: dict[str, list[dict[str, Any]]] = {"LEFT": [], "RIGHT": []}
     trace = []
     for evidence in target.get("evidence_refs") or []:

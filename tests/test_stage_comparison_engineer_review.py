@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from backend.app.services.stage_comparison.engineer_review import (
     build_engineer_decisions,
     build_final_report,
@@ -73,6 +75,24 @@ def test_pending_is_not_in_final_report_and_rejected_stays_feedback():
     assert any(row["target_id"] == target for row in rejected["decisions"])
     assert rejected["decisions"][0]["finding_snapshot"]
     assert rejected["history"]  # pending state is retained, not deleted
+
+
+def test_review_evidence_cannot_be_approved_as_an_atomic_change():
+    unresolved = _atom("unresolved", "voltage", "220 В", "380 В")
+    unresolved["project_entity_ref"] = None
+    synthesis = synthesize_unified_changes(text_atoms=[unresolved])
+    target_id = synthesis["review_items"][0]["review_evidence_id"]
+
+    with pytest.raises(ValueError, match="resolved into an atomic change"):
+        build_engineer_decisions(
+            synthesis,
+            updates=[{
+                "target_id": target_id,
+                "decision": "APPROVED",
+                "author": "engineer",
+            }],
+            generated_at="fixed",
+        )
 
 
 def test_presentation_group_does_not_replace_row_decisions():

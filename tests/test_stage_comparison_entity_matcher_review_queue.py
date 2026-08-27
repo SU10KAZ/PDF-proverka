@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from copy import deepcopy
 
+import pytest
+
 from backend.app.services.stage_comparison.entity_matcher import (
     bind_atoms_to_entity_relations,
     build_early_entity_candidates,
@@ -95,7 +97,9 @@ def _synthesis_review_artifact():
         "review_evidence_id": "review-1",
         "atom_id": "text-unknown",
         "dimension": "UNKNOWN_DIMENSION",
+        "outcome": "REVIEW_REQUIRED",
         "reason_codes": ["dimension_unknown"],
+        "provenance": {"source_atom_outcome": "REVIEW_REQUIRED"},
     }
     return {
         "kind": "stage_comparison_unified_changes",
@@ -569,12 +573,13 @@ def test_generic_yes_cannot_resolve_unknown_change_without_typed_identity():
     assert resolution["resolution_complete"] is False
     assert resolution["missing_typed_fields"] == [
         "dimension",
+        "outcome",
         "project_entity_ref",
     ]
     assert question["context"]["typed_resolution_contract"] == {
         "version": "change-typed-resolution.v1",
         "generic_yes_allowed": False,
-        "required_fields": ["dimension", "project_entity_ref"],
+        "required_fields": ["dimension", "project_entity_ref", "outcome"],
         "accepted_fields": sorted(
             {
                 "dimension",
@@ -585,7 +590,6 @@ def test_generic_yes_cannot_resolve_unknown_change_without_typed_identity():
                 "outcome",
                 "before_value",
                 "after_value",
-                "selected_change_ids",
             }
         ),
     }
@@ -598,6 +602,7 @@ def test_generic_yes_cannot_resolve_unknown_change_without_typed_identity():
                 "typed_resolution": {
                     "dimension": "TYPE",
                     "project_entity_ref": "project:panel-1",
+                    "outcome": "MATERIAL_CHANGE",
                 },
             }
         },
@@ -621,6 +626,365 @@ def test_generic_yes_cannot_resolve_unknown_change_without_typed_identity():
     assert typed_resolution["resolution"] == "CONFIRMED"
     assert typed_resolution["resolution_complete"] is True
     assert typed_resolution["typed_resolution"]["dimension"] == "TYPE"
+
+
+def test_human_answer_contract_rejects_open_enums_invalid_selection_and_cardinality():
+    synthesis = _synthesis_review_artifact()
+    queue = build_review_queue(
+        sheet_relations=_sheet_artifact(),
+        synthesis=synthesis,
+        generated_at="fixed",
+    )
+    change_question = next(
+        item for item in queue["questions"]
+        if item["question_type"] == "CHANGE_REVIEW_EVIDENCE"
+    )
+    contested_question = next(
+        item for item in queue["questions"]
+        if item["question_type"] == "CHANGE_CONTESTED"
+    )
+    sheet_question = next(
+        item for item in queue["questions"]
+        if item["question_type"] == "SHEET_SPLIT"
+    )
+
+    with pytest.raises(ValueError, match="direction unsupported"):
+        build_human_decisions(
+            queue,
+            {change_question["question_id"]: {
+                "answer": "OTHER",
+                "typed_resolution": {"direction": "SIDEWAYS"},
+            }},
+        )
+    with pytest.raises(ValueError, match="resolve rather than preserve review"):
+        build_human_decisions(
+            queue,
+            {change_question["question_id"]: {
+                "answer": "OTHER",
+                "typed_resolution": {"outcome": "REVIEW_REQUIRED"},
+            }},
+        )
+    with pytest.raises(ValueError, match="must select offered changes"):
+        build_human_decisions(
+            queue,
+            {contested_question["question_id"]: {
+                "answer": "YES",
+                "typed_resolution": {"selected_change_ids": ["not-offered"]},
+            }},
+        )
+    with pytest.raises(ValueError, match="conflicts with cardinality"):
+        build_human_decisions(
+            queue,
+            {sheet_question["question_id"]: {
+                "answer": "OTHER",
+                "explicit_candidate": {
+                    "left_pages": [10],
+                    "right_pages": [24, 25],
+                    "relation_type": "MATCHED",
+                },
+            }},
+        )
+
+    legacy_invalid = build_human_decisions(
+        queue,
+        {change_question["question_id"]: {
+            "answer": "OTHER",
+            "typed_resolution": {
+                "dimension": "TYPE",
+                "project_entity_ref": "project:panel-1",
+                "outcome": "MATERIAL_CHANGE",
+            },
+        }},
+    )
+    legacy_invalid["decisions"][0]["typed_resolution"]["outcome"] = (
+        "REVIEW_REQUIRED"
+    )
+    pending = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=legacy_invalid,
+        generated_at="fixed",
+    )
+    assert change_question["question_id"] in {
+        item["question_id"] for item in pending["questions"]
+    }
+
+
+def test_typed_answer_fields_are_scoped_to_the_exact_change_question():
+    synthesis = _synthesis_review_artifact()
+    queue = build_review_queue(synthesis=synthesis, generated_at="fixed")
+    review_question = next(
+        item for item in queue["questions"]
+        if item["question_type"] == "CHANGE_REVIEW_EVIDENCE"
+    )
+    contested_question = next(
+        item for item in queue["questions"]
+        if item["question_type"] == "CHANGE_CONTESTED"
+    )
+
+    assert contested_question["context"]["typed_resolution_contract"] == {
+        "version": "change-typed-resolution.v1",
+        "generic_yes_allowed": False,
+        "required_fields": ["selected_change_ids"],
+        "accepted_fields": ["selected_change_ids"],
+    }
+    with pytest.raises(ValueError, match="unsupported fields"):
+        build_human_decisions(
+            queue,
+            {review_question["question_id"]: {
+                "answer": "OTHER",
+                "typed_resolution": {"selected_change_ids": ["change-a"]},
+            }},
+        )
+    with pytest.raises(ValueError, match="selected_refs is unsupported"):
+        build_human_decisions(
+            queue,
+            {review_question["question_id"]: {
+                "answer": "YES",
+                "selected_refs": ["change-a"],
+            }},
+        )
+    with pytest.raises(ValueError, match="semantically empty"):
+        build_human_decisions(
+            queue,
+            {review_question["question_id"]: {
+                "answer": "OTHER",
+                "typed_resolution": {},
+            }},
+        )
+    with pytest.raises(ValueError, match="unsupported fields"):
+        build_human_decisions(
+            queue,
+            {contested_question["question_id"]: {
+                "answer": "OTHER",
+                "typed_resolution": {"dimension": "TYPE"},
+            }},
+        )
+
+    valid = build_human_decisions(
+        queue,
+        {review_question["question_id"]: {
+            "answer": "OTHER",
+            "typed_resolution": {
+                "dimension": "TYPE",
+                "project_entity_ref": "project:panel-1",
+                "outcome": "MATERIAL_CHANGE",
+            },
+        }},
+    )
+    legacy_foreign = deepcopy(valid)
+    legacy_foreign["decisions"][0]["typed_resolution"][
+        "selected_change_ids"
+    ] = ["change-a"]
+    pending = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=legacy_foreign,
+        generated_at="fixed",
+    )
+    assert review_question["question_id"] in {
+        item["question_id"] for item in pending["questions"]
+    }
+
+    # The short-lived API contract used to append an empty selection to an
+    # otherwise valid atom resolution.  Preserve that valid legacy shape.
+    legacy_synthetic_empty = deepcopy(valid)
+    legacy_synthetic_empty["decisions"][0]["typed_resolution"][
+        "selected_change_ids"
+    ] = []
+    resolved = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=legacy_synthetic_empty,
+        generated_at="fixed",
+    )
+    assert review_question["question_id"] not in {
+        item["question_id"] for item in resolved["questions"]
+    }
+
+    legacy_resolution_alias = build_human_decisions(
+        queue,
+        {review_question["question_id"]: {
+            "answer": "OTHER",
+            "resolution": {
+                "dimension": "TYPE",
+                "project_entity_ref": "project:panel-1",
+                "outcome": "MATERIAL_CHANGE",
+            },
+        }},
+    )
+    assert legacy_resolution_alias["decisions"][0]["typed_resolution"] == {
+        "dimension": "TYPE",
+        "project_entity_ref": "project:panel-1",
+        "outcome": "MATERIAL_CHANGE",
+    }
+
+
+@pytest.mark.parametrize(
+    ("answer_code", "expected_resolution"),
+    [("YES", "CONFIRMED"), ("OTHER", "TYPED_RESOLUTION")],
+)
+def test_contested_change_accepts_validated_legacy_selected_refs(
+    answer_code, expected_resolution
+):
+    synthesis = _synthesis_review_artifact()
+    queue = build_review_queue(synthesis=synthesis, generated_at="fixed")
+    question = next(
+        item for item in queue["questions"]
+        if item["question_type"] == "CHANGE_CONTESTED"
+    )
+
+    decisions = build_human_decisions(
+        queue,
+        {question["question_id"]: {
+            "answer": answer_code,
+            "selected_refs": ["change-a"],
+        }},
+        generated_at="fixed",
+    )
+
+    decision = decisions["decisions"][0]
+    assert decision["selected_refs"] == ["change-a"]
+    assert decision["typed_resolution"] is None
+    pending = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=decisions,
+        generated_at="fixed",
+    )
+    assert question["question_id"] not in {
+        item["question_id"] for item in pending["questions"]
+    }
+    resolution = apply_human_decisions(
+        queue,
+        decisions,
+        synthesis=synthesis,
+        generated_at="fixed",
+    )["change_resolutions"][0]
+    assert resolution["resolution"] == expected_resolution
+    assert resolution["resolution_complete"] is True
+
+    with pytest.raises(ValueError, match="must select offered changes"):
+        build_human_decisions(
+            queue,
+            {question["question_id"]: {
+                "answer": "YES",
+                "selected_refs": ["not-offered"],
+            }},
+        )
+    for selection_payload in (
+        {"selected_refs": ["change-a", "change-b"]},
+        {
+            "typed_resolution": {
+                "selected_change_ids": ["change-a", "change-b"],
+            }
+        },
+    ):
+        with pytest.raises(ValueError, match="proper subset"):
+            build_human_decisions(
+                queue,
+                {question["question_id"]: {
+                    "answer": "YES",
+                    **selection_payload,
+                }},
+            )
+    with pytest.raises(ValueError, match="conflicts with selected_refs"):
+        build_human_decisions(
+            queue,
+            {question["question_id"]: {
+                "answer": "YES",
+                "selected_refs": ["change-a"],
+                "typed_resolution": {
+                    "selected_change_ids": ["change-b"],
+                },
+            }},
+        )
+
+    typed = build_human_decisions(
+        queue,
+        {question["question_id"]: {
+            "answer": "YES",
+            "typed_resolution": {
+                "selected_change_ids": ["change-b"],
+            },
+        }},
+        generated_at="fixed",
+    )
+    assert typed["decisions"][0]["selected_refs"] == []
+    assert typed["decisions"][0]["typed_resolution"] == {
+        "selected_change_ids": ["change-b"]
+    }
+    typed_pending = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=typed,
+        generated_at="fixed",
+    )
+    assert question["question_id"] not in {
+        item["question_id"] for item in typed_pending["questions"]
+    }
+
+    legacy_all = deepcopy(decisions)
+    legacy_all["decisions"][0]["selected_refs"] = ["change-a", "change-b"]
+    unresolved = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=legacy_all,
+        generated_at="fixed",
+    )
+    assert question["question_id"] in {
+        item["question_id"] for item in unresolved["questions"]
+    }
+
+
+def test_uncertain_explicit_sheet_other_cannot_resolve_review():
+    queue = build_review_queue(
+        sheet_relations=_sheet_artifact(), generated_at="fixed"
+    )
+    question = queue["questions"][0]
+
+    with pytest.raises(ValueError, match="relation_type unsupported"):
+        build_human_decisions(
+            queue,
+            {question["question_id"]: {
+                "answer": "OTHER",
+                "explicit_candidate": {
+                    "left_pages": [10, 11],
+                    "right_pages": [24, 25],
+                    "relation_type": "UNCERTAIN",
+                },
+            }},
+        )
+
+    valid = build_human_decisions(
+        queue,
+        {question["question_id"]: {
+            "answer": "OTHER",
+            "explicit_candidate": {
+                "left_pages": [10],
+                "right_pages": [24, 25],
+                "relation_type": "SPLIT",
+            },
+        }},
+        generated_at="fixed",
+    )
+    legacy_uncertain = deepcopy(valid)
+    legacy_uncertain["decisions"][0]["explicit_candidate"] = {
+        "left_pages": [10, 11],
+        "right_pages": [24, 25],
+        "relation_type": "UNCERTAIN",
+    }
+    pending = build_review_queue(
+        sheet_relations=_sheet_artifact(),
+        human_decisions=legacy_uncertain,
+        generated_at="fixed",
+    )
+    assert question["question_id"] in {
+        item["question_id"] for item in pending["questions"]
+    }
+    effective = apply_human_decisions(
+        queue,
+        legacy_uncertain,
+        sheet_relations=_sheet_artifact(),
+        generated_at="fixed",
+    )["effective_sheet_relations"]["relations"][0]
+    assert effective["status"] == "POSSIBLE"
+    assert effective["relation_type"] == "UNCERTAIN"
+    assert effective["review_required"] is True
 
 
 def test_unchanged_answer_is_not_reasked_but_changed_dependency_makes_it_stale():

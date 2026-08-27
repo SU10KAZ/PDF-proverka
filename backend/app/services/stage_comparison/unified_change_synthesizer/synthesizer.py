@@ -134,6 +134,11 @@ def _review_item(
         "content_signature": content_signature(evidence),
         "provenance": {
             "source_atom": atom["provenance"],
+            # The public review-item outcome is deliberately always
+            # REVIEW_REQUIRED.  Preserve the raw atom outcome separately so
+            # the human-resolution contract can require an explicit outcome
+            # only when that source fact was itself unresolved.
+            "source_atom_outcome": atom["outcome"],
             "synthesis": "REVIEW_EVIDENCE_PRESERVED",
         },
     }
