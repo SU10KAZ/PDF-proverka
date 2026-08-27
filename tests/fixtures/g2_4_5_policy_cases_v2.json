@@ -1,0 +1,656 @@
+{
+  "schema_version": "g2.4.5-policy-cases-v2",
+  "policy_contract": "unified-change-policy-v1",
+  "corpus_path": "docs/research/g2_4_5_policy_corpus_v2.md",
+  "graphic_truth_root": "experiments/g2_4_4_3_correct_sides/ios",
+  "expected_verdict_distribution": {
+    "SINGLE_SOURCE": 8,
+    "REVIEW_REQUIRED": 5,
+    "UNRELATED": 1
+  },
+  "cases": [
+    {
+      "case_id": "A1",
+      "title": "TEXT documentation split versus GRAPHIC group quantity",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_e49035bd602be7cb"]
+        },
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_6edbdea8fb72"]
+        }
+      ],
+      "observed_facts": {
+        "text_group_id": "link_4f7238b8c9ed",
+        "text_pages": {"LEFT": [4], "RIGHT": [4]},
+        "graphic_pages_0based": {"LEFT": 0, "RIGHT": 0},
+        "graphic_count_change": [27, 30]
+      },
+      "policy_calls": [],
+      "expected_policy_facts": [
+        "No compatible TEXT/GRAPHIC scope is proven",
+        "Documentation structure is not a closed G2.4.5 dimension"
+      ],
+      "reason": "The v1 corpus inferred same scope and complementary dimensions. The stored TEXT atom is on page 4 while the GRAPHIC truth pair is page index 0, and mapping documentation structure to project STRUCTURE would invent a dimension.",
+      "representability": "NOT_REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A2",
+      "title": "GRAPHIC node type change without TEXT evidence",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_1b601fa171f2"]
+        }
+      ],
+      "observed_facts": {"transition": ["QS1", "QF3"], "confidence": 0.92},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {
+            "text_state": "ABSENT",
+            "graphic_state": "VALID",
+            "scope_compatible": null,
+            "subject_relation": "UNKNOWN",
+            "document_binding_state": "DOCUMENT_BINDING_UNPROVEN",
+            "graphic_dimension": "TYPE",
+            "graphic_direction": "REPLACED",
+            "coverage_by_side": {"LEFT": "CHECKED", "RIGHT": "CHECKED"}
+          },
+          "expected": {
+            "relation_status": "SINGLE_SOURCE",
+            "outcome": "MATERIAL_CHANGE",
+            "reason_codes": ["second_source_has_no_valid_evidence"]
+          }
+        }
+      ],
+      "expected_policy_facts": ["GRAPHIC remains a single-source fact"],
+      "reason": "No TEXT evidence for the section-tie type transition is present; cross-source assumptions are intentionally unproven and do not affect the single-source result.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A3",
+      "title": "TEXT review fact while GRAPHIC was not checked",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_b9db67e604bed43e"]
+        }
+      ],
+      "observed_facts": {"text_source_status": "REMOVED", "text_stage5_class": "REVIEW"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {
+            "text_state": "VALID",
+            "graphic_state": "NOT_CHECKED",
+            "scope_compatible": null,
+            "subject_relation": "UNKNOWN",
+            "document_binding_state": "DOCUMENT_BINDING_UNPROVEN",
+            "text_outcome": "REVIEW_REQUIRED",
+            "text_dimension": "PARAMETER"
+          },
+          "expected": {
+            "relation_status": "SINGLE_SOURCE",
+            "outcome": "REVIEW_REQUIRED",
+            "reason_codes": ["second_source_has_no_valid_evidence"]
+          }
+        }
+      ],
+      "expected_policy_facts": ["NOT_CHECKED is silence, never contradiction"],
+      "reason": "The TEXT classifier requires review and the GRAPHIC route supplied no evidence.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A4",
+      "title": "TEXT parameter fact outside GRAPHIC observability",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_36b401845313b4bb"]
+        }
+      ],
+      "observed_facts": {"dimension": "PARAMETER", "graphic_observability": "NOT_APPLICABLE"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {
+            "text_state": "VALID",
+            "graphic_state": "NOT_APPLICABLE",
+            "scope_compatible": null,
+            "subject_relation": "UNKNOWN",
+            "document_binding_state": "DOCUMENT_BINDING_UNPROVEN",
+            "text_outcome": "REVIEW_REQUIRED",
+            "text_dimension": "PARAMETER",
+            "graphic_dimension": "PARAMETER"
+          },
+          "expected": {
+            "relation_status": "SINGLE_SOURCE",
+            "outcome": "REVIEW_REQUIRED",
+            "reason_codes": ["second_source_has_no_valid_evidence"]
+          }
+        }
+      ],
+      "expected_policy_facts": ["PARAMETER cannot become GRAPHIC CHECKED"],
+      "reason": "graphic-coverage-policy-v2 declares PARAMETER unobservable.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A5",
+      "title": "Coverage is dimension-specific for one GRAPHIC subject",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["blk_2d72a6705eaf4d8c9ee1d6ff459b15a6", "blk_039909ec039649a1b8209f059c95167b"]
+        }
+      ],
+      "observed_facts": {"subject": "SECTION_1", "TYPE": "CHECKED", "CONNECTION": "NOT_CHECKED"},
+      "policy_calls": [
+        {
+          "function": "check_source_validity",
+          "inputs": {
+            "source_valid": true,
+            "coverage_by_side": {"LEFT": "CHECKED", "RIGHT": "CHECKED"},
+            "document_binding_state": "DOCUMENT_BINDING_PROVEN",
+            "graphic_dimension": "TYPE"
+          },
+          "expected": {"state": "PASS", "reason_codes": ["both_sides_checked_under_proven_binding"]}
+        },
+        {
+          "function": "check_source_validity",
+          "inputs": {
+            "source_valid": true,
+            "coverage_by_side": {"LEFT": "NOT_CHECKED", "RIGHT": "NOT_CHECKED"},
+            "document_binding_state": "DOCUMENT_BINDING_PROVEN",
+            "graphic_dimension": "CONNECTION"
+          },
+          "expected": {"state": "FAIL", "reason_codes": ["left_coverage_not_checked", "right_coverage_not_checked"]}
+        }
+      ],
+      "expected_policy_facts": ["M7 passes for TYPE and fails for CONNECTION"],
+      "reason": "This is a coverage-gate case, not a TEXT/GRAPHIC relation verdict.",
+      "representability": "POLICY_FACTS_ONLY_IN_V1"
+    },
+    {
+      "case_id": "A6",
+      "title": "One TEXT identity has two GRAPHIC candidates on RIGHT",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_e49035bd602be7cb"]
+        }
+      ],
+      "observed_facts": {"text_count": 1, "graphic_count": 2, "side": "RIGHT"},
+      "policy_calls": [
+        {
+          "function": "check_cardinality_safety",
+          "inputs": {"text_count": 1, "graphic_count": 2},
+          "expected": {"state": "FAIL", "reason_codes": ["one_to_many_cardinality_ambiguous"]}
+        }
+      ],
+      "expected_policy_facts": ["M8 fails one-to-many cardinality"],
+      "reason": "The corrected orientation moves the two ambiguous VRU_1 candidates to RIGHT; no overall relation is inferred.",
+      "representability": "POLICY_FACTS_ONLY_IN_V1"
+    },
+    {
+      "case_id": "A7",
+      "title": "MSB text identity has eight GRAPHIC candidates",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_b9db67e604bed43e"]
+        }
+      ],
+      "observed_facts": {"text_count": 1, "graphic_count": 8, "link_relation": "UNKNOWN", "side": "RIGHT"},
+      "policy_calls": [
+        {
+          "function": "check_cardinality_safety",
+          "inputs": {"text_count": 1, "graphic_count": 8},
+          "expected": {"state": "FAIL", "reason_codes": ["one_to_many_cardinality_ambiguous"]}
+        }
+      ],
+      "expected_policy_facts": ["M8 fails", "M3 cannot derive M2"],
+      "reason": "Only the cardinality fact is expressible without inventing a proven M2 subject relation; the v1 unrelated verdict is not replayed.",
+      "representability": "POLICY_FACTS_ONLY_IN_V1"
+    },
+    {
+      "case_id": "A8",
+      "title": "Retired GRAPHIC detail-level case",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": []
+        }
+      ],
+      "observed_facts": {"DETAIL_LEVEL_INCREASED": 0},
+      "policy_calls": [],
+      "expected_policy_facts": ["No GRAPHIC DETAIL_LEVEL_INCREASED event exists in corrected truth"],
+      "reason": "The two old detail event IDs belonged to reversed artifacts and are deliberately absent from v2.",
+      "representability": "NOT_REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A9",
+      "title": "Tempting count association without subject proof",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_f9464ad3b067a5ba"]
+        },
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_6edbdea8fb72"]
+        }
+      ],
+      "observed_facts": {"text_removed_sheets": 5, "graphic_group_delta": 3, "subject_relation": "UNKNOWN"},
+      "policy_calls": [],
+      "expected_policy_facts": ["No M2 fact exists", "Counts 5 and 3 are not reconciled"],
+      "reason": "Creating a two-source candidate would itself invent the subject association.",
+      "representability": "NOT_REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A10",
+      "title": "City stamp text versus section-tie type change",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_8bd289a59355afae"]
+        },
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_1b601fa171f2"]
+        }
+      ],
+      "observed_facts": {"scope_compatible": true, "subject_relation": "DIFFERENT_ENTITY"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {
+            "text_state": "VALID",
+            "graphic_state": "VALID",
+            "scope_compatible": true,
+            "subject_relation": "DIFFERENT_ENTITY",
+            "document_binding_state": "DOCUMENT_BINDING_PROVEN",
+            "text_outcome": "DETAIL_ONLY",
+            "graphic_outcome": "MATERIAL_CHANGE",
+            "text_dimension": "UNKNOWN_DIMENSION",
+            "graphic_dimension": "TYPE",
+            "coverage_by_side": {"LEFT": "CHECKED", "RIGHT": "CHECKED"}
+          },
+          "expected": {
+            "relation_status": "UNRELATED",
+            "outcome": "MATERIAL_CHANGE",
+            "reason_codes": ["subjects_unrelated"]
+          }
+        }
+      ],
+      "expected_policy_facts": ["Equal scope never substitutes for M2"],
+      "reason": "A city stamp and an electrical section-tie device are provably different subjects.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A11",
+      "title": "Uncertain reserve-count GRAPHIC observation",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_1d5f0b80d8a1"]
+        }
+      ],
+      "observed_facts": {"graphic_confidence": 0.35, "graphic_state": "REVIEW_REQUIRED"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {
+            "text_state": "ABSENT",
+            "graphic_state": "REVIEW_REQUIRED",
+            "scope_compatible": null,
+            "subject_relation": "UNKNOWN",
+            "document_binding_state": "DOCUMENT_BINDING_UNPROVEN",
+            "graphic_dimension": "QUANTITY"
+          },
+          "expected": {"relation_status": null, "outcome": "REVIEW_REQUIRED", "reason_codes": ["source_fact_requires_review"]}
+        }
+      ],
+      "expected_policy_facts": ["Comparator uncertainty remains review-required"],
+      "reason": "The comparator explicitly refuses to assert a material count change.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A12",
+      "title": "Unresolved GRAPHIC correspondence",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_a7346590ab6f"]
+        }
+      ],
+      "observed_facts": {"graphic_confidence": 0.49, "graphic_state": "REVIEW_REQUIRED"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {
+            "text_state": "ABSENT",
+            "graphic_state": "REVIEW_REQUIRED",
+            "scope_compatible": null,
+            "subject_relation": "UNKNOWN",
+            "document_binding_state": "DOCUMENT_BINDING_UNPROVEN",
+            "graphic_dimension": "STRUCTURE"
+          },
+          "expected": {"relation_status": null, "outcome": "REVIEW_REQUIRED", "reason_codes": ["source_fact_requires_review"]}
+        }
+      ],
+      "expected_policy_facts": ["Ambiguous matching cannot be upgraded to a fact"],
+      "reason": "The corrected comparator emits an uncertainty event, not added/removed nodes.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A13",
+      "title": "Checked unchanged GRAPHIC subject",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["blk_2d72a6705eaf4d8c9ee1d6ff459b15a6", "blk_039909ec039649a1b8209f059c95167b"]
+        }
+      ],
+      "observed_facts": {"dimension": "TYPE", "coverage": {"LEFT": "CHECKED", "RIGHT": "CHECKED"}, "change_event": "ABSENT"},
+      "policy_calls": [
+        {
+          "function": "check_source_validity",
+          "inputs": {
+            "source_valid": true,
+            "coverage_by_side": {"LEFT": "CHECKED", "RIGHT": "CHECKED"},
+            "document_binding_state": "DOCUMENT_BINDING_PROVEN",
+            "graphic_dimension": "TYPE"
+          },
+          "expected": {"state": "PASS", "reason_codes": ["both_sides_checked_under_proven_binding"]}
+        }
+      ],
+      "expected_policy_facts": ["M7 permits a checked no-change observation"],
+      "reason": "A coverage-only no-change fact is not a TEXT/GRAPHIC relation verdict.",
+      "representability": "POLICY_FACTS_ONLY_IN_V1"
+    },
+    {
+      "case_id": "A14",
+      "title": "Repeated-group quantity versus individual entity",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_6edbdea8fb72"]
+        }
+      ],
+      "observed_facts": {"event_subject": "repeated_node_group", "candidate_subject": "individual_entity"},
+      "policy_calls": [],
+      "expected_policy_facts": ["Individual quantity coverage is NOT_APPLICABLE"],
+      "reason": "The live relation function is TEXT×GRAPHIC; constructing a GRAPHIC event-to-GRAPHIC entity pair would exceed that contract.",
+      "representability": "NOT_REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A15",
+      "title": "MSB documentation facts versus GRAPHIC contents",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["ev_6b149f847c6443f7", "ev_af2f35ca1df8b79a", "ev_6ff5660f5421faad"]
+        },
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_1d5f0b80d8a1", "chg_6edbdea8fb72", "chg_1b601fa171f2", "chg_a7346590ab6f"]
+        }
+      ],
+      "observed_facts": {"text_fact_count": 3, "graphic_change_count": 4, "subject_relation": "UNKNOWN"},
+      "policy_calls": [],
+      "expected_policy_facts": ["No M2 fact exists", "No resolved common scope is established"],
+      "reason": "The v1 complementary verdict supplied a relationship that the artifacts do not prove.",
+      "representability": "NOT_REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "A16",
+      "title": "Negative control: real contradiction",
+      "source_references": [
+        {"path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json", "ids": []}
+      ],
+      "observed_facts": {"real_candidate_count": 0},
+      "policy_calls": [],
+      "expected_policy_facts": ["CONTRADICTORY is not present in the real pair"],
+      "reason": "No real same-scope, same-subject, same-dimension, checked pair with opposite directions exists.",
+      "representability": "NEGATIVE_CONTROL"
+    },
+    {
+      "case_id": "A17",
+      "title": "Negative control: automatic merge",
+      "source_references": [
+        {"path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json", "ids": []}
+      ],
+      "observed_facts": {"real_candidate_count": 0, "merge_executor_present": false},
+      "policy_calls": [],
+      "expected_policy_facts": ["G2.4.5 exposes no merge executor"],
+      "reason": "The policy reports facts only; merge is neither an outcome nor a real corpus candidate.",
+      "representability": "NEGATIVE_CONTROL"
+    },
+    {
+      "case_id": "A18",
+      "title": "One aggregate TEXT record versus four GRAPHIC events",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p26c08b83a6/high_level_project_changes.json",
+          "ids": ["hlc_d3913c0ab7b930d2"]
+        },
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_1d5f0b80d8a1", "chg_6edbdea8fb72", "chg_1b601fa171f2", "chg_a7346590ab6f"]
+        }
+      ],
+      "observed_facts": {"text_count": 1, "graphic_count": 4},
+      "policy_calls": [
+        {
+          "function": "check_cardinality_safety",
+          "inputs": {"text_count": 1, "graphic_count": 4},
+          "expected": {"state": "FAIL", "reason_codes": ["one_to_many_cardinality_ambiguous"]}
+        }
+      ],
+      "expected_policy_facts": ["M8 fails one-to-four cardinality"],
+      "reason": "Corrected GRAPHIC truth has four changes, not six.",
+      "representability": "POLICY_FACTS_ONLY_IN_V1"
+    },
+    {
+      "case_id": "A19",
+      "title": "GRAPHIC by GRAPHIC association",
+      "source_references": [
+        {
+          "path": "experiments/g2_4_4_3_correct_sides/ios/comparison_result.json",
+          "ids": ["chg_1d5f0b80d8a1", "chg_a7346590ab6f"]
+        }
+      ],
+      "observed_facts": {"left_source": "GRAPHIC", "right_source": "GRAPHIC", "old_event_ids_retired": true},
+      "policy_calls": [],
+      "expected_policy_facts": ["TEXT×GRAPHIC relation API is not called"],
+      "reason": "G2.4.5 v1 has no GRAPHIC×GRAPHIC relation contract, and the old DETAIL_LEVEL_INCREASED event IDs no longer exist.",
+      "representability": "NOT_REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B1",
+      "title": "AR parameter change with no GRAPHIC source",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p570d156f57/high_level_project_changes.json",
+          "ids": ["hlc_2cece3c61281e7f4"]
+        }
+      ],
+      "observed_facts": {"text_state": "VALID", "graphic_state": "ABSENT", "dimension": "PARAMETER"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "VALID", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN", "text_dimension": "PARAMETER"},
+          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "MATERIAL_CHANGE", "reason_codes": ["second_source_has_no_valid_evidence"]}
+        }
+      ],
+      "expected_policy_facts": ["Missing GRAPHIC evidence does not lower TEXT confidence"],
+      "reason": "No SYSTEM_GRAPH artifact exists for the AR pair.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B2",
+      "title": "AR space-program change with no GRAPHIC source",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p570d156f57/high_level_project_changes.json",
+          "ids": ["hlc_81baf0fc55420526"]
+        }
+      ],
+      "observed_facts": {"text_state": "VALID", "graphic_state": "ABSENT", "dimension": "SPACE"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "VALID", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN", "text_dimension": "SPACE"},
+          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "MATERIAL_CHANGE", "reason_codes": ["second_source_has_no_valid_evidence"]}
+        }
+      ],
+      "expected_policy_facts": ["SPACE remains TEXT-only under current GRAPHIC policy"],
+      "reason": "The TEXT fact has two-sided deterministic proof; GRAPHIC is absent.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B3",
+      "title": "AR TEXT detail increase with no GRAPHIC source",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p570d156f57/high_level_project_changes.json",
+          "ids": ["hlc_78243ba30fcf16c1", "ev_2988677dcc6f4049"]
+        }
+      ],
+      "observed_facts": {"text_outcome": "DETAIL_ONLY", "graphic_state": "ABSENT"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "VALID", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN", "text_outcome": "DETAIL_ONLY"},
+          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "DETAIL_ONLY", "reason_codes": ["second_source_has_no_valid_evidence"]}
+        }
+      ],
+      "expected_policy_facts": ["TEXT detail remains separate from material facts"],
+      "reason": "This is the retained TEXT provenance for detail-level material; it is not joined to corrected GRAPHIC truth.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B4",
+      "title": "AR fail-closed incompatible AI type",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p570d156f57/high_level_project_changes.json",
+          "ids": ["hlc_150a5d10541e7822"]
+        }
+      ],
+      "observed_facts": {"text_state": "REVIEW_REQUIRED", "graphic_state": "ABSENT"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "REVIEW_REQUIRED", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN"},
+          "expected": {"relation_status": null, "outcome": "REVIEW_REQUIRED", "reason_codes": ["source_fact_requires_review"]}
+        }
+      ],
+      "expected_policy_facts": ["Upstream review status is preserved"],
+      "reason": "The classifier failed closed and the policy does not upgrade it.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B5",
+      "title": "AR unproven material removal",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p570d156f57/high_level_project_changes.json",
+          "ids": ["hlc_d817e57d3fba02ba"]
+        }
+      ],
+      "observed_facts": {"text_state": "REVIEW_REQUIRED", "graphic_state": "ABSENT"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "REVIEW_REQUIRED", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN"},
+          "expected": {"relation_status": null, "outcome": "REVIEW_REQUIRED", "reason_codes": ["source_fact_requires_review"]}
+        }
+      ],
+      "expected_policy_facts": ["Absence in one fragment is not promoted to removal"],
+      "reason": "The source itself says context is insufficient.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B6",
+      "title": "AR room present only on LEFT",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p570d156f57/high_level_project_changes.json",
+          "ids": ["ev_2168b0cfc9061d3b"]
+        }
+      ],
+      "observed_facts": {"text_source_status": "REMOVED", "dimension": "UNKNOWN_DIMENSION"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "VALID", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN", "text_dimension": "UNKNOWN_DIMENSION", "text_direction": "REMOVED"},
+          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "MATERIAL_CHANGE", "reason_codes": ["second_source_has_no_valid_evidence"]}
+        }
+      ],
+      "expected_policy_facts": ["Unknown atom dimension is not guessed from aggregate type"],
+      "reason": "The atom proves one-sided presence, but no production field resolves its dimension.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B7",
+      "title": "AR NO_HIGH_LEVEL_CHANGE aggregate",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p570d156f57/high_level_project_changes.json",
+          "ids": ["hlc_a95030b3a8533021"]
+        }
+      ],
+      "observed_facts": {"source_type": "NO_HIGH_LEVEL_CHANGE", "atom_count": 39},
+      "policy_calls": [],
+      "expected_policy_facts": ["NO_CHANGE is not an Outcome enum in G2.4.5 v1"],
+      "reason": "Calling the record VALID/MATERIAL, as the old test did, would replace the factual negative assertion with a different state.",
+      "representability": "NOT_REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B8",
+      "title": "AR-2 TEXT-only parameter proof",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p16b108b9f5/high_level_project_changes.json",
+          "ids": ["hlc_2b9706e6a87dd73e"]
+        }
+      ],
+      "observed_facts": {"text_state": "VALID", "graphic_state": "ABSENT", "dimension": "PARAMETER"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "VALID", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN", "text_dimension": "PARAMETER"},
+          "expected": {"relation_status": "SINGLE_SOURCE", "outcome": "MATERIAL_CHANGE", "reason_codes": ["second_source_has_no_valid_evidence"]}
+        }
+      ],
+      "expected_policy_facts": ["The contract works with only a TEXT source"],
+      "reason": "No entity, scope, coverage, or GRAPHIC artifacts exist for this pair.",
+      "representability": "REPRESENTABLE_IN_V1"
+    },
+    {
+      "case_id": "B9",
+      "title": "AR-2 unresolved TEXT facts",
+      "source_references": [
+        {
+          "path": "comparison/sessions/121d764109184c13/pairs/p16b108b9f5/high_level_project_changes.json",
+          "ids": ["hlc_1111f3fb655e9c76"]
+        }
+      ],
+      "observed_facts": {"text_state": "REVIEW_REQUIRED", "graphic_state": "ABSENT"},
+      "policy_calls": [
+        {
+          "function": "evaluate_source_relation",
+          "inputs": {"text_state": "REVIEW_REQUIRED", "graphic_state": "ABSENT", "scope_compatible": null, "subject_relation": "UNKNOWN", "document_binding_state": "DOCUMENT_BINDING_UNPROVEN"},
+          "expected": {"relation_status": null, "outcome": "REVIEW_REQUIRED", "reason_codes": ["source_fact_requires_review"]}
+        }
+      ],
+      "expected_policy_facts": ["Review-required TEXT remains review-required"],
+      "reason": "The pair has unresolved source-link/context facts and no GRAPHIC evidence.",
+      "representability": "REPRESENTABLE_IN_V1"
+    }
+  ]
+}
