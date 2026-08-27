@@ -97,14 +97,27 @@ describe('Разметка выпадашки', () => {
         expect(item).not.toMatch(/dash-object-picker__check" v-if=/);
     });
 
-    it('у цифр нет ни подписей, ни всплывающих слов, ни столбца «Всего»', () => {
+    it('в строке нет ни подписей, ни столбца «Всего» — только цифры', () => {
         const item = html.match(/<div v-for="obj in sortedObjectsList"[\s\S]*?<\/div>\s*<div class="dash-object-picker__add"/)[0];
         const badges = item.match(/<span class="obj-badge[^>]*>/g);
         expect(badges).toHaveLength(2);
-        for (const b of badges) expect(b).not.toMatch(/title=/);
-        const visible = item.replace(/<!--[\s\S]*?-->/g, '');   // без html-комментариев
+        // видимый текст строки = имя объекта, две цифры и галочка
+        const visible = item
+            .replace(/<!--[\s\S]*?-->/g, '')          // html-комментарии
+            .replace(/<[^>]*>/g, ' ');                 // атрибуты тегов (в т.ч. title)
         expect(visible).not.toMatch(/Не запускались|Нет решений|Всего/);
-        expect(visible).not.toMatch(/'total'/);
+        expect(item).not.toMatch(/'total'/);
+    });
+
+    it('что значит цифра — объясняет подсказка при наведении', () => {
+        const item = html.match(/<div v-for="obj in sortedObjectsList"[\s\S]*?<\/div>\s*<div class="dash-object-picker__add"/)[0];
+        const todo = item.match(/<span class="obj-badge obj-badge--todo"[\s\S]*?>/)[0];
+        const proc = item.match(/<span class="obj-badge obj-badge--proc"[\s\S]*?>/)[0];
+        expect(todo).toMatch(/:title="[^"]*Не запускались на проверку/);
+        expect(proc).toMatch(/:title="[^"]*Нет решений эксперта/);
+        // в подсказке — и само число, чтобы она отвечала на «а сколько это»
+        expect(todo).toMatch(/objectStatOf\(obj\.id, 'not_started'\)/);
+        expect(proc).toMatch(/objectStatOf\(obj\.id, 'no_decisions'\)/);
     });
 });
 

@@ -164,13 +164,16 @@
                          :class="{'dash-object-picker__item--active': obj.id === currentObjectId}"
                          @click="switchObject(obj.id)">
                         <span class="dash-object-picker__name">{{ obj.name }}</span>
-                        <!-- Только две цифры: слов и столбца «Всего» тут быть не должно
-                             (постановка Андрея Ивановича 2026-08-27) — ни подписей,
-                             ни title-подсказок. Оранжевая — «не запускались на
+                        <!-- В строке — только две цифры: подписей и столбца «Всего»
+                             тут быть не должно (постановка Андрея Ивановича
+                             2026-08-27). Что значит цифра, объясняет подсказка
+                             при наведении. Оранжевая — «не запускались на
                              проверку», бирюзовая — «нет решений эксперта». -->
                         <span class="dash-object-picker__counts" v-if="objectStatOf(obj.id, 'not_started') !== null">
-                            <span class="obj-badge obj-badge--todo">{{ objectStatOf(obj.id, 'not_started') }}</span>
-                            <span class="obj-badge obj-badge--proc">{{ objectStatOf(obj.id, 'no_decisions') }}</span>
+                            <span class="obj-badge obj-badge--todo"
+                                  :title="'Не запускались на проверку: ' + objectStatOf(obj.id, 'not_started') + ' — проектов, у которых на последней версии аудит ни разу не запускался'">{{ objectStatOf(obj.id, 'not_started') }}</span>
+                            <span class="obj-badge obj-badge--proc"
+                                  :title="'Нет решений эксперта: ' + objectStatOf(obj.id, 'no_decisions') + ' — проектов, которые эксперт не отработал полностью на последней версии (включая те, где аудит не запускался)'">{{ objectStatOf(obj.id, 'no_decisions') }}</span>
                         </span>
                         <!-- Галочка рендерится всегда (пустая у неактивных), иначе
                              столбцы счётчиков съезжают на строке текущего объекта. -->
