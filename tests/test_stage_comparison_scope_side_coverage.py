@@ -55,9 +55,10 @@ from backend.app.services.stage_comparison.unified_entity_bridge.text_entity_pro
 
 
 ROOT = Path(__file__).resolve().parents[1]
-LEFT_GRAPH_PATH = ROOT / "experiments/g2_dense_sectioned_board/left_system_graph.json"
-RIGHT_GRAPH_PATH = ROOT / "experiments/g2_dense_sectioned_board/right_system_graph.json"
-COMPARISON_PATH = ROOT / "experiments/g2_system_graph_comparator/comparison_result.json"
+CORRECT_SIDES_IOS = ROOT / "experiments/g2_4_4_3_correct_sides/ios"
+LEFT_GRAPH_PATH = CORRECT_SIDES_IOS / "left_system_graph.json"
+RIGHT_GRAPH_PATH = CORRECT_SIDES_IOS / "right_system_graph.json"
+COMPARISON_PATH = CORRECT_SIDES_IOS / "comparison_result.json"
 IOS_STAGE53_PATH = (
     ROOT
     / "comparison/sessions/121d764109184c13/pairs/p26c08b83a6"
@@ -299,6 +300,21 @@ def real_ios():
     )
     manifest = build_graphic_coverage(stage, text, graphs, links, scopes, groups)
     return stage, left, right, comparison, text, graphs, links, groups, scopes, manifest
+
+
+def test_real_ios_uses_accepted_left_to_right_truth_fixture(real_ios):
+    _, left, right, comparison, *_ = real_ios
+
+    assert comparison["left_graph"]["block_id"] == (
+        "blk_2d72a6705eaf4d8c9ee1d6ff459b15a6"
+    )
+    assert comparison["right_graph"]["block_id"] == (
+        "blk_039909ec039649a1b8209f059c95167b"
+    )
+    assert (len(left["nodes"]), len(left["edges"])) == (73, 99)
+    assert (len(right["nodes"]), len(right["edges"])) == (82, 111)
+    assert left["quality"]["outgoing_devices"] == 27
+    assert right["quality"]["outgoing_devices"] == 30
 
 
 @pytest.mark.parametrize(
@@ -821,16 +837,16 @@ def test_real_ios_scope_and_subject_coverage_are_conservative(real_ios):
         "unresolved_scopes": 4,
         "resolved_child_block_scopes": 1,
     }
-    assert links["diagnostics"]["LEFT"]["confidence_counts"]["HIGH"] == 0
-    assert links["diagnostics"]["RIGHT"]["confidence_counts"]["HIGH"] == 1
+    assert links["diagnostics"]["LEFT"]["confidence_counts"]["HIGH"] == 1
+    assert links["diagnostics"]["RIGHT"]["confidence_counts"]["HIGH"] == 0
     assert 0 < len(graph_checked) < len(graph_total)
     assert len(graph_checked) <= 2 * (
         comparison["comparison_quality"]["matched_nodes"]
         + sum(len(item["left_nodes"]) for item in comparison["matching"]["detail_matches"])
     )
     assert text["quality_report"]["produced_entities"] == 19
-    assert graphs["diagnostics"]["LEFT"]["entities"] == 56
-    assert graphs["diagnostics"]["RIGHT"]["entities"] == 52
+    assert graphs["diagnostics"]["LEFT"]["entities"] == 52
+    assert graphs["diagnostics"]["RIGHT"]["entities"] == 56
 
 
 def test_matched_sections_with_unresolved_neighbours_are_not_connection_or_structure_checked(
