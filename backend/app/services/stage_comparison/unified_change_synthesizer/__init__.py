@@ -23,13 +23,22 @@ from .normalization import (
     normalize_atoms,
     stage53_to_text_atoms,
 )
+from .synthesizer import (
+    OBSERVATION_ONLY_GATES,
+    STRICT_MERGE_GATES,
+    SYNTHESIZER_VERSION,
+    synthesize_unified_changes,
+)
 
 __all__ = [
     "DIRECTION",
     "IDENTITY_VERSION",
     "INPUT_VERSION",
     "KIND",
+    "OBSERVATION_ONLY_GATES",
+    "STRICT_MERGE_GATES",
     "SYNTHESIS_VERSION",
+    "SYNTHESIZER_VERSION",
     "SynthesisValidationError",
     "canonical_atomic_identity",
     "content_signature",
@@ -42,4 +51,5 @@ __all__ = [
     "stable_group_id",
     "stable_review_item_id",
     "stage53_to_text_atoms",
+    "synthesize_unified_changes",
 ]
