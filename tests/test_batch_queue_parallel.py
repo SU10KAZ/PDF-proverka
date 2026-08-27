@@ -434,6 +434,54 @@ async def test_slots_grow_when_projects_are_added_to_a_running_queue(monkeypatch
 
 
 @pytest.mark.asyncio
+async def test_single_retry_enqueue_wakes_running_slot_pool(monkeypatch, tmp_path):
+    """Поштучный retry будит пул так же, как массовый start_batch.
+
+    UI добавляет retry каждого упавшего проекта отдельным HTTP-запросом. Если
+    первый запрос уже успел запустить очередь из одного item, последующие
+    должны немедленно поднять остальные слоты, а не ждать завершения первого.
+    """
+    from backend.app.pipeline.stages.prepare import prepare_service
+    from backend.app.services.common import version_service
+
+    monkeypatch.setattr(mgr_mod, "resolve_project_dir", lambda _pid: tmp_path)
+    monkeypatch.setattr(
+        version_service, "resolve_effective_version_id",
+        lambda *_a, **_k: "v001",
+    )
+    monkeypatch.setattr(
+        version_service, "get_version_entry", lambda *_a, **_k: {},
+    )
+    monkeypatch.setattr(
+        prepare_service, "is_prepare_active_or_queued", lambda _pid: False,
+    )
+
+    mgr = PipelineManager()
+    queue = _queue([_item("A", status="running")], action="retry_stage")
+    mgr._batch_queue = queue
+    mgr._ensure_batch_worker = lambda action_for_label="full": queue
+    mgr._resolve_object_id_for_project = lambda *_a, **_k: None
+    mgr._broadcast_batch_progress = _anoop
+    wake_calls = 0
+
+    def _wake():
+        nonlocal wake_calls
+        wake_calls += 1
+
+    mgr._wake_batch_slots = _wake
+
+    job = await mgr._enqueue_single(
+        "B", action="retry_stage", retry_stage="block_analysis",
+        version_id="v001",
+    )
+
+    assert job.project_id == "B"
+    assert queue.items[-1].project_id == "B"
+    assert queue.items[-1].retry_stage == "block_analysis"
+    assert wake_calls == 1
+
+
+@pytest.mark.asyncio
 async def test_pool_never_exceeds_ceiling_after_adds(monkeypatch):
     """Доливка не имеет права перескочить BATCH_MAX_PARALLEL."""
     monkeypatch.setenv("BATCH_MAX_PARALLEL", "3")

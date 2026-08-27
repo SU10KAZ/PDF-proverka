@@ -7069,6 +7069,11 @@ class PipelineManager:
             )
 
         # Broadcast делаем вне лока (там тоже awaits) — на корректность не влияет.
+        # Если очередь уже исполняется несколькими слотами, она могла стартовать
+        # с единственным item. Поштучные entrypoint'ы (retry/resume/start) тоже
+        # обязаны разбудить супервизор после доливки — иначе BATCH_MAX_PARALLEL=5
+        # фактически остаётся одним слотом до завершения первого проекта.
+        self._wake_batch_slots()
         await self._broadcast_batch_progress(queue)
         return placeholder
 
