@@ -31,6 +31,7 @@
   --green-light: #d0f0e4;
   --amber:       #c47300;
   --amber-light: #ffeec4;
+  --amber-border:rgba(196,115,0,0.35);
   --blue:        #1460d4;
   --blue-light:  #deeaff;
   --purple:      #6d3fd4;
@@ -66,6 +67,7 @@
   --green-light: rgba(34,211,138,0.12);
   --amber:       #f5a623;
   --amber-light: rgba(245,166,35,0.13);
+  --amber-border:rgba(245,166,35,0.30);
   --blue:        #4a9eff;
   --blue-light:  rgba(74,158,255,0.12);
   --purple:      #a78bfa;
@@ -2927,7 +2929,9 @@ tr.row-rejected td.sc-cell-goto {
 .dash-object-arrow--open { transform: rotate(180deg); }
 .dash-object-picker {
     position: absolute; top: 100%; left: 0; z-index: 100; margin-top: 4px;
-    min-width: 320px; max-width: 480px; background: var(--card-bg);
+    /* 480px — чтобы название объекта осталось в одну строку рядом с двумя
+       счётчиками (на 320px «272. Садовническая 76 …» переносилось на две). */
+    min-width: 480px; max-width: 560px; background: var(--card-bg);
     border: 1px solid var(--border2); border-radius: var(--radius-lg);
     box-shadow: 0 8px 32px rgba(0,0,0,.18); overflow: hidden;
 }
@@ -2938,7 +2942,27 @@ tr.row-rejected td.sc-cell-goto {
 }
 .dash-object-picker__item:hover { background: var(--teal-light); }
 .dash-object-picker__item--active { background: var(--teal-light); font-weight: 600; }
-.dash-object-picker__check { color: var(--teal); font-weight: 700; }
+.dash-object-picker__name { flex: 1; min-width: 0; }
+/* Два счётчика объекта: «Не запускались на проверку» (оранжевый) и
+   «Нет решений эксперта» (фирменный бирюзовый). Оформление — как у бейджа
+   в сайдбаре (.nav-badge): рамка + подложка в цвет. */
+.dash-object-picker__counts {
+    display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: 10px;
+}
+.obj-badge {
+    min-width: 38px; text-align: center;   /* столбец не пляшет до 3 цифр */
+    font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums;
+    border-radius: 4px; padding: 1px 6px; border: 1px solid transparent;
+}
+.obj-badge--todo {
+    background: var(--amber-light); color: var(--amber); border-color: var(--amber-border);
+}
+.obj-badge--proc {
+    background: var(--teal-light); color: var(--teal); border-color: var(--teal-border);
+}
+/* Галочка держит постоянную ширину, чтобы столбцы счётчиков не съезжали
+   на строке текущего объекта. */
+.dash-object-picker__check { color: var(--teal); font-weight: 700; width: 14px; text-align: right; flex-shrink: 0; margin-left: 10px; }
 .dash-object-picker__add {
     padding: 12px 16px; cursor: pointer; border-top: 1px solid var(--border);
     color: var(--teal); font-weight: 600; font-size: 14px; transition: background .12s;

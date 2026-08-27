@@ -4680,6 +4680,49 @@ const app = createApp({
             try { localStorage.setItem(OBJECT_STORAGE_KEY, id); } catch (e) {}
         }
         const objectsList = ref([]);
+        // Сводка по объектам для выпадашки: {object_id: {not_started, no_decisions, ...}}.
+        // Грузится ЛЕНИВО при открытии списка — обход проектов всех объектов
+        // (~1,5 с на холодной ФС) не должен висеть на загрузке страницы.
+        const objectStats = ref({});
+        const objectStatsLoading = ref(false);
+
+        // Порядок объектов — по первому числу в названии по возрастанию
+        // («213. …», «214. …», «256. …»): в objects.json они лежат в порядке
+        // создания, а инженеру нужен номерной. Объекты без ведущего числа
+        // уходят вниз и сортируются по алфавиту.
+        const _objectNameCollator = new Intl.Collator('ru', { numeric: true, sensitivity: 'base' });
+        function objectLeadNumber(obj) {
+            const m = /^\s*(\d+)/.exec(String((obj && obj.name) || ''));
+            return m ? parseInt(m[1], 10) : Number.POSITIVE_INFINITY;
+        }
+        const sortedObjectsList = computed(() => {
+            return objectsList.value.slice().sort((a, b) => {
+                const an = objectLeadNumber(a), bn = objectLeadNumber(b);
+                if (an !== bn) return an < bn ? -1 : 1;   // Infinity — «без номера», вниз
+                return _objectNameCollator.compare(a.name || '', b.name || '');
+            });
+        });
+
+        // Два счётчика объекта: «Не запускались на проверку» и «Нет решений
+        // эксперта». Считает бэкенд (/objects/stats) теми же правилами, что
+        // строка «Итого» на Главной, — цифры совпадут после переключения.
+        function objectStatOf(objId, key) {
+            const s = objectStats.value[objId];
+            return s && !s.error ? (s[key] || 0) : null;
+        }
+
+        async function loadObjectStats() {
+            if (objectStatsLoading.value) return;
+            objectStatsLoading.value = true;
+            try {
+                const data = await api('/objects/stats');
+                objectStats.value = data.stats || {};
+            } catch (e) {
+                console.error('Failed to load object stats:', e);
+            } finally {
+                objectStatsLoading.value = false;
+            }
+        }
         // Инициализируем из хранилища СИНХРОННО — чтобы уже самый первый
         // запрос (handleRoute до завершения loadObjects) нёс свой per-tab объект,
         // а не глобальный. loadObjects потом сверит id со списком с сервера и
@@ -4734,6 +4777,8 @@ const app = createApp({
             showPaidCost.value = false;
             showAccountInfo.value = false;
             if (willOpen) target.value = true;
+            // Счётчики объектов нужны только когда список раскрыт.
+            if (willOpen && which === 'object') loadObjectStats();
         }
 
         function closeHeaderPopovers() {
@@ -15917,7 +15962,9 @@ const app = createApp({
             candidateTargetOptions, candidateTargetName, candidateNextVersionLabel,
             normalizeProjectName,
             // Objects
-            objectsList, currentObjectId, showObjectPicker, showAddObjectModal, newObjectName,
+            objectsList, sortedObjectsList, currentObjectId, showObjectPicker,
+            showAddObjectModal, newObjectName,
+            objectStats, objectStatOf, loadObjectStats,
             loadObjects, switchObject, addNewObject,
             toggleHeaderPopover, closeHeaderPopovers,
             // Dashboard stats

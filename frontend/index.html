@@ -159,12 +159,20 @@
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-left:4px;opacity:.5"><path d="M6 9l6 6 6-6"/></svg>
                 </span>
                 <div class="dash-object-picker" v-if="showObjectPicker" @click.stop style="top:100%;left:0;margin-top:8px">
-                    <div v-for="obj in objectsList" :key="obj.id"
+                    <div v-for="obj in sortedObjectsList" :key="obj.id"
                          class="dash-object-picker__item"
                          :class="{'dash-object-picker__item--active': obj.id === currentObjectId}"
                          @click="switchObject(obj.id)">
-                        <span>{{ obj.name }}</span>
-                        <span class="dash-object-picker__check" v-if="obj.id === currentObjectId">&#10003;</span>
+                        <span class="dash-object-picker__name">{{ obj.name }}</span>
+                        <span class="dash-object-picker__counts" v-if="objectStatOf(obj.id, 'total') !== null">
+                            <span class="obj-badge obj-badge--todo"
+                                  title="Не запускались на проверку — проектов, у которых на последней версии аудит ни разу не запускался">{{ objectStatOf(obj.id, 'not_started') }}</span>
+                            <span class="obj-badge obj-badge--proc"
+                                  title="Нет решений эксперта — проектов, которые эксперт не отработал полностью на последней версии">{{ objectStatOf(obj.id, 'no_decisions') }}</span>
+                        </span>
+                        <!-- Галочка рендерится всегда (пустая у неактивных), иначе
+                             столбцы счётчиков съезжают на строке текущего объекта. -->
+                        <span class="dash-object-picker__check">{{ obj.id === currentObjectId ? '\u2713' : '' }}</span>
                     </div>
                     <div class="dash-object-picker__add" @click="showAddObjectModal = true; showObjectPicker = false">
                         + Новый объект
@@ -1530,7 +1538,7 @@
                                 <label>Объект</label>
                                 <select class="form-input" v-model="uploadObjectId" :disabled="uploadLoading">
                                     <option value="" disabled>— выберите объект —</option>
-                                    <option v-for="o in objectsList" :key="o.id" :value="o.id">{{ o.name }}</option>
+                                    <option v-for="o in sortedObjectsList" :key="o.id" :value="o.id">{{ o.name }}</option>
                                 </select>
                             </div>
                             <div class="form-row">
