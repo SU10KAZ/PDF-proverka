@@ -1280,6 +1280,13 @@ td:has(> .sev-badge--sm) { vertical-align: middle; text-align: center; }
 .project-card__stat-mark--done { border-color: rgba(212,24,58,0.45); color: var(--red); }
 [data-theme="dark"] .project-card__stat-mark--done { border-color: rgba(255,77,109,0.45); }
 .project-card__stat-mark--partial { color: var(--text3); }
+/* Категория, которой аудит ничего не нашёл (0 позиций): пилюля остаётся на
+   месте — чтобы карточки не «прыгали» и было видно, что этап отработал, — но
+   приглушена и не зовёт к действию. Отметка рисуется прочерком без рамки:
+   пустая клетка читалась бы как «не отработано». */
+.project-card__stat--empty { opacity: .5; }
+.project-card__stat--empty:hover { opacity: .75; }
+.project-card__stat-mark--none { border-color: transparent; color: var(--text3); font-weight: 700; }
 /* Узкая карточка (7 в ряд на 1440): подписи не помещаются — остаются цифра и
    статус, смысл кнопки различает цвет рамки (замечания бирюзовые, оптимизация
    фиолетовая) и подсказка при наведении. */

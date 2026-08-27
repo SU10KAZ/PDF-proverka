@@ -9823,6 +9823,9 @@ const app = createApp({
             const parts = Object.keys(by)
                 .filter(sev => by[sev])
                 .map(sev => `${sev}: ${by[sev]}`);
+            if (!(project.findings_count > 0)) {
+                return 'Замечаний не найдено\nНажмите, чтобы открыть вкладку замечаний';
+            }
             const lines = [`Замечания — всего: ${project.findings_count || 0}`];
             if (parts.length) lines.push(parts.join(' · '));
             lines.push('Нажмите, чтобы открыть список замечаний');
@@ -9835,6 +9838,9 @@ const app = createApp({
             const parts = Object.keys(by)
                 .filter(type => by[type])
                 .map(type => `${optTypeLabel(type)}: ${by[type]}`);
+            if (!(project.optimization_count > 0)) {
+                return 'Предложений по оптимизации не найдено\nНажмите, чтобы открыть вкладку оптимизации';
+            }
             const lines = [`Оптимизация — всего: ${project.optimization_count || 0}`];
             if (parts.length) lines.push(parts.join(' · '));
             lines.push('Нажмите, чтобы открыть предложения по оптимизации');

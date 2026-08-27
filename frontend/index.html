@@ -1307,35 +1307,41 @@
                              Разбивка по severity/типам ушла в tooltip пилюли,
                              галочка проработки — в клетку справа внутри пилюли. -->
                         <div v-if="p.findings_count > 0 || p.optimization_count > 0" class="project-card__stats">
-                            <button v-if="p.findings_count > 0"
-                                    class="project-card__stat"
-                                    :class="{'project-card__stat--done': p.findings_review_status === 'complete'}"
+                            <button class="project-card__stat"
+                                    :class="{'project-card__stat--done': p.findings_review_status === 'complete',
+                                             'project-card__stat--empty': !(p.findings_count > 0)}"
                                     :title="findingsBreakdownTitle(p)"
                                     @click.stop="navigate('/project/' + p.project_id + '/findings')">
                                 <span class="project-card__stat-label">Замечания</span>
-                                <span class="project-card__stat-count">{{ p.findings_count }}</span>
+                                <span class="project-card__stat-count">{{ p.findings_count || 0 }}</span>
                                 <span class="project-card__stat-mark"
                                       :class="{'project-card__stat-mark--done': p.findings_review_status === 'complete',
-                                               'project-card__stat-mark--partial': p.findings_review_status === 'partial'}"
-                                      :title="p.findings_review_status === 'complete' ? 'Замечания отработаны'
-                                              : (p.findings_review_status === 'partial' ? 'Замечания отработаны частично' : 'Замечания не отработаны')">
-                                    <template v-if="p.findings_review_status === 'complete'">&#10003;</template>
+                                               'project-card__stat-mark--partial': p.findings_review_status === 'partial',
+                                               'project-card__stat-mark--none': !(p.findings_count > 0)}"
+                                      :title="!(p.findings_count > 0) ? 'Замечаний не найдено — отрабатывать нечего'
+                                              : (p.findings_review_status === 'complete' ? 'Замечания отработаны'
+                                              : (p.findings_review_status === 'partial' ? 'Замечания отработаны частично' : 'Замечания не отработаны'))">
+                                    <template v-if="!(p.findings_count > 0)">&mdash;</template>
+                                    <template v-else-if="p.findings_review_status === 'complete'">&#10003;</template>
                                     <template v-else-if="p.findings_review_status === 'partial'">&middot;</template>
                                 </span>
                             </button>
-                            <button v-if="p.optimization_count > 0"
-                                    class="project-card__stat"
-                                    :class="{'project-card__stat--done': p.optimization_review_status === 'complete'}"
+                            <button class="project-card__stat"
+                                    :class="{'project-card__stat--done': p.optimization_review_status === 'complete',
+                                             'project-card__stat--empty': !(p.optimization_count > 0)}"
                                     :title="optimizationBreakdownTitle(p)"
                                     @click.stop="navigate('/project/' + p.project_id + '/optimization')">
                                 <span class="project-card__stat-label">Оптимизация</span>
-                                <span class="project-card__stat-count">{{ p.optimization_count }}</span>
+                                <span class="project-card__stat-count">{{ p.optimization_count || 0 }}</span>
                                 <span class="project-card__stat-mark"
                                       :class="{'project-card__stat-mark--done': p.optimization_review_status === 'complete',
-                                               'project-card__stat-mark--partial': p.optimization_review_status === 'partial'}"
-                                      :title="p.optimization_review_status === 'complete' ? 'Оптимизации отработаны'
-                                              : (p.optimization_review_status === 'partial' ? 'Оптимизации отработаны частично' : 'Оптимизации не отработаны')">
-                                    <template v-if="p.optimization_review_status === 'complete'">&#10003;</template>
+                                               'project-card__stat-mark--partial': p.optimization_review_status === 'partial',
+                                               'project-card__stat-mark--none': !(p.optimization_count > 0)}"
+                                      :title="!(p.optimization_count > 0) ? 'Предложений по оптимизации не найдено — отрабатывать нечего'
+                                              : (p.optimization_review_status === 'complete' ? 'Оптимизации отработаны'
+                                              : (p.optimization_review_status === 'partial' ? 'Оптимизации отработаны частично' : 'Оптимизации не отработаны'))">
+                                    <template v-if="!(p.optimization_count > 0)">&mdash;</template>
+                                    <template v-else-if="p.optimization_review_status === 'complete'">&#10003;</template>
                                     <template v-else-if="p.optimization_review_status === 'partial'">&middot;</template>
                                 </span>
                             </button>
