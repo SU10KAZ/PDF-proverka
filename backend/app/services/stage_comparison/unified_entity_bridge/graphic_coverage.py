@@ -927,6 +927,9 @@ def saved_coverage_bundle_is_stale(
         return True
     if side_entity_links_are_stale(links, text, graphics):
         return True
+    saved_relations = scopes["source_artifacts"].get("parent_page_relations", [])
+    if parent_page_relations is None and saved_relations:
+        return True
     if parent_page_relations is not None:
         try:
             from .parent_page_relation import normalize_parent_page_relations
@@ -934,9 +937,7 @@ def saved_coverage_bundle_is_stale(
             current_relations = normalize_parent_page_relations(parent_page_relations)
         except (TypeError, ValueError):
             return True
-        if current_relations != scopes["source_artifacts"].get(
-            "parent_page_relations", []
-        ):
+        if current_relations != saved_relations:
             return True
     scope_sources = scopes["source_artifacts"]
     text_source = scope_sources.get("text_entities") or {}

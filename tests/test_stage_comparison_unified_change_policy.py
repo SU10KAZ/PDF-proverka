@@ -34,6 +34,7 @@ from backend.app.services.stage_comparison.unified_change_policy import (
     normalize_confidence,
     normalize_evidence_atom,
     reinforce_confidence,
+    review_evidence_id,
     resolve_dimension,
     should_surface_atom,
     stable_change_id,
@@ -181,6 +182,27 @@ def test_same_entity_with_different_dimensions_is_not_the_same_change():
     assert stable_change_id(parameter) != stable_change_id(connection)
     assert evaluation["relation_status"] == "COMPLEMENTARY"
     assert "merge" not in evaluation
+
+
+def test_unknown_dimension_atoms_do_not_receive_one_unified_change_id():
+    first = canonical_identity_cell(
+        "scope-1", "panel-1", UNKNOWN_DIMENSION, "ALTERED"
+    )
+    second = canonical_identity_cell(
+        "scope-1", "panel-1", UNKNOWN_DIMENSION, "ALTERED"
+    )
+
+    with pytest.raises(
+        ValueError, match="resolved dimension required for unified change_id"
+    ):
+        stable_change_id(first)
+    with pytest.raises(
+        ValueError, match="resolved dimension required for unified change_id"
+    ):
+        stable_change_id(second)
+    assert review_evidence_id(first, "atom-1") != review_evidence_id(
+        second, "atom-2"
+    )
 
 
 @pytest.mark.parametrize(

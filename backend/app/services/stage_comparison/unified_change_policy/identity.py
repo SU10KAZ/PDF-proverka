@@ -5,7 +5,12 @@ import hashlib
 import json
 from typing import Any, Iterable
 
-from .contract import Direction, PolicyValidationError, resolve_dimension
+from .contract import (
+    UNKNOWN_DIMENSION,
+    Direction,
+    PolicyValidationError,
+    resolve_dimension,
+)
 
 
 def _digest(value: Any) -> str:
@@ -60,7 +65,33 @@ def stable_change_id(identity_cell: Any) -> str:
     )
     if set(identity_cell) != set(canonical):
         raise PolicyValidationError("identity_cell: invalid fields")
+    if canonical["dimension"] == UNKNOWN_DIMENSION:
+        raise PolicyValidationError(
+            "identity_cell.dimension: resolved dimension required for unified change_id"
+        )
     return "change_" + _digest(canonical)[:20]
+
+
+def review_evidence_id(identity_cell: Any, evidence_ref: Any) -> str:
+    """Identify one unresolved-dimension atom without unifying sibling atoms."""
+    if not isinstance(identity_cell, dict):
+        raise PolicyValidationError("identity_cell: object required")
+    canonical = canonical_identity_cell(
+        identity_cell.get("scope_ref"),
+        identity_cell.get("subject_ref"),
+        identity_cell.get("dimension"),
+        identity_cell.get("direction_class"),
+    )
+    if set(identity_cell) != set(canonical):
+        raise PolicyValidationError("identity_cell: invalid fields")
+    if canonical["dimension"] != UNKNOWN_DIMENSION:
+        raise PolicyValidationError(
+            "identity_cell.dimension: UNKNOWN_DIMENSION required for review identity"
+        )
+    atom_ref = _reference(evidence_ref, "evidence_ref")
+    return "review_" + _digest(
+        {"identity_cell": canonical, "evidence_ref": atom_ref}
+    )[:20]
 
 
 def content_signature(evidence_atoms: Iterable[Any]) -> str:
@@ -78,4 +109,9 @@ def content_signature(evidence_atoms: Iterable[Any]) -> str:
     return _digest(sorted(canonical))
 
 
-__all__ = ["canonical_identity_cell", "content_signature", "stable_change_id"]
+__all__ = [
+    "canonical_identity_cell",
+    "content_signature",
+    "review_evidence_id",
+    "stable_change_id",
+]

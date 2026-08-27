@@ -867,11 +867,12 @@ def scope_join_is_stale(
         current_graphics = validate_side_graph_entities(side_graph_entities)
         groups = normalize_graphic_scope_groups(graphic_scope_groups)
         validated = validate_scope_join(artifact)
-        relations = (
-            normalize_parent_page_relations(parent_page_relations)
-            if parent_page_relations is not None
-            else validated["source_artifacts"].get("parent_page_relations", [])
+        saved_relations = validated["source_artifacts"].get(
+            "parent_page_relations", []
         )
+        if parent_page_relations is None and saved_relations:
+            return True
+        relations = normalize_parent_page_relations(parent_page_relations)
     except (ScopeJoinValidationError, TypeError, ValueError):
         return True
     # Document binding is part of the saved evidence, not of the current call:

@@ -406,6 +406,41 @@ def test_parent_relation_revocation_makes_scope_and_coverage_stale(real_ios):
         parent_page_relations=current_relations,
     )
 
+    assert scope_join_is_stale(
+        scopes,
+        stage,
+        text,
+        graphs,
+        groups,
+        parent_page_relations=None,
+    )
+    assert scope_join_is_stale(
+        scopes,
+        stage,
+        text,
+        graphs,
+        groups,
+        parent_page_relations=[],
+    )
+    assert graphic_coverage_is_stale(
+        manifest,
+        stage,
+        text,
+        graphs,
+        links,
+        scopes,
+        groups,
+        parent_page_relations=None,
+    )
+    assert saved_coverage_bundle_is_stale(
+        manifest,
+        text,
+        graphs,
+        links,
+        scopes,
+        parent_page_relations=None,
+    )
+
 
 def test_page_base_is_explicit_and_text_page_one_does_not_match_graphic_index_one():
     stage = _stage53(left_page=1, right_page=1)

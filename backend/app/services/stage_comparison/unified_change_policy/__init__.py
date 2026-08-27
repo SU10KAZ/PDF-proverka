@@ -23,7 +23,12 @@ from .contract import (
     normalize_evidence_atom,
     resolve_dimension,
 )
-from .identity import canonical_identity_cell, content_signature, stable_change_id
+from .identity import (
+    canonical_identity_cell,
+    content_signature,
+    review_evidence_id,
+    stable_change_id,
+)
 from .rules import (
     LIVE_DECISION_GATES,
     OBSERVATION_ONLY_GATES,
@@ -83,6 +88,7 @@ __all__ = [
     "normalize_confidence",
     "normalize_evidence_atom",
     "reinforce_confidence",
+    "review_evidence_id",
     "resolve_dimension",
     "should_surface_atom",
     "stable_change_id",
