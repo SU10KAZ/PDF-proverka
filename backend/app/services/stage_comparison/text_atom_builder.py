@@ -10,6 +10,7 @@ from .text_semantic_validation import (
     KIND as STAGE4_KIND,
     SCHEMA_VERSION as STAGE4_SCHEMA_VERSION,
     iter_stage3_evidence,
+    stage3_content_signature,
 )
 from .unified_change_policy import UNKNOWN_DIMENSION
 from .unified_change_synthesizer import normalize_synthesis_atom
@@ -109,6 +110,9 @@ def _atom_from_fact(
         "provenance": {
             "producer": BUILDER_VERSION,
             "source_evidence_ref": source_evidence_ref,
+            "source_evidence_signature": (
+                fact.get("source_evidence_signature") if fact else None
+            ),
             "semantic_fact_id": fact.get("fact_id") if fact else None,
             "stage3_bucket": bucket,
             "locations": _locations(item),
@@ -136,10 +140,7 @@ def build_text_atoms(
         or text_differences.get("version") != STAGE3_VERSION
     ):
         raise ValueError("Stage 3 text differences artifact required")
-    stage3_signature = str(
-        text_differences.get("source_signature")
-        or content_signature(text_differences)
-    )
+    stage3_signature = stage3_content_signature(text_differences)
     facts_by_evidence: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     if semantic_validation is not None:
         if (

@@ -129,3 +129,188 @@ def test_order_does_not_change_relation_ids():
     assert [item["relation_id"] for item in first["relations"]] == [
         item["relation_id"] for item in second["relations"]
     ]
+
+
+def test_deep_candidate_graph_proves_split_without_group_reference():
+    result = match_sheets(
+        [_sheet(
+            10,
+            title="Старая сводная схема",
+            functional_content=["распределение питания"],
+            main_entities=["QF1", "QF2"],
+            topology=["шины -> QF1", "шины -> QF2"],
+        )],
+        [
+            _sheet(
+                24,
+                title="Фидер А",
+                functional_content=["распределение питания"],
+                main_entities=["QF1"],
+                topology=["шины -> QF1"],
+            ),
+            _sheet(
+                25,
+                title="Фидер Б",
+                functional_content=["распределение питания"],
+                main_entities=["QF2"],
+                topology=["шины -> QF2"],
+            ),
+        ],
+    )
+
+    relation = result["relations"][0]
+    assert relation["relation_type"] == "SPLIT"
+    assert relation["left_pages"] == [10]
+    assert relation["right_pages"] == [24, 25]
+    assert {
+        (edge["left_page"], edge["right_page"])
+        for edge in relation["supported_edges"]
+    } == {(10, 24), (10, 25)}
+    aggregate = next(
+        item for item in relation["evidence"] if item.get("kind") == "AGGREGATE_CONTENT"
+    )
+    assert aggregate["coverage"] == 1.0
+    assert aggregate["title_used"] is False
+    assert aggregate["page_proximity_used"] is False
+    assert {item["page"] for item in aggregate["distinct_contributions"]} == {24, 25}
+
+
+def test_deep_candidate_graph_proves_merge_without_group_reference():
+    result = match_sheets(
+        [
+            _sheet(
+                10,
+                functional_content=["распределение питания"],
+                main_entities=["QF1"],
+                topology=["шины -> QF1"],
+            ),
+            _sheet(
+                11,
+                functional_content=["распределение питания"],
+                main_entities=["QF2"],
+                topology=["шины -> QF2"],
+            ),
+        ],
+        [_sheet(
+            24,
+            functional_content=["распределение питания"],
+            main_entities=["QF1", "QF2"],
+            topology=["шины -> QF1", "шины -> QF2"],
+        )],
+    )
+
+    relation = result["relations"][0]
+    assert relation["relation_type"] == "MERGED"
+    assert relation["left_pages"] == [10, 11]
+    assert relation["right_pages"] == [24]
+    assert {
+        (edge["left_page"], edge["right_page"])
+        for edge in relation["supported_edges"]
+    } == {(10, 24), (11, 24)}
+
+
+def test_explicit_group_drops_page_without_supported_deep_edge():
+    common = {
+        "comparison_group_ref": "panel-1",
+        "functional_content": ["распределение питания"],
+    }
+    result = match_sheets(
+        [_sheet(
+            10,
+            main_entities=["QF1", "QF2"],
+            topology=["шины -> QF1", "шины -> QF2"],
+            **common,
+        )],
+        [
+            _sheet(
+                24,
+                main_entities=["QF1"],
+                topology=["шины -> QF1"],
+                **common,
+            ),
+            _sheet(
+                25,
+                main_entities=["QF2"],
+                topology=["шины -> QF2"],
+                **common,
+            ),
+            _sheet(
+                26,
+                comparison_group_ref="panel-1",
+                functional_content=["план освещения"],
+                main_entities=["светильник L1"],
+                topology=["ЩО -> L1"],
+            ),
+        ],
+    )
+
+    split = next(item for item in result["relations"] if item["relation_type"] == "SPLIT")
+    assert split["right_pages"] == [24, 25]
+    assert 26 not in split["candidate_pages"]
+    assert all(edge["right_page"] != 26 for edge in split["supported_edges"])
+    assert result["unmatched_right_pages"] == [26]
+
+
+def test_page_proximity_and_title_alone_produce_explicit_unknown_result():
+    result = match_sheets(
+        [_sheet(7, title="План первого этажа")],
+        [_sheet(7, title="План первого этажа")],
+    )
+
+    unresolved_left = next(
+        item for item in result["relations"] if item["left_pages"] == [7]
+    )
+    assert unresolved_left["status"] == "UNKNOWN"
+    assert unresolved_left["relation_type"] == "UNCERTAIN"
+    assert unresolved_left["right_pages"] == []
+    assert unresolved_left["candidate_pages"] == [7]
+    assert unresolved_left["automatic_scope"] is False
+    assert result["unmatched_left_pages"] == [7]
+    assert result["unmatched_right_pages"] == [7]
+    deep = result["candidate_search"][0]["deep_candidates"][0]
+    assert deep["status"] == "UNKNOWN"
+    assert deep["score"] is None
+
+
+def test_content_mismatch_produces_explicit_no_match_result():
+    result = match_sheets(
+        [_sheet(
+            3,
+            functional_content=["распределение питания"],
+            main_entities=["QF1"],
+        )],
+        [_sheet(
+            3,
+            functional_content=["пожарная сигнализация"],
+            main_entities=["ИП-1"],
+        )],
+    )
+
+    unresolved_left = next(
+        item for item in result["relations"] if item["left_pages"] == [3]
+    )
+    assert unresolved_left["status"] == "NO_MATCH"
+    assert unresolved_left["relation_type"] == "UNCERTAIN"
+    assert unresolved_left["right_pages"] == []
+    assert unresolved_left["candidate_edges"][0]["right_page"] == 3
+    assert unresolved_left["supported_edges"] == []
+
+
+def test_duplicate_alternatives_do_not_infer_cardinality_from_titles_or_scores():
+    common = {
+        "functional_content": ["распределение питания"],
+        "main_entities": ["QF1"],
+        "topology": ["шины -> QF1"],
+    }
+    result = match_sheets(
+        [_sheet(10, title="Схема", **common)],
+        [
+            _sheet(24, title="Схема часть 1", **common),
+            _sheet(25, title="Схема часть 2", **common),
+        ],
+    )
+
+    assert all(item["relation_type"] != "SPLIT" for item in result["relations"])
+    matched = next(item for item in result["relations"] if item["left_pages"] == [10])
+    assert matched["relation_type"] == "MATCHED"
+    assert len(result["unmatched_right_pages"]) == 1

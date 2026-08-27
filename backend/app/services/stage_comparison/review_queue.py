@@ -19,22 +19,37 @@ from .production_artifacts import (
     stable_id,
     utc_now,
 )
+from .unified_change_policy import DIMENSIONS, UNKNOWN_DIMENSION
 
 
 KIND = "stage_comparison_human_review_questions"
-SCHEMA_VERSION = "human-review-queue.v1"
-BUILDER_VERSION = "consolidated-human-review-queue-v1"
+SCHEMA_VERSION = "human-review-queue.v2"
+BUILDER_VERSION = "consolidated-human-review-queue-v2"
 DECISIONS_KIND = "stage_comparison_human_decisions"
-DECISIONS_SCHEMA_VERSION = "human-decisions.v1"
-DECISIONS_BUILDER_VERSION = "human-decision-store-v1"
+DECISIONS_SCHEMA_VERSION = "human-decisions.v2"
+DECISIONS_BUILDER_VERSION = "human-decision-store-v2"
 APPLICATION_KIND = "stage_comparison_human_decision_applications"
-APPLICATION_SCHEMA_VERSION = "human-decision-applications.v1"
-APPLICATION_VERSION = "human-decision-application-v1"
+APPLICATION_SCHEMA_VERSION = "human-decision-applications.v2"
+APPLICATION_VERSION = "human-decision-application-v2"
+CHANGE_TYPED_RESOLUTION_VERSION = "change-typed-resolution.v1"
 CATEGORIES = ("SHEET", "ENTITY", "CHANGE")
 BASE_ANSWERS = ("YES", "NO", "OTHER", "UNSURE")
 
 _VOLATILE_KEYS = frozenset(
     {"generated_at", "created_at", "updated_at", "timestamp", "stale"}
+)
+_TYPED_CHANGE_RESOLUTION_FIELDS = frozenset(
+    {
+        "dimension",
+        "subject_ref",
+        "project_entity_ref",
+        "facet_ref",
+        "direction",
+        "outcome",
+        "before_value",
+        "after_value",
+        "selected_change_ids",
+    }
 )
 
 
@@ -326,6 +341,12 @@ def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any
             item, "review_evidence_id", "atom_id", prefix="review_evidence_"
         )
         dimension = str(item.get("dimension") or "UNKNOWN_DIMENSION")
+        required_fields = []
+        if dimension == UNKNOWN_DIMENSION:
+            required_fields.append("dimension")
+        project_ref = item.get("project_entity_ref")
+        if not isinstance(project_ref, str) or not project_ref.strip():
+            required_fields.append("project_entity_ref")
         questions.append(
             _question(
                 identity={"review_evidence_id": review_ref},
@@ -345,7 +366,19 @@ def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any
                     "review_evidence_id": review_ref,
                     "atom_id": item.get("atom_id"),
                     "dimension": dimension,
+                    "subject_ref": item.get("subject_ref"),
+                    "project_entity_ref": item.get("project_entity_ref"),
+                    "direction": item.get("direction"),
+                    "outcome": item.get("outcome"),
                     "reason_codes": sorted(item.get("reason_codes") or []),
+                    "typed_resolution_contract": {
+                        "version": CHANGE_TYPED_RESOLUTION_VERSION,
+                        "generic_yes_allowed": not required_fields,
+                        "required_fields": required_fields,
+                        "accepted_fields": sorted(
+                            _TYPED_CHANGE_RESOLUTION_FIELDS
+                        ),
+                    },
                 },
             )
         )
@@ -373,6 +406,14 @@ def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any
                     "contested_group_id": group_ref,
                     "change_ids": change_ids,
                     "reason_codes": sorted(group.get("reason_codes") or []),
+                    "typed_resolution_contract": {
+                        "version": CHANGE_TYPED_RESOLUTION_VERSION,
+                        "generic_yes_allowed": False,
+                        "required_fields": ["selected_change_ids"],
+                        "accepted_fields": sorted(
+                            _TYPED_CHANGE_RESOLUTION_FIELDS
+                        ),
+                    },
                 },
             )
         )
@@ -417,6 +458,111 @@ def decision_is_stale(
     )
 
 
+def _normalized_selected_refs(value: Any) -> list[str]:
+    if not isinstance(value, Iterable) or isinstance(value, (str, bytes, Mapping)):
+        return []
+    return sorted(
+        {
+            str(item).strip()
+            for item in value
+            if isinstance(item, (str, int)) and str(item).strip()
+        }
+    )
+
+
+def _explicit_entity_ref(decision: Mapping[str, Any]) -> str | None:
+    candidate = decision.get("explicit_candidate")
+    value = (
+        candidate.get("right_entity_ref")
+        if isinstance(candidate, Mapping)
+        else None
+    )
+    return value.strip() if isinstance(value, str) and value.strip() else None
+
+
+def _resolved_entity_candidate_ref(decision: Mapping[str, Any]) -> str | None:
+    refs = set(_normalized_selected_refs(decision.get("selected_refs")))
+    explicit_ref = _explicit_entity_ref(decision)
+    if explicit_ref:
+        refs.add(explicit_ref)
+    return next(iter(refs)) if len(refs) == 1 else None
+
+
+def _typed_resolution(decision: Mapping[str, Any]) -> dict[str, Any]:
+    value = decision.get("typed_resolution")
+    return dict(value) if isinstance(value, Mapping) else {}
+
+
+def _change_resolution_requirements(
+    question: Mapping[str, Any], decision: Mapping[str, Any]
+) -> list[str]:
+    """Return unresolved typed fields; an empty list is safe to close."""
+    context = question.get("context")
+    context = context if isinstance(context, Mapping) else {}
+    typed = _typed_resolution(decision)
+    missing: list[str] = []
+    if question.get("question_type") == "CHANGE_CONTESTED":
+        allowed = {
+            str(value)
+            for value in context.get("change_ids") or []
+            if isinstance(value, str) and value
+        }
+        selected = set(
+            _normalized_selected_refs(typed.get("selected_change_ids"))
+            or _normalized_selected_refs(decision.get("selected_refs"))
+        )
+        if not selected or not selected <= allowed:
+            missing.append("selected_change_ids")
+        return missing
+
+    dimension = context.get("dimension")
+    if dimension == UNKNOWN_DIMENSION:
+        resolved_dimension = typed.get("dimension")
+        if resolved_dimension not in DIMENSIONS or resolved_dimension == UNKNOWN_DIMENSION:
+            missing.append("dimension")
+    project_ref = context.get("project_entity_ref")
+    resolved_project = project_ref
+    if not isinstance(project_ref, str) or not project_ref.strip():
+        resolved_project = typed.get("project_entity_ref")
+        if not isinstance(resolved_project, str) or not resolved_project.strip():
+            missing.append("project_entity_ref")
+    subject_ref = context.get("subject_ref")
+    if not isinstance(subject_ref, str) or not subject_ref.strip():
+        resolved_subject = typed.get("subject_ref") or resolved_project
+        if (
+            "project_entity_ref" not in missing
+            and (
+                not isinstance(resolved_subject, str)
+                or not resolved_subject.strip()
+            )
+        ):
+            missing.append("subject_ref")
+    return sorted(set(missing))
+
+
+def _decision_resolves_question(
+    decision: Mapping[str, Any], question: Mapping[str, Any] | None
+) -> bool:
+    if decision_is_stale(decision, question):
+        return False
+    assert isinstance(question, Mapping)
+    answer = str(decision.get("answer") or "")
+    category = question.get("category")
+    if answer == "OTHER":
+        if category == "ENTITY":
+            return _resolved_entity_candidate_ref(decision) is not None
+        if category == "SHEET":
+            return isinstance(decision.get("explicit_candidate"), Mapping)
+        if category == "CHANGE":
+            return bool(_typed_resolution(decision)) and not (
+                _change_resolution_requirements(question, decision)
+            )
+        return False
+    if category == "CHANGE" and answer == "YES":
+        return not _change_resolution_requirements(question, decision)
+    return True
+
+
 def build_review_queue(
     sheet_relations: Mapping[str, Any] | None = None,
     entity_relations: Mapping[str, Any] | None = None,
@@ -438,7 +584,7 @@ def build_review_queue(
     resolved_ids = {
         str(decision.get("question_id"))
         for decision in decisions
-        if not decision_is_stale(
+        if _decision_resolves_question(
             decision, questions_by_id.get(str(decision.get("question_id")))
         )
     }
@@ -446,6 +592,16 @@ def build_review_queue(
         str(decision.get("decision_id") or decision.get("question_id") or "")
         for decision in decisions
         if decision_is_stale(
+            decision, questions_by_id.get(str(decision.get("question_id")))
+        )
+    )
+    unresolved_decision_ids = sorted(
+        str(decision.get("decision_id") or decision.get("question_id") or "")
+        for decision in decisions
+        if not decision_is_stale(
+            decision, questions_by_id.get(str(decision.get("question_id")))
+        )
+        and not _decision_resolves_question(
             decision, questions_by_id.get(str(decision.get("question_id")))
         )
     )
@@ -476,6 +632,7 @@ def build_review_queue(
         "pending": len(pending),
         "resolved_unchanged": len(resolved_ids),
         "stale_decisions": len(stale_decision_ids),
+        "unresolved_decisions": len(unresolved_decision_ids),
         "by_category": {
             category: category_counts.get(category, 0) for category in CATEGORIES
         },
@@ -499,6 +656,7 @@ def build_review_queue(
             "generated_questions": len(all_questions),
             "deduplicated_questions": len(all_questions),
             "stale_decision_ids": stale_decision_ids,
+            "unresolved_decision_ids": unresolved_decision_ids,
             "already_resolved_not_reasked": len(resolved_ids),
             "uses_model": False,
         },
@@ -533,6 +691,109 @@ def _answer_code(value: Any) -> str:
     raise ValueError("human answer code required")
 
 
+def _normalize_explicit_candidate(
+    question: Mapping[str, Any], answer_payload: Mapping[str, Any]
+) -> dict[str, Any] | None:
+    raw = answer_payload.get("explicit_candidate")
+    if raw is None:
+        return None
+    if not isinstance(raw, Mapping):
+        raise ValueError("explicit_candidate must be an object")
+    category = question.get("category")
+    if category == "ENTITY":
+        right_ref = raw.get(
+            "right_entity_ref",
+            raw.get("entity_ref", raw.get("candidate_ref")),
+        )
+        if not isinstance(right_ref, str) or not right_ref.strip():
+            raise ValueError("explicit entity candidate right_entity_ref required")
+        project_ref = raw.get("project_entity_ref")
+        if project_ref is not None and (
+            not isinstance(project_ref, str) or not project_ref.strip()
+        ):
+            raise ValueError(
+                "explicit entity candidate project_entity_ref must be non-empty"
+            )
+        return {
+            "right_entity_ref": right_ref.strip(),
+            "project_entity_ref": (
+                project_ref.strip() if isinstance(project_ref, str) else None
+            ),
+        }
+    if category == "SHEET":
+        def pages(key: str) -> list[int]:
+            values = raw.get(key) or []
+            if (
+                not isinstance(values, Iterable)
+                or isinstance(values, (str, bytes, Mapping))
+            ):
+                raise ValueError(f"explicit sheet candidate {key} must be an array")
+            result = sorted(set(values))
+            if any(
+                not isinstance(page, int)
+                or isinstance(page, bool)
+                or page < 1
+                for page in result
+            ):
+                raise ValueError(
+                    f"explicit sheet candidate {key} must contain positive pages"
+                )
+            return result
+
+        left_pages, right_pages = pages("left_pages"), pages("right_pages")
+        if not left_pages or not right_pages:
+            raise ValueError("explicit sheet candidate requires both sides")
+        relation_type = raw.get("relation_type")
+        if relation_type is None:
+            relation_type = (
+                "MATCHED"
+                if len(left_pages) == len(right_pages) == 1
+                else "SPLIT"
+                if len(left_pages) == 1
+                else "MERGED"
+                if len(right_pages) == 1
+                else "UNCERTAIN"
+            )
+        if relation_type not in {"MATCHED", "SPLIT", "MERGED", "UNCERTAIN"}:
+            raise ValueError("explicit sheet candidate relation_type unsupported")
+        return {
+            "left_pages": left_pages,
+            "right_pages": right_pages,
+            "relation_type": relation_type,
+        }
+    raise ValueError("explicit_candidate is supported for ENTITY or SHEET")
+
+
+def _normalize_typed_resolution(answer_payload: Mapping[str, Any]) -> dict[str, Any] | None:
+    raw = answer_payload.get("typed_resolution")
+    if raw is None and isinstance(answer_payload.get("resolution"), Mapping):
+        raw = answer_payload.get("resolution")
+    if raw is None:
+        return None
+    if not isinstance(raw, Mapping) or not set(raw) <= _TYPED_CHANGE_RESOLUTION_FIELDS:
+        raise ValueError("typed_resolution has unsupported fields")
+    result = deepcopy(dict(raw))
+    for key in (
+        "subject_ref",
+        "project_entity_ref",
+        "facet_ref",
+        "direction",
+        "outcome",
+    ):
+        value = result.get(key)
+        if value is not None:
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(f"typed_resolution.{key} must be non-empty")
+            result[key] = value.strip()
+    if "dimension" in result and result["dimension"] not in DIMENSIONS:
+        raise ValueError("typed_resolution.dimension unsupported")
+    if "selected_change_ids" in result:
+        result["selected_change_ids"] = _normalized_selected_refs(
+            result["selected_change_ids"]
+        )
+    return result
+
+
 def record_human_decision(
     question: Mapping[str, Any],
     answer: str | Mapping[str, Any],
@@ -557,16 +818,24 @@ def record_human_decision(
     answer_payload = answer if isinstance(answer, Mapping) else {}
     resolved_author = author if author is not None else answer_payload.get("author")
     resolved_comment = comment if comment is not None else answer_payload.get("comment")
-    raw_selected = (
-        list(selected_refs)
+    explicit_candidate = _normalize_explicit_candidate(question, answer_payload)
+    typed_resolution = _normalize_typed_resolution(answer_payload)
+    raw_selected = _normalized_selected_refs(
+        selected_refs
         if selected_refs is not None
-        else list(answer_payload.get("selected_refs") or [])
+        else answer_payload.get("selected_refs")
     )
     if code.startswith("SELECT_RIGHT:") or code.startswith("SELECT_LEFT:"):
         raw_selected.append(code.split(":", 1)[1])
-    normalized_selected = sorted(
-        {str(value).strip() for value in raw_selected if str(value).strip()}
-    )
+    if explicit_candidate and question.get("category") == "ENTITY":
+        raw_selected.append(explicit_candidate["right_entity_ref"])
+    normalized_selected = _normalized_selected_refs(raw_selected)
+    if (
+        explicit_candidate
+        and question.get("category") == "ENTITY"
+        and len(set(normalized_selected)) != 1
+    ):
+        raise ValueError("explicit entity candidate conflicts with selected_refs")
     question_id = str(question.get("question_id") or "").strip()
     question_signature = str(question.get("input_signature") or "").strip()
     if not question_id or not question_signature:
@@ -589,8 +858,12 @@ def record_human_decision(
         "category": question.get("category"),
         "answer": code,
         "selected_refs": normalized_selected,
+        "explicit_candidate": explicit_candidate,
+        "typed_resolution": typed_resolution,
         "author": resolved_author,
         "comment": resolved_comment,
+        "question_type": question.get("question_type"),
+        "question_context": deepcopy(question.get("context") or {}),
         "dependencies": deepcopy(question.get("dependencies") or []),
     }
     return {
@@ -708,6 +981,8 @@ def _decision_summary(decision: Mapping[str, Any]) -> dict[str, Any]:
         "question_id": decision.get("question_id"),
         "answer": decision.get("answer"),
         "selected_refs": list(decision.get("selected_refs") or []),
+        "explicit_candidate": deepcopy(decision.get("explicit_candidate")),
+        "typed_resolution": deepcopy(decision.get("typed_resolution")),
         "author": decision.get("author"),
         "comment": decision.get("comment"),
         "question_input_signature": decision.get("question_input_signature"),
@@ -728,10 +1003,19 @@ def apply_answer_to_relation(
     if category == "ENTITY":
         automatic = result.get("relation", result.get("status"))
         right_ref = str(result.get("right_entity_ref") or "")
+        selected_other = _resolved_entity_candidate_ref(decision)
         if answer == "YES":
             effective = "SAME_ENTITY"
-        elif answer in {"NO", "OTHER"}:
+        elif answer == "NO":
             effective = "DIFFERENT_ENTITY"
+        elif answer == "OTHER" and selected_other is not None:
+            effective = (
+                "SAME_ENTITY"
+                if right_ref == selected_other
+                else "DIFFERENT_ENTITY"
+            )
+        elif answer == "OTHER":
+            effective = str(automatic or "UNKNOWN")
         elif answer.startswith("SELECT_RIGHT:"):
             selected = answer.split(":", 1)[1]
             effective = "SAME_ENTITY" if right_ref == selected else "DIFFERENT_ENTITY"
@@ -740,14 +1024,27 @@ def apply_answer_to_relation(
         result["automatic_relation"] = automatic
         result["relation"] = effective
         result["status"] = effective
-        result["confidence"] = "HUMAN" if answer != "UNSURE" else result.get("confidence")
-        result["review_required"] = answer == "UNSURE"
+        resolved = answer != "UNSURE" and not (
+            answer == "OTHER" and selected_other is None
+        )
+        result["confidence"] = "HUMAN" if resolved else result.get("confidence")
+        result["review_required"] = not resolved
         if effective == "SAME_ENTITY":
-            result["project_entity_ref"] = result.get("project_entity_ref") or stable_id(
-                "project_entity_",
-                result.get("left_entity_ref"),
-                result.get("right_entity_ref"),
-                length=24,
+            explicit = decision.get("explicit_candidate")
+            explicit_project_ref = (
+                explicit.get("project_entity_ref")
+                if isinstance(explicit, Mapping)
+                else None
+            )
+            result["project_entity_ref"] = (
+                explicit_project_ref
+                or result.get("project_entity_ref")
+                or stable_id(
+                    "project_entity_",
+                    result.get("left_entity_ref"),
+                    result.get("right_entity_ref"),
+                    length=24,
+                )
             )
             result["unique_candidate"] = True
     elif category == "SHEET":
@@ -758,8 +1055,15 @@ def apply_answer_to_relation(
         elif answer == "NO":
             result["status"] = "NO_MATCH"
         elif answer == "OTHER":
-            result["status"] = "POSSIBLE"
-            result["relation_type"] = "UNCERTAIN"
+            explicit = decision.get("explicit_candidate")
+            if isinstance(explicit, Mapping):
+                result["left_pages"] = list(explicit.get("left_pages") or [])
+                result["right_pages"] = list(explicit.get("right_pages") or [])
+                result["relation_type"] = explicit.get("relation_type")
+                result["status"] = "HIGH"
+            else:
+                result["status"] = "POSSIBLE"
+                result["relation_type"] = "UNCERTAIN"
         elif answer.startswith("SELECT_RIGHT:"):
             selected = int(answer.split(":", 1)[1])
             result["right_pages"] = [selected]
@@ -770,7 +1074,10 @@ def apply_answer_to_relation(
             result["left_pages"] = [selected]
             result["relation_type"] = "MATCHED"
             result["status"] = "HIGH"
-        result["review_required"] = answer == "UNSURE"
+        result["review_required"] = answer == "UNSURE" or (
+            answer == "OTHER"
+            and not isinstance(decision.get("explicit_candidate"), Mapping)
+        )
     else:
         raise ValueError("relation answer requires SHEET or ENTITY question")
     result["human_decision"] = _decision_summary(decision)
@@ -817,6 +1124,8 @@ def apply_human_decisions(
                     "question_id": question_id,
                     "input_signature": signature,
                     "category": decision.get("category"),
+                    "question_type": decision.get("question_type"),
+                    "context": deepcopy(decision.get("question_context") or {}),
                     "dependencies": deepcopy(decision.get("dependencies") or []),
                     "dependency_refs": [
                         str(item.get("ref"))
@@ -858,6 +1167,79 @@ def apply_human_decisions(
             if isinstance(relation, Mapping)
             for relation_ref in [_ref(relation, "relation_id", prefix="erel_")]
         ]
+        # ``OTHER`` can identify a legitimate candidate that was absent from
+        # the automatic top-k set.  Materialize a separate effective relation
+        # from that exact ref; never alter or invent evidence on the automatic
+        # relation artifact.
+        for decision, question in valid:
+            if question.get("category") != "ENTITY" or decision.get("answer") != "OTHER":
+                continue
+            selected_ref = _resolved_entity_candidate_ref(decision)
+            context = question.get("context")
+            left_ref = (
+                context.get("left_entity_ref")
+                if isinstance(context, Mapping)
+                else None
+            )
+            if (
+                selected_ref is None
+                or not isinstance(left_ref, str)
+                or not left_ref.strip()
+            ):
+                continue
+            left_ref = left_ref.strip()
+            if any(
+                item.get("left_entity_ref") == left_ref
+                and item.get("right_entity_ref") == selected_ref
+                for item in effective_entity["relations"]
+            ):
+                continue
+            related = [
+                item
+                for item in effective_entity["relations"]
+                if item.get("left_entity_ref") == left_ref
+            ]
+            left_project_refs = {
+                str(item.get("left_project_entity_ref")).strip()
+                for item in related
+                if isinstance(item.get("left_project_entity_ref"), str)
+                and str(item.get("left_project_entity_ref")).strip()
+            }
+            base_relation = {
+                "relation_id": stable_id("erel_", left_ref, selected_ref),
+                "left_entity_ref": left_ref,
+                "right_entity_ref": selected_ref,
+                "left_project_entity_ref": (
+                    next(iter(left_project_refs))
+                    if len(left_project_refs) == 1
+                    else None
+                ),
+                "right_project_entity_ref": None,
+                "project_entity_ref": None,
+                "relation": "UNKNOWN",
+                "status": "UNKNOWN",
+                "confidence": "UNKNOWN",
+                "score": None,
+                "candidate_rank": None,
+                "unique_candidate": False,
+                "strong_signals": [],
+                "conflicting_signals": [],
+                "mismatched_signals": [],
+                "evidence": [],
+                "review_required": True,
+                "provenance": {
+                    "algorithm": APPLICATION_VERSION,
+                    "candidate_source": "HUMAN_EXPLICIT_REFERENCE",
+                    "name_is_primary": False,
+                    "ai_final_decision": False,
+                },
+            }
+            effective_entity["relations"].append(
+                apply_answer_to_relation(base_relation, question, decision)
+            )
+        effective_entity["relations"].sort(
+            key=lambda item: str(item.get("relation_id") or "")
+        )
         counts = Counter(
             str(item.get("relation", item.get("status")) or "UNKNOWN")
             for item in effective_entity["relations"]
@@ -886,23 +1268,39 @@ def apply_human_decisions(
         if question.get("category") != "CHANGE":
             continue
         answer = str(decision.get("answer") or "")
-        resolution = {
-            "YES": "CONFIRMED",
-            "NO": "REJECTED",
-            "OTHER": "OTHER",
-            "UNSURE": "REVIEW_REQUIRED",
-        }.get(answer, "REVIEW_REQUIRED")
+        missing_fields = _change_resolution_requirements(question, decision)
+        typed = _typed_resolution(decision)
+        if answer == "NO":
+            resolution = "REJECTED"
+        elif answer == "YES" and not missing_fields:
+            resolution = "CONFIRMED"
+        elif answer == "OTHER" and typed and not missing_fields:
+            resolution = "TYPED_RESOLUTION"
+        else:
+            resolution = "REVIEW_REQUIRED"
         change_resolutions.append(
             {
                 "question_id": question.get("question_id"),
                 "dependency_refs": list(question.get("dependency_refs") or []),
                 "resolution": resolution,
+                "resolution_complete": resolution == "REJECTED"
+                or (
+                    not missing_fields
+                    and resolution in {"CONFIRMED", "TYPED_RESOLUTION"}
+                ),
+                "missing_typed_fields": missing_fields,
+                "typed_resolution": typed or None,
                 "decision": _decision_summary(decision),
             }
         )
     change_resolutions.sort(key=lambda item: str(item["question_id"]))
     applied_ids = sorted(
         str(decision.get("decision_id")) for decision, _question in valid
+    )
+    unresolved_ids = sorted(
+        str(decision.get("decision_id"))
+        for decision, question in valid
+        if not _decision_resolves_question(decision, question)
     )
     source_signatures = {
         "review_queue": review_queue.get("input_signature"),
@@ -931,10 +1329,12 @@ def apply_human_decisions(
         "change_resolutions": change_resolutions,
         "applied_decision_ids": applied_ids,
         "stale_decision_ids": sorted(stale_ids),
+        "unresolved_decision_ids": unresolved_ids,
         "diagnostics": {
             "pipeline_rerun": False,
             "automatic_artifacts_mutated": False,
             "applied_decisions": len(applied_ids),
+            "unresolved_decisions": len(unresolved_ids),
             "uses_model": False,
         },
     }
@@ -952,6 +1352,7 @@ __all__ = [
     "BASE_ANSWERS",
     "BUILDER_VERSION",
     "CATEGORIES",
+    "CHANGE_TYPED_RESOLUTION_VERSION",
     "DECISIONS_BUILDER_VERSION",
     "DECISIONS_KIND",
     "DECISIONS_SCHEMA_VERSION",

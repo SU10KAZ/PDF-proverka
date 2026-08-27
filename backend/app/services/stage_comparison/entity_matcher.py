@@ -18,6 +18,7 @@ from difflib import SequenceMatcher
 from typing import Any
 
 from .production_artifacts import (
+    canonical_json,
     canonical_strings,
     content_signature,
     stable_id,
@@ -28,13 +29,16 @@ from .unified_entity_bridge.entity_normalizer import canonical_entity_name
 
 KIND = "stage_comparison_entity_relations"
 SCHEMA_VERSION = "entity-relations.v1"
-ALGORITHM_VERSION = "production-entity-matcher-v1"
+ALGORITHM_VERSION = "production-entity-matcher-v2"
 EARLY_KIND = "stage_comparison_early_entity_candidates"
 EARLY_SCHEMA_VERSION = "early-entity-candidates.v1"
-EARLY_ALGORITHM_VERSION = "production-early-entity-candidates-v1"
+EARLY_ALGORITHM_VERSION = "production-early-entity-candidates-v2"
 SYNTHESIS_CANDIDATE_KIND = "stage_comparison_text_graphic_candidates"
 SYNTHESIS_CANDIDATE_SCHEMA_VERSION = "text-graphic-candidates.v1"
-SYNTHESIS_CANDIDATE_VERSION = "g2.4.6-explicit-candidate-builder-v1"
+SYNTHESIS_CANDIDATE_VERSION = "g2.4.6-explicit-candidate-builder-v2"
+BOUND_ATOMS_KIND = "stage_comparison_entity_bound_atoms"
+BOUND_ATOMS_SCHEMA_VERSION = "entity-bound-atoms.v1"
+BOUND_ATOMS_VERSION = "exact-entity-relation-atom-binding-v1"
 DIRECTION = "LEFT_TO_RIGHT"
 RELATIONS = frozenset(
     {"SAME_ENTITY", "POSSIBLE_ENTITY", "UNKNOWN", "DIFFERENT_ENTITY"}
@@ -129,6 +133,33 @@ _STRONG_SIGNAL_NAMES = frozenset(
 )
 
 
+def _canonical_fact_value(value: Any) -> Any:
+    """Return a JSON-safe value with set-like containers canonically ordered.
+
+    Entity producers use lists for engineering fact sets (including lists of
+    nested mappings).  Their source order is not identity evidence, so neither
+    fallback ids nor matcher signatures may depend on it.
+    """
+    if isinstance(value, Mapping):
+        return {
+            str(key): _canonical_fact_value(item)
+            for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
+        }
+    if isinstance(value, Iterable) and not isinstance(value, (str, bytes)):
+        normalized = [_canonical_fact_value(item) for item in value]
+        return sorted(normalized, key=canonical_json)
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
+def _fact_token(value: Any) -> Any:
+    normalized = _canonical_fact_value(value)
+    if isinstance(normalized, (Mapping, list)):
+        return canonical_json(normalized)
+    return normalized
+
+
 def _values(value: Any) -> list[Any]:
     if value is None:
         return []
@@ -136,19 +167,11 @@ def _values(value: Any) -> list[Any]:
         output: list[Any] = []
         for key in sorted(value, key=str):
             nested = value[key]
-            if isinstance(nested, Mapping):
-                for item in _values(nested):
-                    output.append(f"{key}.{item}")
-            elif isinstance(nested, Iterable) and not isinstance(
-                nested, (str, bytes)
-            ):
-                for item in nested:
-                    output.append(f"{key}={item}")
-            elif nested is not None:
-                output.append(f"{key}={nested}")
+            if nested is not None:
+                output.append(f"{key}={_fact_token(nested)}")
         return output
     if isinstance(value, Iterable) and not isinstance(value, (str, bytes)):
-        return list(value)
+        return [_fact_token(item) for item in value]
     return [value]
 
 
@@ -165,7 +188,14 @@ def _source_values(record: Mapping[str, Any], keys: Iterable[str]) -> list[Any]:
     return output
 
 
-def _reference(record: Mapping[str, Any]) -> str:
+def _reference(
+    record: Mapping[str, Any],
+    *,
+    name: str | None,
+    signals: Mapping[str, Iterable[str]],
+    different_entity_refs: Iterable[str],
+    project_entity_ref: str | None,
+) -> str:
     for key in (
         "entity_ref",
         "entity_id",
@@ -176,9 +206,20 @@ def _reference(record: Mapping[str, Any]) -> str:
         value = record.get(key)
         if isinstance(value, str) and value.strip():
             return value.strip()
-    # The fallback is content-derived rather than row-position-derived, so it
-    # remains stable under input reordering.
-    return stable_id("entity_", record)
+    # Only normalized semantic facts participate in fallback identity.  Raw
+    # producer mappings may contain insertion-ordered nested lists and other
+    # transport details that must not churn entity ids.
+    semantic_identity = {
+        "canonical_name": canonical_entity_name(name) if name else None,
+        "project_entity_ref": project_entity_ref,
+        "signals": {
+            signal: sorted(set(values))
+            for signal, values in sorted(signals.items())
+        },
+        "different_entity_refs": sorted(set(different_entity_refs)),
+        "identity_conflict": bool(record.get("identity_conflict")),
+    }
+    return stable_id("entity_", semantic_identity)
 
 
 def _name(record: Mapping[str, Any]) -> str | None:
@@ -198,7 +239,6 @@ def normalize_entity(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
     """Normalize only explicit facts; never infer role from a name."""
     if not isinstance(record, Mapping):
         raise ValueError(f"{side} entity must be an object")
-    entity_ref = _reference(record)
     name = _name(record)
     signals = {
         signal: canonical_strings(_source_values(record, keys))
@@ -216,6 +256,13 @@ def normalize_entity(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
         )
     )
     project_ref = _project_ref(record)
+    entity_ref = _reference(
+        record,
+        name=name,
+        signals=signals,
+        different_entity_refs=different,
+        project_entity_ref=project_ref,
+    )
     return {
         "side": side,
         "entity_ref": entity_ref,
@@ -638,42 +685,309 @@ def _atom_project_ref(atom: Mapping[str, Any]) -> str | None:
     return value.strip() if isinstance(value, str) and value.strip() else None
 
 
-def _proven_project_refs(
+def _nonempty_ref(value: Any) -> str | None:
+    return value.strip() if isinstance(value, str) and value.strip() else None
+
+
+def _relation_status(relation: Mapping[str, Any]) -> Any:
+    return relation.get(
+        "effective_relation",
+        relation.get("relation", relation.get("status")),
+    )
+
+
+def _relation_rows(
     entity_relations: Mapping[str, Any] | Iterable[Mapping[str, Any]] | None,
-) -> tuple[set[str] | None, dict[str, list[str]]]:
+) -> list[Mapping[str, Any]]:
     if entity_relations is None:
-        return None, {}
+        return []
     if isinstance(entity_relations, Mapping):
         raw_relations = entity_relations.get("relations") or []
     else:
         raw_relations = entity_relations
+    return [item for item in raw_relations if isinstance(item, Mapping)]
+
+
+def _entity_relation_index(
+    entity_relations: Mapping[str, Any] | Iterable[Mapping[str, Any]] | None,
+) -> tuple[
+    set[str] | None,
+    dict[str, list[str]],
+    dict[str, str],
+    dict[str, Any] | None,
+]:
+    """Index exact aliases established by explicit SAME_ENTITY relations.
+
+    The alias map is intentionally exact.  Conflicting aliases are discarded
+    instead of being resolved by a score/name heuristic.  A compact semantic
+    artifact binding is carried into every downstream candidate proof.
+    """
+    if entity_relations is None:
+        return None, {}, {}, None
+    raw_relations = _relation_rows(entity_relations)
     proven: set[str] = set()
     relation_ids: dict[str, list[str]] = defaultdict(list)
+    aliases: dict[str, set[str]] = defaultdict(set)
+    proofs: list[dict[str, Any]] = []
     for relation in raw_relations:
-        if not isinstance(relation, Mapping):
+        if (
+            _relation_status(relation) != "SAME_ENTITY"
+            or relation.get("review_required") is True
+        ):
             continue
-        status = relation.get("relation", relation.get("status"))
-        if status != "SAME_ENTITY":
-            continue
-        shared = relation.get("project_entity_ref")
-        if not isinstance(shared, str) or not shared.strip():
-            left_ref = relation.get("left_project_entity_ref")
-            right_ref = relation.get("right_project_entity_ref")
-            shared = (
-                left_ref
-                if isinstance(left_ref, str)
-                and left_ref.strip()
-                and left_ref == right_ref
-                else None
+        left_entity_ref = _nonempty_ref(relation.get("left_entity_ref"))
+        right_entity_ref = _nonempty_ref(relation.get("right_entity_ref"))
+        left_project_ref = _nonempty_ref(
+            relation.get("left_project_entity_ref")
+        )
+        right_project_ref = _nonempty_ref(
+            relation.get("right_project_entity_ref")
+        )
+        shared = _nonempty_ref(relation.get("project_entity_ref"))
+        if shared is None and left_project_ref == right_project_ref:
+            shared = left_project_ref
+        if shared is None and left_entity_ref and right_entity_ref:
+            shared = stable_id(
+                "project_entity_", left_entity_ref, right_entity_ref, length=24
             )
-        if not isinstance(shared, str) or not shared.strip():
+        if shared is None:
             continue
-        shared = shared.strip()
         proven.add(shared)
-        relation_id = relation.get("relation_id")
-        if isinstance(relation_id, str) and relation_id.strip():
-            relation_ids[shared].append(relation_id.strip())
-    return proven, {key: sorted(set(value)) for key, value in relation_ids.items()}
+        relation_id = _nonempty_ref(relation.get("relation_id")) or stable_id(
+            "erel_", left_entity_ref, right_entity_ref, shared
+        )
+        relation_ids[shared].append(relation_id)
+        exact_aliases = {
+            alias
+            for alias in (
+                shared,
+                left_entity_ref,
+                right_entity_ref,
+                left_project_ref,
+                right_project_ref,
+            )
+            if alias is not None
+        }
+        for alias in exact_aliases:
+            aliases[alias].add(shared)
+        decision = relation.get("human_decision")
+        proofs.append(
+            {
+                "relation_id": relation_id,
+                "effective_relation_id": _nonempty_ref(
+                    relation.get("effective_relation_id")
+                ),
+                "left_entity_ref": left_entity_ref,
+                "right_entity_ref": right_entity_ref,
+                "left_project_entity_ref": left_project_ref,
+                "right_project_entity_ref": right_project_ref,
+                "project_entity_ref": shared,
+                "proof": "HUMAN" if isinstance(decision, Mapping) else "AUTOMATIC",
+                "human_decision": (
+                    {
+                        "decision_id": decision.get("decision_id"),
+                        "question_input_signature": decision.get(
+                            "question_input_signature"
+                        ),
+                        "answer": decision.get("answer"),
+                        "selected_refs": sorted(decision.get("selected_refs") or []),
+                    }
+                    if isinstance(decision, Mapping)
+                    else None
+                ),
+            }
+        )
+    proofs.sort(key=lambda item: (item["relation_id"], canonical_json(item)))
+    relation_ids_result = {
+        key: sorted(set(value)) for key, value in relation_ids.items()
+    }
+    alias_map = {
+        alias: next(iter(project_refs))
+        for alias, project_refs in aliases.items()
+        if len(project_refs) == 1
+    }
+    relation_payloads = sorted(
+        (_canonical_fact_value(item) for item in raw_relations),
+        key=canonical_json,
+    )
+    binding = {
+        "kind": (
+            entity_relations.get("kind")
+            if isinstance(entity_relations, Mapping)
+            else None
+        ),
+        "schema_version": (
+            entity_relations.get("schema_version")
+            if isinstance(entity_relations, Mapping)
+            else None
+        ),
+        "input_signature": (
+            entity_relations.get("input_signature")
+            if isinstance(entity_relations, Mapping)
+            else None
+        ),
+        # ``input_signature`` on an effective artifact may still describe the
+        # immutable automatic matcher input.  Bind to effective relation
+        # semantics as well, including an explicit human decision when used.
+        "proof_signature": content_signature(proofs),
+        "relations_signature": content_signature(relation_payloads),
+    }
+    binding["binding_signature"] = content_signature(binding)
+    return proven, relation_ids_result, alias_map, binding
+
+
+def _canonical_atom_project_ref(
+    atom: Mapping[str, Any],
+    *,
+    proven_refs: set[str],
+    alias_map: Mapping[str, str],
+) -> str | None:
+    explicit_project_ref = _atom_project_ref(atom)
+    mapped: set[str] = set()
+    if explicit_project_ref is not None:
+        if explicit_project_ref in proven_refs:
+            mapped.add(explicit_project_ref)
+        elif explicit_project_ref in alias_map:
+            mapped.add(alias_map[explicit_project_ref])
+        else:
+            return None
+    for ref in (
+        _nonempty_ref(atom.get("subject_ref")),
+        _nonempty_ref(atom.get("entity_ref")),
+    ):
+        if ref is not None and ref in alias_map:
+            mapped.add(alias_map[ref])
+    return next(iter(mapped)) if len(mapped) == 1 else None
+
+
+def _bind_atom(
+    atom: Mapping[str, Any],
+    *,
+    proven_refs: set[str],
+    alias_map: Mapping[str, str],
+    relation_ids: Mapping[str, list[str]],
+    relation_binding: Mapping[str, Any],
+) -> tuple[dict[str, Any], bool]:
+    result = deepcopy(dict(atom))
+    canonical_ref = _canonical_atom_project_ref(
+        result, proven_refs=proven_refs, alias_map=alias_map
+    )
+    if canonical_ref is None:
+        return result, False
+    existing_provenance = result.get("provenance")
+    existing_binding = (
+        existing_provenance.get("entity_relation_binding")
+        if isinstance(existing_provenance, Mapping)
+        else None
+    )
+    if (
+        _atom_project_ref(result) == canonical_ref
+        and _nonempty_ref(result.get("subject_ref")) == canonical_ref
+        and isinstance(existing_binding, Mapping)
+        and existing_binding.get("entity_relations_binding_signature")
+        == relation_binding.get("binding_signature")
+    ):
+        return result, True
+    original_project = _atom_project_ref(result)
+    original_subject = _nonempty_ref(result.get("subject_ref"))
+    result["project_entity_ref"] = canonical_ref
+    if original_subject is not None and (
+        original_subject in proven_refs or original_subject in alias_map
+    ):
+        result["subject_ref"] = canonical_ref
+    provenance = dict(result.get("provenance") or {})
+    provenance["entity_relation_binding"] = {
+        "producer": BOUND_ATOMS_VERSION,
+        "project_entity_ref": canonical_ref,
+        "original_project_entity_ref": original_project,
+        "original_subject_ref": original_subject,
+        "entity_relation_ids": relation_ids.get(canonical_ref, []),
+        "entity_relations_binding_signature": relation_binding.get(
+            "binding_signature"
+        ),
+    }
+    result["provenance"] = provenance
+    return result, True
+
+
+def bind_atoms_to_entity_relations(
+    text_atoms: Iterable[Mapping[str, Any]],
+    graphic_atoms: Iterable[Mapping[str, Any]],
+    entity_relations: Mapping[str, Any] | Iterable[Mapping[str, Any]],
+    *,
+    generated_at: str | None = None,
+) -> dict[str, Any]:
+    """Return atom copies canonically bound by exact SAME_ENTITY evidence.
+
+    This is the explicit pre-synthesis hand-off: the G2.4.6 synthesizer must
+    receive these copies, not the original side-specific atoms.  No fuzzy
+    fallback is attempted and the upstream atom artifacts are never mutated.
+    """
+    relations_input: Mapping[str, Any] | list[Mapping[str, Any]]
+    relations_input = (
+        entity_relations
+        if isinstance(entity_relations, Mapping)
+        else list(entity_relations)
+    )
+    proven_refs, relation_ids, alias_map, relation_binding = (
+        _entity_relation_index(relations_input)
+    )
+    assert proven_refs is not None and relation_binding is not None
+
+    bound_text: list[dict[str, Any]] = []
+    bound_graphic: list[dict[str, Any]] = []
+    bound_ids: list[str] = []
+    unresolved_ids: list[str] = []
+    for where, raw_atoms, output in (
+        ("TEXT", text_atoms, bound_text),
+        ("GRAPHIC", graphic_atoms, bound_graphic),
+    ):
+        atoms = sorted(
+            (dict(item) for item in raw_atoms),
+            key=lambda item: _atom_ref(item, where),
+        )
+        atom_ids = [_atom_ref(atom, where) for atom in atoms]
+        if len(atom_ids) != len(set(atom_ids)):
+            raise ValueError(f"duplicate {where} atom_id")
+        if any(atom.get("source") not in (None, where) for atom in atoms):
+            raise ValueError(f"{where.lower()}_atoms contain another source")
+        for atom in atoms:
+            atom_id = _atom_ref(atom, where)
+            bound, did_bind = _bind_atom(
+                atom,
+                proven_refs=proven_refs,
+                alias_map=alias_map,
+                relation_ids=relation_ids,
+                relation_binding=relation_binding,
+            )
+            output.append(bound)
+            (bound_ids if did_bind else unresolved_ids).append(atom_id)
+    input_signature = content_signature(
+        {
+            "binder": BOUND_ATOMS_VERSION,
+            "text_atoms": bound_text,
+            "graphic_atoms": bound_graphic,
+            "entity_relations_binding": relation_binding,
+        }
+    )
+    return {
+        "kind": BOUND_ATOMS_KIND,
+        "schema_version": BOUND_ATOMS_SCHEMA_VERSION,
+        "binder_version": BOUND_ATOMS_VERSION,
+        "version": 1,
+        "input_signature": input_signature,
+        "generated_at": generated_at or utc_now(),
+        "entity_relations_binding": relation_binding,
+        "text_atoms": bound_text,
+        "graphic_atoms": bound_graphic,
+        "diagnostics": {
+            "bound_atom_ids": sorted(bound_ids),
+            "unresolved_atom_ids": sorted(unresolved_ids),
+            "exact_alias_only": True,
+            "automatic_artifacts_mutated": False,
+            "uses_model": False,
+        },
+    }
 
 
 def _pair_compatible(text_atom: Mapping[str, Any], graphic_atom: Mapping[str, Any]) -> bool:
@@ -738,18 +1052,36 @@ def build_text_graphic_synthesis_candidates(
     if any(item.get("source") not in (None, "GRAPHIC") for item in graphic):
         raise ValueError("graphic_atoms must contain only GRAPHIC atoms")
 
-    proven_refs, relation_ids = _proven_project_refs(relations_input)
+    proven_refs, relation_ids, _alias_map, relation_binding = (
+        _entity_relation_index(relations_input)
+    )
+    bound_atoms_signature = None
+    if relations_input is not None:
+        bound = bind_atoms_to_entity_relations(
+            text,
+            graphic,
+            relations_input,
+            generated_at=generated_at,
+        )
+        text = bound["text_atoms"]
+        graphic = bound["graphic_atoms"]
+        bound_atoms_signature = bound["input_signature"]
     potential: list[tuple[dict[str, Any], dict[str, Any], str]] = []
     omitted_unproven: list[list[str]] = []
     for text_atom in text:
         for graphic_atom in graphic:
             project_ref = _atom_project_ref(text_atom)
-            if not project_ref or project_ref != _atom_project_ref(graphic_atom):
-                continue
-            if proven_refs is not None and project_ref not in proven_refs:
+            graphic_project_ref = _atom_project_ref(graphic_atom)
+            if proven_refs is not None and (
+                not project_ref
+                or project_ref != graphic_project_ref
+                or project_ref not in proven_refs
+            ):
                 omitted_unproven.append(
                     [_atom_ref(text_atom, "TEXT"), _atom_ref(graphic_atom, "GRAPHIC")]
                 )
+                continue
+            if not project_ref or project_ref != graphic_project_ref:
                 continue
             if not _pair_compatible(text_atom, graphic_atom):
                 continue
@@ -827,6 +1159,8 @@ def build_text_graphic_synthesis_candidates(
                     "proof": proof,
                     "project_entity_ref": project_ref,
                     "entity_relation_ids": relation_ids.get(project_ref, []),
+                    "entity_relations_binding": relation_binding,
+                    "bound_atoms_signature": bound_atoms_signature,
                 },
             }
         )
@@ -836,13 +1170,8 @@ def build_text_graphic_synthesis_candidates(
             "builder": SYNTHESIS_CANDIDATE_VERSION,
             "text_atoms": text,
             "graphic_atoms": graphic,
-            "entity_relations_signature": (
-                relations_input.get("input_signature")
-                if isinstance(relations_input, Mapping)
-                else content_signature(relations_input)
-                if relations_input is not None
-                else None
-            ),
+            "entity_relations_binding": relation_binding,
+            "bound_atoms_signature": bound_atoms_signature,
             "candidates": candidates,
         }
     )
@@ -860,6 +1189,9 @@ def build_text_graphic_synthesis_candidates(
             "ambiguous_pairs": sorted(ambiguous_pairs),
             "unproven_pairs": sorted(omitted_unproven),
             "unique_project_entity_ref_required": True,
+            "entity_relations_binding": relation_binding,
+            "bound_atoms_signature": bound_atoms_signature,
+            "exact_alias_only": True,
             "strict_m_gates_preserved": True,
             "uses_model": False,
         },
@@ -875,6 +1207,9 @@ build_early_candidates = build_early_entity_candidates
 
 __all__ = [
     "ALGORITHM_VERSION",
+    "BOUND_ATOMS_KIND",
+    "BOUND_ATOMS_SCHEMA_VERSION",
+    "BOUND_ATOMS_VERSION",
     "DIRECTION",
     "EARLY_ALGORITHM_VERSION",
     "EARLY_KIND",
@@ -887,6 +1222,7 @@ __all__ = [
     "SYNTHESIS_CANDIDATE_VERSION",
     "build_early_candidates",
     "build_early_entity_candidates",
+    "bind_atoms_to_entity_relations",
     "build_g246_candidates",
     "build_synthesis_candidates",
     "build_text_graphic_synthesis_candidates",

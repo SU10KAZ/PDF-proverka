@@ -21,6 +21,7 @@ from .unified_change_policy import (
 KIND = "stage_comparison_text_semantic_validation"
 SCHEMA_VERSION = "text-semantic-validation.v1"
 PRODUCER_VERSION = "text-semantic-validation-v1"
+STAGE3_DIGEST_VERSION = "stage3-semantic-content-v1"
 
 _OPTIONAL_FACT_FIELDS = {
     "fact_id",
@@ -79,6 +80,38 @@ def iter_stage3_evidence(text_differences: Mapping[str, Any]):
                 yield stage3_evidence_ref(group, bucket, item), group, bucket, item
 
 
+def stage3_content_signature(text_differences: Mapping[str, Any]) -> str:
+    """Bind Stage 4 to canonical Stage 3 evidence, not a caller-owned label."""
+    evidence = []
+    references = []
+    for evidence_ref, group, bucket, item in iter_stage3_evidence(text_differences):
+        references.append(evidence_ref)
+        evidence.append({
+            "evidence_ref": evidence_ref,
+            "bucket": bucket,
+            "group": {
+                "id": group.get("id"),
+                "left_pages": sorted(int(value) for value in group.get("left_pages") or []),
+                "right_pages": sorted(int(value) for value in group.get("right_pages") or []),
+                "relation_type": group.get("relation_type"),
+                "relation_status": group.get("relation_status"),
+            },
+            "item": dict(item),
+        })
+    if len(references) != len(set(references)):
+        raise ValueError("Stage 3 contains duplicate evidence identity")
+    evidence.sort(key=lambda value: (value["evidence_ref"], content_signature(value)))
+    return content_signature({
+        "digest_version": STAGE3_DIGEST_VERSION,
+        "kind": text_differences.get("kind"),
+        "version": text_differences.get("version"),
+        "pair_id": text_differences.get("pair_id"),
+        "algorithm": text_differences.get("algorithm"),
+        "source_signature": text_differences.get("source_signature"),
+        "evidence": evidence,
+    })
+
+
 def _reference(value: Any, where: str, *, nullable: bool = False) -> str | None:
     if value is None and nullable:
         return None
@@ -90,7 +123,7 @@ def _reference(value: Any, where: str, *, nullable: bool = False) -> str | None:
 def _normalize_fact(
     fact: Mapping[str, Any],
     *,
-    available_evidence: set[str],
+    available_evidence: Mapping[str, str],
 ) -> dict[str, Any]:
     fields = set(fact)
     if not _REQUIRED_FACT_FIELDS <= fields or not fields <= (
@@ -110,6 +143,7 @@ def _normalize_fact(
         raise ValueError("semantic fact.confidence: unsupported")
     normalized = {
         "source_evidence_ref": source_ref,
+        "source_evidence_signature": available_evidence[source_ref],
         "scope_ref": _reference(fact.get("scope_ref"), "scope_ref", nullable=True),
         "subject_ref": _reference(fact.get("subject_ref"), "subject_ref", nullable=True),
         "project_entity_ref": _reference(
@@ -148,7 +182,12 @@ def build_semantic_validation(
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     evidence = list(iter_stage3_evidence(text_differences))
-    available = {item[0] for item in evidence}
+    available = {
+        evidence_ref: content_signature({"bucket": bucket, "item": dict(item)})
+        for evidence_ref, _group, bucket, item in evidence
+    }
+    if len(available) != len(evidence):
+        raise ValueError("Stage 3 contains duplicate evidence identity")
     normalized = sorted(
         (_normalize_fact(fact, available_evidence=available) for fact in facts),
         key=lambda item: item["fact_id"],
@@ -156,10 +195,7 @@ def build_semantic_validation(
     ids = [item["fact_id"] for item in normalized]
     if len(ids) != len(set(ids)):
         raise ValueError("semantic facts contain duplicate fact_id")
-    stage3_signature = str(
-        text_differences.get("source_signature")
-        or content_signature(text_differences)
-    )
+    stage3_signature = stage3_content_signature(text_differences)
     return {
         "kind": KIND,
         "schema_version": SCHEMA_VERSION,
@@ -168,12 +204,14 @@ def build_semantic_validation(
         "input_signature": content_signature({
             "producer": PRODUCER_VERSION,
             "stage3_signature": stage3_signature,
+            "stage3_source_signature": text_differences.get("source_signature"),
             "facts": normalized,
         }),
         "stage3_signature": stage3_signature,
+        "stage3_source_signature": text_differences.get("source_signature"),
         "facts": normalized,
         "unresolved_source_evidence": sorted(
-            available - {item["source_evidence_ref"] for item in normalized}
+            set(available) - {item["source_evidence_ref"] for item in normalized}
         ),
         "provenance": {
             "producer": PRODUCER_VERSION,
@@ -187,7 +225,9 @@ __all__ = [
     "KIND",
     "PRODUCER_VERSION",
     "SCHEMA_VERSION",
+    "STAGE3_DIGEST_VERSION",
     "build_semantic_validation",
     "iter_stage3_evidence",
+    "stage3_content_signature",
     "stage3_evidence_ref",
 ]

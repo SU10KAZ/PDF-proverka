@@ -21,11 +21,20 @@ from .production_artifacts import (
 
 KIND = "stage_comparison_sheet_relations"
 SCHEMA_VERSION = "sheet-relations.v1"
-ALGORITHM_VERSION = "production-sheet-matcher.v1"
+ALGORITHM_VERSION = "production-sheet-matcher.v2"
 DIRECTION = "LEFT_TO_RIGHT"
 STATUSES = frozenset({"HIGH", "POSSIBLE", "NO_MATCH", "UNKNOWN"})
 RELATION_TYPES = frozenset({"MATCHED", "SPLIT", "MERGED", "UNCERTAIN"})
 DEFAULT_TOP_K = 5
+
+_SUBSTANTIVE_FEATURES = (
+    "functional",
+    "entities",
+    "topology",
+    "graphic",
+    "sheet_type",
+)
+_PRIMARY_FEATURES = frozenset({"functional", "entities", "topology"})
 
 _TOKEN_RE = re.compile(r"[a-zа-я0-9]+(?:[-./][a-zа-я0-9]+)*", re.I)
 _CONTINUATION_RE = re.compile(
@@ -86,8 +95,10 @@ def normalize_sheet(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
     ).strip() or None
     continuation = bool(title and _CONTINUATION_RE.search(title))
     core_group = None
+    explicit_group_key = None
     if explicit_group:
-        core_group = "explicit:" + explicit_group.casefold()
+        explicit_group_key = "explicit:" + explicit_group.casefold()
+        core_group = explicit_group_key
     elif continuation and (functional or entities):
         core_group = "continuation:" + content_signature({
             "functional": functional[:6],
@@ -105,6 +116,8 @@ def normalize_sheet(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
         "sheet_types": sheet_types,
         "graphic": graphic,
         "group_key": core_group,
+        "explicit_group_key": explicit_group_key,
+        "continuation_hint": continuation,
         "source_ref": record.get("source_ref"),
     }
 
@@ -182,11 +195,25 @@ def _deep(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
         (signals["page_proximity"], 0.01),
     ])
     strong = sorted(
-        key for key in ("functional", "entities", "topology", "graphic", "sheet_type")
+        key for key in _SUBSTANTIVE_FEATURES
         if signals[key] is not None and float(signals[key]) >= 0.6
     )
-    if score is None:
+    observed = sorted(key for key in _SUBSTANTIVE_FEATURES if signals[key] is not None)
+    positive = sorted(
+        key
+        for key in _SUBSTANTIVE_FEATURES
+        if signals[key] is not None and float(signals[key]) > 0
+    )
+    # Page proximity and title similarity are useful for candidate retrieval,
+    # but they do not say whether two sheets have comparable content.  With no
+    # substantive observations the honest result is UNKNOWN, even for adjacent
+    # pages with identical titles.
+    if not observed:
         status = "UNKNOWN"
+        score = None
+    elif not positive:
+        status = "NO_MATCH"
+        score = 0.0
     elif score >= 0.70 and len(strong) >= 2:
         status = "HIGH"
     elif score >= 0.27:
@@ -196,14 +223,124 @@ def _deep(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
     evidence = [
         {"feature": key, "score": round(float(value), 6)}
         for key, value in signals.items()
-        if value is not None and float(value) > 0
+        if value is not None
+        and (key in _SUBSTANTIVE_FEATURES or float(value) > 0)
     ]
     return {
+        "left_page": left["page"],
         "right_page": right["page"],
         "score": round(score, 6) if score is not None else None,
         "status": status,
         "strong_signals": strong,
+        "substantive_observations": observed,
+        "substantive_signals": positive,
+        "cardinality_edge_supported": (
+            len(strong) >= 2
+            and bool(_PRIMARY_FEATURES & set(strong))
+            and status in {"HIGH", "POSSIBLE"}
+        ),
+        "signals": signals,
         "evidence": evidence,
+    }
+
+
+def _sheet_fact_set(sheet: Mapping[str, Any]) -> set[tuple[str, str]]:
+    """Return dimension-qualified facts used for aggregate cardinality proof."""
+    facts: set[tuple[str, str]] = set()
+    for feature, field in (
+        ("functional", "functional"),
+        ("entities", "entities"),
+        ("topology", "topology"),
+        ("graphic", "graphic"),
+        ("sheet_type", "sheet_types"),
+    ):
+        facts.update((feature, str(value)) for value in sheet.get(field) or [])
+    return facts
+
+
+def _aggregate_cardinality_evidence(
+    anchor: Mapping[str, Any],
+    members: list[Mapping[str, Any]],
+    candidates: list[Mapping[str, Any]],
+    *,
+    relation_type: str,
+) -> dict[str, Any] | None:
+    """Prove that several supported edges are complementary, not alternatives.
+
+    A high score to two pages is insufficient to infer a split/merge: the two
+    pages can simply be duplicate alternatives.  Every member must contribute
+    at least one distinct fact also present on the aggregate sheet, and the
+    union must cover most of the aggregate sheet facts.  Titles and page
+    numbers deliberately do not participate in this proof.
+    """
+    if len(members) < 2 or len(candidates) != len(members):
+        return None
+    if not all(candidate.get("cardinality_edge_supported") for candidate in candidates):
+        return None
+
+    anchor_facts = _sheet_fact_set(anchor)
+    if not anchor_facts:
+        return None
+    matched_by_member = [anchor_facts & _sheet_fact_set(member) for member in members]
+    if any(not matched for matched in matched_by_member):
+        return None
+
+    distinct_by_member: list[set[tuple[str, str]]] = []
+    for index, matched in enumerate(matched_by_member):
+        other_facts = set().union(*(
+            value for other_index, value in enumerate(matched_by_member)
+            if other_index != index
+        ))
+        distinct_by_member.append(matched - other_facts)
+    if any(not distinct for distinct in distinct_by_member):
+        return None
+
+    covered = set().union(*matched_by_member)
+    coverage = len(covered) / len(anchor_facts)
+    if coverage < 0.6:
+        return None
+    return {
+        "kind": "AGGREGATE_CONTENT",
+        "relation_type": relation_type,
+        "coverage": round(coverage, 6),
+        "covered_fact_count": len(covered),
+        "anchor_fact_count": len(anchor_facts),
+        "distinct_contributions": [
+            {
+                "page": int(member["page"]),
+                "facts": [
+                    {"feature": feature, "value": value}
+                    for feature, value in sorted(distinct)
+                ],
+            }
+            for member, distinct in zip(members, distinct_by_member)
+        ],
+        "title_used": False,
+        "page_proximity_used": False,
+    }
+
+
+def _candidate_sort_key(candidate: Mapping[str, Any]) -> tuple[float, int, int]:
+    score = candidate.get("score")
+    return (
+        -(float(score) if score is not None else -1.0),
+        int(candidate.get("left_page") or 0),
+        int(candidate.get("right_page") or 0),
+    )
+
+
+def _missing_candidate(*, left_page: int | None, right_page: int | None) -> dict[str, Any]:
+    return {
+        "left_page": left_page,
+        "right_page": right_page,
+        "score": None,
+        "status": "UNKNOWN",
+        "strong_signals": [],
+        "substantive_observations": [],
+        "substantive_signals": [],
+        "cardinality_edge_supported": False,
+        "signals": {},
+        "evidence": [{"feature": "candidate_availability", "state": "ABSENT"}],
     }
 
 
@@ -213,13 +350,12 @@ def _relation(
     candidates: list[Mapping[str, Any]],
     *,
     relation_type: str,
+    aggregate_evidence: Mapping[str, Any] | None = None,
+    automatic_scope: bool = True,
 ) -> dict[str, Any]:
     ordered_candidates = sorted(
         (dict(candidate) for candidate in candidates),
-        key=lambda item: (
-            -(item["score"] if item.get("score") is not None else -1),
-            item["right_page"],
-        ),
+        key=_candidate_sort_key,
     )
     statuses = {str(candidate["status"]) for candidate in ordered_candidates}
     status = (
@@ -236,6 +372,34 @@ def _relation(
         "right_pages": sorted(right_pages),
         "relation_type": relation_type,
     }
+    evidence = []
+    candidate_edges = []
+    supported_edges = []
+    for candidate in ordered_candidates:
+        left_page = candidate.get("left_page")
+        right_page = candidate.get("right_page")
+        for item in candidate.get("evidence") or []:
+            evidence.append({
+                **dict(item),
+                "left_page": left_page,
+                "right_page": right_page,
+            })
+        if left_page is not None and right_page is not None:
+            edge = {
+                "left_page": int(left_page),
+                "right_page": int(right_page),
+                "status": candidate.get("status"),
+                "score": candidate.get("score"),
+                "substantive_signals": list(candidate.get("substantive_signals") or []),
+                "cardinality_edge_supported": bool(
+                    candidate.get("cardinality_edge_supported")
+                ),
+            }
+            candidate_edges.append(edge)
+            if edge["cardinality_edge_supported"]:
+                supported_edges.append(edge)
+    if aggregate_evidence is not None:
+        evidence.append(dict(aggregate_evidence))
     return {
         "relation_id": stable_id("srel_", identity),
         "left_pages": sorted(left_pages),
@@ -243,8 +407,15 @@ def _relation(
         "relation_type": relation_type,
         "status": status,
         "confidence": confidence,
-        "evidence": [item for candidate in ordered_candidates for item in candidate["evidence"]],
-        "candidate_pages": [item["right_page"] for item in ordered_candidates],
+        "automatic_scope": automatic_scope,
+        "evidence": evidence,
+        "candidate_pages": sorted({
+            int(item["right_page"])
+            for item in ordered_candidates
+            if item.get("right_page") is not None
+        }),
+        "candidate_edges": candidate_edges,
+        "supported_edges": supported_edges,
         "provenance": {
             "algorithm": ALGORITHM_VERSION,
             "title_is_primary": False,
@@ -297,38 +468,151 @@ def match_sheets(
     consumed_left: set[int] = set()
     consumed_right: set[int] = set()
 
-    # Explicit/continuation groups are the only safe automatic cardinality
-    # expansion.  Similar titles alone never manufacture SPLIT or MERGED.
+    supported_by_left: dict[int, dict[int, dict[str, Any]]] = {}
+    supported_by_right: dict[int, dict[int, dict[str, Any]]] = {}
+    for (left_page, right_page), candidate in deep_by_pair.items():
+        if not candidate.get("cardinality_edge_supported"):
+            continue
+        supported_by_left.setdefault(left_page, {})[right_page] = candidate
+        supported_by_right.setdefault(right_page, {})[left_page] = candidate
+
+    # An explicit group is a useful grouping assertion, but never evidence that
+    # every page in the group belongs in an automatic relation.  Retain only
+    # pages incident to an independently supported deep edge.
     group_keys = sorted({
-        item["group_key"] for item in [*left, *right] if item.get("group_key")
+        item["explicit_group_key"]
+        for item in [*left, *right]
+        if item.get("explicit_group_key")
     })
     for group_key in group_keys:
-        left_group = [item for item in left if item.get("group_key") == group_key]
-        right_group = [item for item in right if item.get("group_key") == group_key]
+        left_group = [
+            item for item in left if item.get("explicit_group_key") == group_key
+        ]
+        right_group = [
+            item for item in right if item.get("explicit_group_key") == group_key
+        ]
         if not left_group or not right_group or len(left_group) == len(right_group):
             continue
-        candidates = []
-        for left_item in left_group:
-            ranked = [
-                deep_by_pair[(left_item["page"], right_item["page"])]
-                for right_item in right_group
-                if (left_item["page"], right_item["page"]) in deep_by_pair
-            ]
-            ranked = [item for item in ranked if item["status"] in {"HIGH", "POSSIBLE"}]
-            candidates.extend(ranked)
-        if not candidates:
+        group_left_pages = {int(item["page"]) for item in left_group}
+        group_right_pages = {int(item["page"]) for item in right_group}
+        edge_items = [
+            candidate
+            for (left_page, right_page), candidate in deep_by_pair.items()
+            if left_page in group_left_pages
+            and right_page in group_right_pages
+            and candidate.get("cardinality_edge_supported")
+        ]
+        active_left_pages = sorted({int(item["left_page"]) for item in edge_items})
+        active_right_pages = sorted({int(item["right_page"]) for item in edge_items})
+        if not active_left_pages or not active_right_pages:
             continue
-        left_pages = [item["page"] for item in left_group]
-        right_pages = sorted({int(item["right_page"]) for item in candidates})
-        if len(left_pages) == 1 and len(right_pages) > 1:
+        if len(active_left_pages) == 1 and len(active_right_pages) > 1:
             relation_type = "SPLIT"
-        elif len(left_pages) > 1 and len(right_pages) == 1:
+        elif len(active_left_pages) > 1 and len(active_right_pages) == 1:
             relation_type = "MERGED"
         else:
-            relation_type = "UNCERTAIN"
-        relations.append(_relation(left_pages, right_pages, candidates, relation_type=relation_type))
-        consumed_left.update(left_pages)
-        consumed_right.update(right_pages)
+            # Equal-cardinality and many-to-many groups remain independent
+            # candidate relations; grouping them would invent topology.
+            continue
+        relations.append(_relation(
+            active_left_pages,
+            active_right_pages,
+            edge_items,
+            relation_type=relation_type,
+            aggregate_evidence={
+                "kind": "EXPLICIT_GROUP_WITH_SUPPORTED_EDGES",
+                "group_key": group_key,
+                "included_edge_count": len(edge_items),
+                "all_included_pages_have_supported_edge": True,
+                "title_used": False,
+                "page_proximity_used": False,
+            },
+        ))
+        consumed_left.update(active_left_pages)
+        consumed_right.update(active_right_pages)
+
+    # Deep candidate graph can establish cardinality without an upstream group
+    # reference.  The leaf constraint rejects ambiguous many-to-many graphs;
+    # aggregate evidence then proves that every included page contributes a
+    # distinct substantive fact instead of merely being an alternative match.
+    proposals: list[dict[str, Any]] = []
+    for left_item in left:
+        left_page = int(left_item["page"])
+        if left_page in consumed_left:
+            continue
+        edges = [
+            candidate
+            for right_page, candidate in supported_by_left.get(left_page, {}).items()
+            if right_page not in consumed_right
+            and {
+                other_left
+                for other_left in supported_by_right.get(right_page, {})
+                if other_left not in consumed_left
+            } == {left_page}
+        ]
+        edges.sort(key=_candidate_sort_key)
+        members = [right_by_page[int(item["right_page"])] for item in edges]
+        aggregate = _aggregate_cardinality_evidence(
+            left_item, members, edges, relation_type="SPLIT"
+        )
+        if aggregate is not None:
+            proposals.append({
+                "relation_type": "SPLIT",
+                "left_pages": [left_page],
+                "right_pages": sorted(int(item["page"]) for item in members),
+                "candidates": edges,
+                "aggregate": aggregate,
+            })
+
+    for right_item in right:
+        right_page = int(right_item["page"])
+        if right_page in consumed_right:
+            continue
+        edges = [
+            candidate
+            for left_page, candidate in supported_by_right.get(right_page, {}).items()
+            if left_page not in consumed_left
+            and {
+                other_right
+                for other_right in supported_by_left.get(left_page, {})
+                if other_right not in consumed_right
+            } == {right_page}
+        ]
+        edges.sort(key=lambda item: int(item["left_page"]))
+        members = [left_by_page[int(item["left_page"])] for item in edges]
+        aggregate = _aggregate_cardinality_evidence(
+            right_item, members, edges, relation_type="MERGED"
+        )
+        if aggregate is not None:
+            proposals.append({
+                "relation_type": "MERGED",
+                "left_pages": sorted(int(item["page"]) for item in members),
+                "right_pages": [right_page],
+                "candidates": edges,
+                "aggregate": aggregate,
+            })
+
+    proposals.sort(key=lambda item: (
+        -float(item["aggregate"]["coverage"]),
+        -min(float(candidate.get("score") or 0) for candidate in item["candidates"]),
+        item["relation_type"],
+        item["left_pages"],
+        item["right_pages"],
+    ))
+    for proposal in proposals:
+        if set(proposal["left_pages"]) & consumed_left:
+            continue
+        if set(proposal["right_pages"]) & consumed_right:
+            continue
+        relations.append(_relation(
+            proposal["left_pages"],
+            proposal["right_pages"],
+            proposal["candidates"],
+            relation_type=proposal["relation_type"],
+            aggregate_evidence=proposal["aggregate"],
+        ))
+        consumed_left.update(proposal["left_pages"])
+        consumed_right.update(proposal["right_pages"])
 
     for left_item in left:
         left_page = int(left_item["page"])
@@ -345,14 +629,65 @@ def match_sheets(
             ),
         )
         available = [item for item in ranked if int(item["right_page"]) not in consumed_right]
-        chosen = available[0] if available else (ranked[0] if ranked else None)
+        chosen = available[0] if available else None
         if chosen is None:
             continue
-        relation_type = "MATCHED" if int(chosen["right_page"]) not in consumed_right else "UNCERTAIN"
-        relations.append(_relation([left_page], [int(chosen["right_page"])], [chosen], relation_type=relation_type))
+        relations.append(_relation(
+            [left_page],
+            [int(chosen["right_page"])],
+            [chosen],
+            relation_type="MATCHED",
+        ))
         consumed_left.add(left_page)
-        if relation_type == "MATCHED":
-            consumed_right.add(int(chosen["right_page"]))
+        consumed_right.add(int(chosen["right_page"]))
+
+    # NO_MATCH and UNKNOWN are persisted as explicit reviewable relations, not
+    # merely inferred from summary arrays.  One side is deliberately left out
+    # of the automatic scope so downstream DOCUMENT orchestration cannot treat
+    # an unresolved candidate as an approved page comparison.
+    for left_item in left:
+        left_page = int(left_item["page"])
+        if left_page in consumed_left:
+            continue
+        ranked = sorted(
+            (
+                value for (candidate_left, _right), value in deep_by_pair.items()
+                if candidate_left == left_page
+            ),
+            key=_candidate_sort_key,
+        )
+        chosen = ranked[0] if ranked else _missing_candidate(
+            left_page=left_page, right_page=None
+        )
+        relations.append(_relation(
+            [left_page],
+            [],
+            [chosen],
+            relation_type="UNCERTAIN",
+            automatic_scope=False,
+        ))
+
+    for right_item in right:
+        right_page = int(right_item["page"])
+        if right_page in consumed_right:
+            continue
+        ranked = sorted(
+            (
+                value for (_left, candidate_right), value in deep_by_pair.items()
+                if candidate_right == right_page
+            ),
+            key=_candidate_sort_key,
+        )
+        chosen = ranked[0] if ranked else _missing_candidate(
+            left_page=None, right_page=right_page
+        )
+        relations.append(_relation(
+            [],
+            [right_page],
+            [chosen],
+            relation_type="UNCERTAIN",
+            automatic_scope=False,
+        ))
 
     input_signature = content_signature({
         "algorithm": ALGORITHM_VERSION,
@@ -360,7 +695,12 @@ def match_sheets(
         "right": right,
         "top_k": top_k,
     })
-    relations.sort(key=lambda item: (item["left_pages"], item["right_pages"], item["relation_id"]))
+    relations.sort(key=lambda item: (
+        0 if item["left_pages"] else 1,
+        item["left_pages"],
+        item["right_pages"],
+        item["relation_id"],
+    ))
     return {
         "kind": KIND,
         "schema_version": SCHEMA_VERSION,

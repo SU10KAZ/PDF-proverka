@@ -9,6 +9,8 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 
@@ -25,6 +27,49 @@ def canonical_json(value: Any) -> str:
 
 def content_signature(value: Any) -> str:
     return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
+
+
+@lru_cache(maxsize=256)
+def _file_sha256(
+    resolved_path: str,
+    size: int,
+    mtime_ns: int,
+    ctime_ns: int,
+) -> str:
+    del size, mtime_ns, ctime_ns  # cache-key fields; content is read below
+    digest = hashlib.sha256()
+    with Path(resolved_path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def file_content_identity(path: str | Path) -> dict[str, Any]:
+    """Return a private source identity that detects same-size/mtime rewrites."""
+    source = Path(path)
+    try:
+        stat = source.stat()
+        resolved = str(source.resolve())
+        return {
+            "path": resolved,
+            "size": stat.st_size,
+            "mtime_ns": stat.st_mtime_ns,
+            "ctime_ns": stat.st_ctime_ns,
+            "sha256": _file_sha256(
+                resolved,
+                stat.st_size,
+                stat.st_mtime_ns,
+                stat.st_ctime_ns,
+            ),
+        }
+    except OSError:
+        return {
+            "path": str(source),
+            "size": None,
+            "mtime_ns": None,
+            "ctime_ns": None,
+            "sha256": None,
+        }
 
 
 def stable_id(prefix: str, *parts: Any, length: int = 20) -> str:
@@ -57,6 +102,7 @@ __all__ = [
     "canonical_json",
     "canonical_strings",
     "content_signature",
+    "file_content_identity",
     "stable_id",
     "utc_now",
 ]

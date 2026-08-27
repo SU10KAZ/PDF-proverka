@@ -133,6 +133,23 @@ def test_stale_stage4_is_rejected():
         raise AssertionError("stale Stage 4 must fail closed")
 
 
+def test_stage4_is_rejected_when_stage3_content_changes_under_same_source_signature():
+    stage3 = _differences(_item("220", "380", "voltage"))
+    source_ref = next(iter_stage3_evidence(stage3))[0]
+    stage4 = build_semantic_validation(
+        stage3, [_fact(source_ref, "voltage", "220", "380")]
+    )
+    changed = deepcopy(stage3)
+    changed["sheet_groups"][0]["changed"][0]["after"] = "400"
+
+    try:
+        build_text_atoms(changed, stage4)
+    except ValueError as error:
+        assert "stale" in str(error)
+    else:
+        raise AssertionError("Stage 4 must bind the actual Stage 3 evidence content")
+
+
 def test_input_order_does_not_change_atom_ids():
     stage3 = _differences(
         _item("220", "380", "voltage"),

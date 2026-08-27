@@ -3,9 +3,11 @@ from __future__ import annotations
 from copy import deepcopy
 
 from backend.app.services.stage_comparison.entity_matcher import (
+    bind_atoms_to_entity_relations,
     build_early_entity_candidates,
     build_text_graphic_synthesis_candidates,
     match_entities,
+    normalize_entity,
 )
 from backend.app.services.stage_comparison.review_queue import (
     apply_human_decisions,
@@ -200,6 +202,41 @@ def test_entity_artifact_ids_and_signature_are_order_independent():
     ]
 
 
+def test_fallback_entity_ref_uses_canonical_nested_semantic_fact_sets():
+    first = {
+        "name": " Щит   ЩР-1 ",
+        "facts": {
+            "parameters": [
+                {"name": "current", "values": [20, 10]},
+                {"name": "voltage", "values": [400, 380]},
+            ],
+            "relationships": [
+                {"from": "input-1", "to": ["load-b", "load-a"]},
+                {"from": "input-2", "to": ["load-c"]},
+            ],
+        },
+    }
+    second = {
+        "facts": {
+            "relationships": [
+                {"to": ["load-c"], "from": "input-2"},
+                {"to": ["load-a", "load-b"], "from": "input-1"},
+            ],
+            "parameters": [
+                {"values": [380, 400], "name": "voltage"},
+                {"values": [10, 20], "name": "current"},
+            ],
+        },
+        "name": "Щит ЩР-1",
+    }
+
+    normalized_first = normalize_entity(first, side="LEFT")
+    normalized_second = normalize_entity(second, side="LEFT")
+
+    assert normalized_first["entity_ref"] == normalized_second["entity_ref"]
+    assert normalized_first["signals"] == normalized_second["signals"]
+
+
 def test_g246_candidate_has_exact_contract_and_keeps_missing_m_gates_fail_closed():
     project_ref = "project:panel-1"
     entities = match_entities(
@@ -265,6 +302,84 @@ def test_g246_candidate_requires_unique_atom_pair_and_proven_relation():
     assert len(ambiguous["diagnostics"]["ambiguous_pairs"]) == 2
 
 
+def test_exact_relation_binds_side_specific_atoms_before_g246_without_fuzzy_match():
+    relations = match_entities(
+        [_panel("left-panel", "ЩР-1")],
+        [_panel("right-panel", "ШР-1")],
+        generated_at="fixed",
+    )
+    text = _atom(
+        "text-type",
+        "TEXT",
+        None,
+        subject_ref="left-panel",
+        project_entity_ref=None,
+    )
+    graphic = _atom(
+        "graphic-type",
+        "GRAPHIC",
+        None,
+        subject_ref="right-panel",
+        project_entity_ref=None,
+    )
+
+    bound = bind_atoms_to_entity_relations(
+        [text], [graphic], relations, generated_at="fixed"
+    )
+    shared_ref = relations["relations"][0]["project_entity_ref"]
+    assert text["project_entity_ref"] is None
+    assert graphic["project_entity_ref"] is None
+    assert bound["text_atoms"][0]["project_entity_ref"] == shared_ref
+    assert bound["graphic_atoms"][0]["project_entity_ref"] == shared_ref
+    assert bound["text_atoms"][0]["subject_ref"] == shared_ref
+    assert bound["graphic_atoms"][0]["subject_ref"] == shared_ref
+    assert bound["entity_relations_binding"]["proof_signature"]
+    rebound = bind_atoms_to_entity_relations(
+        bound["text_atoms"],
+        bound["graphic_atoms"],
+        relations,
+        generated_at="later",
+    )
+    assert rebound["input_signature"] == bound["input_signature"]
+
+    candidates = build_text_graphic_synthesis_candidates(
+        [text], [graphic], relations, generated_at="fixed"
+    )
+    assert len(candidates["candidates"]) == 1
+    provenance = candidates["candidates"][0]["subject_identity_provenance"]
+    assert provenance["entity_relations_binding"]["binding_signature"]
+    assert provenance["entity_relation_ids"] == [
+        relations["relations"][0]["relation_id"]
+    ]
+    synthesis = synthesize_unified_changes(
+        text_atoms=bound["text_atoms"],
+        graphic_atoms=bound["graphic_atoms"],
+        candidates=candidates["candidates"],
+    )
+    assert len(synthesis["changes"]) == 2
+    assert synthesis["review_items"] == []
+    assert {
+        change["project_entity_ref"] for change in synthesis["changes"]
+    } == {shared_ref}
+
+    fuzzy = deepcopy(graphic)
+    fuzzy["subject_ref"] = "right-pane"
+    rejected = build_text_graphic_synthesis_candidates(
+        [text], [fuzzy], relations, generated_at="fixed"
+    )
+    assert rejected["candidates"] == []
+    assert rejected["diagnostics"]["unproven_pairs"] == [
+        ["text-type", "graphic-type"]
+    ]
+
+    unresolved_same = deepcopy(relations)
+    unresolved_same["relations"][0]["review_required"] = True
+    unresolved = build_text_graphic_synthesis_candidates(
+        [text], [graphic], unresolved_same, generated_at="fixed"
+    )
+    assert unresolved["candidates"] == []
+
+
 def test_review_queue_consolidates_categories_counts_and_exact_duplicates():
     queue = build_review_queue(
         _sheet_artifact(),
@@ -322,6 +437,190 @@ def test_v_human_candidate_choice_updates_only_dependent_relations_without_rerun
     }
     assert applied["diagnostics"]["pipeline_rerun"] is False
     assert applied["diagnostics"]["automatic_artifacts_mutated"] is False
+
+
+def test_other_without_ref_stays_pending_but_explicit_ref_creates_effective_relation():
+    entities = _ambiguous_entity_artifact()
+    queue = build_review_queue(entity_relations=entities, generated_at="fixed")
+    question = queue["questions"][0]
+    unresolved = build_human_decisions(
+        queue,
+        {question["question_id"]: "OTHER"},
+        generated_at="fixed",
+    )
+
+    still_pending = build_review_queue(
+        entity_relations=entities,
+        human_decisions=unresolved,
+        generated_at="fixed",
+    )
+    assert still_pending["counts"]["ENTITY"] == 1
+    assert still_pending["counts"]["unresolved_decisions"] == 1
+    unresolved_application = apply_human_decisions(
+        queue,
+        unresolved,
+        entity_relations=entities,
+        generated_at="fixed",
+    )
+    assert {
+        item["relation"]
+        for item in unresolved_application["effective_entity_relations"][
+            "relations"
+        ]
+    } == {"POSSIBLE_ENTITY"}
+    assert all(
+        item["review_required"]
+        for item in unresolved_application["effective_entity_relations"][
+            "relations"
+        ]
+    )
+
+    explicit = build_human_decisions(
+        queue,
+        {
+            question["question_id"]: {
+                "answer": "OTHER",
+                "explicit_candidate": {
+                    "right_entity_ref": "right-panel-3",
+                },
+            }
+        },
+        generated_at="fixed",
+    )
+    resolved_queue = build_review_queue(
+        entity_relations=entities,
+        human_decisions=explicit,
+        generated_at="fixed",
+    )
+    assert resolved_queue["counts"]["ENTITY"] == 0
+    effective = apply_human_decisions(
+        queue,
+        explicit,
+        entity_relations=entities,
+        generated_at="fixed",
+    )["effective_entity_relations"]
+    by_right = {
+        item["right_entity_ref"]: item for item in effective["relations"]
+    }
+    assert by_right["right-panel-3"]["relation"] == "SAME_ENTITY"
+    assert by_right["right-panel-3"]["confidence"] == "HUMAN"
+    assert by_right["right-panel-3"]["review_required"] is False
+    assert by_right["right-panel-1"]["relation"] == "DIFFERENT_ENTITY"
+    assert by_right["right-panel-2"]["relation"] == "DIFFERENT_ENTITY"
+    assert {item["relation"] for item in entities["relations"]} == {
+        "POSSIBLE_ENTITY"
+    }
+
+    text = _atom(
+        "text-explicit",
+        "TEXT",
+        None,
+        subject_ref="left-panel",
+        project_entity_ref=None,
+    )
+    graphic = _atom(
+        "graphic-explicit",
+        "GRAPHIC",
+        None,
+        subject_ref="right-panel-3",
+        project_entity_ref=None,
+    )
+    bound = bind_atoms_to_entity_relations(
+        [text], [graphic], effective, generated_at="fixed"
+    )
+    assert bound["text_atoms"][0]["project_entity_ref"] == by_right[
+        "right-panel-3"
+    ]["project_entity_ref"]
+    assert bound["graphic_atoms"][0]["project_entity_ref"] == by_right[
+        "right-panel-3"
+    ]["project_entity_ref"]
+
+
+def test_generic_yes_cannot_resolve_unknown_change_without_typed_identity():
+    synthesis = _synthesis_review_artifact()
+    queue = build_review_queue(synthesis=synthesis, generated_at="fixed")
+    question = next(
+        item
+        for item in queue["questions"]
+        if item["question_type"] == "CHANGE_REVIEW_EVIDENCE"
+    )
+    generic = build_human_decisions(
+        queue,
+        {question["question_id"]: "YES"},
+        generated_at="fixed",
+    )
+
+    still_pending = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=generic,
+        generated_at="fixed",
+    )
+    assert question["question_id"] in {
+        item["question_id"] for item in still_pending["questions"]
+    }
+    application = apply_human_decisions(
+        queue,
+        generic,
+        synthesis=synthesis,
+        generated_at="fixed",
+    )
+    resolution = application["change_resolutions"][0]
+    assert resolution["resolution"] == "REVIEW_REQUIRED"
+    assert resolution["resolution_complete"] is False
+    assert resolution["missing_typed_fields"] == [
+        "dimension",
+        "project_entity_ref",
+    ]
+    assert question["context"]["typed_resolution_contract"] == {
+        "version": "change-typed-resolution.v1",
+        "generic_yes_allowed": False,
+        "required_fields": ["dimension", "project_entity_ref"],
+        "accepted_fields": sorted(
+            {
+                "dimension",
+                "subject_ref",
+                "project_entity_ref",
+                "facet_ref",
+                "direction",
+                "outcome",
+                "before_value",
+                "after_value",
+                "selected_change_ids",
+            }
+        ),
+    }
+
+    typed = build_human_decisions(
+        queue,
+        {
+            question["question_id"]: {
+                "answer": "YES",
+                "typed_resolution": {
+                    "dimension": "TYPE",
+                    "project_entity_ref": "project:panel-1",
+                },
+            }
+        },
+        generated_at="fixed",
+    )
+    resolved = build_review_queue(
+        synthesis=synthesis,
+        human_decisions=typed,
+        generated_at="fixed",
+    )
+    assert question["question_id"] not in {
+        item["question_id"] for item in resolved["questions"]
+    }
+    typed_application = apply_human_decisions(
+        queue,
+        typed,
+        synthesis=synthesis,
+        generated_at="fixed",
+    )
+    typed_resolution = typed_application["change_resolutions"][0]
+    assert typed_resolution["resolution"] == "CONFIRMED"
+    assert typed_resolution["resolution_complete"] is True
+    assert typed_resolution["typed_resolution"]["dimension"] == "TYPE"
 
 
 def test_unchanged_answer_is_not_reasked_but_changed_dependency_makes_it_stale():

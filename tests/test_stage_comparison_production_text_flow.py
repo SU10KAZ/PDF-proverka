@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import os
+
 from backend.app.services.stage_comparison.production_text_flow import (
     PREPARATION_KIND,
     PREPARATION_SCHEMA_VERSION,
     build_text_differences_from_preparation,
     normalize_comparison_groups,
+)
+from backend.app.services.stage_comparison.production_artifacts import (
+    file_content_identity,
 )
 
 
@@ -75,3 +80,19 @@ def test_group_identity_is_order_independent():
     }])
 
     assert first == second
+
+
+def test_file_identity_detects_same_size_and_mtime_content_rewrite(tmp_path):
+    source = tmp_path / "source.md"
+    source.write_text("220", encoding="utf-8")
+    first = file_content_identity(source)
+    original_mtime = source.stat().st_mtime_ns
+    source.write_text("380", encoding="utf-8")
+    source.touch()
+    os.utime(source, ns=(original_mtime, original_mtime))
+
+    second = file_content_identity(source)
+
+    assert first["size"] == second["size"]
+    assert first["mtime_ns"] == second["mtime_ns"]
+    assert first["sha256"] != second["sha256"]

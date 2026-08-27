@@ -9,7 +9,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from .production_artifacts import content_signature, stable_id, utc_now
+from .production_artifacts import (
+    content_signature,
+    file_content_identity,
+    stable_id,
+    utc_now,
+)
 from . import sheet_matching, text_comparison, text_differences
 
 
@@ -42,14 +47,6 @@ def normalize_comparison_groups(
     if len({group["id"] for group in groups}) != len(groups):
         raise ValueError("duplicate comparison group id")
     return groups
-
-
-def _file_identity(path: Path) -> list[Any]:
-    try:
-        stat = path.stat()
-        return [str(path.resolve()), stat.st_size, stat.st_mtime_ns]
-    except OSError:
-        return [str(path), None, None]
 
 
 def prepare_text_scope(
@@ -107,8 +104,8 @@ def prepare_text_scope(
             ),
         )
         documents[side.upper()] = {
-            "pdf": _file_identity(pdf_path),
-            "markdown": _file_identity(markdown_path),
+            "pdf": file_content_identity(pdf_path),
+            "markdown": file_content_identity(markdown_path),
             "version_id": document.get("version_id"),
         }
     input_signature = content_signature({
