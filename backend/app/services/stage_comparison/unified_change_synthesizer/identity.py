@@ -9,6 +9,9 @@ from ..unified_change_policy import UNKNOWN_DIMENSION
 from .contract import IDENTITY_VERSION, SynthesisValidationError
 
 
+CANONICAL_SYNTHESIS_DIGEST_VERSION = "canonical-synthesis-digest.v1"
+
+
 def digest(value: Any) -> str:
     try:
         raw = json.dumps(
@@ -21,6 +24,29 @@ def digest(value: Any) -> str:
     except (TypeError, ValueError) as error:
         raise SynthesisValidationError("identity: JSON-compatible value required") from error
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def canonical_synthesis_digest(payload: Mapping[str, Any]) -> str:
+    """Return the versioned canonical digest of a complete synthesis.
+
+    The digest input is the entire payload, without excluded fields, wrapped
+    with a domain/version marker. Serialization is UTF-8 JSON with Unicode
+    preserved, keys sorted recursively, compact comma/colon separators, and
+    NaN/Infinity rejected. The lowercase SHA-256 hex digest is returned.
+    """
+    if (
+        not isinstance(payload, Mapping)
+        or payload.get("synthesis_version") != "unified-change-synthesis.v1"
+    ):
+        raise SynthesisValidationError(
+            "canonical synthesis digest: unified-change-synthesis.v1 required"
+        )
+    return digest(
+        {
+            "digest_version": CANONICAL_SYNTHESIS_DIGEST_VERSION,
+            "synthesis": dict(payload),
+        }
+    )
 
 
 def canonical_atomic_identity(
@@ -114,7 +140,9 @@ def content_signature(evidence: Iterable[Mapping[str, Any]]) -> str:
 
 
 __all__ = [
+    "CANONICAL_SYNTHESIS_DIGEST_VERSION",
     "canonical_atomic_identity",
+    "canonical_synthesis_digest",
     "content_signature",
     "digest",
     "stable_atomic_change_id",

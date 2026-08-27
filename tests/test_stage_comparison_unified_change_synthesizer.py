@@ -3,13 +3,17 @@ from __future__ import annotations
 
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 from typing import Any
 
 import pytest
 
 from backend.app.services.stage_comparison.unified_change_synthesizer import (
     SynthesisValidationError,
+    canonical_synthesis_digest,
     ledger_to_graphic_atoms,
     schema_path,
     stage53_to_text_atoms,
@@ -29,6 +33,9 @@ PILOT_RIGHT_GRAPH = (
     ROOT / "experiments/g2_4_4_3_correct_sides/ios/right_system_graph.json"
 )
 POLICY_V2 = ROOT / "tests/fixtures/g2_4_5_policy_cases_v2.json"
+PILOT_SYNTHESIS_DIGEST = (
+    "1a3c4a6ec7f3adb8f66b52f7bb1c7807f51cad9a2d7a24ac0ae18a55ca7dc70d"
+)
 
 
 def _atom(
@@ -725,6 +732,45 @@ def test_real_pilot_preserves_all_four_graphic_changes_without_parent_relation()
     assert not {"NODE_ADDED", "NODE_REMOVED"}.intersection(
         change["type"] for change in ledger["changes"]
     )
+
+
+def test_canonical_pilot_digest_is_golden_across_hash_seeds_and_processes():
+    ledger = json.loads(PILOT_LEDGER.read_text(encoding="utf-8"))
+    adapted = ledger_to_graphic_atoms(
+        ledger, artifact_ref=str(PILOT_LEDGER.relative_to(ROOT))
+    )
+    result = synthesize_unified_changes(graphic_atoms=adapted["atoms"])
+
+    assert canonical_synthesis_digest(result) == PILOT_SYNTHESIS_DIGEST
+
+    probe = "\n".join(
+        (
+            "import json",
+            "from pathlib import Path",
+            "from backend.app.services.stage_comparison.unified_change_synthesizer import canonical_synthesis_digest, ledger_to_graphic_atoms, synthesize_unified_changes",
+            "root = Path.cwd()",
+            "ledger_path = root / 'experiments/g2_4_4_3_correct_sides/ios/graphic_change_ledger.json'",
+            "ledger = json.loads(ledger_path.read_text(encoding='utf-8'))",
+            "adapted = ledger_to_graphic_atoms(ledger, artifact_ref=str(ledger_path.relative_to(root)))",
+            "result = synthesize_unified_changes(graphic_atoms=adapted['atoms'])",
+            "print(canonical_synthesis_digest(result))",
+        )
+    )
+    observed = set()
+    for seed in ("1", "42", "314159"):
+        environment = os.environ.copy()
+        environment["PYTHONHASHSEED"] = seed
+        completed = subprocess.run(
+            [sys.executable, "-c", probe],
+            cwd=ROOT,
+            env=environment,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        observed.add(completed.stdout.strip())
+
+    assert observed == {PILOT_SYNTHESIS_DIGEST}
 
 
 def test_corpus_v2_authorizes_no_real_cross_source_merge():

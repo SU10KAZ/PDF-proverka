@@ -13,7 +13,9 @@ from .contract import (
     normalize_synthesis_atom,
 )
 from .identity import (
+    CANONICAL_SYNTHESIS_DIGEST_VERSION,
     canonical_atomic_identity,
+    canonical_synthesis_digest,
     content_signature,
     stable_atomic_change_id,
     stable_group_id,
@@ -35,6 +37,7 @@ from .validation import schema_path, validate_synthesis
 
 __all__ = [
     "DIRECTION",
+    "CANONICAL_SYNTHESIS_DIGEST_VERSION",
     "IDENTITY_VERSION",
     "INPUT_VERSION",
     "KIND",
@@ -45,6 +48,7 @@ __all__ = [
     "SYNTHESIZER_VERSION",
     "SynthesisValidationError",
     "canonical_atomic_identity",
+    "canonical_synthesis_digest",
     "content_signature",
     "build_presentation_groups",
     "ledger_to_graphic_atoms",
