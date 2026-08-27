@@ -1,0 +1,179 @@
+"""Trace a unified atomic change to exact LEFT/RIGHT viewer highlights."""
+from __future__ import annotations
+
+from typing import Any, Mapping
+
+from .production_artifacts import content_signature
+
+
+KIND = "stage_comparison_evidence_navigation"
+SCHEMA_VERSION = "evidence-navigation.v1"
+
+
+def _target(synthesis: Mapping[str, Any], target_id: str) -> Mapping[str, Any]:
+    for collection, key in (("changes", "change_id"), ("review_items", "review_evidence_id")):
+        for value in synthesis.get(collection) or []:
+            if isinstance(value, Mapping) and value.get(key) == target_id:
+                return value
+    raise KeyError("unified change/review evidence not found")
+
+
+def _document_ref(documents: Mapping[str, Any] | None, side: str) -> Any:
+    value = (documents or {}).get(side)
+    if isinstance(value, Mapping):
+        return value.get("document_ref", value.get("document_code", value.get("pdf_path")))
+    return value
+
+
+def _text_locations(
+    atom: Mapping[str, Any],
+    documents: Mapping[str, Any] | None,
+) -> dict[str, list[dict[str, Any]]]:
+    provenance = atom.get("provenance")
+    locations = provenance.get("locations") if isinstance(provenance, Mapping) else None
+    output = {"LEFT": [], "RIGHT": []}
+    for side in output:
+        values = locations.get(side) if isinstance(locations, Mapping) else []
+        for location in values or []:
+            if not isinstance(location, Mapping):
+                continue
+            bboxes = list(location.get("bboxes") or [])
+            output[side].append({
+                "source": "TEXT",
+                "document_ref": _document_ref(documents, side),
+                "page": location.get("page"),
+                "fragment_id": location.get("fragment_id"),
+                "block_id": None,
+                "node_id": None,
+                "highlight": {"kind": "BBOX_SET", "bboxes": bboxes} if bboxes else None,
+                "coordinates_available": bool(bboxes),
+            })
+    return output
+
+
+def _graphic_locations(
+    change: Mapping[str, Any] | None,
+    documents: Mapping[str, Any] | None,
+) -> dict[str, list[dict[str, Any]]]:
+    output = {"LEFT": [], "RIGHT": []}
+    if not change:
+        return output
+    structural = change.get("structural")
+    nodes_by_side = {
+        "LEFT": list(structural.get("left_nodes") or []) if isinstance(structural, Mapping) else [],
+        "RIGHT": list(structural.get("right_nodes") or []) if isinstance(structural, Mapping) else [],
+    }
+    for side, region_key in (("LEFT", "left_region"), ("RIGHT", "right_region")):
+        region = change.get(region_key)
+        if not isinstance(region, Mapping):
+            # Honest absence is still traceable to the change/evidence, but no
+            # page coordinate is invented.
+            output[side].append({
+                "source": "GRAPHIC",
+                "document_ref": _document_ref(documents, side),
+                "page": None,
+                "fragment_id": None,
+                "block_id": None,
+                "node_id": nodes_by_side[side][0] if len(nodes_by_side[side]) == 1 else None,
+                "highlight": None,
+                "coordinates_available": False,
+            })
+            continue
+        bbox = region.get("bbox_visual_pt")
+        polygon = region.get("polygon")
+        if isinstance(polygon, list) and polygon:
+            highlight = {"kind": "POLYGON", "polygon": polygon}
+        elif isinstance(bbox, list) and len(bbox) == 4:
+            highlight = {"kind": "BBOX", "bbox": bbox}
+        else:
+            highlight = None
+        page_index = region.get("page_index")
+        output[side].append({
+            "source": "GRAPHIC",
+            "document_ref": _document_ref(documents, side),
+            "page": int(page_index) + 1 if isinstance(page_index, int) else None,
+            "fragment_id": None,
+            "block_id": region.get("block_id"),
+            "node_id": nodes_by_side[side][0] if len(nodes_by_side[side]) == 1 else None,
+            "highlight": highlight,
+            "coordinates_available": highlight is not None,
+        })
+    return output
+
+
+def build_evidence_navigation(
+    target_id: str,
+    *,
+    synthesis: Mapping[str, Any],
+    text_atoms: Mapping[str, Any] | None = None,
+    graphic_ledger: Mapping[str, Any] | None = None,
+    documents: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    target = _target(synthesis, target_id)
+    text_by_atom = {
+        str(atom.get("atom_id")): atom
+        for atom in (text_atoms or {}).get("atoms") or []
+        if isinstance(atom, Mapping)
+    }
+    graphic_by_evidence = {
+        str(change.get("change_id")): change
+        for change in (graphic_ledger or {}).get("changes") or []
+        if isinstance(change, Mapping)
+    }
+    sides: dict[str, list[dict[str, Any]]] = {"LEFT": [], "RIGHT": []}
+    trace = []
+    for evidence in target.get("evidence_refs") or []:
+        if not isinstance(evidence, Mapping):
+            continue
+        source = evidence.get("source")
+        atom_id = str(evidence.get("atom_id") or "")
+        evidence_ref = str(evidence.get("evidence_ref") or "")
+        if source == "TEXT":
+            located = _text_locations(text_by_atom.get(atom_id, {}), documents)
+        elif source == "GRAPHIC":
+            located = _graphic_locations(graphic_by_evidence.get(evidence_ref), documents)
+        else:
+            continue
+        for side in sides:
+            sides[side].extend(located[side])
+        trace.append({
+            "target_id": target_id,
+            "evidence_ref": evidence_ref,
+            "atom_id": atom_id,
+            "source": source,
+            "source_artifact": evidence.get("source_artifact"),
+            "locations": located,
+        })
+    for side in sides:
+        sides[side].sort(key=lambda item: (
+            item["page"] if isinstance(item.get("page"), int) else 10**9,
+            item["source"],
+            str(item.get("block_id") or item.get("fragment_id") or ""),
+        ))
+    has_both_sides = bool(sides["LEFT"] and sides["RIGHT"])
+    return {
+        "kind": KIND,
+        "schema_version": SCHEMA_VERSION,
+        "version": 1,
+        "target_id": target_id,
+        "source_mode": target.get("source_mode", target.get("source")),
+        "direction": "LEFT_TO_RIGHT",
+        "layout": "SIDE_BY_SIDE" if has_both_sides else "SINGLE_SIDE",
+        "sides": sides,
+        "trace": trace,
+        "input_signature": content_signature({
+            "target": target,
+            "trace": trace,
+            "documents": documents,
+        }),
+        "viewer_action": {
+            "open_exact_pages": True,
+            "zoom_to_highlights": any(
+                location["coordinates_available"]
+                for values in sides.values() for location in values
+            ),
+        },
+    }
+
+
+__all__ = ["KIND", "SCHEMA_VERSION", "build_evidence_navigation"]
