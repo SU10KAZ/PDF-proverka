@@ -385,6 +385,47 @@ def test_missing_parameter_facets_fail_safe_to_separate_identities():
     )
 
 
+def test_text_change_id_is_stable_when_same_cell_neighbour_appears_or_disappears():
+    first = _atom(
+        "text-type-a",
+        "TEXT",
+        dimension="TYPE",
+        direction="REPLACED",
+        before_value="QS1",
+        after_value="QF3",
+    )
+    second = _atom(
+        "text-type-b",
+        "TEXT",
+        dimension="TYPE",
+        direction="REPLACED",
+        before_value="QS2",
+        after_value="QF4",
+    )
+
+    alone_before = _only_change(synthesize_unified_changes(text_atoms=[first]))
+    with_neighbour = synthesize_unified_changes(text_atoms=[first, second])
+    with_neighbour_reversed = synthesize_unified_changes(
+        text_atoms=[second, first]
+    )
+    alone_after = _only_change(synthesize_unified_changes(text_atoms=[first]))
+
+    def id_for(result: dict[str, Any], atom_id: str) -> str:
+        return next(
+            change["change_id"]
+            for change in result["changes"]
+            if change["evidence_refs"][0]["atom_id"] == atom_id
+        )
+
+    assert len({change["change_id"] for change in with_neighbour["changes"]}) == 2
+    assert {
+        alone_before["change_id"],
+        id_for(with_neighbour, first["atom_id"]),
+        id_for(with_neighbour_reversed, first["atom_id"]),
+        alone_after["change_id"],
+    } == {alone_before["change_id"]}
+
+
 def test_graphic_corroboration_keeps_text_change_id_and_changes_content_only():
     text = _atom("text-type", "TEXT", dimension="TYPE", direction="REPLACED")
     graphic = _atom(
@@ -406,6 +447,32 @@ def test_graphic_corroboration_keeps_text_change_id_and_changes_content_only():
     assert after["change_id"] == before["change_id"]
     assert after["content_signature"] != before["content_signature"]
     assert (before["source_mode"], after["source_mode"]) == ("TEXT", "BOTH")
+
+    restored = _only_change(synthesize_unified_changes(text_atoms=[text]))
+    assert restored["change_id"] == before["change_id"]
+
+
+def test_presentation_group_membership_never_changes_atomic_ids():
+    voltage = _atom("text-voltage", "TEXT", facet_ref="voltage")
+    temperature = _atom(
+        "text-temperature", "TEXT", facet_ref="temperature_range"
+    )
+
+    alone_before = _only_change(synthesize_unified_changes(text_atoms=[voltage]))
+    grouped = synthesize_unified_changes(text_atoms=[temperature, voltage])
+    alone_after = _only_change(synthesize_unified_changes(text_atoms=[voltage]))
+    grouped_voltage = next(
+        change
+        for change in grouped["changes"]
+        if change["evidence_refs"][0]["atom_id"] == voltage["atom_id"]
+    )
+
+    assert len(grouped["presentation_groups"]) == 1
+    assert (
+        alone_before["change_id"]
+        == grouped_voltage["change_id"]
+        == alone_after["change_id"]
+    )
 
 
 def test_input_candidate_and_evidence_order_do_not_change_output():

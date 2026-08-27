@@ -1,8 +1,6 @@
 """Pure UNION synthesis and strict G2.4.5-based cross-source decisions."""
 from __future__ import annotations
 
-from collections import Counter
-import json
 from typing import Any, Iterable, Mapping
 
 from ..unified_change_policy import (
@@ -62,31 +60,15 @@ def _sort_evidence(values: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
     )
 
 
-def _base_identity_key(atom: Mapping[str, Any]) -> str:
-    identity = canonical_atomic_identity(atom)
-    # PARAMETER without a facet is already evidence-scoped by the versioned
-    # identity contract; other cells are counted before disambiguation.
-    return json.dumps(
-        identity,
-        ensure_ascii=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    )
-
-
 def _identity_by_atom(atoms: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    text_counts = Counter(
-        _base_identity_key(atom) for atom in atoms if atom["source"] == "TEXT"
-    )
-    identities: dict[str, dict[str, Any]] = {}
-    for atom in atoms:
-        evidence_scoped = atom["source"] == "GRAPHIC"
-        if atom["source"] == "TEXT" and text_counts[_base_identity_key(atom)] > 1:
-            evidence_scoped = True
-        identities[atom["atom_id"]] = canonical_atomic_identity(
-            atom, evidence_scoped=evidence_scoped
-        )
-    return identities
+    # Atomic identity must not depend on how many neighbouring facts happen to
+    # occupy the same base cell in this run.  ``atom_id`` is the stable
+    # source-evidence identity and is fixed before cross-source candidates are
+    # evaluated.  A later GRAPHIC corroboration reuses the TEXT change record.
+    return {
+        atom["atom_id"]: canonical_atomic_identity(atom, evidence_scoped=True)
+        for atom in atoms
+    }
 
 
 def _single_change(

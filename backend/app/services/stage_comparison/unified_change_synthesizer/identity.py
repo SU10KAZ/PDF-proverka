@@ -30,9 +30,10 @@ def canonical_atomic_identity(
 ) -> dict[str, Any]:
     """Build the G2.4.6 identity cell without changing G2.4.5.
 
-    ``facet_ref`` is an explicit upstream property reference.  PARAMETER atoms
-    without it, and same-source collisions selected by the synthesizer, are
-    deliberately evidence-scoped instead of being incorrectly unified.
+    ``facet_ref`` is an explicit upstream property reference.  The production
+    synthesizer evidence-scopes every atomic fact from its first appearance;
+    this optional switch remains available only for callers that need the
+    non-unique base cell for grouping or diagnostics.
     """
     if atom.get("dimension") == UNKNOWN_DIMENSION:
         raise SynthesisValidationError(
