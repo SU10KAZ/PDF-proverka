@@ -801,15 +801,47 @@ def _non_actionable_change_review(
     }
 
 
+def _ai_resolved_review_ids(
+    ai_resolutions: Mapping[str, Any] | None,
+) -> set[str]:
+    if not isinstance(ai_resolutions, Mapping):
+        return set()
+    return {
+        str(value.get("review_evidence_id") or "")
+        for value in ai_resolutions.get("resolutions") or []
+        if isinstance(value, Mapping)
+        and value.get("status") == "AI_RESOLVED"
+        and isinstance(value.get("typed_resolution"), Mapping)
+        and value.get("typed_resolution")
+    }
+
+
 def _change_question_plan(
     synthesis: Mapping[str, Any] | None,
+    ai_resolutions: Mapping[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     if not isinstance(synthesis, Mapping):
         return [], []
+    ai_resolved = _ai_resolved_review_ids(ai_resolutions)
     questions: list[dict[str, Any]] = []
     suppressed: list[dict[str, Any]] = []
     for item in synthesis.get("review_items") or []:
         if not isinstance(item, Mapping):
+            continue
+        review_ref_early = _ref(
+            item, "review_evidence_id", "atom_id", prefix="review_evidence_"
+        )
+        if review_ref_early in ai_resolved:
+            # Элемент уже стал находкой: спрашивать про него — значит просить
+            # человека сделать работу дважды.
+            suppressed.append({
+                "review_evidence_id": review_ref_early,
+                "atom_id": item.get("atom_id"),
+                "reason_codes": ["resolved_by_ai"],
+                "only_upstream_relation_blocker": False,
+                "opposite_coverage_gap": False,
+                "engineer_review_target": True,
+            })
             continue
         suppression = _non_actionable_change_review(item)
         if suppression is not None:
@@ -934,8 +966,11 @@ def _change_question_plan(
     return questions, suppressed
 
 
-def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any]]:
-    return _change_question_plan(synthesis)[0]
+def _change_questions(
+    synthesis: Mapping[str, Any] | None,
+    ai_resolutions: Mapping[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    return _change_question_plan(synthesis, ai_resolutions)[0]
 
 
 def _deduplicate(questions: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -1160,10 +1195,13 @@ def build_review_queue(
     synthesis: Mapping[str, Any] | None = None,
     *,
     human_decisions: Mapping[str, Any] | Iterable[Mapping[str, Any]] | None = None,
+    ai_resolutions: Mapping[str, Any] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Build one deduplicated queue and suppress unchanged resolved questions."""
-    change_questions, suppressed_change_reviews = _change_question_plan(synthesis)
+    change_questions, suppressed_change_reviews = _change_question_plan(
+        synthesis, ai_resolutions
+    )
     entity_questions, suppressed_entity_reviews = _entity_questions(
         entity_relations, synthesis
     )
@@ -1209,6 +1247,10 @@ def build_review_queue(
         "entity_relations": _artifact_signature(entity_relations),
         "synthesis": _artifact_signature(synthesis),
     }
+    if ai_resolutions is not None:
+        # Очередь обязана протухнуть, когда ИИ-слой перерешал элементы: иначе
+        # старый вопрос переживёт находку, которую он же и заменяет.
+        source_signatures["ai_resolutions"] = _artifact_signature(ai_resolutions)
     question_signatures = {
         item["question_id"]: item["input_signature"] for item in all_questions
     }
@@ -1804,6 +1846,80 @@ def apply_answer_to_relation(
     return result
 
 
+AI_RESOLUTION_SOURCE = "AI"
+AI_QUESTION_PREFIX = "ai_resolution:"
+
+
+def _ai_change_resolutions(
+    ai_resolutions: Mapping[str, Any] | None,
+    synthesis: Mapping[str, Any] | None,
+    human_targets: set[str],
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """Machine resolutions as change resolutions — never as human answers.
+
+    Only items the AI layer marked resolved and typed reach this point, and
+    only for review evidence that this exact synthesis still publishes: a
+    resolution for an item that no longer exists would materialize nothing and
+    fail the downstream guard.
+    """
+    if not isinstance(ai_resolutions, Mapping):
+        return [], []
+    scope_by_review: dict[str, Any] = {}
+    for item in (synthesis or {}).get("review_items") or []:
+        if isinstance(item, Mapping):
+            scope_by_review[str(item.get("review_evidence_id") or "")] = item.get(
+                "scope_ref"
+            )
+    published = set(scope_by_review)
+    applied: list[dict[str, Any]] = []
+    overridden: list[str] = []
+    for value in ai_resolutions.get("resolutions") or []:
+        if not isinstance(value, Mapping) or value.get("status") != "AI_RESOLVED":
+            continue
+        typed = value.get("typed_resolution")
+        if not isinstance(typed, Mapping) or not typed:
+            continue
+        review_ref = str(value.get("review_evidence_id") or "")
+        if not review_ref or (published and review_ref not in published):
+            continue
+        if review_ref in human_targets:
+            overridden.append(review_ref)
+            continue
+        question = {
+            "question_id": AI_QUESTION_PREFIX + review_ref,
+            "category": "CHANGE",
+            "question_type": "CHANGE_REVIEW_EVIDENCE",
+            # Тот же scope, что у человека, — иначе один и тот же объект
+            # получит две разные ссылки и раздвоится в находках.
+            "context": {
+                "review_evidence_id": review_ref,
+                "scope_ref": scope_by_review.get(review_ref),
+            },
+        }
+        normalized = _normalize_typed_resolution(
+            question, {"typed_resolution": dict(typed)}
+        )
+        applied.append({
+            "question_id": question["question_id"],
+            "dependency_refs": [review_ref],
+            "resolution": "TYPED_RESOLUTION",
+            "resolution_complete": True,
+            "missing_typed_fields": [],
+            "typed_resolution": normalized,
+            "decision": None,
+            "source": AI_RESOLUTION_SOURCE,
+            "ai_resolution": {
+                "confidence": value.get("confidence"),
+                "engineering_summary": value.get("engineering_summary"),
+                "evidence_quotes": deepcopy(value.get("evidence_quotes") or []),
+                "audit": deepcopy(value.get("audit") or {}),
+                "critic": deepcopy(value.get("critic")),
+            },
+        })
+    applied.sort(key=lambda item: str(item["question_id"]))
+    return applied, sorted(set(overridden))
+
+
 def apply_human_decisions(
     review_queue: Mapping[str, Any],
     human_decisions: Mapping[str, Any],
@@ -1811,9 +1927,17 @@ def apply_human_decisions(
     sheet_relations: Mapping[str, Any] | None = None,
     entity_relations: Mapping[str, Any] | None = None,
     synthesis: Mapping[str, Any] | None = None,
+    ai_resolutions: Mapping[str, Any] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
-    """Apply only dependent overrides; never rerun matching or synthesis."""
+    """Apply only dependent overrides; never rerun matching or synthesis.
+
+    ``ai_resolutions`` is a second, clearly separate source of change
+    resolutions.  It never touches ``review_answers``: that file holds exactly
+    one answer per question, and writing a machine answer into it would
+    silently overwrite a person's.  Where both sources address the same review
+    item, the human wins — always, and whether or not their answer is complete.
+    """
     questions = {
         str(item.get("question_id")): item
         for item in review_queue.get("questions") or []
@@ -2054,6 +2178,15 @@ def apply_human_decisions(
                 "decision": _decision_summary(decision),
             }
         )
+    human_change_targets = {
+        str(ref)
+        for item in change_resolutions
+        for ref in item.get("dependency_refs") or []
+    }
+    ai_applied, ai_overridden = _ai_change_resolutions(
+        ai_resolutions, synthesis, human_change_targets
+    )
+    change_resolutions.extend(ai_applied)
     change_resolutions.sort(key=lambda item: str(item["question_id"]))
     applied_ids = sorted(
         str(decision.get("decision_id")) for decision, _question in valid
@@ -2070,6 +2203,8 @@ def apply_human_decisions(
         "entity_relations": _artifact_signature(entity_relations),
         "synthesis": _artifact_signature(synthesis),
     }
+    if ai_resolutions is not None:
+        source_signatures["ai_resolutions"] = _artifact_signature(ai_resolutions)
     input_signature = content_signature(
         {
             "application": APPLICATION_VERSION,
@@ -2096,7 +2231,10 @@ def apply_human_decisions(
             "automatic_artifacts_mutated": False,
             "applied_decisions": len(applied_ids),
             "unresolved_decisions": len(unresolved_ids),
-            "uses_model": False,
+            "ai_resolutions_applied": len(ai_applied),
+            "ai_resolutions_overridden_by_human": len(ai_overridden),
+            "ai_overridden_review_evidence_ids": ai_overridden,
+            "uses_model": bool(ai_applied),
         },
     }
 

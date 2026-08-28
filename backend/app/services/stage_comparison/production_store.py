@@ -45,6 +45,7 @@ ARTIFACT_PATHS: dict[str, Callable[[str, str], Path]] = {
     "review_questions": paths.production_review_questions_path,
     "review_answers": paths.production_review_answers_path,
     "review_application": paths.production_review_application_path,
+    "ai_resolutions": paths.production_ai_resolutions_path,
     "automatic_unified_synthesis": paths.production_automatic_synthesis_path,
     "unified_synthesis": paths.production_unified_synthesis_path,
     "engineer_decisions": paths.production_engineer_decisions_path,

@@ -20,6 +20,9 @@ from uuid import uuid4
 from backend.app.services.common.blocks_json import load_blocks_json
 
 from . import production_store, sheet_matching, sheet_scope_policy, store
+from .ai import gateway as ai_gateway
+from .ai import resolution as ai_resolution
+from .ai import settings as ai_settings
 from .engineer_review import build_engineer_decisions, build_final_report, review_rows
 from .evidence_navigation import build_evidence_navigation
 from .graphic_comparison.mode2 import (
@@ -2248,6 +2251,7 @@ def _build_review_questions(
     entity_relations: Mapping[str, Any],
     synthesis: Mapping[str, Any],
     answers: Mapping[str, Any] | None,
+    ai_resolutions: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     try:
         module = importlib.import_module(
@@ -2265,6 +2269,7 @@ def _build_review_questions(
         entity_relations,
         synthesis,
         human_decisions=None,
+        ai_resolutions=ai_resolutions,
     )
     if not sheet_suggestions:
         return builder(
@@ -2272,10 +2277,143 @@ def _build_review_questions(
             entity_relations,
             synthesis,
             human_decisions=answers,
+            ai_resolutions=ai_resolutions,
         )
     return _merge_suggestion_questions(
         base, sheet_suggestions, answers, module
     )
+
+
+def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Карточка этапа для конвейера: сколько закрыто и сколько осталось людям."""
+    diagnostics = (artifact or {}).get("diagnostics") or {}
+    total = int(diagnostics.get("input_items") or 0)
+    resolved = int(diagnostics.get("ai_resolved") or 0)
+    mode = str((artifact or {}).get("mode") or ai_settings.MODE_OFF)
+    return {
+        "status": "NOT_APPLICABLE" if mode == ai_settings.MODE_OFF else "COMPLETED",
+        "mode": mode,
+        "total": total,
+        "processed": total,
+        "ai_resolved": resolved,
+        "human_required": int(diagnostics.get("human_required") or 0),
+        "verifier_rejected": int(diagnostics.get("verifier_rejected") or 0),
+        "critic_rejected": int(diagnostics.get("critic_rejected") or 0),
+        "model_calls": int(diagnostics.get("model_calls") or 0),
+        "model_failures": int(diagnostics.get("model_failures") or 0),
+        "model_timeouts": int(diagnostics.get("model_timeouts") or 0),
+        "cache_hits": int(((diagnostics.get("cache") or {}).get("hits")) or 0),
+        "duration_ms": int(diagnostics.get("duration_ms") or 0),
+        "human_reasons": dict(diagnostics.get("human_reasons") or {}),
+        "budgets_hit": list(diagnostics.get("budgets_hit") or []),
+    }
+
+
+def _run_ai_resolution(
+    session_id: str,
+    pair_id: str,
+    *,
+    synthesis: Mapping[str, Any],
+    preparation: Mapping[str, Any] | None,
+    sheet_relations: Mapping[str, Any],
+    comparison_groups: Iterable[Mapping[str, Any]],
+    publish_progress: Any,
+) -> dict[str, Any]:
+    """Разрешить неоднозначные расхождения моделью — или честно не разрешить.
+
+    Слой врезан РОВНО между детерминированным синтезом и построением вопросов:
+    ниже по течению всё работает так же, как если бы типизированный ответ дал
+    человек. Выключенный слой (режим OFF) пишет пустой артефакт и не делает ни
+    одного вызова — поведение системы совпадает со сборкой без ИИ.
+
+    Отказ слоя не роняет прогон: элементы возвращаются человеку с причиной.
+    """
+    review_items = [
+        item for item in synthesis.get("review_items") or []
+        if isinstance(item, Mapping)
+    ]
+    if not ai_settings.enabled() or not review_items or not preparation:
+        artifact = ai_resolution.empty_artifact()
+        production_store.save_artifact(
+            session_id, pair_id, "ai_resolutions", artifact
+        )
+        return artifact
+
+    started_at = utc_now()
+    started_perf = time.perf_counter()
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="ai_resolution",
+        message="ИИ-анализ текста…",
+        processed=0,
+        total=len(review_items),
+        unit="ai_items",
+        stage_key="ai_resolution",
+        stage_status="RUNNING",
+        stage_started_at=started_at,
+        stage_update={"mode": ai_settings.mode(), "total": len(review_items)},
+    )
+
+    def report(payload: Mapping[str, Any]) -> None:
+        publish_progress(
+            current_stage="unified_synthesis",
+            current_substage="ai_resolution",
+            message="ИИ-анализ текста…",
+            processed=int(payload.get("processed") or 0),
+            total=int(payload.get("total") or 0),
+            unit="ai_items",
+            duration_ms=max(0, int((time.perf_counter() - started_perf) * 1000)),
+            stage_key="ai_resolution",
+            stage_status="RUNNING",
+            stage_started_at=started_at,
+            stage_update={
+                "mode": ai_settings.mode(),
+                "total": int(payload.get("total") or 0),
+                "processed": int(payload.get("processed") or 0),
+                "ai_resolved": int(payload.get("resolved") or 0),
+                "human_required": int(payload.get("human") or 0),
+            },
+        )
+
+    cache_dir = production_store.artifact_path(
+        session_id, pair_id, "ai_resolutions"
+    ).parent / "ai_response_cache"
+    layer = ai_resolution.AiResolutionLayer(cache_dir=cache_dir, progress=report)
+    try:
+        artifact = layer.resolve(
+            review_items=review_items,
+            preparation=preparation,
+            sheet_relations=sheet_relations,
+            comparison_groups=list(comparison_groups),
+        )
+    except Exception as exc:  # noqa: BLE001 — слой не имеет права ронять прогон
+        ai_gateway.kill_live_processes()
+        artifact = ai_resolution.empty_artifact()
+        artifact["diagnostics"]["layer_error"] = type(exc).__name__
+        artifact["mode"] = ai_settings.mode()
+    production_store.save_artifact(
+        session_id, pair_id, "ai_resolutions", artifact
+    )
+    stage = _ai_resolution_stage(artifact)
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="ai_resolution",
+        message=(
+            "ИИ-анализ текста завершён."
+            if not artifact["diagnostics"].get("layer_error")
+            else "ИИ-анализ текста завершён с ограничениями."
+        ),
+        processed=stage["processed"],
+        total=stage["total"],
+        unit="ai_items",
+        duration_ms=max(0, int((time.perf_counter() - started_perf) * 1000)),
+        stage_key="ai_resolution",
+        stage_status="COMPLETED",
+        stage_started_at=started_at,
+        stage_completed_at=utc_now(),
+        stage_update=stage,
+    )
+    return artifact
 
 
 def _sheet_comparison_groups(
@@ -3128,6 +3266,9 @@ def _run_production_comparison_impl(
         text_started_perf = time.perf_counter()
 
     text_atoms: list[dict[str, Any]] = []
+    # Ветка текста может отказать целиком; ИИ-слою тогда не с чем работать, и
+    # он обязан это увидеть, а не упасть на несуществующем имени.
+    preparation: dict[str, Any] | None = None
     text_stage: dict[str, Any]
     atom_artifact = _empty_text_atoms(
         run_id=run_id,
@@ -3585,12 +3726,22 @@ def _run_production_comparison_impl(
         stage_status="RUNNING",
         stage_started_at=synthesis_started_at,
     )
+    ai_resolutions = _run_ai_resolution(
+        session_id,
+        pair_id,
+        synthesis=automatic_synthesis,
+        preparation=preparation,
+        sheet_relations=sheet_relations,
+        comparison_groups=groups,
+        publish_progress=publish_progress,
+    )
     base_questions = _build_review_questions(
         sheet_relations=sheet_relations,
         sheet_suggestions=sheet_suggestions,
         entity_relations=entity_relations,
         synthesis=automatic_synthesis,
         answers=None,
+        ai_resolutions=ai_resolutions,
     )
     application = review_module.apply_human_decisions(
         base_questions,
@@ -3598,6 +3749,7 @@ def _run_production_comparison_impl(
         sheet_relations=sheet_relations,
         entity_relations=entity_relations,
         synthesis=automatic_synthesis,
+        ai_resolutions=ai_resolutions,
     )
     if request["input_mode"] == "DOCUMENT":
         sheet_scope_projection = _materialized_sheet_scope(
@@ -3706,6 +3858,7 @@ def _run_production_comparison_impl(
         entity_relations=entity_relations,
         synthesis=automatic_synthesis,
         answers=answers,
+        ai_resolutions=ai_resolutions,
     )
     if sheet_suggestions:
         question_by_suggestion = {
@@ -3908,6 +4061,14 @@ def _run_production_comparison_impl(
                     or []
                 ),
                 **_artifact_state(effective_bound_atoms),
+            },
+            "ai_resolution": {
+                **_ai_resolution_stage(ai_resolutions),
+                **(
+                    {"progress": progress_snapshots["ai_resolution"]}
+                    if "ai_resolution" in progress_snapshots
+                    else {}
+                ),
             },
             "review_questions": question_stage,
             "review_application": {
@@ -4424,7 +4585,7 @@ def _apply_completed_change_resolutions(
                 atom["subject_ref"] = atom["project_entity_ref"]
             atom["review_status"] = "CONFIRMED"
             provenance = dict(atom.get("provenance") or {})
-            provenance["human_change_resolution"] = {
+            record = {
                 "resolution": resolution.get("resolution"),
                 "question_id": resolution.get("question_id"),
                 "decision_id": (
@@ -4434,6 +4595,17 @@ def _apply_completed_change_resolutions(
                 ),
                 "application_signature": application.get("input_signature"),
             }
+            if resolution.get("source") == "AI":
+                # Провенанс — единственный след того, КТО изменил атом.
+                # Записать машинное разрешение под ключом человека значит
+                # солгать аудиту, поэтому ключ отдельный.
+                ai_details = resolution.get("ai_resolution")
+                provenance["ai_change_resolution"] = {
+                    **record,
+                    **(dict(ai_details) if isinstance(ai_details, Mapping) else {}),
+                }
+            else:
+                provenance["human_change_resolution"] = record
             atom["provenance"] = provenance
             output.append(atom)
         return output
@@ -4894,6 +5066,9 @@ def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
         entity_relations = production_store.load_artifact(
             session_id, pair_id, "entity_relations"
         )
+        ai_resolutions = production_store.load_artifact(
+            session_id, pair_id, "ai_resolutions"
+        )
         base_queue = _build_review_questions(
             sheet_relations=sheet_relations or {},
             sheet_suggestions=(
@@ -4904,6 +5079,7 @@ def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
             entity_relations=entity_relations or {},
             synthesis=review_synthesis,
             answers=None,
+            ai_resolutions=ai_resolutions,
         )
         current_application = review_module.apply_human_decisions(
             base_queue,
@@ -4911,6 +5087,7 @@ def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
             sheet_relations=sheet_relations,
             entity_relations=entity_relations,
             synthesis=review_synthesis,
+            ai_resolutions=ai_resolutions,
         )
         persisted_diagnostics = (
             last_application.get("diagnostics")
@@ -5093,12 +5270,16 @@ def _update_review_answers_locked(
         if isinstance(state.get("sheet_suggestions"), Mapping)
         else None
     )
+    ai_resolutions = production_store.load_artifact(
+        session_id, pair_id, "ai_resolutions"
+    )
     base_questions = _build_review_questions(
         sheet_relations=sheet_relations or {},
         sheet_suggestions=sheet_suggestions,
         entity_relations=entity_relations or {},
         synthesis=review_synthesis,
         answers=None,
+        ai_resolutions=ai_resolutions,
     )
     input_signature = str(base_questions.get("input_signature") or "")
     if expected_input_signature is not None and expected_input_signature != input_signature:
@@ -5185,6 +5366,7 @@ def _update_review_answers_locked(
         sheet_relations=sheet_relations,
         entity_relations=entity_relations,
         synthesis=review_synthesis,
+        ai_resolutions=ai_resolutions,
     )
     sheet_scope_stage = (
         (state.get("stages") or {}).get("sheet_scope") or {}
@@ -5342,6 +5524,7 @@ def _update_review_answers_locked(
         entity_relations=entity_relations or {},
         synthesis=review_synthesis,
         answers=answer_artifact,
+        ai_resolutions=ai_resolutions,
     )
 
     previous_status = str(state.get("status") or "COMPLETED")

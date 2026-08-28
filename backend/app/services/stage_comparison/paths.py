@@ -170,6 +170,15 @@ def production_review_application_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "review_application.json"
 
 
+def production_ai_resolutions_path(session_id: str, pair_id: str) -> Path:
+    """Разрешения ИИ — ОТДЕЛЬНЫЙ файл, а не строка в ответах человека.
+
+    review_answers.json хранит ровно один ответ на вопрос; запись машинного
+    ответа туда молча затёрла бы ответ инженера.
+    """
+    return production_dir(session_id, pair_id) / "ai_resolutions.json"
+
+
 def production_automatic_synthesis_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "automatic_unified_synthesis.json"
 
