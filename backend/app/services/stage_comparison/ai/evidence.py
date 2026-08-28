@@ -29,14 +29,29 @@ CONTEXT_WINDOW = 6
 CONTEXT_CHAR_LIMIT = 400
 
 
+def scope_refs_for_group(group: Mapping[str, Any]) -> list[str]:
+    """Все ключи области, под которыми эта группа может встретиться.
+
+    Ключ чеканят два производителя, и формулы у них исторически разные:
+    производитель фактов хеширует позиционные аргументы, построитель атомов —
+    именованный объект. Элемент без факта приходит со вторым ключом, элемент с
+    фактом — с первым. Знать обе формулы здесь дешевле, чем потерять привязку
+    к паре листов и отправить модель разбирать расхождение вслепую.
+    """
+    left = sorted(int(page) for page in group.get("left_pages") or [])
+    right = sorted(int(page) for page in group.get("right_pages") or [])
+    return [
+        stable_id("text_scope_", group.get("id"), left, right),
+        "text_scope_" + content_signature({
+            "group_id": group.get("id"),
+            "left_pages": left,
+            "right_pages": right,
+        })[:20],
+    ]
+
+
 def scope_ref_for_group(group: Mapping[str, Any]) -> str:
-    """Тот же ключ, что чеканит производитель фактов, — иначе связи не будет."""
-    return stable_id(
-        "text_scope_",
-        group.get("id"),
-        sorted(int(page) for page in group.get("left_pages") or []),
-        sorted(int(page) for page in group.get("right_pages") or []),
-    )
+    return scope_refs_for_group(group)[0]
 
 
 @dataclass
@@ -248,8 +263,9 @@ def build_packages(
         if isinstance(relation, Mapping)
     }
     scope_to_relation = {
-        scope_ref_for_group(group): str(group.get("id") or "")
+        scope_ref: str(group.get("id") or "")
         for group in comparison_groups
+        for scope_ref in scope_refs_for_group(group)
     }
 
     grouped: dict[str, list[EvidenceItem]] = {}
@@ -337,4 +353,5 @@ __all__ = [
     "PACKAGE_VERSION",
     "build_packages",
     "scope_ref_for_group",
+    "scope_refs_for_group",
 ]

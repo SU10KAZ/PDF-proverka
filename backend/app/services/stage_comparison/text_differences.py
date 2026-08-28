@@ -14,6 +14,8 @@ import unicodedata
 from collections import Counter, defaultdict, deque
 from typing import Any, Iterable
 
+from . import room_schedule
+
 
 VERSION = 1
 KIND = "stage_comparison_text_differences"
@@ -284,6 +286,49 @@ def _added_item(fragment: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _room_identity(
+    fragments: list[dict[str, Any]],
+) -> tuple[dict[str, str], dict[str, str]]:
+    """Номер помещения как ключ строки — там, где заголовок его доказал.
+
+    «1.9 С/у 6,95» и «1.8 С/у 4,38» — разные помещения с одинаковым названием.
+    Сравнение по похожести текста их путает: скелет строки у обеих «с/у», и
+    выигрывает та, что случайно ближе по цифрам. На паре АР так склеились 32
+    санузла — и каждый унёс с собой настоящее изменение своей площади.
+
+    Возвращает (номер → единственный фрагмент, фрагмент → номер). Номер,
+    встретившийся на стороне дважды, ключом не считается: неоднозначность
+    решается вопросом инженеру, а не выбором первого кандидата.
+    """
+    widths: dict[str, int] = {}
+    for fragment in fragments:
+        if fragment.get("source_kind") != "table_row":
+            continue
+        units = room_schedule.header_units(fragment)
+        if units:
+            group = str(fragment.get("source_group") or "")
+            widths[group] = max(widths.get(group, 0), max(units))
+    by_code: dict[str, list[str]] = defaultdict(list)
+    code_of: dict[str, str] = {}
+    for fragment in fragments:
+        if fragment.get("source_kind") != "table_row":
+            continue
+        width = widths.get(str(fragment.get("source_group") or ""))
+        if not width:
+            continue
+        units = room_schedule.row_units(room_schedule.row_cells(fragment), width)
+        if not units or len(units) != 1:
+            continue
+        code = units[0][0]
+        fragment_id = str(fragment["id"])
+        by_code[code].append(fragment_id)
+        code_of[fragment_id] = code
+    unique = {
+        code: ids[0] for code, ids in by_code.items() if len(ids) == 1
+    }
+    return unique, code_of
+
+
 def compare_group(
     left_fragments: list[dict[str, Any]],
     right_fragments: list[dict[str, Any]],
@@ -310,6 +355,19 @@ def compare_group(
             unused_right.discard(right_id)
             same_items.append(_paired_item(left_by_id[left_id], right_by_id[right_id]))
 
+    # Помещение сопоставляется со своим помещением, а не с похожей строкой.
+    left_rooms, left_code_of = _room_identity(left_fragments)
+    right_rooms, right_code_of = _room_identity(right_fragments)
+    for code in sorted(set(left_rooms) & set(right_rooms)):
+        left_id, right_id = left_rooms[code], right_rooms[code]
+        if left_id not in unused_left or right_id not in unused_right:
+            continue
+        unused_left.discard(left_id)
+        unused_right.discard(right_id)
+        changed_items.append(
+            _changed_item(left_by_id[left_id], right_by_id[right_id])
+        )
+
     left_keys: dict[str, list[str]] = defaultdict(list)
     right_keys: dict[str, list[str]] = defaultdict(list)
     for fragment_id in unused_left:
@@ -332,6 +390,12 @@ def compare_group(
     ambiguous_pairs = []
     for left_id in unused_left:
         for right_id in unused_right:
+            left_code = left_code_of.get(left_id)
+            right_code = right_code_of.get(right_id)
+            if left_code and right_code and left_code != right_code:
+                # Два помещения с разными номерами — не одна строка, как бы
+                # похожи ни были их названия.
+                continue
             left, right = left_by_id[left_id], right_by_id[right_id]
             score = _candidate_score(left, right)
             raw_similarity = similarity(str(left["text"]), str(right["text"]))

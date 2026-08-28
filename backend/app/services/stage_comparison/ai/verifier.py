@@ -81,12 +81,22 @@ def normalize(value: Any) -> str:
 _CONTEXT_MARK = re.compile(r"^[»\s]+")
 
 
+def strip_context_mark(value: Any) -> str:
+    """Снять маркер текущей строки «»».
+
+    Маркер — наша собственная разметка пакета, а не текст документа. Модель
+    честно копирует то, что видит, вместе с ним, и отклонять её за это значит
+    ловить не выдумку, а собственное форматирование.
+    """
+    return _CONTEXT_MARK.sub("", str(value or ""))
+
+
 def _corpus(item: Mapping[str, Any]) -> tuple[str, str]:
     """Всё, что модель имела право видеть: сторона LEFT и сторона RIGHT."""
     left = [str(item.get("before_value") or "")]
-    left += [_CONTEXT_MARK.sub("", line) for line in item.get("left_context") or []]
+    left += [strip_context_mark(line) for line in item.get("left_context") or []]
     right = [str(item.get("after_value") or "")]
-    right += [_CONTEXT_MARK.sub("", line) for line in item.get("right_context") or []]
+    right += [strip_context_mark(line) for line in item.get("right_context") or []]
     return normalize("  ".join(left)), normalize("  ".join(right))
 
 
@@ -116,8 +126,8 @@ def verify_resolution(
         errors.append("привязка: разрешение относится к другому элементу")
 
     left, right = _corpus(item)
-    before = resolution.get("before_value")
-    after = resolution.get("after_value")
+    before = strip_context_mark(resolution.get("before_value")) or None
+    after = strip_context_mark(resolution.get("after_value")) or None
 
     # 1. Значения обязаны существовать в доказательствах своей стороны.
     if before and normalize(before) not in left:
@@ -166,7 +176,7 @@ def verify_resolution(
         if not isinstance(quote, Mapping):
             errors.append("тип: цитата должна быть объектом")
             continue
-        text = normalize(quote.get("quote"))
+        text = normalize(strip_context_mark(quote.get("quote")))
         if not text:
             continue
         haystack = left if quote.get("side") == "LEFT" else right

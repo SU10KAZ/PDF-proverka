@@ -263,3 +263,64 @@ def test_two_assemblies_in_one_block_keep_separate_identities():
         fact["provenance"]["entity"]["original"] for fact in result["facts"]
     }
     assert subjects == {"кровля тип к5"}
+
+
+# ── Сопоставление помещений по номеру ─────────────────────────────────────
+
+
+def _room_row(fragment_id: str, side: str, parts: list[str], *, order: int) -> dict:
+    return _fragment(fragment_id, side, parts, order=order)
+
+
+def test_two_rooms_with_the_same_name_are_matched_by_number_not_by_text():
+    """«1.9 С/у» и «1.8 С/у» — разные помещения, как бы ни были похожи строки."""
+    left = [
+        _room_header("left"),
+        _room_row("l1", "left", ["1.8", "С/у", "4,37"], order=2),
+        _room_row("l2", "left", ["1.9", "С/у", "6,95"], order=3),
+    ]
+    right = [
+        _room_header("right"),
+        _room_row("r1", "right", ["1.8", "С/у", "4,38"], order=2),
+        _room_row("r2", "right", ["1.9", "С/у", "6,82"], order=3),
+    ]
+
+    result = _facts(left, right)
+
+    areas = {
+        fact["provenance"]["entity"]["original"]: (
+            fact["before_value"], fact["after_value"]
+        )
+        for fact in result["facts"]
+        if fact["facet_ref"] == "room_area_m2"
+    }
+    assert areas == {
+        "1.8": ("4.37 м²", "4.38 м²"),
+        "1.9": ("6.95 м²", "6.82 м²"),
+    }
+
+
+def test_a_room_number_repeated_on_one_side_is_not_used_as_a_key():
+    """Неоднозначность решается вопросом, а не выбором первого кандидата."""
+    left = [
+        _room_header("left"),
+        _room_row("l1", "left", ["1.8", "С/у", "4,37"], order=2),
+        _room_row("l2", "left", ["1.8", "Кладовая", "2,10"], order=3),
+    ]
+    right = [
+        _room_header("right"),
+        _room_row("r1", "right", ["1.8", "С/у", "4,38"], order=2),
+    ]
+
+    result = _facts(left, right)
+
+    areas = sorted(
+        (fact["before_value"], fact["after_value"])
+        for fact in result["facts"]
+        if fact["facet_ref"] == "room_area_m2"
+    )
+    # «1.8 С/у» сопоставился со своим «1.8 С/у» — по тексту, а не по номеру.
+    # «1.8 Кладовая» остался без пары и честно объявлен удалённым: номер,
+    # встретившийся на стороне дважды, ключом не является, поэтому кладовая не
+    # получила чужую площадь санузла.
+    assert areas == [("2.10 м²", None), ("4.37 м²", "4.38 м²")]

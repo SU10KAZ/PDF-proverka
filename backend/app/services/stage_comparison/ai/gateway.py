@@ -253,9 +253,8 @@ def _run_process(
     )
     _REGISTRY.add(process)
     try:
-        if stdin_text is None:
-            process.stdin.close()  # type: ignore[union-attr]
-            stdin_text = None
+        # stdin закрывает сам communicate(): без этого CLI ждёт ввод три
+        # секунды и печатает предупреждение прямо в разбираемый поток.
         deadline = time.monotonic() + timeout_s
         reader: dict[str, str] = {}
 
