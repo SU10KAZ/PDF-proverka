@@ -427,14 +427,16 @@ def _table_contexts(
             room_widths.add(width)
         # One header shape per table, or the table is not proven.  A group with
         # two different widths, or with a glued two-up header, stays unresolved.
+        # Room tables are tracked separately from ``valid_tables``: that set
+        # means «proven electrical load table» and nothing else.
         if len(room_widths) == 1 and key not in valid_tables:
-            valid_tables.add(key)
             room_schedule_widths[key] = next(iter(room_widths))
         elif room_header_seen:
+            # An unproven table still has header rows, and a header row is
+            # never a fact whether or not its table was proven.
             room_header_ids = {
                 str(value["id"]) for value in ordered
-                if _room_schedule_header_width(value) is not None
-                or _looks_like_room_header(value)
+                if _looks_like_room_header(value)
             }
         current_context: str | None = None
         for fragment in ordered:
@@ -1077,7 +1079,7 @@ def produce_text_facts(
             "not_applicable_source_evidence": len(not_applicable),
             "unresolved_source_evidence": len(unresolved),
             "facts_by_rule": dict(sorted(rule_counts.items())),
-            "recognized_electrical_tables": len(valid_tables) - len(room_schedule_widths),
+            "recognized_electrical_tables": len(valid_tables),
             "recognized_room_schedule_tables": len(room_schedule_widths),
             "structured_fragment_coverage_by_group": dict(
                 sorted(coverage_by_group.items())
