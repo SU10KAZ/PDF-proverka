@@ -126,6 +126,10 @@ def production_text_differences_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "text_differences.json"
 
 
+def production_text_fact_production_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "text_fact_production.json"
+
+
 def production_text_semantic_validation_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "text_semantic_validation.json"
 
@@ -226,6 +230,7 @@ __all__ = [
     "production_sheet_relations_path",
     "production_text_preparation_path",
     "production_text_differences_path",
+    "production_text_fact_production_path",
     "production_text_semantic_validation_path",
     "production_text_atoms_path",
     "production_graphic_ledger_path",

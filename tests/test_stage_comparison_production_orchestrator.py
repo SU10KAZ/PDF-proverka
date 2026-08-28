@@ -76,7 +76,7 @@ def _type_atom(atom_id: str, source: str) -> dict:
     return atom
 
 
-def _text_artifacts(atoms: list[dict]) -> tuple[dict, dict, dict, dict]:
+def _text_artifacts(atoms: list[dict]) -> tuple[dict, dict, dict, dict, dict]:
     preparation = {
         "kind": "stage_comparison_text_preparation",
         "schema_version": "text-preparation.v1",
@@ -88,11 +88,23 @@ def _text_artifacts(atoms: list[dict]) -> tuple[dict, dict, dict, dict]:
         "source_signature": "stage3-input",
         "sheet_groups": [],
     }
+    fact_production = {
+        "kind": "stage_comparison_text_fact_production",
+        "schema_version": "text-fact-production.v1",
+        "input_signature": "fact-production-input",
+        "facts": [
+            {"fact_id": f"fact:{atom['atom_id']}", "outcome": atom["outcome"]}
+            for atom in atoms
+        ],
+        "not_applicable_source_evidence": [],
+        "unresolved_source_evidence": [],
+    }
     semantic = {
         "kind": "stage_comparison_text_semantic_validation",
         "schema_version": "text-semantic-validation.v1",
         "input_signature": "semantic-input",
         "stage3_signature": "stage3-input",
+        "text_fact_production_signature": "fact-production-input",
         "facts": [],
     }
     atom_artifact = {
@@ -101,7 +113,7 @@ def _text_artifacts(atoms: list[dict]) -> tuple[dict, dict, dict, dict]:
         "input_signature": "atom-input",
         "atoms": atoms,
     }
-    return preparation, differences, semantic, atom_artifact
+    return preparation, differences, fact_production, semantic, atom_artifact
 
 
 def _candidate(text_id: str, graphic_id: str) -> dict:
@@ -198,7 +210,19 @@ def _install_run_fakes(
         lambda _pair: (relations, {"left": [], "right": []}),
     )
 
-    def text_branch(_pair, _pair_id, groups, _indexes, _existing):
+    def text_branch(
+        _pair,
+        _pair_id,
+        groups,
+        _indexes,
+        _existing,
+        *,
+        document_cache_dir=None,
+    ):
+        if capture is not None:
+            capture.setdefault("document_cache_dirs", []).append(
+                document_cache_dir
+            )
         if capture is not None:
             captured = [
                 {
@@ -272,6 +296,127 @@ def _run(pair_id: str = "pair-1", *, input_mode: str = "PAGE") -> dict:
     return orchestrator.run_production_comparison("session-1", pair_id, **kwargs)
 
 
+def test_text_branch_runs_fact_producer_before_closed_semantic_validation(
+    tmp_path, monkeypatch
+):
+    calls = []
+    preparation = {"kind": "preparation", "input_signature": "prep-signature"}
+    differences = {"kind": "differences"}
+    fact_production = {
+        "input_signature": "facts-signature",
+        "facts": [{"fact_id": "fact-1"}],
+        "not_applicable_source_evidence": [{"source_evidence_ref": "n-a"}],
+    }
+
+    def prepare(*_args, **options):
+        calls.append(("prepare", options.get("document_cache_dir")))
+        return preparation
+
+    def build_differences(actual):
+        assert actual is preparation
+        calls.append(("diff", None))
+        return differences
+
+    def produce(actual_differences, actual_preparation):
+        assert actual_differences is differences
+        assert actual_preparation is preparation
+        calls.append(("facts", None))
+        return fact_production
+
+    def validate(actual_differences, facts, **options):
+        assert actual_differences is differences
+        assert facts == fact_production["facts"]
+        assert options["not_applicable_source_evidence"] == (
+            fact_production["not_applicable_source_evidence"]
+        )
+        calls.append(("semantic", None))
+        return {
+            "kind": orchestrator.SEMANTIC_KIND,
+            "schema_version": orchestrator.SEMANTIC_SCHEMA_VERSION,
+            "stage3_signature": "stage3-signature",
+            "input_signature": "semantic-signature",
+            "facts": [],
+            "provenance": {"producer": "closed-validator"},
+        }
+
+    def atoms(actual_differences, semantic, **_options):
+        assert actual_differences is differences
+        assert semantic["text_fact_production_signature"] == "facts-signature"
+        calls.append(("atoms", None))
+        return {"atoms": [], "input_signature": "atoms-signature"}
+
+    monkeypatch.setattr(orchestrator, "prepare_text_scope", prepare)
+    monkeypatch.setattr(
+        orchestrator, "build_text_differences_from_preparation", build_differences
+    )
+    monkeypatch.setattr(orchestrator, "produce_text_facts", produce)
+    monkeypatch.setattr(
+        orchestrator, "stage3_content_signature", lambda _value: "stage3-signature"
+    )
+    monkeypatch.setattr(orchestrator, "build_semantic_validation", validate)
+    monkeypatch.setattr(orchestrator, "build_text_atoms", atoms)
+
+    cache_dir = tmp_path / "document-cache"
+    first = orchestrator._run_text_branch(
+        {},
+        "pair-1",
+        [],
+        {},
+        {
+            "kind": orchestrator.SEMANTIC_KIND,
+            "schema_version": orchestrator.SEMANTIC_SCHEMA_VERSION,
+            "stage3_signature": "stage3-signature",
+            "text_fact_production_signature": "old-facts",
+        },
+        document_cache_dir=cache_dir,
+    )
+    second = orchestrator._run_text_branch(
+        {}, "pair-1", [], {}, first[3], document_cache_dir=cache_dir
+    )
+
+    assert first[2] is fact_production
+    assert second[3] == first[3]
+    assert [name for name, _value in calls] == [
+        "prepare", "diff", "facts", "semantic", "atoms",
+        "prepare", "diff", "facts", "atoms",
+    ]
+    assert calls[0][1] == cache_dir
+
+
+def test_text_stage_does_not_mark_unresolved_placeholder_as_valid():
+    stage = orchestrator._text_stage_summary(
+        {
+            "comparison_groups": [{"id": "scope"}],
+            "fragments": {"left": [], "right": [{}]},
+            "input_signature": "preparation",
+        },
+        {
+            "summary": {"added": 1},
+            "source_signature": "differences",
+        },
+        {
+            "facts": [],
+            "not_applicable_source_evidence": [],
+            "unresolved_source_evidence": ["source-1"],
+            "input_signature": "fact-production",
+        },
+        {
+            "diagnostics": {"facts": 0, "unresolved_source_evidence": 1},
+            "input_signature": "semantic",
+        },
+        {
+            "atoms": [{"atom_id": "placeholder", "review_status": "REVIEW_REQUIRED"}],
+            "input_signature": "atoms",
+        },
+    )
+
+    assert stage["source_state"] == "REVIEW_REQUIRED"
+    assert stage["deltas"] == 1
+    assert stage["automatic_atoms"] == 0
+    assert stage["review_required"] == 1
+    assert stage["reason_counts"] == {"unresolved_text_structure": 1}
+
+
 def _split_sheet_relations() -> dict:
     artifact = match_sheets(
         [{
@@ -331,6 +476,20 @@ def test_page_runs_without_sheet_gate_and_persists_stage3(tmp_path, monkeypatch)
     assert state["constraints"]["sheet_matcher_is_page_gate"] is False
     assert state["constraints"]["parent_relation_required"] is False
     assert paths.production_text_differences_path("session-1", "pair-1").is_file()
+    assert paths.production_text_fact_production_path(
+        "session-1", "pair-1"
+    ).is_file()
+    assert capture["document_cache_dirs"] == [None]
+    assert state["stages"]["text"]["automatic_atoms"] == 1
+    assert state["stages"]["text"]["review_required"] == 0
+    assert state["stages"]["text"]["preparation"]["status"] == "COMPLETED"
+    assert state["stages"]["text"]["deterministic_diff"]["status"] == (
+        "COMPLETED"
+    )
+    assert state["stages"]["text"]["semantic_validation"]["status"] == (
+        "COMPLETED"
+    )
+    assert state["stages"]["text"]["text_atoms"]["atoms"] == 1
     assert not paths.high_level_project_changes_path("session-1", "pair-1").exists()
     assert not paths.project_change_summary_path("session-1", "pair-1").exists()
 
@@ -952,6 +1111,8 @@ def test_document_uses_production_split_relations_as_scope(tmp_path, monkeypatch
     assert capture["groups"][0]["left_pages"] == [10]
     assert capture["groups"][0]["right_pages"] == [24, 25]
     assert capture["groups"][0]["relation_type"] == "SPLIT"
+    assert len(capture["document_cache_dirs"]) == 1
+    assert capture["document_cache_dirs"][0].name == "text_fragment_cache"
     stored = production_store.load_artifact("session-1", "pair-1", "sheet_relations")
     assert stored["kind"] == "stage_comparison_sheet_relations"
 
@@ -970,8 +1131,17 @@ def test_document_sheet_select_publishes_new_generation_for_effective_subset(
     )
     captured_text_branch = orchestrator._run_text_branch
 
-    def scope_sensitive_text(pair, pair_id, groups, indexes, existing):
-        captured_text_branch(pair, pair_id, groups, indexes, existing)
+    def scope_sensitive_text(
+        pair, pair_id, groups, indexes, existing, *, document_cache_dir=None
+    ):
+        captured_text_branch(
+            pair,
+            pair_id,
+            groups,
+            indexes,
+            existing,
+            document_cache_dir=document_cache_dir,
+        )
         right_pages = sorted({
             page for group in groups for page in group.get("right_pages") or []
         })
@@ -1133,8 +1303,17 @@ def test_document_sheet_no_removes_relation_from_regenerated_scope(
     )
     captured_text_branch = orchestrator._run_text_branch
 
-    def scope_sensitive_text(pair, pair_id, groups, indexes, existing):
-        captured_text_branch(pair, pair_id, groups, indexes, existing)
+    def scope_sensitive_text(
+        pair, pair_id, groups, indexes, existing, *, document_cache_dir=None
+    ):
+        captured_text_branch(
+            pair,
+            pair_id,
+            groups,
+            indexes,
+            existing,
+            document_cache_dir=document_cache_dir,
+        )
         return _text_artifacts(
             [_atom("text-in-scope", "TEXT")] if groups else []
         )

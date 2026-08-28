@@ -44,6 +44,10 @@ from .text_atom_builder import (
     SCHEMA_VERSION as TEXT_ATOMS_SCHEMA_VERSION,
     build_text_atoms,
 )
+from .text_fact_producer import (
+    PRODUCER_VERSION as TEXT_FACT_PRODUCER_VERSION,
+    produce_text_facts,
+)
 from .text_semantic_validation import (
     KIND as SEMANTIC_KIND,
     SCHEMA_VERSION as SEMANTIC_SCHEMA_VERSION,
@@ -282,32 +286,219 @@ def _run_text_branch(
     groups: list[dict[str, Any]],
     indexes: Mapping[str, list[dict[str, Any]]],
     existing_semantic: Mapping[str, Any] | None,
-) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
+    *,
+    document_cache_dir: Path | None = None,
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+]:
     preparation = prepare_text_scope(
         pair,
         groups,
         sheet_indexes=indexes,
         fitz=_fitz(),
+        document_cache_dir=document_cache_dir,
     )
     differences = build_text_differences_from_preparation(preparation)
+    fact_production = produce_text_facts(differences, preparation)
     stage3_signature = stage3_content_signature(differences)
+    fact_production_signature = fact_production.get("input_signature")
     if (
         isinstance(existing_semantic, Mapping)
         and existing_semantic.get("kind") == SEMANTIC_KIND
         and existing_semantic.get("schema_version") == SEMANTIC_SCHEMA_VERSION
         and existing_semantic.get("stage3_signature") == stage3_signature
+        and existing_semantic.get("text_fact_production_signature")
+        == fact_production_signature
     ):
         semantic = dict(existing_semantic)
     else:
-        # Stage 4 is a closed validator, not an inference step.  In the
-        # absence of governed facts it emits an honest empty validation.
-        semantic = build_semantic_validation(differences)
+        # Stage 4 remains a closed validator.  The deterministic producer is
+        # its explicit governed input; neither stage invokes a model or
+        # guesses facts from ambiguous narrative text.
+        semantic = build_semantic_validation(
+            differences,
+            fact_production.get("facts") or [],
+            not_applicable_source_evidence=(
+                fact_production.get("not_applicable_source_evidence") or []
+            ),
+        )
+        semantic["text_fact_production_signature"] = fact_production_signature
+        semantic["provenance"] = {
+            **dict(semantic.get("provenance") or {}),
+            "fact_source": TEXT_FACT_PRODUCER_VERSION,
+            "text_fact_production_signature": fact_production_signature,
+        }
     atoms = build_text_atoms(
         differences,
         semantic,
         artifact_ref=f"production/{pair_id}/text_differences.json",
     )
-    return preparation, differences, semantic, atoms
+    return preparation, differences, fact_production, semantic, atoms
+
+
+def _text_stage_summary(
+    preparation: Mapping[str, Any],
+    differences: Mapping[str, Any],
+    fact_production: Mapping[str, Any],
+    semantic: Mapping[str, Any],
+    atom_artifact: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Expose real TEXT pipeline counters without treating placeholders as facts."""
+    fragments = preparation.get("fragments") or {}
+    left_fragments = list(fragments.get("left") or []) if isinstance(
+        fragments, Mapping
+    ) else []
+    right_fragments = list(fragments.get("right") or []) if isinstance(
+        fragments, Mapping
+    ) else []
+    difference_summary = dict(differences.get("summary") or {})
+    facts = [
+        value
+        for value in fact_production.get("facts") or []
+        if isinstance(value, Mapping)
+    ]
+    not_applicable = [
+        value
+        for value in fact_production.get("not_applicable_source_evidence") or []
+        if isinstance(value, Mapping)
+    ]
+    unresolved = list(fact_production.get("unresolved_source_evidence") or [])
+    atoms = [
+        value
+        for value in atom_artifact.get("atoms") or []
+        if isinstance(value, Mapping)
+    ]
+    automatic_atoms = sum(
+        value.get("review_status") != "REVIEW_REQUIRED" for value in atoms
+    )
+    review_required_atoms = len(atoms) - automatic_atoms
+
+    reason_counts: dict[str, int] = {}
+
+    def add_reason(reason: Any) -> None:
+        code = str(reason or "").strip()
+        if code:
+            reason_counts[code] = reason_counts.get(code, 0) + 1
+
+    for fact in facts:
+        requirement = (fact.get("provenance") or {}).get("review_requirement")
+        if isinstance(requirement, Mapping):
+            for reason in requirement.get("reason_codes") or []:
+                add_reason(reason)
+    for item in not_applicable:
+        add_reason(item.get("reason_code"))
+    if unresolved:
+        reason_counts["unresolved_text_structure"] = len(unresolved)
+
+    # An unresolved Stage 3 evidence item still creates an intentionally
+    # review-only placeholder atom.  Such a placeholder must never upgrade
+    # the TEXT source to VALID by its mere presence.
+    if automatic_atoms:
+        source_state = "VALID"
+    elif facts or unresolved:
+        source_state = "REVIEW_REQUIRED"
+    elif not_applicable:
+        source_state = "NOT_APPLICABLE"
+    else:
+        source_state = "ABSENT"
+
+    semantic_diagnostics = dict(semantic.get("diagnostics") or {})
+    delta_count = sum(
+        int(difference_summary.get(bucket) or 0)
+        for bucket in ("changed", "removed", "added")
+    )
+    return {
+        "status": "COMPLETED",
+        "source_state": source_state,
+        "atoms": len(atoms),
+        "deltas": delta_count,
+        "automatic_atoms": automatic_atoms,
+        "review_required": review_required_atoms,
+        "review_required_atoms": review_required_atoms,
+        "not_applicable": len(not_applicable),
+        "unresolved": len(unresolved),
+        "reason_counts": dict(sorted(reason_counts.items())),
+        "input_signature": atom_artifact.get("input_signature"),
+        "preparation": {
+            "status": "COMPLETED",
+            "groups": len(preparation.get("comparison_groups") or []),
+            "fragments": len(left_fragments) + len(right_fragments),
+            "left_fragments": len(left_fragments),
+            "right_fragments": len(right_fragments),
+            "extraction": copy.deepcopy(preparation.get("extraction") or {}),
+            "input_signature": preparation.get("input_signature"),
+        },
+        "deterministic_diff": {
+            "status": "COMPLETED",
+            "groups": int(
+                difference_summary.get("sheet_groups_with_differences") or 0
+            ),
+            "changed": int(difference_summary.get("changed") or 0),
+            "removed": int(difference_summary.get("removed") or 0),
+            "added": int(difference_summary.get("added") or 0),
+            "source_signature": differences.get("source_signature"),
+        },
+        "fact_production": {
+            "status": "COMPLETED",
+            "facts": len(facts),
+            "automatic": sum(
+                fact.get("outcome") != "REVIEW_REQUIRED" for fact in facts
+            ),
+            "review_required": sum(
+                fact.get("outcome") == "REVIEW_REQUIRED" for fact in facts
+            ),
+            "not_applicable": len(not_applicable),
+            "unresolved": len(unresolved),
+            "reason_counts": dict(sorted(reason_counts.items())),
+            "input_signature": fact_production.get("input_signature"),
+        },
+        "semantic_validation": {
+            "status": "COMPLETED",
+            "facts": int(semantic_diagnostics.get("facts") or len(facts)),
+            "automatic": sum(
+                fact.get("outcome") != "REVIEW_REQUIRED" for fact in facts
+            ),
+            "review_required": sum(
+                fact.get("outcome") == "REVIEW_REQUIRED" for fact in facts
+            ),
+            "not_applicable": int(
+                semantic_diagnostics.get("not_applicable_source_evidence")
+                or len(not_applicable)
+            ),
+            "unresolved": int(
+                semantic_diagnostics.get("unresolved_source_evidence")
+                or len(unresolved)
+            ),
+            "reason_counts": dict(sorted(reason_counts.items())),
+            "input_signature": semantic.get("input_signature"),
+        },
+        "text_atoms": {
+            "status": "COMPLETED",
+            "atoms": len(atoms),
+            "automatic": automatic_atoms,
+            "review_required": review_required_atoms,
+            "not_applicable": len(not_applicable),
+            "unresolved": len(unresolved),
+            "reason_counts": dict(sorted(reason_counts.items())),
+            "input_signature": atom_artifact.get("input_signature"),
+        },
+    }
+
+
+def _text_error_reason(error: Exception) -> str:
+    if isinstance(error, FileNotFoundError):
+        return "TEXT_SOURCE_MISSING"
+    if isinstance(error, UnicodeDecodeError):
+        return "TEXT_SOURCE_DECODING_FAILED"
+    if isinstance(error, ValueError):
+        return "TEXT_PIPELINE_VALIDATION_FAILED"
+    if isinstance(error, OSError):
+        return "TEXT_SOURCE_READ_FAILED"
+    return "TEXT_EXTRACTION_UNAVAILABLE"
 
 
 def _direct_page_sources(
@@ -2470,8 +2661,27 @@ def _run_production_comparison_impl(
         session_id, pair_id, "text_semantic_validation"
     )
     try:
-        preparation, differences, semantic, atom_artifact = _run_text_branch(
-            pair, pair_id, groups, indexes, existing_semantic
+        document_cache_dir = (
+            production_store.artifact_path(
+                session_id, pair_id, "text_preparation"
+            ).parent
+            / "text_fragment_cache"
+            if request["input_mode"] == "DOCUMENT"
+            else None
+        )
+        (
+            preparation,
+            differences,
+            fact_production,
+            semantic,
+            atom_artifact,
+        ) = _run_text_branch(
+            pair,
+            pair_id,
+            groups,
+            indexes,
+            existing_semantic,
+            document_cache_dir=document_cache_dir,
         )
         production_store.save_artifact(
             session_id, pair_id, "text_preparation", preparation
@@ -2480,18 +2690,22 @@ def _run_production_comparison_impl(
             session_id, pair_id, "text_differences", differences
         )
         production_store.save_artifact(
+            session_id, pair_id, "text_fact_production", fact_production
+        )
+        production_store.save_artifact(
             session_id, pair_id, "text_semantic_validation", semantic
         )
         production_store.save_artifact(
             session_id, pair_id, "text_atoms", atom_artifact
         )
         text_atoms = list(atom_artifact.get("atoms") or [])
-        text_stage = {
-            "status": "COMPLETED",
-            "source_state": "VALID" if text_atoms else "ABSENT",
-            "atoms": len(text_atoms),
-            "input_signature": atom_artifact.get("input_signature"),
-        }
+        text_stage = _text_stage_summary(
+            preparation,
+            differences,
+            fact_production,
+            semantic,
+            atom_artifact,
+        )
     except (FileNotFoundError, OSError, UnicodeDecodeError, ValueError, RuntimeError) as exc:
         text_atoms = []
         atom_artifact = _empty_text_atoms(
@@ -2506,7 +2720,14 @@ def _run_production_comparison_impl(
             "status": "CHECK_BLOCKED",
             "source_state": "CHECK_BLOCKED",
             "atoms": 0,
-            "reason_code": type(exc).__name__,
+            "deltas": 0,
+            "automatic_atoms": 0,
+            "review_required": 0,
+            "review_required_atoms": 0,
+            "not_applicable": 0,
+            "unresolved": 0,
+            "reason_code": _text_error_reason(exc),
+            "error_type": type(exc).__name__,
         }
 
     graphic_ledger = None
