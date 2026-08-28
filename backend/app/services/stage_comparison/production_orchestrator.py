@@ -37,6 +37,12 @@ from .production_text_flow import (
     build_text_differences_from_preparation,
     prepare_text_scope,
 )
+from .production_text_evidence import (
+    ProductionTextEvidenceConflictError,
+    build_production_text_evidence,
+    empty_production_text_evidence,
+    evidence_is_publishable,
+)
 from .sheet_content_fingerprint import (
     build_sheet_content_fingerprint,
     has_meaningful_content,
@@ -4739,6 +4745,59 @@ def get_production_changes(session_id: str, pair_id: str) -> dict[str, Any]:
     }
 
 
+def get_production_text_evidence(
+    session_id: str,
+    pair_id: str,
+) -> dict[str, Any]:
+    """Read the current generation's exact TEXT viewer evidence.
+
+    This GET never acquires a producer lock and never creates or refreshes an
+    artifact.  A non-published or blocked TEXT branch is represented as an
+    honest empty payload so an older generation cannot leak through while a
+    new run is being produced.
+    """
+    state = get_production_state(session_id, pair_id)
+    if not evidence_is_publishable(state):
+        return empty_production_text_evidence(state)
+
+    source_snapshot = _load_published_source_snapshot(
+        session_id, pair_id, state
+    )
+    text_differences = production_store.load_artifact(
+        session_id, pair_id, "text_differences"
+    )
+    if text_differences is None:
+        raise ProductionStateConflictError(
+            "published production Stage 3 text differences are missing"
+        )
+    synthesis = _published_synthesis(session_id, pair_id, state)
+    if synthesis is None:  # guarded by ``evidence_is_publishable``
+        raise ProductionStateConflictError("published synthesis is missing")
+    try:
+        payload = build_production_text_evidence(
+            state=state,
+            source_snapshot=source_snapshot,
+            text_differences=text_differences,
+            synthesis=synthesis,
+            synthesis_input_signature=canonical_synthesis_digest(synthesis),
+        )
+    except ProductionTextEvidenceConflictError as exc:
+        raise ProductionStateConflictError(str(exc)) from exc
+
+    # Detect a full rerun or a review-driven synthesis publication racing this
+    # multi-artifact read.  Returning a mixed but individually valid payload
+    # would violate the endpoint's generation-bound contract.
+    latest = production_store.load_artifact(session_id, pair_id, "state")
+    if not isinstance(latest, Mapping) or any(
+        latest.get(key) != state.get(key)
+        for key in ("run_id", "input_signature", "revision", "status")
+    ):
+        raise ProductionStateConflictError(
+            "production generation changed while TEXT evidence was read"
+        )
+    return payload
+
+
 def get_review_questions(session_id: str, pair_id: str) -> dict[str, Any]:
     state = get_production_state(session_id, pair_id)
     synthesis = _published_synthesis(session_id, pair_id, state)
@@ -5490,6 +5549,7 @@ __all__ = [
     "get_final_report",
     "get_production_changes",
     "get_production_state",
+    "get_production_text_evidence",
     "get_review_questions",
     "normalize_run_request",
     "run_production_comparison",

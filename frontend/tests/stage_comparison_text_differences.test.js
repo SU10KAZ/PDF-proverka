@@ -37,6 +37,7 @@ describe('grouped Stage 3 text differences', () => {
     expect(html).toContain('scTextAllDifferenceGroups.length');
     expect(app).toContain('scTextDifferences.value = {...scTextDifferences.value, stale: true}');
     expect(html).toContain('Текстовых расхождений нет');
-    expect(html).toContain('Связи или исходные документы изменились');
+    expect(html).toContain('Legacy-результат устарел. Используйте полный production-анализ.');
+    expect(html).toContain('Legacy-результаты TEXT — только для совместимости');
   });
 });

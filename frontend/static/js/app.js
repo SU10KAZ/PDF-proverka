@@ -11930,6 +11930,10 @@ const app = createApp({
         const scProductionChanges = ref(null);
         const scProductionQuestions = ref(null);
         const scProductionFinalReport = ref(null);
+        const scProductionTextEvidence = ref(null);
+        const scTextEvidenceMode = ref('all');
+        const scTextEvidenceSelectedId = ref('');
+        const scTextEvidenceHoveredId = ref('');
         const scProductionLoading = ref(false);
         const scProductionRunLoading = ref(false);
         const scProductionDecisionsSaving = ref(false);
@@ -12144,6 +12148,19 @@ const app = createApp({
             && SC_PRODUCTION_REVIEW.normalizeProductionPipeline
             ? SC_PRODUCTION_REVIEW.normalizeProductionPipeline(scProductionPresentationPayload())
             : []);
+        const scProductionTextPresentation = computed(() => SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.normalizeProductionTextPresentation
+            ? SC_PRODUCTION_REVIEW.normalizeProductionTextPresentation(
+                scProductionState.value,
+                scProductionTextEvidence.value,
+            )
+            : {
+                tone: 'idle', label: 'Не запущен', counters: [],
+                message: 'TEXT запускается в составе полного анализа.',
+            });
+        const scTextEvidenceActiveId = computed(() => (
+            scTextEvidenceHoveredId.value || scTextEvidenceSelectedId.value
+        ));
         const scProductionSelectionReady = computed(() => scProductionPipeline.value.some(stage => (
             stage.id === 'selection' && stage.status === 'COMPLETED'
         )));
@@ -13683,6 +13700,10 @@ const app = createApp({
             scProductionChanges.value = null;
             scProductionQuestions.value = null;
             scProductionFinalReport.value = null;
+            scProductionTextEvidence.value = null;
+            scTextEvidenceMode.value = 'all';
+            scTextEvidenceSelectedId.value = '';
+            scTextEvidenceHoveredId.value = '';
             scProductionError.value = '';
             scProductionSaveMessage.value = '';
             scProductionEvidence.value = null;
@@ -14175,6 +14196,45 @@ const app = createApp({
             });
         }
 
+        function scProductionTextEvidenceMatchesState(evidence) {
+            return Boolean(SC_PRODUCTION_REVIEW
+                && SC_PRODUCTION_REVIEW.productionTextEvidenceMatchesGeneration
+                && SC_PRODUCTION_REVIEW.productionTextEvidenceMatchesGeneration(
+                    scProductionState.value,
+                    scProductionChanges.value,
+                    evidence,
+                ));
+        }
+
+        function scApplyProductionTextEvidence(data) {
+            if (!data || !SC_PRODUCTION_REVIEW
+                    || !SC_PRODUCTION_REVIEW.normalizeProductionTextEvidence) return false;
+            const normalized = SC_PRODUCTION_REVIEW.normalizeProductionTextEvidence(data);
+            if (!scProductionTextEvidenceMatchesState(normalized)) {
+                scProductionTextEvidence.value = null;
+                scTextEvidenceMode.value = 'all';
+                scTextEvidenceSelectedId.value = '';
+                scTextEvidenceHoveredId.value = '';
+                return false;
+            }
+            scProductionTextEvidence.value = normalized;
+            if (scProductionTextEvidence.value.stale
+                    || (scTextEvidenceMode.value === 'matches'
+                        && !scProductionTextEvidence.value.matches.length)
+                    || (scTextEvidenceMode.value === 'changes'
+                        && !scProductionTextEvidence.value.changes.length)) {
+                scTextEvidenceMode.value = 'all';
+            }
+            const selected = scTextEvidenceSelectedId.value;
+            if (selected && !SC_PRODUCTION_REVIEW.productionTextEvidenceItem(
+                scProductionTextEvidence.value, selected,
+            )) {
+                scTextEvidenceSelectedId.value = '';
+            }
+            scTextEvidenceHoveredId.value = '';
+            return true;
+        }
+
         async function scLoadProductionReview(options) {
             if (!scActivePair.value || !SC_PRODUCTION_REVIEW) return;
             if (scProductionArtifactRetryTimer) {
@@ -14197,7 +14257,9 @@ const app = createApp({
             );
             scProductionLoading.value = true;
             if (!settings.silent) scProductionError.value = '';
-            const suffixes = ['/state', '/changes', '/questions', '/final-report'];
+            const suffixes = [
+                '/state', '/changes', '/questions', '/final-report', '/text-evidence',
+            ];
             const settled = await Promise.all(suffixes.map(async suffix => {
                 try {
                     return {suffix, data: await scProductionRequest(suffix, {optional: true})};
@@ -14224,8 +14286,19 @@ const app = createApp({
                         scApplyProductionQuestions(result.data, {preserveDirty: preserveDrafts});
                     } else if (result.suffix === '/final-report' && result.data) {
                         scProductionFinalReport.value = result.data.final_report || result.data;
+                    } else if (result.suffix === '/text-evidence' && result.data) {
+                        if (!scApplyProductionTextEvidence(result.data)) {
+                            missing.push(result.suffix);
+                        }
                     }
                 });
+                if (missing.includes('/text-evidence') && scProductionTextEvidence.value
+                        && !scProductionTextEvidenceMatchesState(scProductionTextEvidence.value)) {
+                    scProductionTextEvidence.value = null;
+                    scTextEvidenceMode.value = 'all';
+                    scTextEvidenceSelectedId.value = '';
+                    scTextEvidenceHoveredId.value = '';
+                }
                 const terminalArtifactsExpected = ['COMPLETED', 'PARTIAL'].includes(String(
                     scProductionState.value && scProductionState.value.status || '',
                 ).toUpperCase());
@@ -14327,6 +14400,8 @@ const app = createApp({
                 changes: scProductionChanges.value,
                 questions: scProductionQuestions.value,
                 finalReport: scProductionFinalReport.value,
+                textEvidence: scProductionTextEvidence.value,
+                textEvidenceMode: scTextEvidenceMode.value,
                 decisionDrafts: {...scProductionDecisionDrafts},
                 questionDrafts: {...scProductionQuestionDrafts},
             };
@@ -14360,6 +14435,10 @@ const app = createApp({
             scProductionChanges.value = null;
             scProductionQuestions.value = null;
             scProductionFinalReport.value = null;
+            scProductionTextEvidence.value = null;
+            scTextEvidenceMode.value = 'all';
+            scTextEvidenceHoveredId.value = '';
+            scTextEvidenceSelectedId.value = '';
             scClearReactiveRecord(scProductionDecisionDrafts);
             scClearReactiveRecord(scProductionQuestionDrafts);
             try {
@@ -14393,6 +14472,8 @@ const app = createApp({
                 scProductionChanges.value = previousReview.changes;
                 scProductionQuestions.value = previousReview.questions;
                 scProductionFinalReport.value = previousReview.finalReport;
+                scProductionTextEvidence.value = previousReview.textEvidence;
+                scTextEvidenceMode.value = previousReview.textEvidenceMode;
                 Object.assign(scProductionDecisionDrafts, previousReview.decisionDrafts);
                 Object.assign(scProductionQuestionDrafts, previousReview.questionDrafts);
                 await scLoadProductionReview({silent: true, preserveDrafts: true});
@@ -14998,6 +15079,112 @@ const app = createApp({
             })[String(value || '').toUpperCase()] || 'PENDING_REVIEW';
         }
 
+        function scSetTextEvidenceMode(mode) {
+            const normalized = String(mode || '').toLowerCase();
+            if (!['all', 'matches', 'changes'].includes(normalized)) return;
+            if (normalized === 'matches'
+                    && !scProductionTextPresentation.value.can_visualize_matches) return;
+            if (normalized === 'changes'
+                    && !scProductionTextPresentation.value.can_visualize_changes) return;
+            scTextEvidenceMode.value = normalized;
+            scTextEvidenceHoveredId.value = '';
+            scTextEvidenceSelectedId.value = '';
+        }
+
+        function scTextEvidenceOverlaysFor(side, page) {
+            if (!SC_PRODUCTION_REVIEW
+                    || !SC_PRODUCTION_REVIEW.productionTextEvidenceOverlays) return [];
+            return SC_PRODUCTION_REVIEW.productionTextEvidenceOverlays(
+                scProductionTextEvidence.value,
+                scTextEvidenceMode.value,
+                side,
+                page,
+                scTextEvidenceActiveId.value,
+            );
+        }
+
+        function scTextEvidenceOverlayStyle(overlay) {
+            return scProductionEvidenceOverlayStyle(overlay);
+        }
+
+        function scTextEvidenceOverlayLabel(overlay, side) {
+            const kind = overlay && overlay.evidence_kind === 'MATCH'
+                ? 'Совпадение' : 'Изменение';
+            const review = overlay && overlay.review_required
+                ? 'Требует проверки. ' : '';
+            const paired = overlay && overlay.paired
+                ? 'Связано между LEFT и RIGHT. ' : '';
+            const title = String(overlay && overlay.title || '').trim();
+            const page = Number(overlay && overlay.page);
+            const location = `${String(side || '').toUpperCase()}`
+                + (Number.isInteger(page) && page > 0 ? `, лист ${page}` : '');
+            return `${kind}. ${review}${paired}${title}${title ? '. ' : ''}${location}.`;
+        }
+
+        function scHoverTextEvidence(evidenceId, active) {
+            const normalized = String(evidenceId || '');
+            if (active) {
+                scTextEvidenceHoveredId.value = normalized;
+            } else if (scTextEvidenceHoveredId.value === normalized) {
+                scTextEvidenceHoveredId.value = '';
+            }
+        }
+
+        async function scOpenProductionReviewTarget(targetId) {
+            const normalized = String(targetId || '');
+            if (!normalized) return;
+            scTab.value = 'diffs';
+            await nextTick();
+            const row = [...document.querySelectorAll('[data-production-target-id]')]
+                .find(item => item.dataset.productionTargetId === normalized);
+            if (!row) {
+                await scScrollToProductionElement('sc-production-review-table');
+                return;
+            }
+            scProductionReturnTargetId.value = normalized;
+            row.scrollIntoView({behavior: 'smooth', block: 'center'});
+            const link = row.querySelector('.sc-production-evidence-link');
+            if (link && typeof link.focus === 'function') link.focus({preventScroll: true});
+            if (scProductionReturnTimer) clearTimeout(scProductionReturnTimer);
+            scProductionReturnTimer = setTimeout(() => {
+                if (scProductionReturnTargetId.value === normalized) {
+                    scProductionReturnTargetId.value = '';
+                }
+            }, 2600);
+        }
+
+        async function scActivateTextEvidence(overlay) {
+            if (!overlay || !SC_PRODUCTION_REVIEW
+                    || !SC_PRODUCTION_REVIEW.productionTextEvidenceItem) return;
+            const item = SC_PRODUCTION_REVIEW.productionTextEvidenceItem(
+                scProductionTextEvidence.value, overlay.evidence_id,
+            );
+            if (!item) return;
+            scTextEvidenceSelectedId.value = scTextEvidenceSelectedId.value === item.evidence_id
+                ? '' : item.evidence_id;
+            if (item.kind === 'CHANGE' && item.target_id) {
+                await scOpenProductionReviewTarget(item.target_id);
+                return;
+            }
+            if (item.kind !== 'MATCH') return;
+            for (const side of ['left', 'right']) {
+                const page = Number(item.sides && item.sides[side] && item.sides[side].page);
+                if (!Number.isInteger(page) || page < 1) continue;
+                scSetViewerEmpty(side, false);
+                scCurrentPage[side] = page;
+            }
+            if (item.has_any_coordinates) scSyncView.value = false;
+            await nextTick();
+            // Continuous watchers first centre the newly selected pages.  Let
+            // that settle before moving each pane to its exact persisted bbox.
+            if (scViewMode.value === 'continuous') await nextTick();
+            scFocusTextEvidenceSide('left', item.sides.left);
+            scFocusTextEvidenceSide('right', item.sides.right);
+            scMeasurePane('left');
+            scMeasurePane('right');
+            scScheduleView();
+        }
+
         function scProductionEvidenceOverlaysFor(side, page) {
             if (!scProductionEvidence.value || !scProductionEvidenceVisible.value) return [];
             const value = scProductionEvidence.value.sides[side];
@@ -15067,6 +15254,30 @@ const app = createApp({
                 SC_SEARCH_FOCUS_ZOOM,
                 0.3 / Math.max(width || 0.01, height || 0.01),
             ));
+        }
+
+        function scFocusTextEvidenceSide(side, evidenceSide) {
+            if (scViewMode.value !== 'continuous') {
+                scFocusProductionEvidenceSide(side, evidenceSide);
+                return;
+            }
+            if (!SC_PRODUCTION_REVIEW || !evidenceSide) return;
+            const focus = SC_PRODUCTION_REVIEW.evidenceFocus(evidenceSide);
+            const page = Number(evidenceSide.page);
+            if (!focus || !Number.isInteger(page) || page < 1) return;
+            const dims = scContinuousDims[side][page] || scPageDims[side];
+            const x = focus.units === 'normalized'
+                ? focus.x : (dims.w ? focus.x / dims.w : null);
+            const y = focus.units === 'normalized'
+                ? focus.y : (dims.h ? focus.y / dims.h : null);
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+            const slot = scContinuousSlotForPage(side, page);
+            if (slot) scContinuousCurrentSlot[side] = slot.key;
+            scLoadContinuousWindow(side, page);
+            scSetContinuousAnchor(side, page, {
+                slot: slot && slot.key,
+                x, y, viewportX: 0.5, viewportY: 0.5,
+            });
         }
 
         async function scShowProductionEvidencePage(side, page) {
@@ -18004,7 +18215,8 @@ const app = createApp({
             scProcessing, scProcessingError,
             // Production atomic comparison/review (legacy refs stay exported below)
             scProductionState, scProductionChanges, scProductionQuestions,
-            scProductionFinalReport, scProductionAvailable, scProductionHasRun,
+            scProductionFinalReport, scProductionTextEvidence,
+            scProductionTextPresentation, scProductionAvailable, scProductionHasRun,
             scProductionLoading, scProductionRunLoading,
             scProductionDecisionsSaving, scProductionAnswersSaving,
             scProductionError, scProductionSaveMessage, scProductionInputMode,
@@ -18022,6 +18234,7 @@ const app = createApp({
             scProductionEvidenceLoadingId, scProductionEvidenceError,
             scProductionEvidenceReturn, scProductionReturnTargetId,
             scProductionQuestionFocusCategory, scProductionPipelineExpanded,
+            scTextEvidenceMode, scTextEvidenceSelectedId, scTextEvidenceActiveId,
             scLoadProductionReview, scDiscardProductionDrafts,
             scRunProductionComparison, scProductionRunBody,
             scHandleProductionPrimaryAction, scContinueProductionReview,
@@ -18047,6 +18260,10 @@ const app = createApp({
             scProductionEvidenceOverlaysFor, scProductionEvidenceOverlayStyle,
             scProductionEvidencePages, scProductionEvidenceSideNotice,
             scShowProductionEvidencePage,
+            scSetTextEvidenceMode, scTextEvidenceOverlaysFor,
+            scTextEvidenceOverlayStyle, scTextEvidenceOverlayLabel,
+            scHoverTextEvidence,
+            scActivateTextEvidence, scOpenProductionReviewTarget,
             scMatchState, scMatchSummary, scSuggestions, scLeftSuggestion,
             scTextComparison, scTextComparisonLoading, scTextComparisonError,
             scSelectedTextMetric, scSelectedTextHints, scRunTextComparison,

@@ -5,28 +5,32 @@ const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const app = readFileSync(new URL('../static/js/app.js', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../static/css/styles.css', import.meta.url), 'utf8');
 
-describe('deterministic stage comparison text overlay', () => {
-  it('starts and restores a persisted text comparison independently of sheet matching', () => {
+describe('legacy deterministic stage comparison text compatibility', () => {
+  it('keeps the persisted legacy flow callable without exposing a second production control', () => {
     expect(app).toContain('const scTextComparison = ref(null)');
     expect(app).toContain("scTextComparison.value = data.text_comparison || null");
     expect(app).toContain("scPairUrl(scActivePair.value.id, '/text-comparison')");
-    expect(html).toContain('Сравнить текст');
-    expect(html).toContain('Осталось для проверки');
+    expect(html).not.toContain('scRunTextComparison');
+    expect(html).not.toContain('scRunTextDifferences');
+    expect(html).not.toContain('scRunTextAiReview');
+    expect(html).not.toContain('scRunProjectChangeSummary');
+    expect(html).not.toContain('Пересчитать текст');
+    expect(html).toContain('Legacy-диагностика связей листов');
+    expect(html).toContain('Legacy-результаты TEXT — только для совместимости');
   });
 
-  it('draws grey overlays in both paged and continuous viewer modes', () => {
-    expect(html.match(/class="sc-text-comparison-mask"/g)).toHaveLength(2);
-    expect(html).toContain('scTextComparisonOverlaysFor(side, scCurrentPage[side])');
-    expect(html).toContain('scTextComparisonOverlaysFor(side, entry.page)');
-    expect(css).toContain('background: rgba(100, 116, 139, .54);');
-    expect(css).toContain('.sc-text-comparison-mask.is-elsewhere::after');
+  it('removes legacy overlays from both production viewer modes', () => {
+    expect(html).not.toContain('class="sc-text-comparison-mask"');
+    expect(html).not.toContain('scTextComparisonOverlaysFor(side, scCurrentPage[side])');
+    expect(html).not.toContain('scTextComparisonOverlaysFor(side, entry.page)');
+    expect(html.match(/class="sc-text-evidence-overlay"/g)).toHaveLength(2);
+    expect(css).toContain('.sc-text-evidence-overlay.is-match');
   });
 
-  it('marks stale overlays and exposes only explicit human link actions', () => {
+  it('retains legacy stale bookkeeping without link mutations in the production TEXT block', () => {
     expect(app).toContain("scTextComparison.value = {...scTextComparison.value, stale: true}");
-    expect(html).toContain('карта листов изменилась — нужен пересчёт');
-    expect(html).toContain('Добавить связь');
-    expect(html).toContain('Заменить связь');
     expect(app).toContain('async function scApplyTextHint(hint, replace = false)');
+    expect(html).not.toContain('@click="scApplyTextHint(hint, false)"');
+    expect(html).not.toContain('@click="scApplyTextHint(hint, true)"');
   });
 });

@@ -5991,72 +5991,80 @@
                             Обработать
                         </button>
                     </section>
-                    <section v-if="scMatchState && scMatchState.links && scMatchState.links.links.length"
-                             class="sc-text-comparison-summary">
-                        <div class="sc-text-comparison-summary__head">
-                            <div>
-                                <strong>Текст</strong>
-                                <span v-if="scTextComparison && scTextComparison.stale" class="is-stale">
-                                    карта листов изменилась — нужен пересчёт
+                    <section v-if="scActivePair" class="sc-text-evidence-summary"
+                             :class="'is-' + scProductionTextPresentation.tone"
+                             aria-labelledby="sc-text-evidence-title">
+                        <header class="sc-text-evidence-summary__head">
+                            <div class="sc-text-evidence-summary__title">
+                                <strong id="sc-text-evidence-title">TEXT</strong>
+                                <span class="sc-text-evidence-status" role="status"
+                                      :class="'is-' + scProductionTextPresentation.tone">
+                                    <i aria-hidden="true">{{ scProductionTextPresentation.tone === 'completed' ? '✓' : (scProductionTextPresentation.tone === 'running' ? '…' : (scProductionTextPresentation.tone === 'idle' ? '○' : '⚠')) }}</i>
+                                    {{ scProductionTextPresentation.label }}
                                 </span>
                             </div>
-                            <button type="button" class="btn btn-sm btn-primary"
-                                    :disabled="scTextComparisonLoading || scLinkSaving"
-                                    @click="scRunTextComparison()">
-                                {{ scTextComparisonLoading ? 'Сравниваем…' : (scTextComparison ? 'Пересчитать текст' : 'Сравнить текст') }}
+                            <div class="sc-text-evidence-modes" role="group"
+                                 aria-label="Режим подсветки текста">
+                                <button type="button" :class="{'is-active': scTextEvidenceMode === 'all'}"
+                                        :aria-pressed="scTextEvidenceMode === 'all'"
+                                        title="Обычный документ без фильтра"
+                                        @click="scSetTextEvidenceMode('all')">Всё</button>
+                                <button type="button" :class="{'is-active': scTextEvidenceMode === 'matches'}"
+                                        :aria-pressed="scTextEvidenceMode === 'matches'"
+                                        :disabled="!scProductionTextPresentation.can_visualize_matches"
+                                        title="Показать совпавший текст. Только визуализация; результат анализа не меняется"
+                                        @click="scSetTextEvidenceMode('matches')">Показать совпадения</button>
+                                <button type="button" :class="{'is-active': scTextEvidenceMode === 'changes'}"
+                                        :aria-pressed="scTextEvidenceMode === 'changes'"
+                                        :disabled="!scProductionTextPresentation.can_visualize_changes"
+                                        title="Показать evidence изменений текущего production generation"
+                                        @click="scSetTextEvidenceMode('changes')">Показать изменения</button>
+                            </div>
+                        </header>
+                        <div class="sc-text-evidence-summary__body">
+                            <p>{{ scProductionTextPresentation.message }}</p>
+                            <div v-if="scProductionTextPresentation.counters.length"
+                                 class="sc-text-evidence-summary__counters">
+                                <span v-for="counter in scProductionTextPresentation.counters"
+                                      :key="'text-counter-' + counter.label">
+                                    {{ counter.label }} <b>{{ counter.value }}</b>
+                                </span>
+                            </div>
+                        </div>
+                        <div v-if="scProductionTextPresentation.show_rerun"
+                             class="sc-text-evidence-summary__rerun">
+                            <small>Повторный расчёт текста сейчас выполняется в составе полного автоматического анализа.</small>
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                    :disabled="!scProductionSelectionReady || scProductionMutating || scProductionRunActive"
+                                    @click="scRunProductionComparison({confirmRerun: true})">
+                                ↻ Запустить полный анализ заново
                             </button>
                         </div>
-                        <div v-if="scTextComparison && (scSelectedTextMetric || scTextComparison.summary)"
-                             class="sc-text-comparison-summary__metrics">
-                            <template v-if="scSelectedTextMetric">
-                                <span>На текущей связи <b>{{ scSelectedTextMetric.combined.linked_percent }}%</b></span>
-                                <span>На других листах <b>{{ scSelectedTextMetric.combined.elsewhere_percent }}%</b></span>
-                                <span>Осталось для проверки <b>{{ scSelectedTextMetric.combined.remaining_percent }}%</b></span>
-                            </template>
-                            <template v-else>
-                                <span>На текущих связях <b>{{ scTextComparison.summary.linked_percent }}%</b></span>
-                                <span>На других листах <b>{{ scTextComparison.summary.found_elsewhere_percent }}%</b></span>
-                                <span>Осталось для проверки <b>{{ scTextComparison.summary.remaining_percent }}%</b></span>
-                            </template>
-                        </div>
-                        <div v-for="hint in scSelectedTextHints" :key="hint.id"
-                             class="sc-text-link-hint" :class="{'is-strong': hint.kind === 'likely_incorrect'}">
-                            <span class="sc-text-link-hint__icon">⚠</span>
-                            <div>
-                                <strong>{{ hint.kind === 'likely_incorrect' ? 'Возможно неверно сопоставлены листы' : 'Возможна дополнительная связь' }}</strong>
-                                <span>{{ hint.actual_label }} · {{ hint.matched_fragments }} фрагм. · {{ Math.round(hint.share_of_remaining_text * 100) }}% остатка</span>
+                        <details class="sc-text-evidence-summary__details">
+                            <summary>Подробнее</summary>
+                            <p>
+                                Подсветка читает готовые production anchors и не запускает сравнение.
+                                <template v-if="scProductionTextPresentation.generation_run_id">
+                                    Generation: {{ scProductionTextPresentation.generation_run_id }}.
+                                </template>
+                            </p>
+                            <p v-if="scProductionTextEvidence
+                                      && scProductionTextEvidence.constraints
+                                      && scProductionTextEvidence.constraints.exact_match_coverage === 'PERSISTED_DELTA_GROUPS_ONLY'">
+                                Точные пары показаны только для групп, которые Stage 3 сохранил вместе
+                                с различиями. Это доступная визуальная выборка, а не общее число совпадений.
+                            </p>
+                            <div v-if="scSelectedTextHints.length" class="sc-text-evidence-legacy">
+                                <strong>Legacy-диагностика связей листов</strong>
+                                <small>Не является результатом текущего production generation.</small>
+                                <span v-for="hint in scSelectedTextHints" :key="'legacy-text-hint-' + hint.id">
+                                    {{ hint.actual_label }} · совпавших фрагментов: {{ hint.matched_fragments }}
+                                </span>
                             </div>
-                            <div class="sc-text-link-hint__actions">
-                                <button type="button" class="btn btn-sm" @click="scOpenTextHint(hint)">Открыть</button>
-                                <button type="button" class="btn btn-sm" :disabled="scLinkSaving"
-                                        @click="scApplyTextHint(hint, false)">Добавить связь</button>
-                                <button v-if="hint.kind === 'likely_incorrect'" type="button" class="btn btn-sm"
-                                        :disabled="scLinkSaving" @click="scApplyTextHint(hint, true)">Заменить связь</button>
-                            </div>
-                        </div>
-                        <div v-if="scTextComparisonError" class="sc-text-comparison-summary__error">
-                            {{ scTextComparisonError }}
-                        </div>
-                        <div v-if="scTextFinalComparison && !scTextFinalComparison.stale"
-                             class="sc-ai-review-state"
-                             :class="{'is-failed': scTextFinalComparison.review_status !== 'completed'}">
-                            <template v-if="scTextFinalComparison.review_status === 'completed'">
-                                <b>Проверено ИИ</b>
-                                <span>Совпало: {{ scTextResultSummary.same || 0 }}</span>
-                                <span>Перенесено: {{ scTextResultSummary.moved || 0 }}</span>
-                                <span>ИИ скорректировал: {{ scTextResultSummary.ai_corrected || 0 }}</span>
-                                <span v-if="scTextResultSummary.uncertain">Требует проверки: {{ scTextResultSummary.uncertain }}</span>
-                            </template>
-                            <template v-else>
-                                Текст проверен детерминированно, ИИ-проверка не выполнена полностью
-                            </template>
-                        </div>
-                        <div v-else-if="scTextDifferences && !scTextDifferences.stale" class="sc-ai-review-state is-failed">
-                            Текст проверен детерминированно, ИИ-проверка не выполнена
-                        </div>
-                        <div v-if="scTextAiReviewError" class="sc-text-comparison-summary__error">
-                            {{ scTextAiReviewError }}
-                        </div>
+                            <p v-if="scTextComparisonError || scTextAiReviewError" class="sc-text-comparison-summary__error">
+                                Legacy: {{ scTextComparisonError || scTextAiReviewError }}
+                            </p>
+                        </details>
                     </section>
                     <div v-if="scProcessingError" class="sc-shell-error">{{ scProcessingError }}</div>
                     <div class="sc-viewer-shell">
@@ -6198,11 +6206,22 @@
                                          class="sc-page-tile" :src="tile.url" decoding="async"
                                          draggable="false" alt=""
                                          :style="{left: tile.left + 'px', top: tile.top + 'px', width: tile.width + 'px', height: tile.height + 'px'}">
-                                    <i v-for="overlay in scTextComparisonOverlaysFor(side, scCurrentPage[side])"
-                                       :key="overlay.id" class="sc-text-comparison-mask"
-                                       :class="{'is-elsewhere': overlay.status === 'MOVED'}"
-                                       :title="overlay.title" :aria-label="overlay.title"
-                                       :style="scTextComparisonOverlayStyle(overlay)"></i>
+                                    <button v-for="overlay in scTextEvidenceOverlaysFor(side, scCurrentPage[side])"
+                                            :key="'text-evidence-' + overlay.evidence_id + '-' + overlay.id"
+                                            type="button" class="sc-text-evidence-overlay"
+                                            :class="[
+                                                'is-' + String(overlay.evidence_kind || '').toLowerCase(),
+                                                {'is-active': overlay.active, 'is-review-required': overlay.review_required},
+                                            ]"
+                                            :title="scTextEvidenceOverlayLabel(overlay, side)"
+                                            :aria-label="scTextEvidenceOverlayLabel(overlay, side)"
+                                            :style="scTextEvidenceOverlayStyle(overlay)"
+                                            @mouseenter="scHoverTextEvidence(overlay.evidence_id, true)"
+                                            @mouseleave="scHoverTextEvidence(overlay.evidence_id, false)"
+                                            @focus="scHoverTextEvidence(overlay.evidence_id, true)"
+                                            @blur="scHoverTextEvidence(overlay.evidence_id, false)"
+                                            @pointerdown.stop
+                                            @click.stop="scActivateTextEvidence(overlay)"></button>
                                     <i v-for="overlay in scProductionEvidenceOverlaysFor(side, scCurrentPage[side])"
                                        :key="'production-evidence-' + overlay.id"
                                        class="sc-production-evidence-overlay"
@@ -6249,12 +6268,22 @@
                                              :key="tile.key" class="sc-continuous-page__tile"
                                              :src="tile.url" decoding="async" draggable="false" alt=""
                                              :style="{left: tile.left + '%', top: tile.top + '%', width: tile.width + '%', height: tile.height + '%'}">
-                                        <i v-for="overlay in entry.page ? scTextComparisonOverlaysFor(side, entry.page) : []"
-                                           :key="side + '-continuous-mask-' + overlay.id"
-                                           class="sc-text-comparison-mask"
-                                           :class="{'is-elsewhere': overlay.status === 'MOVED'}"
-                                           :title="overlay.title" :aria-label="overlay.title"
-                                           :style="scTextComparisonOverlayStyle(overlay)"></i>
+                                        <button v-for="overlay in entry.page ? scTextEvidenceOverlaysFor(side, entry.page) : []"
+                                                :key="side + '-continuous-text-evidence-' + overlay.evidence_id + '-' + overlay.id"
+                                                type="button" class="sc-text-evidence-overlay"
+                                                :class="[
+                                                    'is-' + String(overlay.evidence_kind || '').toLowerCase(),
+                                                    {'is-active': overlay.active, 'is-review-required': overlay.review_required},
+                                                ]"
+                                                :title="scTextEvidenceOverlayLabel(overlay, side)"
+                                                :aria-label="scTextEvidenceOverlayLabel(overlay, side)"
+                                                :style="scTextEvidenceOverlayStyle(overlay)"
+                                                @mouseenter="scHoverTextEvidence(overlay.evidence_id, true)"
+                                                @mouseleave="scHoverTextEvidence(overlay.evidence_id, false)"
+                                                @focus="scHoverTextEvidence(overlay.evidence_id, true)"
+                                                @blur="scHoverTextEvidence(overlay.evidence_id, false)"
+                                                @pointerdown.stop
+                                                @click.stop="scActivateTextEvidence(overlay)"></button>
                                         <i v-for="(highlight, index) in entry.page ? scTextSearchHighlightsFor(side, entry.page) : []"
                                            :key="side + '-continuous-search-' + entry.page + '-' + index"
                                            class="sc-text-highlight"
@@ -6290,49 +6319,26 @@
             <div v-if="scTab==='diffs'" class="sc-shell sc-differences">
                 <section class="sc-shell-card sc-differences__head">
                     <div>
-                        <strong>Текстовые расхождения П ↔ РД</strong>
+                        <strong>Production-расхождения П ↔ РД</strong>
                         <p v-if="scActivePair">
                             {{ scActivePair.left.filename }} ↔ {{ scActivePair.right.filename }}
                         </p>
                         <p v-else>Выберите пару документов на вкладке «Загрузка документации».</p>
                     </div>
-                    <div v-if="scTextResultAvailable" class="sc-differences__head-actions">
-                        <span class="sc-differences__ready">Готовый результат</span>
-                        <button v-if="!scTextAiReviewCompleted && scTextDifferences && !scTextDifferences.stale"
-                                type="button" class="btn btn-primary"
-                                :disabled="!scCanRunTextAiReview"
-                                @click="scRunTextAiReview()">
-                            {{ scTextAiReviewLoading
-                                ? 'ИИ проверяет…'
-                                : (scTextFinalComparison ? 'Повторить ИИ-проверку' : 'Запустить ИИ-проверку') }}
-                        </button>
-                        <button v-else-if="!scHighLevelProjectChangesAvailable"
-                                type="button" class="btn btn-primary"
-                                :disabled="!scCanRunProjectChangeSummary"
-                                @click="scRunProjectChangeSummary()">
-                            {{ scProjectChangeSummaryLoading ? 'Синтез…' : 'Сформировать основные изменения' }}
-                        </button>
+                    <div v-if="scActivePair && scProductionHasRun" class="sc-differences__head-actions">
+                        <span class="sc-differences__ready">Текущий production generation</span>
                     </div>
                     <button v-else-if="scActivePair && !scAcceptedSheetLinksReady"
                             type="button" class="btn btn-primary" @click="scTab = 'links'">
                         Принять связи листов
                     </button>
-                    <button v-else type="button" class="btn btn-primary"
-                            :disabled="!scActivePair || scTextComparisonLoading || scTextDifferencesLoading || scTextAiReviewLoading"
-                            @click="scTextComparison && !scTextComparison.stale ? scRunTextDifferences() : scRunTextComparison()">
-                        {{ scTextComparisonLoading || scTextDifferencesLoading ? 'Сравнение…' : (scTextAiReviewLoading ? 'ИИ проверяет…' : 'Сформировать расхождения') }}
-                    </button>
+                    <span v-else-if="scActivePair" class="sc-differences__ready">
+                        TEXT будет рассчитан кнопкой полного анализа в конвейере выше
+                    </span>
                 </section>
 
-                <div v-if="scTextComparisonError || scTextDifferencesError || scTextAiReviewError || scProjectChangeSummaryError" class="sc-shell-error">
-                    {{ scTextComparisonError || scTextDifferencesError || scTextAiReviewError || scProjectChangeSummaryError }}
-                </div>
-                <div v-if="scTextDifferences && scTextDifferences.stale" class="sc-shell-error sc-differences__stale">
-                    Связи или исходные документы изменились. Пересчитайте расхождения.
-                </div>
-
                 <!-- Production LEFT → RIGHT comparison. Legacy summaries and the
-                     Stage 3 discrepancy ledger remain below this panel. -->
+                     Stage 3 discrepancy ledger remain read-only below this panel. -->
                 <section v-if="scActivePair" id="sc-production-review-stage"
                          class="sc-production-review" aria-labelledby="sc-production-title">
                     <header class="sc-production-review__head">
@@ -6674,6 +6680,27 @@
                     </div>
                 </section>
 
+                <details v-if="scTextResultAvailable || scProjectChangeSummaryAvailable
+                                   || scHighLevelProjectChangesAvailable || scTextAiReviewCompleted
+                                   || scTextComparisonError || scTextDifferencesError
+                                   || scTextAiReviewError || scProjectChangeSummaryError"
+                         class="sc-legacy-text-results">
+                    <summary>Legacy-результаты TEXT — только для совместимости</summary>
+                    <p>
+                        Это сохранённые результаты прежнего контура. Они доступны только для чтения
+                        и не являются текущим production generation.
+                    </p>
+                    <div v-if="scTextComparisonError || scTextDifferencesError
+                                   || scTextAiReviewError || scProjectChangeSummaryError"
+                         class="sc-shell-error">
+                        {{ scTextComparisonError || scTextDifferencesError
+                            || scTextAiReviewError || scProjectChangeSummaryError }}
+                    </div>
+                    <div v-if="scTextDifferences && scTextDifferences.stale"
+                         class="sc-shell-error sc-differences__stale">
+                        Legacy-результат устарел. Используйте полный production-анализ.
+                    </div>
+
                 <section v-if="scHighLevelProjectChangesAvailable" class="sc-project-summary sc-high-level-summary">
                     <header class="sc-project-summary__head">
                         <div>
@@ -6912,12 +6939,7 @@
 
                 <section v-if="scTextAiReviewCompleted && !scProjectChangeSummaryAvailable && !scHighLevelProjectChangesAvailable"
                          class="sc-shell-card sc-project-summary__pending">
-                    <strong>Основные изменения ещё не сформированы</strong>
-                    <button type="button" class="btn btn-primary"
-                            :disabled="!scCanRunProjectChangeSummary"
-                            @click="scRunProjectChangeSummary()">
-                        {{ scProjectChangeSummaryLoading ? 'Агрегация…' : 'Сформировать основные изменения' }}
-                    </button>
+                    <strong>Legacy-сводка основных изменений не была сформирована.</strong>
                 </section>
 
                 <details v-if="scTextResultAvailable" class="sc-raw-differences">
@@ -7105,6 +7127,7 @@
                     </table>
                 </div>
                     </div>
+                </details>
                 </details>
             </div>
 

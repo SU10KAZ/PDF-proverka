@@ -211,6 +211,9 @@
     }
 
     function finiteNumber(value) {
+        if (value === null || value === undefined || value === '' || typeof value === 'boolean') {
+            return null;
+        }
         const normalized = Number(value);
         return Number.isFinite(normalized) && normalized >= 0 ? normalized : null;
     }
@@ -1055,7 +1058,9 @@
             supported: true,
             partial_rerun_supported: false,
             label: '↻ Запустить полный анализ заново',
-            note: 'Для пересчёта этого этапа необходимо повторить автоматический анализ.',
+            note: number === 3
+                ? 'Повторный расчёт текста сейчас выполняется в составе полного автоматического анализа.'
+                : 'Для пересчёта этого этапа необходимо повторить автоматический анализ.',
             dependencies: dependencyNames[number],
             requires_confirmation: true,
         };
@@ -1866,6 +1871,250 @@
         return {x: (x0 + x1) / 2, y: (y0 + y1) / 2, width: x1 - x0, height: y1 - y0, units};
     }
 
+    function normalizeProductionTextEvidenceItem(value, kind, index) {
+        const source = object(value);
+        const evidenceId = String(
+            source.evidence_id || source.id || `${kind.toLowerCase()}-${index + 1}`,
+        );
+        const normalized = normalizeEvidence({
+            ...source,
+            target_id: evidenceId,
+            source_mode: 'TEXT',
+            layout: 'SIDE_BY_SIDE',
+        });
+        return {
+            ...normalized,
+            evidence_id: evidenceId,
+            target_id: source.target_id ? String(source.target_id) : '',
+            kind,
+            title: text(source.title, kind === 'MATCH' ? 'Совпавший текст' : 'Изменение текста'),
+            before: source.before === null || source.before === undefined
+                ? '' : text(source.before, ''),
+            after: source.after === null || source.after === undefined
+                ? '' : text(source.after, ''),
+            review_required: Boolean(source.review_required),
+            raw_item: source,
+        };
+    }
+
+    function normalizeProductionTextEvidence(payload) {
+        const source = object(payload);
+        const summary = object(source.summary);
+        const numberOrNull = value => {
+            if (value === null || value === undefined || value === '' || typeof value === 'boolean') {
+                return null;
+            }
+            const normalized = Number(value);
+            return Number.isFinite(normalized) && normalized >= 0 ? normalized : null;
+        };
+        return {
+            kind: String(source.kind || ''),
+            schema_version: String(source.schema_version || ''),
+            available: Boolean(source.available),
+            stale: Boolean(source.stale),
+            run_status: String(source.run_status || 'NOT_STARTED').toUpperCase(),
+            generation_run_id: String(source.generation_run_id || ''),
+            generation_revision: source.generation_revision !== null
+                && source.generation_revision !== undefined
+                && source.generation_revision !== ''
+                && Number.isInteger(Number(source.generation_revision))
+                ? Number(source.generation_revision) : null,
+            input_signature: String(source.input_signature || ''),
+            synthesis_input_signature: String(source.synthesis_input_signature || ''),
+            summary: {
+                available_match_pairs: numberOrNull(
+                    source.available_match_pairs !== undefined
+                        ? source.available_match_pairs : summary.available_match_pairs,
+                ),
+                matched_fragments: numberOrNull(summary.matched_fragments),
+                changed_fragments: numberOrNull(summary.changed_fragments),
+                changed: numberOrNull(summary.changed),
+                removed: numberOrNull(summary.removed),
+                added: numberOrNull(summary.added),
+                review_required: numberOrNull(summary.review_required),
+                prepared_fragments: numberOrNull(summary.prepared_fragments),
+                text_atoms: numberOrNull(summary.text_atoms),
+            },
+            matches: array(source.matches).map((item, index) => (
+                normalizeProductionTextEvidenceItem(item, 'MATCH', index)
+            )),
+            changes: array(source.changes).map((item, index) => (
+                normalizeProductionTextEvidenceItem(item, 'CHANGE', index)
+            )),
+            constraints: object(source.constraints),
+            raw: source,
+        };
+    }
+
+    function productionTextEvidenceMatchesGeneration(stateValue, changesValue, evidenceValue) {
+        const stateWrapper = object(stateValue);
+        const state = object(stateWrapper.state || stateWrapper);
+        const changesWrapper = object(changesValue);
+        const changes = object(changesWrapper.production_changes || changesWrapper);
+        const evidence = object(evidenceValue);
+        if (!evidence.available) return true;
+        const stateRunId = String(state.run_id || state.generation_run_id || '');
+        const evidenceRunId = String(evidence.generation_run_id || '');
+        const stateInputSignature = String(state.input_signature || '');
+        const evidenceInputSignature = String(evidence.input_signature || '');
+        const changesSignature = String(changes.input_signature || '');
+        const evidenceSynthesisSignature = String(evidence.synthesis_input_signature || '');
+        const stateRevisionPresent = state.revision !== null
+            && state.revision !== undefined && state.revision !== '';
+        const evidenceRevisionPresent = evidence.generation_revision !== null
+            && evidence.generation_revision !== undefined
+            && evidence.generation_revision !== '';
+        const stateRevision = Number(state.revision);
+        const evidenceRevision = Number(evidence.generation_revision);
+        return Boolean(
+            stateRunId && evidenceRunId && stateRunId === evidenceRunId
+            && stateInputSignature && evidenceInputSignature
+            && stateInputSignature === evidenceInputSignature
+            && stateRevisionPresent && evidenceRevisionPresent
+            && Number.isInteger(stateRevision) && Number.isInteger(evidenceRevision)
+            && stateRevision === evidenceRevision
+            && changesSignature && evidenceSynthesisSignature
+            && changesSignature === evidenceSynthesisSignature
+        );
+    }
+
+    function productionTextEvidenceOverlays(payload, mode, side, page, activeId) {
+        const source = object(payload);
+        const normalizedMode = String(mode || 'all').toLowerCase();
+        const normalizedSide = String(side || '').toLowerCase();
+        const normalizedPage = Number(page);
+        if (!source.available || source.stale || normalizedMode === 'all'
+                || !['left', 'right'].includes(normalizedSide)
+                || !Number.isInteger(normalizedPage) || normalizedPage < 1) return [];
+        const items = normalizedMode === 'matches'
+            ? array(source.matches)
+            : normalizedMode === 'changes' ? array(source.changes) : [];
+        return items.flatMap(item => {
+            const evidenceSide = object(object(item.sides)[normalizedSide]);
+            return array(evidenceSide.overlays)
+                .filter(overlay => Number(overlay.page) === normalizedPage)
+                .map(overlay => ({
+                    ...overlay,
+                    evidence_id: item.evidence_id,
+                    target_id: item.target_id || '',
+                    evidence_kind: item.kind,
+                    title: item.title,
+                    review_required: Boolean(item.review_required),
+                    paired: Boolean(item.has_both_sides),
+                    active: Boolean(activeId) && String(activeId) === String(item.evidence_id),
+                }));
+        });
+    }
+
+    function productionTextEvidenceItem(payload, evidenceId) {
+        const target = String(evidenceId || '');
+        if (!target) return null;
+        return [...array(object(payload).matches), ...array(object(payload).changes)]
+            .find(item => String(item.evidence_id || '') === target) || null;
+    }
+
+    function reviewFragmentPhrase(count) {
+        const value = Math.max(0, Number(count) || 0);
+        const lastTwo = value % 100;
+        const last = value % 10;
+        const noun = last === 1 && lastTwo !== 11
+            ? 'фрагмент'
+            : [2, 3, 4].includes(last) && ![12, 13, 14].includes(lastTwo)
+                ? 'фрагмента' : 'фрагментов';
+        const verb = last === 1 && lastTwo !== 11 ? 'требует' : 'требуют';
+        return `${value} ${noun} ${verb} дополнительной проверки.`;
+    }
+
+    function normalizeProductionTextPresentation(stateValue, evidenceValue) {
+        const state = object(stateValue && stateValue.state ? stateValue.state : stateValue);
+        const evidence = object(evidenceValue);
+        const textStage = object(object(state.stages).text);
+        const hasTextStage = Object.keys(textStage).length > 0;
+        const stageStatus = normalizePipelineStatus(textStage.status || textStage.source_state);
+        const runStatus = normalizePipelineStatus(state.status);
+        const stale = Boolean(state.stale || evidence.stale);
+        const summary = object(evidence.summary);
+        const fallbackReview = firstNumber([textStage], [
+            'review_required', 'review_required_atoms', 'unresolved',
+        ]);
+        const reviewRequired = finiteNumber(summary.review_required) !== null
+            ? finiteNumber(summary.review_required)
+            : fallbackReview;
+        let tone = 'idle';
+        let label = 'Не запущен';
+        let message = 'TEXT запускается автоматически в составе полного анализа.';
+        if (stale) {
+            tone = 'warning';
+            label = 'Результат устарел';
+            message = 'Текстовый результат относится к предыдущему generation. Запустите полный анализ заново.';
+        } else if (runStatus === 'RUNNING' || stageStatus === 'RUNNING') {
+            tone = 'running';
+            label = 'Выполняется';
+            message = 'Текстовый анализ выполняется в составе полного автоматического анализа.';
+        } else if (stageStatus === 'FAILED' || (!hasTextStage && runStatus === 'FAILED')) {
+            tone = 'warning';
+            label = 'Не завершён';
+            message = 'Текстовый анализ не удалось завершить. Запустите полный анализ заново.';
+        } else if (stageStatus === 'PARTIAL'
+                || (!hasTextStage && runStatus === 'PARTIAL')) {
+            tone = 'warning';
+            label = 'Завершён частично';
+            message = 'Текстовый анализ завершён частично. Часть фрагментов требует проверки.';
+        } else if (stageStatus === 'NEEDS_REVIEW') {
+            tone = 'review';
+            label = 'Требует проверки';
+            message = reviewRequired > 0
+                ? `Детерминированная проверка завершена. ${reviewFragmentPhrase(reviewRequired)}`
+                : 'Детерминированная проверка завершена. Часть фрагментов требует дополнительной проверки.';
+        } else if (stageStatus === 'COMPLETED') {
+            tone = reviewRequired > 0 ? 'review' : 'completed';
+            label = reviewRequired > 0 ? 'Требует проверки' : 'Завершён';
+            message = reviewRequired > 0
+                ? `Детерминированная проверка завершена. ${reviewFragmentPhrase(reviewRequired)}`
+                : 'Детерминированная проверка завершена. Дополнительная семантическая проверка не применялась.';
+        }
+        const availableMatchPairs = finiteNumber(summary.available_match_pairs) !== null
+            ? finiteNumber(summary.available_match_pairs)
+            : finiteNumber(summary.matched_fragments);
+        const resultCounters = [
+            ['Доступно пар', availableMatchPairs],
+            ['Изменено', summary.changed],
+            ['Удалено', summary.removed],
+            ['Добавлено', summary.added],
+            ['Требуют проверки', reviewRequired],
+        ].filter(([, value]) => finiteNumber(value) !== null)
+            .map(([counterLabel, value]) => ({label: counterLabel, value: Number(value)}));
+        const counters = hasTextStage && !['NOT_STARTED', 'RUNNING'].includes(stageStatus)
+            ? resultCounters : [];
+        const itemOverlays = (item, side) => array(
+            object(object(object(item).sides)[side]).overlays,
+        );
+        const matchesHaveCoordinates = array(evidence.matches).some(item => (
+            itemOverlays(item, 'left').length > 0 && itemOverlays(item, 'right').length > 0
+        ));
+        const changesHaveCoordinates = array(evidence.changes).some(item => (
+            ['left', 'right'].some(side => itemOverlays(item, side).length > 0)
+        ));
+        return {
+            tone,
+            label,
+            message,
+            counters,
+            review_required: reviewRequired,
+            available: Boolean(evidence.available) && !stale,
+            can_visualize_matches: Boolean(evidence.available) && !stale
+                && matchesHaveCoordinates,
+            can_visualize_changes: Boolean(evidence.available) && !stale
+                && changesHaveCoordinates,
+            show_rerun: stale || ['FAILED', 'PARTIAL'].includes(stageStatus)
+                || (!hasTextStage && ['FAILED', 'PARTIAL'].includes(runStatus)),
+            generation_run_id: String(evidence.generation_run_id || state.run_id || ''),
+            stage_status: stageStatus,
+            run_status: runStatus,
+            stale,
+        };
+    }
+
     function normalizeFinalRows(report) {
         const approved = array(report && report.approved_atomic_changes);
         return normalizeRows(approved.map(change => ({
@@ -2052,6 +2301,8 @@
         normalizeFinalRows,
         normalizePipelineStatus,
         normalizePipelineProgress,
+        normalizeProductionTextEvidence,
+        normalizeProductionTextPresentation,
         normalizeProductionOverview,
         normalizeProductionPipeline,
         normalizeQuestionCounts,
@@ -2065,6 +2316,9 @@
         productionPollingTransition,
         productionRunActivity,
         productionStateResponseAccepted,
+        productionTextEvidenceMatchesGeneration,
+        productionTextEvidenceItem,
+        productionTextEvidenceOverlays,
         reviewCounts,
         text,
     };

@@ -354,6 +354,24 @@ async def get_production_state(session_id: str, pair_id: str):
         raise HTTPException(404, str(exc)) from exc
 
 
+@router.get(
+    "/sessions/{session_id}/pairs/{pair_id}/production/text-evidence"
+)
+async def get_production_text_evidence(session_id: str, pair_id: str):
+    try:
+        return await run_in_threadpool(
+            production.get_production_text_evidence, session_id, pair_id
+        )
+    except production_store.ProductionConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except KeyError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            409, f"Некорректный production TEXT evidence: {exc}"
+        ) from exc
+
+
 @router.get("/sessions/{session_id}/pairs/{pair_id}/production/changes")
 async def get_production_changes(session_id: str, pair_id: str):
     try:

@@ -103,10 +103,11 @@ describe('Stage 4 discrepancy ledger', () => {
     expect(app).toContain('view.cx = Number(box.x || 0)');
   });
 
-  it('shows deterministic fallback without claiming AI review', () => {
+  it('keeps deterministic legacy output read-only without exposing a second model run', () => {
     expect(html).toContain('Только детерминированная проверка');
-    expect(html).toContain('Запустить ИИ-проверку');
-    expect(html).toContain('@click="scRunTextAiReview()"');
+    expect(html).toContain('Legacy-результаты TEXT — только для совместимости');
+    expect(html).not.toContain('Запустить ИИ-проверку');
+    expect(html).not.toContain('scRunTextAiReview');
     expect(app).toContain('const scCanRunTextAiReview = computed(() => Boolean(');
     const review = {sheet_groups: [{id: 'g1', status: 'failed', decisions: []}]};
     expect(ledger.groupAiDiagnostics(review, 'g1')).toBeNull();
@@ -117,7 +118,9 @@ describe('Stage 4 discrepancy ledger', () => {
     expect(tabButton).toContain("@click=\"scTab='diffs'\"");
     expect(tabButton).not.toContain('scRunTextAiReview');
     expect(tabButton).not.toContain('/text-ai-review');
-    expect(html).toContain('v-if="!scTextAiReviewCompleted && scTextDifferences && !scTextDifferences.stale"');
+    expect(html).not.toContain('scRunTextComparison');
+    expect(html).not.toContain('scRunTextDifferences');
+    expect(html).not.toContain('scRunTextAiReview');
   });
 
   it('uses factual summaries and keeps uncertainty diagnostics collapsed', () => {
