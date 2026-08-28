@@ -545,9 +545,18 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
     return questions
 
 
-def _entity_questions(entity_relations: Mapping[str, Any] | None) -> list[dict[str, Any]]:
+def _entity_name(ref: Any) -> str:
+    """«text_entity:24_5» reads as «24.5» on a card; the ref stays internal."""
+    value = str(ref or "").split(":", 1)[-1].strip()
+    return value.replace("_", ".") or "объект без обозначения"
+
+
+def _entity_questions(
+    entity_relations: Mapping[str, Any] | None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     if not isinstance(entity_relations, Mapping):
-        return []
+        return [], []
+    suppressed: list[dict[str, Any]] = []
     by_left: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for relation in entity_relations.get("relations") or []:
         if not isinstance(relation, Mapping):
@@ -556,6 +565,19 @@ def _entity_questions(entity_relations: Mapping[str, Any] | None) -> list[dict[s
         if status not in {"POSSIBLE_ENTITY", "UNKNOWN"}:
             continue
         if relation.get("review_required") is False:
+            continue
+        left_side = str(relation.get("left_entity_ref") or "").strip()
+        right_side = str(relation.get("right_entity_ref") or "").strip()
+        if left_side and left_side == right_side:
+            # «Помещение 24.5 слева и помещение 24.5 справа — один объект?» is
+            # not a question: both sides state the same designation, inside a
+            # sheet pair that was already proven.  Nothing downstream waits on
+            # the answer either — the atoms carry that ref already.
+            suppressed.append({
+                "left_entity_ref": left_side,
+                "right_entity_ref": right_side,
+                "reason_codes": ["identical_entity_designation"],
+            })
             continue
         left_ref = str(relation.get("left_entity_ref") or "").strip()
         if not left_ref:
@@ -578,15 +600,20 @@ def _entity_questions(entity_relations: Mapping[str, Any] | None) -> list[dict[s
         right_refs = [str(item.get("right_entity_ref") or "?") for item in relations]
         if len(relations) == 1:
             question_type = "ENTITY_IDENTITY"
-            prompt = f"{left_ref} слева и {right_refs[0]} справа — один объект?"
+            prompt = (
+                f"«{_entity_name(left_ref)}» слева и «{_entity_name(right_refs[0])}» "
+                "справа — это один и тот же объект?"
+            )
             options = _base_options()
         else:
             question_type = "ENTITY_CANDIDATE_SELECTION"
-            prompt = f"Какой объект справа соответствует {left_ref} слева?"
+            prompt = (
+                f"Какому объекту справа соответствует «{_entity_name(left_ref)}» слева?"
+            )
             options = [
                 _option(
                     f"SELECT_RIGHT:{right_ref}",
-                    f"«{right_ref.split(':', 1)[-1]}» справа",
+                    f"«{_entity_name(right_ref)}» справа",
                     selected_right_entity_ref=right_ref,
                 )
                 for right_ref in right_refs
@@ -635,7 +662,8 @@ def _entity_questions(entity_relations: Mapping[str, Any] | None) -> list[dict[s
                 },
             )
         )
-    return questions
+    suppressed.sort(key=lambda value: value["left_entity_ref"])
+    return questions, suppressed
 
 
 def _nested_review_requirements(value: Any) -> list[dict[str, Any]]:
@@ -1087,10 +1115,11 @@ def build_review_queue(
 ) -> dict[str, Any]:
     """Build one deduplicated queue and suppress unchanged resolved questions."""
     change_questions, suppressed_change_reviews = _change_question_plan(synthesis)
+    entity_questions, suppressed_entity_reviews = _entity_questions(entity_relations)
     all_questions = _deduplicate(
         [
             *_sheet_questions(sheet_relations),
-            *_entity_questions(entity_relations),
+            *entity_questions,
             *change_questions,
         ]
     )
@@ -1195,6 +1224,12 @@ def build_review_queue(
                 bool(item.get("engineer_review_target"))
                 for item in suppressed_change_reviews
             ),
+            "suppressed_entity_questions": len(suppressed_entity_reviews),
+            "suppressed_entity_question_reasons": dict(sorted(Counter(
+                reason
+                for item in suppressed_entity_reviews
+                for reason in item["reason_codes"]
+            ).items())),
             "stale_decision_ids": stale_decision_ids,
             "unresolved_decision_ids": unresolved_decision_ids,
             "already_resolved_not_reasked": len(resolved_ids),

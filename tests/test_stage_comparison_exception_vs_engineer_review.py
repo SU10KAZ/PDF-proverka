@@ -287,3 +287,70 @@ def test_a_changed_finding_invalidates_the_approval_it_carried():
     report = build_final_report(moved, approved, generated_at="fixed")
 
     assert report["approved_review_findings"] == []
+
+
+# --- D: an entity question only where the identity is genuinely open --------
+
+
+def _entity_relations(*relations: dict) -> dict:
+    return {
+        "kind": "stage_comparison_entity_relations",
+        "relations": list(relations),
+    }
+
+
+def _entity(left: str, right: str, relation_id: str) -> dict:
+    return {
+        "relation_id": relation_id,
+        "left_entity_ref": left,
+        "right_entity_ref": right,
+        "relation": "POSSIBLE_ENTITY",
+        "review_required": True,
+        "confidence": "MEDIUM",
+        "score": 0.75,
+    }
+
+
+def test_an_object_is_not_asked_to_confirm_it_is_itself():
+    queue = build_review_queue(
+        entity_relations=_entity_relations(
+            _entity("text_entity:24_5", "text_entity:24_5", "erel_same"),
+        ),
+        generated_at="fixed",
+    )
+
+    assert queue["counts"]["ENTITY"] == 0
+    assert queue["diagnostics"]["suppressed_entity_questions"] == 1
+    assert queue["diagnostics"]["suppressed_entity_question_reasons"] == {
+        "identical_entity_designation": 1
+    }
+
+
+def test_two_different_designations_are_still_a_real_question():
+    queue = build_review_queue(
+        entity_relations=_entity_relations(
+            _entity("text_entity:24_5", "text_entity:24_6", "erel_moved"),
+        ),
+        generated_at="fixed",
+    )
+
+    assert queue["counts"]["ENTITY"] == 1
+    prompt = queue["questions"][0]["prompt"]
+    assert "text_entity:" not in prompt
+    assert "«24.5»" in prompt and "«24.6»" in prompt
+
+
+def test_a_choice_between_candidates_names_them_in_the_options():
+    queue = build_review_queue(
+        entity_relations=_entity_relations(
+            _entity("text_entity:24_5", "text_entity:24_6", "erel_a"),
+            _entity("text_entity:24_5", "text_entity:24_7", "erel_b"),
+        ),
+        generated_at="fixed",
+    )
+
+    question = queue["questions"][0]
+    assert question["question_type"] == "ENTITY_CANDIDATE_SELECTION"
+    assert "text_entity:" not in question["prompt"]
+    labels = [option["label"] for option in question["answer_options"]]
+    assert "«24.6» справа" in labels and "«24.7» справа" in labels
