@@ -18,7 +18,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable, Mapping
 
 from ..production_artifacts import content_signature, stable_id
-from . import schemas
+from . import schemas, settings
 
 PACKAGE_VERSION = "stage-comparison-ai-evidence.v1"
 
@@ -162,8 +162,9 @@ def _context_lines(
     pages: Mapping[tuple[str, int], list[dict[str, Any]]],
     fragment_id: str,
     *,
-    window: int = CONTEXT_WINDOW,
+    window: int | None = None,
 ) -> list[str]:
+    window = CONTEXT_WINDOW if window is None else window
     located = position.get(fragment_id)
     if located is None:
         return []
@@ -256,6 +257,7 @@ def build_packages(
     помещение.
     """
     position, pages = _fragment_index(preparation)
+    window = settings.context_window()
     labels = _sheet_labels(sheet_relations)
     relations_by_id = {
         str(relation.get("relation_id") or ""): relation
@@ -283,12 +285,14 @@ def build_packages(
         left_context: list[str] = []
         for location in locations["LEFT"]:
             left_context += _context_lines(
-                position, pages, str(location.get("fragment_id") or "")
+                position, pages, str(location.get("fragment_id") or ""),
+                window=window,
             )
         right_context: list[str] = []
         for location in locations["RIGHT"]:
             right_context += _context_lines(
-                position, pages, str(location.get("fragment_id") or "")
+                position, pages, str(location.get("fragment_id") or ""),
+                window=window,
             )
         evidence = EvidenceItem(
             item_id=str(item.get("review_evidence_id") or ""),

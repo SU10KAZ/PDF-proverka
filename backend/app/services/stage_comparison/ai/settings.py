@@ -130,6 +130,16 @@ def batch_size() -> int:
     return _env_int("STAGE_COMPARISON_AI_BATCH_SIZE", 10, low=1, high=50)
 
 
+def context_window() -> int:
+    """Сколько строк документа показывать вокруг изменившейся с каждой стороны.
+
+    Слишком узкое окно — и модель честно отвечает EVIDENCE_TRUNCATED вместо
+    вывода: на паре АР так закончились 29 % отказов. Слишком широкое — и
+    соседняя строка таблицы начинает выглядеть тем же объектом.
+    """
+    return _env_int("STAGE_COMPARISON_AI_CONTEXT_WINDOW", 6, low=1, high=40)
+
+
 def concurrency() -> int:
     return _env_int("STAGE_COMPARISON_AI_CONCURRENCY", 4, low=1, high=16)
 
@@ -166,6 +176,7 @@ def snapshot() -> dict:
             "max_session_seconds": max_session_seconds(),
             "call_timeout_seconds": call_timeout_seconds(),
             "batch_size": batch_size(),
+            "context_window": context_window(),
             "concurrency": concurrency(),
         },
         "cache_enabled": cache_enabled(),
@@ -188,6 +199,7 @@ __all__ = [
     "claude_binary",
     "codex_binary",
     "concurrency",
+    "context_window",
     "critic_model",
     "deep",
     "enabled",
