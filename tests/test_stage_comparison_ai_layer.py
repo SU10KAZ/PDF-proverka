@@ -704,3 +704,68 @@ def test_an_observation_enters_the_evidence_with_an_explicit_mark():
     })
     assert observations["LEFT"] == ["по чертежу: толщина 200 мм"]
     assert observations["RIGHT"] == []
+
+
+# ── I. Отмена, таймаут, сироты ────────────────────────────────────────────
+
+
+def test_the_gateway_kills_the_whole_process_group_on_timeout(monkeypatch):
+    """CLI поднимает дочерние процессы; убить надо всю группу, а не лидера."""
+    killed: list[tuple[int, int]] = []
+    monkeypatch.setattr(
+        gateway.os, "killpg", lambda pgid, sig: killed.append((pgid, sig))
+    )
+    monkeypatch.setattr(gateway.os, "getpgid", lambda pid: 4242)
+
+    class _Process:
+        pid = 999
+        returncode = None
+
+        def wait(self, timeout=None):
+            return 0
+
+    gateway._kill_process_group(_Process())
+    assert killed and killed[0][0] == 4242
+
+
+def test_orphan_recovery_only_looks_at_processes_we_marked(monkeypatch, tmp_path):
+    """Чужой codex exec трогать нельзя: метка — единственный признак нашего."""
+    proc = tmp_path / "proc"
+    ours = proc / "101"
+    theirs = proc / "102"
+    child = proc / "103"
+    for directory in (ours, theirs, child):
+        directory.mkdir(parents=True)
+    ours.joinpath("environ").write_bytes(
+        b"PATH=/usr/bin\x00" + gateway.RUN_MARKER_ENV.encode() + b"=run-old\x00"
+    )
+    ours.joinpath("status").write_text("Name:\tcodex\nPPid:\t1\n")
+    theirs.joinpath("environ").write_bytes(b"PATH=/usr/bin\x00")
+    theirs.joinpath("status").write_text("Name:\tcodex\nPPid:\t1\n")
+    child.joinpath("environ").write_bytes(
+        gateway.RUN_MARKER_ENV.encode() + b"=run-live\x00"
+    )
+    child.joinpath("status").write_text("Name:\tcodex\nPPid:\t500\n")
+    monkeypatch.setattr(gateway, "Path", lambda value: proc if value == "/proc" else tmp_path)
+
+    orphans = gateway.find_orphaned_processes()
+
+    assert [item["run_id"] for item in orphans] == ["run-old"]
+
+
+def test_orphan_recovery_never_kills_the_current_run(monkeypatch):
+    monkeypatch.setattr(
+        gateway, "find_orphaned_processes",
+        lambda: [{"pid": 1, "run_id": "live"}, {"pid": 2, "run_id": "old"}],
+    )
+    killed: list[int] = []
+    monkeypatch.setattr(gateway.os, "getpgid", lambda pid: pid)
+    monkeypatch.setattr(gateway.os, "killpg", lambda pgid, sig: killed.append(pgid))
+
+    assert gateway.reap_orphaned_processes(keep_run_id="live") == 1
+    assert killed == [2]
+
+
+def test_a_run_that_dies_mid_flight_leaves_no_live_processes():
+    assert gateway.live_process_count() == 0
+    assert gateway.kill_live_processes() == 0

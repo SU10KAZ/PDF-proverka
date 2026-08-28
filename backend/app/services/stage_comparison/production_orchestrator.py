@@ -2341,6 +2341,9 @@ def _run_ai_resolution(
         )
         return artifact
 
+    # Сессии прошлых прогонов, переживших падение бэкенда, держат соединение
+    # с провайдером и жгут лимит подписки. Убираем их до старта своих.
+    ai_gateway.reap_orphaned_processes()
     started_at = utc_now()
     started_perf = time.perf_counter()
     publish_progress(

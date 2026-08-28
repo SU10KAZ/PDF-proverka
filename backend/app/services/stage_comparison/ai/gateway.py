@@ -337,6 +337,61 @@ def kill_live_processes() -> int:
     return _REGISTRY.kill_all()
 
 
+def find_orphaned_processes() -> list[dict[str, Any]]:
+    """Найти CLI-сессии прошлых прогонов, оставшиеся без родителя.
+
+    Процесс запускается в собственной сессии — это цена честной отмены: убить
+    можно всю группу. Обратная сторона в том, что упавший бэкенд не уносит их
+    за собой. Метка в окружении делает такие сироты находимыми: без неё
+    отличить их от чужого `codex exec` нечем, а убивать чужое нельзя.
+    """
+    orphans: list[dict[str, Any]] = []
+    proc = Path("/proc")
+    if not proc.is_dir():
+        return orphans
+    for entry in proc.iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            environ = (entry / "environ").read_bytes()
+        except (OSError, PermissionError):
+            continue
+        if RUN_MARKER_ENV.encode() not in environ:
+            continue
+        try:
+            status = (entry / "status").read_text(encoding="utf-8", errors="replace")
+        except (OSError, PermissionError):
+            continue
+        parent = 0
+        for line in status.splitlines():
+            if line.startswith("PPid:"):
+                parent = int(line.split()[1] or 0)
+                break
+        if parent != 1:
+            continue
+        run_id = ""
+        for chunk in environ.split(b"\0"):
+            if chunk.startswith(RUN_MARKER_ENV.encode() + b"="):
+                run_id = chunk.split(b"=", 1)[1].decode("utf-8", "replace")
+                break
+        orphans.append({"pid": int(entry.name), "run_id": run_id})
+    return orphans
+
+
+def reap_orphaned_processes(*, keep_run_id: str = "") -> int:
+    """Убить осиротевшие сессии прошлых прогонов. Текущий прогон не трогаем."""
+    killed = 0
+    for orphan in find_orphaned_processes():
+        if keep_run_id and orphan["run_id"] == keep_run_id:
+            continue
+        try:
+            os.killpg(os.getpgid(orphan["pid"]), signal.SIGKILL)
+            killed += 1
+        except (ProcessLookupError, PermissionError, OSError):
+            continue
+    return killed
+
+
 def live_process_count() -> int:
     return _REGISTRY.size()
 
@@ -599,7 +654,9 @@ __all__ = [
     "call_codex",
     "classify_failure",
     "extract_json",
+    "find_orphaned_processes",
     "kill_live_processes",
     "live_process_count",
+    "reap_orphaned_processes",
     "validate_runtime",
 ]
