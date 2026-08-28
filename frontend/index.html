@@ -5433,11 +5433,79 @@
                      :class="{'is-tight': scTab === 'links'}"
                      aria-labelledby="sc-production-pipeline-title">
                 <header class="sc-production-pipeline__head">
-                    <div>
+                    <div class="sc-production-pipeline__summary">
                         <strong id="sc-production-pipeline-title">Конвейер сравнения LEFT → RIGHT</strong>
-                        <small>Статусы и счётчики из текущего production state</small>
+                        <p>{{ scProductionOverview.headline }}</p>
+                        <template v-if="!(scProductionOverview.progress && scProductionOverview.progress.is_running)">
+                            <small v-for="line in scProductionOverview.detail_lines"
+                                   :key="'pipeline-summary-' + line">{{ line }}</small>
+                        </template>
+                        <div v-if="scProductionOverview.progress && scProductionOverview.progress.is_running"
+                             class="sc-production-pipeline__operation" aria-live="polite">
+                            <span v-if="scProductionOverview.current_stage_label">
+                                Текущий этап: <b>{{ scProductionOverview.current_stage_label }}</b>
+                            </span>
+                            <span v-if="scProductionOverview.current_substage_label">
+                                Текущая операция: <b>{{ scProductionOverview.current_substage_label }}</b>
+                            </span>
+                            <span v-if="scProductionOverview.progress.current_item">
+                                {{ scProductionOverview.progress.current_item }}
+                            </span>
+                        </div>
+                        <div v-if="scProductionOverview.progress && scProductionOverview.progress.kind !== 'none'"
+                             class="sc-production-progress"
+                             :class="'is-' + scProductionOverview.progress.kind">
+                            <div class="sc-production-progress__track"
+                                 role="progressbar"
+                                 :aria-valuemin="scProductionOverview.progress.determinate ? 0 : null"
+                                 :aria-valuemax="scProductionOverview.progress.determinate ? 100 : null"
+                                 :aria-valuenow="scProductionOverview.progress.determinate ? scProductionOverview.progress.percent : null"
+                                 :aria-label="scProductionOverview.progress.message || 'Ход анализа'">
+                                <i v-if="scProductionOverview.progress.determinate"
+                                   :style="{width: scProductionOverview.progress.percent + '%'}"></i>
+                                <i v-else></i>
+                            </div>
+                            <b v-if="scProductionOverview.progress.counter_label">
+                                {{ scProductionOverview.progress.counter_label }}
+                            </b>
+                            <span v-if="scProductionOverview.progress.message">
+                                {{ scProductionOverview.progress.message }}
+                            </span>
+                            <span v-if="scProductionOverview.progress.elapsed_label">
+                                Прошло: {{ scProductionOverview.progress.elapsed_label }}
+                            </span>
+                            <span v-if="scProductionOverview.progress.eta_label">
+                                Для текущей операции осталось примерно: {{ scProductionOverview.progress.eta_label }}
+                            </span>
+                            <span v-if="scProductionOverview.progress.last_activity_label">
+                                Последняя активность: {{ scProductionOverview.progress.last_activity_label }}
+                            </span>
+                            <em v-if="scProductionOverview.progress.heartbeat_warning">
+                                {{ scProductionOverview.progress.heartbeat_warning_text }}
+                            </em>
+                        </div>
+                        <details v-if="scProductionOverview.reason_codes && scProductionOverview.reason_codes.length"
+                                 class="sc-production-pipeline__diagnostics">
+                            <summary>Внутренняя диагностика ошибки</summary>
+                            <pre>{{ scProductionOverview.reason_codes.join('\n') }}</pre>
+                        </details>
                     </div>
-                    <span v-if="scProductionStale" class="sc-production-pipeline__stale">устарел</span>
+                    <div class="sc-production-pipeline__controls">
+                        <span v-if="scProductionStale" class="sc-production-pipeline__stale">устарел</span>
+                        <label>
+                            <span>Режим</span>
+                            <select v-model="scProductionInputMode"
+                                    :disabled="scProductionMutating || scProductionRunActive">
+                                <option value="DOCUMENT">Документ ↔ документ</option>
+                                <option value="PAGE">Текущие страницы</option>
+                            </select>
+                        </label>
+                        <button type="button" class="btn btn-primary sc-production-pipeline__primary"
+                                :disabled="scProductionOverview.cta.disabled || scProductionMutating || scProductionRunActive"
+                                @click="scHandleProductionPrimaryAction()">
+                            {{ scProductionOverview.cta.label }}
+                        </button>
+                    </div>
                 </header>
                 <div class="sc-production-pipeline__rail" role="list" aria-label="8 этапов сравнения">
                     <button v-for="stage in scProductionPipeline" :key="stage.id" type="button"
@@ -5452,9 +5520,19 @@
                         <span class="sc-production-pipeline__number">{{ stage.number }}</span>
                         <span class="sc-production-pipeline__stage-copy">
                             <b>{{ stage.label }}</b>
-                            <small>{{ scProductionPipelineStatusLabel(stage.status) }}</small>
+                            <small class="sc-production-pipeline__stage-status">
+                                <i aria-hidden="true"></i>{{ scProductionPipelineStatusLabel(stage.status) }}
+                            </small>
                         </span>
-                        <span v-if="stage.counters.length" class="sc-production-pipeline__mini-counters">
+                        <span v-if="stage.sections && stage.sections.length"
+                              class="sc-production-pipeline__branch-counters">
+                            <span v-for="section in stage.sections" :key="stage.id + '-branch-' + section.id">
+                                {{ section.label.split(' ')[0] }}
+                                <b>{{ section.mini_counter || '—' }}</b>
+                            </span>
+                        </span>
+                        <span v-if="stage.counters.length && !(stage.sections && stage.sections.length)"
+                              class="sc-production-pipeline__mini-counters">
                             <span v-for="counter in stage.counters.slice(0, 2)"
                                   :key="stage.id + '-mini-' + counter.label">
                                 {{ counter.label }} <b>{{ counter.value }}</b>
@@ -5486,9 +5564,61 @@
                     </div>
                     <p v-if="stage.reason" class="sc-production-pipeline__reason">{{ stage.reason }}</p>
 
+                    <div v-if="stage.progress && stage.progress.kind && stage.progress.kind !== 'none' && stage.progress.kind !== 'parallel'"
+                         class="sc-production-progress sc-production-progress--stage"
+                         :class="'is-' + stage.progress.kind">
+                        <div class="sc-production-progress__track"
+                             role="progressbar"
+                             :aria-valuemin="stage.progress.determinate ? 0 : null"
+                             :aria-valuemax="stage.progress.determinate ? 100 : null"
+                             :aria-valuenow="stage.progress.determinate ? stage.progress.percent : null">
+                            <i v-if="stage.progress.determinate"
+                               :style="{width: stage.progress.percent + '%'}"></i>
+                            <i v-else></i>
+                        </div>
+                        <b v-if="stage.progress.counter_label">{{ stage.progress.counter_label }}</b>
+                        <span v-if="stage.progress.message">{{ stage.progress.message }}</span>
+                        <span v-if="stage.progress.elapsed_label">
+                            {{ stage.progress.is_running ? 'Прошло' : 'Выполнено за' }}:
+                            {{ stage.progress.elapsed_label }}
+                        </span>
+                        <span v-if="stage.progress.eta_label">Осталось примерно: {{ stage.progress.eta_label }}</span>
+                        <span v-if="stage.progress.last_activity_label">
+                            Последняя активность: {{ stage.progress.last_activity_label }}
+                        </span>
+                        <em v-if="stage.progress.heartbeat_warning">{{ stage.progress.heartbeat_warning_text }}</em>
+                    </div>
+
                     <div v-if="stage.sections" class="sc-production-pipeline__content-sections">
                         <section v-for="section in stage.sections" :key="stage.id + '-' + section.id">
                             <h4>{{ section.label }}</h4>
+                            <div v-if="section.progress && section.progress.kind && section.progress.kind !== 'none'"
+                                 class="sc-production-progress sc-production-progress--branch"
+                                 :class="'is-' + section.progress.kind">
+                                <div class="sc-production-progress__track"
+                                     role="progressbar"
+                                     :aria-valuemin="section.progress.determinate ? 0 : null"
+                                     :aria-valuemax="section.progress.determinate ? 100 : null"
+                                     :aria-valuenow="section.progress.determinate ? section.progress.percent : null">
+                                    <i v-if="section.progress.determinate"
+                                       :style="{width: section.progress.percent + '%'}"></i>
+                                    <i v-else></i>
+                                </div>
+                                <b v-if="section.progress.counter_label">{{ section.progress.counter_label }}</b>
+                                <span v-if="section.progress.message">{{ section.progress.message }}</span>
+                                <span v-if="section.progress.current_item">{{ section.progress.current_item }}</span>
+                                <span v-if="section.progress.elapsed_label">
+                                    {{ section.progress.is_running ? 'Прошло' : 'Выполнено за' }}:
+                                    {{ section.progress.elapsed_label }}
+                                </span>
+                                <span v-if="section.progress.eta_label">Осталось примерно: {{ section.progress.eta_label }}</span>
+                                <span v-if="section.progress.last_activity_label">
+                                    Последняя активность: {{ section.progress.last_activity_label }}
+                                </span>
+                                <em v-if="section.progress.heartbeat_warning">
+                                    {{ section.progress.heartbeat_warning_text }}
+                                </em>
+                            </div>
                             <div class="sc-production-pipeline__substages">
                                 <article v-for="substage in section.substages"
                                          :key="stage.id + '-' + substage.id"
@@ -5507,7 +5637,7 @@
                                     <small v-if="substage.note" class="sc-production-pipeline__note">
                                         {{ substage.note }}
                                     </small>
-                                    <details v-if="substage.reason_codes.length">
+                                    <details v-if="substage.reason_codes.length || substage.technical_label">
                                         <summary>Внутренняя диагностика</summary>
                                         <pre>{{ scProductionPipelineDiagnostics(substage) }}</pre>
                                     </details>
@@ -5534,10 +5664,22 @@
                         <p v-if="detail" class="sc-production-pipeline__note">{{ detail }}</p>
                     </template>
                     <footer>
-                        <button type="button" class="btn btn-sm btn-primary"
+                        <button v-if="stage.action" type="button" class="btn btn-sm btn-primary"
                                 @click="scOpenProductionPipelineDestination(stage)">
-                            Перейти к этапу
+                            {{ stage.action.label }}
                         </button>
+                        <div v-if="stage.rerun" class="sc-production-pipeline__rerun">
+                            <small>{{ stage.rerun.note }}</small>
+                            <small v-if="stage.rerun.dependencies && stage.rerun.dependencies.length">
+                                Зависимые этапы также будут обновлены:
+                                {{ stage.rerun.dependencies.join(', ') }}.
+                            </small>
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                    :disabled="!scProductionSelectionReady || scProductionMutating || scProductionRunActive"
+                                    @click="scRunProductionComparison({confirmRerun: true})">
+                                {{ stage.rerun.label }}
+                            </button>
+                        </div>
                         <details v-if="stage.reason_codes.length" class="sc-production-pipeline__diagnostics">
                             <summary>Внутренние reason codes</summary>
                             <pre>{{ scProductionPipelineDiagnostics(stage) }}</pre>
@@ -6184,14 +6326,6 @@
                             </small>
                         </div>
                         <div class="sc-production-review__run">
-                            <label>
-                                <span>Режим</span>
-                                <select v-model="scProductionInputMode"
-                                        :disabled="scProductionMutating">
-                                    <option value="DOCUMENT">Документ ↔ документ</option>
-                                    <option value="PAGE">Текущие страницы</option>
-                                </select>
-                            </label>
                             <button type="button" class="btn btn-secondary"
                                     :disabled="scProductionLoading || scProductionMutating"
                                     @click="scLoadProductionReview()">
@@ -6203,11 +6337,6 @@
                                     title="Отбросить локальные несохранённые изменения и взять текущую серверную версию"
                                     @click="scDiscardProductionDrafts()">
                                 Сбросить черновики
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                    :disabled="scProductionMutating"
-                                    @click="scRunProductionComparison()">
-                                {{ scProductionRunLoading ? 'Production-анализ…' : 'Запустить production' }}
                             </button>
                         </div>
                     </header>

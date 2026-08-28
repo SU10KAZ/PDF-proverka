@@ -11898,6 +11898,8 @@ const app = createApp({
         const scActivePair = ref(null);
         const scPairData = ref(null);
         const scPairLoading = ref(false);
+        let scSessionRequestToken = 0;
+        let scPairOpenToken = 0;
         const scProcessing = ref(false);
         const scProcessingError = ref('');
         const scMatchState = ref(null);
@@ -11947,11 +11949,26 @@ const app = createApp({
         const scProductionReturnTargetId = ref('');
         const scProductionQuestionFocusCategory = ref('');
         const scProductionPipelineExpanded = ref('');
+        const scProductionClock = ref(Date.now());
+        const scProductionPolling = ref(false);
         let scProductionEvidenceTimer = 0;
         let scProductionReturnTimer = 0;
         let scProductionQuestionFocusTimer = 0;
         let scProductionEvidenceToken = 0;
+        let scProductionPollTimer = 0;
+        let scProductionClockTimer = 0;
+        let scProductionPollToken = 0;
+        let scProductionRunToken = 0;
+        let scProductionLoadToken = 0;
+        let scProductionPendingRun = null;
+        let scProductionArtifactRetryTimer = 0;
         onUnmounted(() => {
+            scStopProductionPolling();
+            scProductionLoadToken += 1;
+            if (scProductionArtifactRetryTimer) {
+                clearTimeout(scProductionArtifactRetryTimer);
+                scProductionArtifactRetryTimer = 0;
+            }
             scProductionEvidenceToken += 1;
             if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
             if (scProductionReturnTimer) clearTimeout(scProductionReturnTimer);
@@ -12108,15 +12125,45 @@ const app = createApp({
         const scProductionFinalRows = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeFinalRows(scProductionFinalReport.value)
             : []);
-        const scProductionPipeline = computed(() => SC_PRODUCTION_REVIEW
-            && SC_PRODUCTION_REVIEW.normalizeProductionPipeline
-            ? SC_PRODUCTION_REVIEW.normalizeProductionPipeline({
+        function scProductionPresentationPayload() {
+            return {
                 state: scProductionState.value,
                 questions: scProductionQuestions.value,
                 changes: scProductionChanges.value,
                 final_report: scProductionFinalReport.value,
-            })
+                active_pair: scActivePair.value,
+                selected_mode: scProductionInputMode.value,
+                selected_pages: {
+                    left: scViewerEmpty.left ? [] : [Number(scCurrentPage.left)],
+                    right: scViewerEmpty.right ? [] : [Number(scCurrentPage.right)],
+                },
+                now_ms: scProductionClock.value,
+            };
+        }
+        const scProductionPipeline = computed(() => SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.normalizeProductionPipeline
+            ? SC_PRODUCTION_REVIEW.normalizeProductionPipeline(scProductionPresentationPayload())
             : []);
+        const scProductionSelectionReady = computed(() => scProductionPipeline.value.some(stage => (
+            stage.id === 'selection' && stage.status === 'COMPLETED'
+        )));
+        const scProductionOverview = computed(() => SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.normalizeProductionOverview
+            ? SC_PRODUCTION_REVIEW.normalizeProductionOverview(
+                scProductionPresentationPayload(), scProductionPipeline.value,
+            )
+            : {
+                state: 'NOT_STARTED',
+                headline: 'Анализ ещё не запускался.',
+                detail_lines: [],
+                cta: {kind: 'RUN', label: '▶ Запустить полный анализ', disabled: false},
+            });
+        const scProductionRunActive = computed(() => Boolean(
+            scProductionRunLoading.value
+            || ['RUNNING', 'UPDATING'].includes(String(
+                scProductionState.value && scProductionState.value.status || '',
+            ).toUpperCase())
+        ));
         const scProductionSheetSuggestions = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeSheetSuggestions(scProductionState.value)
             : []);
@@ -12989,7 +13036,54 @@ const app = createApp({
 
         function scPairRowBusy(row) {
             const state = scPairRowStates[scPairRowKey(row)];
-            return Boolean(state && ['opening', 'processing'].includes(state.status));
+            return scPairLoading.value
+                || Boolean(state && ['opening', 'processing'].includes(state.status));
+        }
+
+        function scInvalidatePairOpen() {
+            scPairOpenToken += 1;
+            scPairLoading.value = false;
+        }
+
+        function scBeginPairOpen() {
+            const sessionId = scSession.value && scSession.value.id;
+            if (!sessionId) return null;
+            const context = {token: ++scPairOpenToken, sessionId};
+            scPairLoading.value = true;
+            return context;
+        }
+
+        function scPairOpenContextCurrent(context) {
+            return Boolean(
+                context
+                && context.token === scPairOpenToken
+                && scSession.value
+                && scSession.value.id === context.sessionId,
+            );
+        }
+
+        function scActivePairRequestContext() {
+            if (!scSession.value || !scActivePair.value) return null;
+            return {
+                token: scPairOpenToken,
+                sessionId: scSession.value.id,
+                pairId: scActivePair.value.id,
+            };
+        }
+
+        function scActivePairRequestContextCurrent(context) {
+            return Boolean(
+                context
+                && context.token === scPairOpenToken
+                && scSession.value && scSession.value.id === context.sessionId
+                && scActivePair.value && scActivePair.value.id === context.pairId,
+            );
+        }
+
+        function scPairRequestUrl(context, suffix) {
+            if (!context) return '';
+            return `/api/stage-comparison/sessions/${encodeURIComponent(context.sessionId)}`
+                + `/pairs/${encodeURIComponent(context.pairId)}${suffix || ''}`;
         }
 
         function scPairRowError(row) {
@@ -13011,10 +13105,13 @@ const app = createApp({
         }
 
         async function scRefreshSession() {
+            const requestToken = ++scSessionRequestToken;
             const object = scSelectedObject.value;
             const left = object && (object.stages || []).find(stage => stage.name === 'stage_1');
             const right = object && (object.stages || []).find(stage => stage.name === 'stage_2');
             if (!left || !right || !left.pdf_count || !right.pdf_count) {
+                scInvalidatePairOpen();
+                scResetProductionReview();
                 scSession.value = null;
                 scDocumentOrder.left = [];
                 scDocumentOrder.right = [];
@@ -13029,6 +13126,7 @@ const app = createApp({
                 scPairingMatching.value = false;
                 scPairingSaveError.value = '';
                 scPairingSaveMessage.value = '';
+                scSessionLoading.value = false;
                 return;
             }
             scSessionLoading.value = true;
@@ -13041,23 +13139,44 @@ const app = createApp({
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (requestToken !== scSessionRequestToken) return;
                 const previousSessionId = scSession.value && scSession.value.id;
+                const sessionChanged = previousSessionId !== data.id;
+                if (sessionChanged) {
+                    scInvalidatePairOpen();
+                    scResetProductionReview();
+                    scActivePair.value = null;
+                    scPairData.value = null;
+                    scMatchState.value = null;
+                }
                 scSession.value = data;
-                if (previousSessionId !== data.id) {
+                if (sessionChanged) {
                     Object.keys(scPairRowStates).forEach(key => { delete scPairRowStates[key]; });
                 }
                 scInitializeDocumentOrder(true);
                 scApplyDocumentDefaults();
                 const activeId = scActivePair.value && scActivePair.value.id;
                 if (activeId && !scPairs.value.some(pair => pair.id === activeId)) {
+                    scInvalidatePairOpen();
+                    scResetProductionReview();
                     scActivePair.value = null;
                     scPairData.value = null;
                     scMatchState.value = null;
+                    if (!sessionChanged) scForgetActivePair(data.id);
+                } else if (!activeId) {
+                    const restoredId = scStoredActivePairId(data.id);
+                    const restoredPair = scPairs.value.find(pair => pair.id === restoredId);
+                    if (restoredPair) await scOpenPair(restoredPair);
+                    else if (restoredId) scForgetActivePair(data.id);
                 }
             } catch (error) {
-                scSessionError.value = String(error.message || error);
+                if (requestToken === scSessionRequestToken) {
+                    scSessionError.value = String(error.message || error);
+                }
             } finally {
-                scSessionLoading.value = false;
+                if (requestToken === scSessionRequestToken) {
+                    scSessionLoading.value = false;
+                }
             }
         }
 
@@ -13331,6 +13450,28 @@ const app = createApp({
             }
         }
 
+        function scActivePairStorageKey(sessionId) {
+            return sessionId ? `stage-comparison:active-pair:${sessionId}` : '';
+        }
+
+        function scStoredActivePairId(sessionId) {
+            const key = scActivePairStorageKey(sessionId);
+            if (!key) return '';
+            try { return String(localStorage.getItem(key) || ''); } catch (_) { return ''; }
+        }
+
+        function scPersistActivePair(pair) {
+            const key = scActivePairStorageKey(scSession.value && scSession.value.id);
+            if (!key || !pair || !pair.id) return;
+            try { localStorage.setItem(key, String(pair.id)); } catch (_) {}
+        }
+
+        function scForgetActivePair(sessionId) {
+            const key = scActivePairStorageKey(sessionId);
+            if (!key) return;
+            try { localStorage.removeItem(key); } catch (_) {}
+        }
+
         function scActivatePairData(data) {
             if (!data || !data.pair) return;
             scResetProductionReview();
@@ -13339,6 +13480,7 @@ const app = createApp({
             scRememberPair(data.pair);
             scPairData.value = data;
             scActivePair.value = data.pair;
+            scPersistActivePair(data.pair);
             scMatchState.value = data.sheet_matching || null;
             scSheetLinkRepairs.value = data.sheet_link_repairs || null;
             scTextComparison.value = data.text_comparison || null;
@@ -13391,10 +13533,10 @@ const app = createApp({
             void scLoadProductionReview({silent: true});
         }
 
-        async function scCreatePairForDocuments(leftPdf, rightPdf) {
-            if (!scSession.value || !leftPdf || !rightPdf) return null;
+        async function scCreatePairForDocuments(leftPdf, rightPdf, sessionId) {
+            if (!sessionId || !leftPdf || !rightPdf) return null;
             const response = await fetch(
-                `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs`,
+                `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}/pairs`,
                 {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -13403,66 +13545,104 @@ const app = createApp({
             );
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
-            scRememberPair(data.pair);
             return data;
         }
 
         async function scOpenSelectedPair() {
-            if (!scSession.value || !scSelectedPdf.left || !scSelectedPdf.right) return;
-            scPairLoading.value = true;
+            if (!scSession.value || !scSelectedPdf.left || !scSelectedPdf.right
+                    || scPairLoading.value) return;
+            const context = scBeginPairOpen();
+            if (!context) return;
             scSessionError.value = '';
             try {
-                const data = await scCreatePairForDocuments(scSelectedPdf.left, scSelectedPdf.right);
+                const data = await scCreatePairForDocuments(
+                    scSelectedPdf.left, scSelectedPdf.right, context.sessionId,
+                );
+                if (!scPairOpenContextCurrent(context)) return;
                 scActivatePairData(data);
                 return data;
             } catch (error) {
-                scSessionError.value = String(error.message || error);
+                if (scPairOpenContextCurrent(context)) {
+                    scSessionError.value = String(error.message || error);
+                }
             } finally {
-                scPairLoading.value = false;
+                if (scPairOpenContextCurrent(context)) scPairLoading.value = false;
             }
         }
 
         async function scOpenPairRow(row) {
             if (!row || !row.left || !row.right || scPairRowBusy(row)) return;
+            const context = scBeginPairOpen();
+            if (!context) return;
             const state = scMutablePairRowState(row);
             state.status = 'opening';
             state.error = '';
             try {
-                const data = await scCreatePairForDocuments(row.left.pdf_path, row.right.pdf_path);
+                const data = await scCreatePairForDocuments(
+                    row.left.pdf_path, row.right.pdf_path, context.sessionId,
+                );
+                if (!scPairOpenContextCurrent(context)) {
+                    state.status = 'idle';
+                    return;
+                }
                 scActivatePairData(data);
                 state.status = data.sheet_matching && data.sheet_matching.suggestions ? 'done' : 'opened';
             } catch (error) {
-                state.status = 'error';
-                state.error = String(error.message || error);
+                if (scPairOpenContextCurrent(context)) {
+                    state.status = 'error';
+                    state.error = String(error.message || error);
+                }
+            } finally {
+                if (scPairOpenContextCurrent(context)) scPairLoading.value = false;
+                else if (['opening', 'processing'].includes(state.status)) state.status = 'idle';
             }
         }
 
         async function scProcessPairRow(row) {
             if (!row || !row.left || !row.right || scPairRowBusy(row)) return;
+            const context = scBeginPairOpen();
+            if (!context) return;
             const state = scMutablePairRowState(row);
             state.status = 'processing';
             state.error = '';
             try {
-                const data = await scCreatePairForDocuments(row.left.pdf_path, row.right.pdf_path);
-                const matching = await scProcessPair(data.pair);
+                const data = await scCreatePairForDocuments(
+                    row.left.pdf_path, row.right.pdf_path, context.sessionId,
+                );
+                if (!scPairOpenContextCurrent(context)) {
+                    state.status = 'idle';
+                    return;
+                }
+                const matching = await scProcessPair(data.pair, context);
+                if (!scPairOpenContextCurrent(context)) {
+                    state.status = 'idle';
+                    return;
+                }
                 data.sheet_matching = matching;
                 scActivatePairData(data);
                 state.status = 'done';
             } catch (error) {
-                state.status = 'error';
-                state.error = String(error.message || error);
+                if (scPairOpenContextCurrent(context)) {
+                    state.status = 'error';
+                    state.error = String(error.message || error);
+                }
+            } finally {
+                if (scPairOpenContextCurrent(context)) scPairLoading.value = false;
+                else if (['opening', 'processing'].includes(state.status)) state.status = 'idle';
             }
         }
 
         async function scOpenPair(pair) {
-            if (!scSession.value || !pair) return;
-            scPairLoading.value = true;
+            if (!scSession.value || !pair || scPairLoading.value) return;
+            const context = scBeginPairOpen();
+            if (!context) return;
             try {
                 const response = await fetch(
-                    `/api/stage-comparison/sessions/${encodeURIComponent(scSession.value.id)}/pairs/${encodeURIComponent(pair.id)}`,
+                    `/api/stage-comparison/sessions/${encodeURIComponent(context.sessionId)}/pairs/${encodeURIComponent(pair.id)}`,
                 );
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (!scPairOpenContextCurrent(context)) return;
                 scActivatePairData(data);
                 const state = scMutablePairRowState({
                     index: -1,
@@ -13473,9 +13653,11 @@ const app = createApp({
                 state.error = '';
                 return data;
             } catch (error) {
-                scSessionError.value = String(error.message || error);
+                if (scPairOpenContextCurrent(context)) {
+                    scSessionError.value = String(error.message || error);
+                }
             } finally {
-                scPairLoading.value = false;
+                if (scPairOpenContextCurrent(context)) scPairLoading.value = false;
             }
         }
 
@@ -13491,6 +13673,14 @@ const app = createApp({
         }
 
         function scResetProductionReview() {
+            scStopProductionPolling();
+            scProductionRunToken += 1;
+            scProductionLoadToken += 1;
+            scProductionPendingRun = null;
+            if (scProductionArtifactRetryTimer) {
+                clearTimeout(scProductionArtifactRetryTimer);
+                scProductionArtifactRetryTimer = 0;
+            }
             scProductionState.value = null;
             scProductionChanges.value = null;
             scProductionQuestions.value = null;
@@ -13505,6 +13695,7 @@ const app = createApp({
             scProductionReturnTargetId.value = '';
             scProductionQuestionFocusCategory.value = '';
             scProductionPipelineExpanded.value = '';
+            scProductionClock.value = Date.now();
             scProductionLoading.value = false;
             scProductionRunLoading.value = false;
             scProductionDecisionsSaving.value = false;
@@ -13538,6 +13729,93 @@ const app = createApp({
                 throw error;
             }
             return data;
+        }
+
+        function scProductionStateIsRunning(value) {
+            const payload = value && value.state ? value.state : value;
+            return ['RUNNING', 'UPDATING'].includes(String(
+                payload && payload.status || '',
+            ).toUpperCase());
+        }
+
+        function scProductionRunContextCurrent(token, pairId) {
+            return token === scProductionRunToken
+                && Boolean(scActivePair.value)
+                && scActivePair.value.id === pairId;
+        }
+
+        function scProductionStatePredatesPendingRun(data, pairId) {
+            const pending = scProductionPendingRun;
+            if (!pending || pending.pairId !== pairId || scProductionStateIsRunning(data)) {
+                return false;
+            }
+            const payload = data && data.state ? data.state : data;
+            if (!payload || typeof payload !== 'object') return false;
+            const observedRunId = String(payload.run_id || payload.generation_run_id || '');
+            return observedRunId === pending.previousRunId;
+        }
+
+        function scStopProductionPolling() {
+            scProductionPollToken += 1;
+            scProductionPolling.value = false;
+            if (scProductionPollTimer) clearTimeout(scProductionPollTimer);
+            if (scProductionClockTimer) clearInterval(scProductionClockTimer);
+            scProductionPollTimer = 0;
+            scProductionClockTimer = 0;
+            scProductionClock.value = Date.now();
+        }
+
+        function scScheduleProductionPoll(token, pairId, delayMs) {
+            if (scProductionPollTimer) clearTimeout(scProductionPollTimer);
+            scProductionPollTimer = setTimeout(() => {
+                void scPollProductionState(token, pairId);
+            }, Math.max(250, Number(delayMs) || 2000));
+        }
+
+        function scStartProductionPolling(options) {
+            if (!scActivePair.value) return;
+            const settings = options || {};
+            const pairId = scActivePair.value.id;
+            if (scProductionPolling.value && !settings.restart) return;
+            scStopProductionPolling();
+            const token = scProductionPollToken;
+            scProductionPolling.value = true;
+            scProductionClock.value = Date.now();
+            scProductionClockTimer = setInterval(() => {
+                scProductionClock.value = Date.now();
+            }, 1000);
+            scScheduleProductionPoll(token, pairId, settings.immediate ? 350 : 2000);
+        }
+
+        async function scPollProductionState(token, pairId) {
+            if (token !== scProductionPollToken || !scProductionPolling.value
+                    || !scActivePair.value || scActivePair.value.id !== pairId) return;
+            try {
+                const data = await scProductionRequest('/state', {optional: true});
+                if (token !== scProductionPollToken || !scActivePair.value
+                        || scActivePair.value.id !== pairId) return;
+                // POST /run publishes RUNNING before doing the heavy work.  A
+                // very fast first poll may still observe the preceding terminal
+                // generation; do not let it replace the optimistic running UI.
+                if (data && scProductionStatePredatesPendingRun(data, pairId)) {
+                    scScheduleProductionPoll(token, pairId, 500);
+                    return;
+                }
+                if (data) scApplyProductionState(data);
+                scProductionClock.value = Date.now();
+                if (scProductionStateIsRunning(data) || scProductionRunLoading.value) {
+                    scScheduleProductionPoll(token, pairId, 2000);
+                    return;
+                }
+                scStopProductionPolling();
+                await scLoadProductionReview({silent: true, preserveDrafts: false});
+            } catch (_) {
+                // A transient state-read failure is not a pipeline failure.
+                // Keep the last honest heartbeat visible and retry gently.
+                if (token === scProductionPollToken && scProductionPolling.value) {
+                    scScheduleProductionPoll(token, pairId, 3000);
+                }
+            }
         }
 
         function scProductionAuthor() {
@@ -13830,10 +14108,26 @@ const app = createApp({
             const payload = data && data.state ? data.state : data;
             if (!payload || typeof payload !== 'object') return;
             scProductionState.value = payload;
+            scProductionClock.value = Date.now();
             scHydrateProductionSuggestionActions(data);
             scHydrateProductionSuggestionActions(payload);
             const mode = String(payload.input_mode || '').toUpperCase();
             if (mode === 'PAGE' || mode === 'DOCUMENT') scProductionInputMode.value = mode;
+            const selection = payload.selection && typeof payload.selection === 'object'
+                ? payload.selection
+                : {};
+            if (mode === 'PAGE') {
+                const leftPage = Number((selection.left_pages || [])[0]);
+                const rightPage = Number((selection.right_pages || [])[0]);
+                if (Number.isInteger(leftPage) && leftPage > 0) {
+                    scViewerEmpty.left = false;
+                    scCurrentPage.left = Math.min(scPageCount('left') || leftPage, leftPage);
+                }
+                if (Number.isInteger(rightPage) && rightPage > 0) {
+                    scViewerEmpty.right = false;
+                    scCurrentPage.right = Math.min(scPageCount('right') || rightPage, rightPage);
+                }
+            }
         }
 
         function scApplyProductionChanges(data, options) {
@@ -13864,9 +14158,24 @@ const app = createApp({
 
         async function scLoadProductionReview(options) {
             if (!scActivePair.value || !SC_PRODUCTION_REVIEW) return;
+            if (scProductionArtifactRetryTimer) {
+                clearTimeout(scProductionArtifactRetryTimer);
+                scProductionArtifactRetryTimer = 0;
+            }
             const pairId = scActivePair.value.id;
+            const sessionId = scSession.value && scSession.value.id;
+            const loadToken = ++scProductionLoadToken;
             const settings = options || {};
             const preserveDrafts = settings.preserveDrafts !== false;
+            const retryAttempt = Math.max(0, Number(settings.terminalRetryAttempt) || 0);
+            const retryErrorBaseline = Object.prototype.hasOwnProperty.call(
+                settings, 'terminalRetryErrorBaseline',
+            ) ? settings.terminalRetryErrorBaseline : scProductionError.value;
+            const contextCurrent = () => (
+                loadToken === scProductionLoadToken
+                && scSession.value && scSession.value.id === sessionId
+                && scActivePair.value && scActivePair.value.id === pairId
+            );
             scProductionLoading.value = true;
             if (!settings.silent) scProductionError.value = '';
             const suffixes = ['/state', '/changes', '/questions', '/final-report'];
@@ -13878,13 +14187,16 @@ const app = createApp({
                 }
             }));
             try {
-                if (!scActivePair.value || scActivePair.value.id !== pairId) return;
+                if (!contextCurrent()) return;
                 let firstError = null;
+                const missing = [];
                 settled.forEach(result => {
                     if (result.error) {
                         firstError = firstError || result.error;
+                        missing.push(result.suffix);
                         return;
                     }
+                    if (!result.data) missing.push(result.suffix);
                     if (result.suffix === '/state' && result.data) {
                         scApplyProductionState(result.data);
                     } else if (result.suffix === '/changes' && result.data) {
@@ -13895,10 +14207,50 @@ const app = createApp({
                         scProductionFinalReport.value = result.data.final_report || result.data;
                     }
                 });
-                if (firstError) scProductionError.value = String(firstError.message || firstError);
+                const terminalArtifactsExpected = ['COMPLETED', 'PARTIAL'].includes(String(
+                    scProductionState.value && scProductionState.value.status || '',
+                ).toUpperCase());
+                const missingTerminalArtifacts = terminalArtifactsExpected
+                    && missing.some(suffix => suffix !== '/state');
+                const shouldRetry = terminalArtifactsExpected
+                    && (Boolean(firstError) || missingTerminalArtifacts)
+                    && retryAttempt < 3;
+                if (shouldRetry) {
+                    const retryDelays = [1000, 2500, 5000];
+                    scProductionArtifactRetryTimer = setTimeout(() => {
+                        scProductionArtifactRetryTimer = 0;
+                        if (!contextCurrent()) return;
+                        void scLoadProductionReview({
+                            silent: true,
+                            // The UI is interactive between bounded retries;
+                            // keep any decisions entered after the first load.
+                            preserveDrafts: true,
+                            terminalRetryAttempt: retryAttempt + 1,
+                            terminalRetryErrorBaseline: retryErrorBaseline,
+                        });
+                    }, retryDelays[retryAttempt]);
+                } else if (firstError && (
+                    retryAttempt === 0 || scProductionError.value === retryErrorBaseline
+                )) {
+                    scProductionError.value = String(firstError.message || firstError);
+                } else if (missingTerminalArtifacts && (
+                    retryAttempt === 0 || scProductionError.value === retryErrorBaseline
+                )) {
+                    scProductionError.value = 'Не удалось загрузить все результаты анализа. Повторите обновление.';
+                }
+                return {
+                    complete: !firstError && !missingTerminalArtifacts,
+                    missing,
+                    retry_scheduled: shouldRetry,
+                };
             } finally {
-                if (scActivePair.value && scActivePair.value.id === pairId) {
+                if (contextCurrent()) {
                     scProductionLoading.value = false;
+                    if (scProductionStateIsRunning(scProductionState.value)) {
+                        scStartProductionPolling();
+                    } else if (!scProductionRunLoading.value) {
+                        scStopProductionPolling();
+                    }
                 }
             }
         }
@@ -13923,27 +14275,111 @@ const app = createApp({
             };
         }
 
-        async function scRunProductionComparison() {
-            if (!scActivePair.value || scProductionMutating.value) return;
+        function scConfirmProductionFullRerun() {
+            if (!scProductionHasRun.value) return true;
+            let warning = 'Повторный полный анализ пересчитает этапы 2–6. '
+                + 'После этого будут обновлены список решений этапа 7 и итоговый отчёт этапа 8. '
+                + 'Идентичность вопросов и изменений может измениться; '
+                + 'сохранение всех решений инженера не гарантируется.';
+            if (scProductionHasDirtyDecisions.value || scProductionHasDirtyAnswers.value) {
+                warning += ' Есть несохранённые черновики решений или ответов; '
+                    + 'при запуске они будут потеряны.';
+            }
+            return window.confirm(`${warning} Продолжить?`);
+        }
+
+        async function scRunProductionComparison(options) {
+            const settings = options || {};
+            if (!scActivePair.value || !scProductionSelectionReady.value
+                    || scProductionMutating.value || scProductionRunActive.value) return;
+            if (settings.confirmRerun && !scConfirmProductionFullRerun()) return;
+            const pairId = scActivePair.value.id;
+            const runToken = ++scProductionRunToken;
+            scProductionLoadToken += 1;
+            if (scProductionArtifactRetryTimer) {
+                clearTimeout(scProductionArtifactRetryTimer);
+                scProductionArtifactRetryTimer = 0;
+            }
             scProductionRunLoading.value = true;
             scProductionError.value = '';
             scProductionSaveMessage.value = '';
+            const previousReview = {
+                state: scProductionState.value,
+                changes: scProductionChanges.value,
+                questions: scProductionQuestions.value,
+                finalReport: scProductionFinalReport.value,
+                decisionDrafts: {...scProductionDecisionDrafts},
+                questionDrafts: {...scProductionQuestionDrafts},
+            };
+            scProductionPendingRun = {
+                token: runToken,
+                pairId,
+                previousRunId: String(
+                    previousReview.state
+                    && (previousReview.state.run_id || previousReview.state.generation_run_id)
+                    || '',
+                ),
+            };
+            const runBody = scProductionRunBody();
+            const requestedAt = new Date().toISOString();
+            scProductionState.value = {
+                kind: previousReview.state && previousReview.state.kind,
+                schema_version: previousReview.state && previousReview.state.schema_version,
+                status: 'RUNNING',
+                progress: 0,
+                input_mode: runBody.input_mode,
+                selection: runBody,
+                stages: {},
+                started_at: requestedAt,
+                last_activity_at: requestedAt,
+                current_stage: null,
+                current_substage: null,
+                message: 'Запрос на полный анализ отправлен…',
+                stale: false,
+                constraints: previousReview.state && previousReview.state.constraints || {},
+            };
+            scProductionChanges.value = null;
+            scProductionQuestions.value = null;
+            scProductionFinalReport.value = null;
+            scClearReactiveRecord(scProductionDecisionDrafts);
+            scClearReactiveRecord(scProductionQuestionDrafts);
             try {
-                const data = await scProductionRequest('/run', {
+                const runRequest = scProductionRequest('/run', {
                     fetch: {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(scProductionRunBody()),
+                        body: JSON.stringify(runBody),
                     },
                 });
+                scStartProductionPolling({immediate: true, restart: true});
+                const data = await runRequest;
+                if (!scProductionRunContextCurrent(runToken, pairId)) return;
                 if (data && (data.state || data.status)) {
                     scApplyProductionState(data);
                 }
                 await scLoadProductionReview({silent: true, preserveDrafts: false});
             } catch (error) {
+                if (!scProductionRunContextCurrent(runToken, pairId)) return;
+                scProductionState.value = previousReview.state;
+                scProductionChanges.value = previousReview.changes;
+                scProductionQuestions.value = previousReview.questions;
+                scProductionFinalReport.value = previousReview.finalReport;
+                Object.assign(scProductionDecisionDrafts, previousReview.decisionDrafts);
+                Object.assign(scProductionQuestionDrafts, previousReview.questionDrafts);
+                await scLoadProductionReview({silent: true, preserveDrafts: true});
+                if (!scProductionRunContextCurrent(runToken, pairId)) return;
                 scProductionError.value = String(error.message || error);
             } finally {
+                if (!scProductionRunContextCurrent(runToken, pairId)) return;
+                if (scProductionPendingRun && scProductionPendingRun.token === runToken) {
+                    scProductionPendingRun = null;
+                }
                 scProductionRunLoading.value = false;
+                if (scProductionStateIsRunning(scProductionState.value)) {
+                    scStartProductionPolling();
+                } else {
+                    scStopProductionPolling();
+                }
             }
         }
 
@@ -14392,6 +14828,7 @@ const app = createApp({
         function scProductionPipelineDiagnostics(value) {
             const raw = value && value.raw && typeof value.raw === 'object' ? value.raw : {};
             const diagnostic = {
+                technical_label: String(value && value.technical_label || ''),
                 reason_codes: Array.isArray(value && value.reason_codes)
                     ? value.reason_codes
                     : [],
@@ -14409,10 +14846,73 @@ const app = createApp({
         }
 
         async function scOpenProductionPipelineDestination(stage) {
-            if (!stage || !stage.destination) return;
-            const destination = stage.destination;
+            if (!stage) return;
+            if (stage.id === 'questions') {
+                const pendingCategory = (stage.categories || []).find(category => (
+                    Number(category.total || 0) > Number(category.answered || 0)
+                ));
+                await scOpenProductionQuestions(pendingCategory && pendingCategory.category);
+                return;
+            }
+            if (stage.id === 'review') {
+                await scOpenFirstPendingProductionRow();
+                return;
+            }
+            const destination = stage.destination
+                || stage.action && stage.action.destination;
+            if (!destination) return;
             if (destination.tab) scTab.value = destination.tab;
             if (destination.anchor) await scScrollToProductionElement(destination.anchor);
+        }
+
+        async function scOpenFirstPendingProductionRow() {
+            scTab.value = 'diffs';
+            await nextTick();
+            const pending = scProductionRows.value.find(row => (
+                scProductionDecisionDraft(row).decision === 'PENDING_REVIEW'
+            ));
+            const targetId = pending && pending.target_id;
+            const rows = [...document.querySelectorAll('[data-production-target-id]')];
+            const row = targetId
+                ? rows.find(item => item.dataset.productionTargetId === targetId)
+                : rows[0];
+            if (!row) {
+                await scScrollToProductionElement('sc-production-review-stage');
+                return;
+            }
+            row.scrollIntoView({behavior: 'smooth', block: 'center'});
+            const control = row.querySelector('button, select, input, textarea');
+            if (control && typeof control.focus === 'function') control.focus({preventScroll: true});
+            if (targetId) {
+                scProductionReturnTargetId.value = targetId;
+                if (scProductionReturnTimer) clearTimeout(scProductionReturnTimer);
+                scProductionReturnTimer = setTimeout(() => {
+                    if (scProductionReturnTargetId.value === targetId) {
+                        scProductionReturnTargetId.value = '';
+                    }
+                }, 2600);
+            }
+        }
+
+        async function scContinueProductionReview() {
+            const questionStage = scProductionPipeline.value.find(stage => stage.id === 'questions');
+            if (questionStage && questionStage.status === 'NEEDS_REVIEW') {
+                await scOpenProductionPipelineDestination(questionStage);
+                return;
+            }
+            await scOpenFirstPendingProductionRow();
+        }
+
+        async function scHandleProductionPrimaryAction() {
+            const cta = scProductionOverview.value && scProductionOverview.value.cta || {};
+            if (cta.disabled || cta.kind === 'RUNNING') return;
+            if (cta.kind === 'CONTINUE_REVIEW') {
+                await scContinueProductionReview();
+                return;
+            }
+            await scRunProductionComparison({
+                confirmRerun: cta.kind === 'RERUN' || cta.kind === 'RETRY',
+            });
         }
 
         async function scOpenProductionQuestions(category) {
@@ -14653,11 +15153,21 @@ const app = createApp({
             scProductionEvidenceTimer = 0;
         }
 
-        async function scProcessPair(pair) {
+        async function scProcessPair(pair, openContext) {
             if (!pair) return null;
-            const response = await fetch(scPairUrl(pair.id, '/sheet-match-suggestions'), {method: 'POST'});
+            const sessionId = openContext && openContext.sessionId
+                || (scSession.value && scSession.value.id);
+            if (!sessionId) return null;
+            const sheetMatchSuffix = '/sheet-match-suggestions';
+            const response = await fetch(
+                `/api/stage-comparison/sessions/${encodeURIComponent(sessionId)}`
+                    + `/pairs/${encodeURIComponent(pair.id)}${sheetMatchSuffix}`,
+                {method: 'POST'},
+            );
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+            if (openContext && !scPairOpenContextCurrent(openContext)) return null;
+            if (!scSession.value || scSession.value.id !== sessionId) return null;
             if (scActivePair.value && scActivePair.value.id === pair.id) {
                 scMatchState.value = data;
                 scFocusLeftPage(scCurrentPage.left);
@@ -14785,35 +15295,42 @@ const app = createApp({
                 scProjectChangeSummaryError.value = 'Сначала завершите ИИ-проверку текста.';
                 return;
             }
+            const pairContext = scActivePairRequestContext();
+            if (!pairContext) return;
             scProjectChangeSummaryLoading.value = true;
             scProjectChangeSummaryError.value = '';
             try {
                 if (!scProjectChangeSummaryAvailable.value) {
                     const response = await fetch(
-                        scPairUrl(scActivePair.value.id, '/text-change-summary'),
+                        scPairRequestUrl(pairContext, '/text-change-summary'),
                         {method: 'POST'},
                     );
                     const data = await response.json().catch(() => ({}));
                     if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                    if (!scActivePairRequestContextCurrent(pairContext)) return;
                     scProjectChangeSummary.value = data;
                     if (data.sheet_link_repair_applied) {
-                        const pairResponse = await fetch(scPairUrl(scActivePair.value.id, ''));
+                        const pairResponse = await fetch(scPairRequestUrl(pairContext, ''));
                         const pairData = await pairResponse.json().catch(() => ({}));
                         if (!pairResponse.ok) {
                             throw new Error(pairData.detail || ('HTTP ' + pairResponse.status));
                         }
+                        if (!scActivePairRequestContextCurrent(pairContext)) return;
                         scActivatePairData(pairData);
                     }
                 }
                 const response = await fetch(
-                    scPairUrl(scActivePair.value.id, '/high-level-project-changes'),
+                    scPairRequestUrl(pairContext, '/high-level-project-changes'),
                     {method: 'POST'},
                 );
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (!scActivePairRequestContextCurrent(pairContext)) return;
                 scHighLevelProjectChanges.value = data;
             } catch (error) {
-                scProjectChangeSummaryError.value = scTextOperationErrorMessage(error);
+                if (scActivePairRequestContextCurrent(pairContext)) {
+                    scProjectChangeSummaryError.value = scTextOperationErrorMessage(error);
+                }
             } finally {
                 scProjectChangeSummaryLoading.value = false;
             }
@@ -14965,22 +15482,27 @@ const app = createApp({
         async function scUndoSheetLinkRepair() {
             const repair = scActiveSheetLinkRepair.value;
             if (!scActivePair.value || !repair || scSheetLinkRepairUndoLoading.value) return;
+            const pairContext = scActivePairRequestContext();
+            if (!pairContext) return;
             scSheetLinkRepairUndoLoading.value = true;
             scProcessingError.value = '';
             try {
                 const response = await fetch(
-                    scPairUrl(
-                        scActivePair.value.id,
+                    scPairRequestUrl(
+                        pairContext,
                         `/sheet-link-repairs/${encodeURIComponent(repair.id)}/undo`,
                     ),
                     {method: 'POST'},
                 );
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.detail || ('HTTP ' + response.status));
+                if (!scActivePairRequestContextCurrent(pairContext)) return;
                 scActivatePairData(data);
                 scTab.value = 'links';
             } catch (error) {
-                scProcessingError.value = String(error.message || error);
+                if (scActivePairRequestContextCurrent(pairContext)) {
+                    scProcessingError.value = String(error.message || error);
+                }
             } finally {
                 scSheetLinkRepairUndoLoading.value = false;
             }
@@ -17459,8 +17981,11 @@ const app = createApp({
             scProductionError, scProductionSaveMessage, scProductionInputMode,
             scProductionRows, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
-            scProductionFinalRows, scProductionPipeline, scProductionSheetSuggestions,
+            scProductionFinalRows, scProductionPipeline, scProductionOverview,
+            scProductionSelectionReady,
+            scProductionSheetSuggestions,
             scProductionStale, scProductionSuggestionSemantics, scProductionMutating,
+            scProductionRunActive, scProductionPolling, scProductionClock,
             scProductionHasDirtyDecisions, scProductionHasDirtyAnswers,
             scProductionDecisionDrafts, scProductionQuestionDrafts,
             scProductionSuggestionActions, scProductionSuggestionApplications,
@@ -17470,6 +17995,7 @@ const app = createApp({
             scProductionQuestionFocusCategory, scProductionPipelineExpanded,
             scLoadProductionReview, scDiscardProductionDrafts,
             scRunProductionComparison, scProductionRunBody,
+            scHandleProductionPrimaryAction, scContinueProductionReview,
             scProductionDecisionDraft, scProductionDecisionIsDirty,
             scSetProductionDecision, scSetProductionDecisionField,
             scSaveProductionDecisions,
@@ -17484,7 +18010,7 @@ const app = createApp({
             scProductionSuggestionStatus,
             scToggleProductionPipeline, scProductionPipelineStatusLabel,
             scProductionPipelineDiagnostics, scOpenProductionPipelineDestination,
-            scOpenProductionQuestions,
+            scOpenProductionQuestions, scOpenFirstPendingProductionRow,
             scProductionStateStatusLabel, scProductionQuestionCategoryLabel,
             scProductionChangeStatusLabel, scProductionDecisionLabel,
             scOpenProductionEvidence, scCloseProductionEvidence,

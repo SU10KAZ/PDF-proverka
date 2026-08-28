@@ -8,7 +8,8 @@ describe('Stage 5 project change summary', () => {
   it('loads a separate artifact and runs aggregation after the Stage 4 reviewer', () => {
     expect(app).toContain('const scProjectChangeSummary = ref(null)');
     expect(app).toContain('data.project_change_summary || null');
-    expect(app).toContain("scPairUrl(scActivePair.value.id, '/text-change-summary')");
+    expect(app).toContain("scPairRequestUrl(pairContext, '/text-change-summary')");
+    expect(app).toContain('scActivePairRequestContextCurrent(pairContext)');
     expect(app).toContain('await scRunProjectChangeSummary();');
   });
 
@@ -66,7 +67,7 @@ describe('Stage 5 project change summary', () => {
   it('loads additive Stage 5.3 output and renders it before atomic Stage 5 groups', () => {
     expect(app).toContain('const scHighLevelProjectChanges = ref(null)');
     expect(app).toContain('data.high_level_project_changes || null');
-    expect(app).toContain("scPairUrl(scActivePair.value.id, '/high-level-project-changes')");
+    expect(app).toContain("scPairRequestUrl(pairContext, '/high-level-project-changes')");
     expect(html.indexOf('v-if="scHighLevelProjectChangesAvailable"')).toBeLessThan(
       html.indexOf('v-if="scProjectChangeSummaryAvailable && !scHighLevelProjectChangesAvailable"'),
     );

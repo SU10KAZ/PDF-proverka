@@ -435,11 +435,16 @@ describe('Stage Comparison production review helpers', () => {
       'Проверка инженером', 'Итоговый отчёт',
     ]);
     expect(stages[2].status).toBe('PARTIAL');
-    expect(stages[2].sections.map(section => section.label)).toEqual(['TEXT', 'GRAPHIC']);
+    expect(stages[2].sections.map(section => section.label)).toEqual([
+      'TEXT (текст)', 'GRAPHIC (графика)',
+    ]);
     expect(stages[2].sections[0].substages.map(stage => stage.label)).toEqual([
-      'Preparation', 'Deterministic Diff', 'Semantic Validation', 'Text Atoms',
+      'Подготовка текста', 'Поиск различий', 'Проверка различий', 'Формирование изменений',
     ]);
     expect(stages[2].sections[1].substages.map(stage => stage.label)).toEqual([
+      'Выбор метода', 'Точное графическое сравнение', 'Структурное сравнение', 'Визуальная проверка',
+    ]);
+    expect(stages[2].sections[1].substages.map(stage => stage.technical_label)).toEqual([
       'Router', 'MODE 1', 'MODE 2', 'Vision fallback',
     ]);
     expect(stages[2].reason).toContain('групповое графическое сравнение');

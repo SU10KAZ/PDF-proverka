@@ -234,7 +234,7 @@
     function normalizePipelineStatus(value) {
         const status = String(value || '').toUpperCase();
         if (['COMPLETED', 'READY', 'VALID', 'ABSENT'].includes(status)) return 'COMPLETED';
-        if (['RUNNING', 'IN_PROGRESS', 'PROCESSING'].includes(status)) return 'RUNNING';
+        if (['RUNNING', 'UPDATING', 'IN_PROGRESS', 'PROCESSING'].includes(status)) return 'RUNNING';
         if (['NEEDS_REVIEW', 'REVIEW_REQUIRED', 'PENDING_REVIEW'].includes(status)) {
             return 'NEEDS_REVIEW';
         }
@@ -384,15 +384,23 @@
         return array(values).map(object).find(value => Object.keys(value).length) || {};
     }
 
-    function substageRecord(id, label, source, fallback, specs, missingNote) {
+    function substageRecord(
+        id, label, technicalLabel, source, fallback, specs, missingNote, progressOptions,
+    ) {
         const reported = Object.keys(object(source)).length > 0;
         const effective = reported ? object(source) : object(fallback);
         const sources = reported ? [source, fallback] : [fallback];
+        const status = Object.keys(effective).length ? statusOf(effective) : 'NOT_STARTED';
         return {
             id,
             label,
-            status: Object.keys(effective).length ? statusOf(effective) : 'NOT_STARTED',
+            technical_label: technicalLabel,
+            reported,
+            status,
             counters: countersFrom(array(specs).map(spec => ({...spec, sources}))),
+            progress: normalizePipelineProgress(effective, {
+                ...(progressOptions || {}), status,
+            }),
             reason: reasonSummary(sources, Boolean(effective.stale)),
             reason_codes: collectReasonCodes(sources),
             note: !reported && Object.keys(effective).length ? missingNote : '',
@@ -400,7 +408,7 @@
         };
     }
 
-    function textPipelineSubstages(stages) {
+    function textPipelineSubstages(stages, progressOptions) {
         const textStage = object(stages.text);
         const nested = object(textStage.substages);
         const components = object(textStage.components);
@@ -421,68 +429,130 @@
             components.text_atoms, textStage.text_atoms,
         ]);
         const inheritedNote = 'Этап выполнен внутри TEXT; backend не опубликовал отдельную метрику.';
-        return [
-            substageRecord('text-preparation', 'Preparation', preparation, textStage, [
+        const records = [
+            substageRecord('text-preparation', 'Подготовка текста', 'Preparation', preparation, textStage, [
                 {label: 'Фрагменты', keys: ['fragments', 'fragment_count', 'fragments_total']},
                 {label: 'Группы', keys: ['groups', 'groups_total']},
-            ], inheritedNote),
-            substageRecord('text-diff', 'Deterministic Diff', differences, textStage, [
+            ], inheritedNote, progressOptions),
+            substageRecord('text-diff', 'Поиск различий', 'Deterministic Diff', differences, textStage, [
                 {label: 'Дельты', keys: ['deltas', 'differences', 'difference_count', 'deltas_total']},
                 {label: 'Изменено', keys: ['changed']},
                 {label: 'Добавлено', keys: ['added']},
                 {label: 'Удалено', keys: ['removed']},
-            ], inheritedNote),
-            substageRecord('text-semantic', 'Semantic Validation', semantic, textStage, [
+            ], inheritedNote, progressOptions),
+            substageRecord('text-semantic', 'Проверка различий', 'Semantic Validation', semantic, textStage, [
                 {label: 'Факты', keys: ['facts', 'facts_total', 'validated_facts']},
                 {label: 'Автоматически', keys: ['automatic', 'automatic_facts', 'validated']},
                 {label: 'На проверку', keys: ['review_required', 'unresolved']},
                 {label: 'Неприменимо', keys: ['not_applicable']},
-            ], inheritedNote),
-            substageRecord('text-atoms', 'Text Atoms', atoms, textStage, [
+            ], inheritedNote, progressOptions),
+            substageRecord('text-atoms', 'Формирование изменений', 'Text Atoms', atoms, textStage, [
                 {label: 'Атомы', keys: ['atoms', 'atom_count', 'atoms_total']},
                 {label: 'Автоматически', keys: ['automatic_atoms', 'automatic']},
                 {label: 'На проверку', keys: ['review_required', 'review_atoms']},
                 {label: 'Неприменимо', keys: ['not_applicable']},
-            ], inheritedNote),
+            ], inheritedNote, progressOptions),
         ];
+        const liveSubstage = String(
+            progressSource(textStage).current_substage
+                || object(progressOptions).current_substage
+                || '',
+        ).toLowerCase();
+        const liveOrder = {
+            text_preparation: 0,
+            text_difference_search: 1,
+            deterministic_diff: 1,
+            text_difference_validation: 2,
+            semantic_validation: 2,
+            text_change_formation: 3,
+            text_atoms: 3,
+        };
+        const liveIndex = liveOrder[liveSubstage];
+        if (statusOf(textStage) === 'RUNNING' && Number.isInteger(liveIndex)) {
+            records.forEach((record, index) => {
+                if (record.reported) return;
+                record.status = index < liveIndex
+                    ? 'COMPLETED'
+                    : index === liveIndex ? 'RUNNING' : 'NOT_STARTED';
+                record.progress = normalizePipelineProgress(
+                    index === liveIndex ? textStage : {},
+                    {...(progressOptions || {}), status: record.status},
+                );
+            });
+        }
+        return records;
     }
 
-    function graphicPipelineSubstages(stages) {
+    function graphicPipelineSubstages(stages, progressOptions) {
         const graphic = object(stages.graphic);
         const nested = object(graphic.substages);
         const components = object(graphic.components);
         const results = array(graphic.group_results);
         const route = String(graphic.route || '').toUpperCase();
         const mode = String(graphic.mode || '').toUpperCase();
+        const graphicStatus = statusOf(graphic);
+        const liveSubstage = String(
+            progressSource(graphic).current_substage || '',
+        ).toLowerCase();
         const explicitRouter = firstStage([
             stages.graphic_router, nested.router, components.router, graphic.router,
         ]);
-        const router = substageRecord('graphic-router', 'Router', explicitRouter, graphic, [
+        const router = substageRecord('graphic-router', 'Выбор метода', 'Router', explicitRouter, graphic, [
             {label: 'Группы', keys: ['groups_total']},
-            {label: 'Готово', keys: ['groups_completed']},
-            {label: 'Заблокировано', keys: ['groups_blocked']},
-        ], 'Маршрутизация опубликована в общем GRAPHIC stage.');
+            {label: 'Маршрутов', keys: ['router_runs']},
+            {label: 'Ошибок маршрута', keys: ['router_failed_groups']},
+        ], 'Маршрутизация опубликована в общем GRAPHIC stage.', progressOptions);
+        if (!router.reported && Object.keys(graphic).length) {
+            const routerFailures = firstNumber([graphic], ['router_failed_groups']) || 0;
+            if (graphicStatus === 'RUNNING') {
+                // PAGE goes straight into structural comparison after method
+                // selection. DOCUMENT keeps routing each independent group.
+                router.status = liveSubstage === 'graphic_structural_comparison'
+                    ? 'COMPLETED'
+                    : 'RUNNING';
+            } else if (graphicStatus === 'FAILED') {
+                router.status = 'FAILED';
+            } else {
+                router.status = routerFailures > 0 ? 'PARTIAL' : 'COMPLETED';
+            }
+            router.progress = normalizePipelineProgress(
+                router.status === 'RUNNING' ? graphic : {},
+                {...(progressOptions || {}), status: router.status},
+            );
+        }
 
-        function derivedBranch(id, label, names, selected) {
+        function derivedBranch(id, label, technicalLabel, names, selected) {
             const explicit = firstStage(names);
             if (Object.keys(explicit).length) {
-                return substageRecord(id, label, explicit, graphic, [
+                return substageRecord(id, label, technicalLabel, explicit, graphic, [
                     {label: 'Группы', keys: ['groups', 'groups_total', 'groups_completed']},
                     {label: 'Изменения', keys: ['changes']},
-                ], '');
+                ], '', progressOptions);
             }
             const selectedResults = results.filter(selected);
             if (selectedResults.length) {
+                const aggregateStatus = aggregatePipelineStatus(selectedResults.map(statusOf));
+                const status = !['RUNNING', 'FAILED'].includes(aggregateStatus)
+                    && selectedResults.some(item => item.review_required === true)
+                    ? 'NEEDS_REVIEW'
+                    : aggregateStatus;
                 return {
                     id,
                     label,
-                    status: aggregatePipelineStatus(selectedResults.map(statusOf)),
+                    technical_label: technicalLabel,
+                    status,
                     counters: [
                         {label: 'Группы', value: selectedResults.length},
                         {label: 'Изменения', value: selectedResults.reduce(
                             (sum, item) => sum + (finiteNumber(item.changes) || 0), 0,
                         )},
                     ],
+                    progress: normalizePipelineProgress({
+                        ...graphic,
+                        status,
+                        processed: selectedResults.filter(item => statusOf(item) !== 'RUNNING').length,
+                        total: selectedResults.length,
+                    }, {...(progressOptions || {}), status}),
                     reason: reasonSummary(selectedResults, Boolean(graphic.stale)),
                     reason_codes: collectReasonCodes(selectedResults),
                     note: '',
@@ -490,44 +560,69 @@
                 };
             }
             const branchSelected = selected({route, mode});
+            const liveBranch = (
+                id === 'graphic-mode-1'
+                    && ['graphic_mode_1', 'mode_1'].includes(liveSubstage)
+            ) || (
+                id === 'graphic-mode-2'
+                    && ['graphic_structural_comparison', 'graphic_mode_2', 'mode_2']
+                        .includes(liveSubstage)
+            ) || (
+                id === 'graphic-vision'
+                    && ['graphic_vision', 'vision', 'vision_fallback'].includes(liveSubstage)
+            );
+            let status;
+            if (!Object.keys(graphic).length) status = 'NOT_STARTED';
+            else if (liveBranch && graphicStatus === 'RUNNING') status = 'RUNNING';
+            else if (branchSelected) {
+                status = graphicStatus !== 'RUNNING' && graphic.review_required === true
+                    ? 'NEEDS_REVIEW'
+                    : graphicStatus;
+            } else if (graphicStatus === 'RUNNING' && !route && !mode) {
+                // The common live progress record does not disclose which
+                // DOCUMENT route will be selected. Unknown is not N/A.
+                status = 'NOT_STARTED';
+            } else status = 'NOT_APPLICABLE';
             return {
                 id,
                 label,
-                status: !Object.keys(graphic).length
-                    ? 'NOT_STARTED'
-                    : branchSelected ? statusOf(graphic) : 'NOT_APPLICABLE',
-                counters: branchSelected ? countersFrom([
+                technical_label: technicalLabel,
+                status,
+                counters: branchSelected || liveBranch ? countersFrom([
                     {label: 'Изменения', keys: ['changes'], sources: [graphic]},
                 ]) : [],
-                reason: branchSelected ? reasonSummary([graphic], Boolean(graphic.stale)) : '',
-                reason_codes: branchSelected ? collectReasonCodes([graphic]) : [],
-                note: branchSelected ? 'Отдельная метрика ветки backend не опубликована.' : '',
+                reason: branchSelected || liveBranch
+                    ? reasonSummary([graphic], Boolean(graphic.stale)) : '',
+                reason_codes: branchSelected || liveBranch ? collectReasonCodes([graphic]) : [],
+                note: branchSelected || liveBranch
+                    ? 'Отдельная метрика ветки backend не опубликована.' : '',
+                progress: normalizePipelineProgress(
+                    status === 'RUNNING' ? graphic : {},
+                    {...(progressOptions || {}), status},
+                ),
                 raw: {},
             };
         }
 
         const mode1 = derivedBranch(
-            'graphic-mode-1', 'MODE 1',
+            'graphic-mode-1', 'Точное графическое сравнение', 'MODE 1',
             [stages.graphic_mode_1, nested.mode_1, components.mode_1, graphic.mode_1],
             item => String(item.route || route).toUpperCase() === 'MODE_1_APPLICABLE'
                 || String(item.mode || mode).toUpperCase() === 'MODE_1',
         );
         const mode2 = derivedBranch(
-            'graphic-mode-2', 'MODE 2',
+            'graphic-mode-2', 'Структурное сравнение', 'MODE 2',
             [stages.graphic_mode_2, nested.mode_2, components.mode_2, graphic.mode_2],
             item => String(item.route || route).toUpperCase() === 'MODE_2_REQUIRED'
                 || String(item.mode || mode).toUpperCase() === 'MODE_2',
         );
         const vision = derivedBranch(
-            'graphic-vision', 'Vision fallback',
+            'graphic-vision', 'Визуальная проверка', 'Vision fallback',
             [stages.graphic_vision, nested.vision, nested.vision_fallback,
                 components.vision, graphic.vision_fallback],
             item => String(item.route || route).toUpperCase() === 'VISION_REQUIRED'
                 || String(item.mode || mode).toUpperCase() === 'VISION',
         );
-        if (vision.status === 'PARTIAL' && (route === 'VISION_REQUIRED' || mode === 'VISION')) {
-            vision.status = 'NEEDS_REVIEW';
-        }
         return [router, mode1, mode2, vision];
     }
 
@@ -543,50 +638,476 @@
         })[normalizePipelineStatus(value)] || 'Не начато';
     }
 
+    const HEARTBEAT_WARNING_THRESHOLD_MS = 120 * 1000;
+    const HEARTBEAT_WARNING_TEXT = 'Давно нет обновлений. Операция может выполняться долго или ожидать завершения внутреннего процесса.';
+    const PIPELINE_STAGE_LABELS = {
+        selection: '1. Выбор сравнения',
+        sheets: '2. Сопоставление листов',
+        sheet_matching: '2. Сопоставление листов',
+        sheet_scope: '2. Сопоставление листов',
+        content: '3. Анализ содержимого',
+        content_analysis: '3. Анализ содержимого',
+        text: '3. Анализ содержимого',
+        graphic: '3. Анализ содержимого',
+        objects: '4. Сопоставление объектов',
+        entity_matching: '4. Сопоставление объектов',
+        entity_binding: '4. Сопоставление объектов',
+        effective_entity_binding: '4. Сопоставление объектов',
+        questions: '5. Вопросы инженеру',
+        review_questions: '5. Вопросы инженеру',
+        synthesis: '6. Синтез изменений',
+        unified_synthesis: '6. Синтез изменений',
+        automatic_unified_synthesis: '6. Синтез изменений',
+        review: '7. Проверка инженером',
+        engineer_decisions: '7. Проверка инженером',
+        report: '8. Итоговый отчёт',
+        final_report: '8. Итоговый отчёт',
+    };
+    const SUBSTAGE_LABELS = {
+        preparation: 'Подготовка текста',
+        text_preparation: 'Подготовка текста',
+        deterministic_diff: 'Поиск различий',
+        differences: 'Поиск различий',
+        semantic_validation: 'Проверка различий',
+        text_atoms: 'Формирование изменений',
+        atoms: 'Формирование изменений',
+        router: 'Выбор метода',
+        mode_1: 'Точное графическое сравнение',
+        mode_2: 'Структурное сравнение',
+        vision: 'Визуальная проверка',
+        vision_fallback: 'Визуальная проверка',
+        sheet_candidate_matching: 'Поиск кандидатов для листов',
+        sheet_scope: 'Формирование групп листов',
+        page_sheet_advisory: 'Проверка рекомендаций по листам',
+        text_difference_search: 'Поиск различий',
+        text_difference_validation: 'Проверка различий',
+        text_change_formation: 'Формирование текстовых изменений',
+        graphic_method_selection: 'Выбор метода графического сравнения',
+        graphic_structural_comparison: 'Структурное графическое сравнение',
+        graphic_group_comparison: 'Сравнение групп графики',
+        entity_matching: 'Сопоставление объектов',
+        entity_binding: 'Привязка изменений к объектам',
+        automatic_synthesis: 'Синтез автоматических изменений',
+        review_application: 'Применение ответов инженера',
+        effective_synthesis: 'Синтез с учётом ответов',
+        question_generation: 'Формирование вопросов инженеру',
+        approved_report_projection: 'Обновление итогового отчёта',
+    };
+
+    function metricNumber(value) {
+        if (value === null || value === undefined || value === '') return null;
+        const normalized = Number(value);
+        return Number.isFinite(normalized) && normalized >= 0 ? normalized : null;
+    }
+
+    function timestampMilliseconds(value) {
+        if (value === null || value === undefined || value === '') return null;
+        if (value instanceof Date) {
+            const result = value.getTime();
+            return Number.isFinite(result) ? result : null;
+        }
+        const numeric = Number(value);
+        if (Number.isFinite(numeric) && String(value).trim() !== '') {
+            return numeric > 0 && numeric < 100000000000 ? numeric * 1000 : numeric;
+        }
+        const parsed = Date.parse(String(value));
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function formatPipelineDuration(value) {
+        const milliseconds = metricNumber(value);
+        if (milliseconds === null) return '';
+        const seconds = Math.max(0, Math.floor(milliseconds / 1000));
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const rest = seconds % 60;
+        if (hours) return `${hours} ч ${minutes} мин`;
+        if (minutes) return `${minutes} мин ${rest} сек`;
+        return `${rest} сек`;
+    }
+
+    function formatActivityAge(value) {
+        const milliseconds = metricNumber(value);
+        if (milliseconds === null) return '';
+        if (milliseconds < 2000) return 'сейчас';
+        const seconds = Math.floor(milliseconds / 1000);
+        if (seconds < 60) return `${seconds} сек назад`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes} мин назад`;
+        return `${Math.floor(minutes / 60)} ч назад`;
+    }
+
+    function progressSource(value) {
+        const source = object(value);
+        return Object.assign(
+            {},
+            source,
+            object(source.progress),
+            object(source.runtime_progress),
+            object(source.live_progress),
+            object(source.execution_progress),
+        );
+    }
+
+    function progressMetric(source, keys) {
+        const value = object(source);
+        for (const key of array(keys)) {
+            const direct = metricNumber(value[key]);
+            if (direct !== null) return direct;
+            const counted = metricNumber(object(value.counts)[key]);
+            if (counted !== null) return counted;
+        }
+        return null;
+    }
+
+    function normalizedUnit(value) {
+        const unit = String(value || '').trim();
+        const known = {
+            sheet: 'листов', sheets: 'листов', left_sheets: 'листов',
+            page: 'страниц', pages: 'страниц',
+            group: 'групп', groups: 'групп', item: 'единиц', items: 'единиц',
+            fragment: 'фрагментов', fragments: 'фрагментов',
+            delta: 'различий', deltas: 'различий', differences: 'различий',
+            atom: 'изменений', atoms: 'изменений',
+            relation: 'связей', relations: 'связей',
+            atomic_targets: 'изменений', questions: 'вопросов',
+            approved_changes: 'изменений',
+        };
+        return known[unit.toLowerCase()] || unit;
+    }
+
+    function unitDurations(source) {
+        const candidates = [
+            source.unit_durations_ms, source.completed_unit_durations_ms,
+            source.recent_unit_durations_ms, source.durations_ms,
+        ];
+        for (const candidate of candidates) {
+            const values = array(candidate).map(metricNumber).filter(value => value !== null && value > 0);
+            if (values.length) return values;
+        }
+        return [];
+    }
+
+    function estimatePipelineEtaMs(source, options) {
+        const settings = object(options);
+        const effective = progressSource(source);
+        const processed = settings.processed !== undefined
+            ? metricNumber(settings.processed)
+            : progressMetric(effective, ['processed', 'current', 'completed_units', 'groups_completed']);
+        const total = settings.total !== undefined
+            ? metricNumber(settings.total)
+            : progressMetric(effective, ['total', 'total_units', 'groups_total']);
+        if (processed === null || total === null || total <= processed || total <= 0) return null;
+        const durations = unitDurations(effective);
+        const explicitAverage = progressMetric(effective, [
+            'average_unit_duration_ms', 'avg_unit_duration_ms', 'moving_average_ms',
+        ]);
+        let average = null;
+        if (durations.length >= 2) {
+            const sample = durations.slice(-5);
+            average = sample.reduce((sum, value) => sum + value, 0) / sample.length;
+        } else if (explicitAverage !== null && explicitAverage > 0) {
+            average = explicitAverage;
+        } else {
+            const elapsed = settings.elapsed_ms !== undefined
+                ? metricNumber(settings.elapsed_ms)
+                : progressMetric(effective, ['elapsed_ms']);
+            if (processed >= 2 && elapsed !== null && elapsed > 0) average = elapsed / processed;
+        }
+        if (!(average > 0)) return null;
+        return Math.max(0, Math.round(average * (total - processed)));
+    }
+
+    function formatPipelineEta(value) {
+        const milliseconds = metricNumber(value);
+        if (milliseconds === null || milliseconds <= 0) return '';
+        const seconds = milliseconds / 1000;
+        if (seconds < 90) {
+            const rounded = Math.max(5, Math.round(seconds / 5) * 5);
+            return `~${rounded} сек`;
+        }
+        const minutes = Math.max(1, Math.round(seconds / 60));
+        if (minutes < 60) return `~${minutes} мин`;
+        const hours = Math.max(1, Math.round(minutes / 60));
+        return `~${hours} ч`;
+    }
+
+    function formatProgressCurrentItem(value) {
+        if (value === null || value === undefined || value === '') return '';
+        if (typeof value !== 'object' || Array.isArray(value)) return text(value, '');
+        const leftPages = uniqueNumbers(value.left_pages);
+        const rightPages = uniqueNumbers(value.right_pages);
+        if (leftPages.length || rightPages.length) {
+            return `LEFT ${leftPages.join(', ') || '—'} ↔ RIGHT ${rightPages.join(', ') || '—'}`;
+        }
+        return text(value);
+    }
+
+    function normalizePipelineProgress(value, options) {
+        const settings = object(options);
+        const source = progressSource(value);
+        const status = normalizePipelineStatus(settings.status || source.status);
+        const now = timestampMilliseconds(settings.now_ms) ?? Date.now();
+        const processed = progressMetric(source, [
+            'processed', 'current', 'completed_units', 'items_processed',
+            'groups_completed', 'deltas_processed', 'fragments_processed',
+        ]);
+        const total = progressMetric(source, [
+            'total', 'total_units', 'items_total', 'groups_total',
+            'deltas_total', 'fragments_total',
+        ]);
+        const determinate = processed !== null && total !== null && total > 0;
+        const running = status === 'RUNNING';
+        const kind = determinate ? 'determinate' : running ? 'indeterminate' : 'none';
+        const startedAtMs = timestampMilliseconds(source.started_at);
+        const completedAtMs = timestampMilliseconds(source.completed_at);
+        const reportedDuration = progressMetric(source, ['duration_ms']);
+        let elapsedMs = reportedDuration;
+        if (startedAtMs !== null) {
+            const end = running ? now : completedAtMs;
+            if (end !== null) {
+                const timestampDuration = Math.max(0, end - startedAtMs);
+                elapsedMs = running && elapsedMs !== null
+                    ? Math.max(elapsedMs, timestampDuration)
+                    : (elapsedMs === null ? timestampDuration : elapsedMs);
+            }
+        }
+        const activityAtMs = timestampMilliseconds(
+            source.last_activity_at || source.updated_at || source.started_at,
+        );
+        const activityAgeMs = activityAtMs === null ? null : Math.max(0, now - activityAtMs);
+        const configuredThreshold = metricNumber(
+            settings.warning_threshold_ms !== undefined
+                ? settings.warning_threshold_ms
+                : source.heartbeat_warning_threshold_ms,
+        );
+        const constraintThresholdSeconds = metricNumber(
+            object(source.constraints).activity_warning_threshold_sec,
+        );
+        const warningThresholdMs = configuredThreshold && configuredThreshold > 0
+            ? configuredThreshold
+            : constraintThresholdSeconds && constraintThresholdSeconds > 0
+                ? constraintThresholdSeconds * 1000
+                : HEARTBEAT_WARNING_THRESHOLD_MS;
+        const human = Boolean(settings.human || source.human);
+        const etaMs = running && !human && determinate
+            ? estimatePipelineEtaMs(source, {processed, total, elapsed_ms: elapsedMs})
+            : null;
+        const unit = normalizedUnit(source.unit || settings.unit);
+        const counterLabel = determinate
+            ? `${processed} / ${total}${unit ? ` ${unit}` : ''}`
+            : '';
+        return {
+            status,
+            kind,
+            mode: kind,
+            determinate,
+            indeterminate: kind === 'indeterminate',
+            processed,
+            total,
+            unit,
+            counter_label: counterLabel,
+            percent: determinate ? Math.max(0, Math.min(100, (processed / total) * 100)) : null,
+            message: source.message || source.operation
+                ? text(source.message || source.operation)
+                : '',
+            current_stage: source.current_stage || '',
+            current_substage: source.current_substage || '',
+            current_item: formatProgressCurrentItem(source.current_item),
+            current_item_raw: source.current_item || null,
+            started_at: source.started_at || null,
+            completed_at: source.completed_at || null,
+            last_activity_at: source.last_activity_at || null,
+            elapsed_ms: elapsedMs,
+            elapsed_label: elapsedMs === null ? '' : formatPipelineDuration(elapsedMs),
+            heartbeat_age_ms: activityAgeMs,
+            last_activity_label: activityAgeMs === null ? '' : formatActivityAge(activityAgeMs),
+            warning_threshold_ms: warningThresholdMs,
+            heartbeat_warning: running && activityAgeMs !== null && activityAgeMs > warningThresholdMs,
+            heartbeat_warning_text: running && activityAgeMs !== null && activityAgeMs > warningThresholdMs
+                ? HEARTBEAT_WARNING_TEXT
+                : '',
+            eta_ms: etaMs,
+            eta_label: etaMs === null ? '' : formatPipelineEta(etaMs),
+            human,
+            is_running: running,
+            is_terminal: !['NOT_STARTED', 'RUNNING'].includes(status),
+        };
+    }
+
+    function aggregateConcurrentPipelineStatus(values, runningHint) {
+        const statuses = array(values).map(value => (
+            PIPELINE_STATUSES.includes(value) ? value : normalizePipelineStatus(value)
+        ));
+        if (!statuses.length || statuses.every(status => status === 'NOT_STARTED')) return 'NOT_STARTED';
+        if (statuses.includes('RUNNING')) return 'RUNNING';
+        if (statuses.includes('FAILED') && !runningHint) return 'FAILED';
+        if (statuses.includes('NOT_STARTED')) return runningHint ? 'RUNNING' : 'PARTIAL';
+        if (statuses.includes('FAILED')) return 'FAILED';
+        if (statuses.includes('NEEDS_REVIEW')) return 'NEEDS_REVIEW';
+        if (statuses.includes('PARTIAL')) return 'PARTIAL';
+        if (statuses.every(status => status === 'NOT_APPLICABLE')) return 'NOT_APPLICABLE';
+        if (statuses.every(status => ['COMPLETED', 'NOT_APPLICABLE'].includes(status))) {
+            return 'COMPLETED';
+        }
+        return statuses[0] || 'NOT_STARTED';
+    }
+
+    function contextualStageAction(id, destination) {
+        const labels = {
+            selection: 'Изменить выбор',
+            sheets: 'Открыть сопоставление листов',
+            content: 'Открыть анализ',
+            objects: 'Открыть сопоставление объектов',
+            questions: 'Ответить на вопросы',
+            synthesis: 'Открыть результат синтеза',
+            review: 'Проверить изменения',
+            report: 'Открыть итоговый отчёт',
+        };
+        return {kind: 'OPEN', label: labels[id] || 'Открыть', destination};
+    }
+
+    function fullRerunFallback(number) {
+        if (![2, 3, 4, 5, 6].includes(number)) return null;
+        const dependencyNames = {
+            2: ['3. Анализ содержимого', '4. Сопоставление объектов', '5. Вопросы инженеру', '6. Синтез изменений', '7. Проверка инженером', '8. Итоговый отчёт'],
+            3: ['4. Сопоставление объектов', '5. Вопросы инженеру', '6. Синтез изменений', '7. Проверка инженером', '8. Итоговый отчёт'],
+            4: ['5. Вопросы инженеру', '6. Синтез изменений', '7. Проверка инженером', '8. Итоговый отчёт'],
+            5: ['6. Синтез изменений', '7. Проверка инженером', '8. Итоговый отчёт'],
+            6: ['7. Проверка инженером', '8. Итоговый отчёт'],
+        };
+        return {
+            kind: 'FULL_RERUN',
+            supported: true,
+            partial_rerun_supported: false,
+            label: '↻ Запустить полный анализ заново',
+            note: 'Для пересчёта этого этапа необходимо повторить автоматический анализ.',
+            dependencies: dependencyNames[number],
+            requires_confirmation: true,
+        };
+    }
+
     function normalizeProductionPipeline(payload) {
         const wrapper = object(payload);
         const state = object(wrapper.state);
         const stages = object(state.stages);
-        const questionsArtifact = wrapper.questions;
-        const changesArtifact = wrapper.changes;
-        const finalReport = object(wrapper.final_report || wrapper.finalReport);
-        const stale = Boolean(state.stale);
+        const stateStatus = normalizePipelineStatus(state.status);
+        // Artifacts from the previous generation remain readable while the
+        // synchronous producer is running.  During that window only the
+        // current generation's state.stages are authoritative.
+        const generationRunning = stateStatus === 'RUNNING';
+        const questionsArtifact = generationRunning ? null : wrapper.questions;
+        const changesArtifact = generationRunning ? null : wrapper.changes;
+        const finalReport = generationRunning
+            ? {}
+            : object(wrapper.final_report || wrapper.finalReport);
+        const stale = [state, wrapper.questions, wrapper.changes,
+            wrapper.final_report || wrapper.finalReport]
+            .some(value => Boolean(object(value).stale));
+        const hasProductionRun = stateStatus !== 'NOT_STARTED'
+            || Boolean(state.run_id || state.generation_run_id || state.started_at)
+            || Object.keys(stages).length > 0;
         const selection = object(state.selection);
+        const activePair = object(wrapper.active_pair);
+        const selectedPages = object(wrapper.selected_pages);
+        const selectedMode = String(
+            wrapper.selected_mode || selection.input_mode || state.input_mode || 'DOCUMENT',
+        ).toUpperCase();
+        const backendWarningSeconds = metricNumber(
+            object(state.constraints).activity_warning_threshold_sec,
+        );
+        const progressOptions = {
+            now_ms: wrapper.now_ms,
+            current_substage: state.current_substage
+                || progressSource(state).current_substage
+                || '',
+            warning_threshold_ms: wrapper.heartbeat_warning_threshold_ms
+                || state.heartbeat_warning_threshold_ms
+                || (backendWarningSeconds ? backendWarningSeconds * 1000 : null),
+        };
         const questionRows = normalizeQuestions(questionsArtifact);
         const questionCounts = normalizeQuestionCounts(questionsArtifact);
+        const rawQuestionCounts = object(object(questionsArtifact).counts);
+        const hasRawQuestionCounts = Object.keys(rawQuestionCounts).length > 0;
         const questionsStage = object(stages.review_questions);
-        const explicitQuestionTotal = firstNumber([questionsStage], ['questions', 'total']);
-        const questionTotal = questionRows.length || questionCounts.total
-            || explicitQuestionTotal || 0;
         const explicitAnswered = firstNumber([questionsStage], ['answered', 'answers']);
+        const stageQuestionTotal = firstNumber([questionsStage], ['total']);
+        const legacyStageQuestions = firstNumber([questionsStage], ['questions']);
+        const explicitQuestionTotal = stageQuestionTotal !== null
+            ? stageQuestionTotal
+            : (explicitAnswered !== null ? legacyStageQuestions : null);
+        const resolvedUnchanged = firstNumber(
+            [rawQuestionCounts], ['resolved_unchanged'],
+        );
+        const answeredRows = questionRows.filter(question => (
+            Boolean(String(question.answer || '').trim())
+            || ['ANSWERED', 'RESOLVED', 'CLOSED'].includes(question.status)
+        )).length;
         const answeredKnown = questionRows.length > 0
             || Boolean(object(questionsArtifact).questions)
-            || explicitAnswered !== null;
-        const answered = questionRows.length
-            ? questionRows.filter(question => Boolean(String(question.answer || '').trim())
-                || ['ANSWERED', 'RESOLVED', 'CLOSED'].includes(question.status)).length
-            : (explicitAnswered === null ? 0 : explicitAnswered);
+            || explicitAnswered !== null
+            || resolvedUnchanged !== null;
+        const answered = explicitAnswered !== null
+            ? explicitAnswered
+            : Math.max(answeredRows, resolvedUnchanged || 0);
+        const pendingRows = Math.max(0, questionRows.length - answeredRows);
+        const stagePending = firstNumber([questionsStage], ['pending']);
+        const artifactPending = firstNumber([rawQuestionCounts], ['pending']);
+        const explicitPending = stagePending !== null
+            ? stagePending
+            : artifactPending !== null
+                ? artifactPending
+                : questionRows.length
+                    ? pendingRows
+                : legacyStageQuestions !== null
+                    ? Math.max(0, legacyStageQuestions - answered)
+                    : null;
+        const questionPending = explicitPending !== null ? explicitPending : pendingRows;
+        const rawPendingTotal = firstNumber([rawQuestionCounts], ['total']);
+        const questionTotal = explicitQuestionTotal !== null
+            ? Math.max(explicitQuestionTotal, questionPending + answered)
+            : Math.max(
+                questionPending + answered,
+                (rawPendingTotal || 0) + (resolvedUnchanged || 0),
+                hasRawQuestionCounts
+                    ? questionCounts.total + answered
+                    : questionRows.length,
+            );
         const reviewRows = normalizeRows(changesArtifact);
         const persistedCounts = reviewCounts(reviewRows);
         const decisionsStage = object(stages.engineer_decisions);
         const decisionsCounts = object(decisionsStage.counts);
+        const synthesizedFindings = firstNumber([
+            object(stages.unified_synthesis), object(stages.automatic_unified_synthesis),
+        ], ['review_items']);
         const hasReviewRows = Array.isArray(changesArtifact)
             || Array.isArray(object(changesArtifact).rows);
         const stageReviewTotal = firstNumber([decisionsCounts], ['total']);
         const rowsAreAuthoritative = hasReviewRows
             && (reviewRows.length > 0 || stageReviewTotal === null || stageReviewTotal === 0);
-        const reviewTotal = rowsAreAuthoritative
-            ? persistedCounts.total
-            : (stageReviewTotal || 0);
         const reviewApproved = rowsAreAuthoritative
             ? persistedCounts.APPROVED
             : (firstNumber([decisionsCounts], ['APPROVED', 'approved']) || 0);
         const reviewRejected = rowsAreAuthoritative
             ? persistedCounts.REJECTED
             : (firstNumber([decisionsCounts], ['REJECTED', 'rejected']) || 0);
+        const explicitReviewPending = firstNumber(
+            [decisionsCounts], ['PENDING_REVIEW', 'pending'],
+        );
+        const baseReviewTotal = stageReviewTotal !== null
+            ? stageReviewTotal
+            : (synthesizedFindings || 0);
         const reviewPending = rowsAreAuthoritative
             ? persistedCounts.PENDING_REVIEW
-            : (firstNumber([decisionsCounts], ['PENDING_REVIEW', 'pending']) || 0);
+            : (explicitReviewPending !== null
+                ? explicitReviewPending
+                : Math.max(0, baseReviewTotal - reviewApproved - reviewRejected));
+        const reviewTotal = rowsAreAuthoritative
+            ? persistedCounts.total
+            : Math.max(
+                baseReviewTotal,
+                reviewApproved + reviewRejected + reviewPending,
+            );
         const finalStage = object(stages.final_report);
         const finalApproved = firstNumber([
             object(finalReport.summary), finalStage,
@@ -597,14 +1118,30 @@
 
         function stageRecord(id, number, label, status, counters, sources, destination, extra) {
             const sourceList = array(sources);
+            const progressSourceRecord = sourceList.find(source => statusOf(source) === 'RUNNING')
+                || sourceList.find(source => Object.keys(progressSource(source)).some(key => (
+                    ['processed', 'total', 'started_at', 'last_activity_at', 'duration_ms'].includes(key)
+                )))
+                || sourceList[0]
+                || {};
+            const action = contextualStageAction(id, destination);
             return {
                 id, number, label,
                 status,
                 status_label: pipelineStatusLabel(status),
                 counters: array(counters),
+                progress: normalizePipelineProgress(progressSourceRecord, {
+                    ...progressOptions, status,
+                }),
                 reason: reasonSummary(sourceList, stale),
                 reason_codes: collectReasonCodes(sourceList),
                 destination,
+                action,
+                action_label: action.label,
+                rerun: hasProductionRun
+                    && !['NOT_STARTED', 'RUNNING', 'NOT_APPLICABLE'].includes(status)
+                    ? fullRerunFallback(number)
+                    : null,
                 raw: sourceList.reduce((result, source, index) => {
                     if (source && typeof source === 'object' && Object.keys(source).length) {
                         result[`source_${index + 1}`] = source;
@@ -616,14 +1153,48 @@
         }
 
         const selectionCounters = [];
-        if (Array.isArray(selection.left_pages) && selection.left_pages.length) {
-            selectionCounters.push({label: 'LEFT листы', value: selection.left_pages.length});
+        function pairSideSelected(value) {
+            if (typeof value === 'string') return Boolean(value.trim());
+            const side = object(value);
+            return Boolean(
+                side.id || side.pdf_path || side.path || side.filename
+                || side.name || side.document_id || side.document_code,
+            );
         }
-        if (Array.isArray(selection.right_pages) && selection.right_pages.length) {
-            selectionCounters.push({label: 'RIGHT листы', value: selection.right_pages.length});
+        const pairHasBothSides = pairSideSelected(activePair.left)
+            && pairSideSelected(activePair.right);
+        const useUiPageSelection = Boolean(wrapper.selected_mode && pairHasBothSides);
+        const leftPages = uniqueNumbers(
+            useUiPageSelection ? selectedPages.left
+                : array(selection.left_pages).length ? selection.left_pages : selectedPages.left,
+        );
+        const rightPages = uniqueNumbers(
+            useUiPageSelection ? selectedPages.right
+                : array(selection.right_pages).length ? selection.right_pages : selectedPages.right,
+        );
+        if (selectedMode === 'PAGE' && leftPages.length) {
+            selectionCounters.push({label: 'LEFT листы', value: leftPages.length});
         }
-        const selectionStatus = Object.keys(selection).length ? 'COMPLETED'
-            : normalizePipelineStatus(state.status);
+        if (selectedMode === 'PAGE' && rightPages.length) {
+            selectionCounters.push({label: 'RIGHT листы', value: rightPages.length});
+        }
+        const hasSelectionSource = Object.keys(selection).length > 0 || pairHasBothSides;
+        const hasSelection = hasSelectionSource && (
+            selectedMode !== 'PAGE'
+            || (leftPages.length === 1 && rightPages.length === 1)
+        );
+        const selectionStatus = hasSelection ? 'COMPLETED' : 'NOT_STARTED';
+        function selectedSideDetail(side, pages) {
+            const upper = side.toUpperCase();
+            const pairSide = object(activePair[side]);
+            const documentName = pairSide.filename || pairSide.name || pairSide.document_name
+                || activePair[`${side}_filename`] || selection[`${side}_document`]
+                || selection[`${side}_document_id`] || 'документ выбран';
+            const pageText = selectedMode === 'PAGE' && pages.length
+                ? ` · стр. ${pages.join(', ')}`
+                : '';
+            return `${upper}: ${documentName}${pageText}`;
+        }
         const sheetMatching = object(stages.sheet_matching);
         const sheetScope = object(stages.sheet_scope);
         const sheetCounters = countersFrom([
@@ -644,8 +1215,19 @@
 
         const text = object(stages.text);
         const graphic = object(stages.graphic);
-        const textSubstages = textPipelineSubstages(stages);
-        const graphicSubstages = graphicPipelineSubstages(stages);
+        const textStatus = statusOf(text);
+        const graphicStatus = statusOf(graphic);
+        const contentStatus = aggregateConcurrentPipelineStatus(
+            [textStatus, graphicStatus], normalizePipelineStatus(state.status) === 'RUNNING',
+        );
+        const textProgress = normalizePipelineProgress(text, {
+            ...progressOptions, status: textStatus,
+        });
+        const graphicProgress = normalizePipelineProgress(graphic, {
+            ...progressOptions, status: graphicStatus, unit: 'groups',
+        });
+        const textSubstages = textPipelineSubstages(stages, progressOptions);
+        const graphicSubstages = graphicPipelineSubstages(stages, progressOptions);
         const contentCounters = countersFrom([
             {label: 'TEXT дельты', keys: ['deltas', 'differences', 'deltas_total'], sources: [text]},
             {label: 'TEXT атомы', keys: ['atoms', 'atoms_total'], sources: [text]},
@@ -686,43 +1268,85 @@
                 && (Boolean(String(question.answer || '').trim())
                     || ['ANSWERED', 'RESOLVED', 'CLOSED'].includes(question.status))).length,
         }));
-        const questionStatus = statusOf(questionsStage) === 'FAILED'
-            ? 'FAILED'
-            : questionTotal > answered ? 'NEEDS_REVIEW'
+        const reportedQuestionStatus = statusOf(questionsStage);
+        const questionStatus = reportedQuestionStatus === 'RUNNING'
+            ? 'RUNNING'
+            : reportedQuestionStatus === 'FAILED' ? 'FAILED'
+            : questionPending > 0 ? 'NEEDS_REVIEW'
                 : Object.keys(questionsStage).length ? 'COMPLETED' : 'NOT_STARTED';
         const reviewStatus = statusOf(decisionsStage) === 'FAILED'
             ? 'FAILED'
             : reviewPending > 0 ? 'NEEDS_REVIEW'
-                : Object.keys(decisionsStage).length || hasReviewRows ? 'COMPLETED' : 'NOT_STARTED';
-        const reviewCounters = Object.keys(decisionsStage).length || hasReviewRows ? [
+                : reviewTotal > 0 ? 'COMPLETED' : 'NOT_STARTED';
+        const hasSynthesis = [automaticSynthesis, reviewApplication, synthesis]
+            .some(source => Object.keys(source).length > 0);
+        const explicitReportStatus = statusOf(finalStage);
+        const reportStatus = explicitReportStatus === 'RUNNING'
+            ? 'RUNNING'
+            : explicitReportStatus === 'FAILED' ? 'FAILED'
+            : !hasSynthesis && !Object.keys(finalStage).length && !Object.keys(finalReport).length
+                ? 'NOT_STARTED'
+                : questionPending > 0 || reviewPending > 0
+                    ? 'NEEDS_REVIEW'
+                    : 'COMPLETED';
+        const reviewCounters = reviewTotal > 0 ? [
             {label: 'Найдено', value: reviewTotal},
-            {label: 'APPROVED', value: reviewApproved},
-            {label: 'REJECTED', value: reviewRejected},
-            {label: 'PENDING', value: reviewPending},
+            {label: 'Подтверждено', value: reviewApproved},
+            {label: 'Отклонено', value: reviewRejected},
+            {label: 'Ожидает решения', value: reviewPending},
         ] : [];
-        const reportCounters = Object.keys(finalStage).length || Object.keys(finalReport).length ? [
+        const reportCounters = hasSynthesis || Object.keys(finalStage).length
+            || Object.keys(finalReport).length ? [
             {label: 'Найдено', value: reviewTotal},
-            {label: 'APPROVED', value: reviewApproved},
-            {label: 'REJECTED', value: reviewRejected},
-            {label: 'PENDING', value: reviewPending},
+            {label: 'Подтверждено', value: reviewApproved},
+            {label: 'Отклонено', value: reviewRejected},
+            {label: 'Ещё не проверено', value: reviewPending},
             {label: 'Войдёт в отчёт', value: approvedInReport},
         ] : [];
 
         return [
             stageRecord('selection', 1, 'Выбор сравнения', selectionStatus,
-                selectionCounters, [selection], {tab: 'upload'}, {
-                    details: [selection.input_mode || state.input_mode
-                        ? `Режим: ${selection.input_mode || state.input_mode}` : ''],
+                selectionCounters, [selection, activePair], {tab: 'upload'}, {
+                    details: hasSelection ? [
+                        selectedSideDetail('left', leftPages),
+                        selectedSideDetail('right', rightPages),
+                        `Режим: ${selectedMode} ↔ ${selectedMode}`,
+                    ] : [],
+                    selection: {
+                        mode: selectedMode,
+                        mode_label: `${selectedMode} ↔ ${selectedMode}`,
+                        left: {document: selectedSideDetail('left', leftPages), pages: leftPages},
+                        right: {document: selectedSideDetail('right', rightPages), pages: rightPages},
+                    },
                 }),
             stageRecord('sheets', 2, 'Сопоставление листов',
                 aggregatePipelineStatus([statusOf(sheetMatching), statusOf(sheetScope)]),
                 sheetCounters, [sheetMatching, sheetScope], {tab: 'links'}),
             stageRecord('content', 3, 'Анализ содержимого',
-                aggregatePipelineStatus([statusOf(text), statusOf(graphic)]),
+                contentStatus,
                 contentCounters, [text, graphic], {tab: 'diffs', anchor: 'sc-production-review-stage'}, {
+                    progress: {
+                        status: contentStatus,
+                        kind: 'parallel', mode: 'parallel', aggregate: false,
+                        branches: {text: textProgress, graphic: graphicProgress},
+                    },
+                    mini_counters: [
+                        textProgress.counter_label
+                            ? {label: 'TEXT', value: textProgress.counter_label} : null,
+                        graphicProgress.counter_label
+                            ? {label: 'GRAPHIC', value: graphicProgress.counter_label} : null,
+                    ].filter(Boolean),
                     sections: [
-                        {id: 'text', label: 'TEXT', substages: textSubstages},
-                        {id: 'graphic', label: 'GRAPHIC', substages: graphicSubstages},
+                        {
+                            id: 'text', label: 'TEXT (текст)', technical_label: 'TEXT',
+                            progress: textProgress, mini_counter: textProgress.counter_label,
+                            substages: textSubstages,
+                        },
+                        {
+                            id: 'graphic', label: 'GRAPHIC (графика)', technical_label: 'GRAPHIC',
+                            progress: graphicProgress, mini_counter: graphicProgress.counter_label,
+                            substages: graphicSubstages,
+                        },
                     ],
                 }),
             stageRecord('objects', 4, 'Сопоставление объектов',
@@ -736,10 +1360,19 @@
             stageRecord('questions', 5, 'Вопросы инженеру', questionStatus,
                 questionCategoryCounters, [questionsStage],
                 {tab: 'diffs', anchor: 'sc-production-questions-stage'}, {
-                    progress: {answered: answeredKnown ? answered : null, total: questionTotal},
+                    progress: {
+                        ...normalizePipelineProgress({
+                            ...questionsStage,
+                            processed: answeredKnown ? answered : null,
+                            total: questionTotal,
+                            unit: 'вопросов',
+                        }, {...progressOptions, status: questionStatus, human: true}),
+                        answered: answeredKnown ? answered : null,
+                    },
                     categories: categoryDetails,
-                    reason: stale ? reasonSummary([questionsStage], true) : questionTotal > answered
-                        ? `Осталось ответить: ${questionTotal - answered}.`
+                    pending: questionPending,
+                    reason: stale ? reasonSummary([questionsStage], true) : questionPending > 0
+                        ? `Осталось ответить: ${questionPending}.`
                         : '',
                 }),
             stageRecord('synthesis', 6, 'Синтез изменений',
@@ -755,17 +1388,168 @@
                 {tab: 'diffs', anchor: 'sc-production-review-stage'}),
             stageRecord('review', 7, 'Проверка инженером', reviewStatus,
                 reviewCounters, [decisionsStage], {tab: 'diffs', anchor: 'sc-production-review-table'}, {
+                    progress: normalizePipelineProgress({
+                        ...decisionsStage,
+                        processed: reviewApproved + reviewRejected,
+                        total: reviewTotal,
+                        unit: 'изменений',
+                    }, {...progressOptions, status: reviewStatus, human: true}),
+                    pending: reviewPending,
                     reason: stale ? reasonSummary([decisionsStage], true) : reviewPending > 0
                         ? `Без решения инженера: ${reviewPending}.`
                         : '',
                 }),
             stageRecord('report', 8, 'Итоговый отчёт',
-                Object.keys(finalStage).length || Object.keys(finalReport).length
-                    ? statusOf(finalStage.status ? finalStage : {status: 'COMPLETED'})
-                    : 'NOT_STARTED', reportCounters, [finalStage], {tab: 'report'}, {
+                reportStatus, reportCounters, [finalStage], {tab: 'report'}, {
                     approved_only: object(finalReport.constraints).approved_only === true,
+                    pending: reviewPending,
                 }),
         ];
+    }
+
+    function stageLabelFromValue(value, stages) {
+        if (value !== null && value !== undefined && value !== '') {
+            const raw = String(value).trim();
+            const numericMatch = raw.match(/(?:^|STAGE[_\s-]*)([1-8])$/i);
+            if (numericMatch) {
+                const stage = array(stages).find(item => item.number === Number(numericMatch[1]));
+                if (stage) return `${stage.number}. ${stage.label}`;
+            }
+            const normalized = raw.toLowerCase().replace(/[\s.-]+/g, '_');
+            if (PIPELINE_STAGE_LABELS[normalized]) return PIPELINE_STAGE_LABELS[normalized];
+            const byId = array(stages).find(item => item.id === normalized);
+            if (byId) return `${byId.number}. ${byId.label}`;
+            return raw;
+        }
+        const running = array(stages).find(stage => stage.status === 'RUNNING');
+        return running ? `${running.number}. ${running.label}` : '';
+    }
+
+    function substageLabelFromValue(value) {
+        if (value === null || value === undefined || value === '') return '';
+        const raw = String(value).trim();
+        const normalized = raw.toLowerCase().replace(/[\s.-]+/g, '_');
+        const direct = SUBSTAGE_LABELS[normalized];
+        if (direct) return direct;
+        const suffix = Object.keys(SUBSTAGE_LABELS).find(key => normalized.endsWith(`_${key}`));
+        return suffix ? SUBSTAGE_LABELS[suffix] : raw;
+    }
+
+    function normalizeProductionOverview(payload, normalizedStages) {
+        const wrapper = object(payload);
+        const state = object(wrapper.state);
+        const stages = Array.isArray(normalizedStages)
+            ? normalizedStages
+            : normalizeProductionPipeline(wrapper);
+        const stateStatus = normalizePipelineStatus(state.status);
+        const running = stateStatus === 'RUNNING' || stages.some(stage => stage.status === 'RUNNING');
+        const failed = stateStatus === 'FAILED';
+        const stale = [state, wrapper.questions, wrapper.changes,
+            wrapper.final_report || wrapper.finalReport]
+            .some(value => Boolean(object(value).stale));
+        const runStarted = stateStatus !== 'NOT_STARTED'
+            || Boolean(state.run_id || state.generation_run_id || state.started_at)
+            || Object.keys(object(state.stages)).length > 0;
+        const questionsStage = stages.find(stage => stage.id === 'questions') || {};
+        const reviewStage = stages.find(stage => stage.id === 'review') || {};
+        const selectionReady = stages.some(stage => (
+            stage.id === 'selection' && stage.status === 'COMPLETED'
+        ));
+        const questionsPending = metricNumber(questionsStage.pending) || 0;
+        const findingsPending = metricNumber(reviewStage.pending) || 0;
+        const humanPending = questionsPending > 0 || findingsPending > 0;
+        let overviewState;
+        if (running) overviewState = 'RUNNING';
+        else if (failed) overviewState = 'FAILED';
+        else if (!runStarted) overviewState = 'NOT_STARTED';
+        else if (humanPending) overviewState = 'NEEDS_REVIEW';
+        else if (stateStatus === 'PARTIAL') overviewState = 'PARTIAL';
+        else overviewState = 'COMPLETED';
+
+        const stateProgress = progressSource(state);
+        const progress = normalizePipelineProgress(state, {
+            now_ms: wrapper.now_ms,
+            warning_threshold_ms: wrapper.heartbeat_warning_threshold_ms
+                || state.heartbeat_warning_threshold_ms
+                || (metricNumber(object(state.constraints).activity_warning_threshold_sec)
+                    ? metricNumber(object(state.constraints).activity_warning_threshold_sec) * 1000
+                    : null),
+            status: overviewState === 'RUNNING' ? 'RUNNING' : stateStatus,
+        });
+        const currentStage = state.current_stage || stateProgress.current_stage;
+        const currentSubstage = state.current_substage || stateProgress.current_substage;
+        const currentStageLabel = stageLabelFromValue(currentStage, stages);
+        const currentSubstageLabel = substageLabelFromValue(currentSubstage);
+        const failedStageLabel = state.failed_stage
+            ? stageLabelFromValue(state.failed_stage, stages) : '';
+        const failedSubstageLabel = state.failed_substage
+            ? substageLabelFromValue(state.failed_substage) : '';
+        const failedReason = state.reason_code
+            ? humanizeReasonCode(state.reason_code) : '';
+        const overviewReasonCodes = collectReasonCodes([state]);
+        const detailLines = [];
+        let headline;
+        let cta;
+        if (overviewState === 'NOT_STARTED') {
+            headline = 'Анализ ещё не запускался.';
+            cta = {
+                kind: 'RUN', label: '▶ Запустить полный анализ',
+                disabled: !selectionReady,
+            };
+        } else if (overviewState === 'RUNNING') {
+            headline = 'Анализ выполняется';
+            if (progress.elapsed_label) detailLines.push(`Прошло: ${progress.elapsed_label}.`);
+            if (currentStageLabel) detailLines.push(`Текущий этап: ${currentStageLabel}.`);
+            if (currentSubstageLabel) detailLines.push(`Текущая операция: ${currentSubstageLabel}.`);
+            if (progress.eta_label) {
+                detailLines.push(`Для текущей операции осталось примерно: ${progress.eta_label}.`);
+            }
+            if (progress.last_activity_label) {
+                detailLines.push(`Последняя активность: ${progress.last_activity_label}.`);
+            }
+            if (progress.heartbeat_warning_text) detailLines.push(progress.heartbeat_warning_text);
+            cta = {kind: 'RUNNING', label: 'Анализ выполняется…', disabled: true};
+        } else if (overviewState === 'FAILED') {
+            headline = 'Во время анализа произошла ошибка.';
+            if (failedStageLabel) detailLines.push(`Ошибка на этапе: ${failedStageLabel}.`);
+            if (failedSubstageLabel) detailLines.push(`Операция: ${failedSubstageLabel}.`);
+            if (failedReason) detailLines.push(`Причина: ${failedReason}`);
+            cta = {kind: 'RETRY', label: 'Повторить анализ', disabled: !selectionReady};
+        } else if (stale) {
+            headline = 'Результат анализа устарел.';
+            detailLines.push('Исходные документы или область сравнения изменились. Требуется повторный автоматический анализ.');
+            cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
+        } else if (overviewState === 'NEEDS_REVIEW') {
+            headline = 'Автоматический анализ завершён.';
+            if (questionsPending) detailLines.push(`Требуется ответить на вопросы: ${questionsPending}.`);
+            if (findingsPending) detailLines.push(`Требуется проверить изменения: ${findingsPending}.`);
+            cta = {
+                kind: 'CONTINUE_REVIEW', label: 'Продолжить проверку', disabled: false,
+                destination: questionsPending ? questionsStage.destination : reviewStage.destination,
+            };
+        } else {
+            headline = overviewState === 'PARTIAL'
+                ? 'Автоматический анализ завершён частично.'
+                : 'Анализ полностью завершён.';
+            cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
+        }
+        return {
+            state: overviewState,
+            headline,
+            detail_lines: detailLines,
+            current_stage_label: currentStageLabel,
+            current_substage_label: currentSubstageLabel,
+            failed_stage_label: failedStageLabel,
+            failed_substage_label: failedSubstageLabel,
+            reason_codes: overviewReasonCodes,
+            progress,
+            stale,
+            human: {
+                questions_pending: questionsPending,
+                findings_pending: findingsPending,
+            },
+            cta,
+        };
     }
 
     function point(value) {
@@ -1126,12 +1910,19 @@
         PIPELINE_STATUSES,
         QUESTION_CATEGORIES,
         REVIEW_DECISIONS,
+        aggregateConcurrentPipelineStatus,
         decision,
+        estimatePipelineEtaMs,
         evidenceFocus,
+        formatActivityAge,
+        formatPipelineDuration,
+        formatPipelineEta,
         humanizeReasonCode,
         normalizeEvidence,
         normalizeFinalRows,
         normalizePipelineStatus,
+        normalizePipelineProgress,
+        normalizeProductionOverview,
         normalizeProductionPipeline,
         normalizeQuestionCounts,
         normalizeQuestions,
