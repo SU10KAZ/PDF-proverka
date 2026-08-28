@@ -303,6 +303,74 @@ def _is_electrical_units(fragment: Mapping[str, Any]) -> bool:
     )
 
 
+# An architectural room schedule («экспликация помещений») names its own
+# columns, and — unlike the electrical load table — the header has exactly as
+# many cells as its data rows.  So the column→meaning mapping is READ FROM THE
+# DOCUMENT instead of being hardcoded here, which is a stronger proof than the
+# electrical rule has.  Only the fourth column may be missing, and only from
+# the tail: a row whose category cell is empty collapses from four cells to
+# three.
+_ROOM_HEADER_COLUMNS = (
+    re.compile(r"^номер(\s+помещения)?$"),
+    re.compile(r"^наименование"),
+    re.compile(r"^площад"),
+    re.compile(r"^кат"),
+)
+_ROOM_SCHEDULE_COLUMNS = (
+    ("room_name", "TYPE", None),
+    # «м²», not «m2»: the unit is appended to the value, and a unit carrying an
+    # ASCII digit makes ``_direction`` count two numbers in «15.71 m2» and fall
+    # back to ALTERED instead of INCREASED.
+    ("room_area_m2", "PARAMETER", "м²"),
+    ("room_fire_category", "TYPE", None),
+)
+# «28.1», «01.62г», «Б2.14» — a room number, never a bare integer: a bare
+# integer is indistinguishable from an area, and the third column holds areas.
+_ROOM_CODE_RE = re.compile(r"^[а-яa-z]?\d{1,3}(?:\.\d{1,3}){1,3}[а-яa-z]?$", re.I)
+_ROOM_AREA_RE = re.compile(r"^\d{1,6}(?:[.,]\d{1,3})?(?:\s*(?:м2|м²|m2))?$", re.I)
+# One side writes «288.62 м2» and the other «185,03» for the same column.  The
+# unit is stripped here and reattached once by ``_normalized_value``, so the
+# two sides of an unchanged area compare equal instead of inventing a change.
+_ROOM_AREA_UNIT_RE = re.compile(r"\s*(?:м2|м²|m2)\s*$", re.I)
+_ROOM_CATEGORY_RE = re.compile(r"^[абвгдabvgd]\s*[1-4]?$", re.I)
+
+
+def _looks_like_room_header(fragment: Mapping[str, Any]) -> bool:
+    parts = [canonicalize_text(str(value)) for value in fragment.get("location_parts") or []]
+    return bool(parts) and _ROOM_HEADER_COLUMNS[0].match(parts[0]) is not None
+
+
+def _room_schedule_header_width(fragment: Mapping[str, Any]) -> int | None:
+    """Return the proven column count of a room-schedule header, or None.
+
+    Only a header that parses as exactly one «номер | наименование | площадь
+    [| категория]» unit counts.  Two units glued side by side is a two-up
+    sheet whose column boundary is not recoverable from the cells alone, and
+    guessing where the second table starts is exactly what this producer
+    refuses to do.
+    """
+    parts = [canonicalize_text(str(value)) for value in fragment.get("location_parts") or []]
+    if len(parts) < 3:
+        return None
+    index = 0
+    units: list[int] = []
+    while index < len(parts):
+        if not _ROOM_HEADER_COLUMNS[0].match(parts[index]):
+            return None
+        if index + 2 >= len(parts):
+            return None
+        if not _ROOM_HEADER_COLUMNS[1].match(parts[index + 1]):
+            return None
+        if not _ROOM_HEADER_COLUMNS[2].match(parts[index + 2]):
+            return None
+        width = 3
+        if index + 3 < len(parts) and _ROOM_HEADER_COLUMNS[3].match(parts[index + 3]):
+            width = 4
+        units.append(width)
+        index += width
+    return units[0] if len(units) == 1 else None
+
+
 def _is_section_row(fragment: Mapping[str, Any]) -> bool:
     parts = list(fragment.get("location_parts") or [])
     if len(parts) != 1:
@@ -320,7 +388,12 @@ def _is_section_row(fragment: Mapping[str, Any]) -> bool:
 
 def _table_contexts(
     fragments: Mapping[str, tuple[str, dict[str, Any]]],
-) -> tuple[set[tuple[str, str]], dict[str, str | None], dict[str, str]]:
+) -> tuple[
+    set[tuple[str, str]],
+    dict[tuple[str, str], int],
+    dict[str, str | None],
+    dict[str, str],
+]:
     grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     for _fragment_id, (side, fragment) in fragments.items():
         if fragment.get("source_kind") != "table_row":
@@ -329,6 +402,7 @@ def _table_contexts(
         if source_group:
             grouped[(side, source_group)].append(fragment)
     valid_tables: set[tuple[str, str]] = set()
+    room_schedule_widths: dict[tuple[str, str], int] = {}
     context_by_fragment: dict[str, str | None] = {}
     metadata_reason: dict[str, str] = {}
     for key, values in grouped.items():
@@ -341,6 +415,27 @@ def _table_contexts(
         unit_ids = {str(value["id"]) for value in ordered if _is_electrical_units(value)}
         if header_ids and unit_ids:
             valid_tables.add(key)
+        room_header_ids: set[str] = set()
+        room_widths: set[int] = set()
+        room_header_seen = False
+        for value in ordered:
+            width = _room_schedule_header_width(value)
+            if width is None:
+                continue
+            room_header_seen = True
+            room_header_ids.add(str(value["id"]))
+            room_widths.add(width)
+        # One header shape per table, or the table is not proven.  A group with
+        # two different widths, or with a glued two-up header, stays unresolved.
+        if len(room_widths) == 1 and key not in valid_tables:
+            valid_tables.add(key)
+            room_schedule_widths[key] = next(iter(room_widths))
+        elif room_header_seen:
+            room_header_ids = {
+                str(value["id"]) for value in ordered
+                if _room_schedule_header_width(value) is not None
+                or _looks_like_room_header(value)
+            }
         current_context: str | None = None
         for fragment in ordered:
             fragment_id = str(fragment["id"])
@@ -348,11 +443,13 @@ def _table_contexts(
                 metadata_reason[fragment_id] = "electrical_table_header_not_a_fact"
             elif fragment_id in unit_ids:
                 metadata_reason[fragment_id] = "electrical_table_units_not_a_fact"
+            elif fragment_id in room_header_ids:
+                metadata_reason[fragment_id] = "room_schedule_header_not_a_fact"
             elif _is_section_row(fragment):
                 current_context = canonicalize_text(str(fragment.get("text") or ""))
                 metadata_reason[fragment_id] = "table_section_label_not_a_fact"
             context_by_fragment[fragment_id] = current_context
-    return valid_tables, context_by_fragment, metadata_reason
+    return valid_tables, room_schedule_widths, context_by_fragment, metadata_reason
 
 
 def _table_row_properties(
@@ -398,6 +495,60 @@ def _table_row_properties(
         "context": context,
         "values": values,
         "rule": "recognized_electrical_load_table",
+        "explicit_project_entity": True,
+    }
+
+
+def _room_row_properties(
+    fragment: Mapping[str, Any],
+    *,
+    side: str,
+    room_schedule_widths: Mapping[tuple[str, str], int],
+    context_by_fragment: Mapping[str, str | None],
+) -> dict[str, Any] | None:
+    """One room, one row: «28.1 | холл | 15,71» in a table that named itself.
+
+    Every column meaning comes from the header proven for this very
+    ``source_group``, so nothing is inferred from the shape of a single row.
+    A glued pair of rows («02.1 Рампа 2019,94 B2 02.42а Кладовая 6,18») has
+    more cells than the header declares and is refused: taking its last number
+    as the area of the first room would be wrong by a factor of 327.
+    """
+    key = (side, str(fragment.get("source_group") or ""))
+    width = room_schedule_widths.get(key)
+    if width is None or fragment.get("source_kind") != "table_row":
+        return None
+    parts = [canonicalize_text(str(value)) for value in fragment.get("location_parts") or []]
+    # Fewer cells than the header only ever means a trailing empty category.
+    if not 3 <= len(parts) <= width:
+        return None
+    if not _ROOM_CODE_RE.match(parts[0]):
+        return None
+    if not parts[1] or _NUMBER_RE.match(parts[1]):
+        return None
+    if not _ROOM_AREA_RE.match(parts[2]):
+        return None
+    if len(parts) == 4 and not _ROOM_CATEGORY_RE.match(parts[3]):
+        return None
+    parts[2] = _ROOM_AREA_UNIT_RE.sub("", parts[2]).strip()
+    values = {
+        facet: {
+            "dimension": dimension,
+            "value": _normalized_value(raw, unit),
+            "raw_value": raw,
+            "unit": unit,
+            "cell_index": index,
+        }
+        for index, ((facet, dimension, unit), raw) in enumerate(
+            zip(_ROOM_SCHEDULE_COLUMNS, parts[1:]), start=1
+        )
+    }
+    return {
+        "subject_original": parts[0],
+        "subject_canonical": canonical_entity_name(parts[0]),
+        "context": context_by_fragment.get(str(fragment.get("id") or "")),
+        "values": values,
+        "rule": "recognized_room_schedule_table",
         "explicit_project_entity": True,
     }
 
@@ -486,6 +637,7 @@ def _fragment_properties(
     *,
     side: str,
     valid_tables: set[tuple[str, str]],
+    room_schedule_widths: Mapping[tuple[str, str], int],
     context_by_fragment: Mapping[str, str | None],
 ) -> dict[str, Any] | None:
     return (
@@ -493,6 +645,12 @@ def _fragment_properties(
             fragment,
             side=side,
             valid_tables=valid_tables,
+            context_by_fragment=context_by_fragment,
+        )
+        or _room_row_properties(
+            fragment,
+            side=side,
+            room_schedule_widths=room_schedule_widths,
             context_by_fragment=context_by_fragment,
         )
         or _supply_property(str(fragment.get("text") or ""))
@@ -609,6 +767,7 @@ def _single_side_properties(
     *,
     side: str,
     valid_tables: set[tuple[str, str]],
+    room_schedule_widths: Mapping[tuple[str, str], int],
     context_by_fragment: Mapping[str, str | None],
 ) -> dict[str, Any] | None:
     if len(values) != 1:
@@ -617,6 +776,7 @@ def _single_side_properties(
         values[0],
         side=side,
         valid_tables=valid_tables,
+        room_schedule_widths=room_schedule_widths,
         context_by_fragment=context_by_fragment,
     )
 
@@ -795,7 +955,9 @@ def produce_text_facts(
 
     fragments = _fragments_by_id(text_preparation)
     prepared_groups = _preparation_groups(text_preparation)
-    valid_tables, contexts, known_metadata = _table_contexts(fragments)
+    valid_tables, room_schedule_widths, contexts, known_metadata = _table_contexts(
+        fragments
+    )
     facts: list[dict[str, Any]] = []
     not_applicable: list[dict[str, Any]] = []
     rule_counts: Counter[str] = Counter()
@@ -813,11 +975,13 @@ def produce_text_facts(
         referenced = _referenced_fragments(item, fragments)
         left = _single_side_properties(
             referenced["left"], side="left",
-            valid_tables=valid_tables, context_by_fragment=contexts,
+            valid_tables=valid_tables, room_schedule_widths=room_schedule_widths,
+            context_by_fragment=contexts,
         )
         right = _single_side_properties(
             referenced["right"], side="right",
-            valid_tables=valid_tables, context_by_fragment=contexts,
+            valid_tables=valid_tables, room_schedule_widths=room_schedule_widths,
+            context_by_fragment=contexts,
         )
         produced = _facts_for_evidence(
             pair_id=text_differences.get("pair_id"),
@@ -913,7 +1077,8 @@ def produce_text_facts(
             "not_applicable_source_evidence": len(not_applicable),
             "unresolved_source_evidence": len(unresolved),
             "facts_by_rule": dict(sorted(rule_counts.items())),
-            "recognized_electrical_tables": len(valid_tables),
+            "recognized_electrical_tables": len(valid_tables) - len(room_schedule_widths),
+            "recognized_room_schedule_tables": len(room_schedule_widths),
             "structured_fragment_coverage_by_group": dict(
                 sorted(coverage_by_group.items())
             ),
