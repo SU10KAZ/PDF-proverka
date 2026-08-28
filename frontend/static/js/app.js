@@ -14183,6 +14183,10 @@ const app = createApp({
             const after = context.after_value;
             if (!before && !after) return null;
             return {
+                // Вопрос обязан назвать объект, а не только значения: «было
+                // 6,02 — стало 6,40» без «помещение 24.5» неотвечаем.
+                object: StageComparisonReview.objectLabel(context),
+                change: StageComparisonReview.changeLabel(context),
                 before: before || '—',
                 after: after || '—',
                 leftPages: Array.isArray(context.left_pages) ? context.left_pages : [],

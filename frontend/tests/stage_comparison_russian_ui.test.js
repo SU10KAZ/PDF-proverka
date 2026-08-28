@@ -154,6 +154,12 @@ describe('шаблон раздела не печатает внутренние
         expect(html).not.toContain('Открыть лист (стр. {{ sheet.page }})');
     });
 
+    it('карточка вопроса называет объект и суть изменения', () => {
+        expect(html).toContain('Объект: <b>{{ scProductionQuestionChange(question).object }}</b>');
+        expect(html).toContain('Что изменилось: <b>{{ scProductionQuestionChange(question).change }}</b>');
+        expect(app).toContain('StageComparisonReview.objectLabel(context)');
+    });
+
     it('причина решения спрашивается словами, а не кодом', () => {
         expect(html).toContain('Причина решения (необязательно)');
         expect(html).not.toContain('Код причины (необязательно)');

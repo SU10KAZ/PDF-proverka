@@ -6492,6 +6492,8 @@
                                     </p>
                                     <div v-if="scProductionQuestionChange(question)"
                                          class="sc-production-question__change">
+                                        <span>Объект: <b>{{ scProductionQuestionChange(question).object }}</b></span>
+                                        <span>Что изменилось: <b>{{ scProductionQuestionChange(question).change }}</b></span>
                                         <span>Было: <b>{{ scProductionQuestionChange(question).before }}</b></span>
                                         <span>Стало: <b>{{ scProductionQuestionChange(question).after }}</b></span>
                                     </div>
