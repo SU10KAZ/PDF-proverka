@@ -2134,7 +2134,10 @@ def _sheet_comparison_groups(
             continue
         status = str(relation.get("status") or "").upper()
         relation_type = str(relation.get("relation_type") or "MATCHED")
-        if status == "NO_MATCH" or relation_type.upper() == "NO_MATCH":
+        if (
+            status in {"NO_MATCH", "CANDIDATE_SUPERSEDED"}
+            or relation_type.upper() == "NO_MATCH"
+        ):
             continue
         left_pages = sorted({int(page) for page in relation.get("left_pages") or []})
         right_pages = sorted({
@@ -2155,6 +2158,36 @@ def _sheet_comparison_groups(
         str(item.get("id") or ""),
     ))
     return groups
+
+
+def _sheet_relation_counts(
+    relations: Mapping[str, Any] | None,
+) -> dict[str, int]:
+    """Publish status and cardinality counters used by the pipeline UI."""
+    counts: dict[str, int] = {}
+    for relation in (relations or {}).get("relations") or []:
+        if not isinstance(relation, Mapping):
+            continue
+        status = str(relation.get("status") or "UNKNOWN").upper()
+        counts[status] = counts.get(status, 0) + 1
+        relation_type = str(relation.get("relation_type") or "").upper()
+        if relation_type in {"SPLIT", "MERGED"}:
+            counts[relation_type] = counts.get(relation_type, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _initial_pipeline_stages(input_mode: str) -> dict[str, dict[str, Any]]:
+    """Expose a truthful transient state while the synchronous run is active."""
+    return {
+        "sheet_matching": {
+            "status": "RUNNING" if input_mode == "DOCUMENT" else "PENDING_ADVISORY",
+            "relations": 0,
+            "relation_counts": {},
+        },
+        "sheet_scope": {"status": "NOT_STARTED", "groups": 0},
+        "text": {"status": "NOT_STARTED", "atoms": 0, "deltas": 0},
+        "graphic": {"status": "NOT_STARTED", "changes": 0},
+    }
 
 
 def _sheet_scope_signature(groups: Iterable[Mapping[str, Any]]) -> str:
@@ -2598,7 +2631,7 @@ def _run_production_comparison_impl(
         "progress": 0,
         "stale": False,
         "started_at": started_at,
-        "stages": {},
+        "stages": _initial_pipeline_stages(request["input_mode"]),
         "constraints": {
             "new_flow": True,
             "legacy_stage5_used": False,
@@ -2969,6 +3002,7 @@ def _run_production_comparison_impl(
             "sheet_matching": {
                 "status": sheet_status,
                 "relations": len(sheet_relations.get("relations") or []),
+                "relation_counts": _sheet_relation_counts(sheet_relations),
                 **_artifact_state(sheet_relations),
             },
             "sheet_scope": {

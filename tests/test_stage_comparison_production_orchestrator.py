@@ -3322,3 +3322,63 @@ def test_exact_entity_binding_reaches_g246_and_merges_both_sources():
     )
     assert len(synthesis["changes"]) == 1
     assert synthesis["changes"][0]["source_mode"] == "BOTH"
+
+
+def test_pipeline_stage_metadata_is_truthful_and_skips_superseded_candidates():
+    relations = {
+        "relations": [
+            {
+                "relation_id": "confirmed",
+                "status": "HIGH",
+                "relation_type": "MATCHED",
+                "left_pages": [1],
+                "right_pages": [2],
+            },
+            {
+                "relation_id": "superseded",
+                "status": "CANDIDATE_SUPERSEDED",
+                "relation_type": "SPLIT",
+                "left_pages": [1],
+                "right_pages": [2, 3],
+            },
+            {
+                "relation_id": "review",
+                "status": "POSSIBLE",
+                "relation_type": "MERGED",
+                "left_pages": [4, 5],
+                "right_pages": [6],
+            },
+            {
+                "relation_id": "none",
+                "status": "NO_MATCH",
+                "relation_type": "NO_MATCH",
+                "left_pages": [7],
+                "right_pages": [],
+            },
+        ]
+    }
+
+    assert [
+        group["id"] for group in orchestrator._sheet_comparison_groups(relations)
+    ] == ["confirmed", "review"]
+    assert orchestrator._sheet_relation_counts(relations) == {
+        "CANDIDATE_SUPERSEDED": 1,
+        "HIGH": 1,
+        "MERGED": 1,
+        "NO_MATCH": 1,
+        "POSSIBLE": 1,
+        "SPLIT": 1,
+    }
+    assert orchestrator._initial_pipeline_stages("DOCUMENT") == {
+        "sheet_matching": {
+            "status": "RUNNING",
+            "relations": 0,
+            "relation_counts": {},
+        },
+        "sheet_scope": {"status": "NOT_STARTED", "groups": 0},
+        "text": {"status": "NOT_STARTED", "atoms": 0, "deltas": 0},
+        "graphic": {"status": "NOT_STARTED", "changes": 0},
+    }
+    assert orchestrator._initial_pipeline_stages("PAGE")["sheet_matching"][
+        "status"
+    ] == "PENDING_ADVISORY"
