@@ -3,6 +3,11 @@
 The projection deliberately performs no comparison, matching, or synthesis.
 It exposes exact Stage 3 deterministic pairs and exact TEXT-atom locations
 only after all inputs have been proven to belong to the published generation.
+
+The current list of changes is read from the *effective* unified synthesis,
+which is republished after every human resolution.  The frozen source
+snapshot is used for provenance only — evidence refs, fragments, pages and
+bounding boxes — never for current values, status or identity.
 """
 from __future__ import annotations
 
@@ -15,12 +20,24 @@ from .text_atom_builder import KIND as TEXT_ATOMS_KIND
 from .text_atom_builder import SCHEMA_VERSION as TEXT_ATOMS_SCHEMA_VERSION
 from .text_differences import KIND as TEXT_DIFFERENCES_KIND
 from .text_differences import VERSION as TEXT_DIFFERENCES_VERSION
-from .text_semantic_validation import stage3_content_signature
+from .text_semantic_validation import (
+    STAGE3_FULL_DIGEST_VERSION,
+    stage3_content_signature,
+    stage3_full_content_signature,
+)
 
 
 KIND = "stage_comparison_production_text_evidence"
-SCHEMA_VERSION = "production-text-evidence.v1"
+SCHEMA_VERSION = "production-text-evidence.v2"
 PUBLISHED_STATUSES = frozenset({"COMPLETED", "PARTIAL"})
+
+TEXT_RESULT_PUBLISHED = "PUBLISHED"
+TEXT_RESULT_BLOCKED = "BLOCKED"
+TEXT_RESULT_NOT_PRODUCED = "NOT_PRODUCED"
+
+MATCH_EVIDENCE_UNKNOWN = "UNKNOWN"
+MATCH_EVIDENCE_VERIFIED = "VERIFIED"
+MATCH_EVIDENCE_LEGACY = "UNVERIFIED_LEGACY_GENERATION"
 
 
 class ProductionTextEvidenceConflictError(ValueError):
@@ -33,16 +50,59 @@ def _non_negative_int(value: Any) -> int | None:
     return value
 
 
+def _text_stage(state: Mapping[str, Any]) -> Mapping[str, Any]:
+    stages = state.get("stages")
+    text = stages.get("text") if isinstance(stages, Mapping) else None
+    return text if isinstance(text, Mapping) else {}
+
+
+def text_result_state(state: Mapping[str, Any]) -> str:
+    """Classify what the TEXT branch actually produced for this generation.
+
+    ``BLOCKED`` and ``NOT_PRODUCED`` both mean *no result was built*; their
+    counters are unknown rather than zero, and neither may be presented as a
+    successful analysis that simply found nothing.
+    """
+    text = _text_stage(state)
+    if "CHECK_BLOCKED" in {
+        str(text.get("status") or ""),
+        str(text.get("source_state") or ""),
+    }:
+        return TEXT_RESULT_BLOCKED
+    if str(state.get("status") or "") not in PUBLISHED_STATUSES:
+        return TEXT_RESULT_NOT_PRODUCED
+    if text.get("status") != "COMPLETED":
+        return TEXT_RESULT_NOT_PRODUCED
+    return TEXT_RESULT_PUBLISHED
+
+
+def _unknown_summary() -> dict[str, int | None]:
+    return {
+        "matched_fragments": None,
+        "changed_fragments": None,
+        "changed": None,
+        "removed": None,
+        "added": None,
+        "review_required": None,
+        "prepared_fragments": None,
+        "text_atoms": None,
+    }
+
+
 def _summary(state: Mapping[str, Any]) -> dict[str, int | None]:
     """Use only counters already published in ``state.stages.text``.
 
     Stage 3 intentionally does not publish a total exact-match count in state,
     so ``matched_fragments`` remains unknown.  The payload separately reports
     how many persisted match pairs are available for viewer highlighting.
+
+    When the TEXT branch produced no result at all, every counter is unknown:
+    the zeros a blocked stage writes describe an aborted run, not a checked
+    document with nothing in it.
     """
-    stages = state.get("stages")
-    text = stages.get("text") if isinstance(stages, Mapping) else None
-    text = text if isinstance(text, Mapping) else {}
+    if text_result_state(state) != TEXT_RESULT_PUBLISHED:
+        return _unknown_summary()
+    text = _text_stage(state)
     preparation = text.get("preparation")
     preparation = preparation if isinstance(preparation, Mapping) else {}
     deterministic = text.get("deterministic_diff")
@@ -59,7 +119,23 @@ def _summary(state: Mapping[str, Any]) -> dict[str, int | None]:
     }
 
 
+def _blocked_reason(state: Mapping[str, Any]) -> tuple[str | None, str | None]:
+    text = _text_stage(state)
+    reason = text.get("reason_code")
+    error = text.get("error_type")
+    return (
+        str(reason) if reason else None,
+        str(error) if error else None,
+    )
+
+
 def _base_payload(state: Mapping[str, Any]) -> dict[str, Any]:
+    result_state = text_result_state(state)
+    reason, error = (
+        _blocked_reason(state)
+        if result_state == TEXT_RESULT_BLOCKED
+        else (None, None)
+    )
     return {
         "kind": KIND,
         "schema_version": SCHEMA_VERSION,
@@ -67,12 +143,20 @@ def _base_payload(state: Mapping[str, Any]) -> dict[str, Any]:
         "available": False,
         "stale": bool(state.get("stale")),
         "run_status": str(state.get("status") or "NOT_STARTED"),
+        "text_result_state": result_state,
+        "text_blocked_reason": reason,
+        "text_blocked_error": error,
         "generation_run_id": state.get("run_id"),
         "generation_revision": _non_negative_int(state.get("revision")),
         "input_signature": state.get("input_signature"),
         "synthesis_input_signature": None,
         "summary": _summary(state),
-        "available_match_pairs": 0,
+        # Unknown, not zero: nothing has been counted while the projection is
+        # unavailable, and a hard 0 would read as "checked, found none".
+        "available_match_pairs": None,
+        "match_evidence_state": MATCH_EVIDENCE_UNKNOWN,
+        "change_items": None,
+        "available_change_items": None,
         "matches": [],
         "changes": [],
         "constraints": {
@@ -83,21 +167,18 @@ def _base_payload(state: Mapping[str, Any]) -> dict[str, Any]:
             "fuzzy_association_used": False,
             "match_coordinates_required": "BOTH_SIDES",
             "summary_source": "state.stages.text",
+            "changes_source": "effective_unified_synthesis",
+            "provenance_source": "published_source_snapshot",
             "matched_fragments_total_available": False,
             "exact_match_coverage": "PERSISTED_DELTA_GROUPS_ONLY",
+            "same_evidence_signature_version": STAGE3_FULL_DIGEST_VERSION,
         },
     }
 
 
 def evidence_is_publishable(state: Mapping[str, Any]) -> bool:
     """Return whether persisted evidence may be opened for this state."""
-    if str(state.get("status") or "") not in PUBLISHED_STATUSES:
-        return False
-    stages = state.get("stages")
-    text = stages.get("text") if isinstance(stages, Mapping) else None
-    if not isinstance(text, Mapping) or text.get("status") != "COMPLETED":
-        return False
-    return str(text.get("source_state") or "") != "CHECK_BLOCKED"
+    return text_result_state(state) == TEXT_RESULT_PUBLISHED
 
 
 def empty_production_text_evidence(state: Mapping[str, Any]) -> dict[str, Any]:
@@ -192,10 +273,16 @@ def _locations(values: Any, side: str) -> list[dict[str, Any]]:
             f"production TEXT {side} locations are malformed"
         )
     output = []
+    seen: set[str] = set()
     for value in values:
         location = _location(value, side)
-        if location is not None:
-            output.append(location)
+        if location is None:
+            continue
+        identity = content_signature(location)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        output.append(location)
     output.sort(key=lambda item: (
         item["page"],
         str(item.get("fragment_id") or ""),
@@ -271,49 +358,6 @@ def _matches(text_differences: Mapping[str, Any]) -> list[dict[str, Any]]:
     return output
 
 
-def _target_index(synthesis: Mapping[str, Any]) -> dict[str, dict[str, str]]:
-    output: dict[str, dict[str, str]] = {}
-
-    def add(atom_id: Any, target_id: Any, target_kind: str, review_status: Any) -> None:
-        atom_ref = str(atom_id or "")
-        target_ref = str(target_id or "")
-        if not atom_ref or not target_ref:
-            return
-        value = {
-            "target_id": target_ref,
-            "target_kind": target_kind,
-            "target_review_status": str(review_status or ""),
-        }
-        previous = output.get(atom_ref)
-        if previous is not None and previous != value:
-            raise ProductionTextEvidenceConflictError(
-                "published synthesis maps one TEXT atom to multiple targets"
-            )
-        output[atom_ref] = value
-
-    for change in synthesis.get("changes") or []:
-        if not isinstance(change, Mapping):
-            continue
-        for evidence in change.get("evidence_refs") or []:
-            if isinstance(evidence, Mapping) and evidence.get("source") == "TEXT":
-                add(
-                    evidence.get("atom_id"),
-                    change.get("change_id"),
-                    "CHANGE",
-                    change.get("review_status"),
-                )
-    for review in synthesis.get("review_items") or []:
-        if not isinstance(review, Mapping) or review.get("source") != "TEXT":
-            continue
-        add(
-            review.get("atom_id"),
-            review.get("review_evidence_id"),
-            "REVIEW_EVIDENCE",
-            review.get("review_status"),
-        )
-    return output
-
-
 def _title(before: Any, after: Any) -> str:
     if before not in (None, "") and after not in (None, ""):
         return f"{before} → {after}"
@@ -324,68 +368,216 @@ def _title(before: Any, after: Any) -> str:
     return "Изменение текста"
 
 
-def _changes(
-    text_artifact: Mapping[str, Any],
-    synthesis: Mapping[str, Any],
-) -> list[dict[str, Any]]:
+def _snapshot_atoms(text_artifact: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
+    """Index the frozen automatic atoms; they are provenance, not truth."""
     atoms = text_artifact.get("atoms")
     if not isinstance(atoms, list):
         raise ProductionTextEvidenceConflictError(
             "published TEXT atom artifact is malformed"
         )
-    targets = _target_index(synthesis)
-    output = []
-    seen: set[str] = set()
+    output: dict[str, Mapping[str, Any]] = {}
     for atom in atoms:
         if not isinstance(atom, Mapping):
             raise ProductionTextEvidenceConflictError(
                 "published TEXT atom is malformed"
             )
         atom_id = str(atom.get("atom_id") or "")
-        if not atom_id or atom_id in seen:
+        if not atom_id or atom_id in output:
             raise ProductionTextEvidenceConflictError(
                 "published TEXT atom identity is missing or duplicated"
             )
-        seen.add(atom_id)
-        provenance = atom.get("provenance")
-        locations = (
-            provenance.get("locations")
-            if isinstance(provenance, Mapping)
-            else None
-        )
-        locations = locations if isinstance(locations, Mapping) else {}
-        before = atom.get("before_value")
-        after = atom.get("after_value")
-        source_review_status = str(atom.get("review_status") or "CONFIRMED")
-        target = targets.get(atom_id)
-        effective_review_status = str(
-            (target or {}).get("target_review_status") or source_review_status
-        )
-        item = {
-            "evidence_id": atom_id,
-            "title": _title(before, after),
-            "before": before,
-            "after": after,
-            "review_required": effective_review_status == "REVIEW_REQUIRED",
-            "review_status": effective_review_status,
-            "source_review_status": source_review_status,
-            "sides": {
-                "LEFT": _locations(locations.get("LEFT"), "LEFT"),
-                "RIGHT": _locations(locations.get("RIGHT"), "RIGHT"),
-            },
-        }
-        if target is not None:
-            item.update(target)
-        output.append(item)
-    output.sort(key=lambda item: item["evidence_id"])
+        output[atom_id] = atom
     return output
+
+
+def _provenance_locations(value: Any) -> Mapping[str, Any] | None:
+    if not isinstance(value, Mapping):
+        return None
+    locations = value.get("locations")
+    return locations if isinstance(locations, Mapping) else None
+
+
+def _text_atom_ids(item: Mapping[str, Any]) -> list[str]:
+    output = set()
+    for evidence in item.get("evidence_refs") or []:
+        if isinstance(evidence, Mapping) and evidence.get("source") == "TEXT":
+            atom_id = str(evidence.get("atom_id") or "")
+            if atom_id:
+                output.add(atom_id)
+    return sorted(output)
+
+
+def _sides_for(
+    atom_ids: list[str],
+    inline_locations: Mapping[str, Mapping[str, Any]],
+    snapshot_atoms: Mapping[str, Mapping[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
+    """Resolve exact coordinates for one current item.
+
+    Locations travel inside the synthesis provenance; the frozen snapshot is
+    consulted only when that copy is unavailable.  Either way this is pure
+    provenance — no value, status or identity is taken from it.
+    """
+    raw: dict[str, list[Any]] = {"LEFT": [], "RIGHT": []}
+    for atom_id in atom_ids:
+        locations = inline_locations.get(atom_id)
+        if locations is None:
+            locations = _provenance_locations(
+                (snapshot_atoms.get(atom_id) or {}).get("provenance")
+            )
+        if locations is None:
+            continue
+        for side in ("LEFT", "RIGHT"):
+            values = locations.get(side)
+            if values is None:
+                continue
+            if not isinstance(values, list):
+                raise ProductionTextEvidenceConflictError(
+                    f"production TEXT {side} locations are malformed"
+                )
+            raw[side].extend(values)
+    return {side: _locations(raw[side], side) for side in ("LEFT", "RIGHT")}
+
+
+def _change_item(
+    *,
+    target_id: str,
+    target_kind: str,
+    item: Mapping[str, Any],
+    review_status: str,
+    atom_ids: list[str],
+    sides: Mapping[str, list[dict[str, Any]]],
+    snapshot_atoms: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    before = item.get("before_value")
+    after = item.get("after_value")
+    source_status = sorted({
+        str((snapshot_atoms.get(atom_id) or {}).get("review_status") or "")
+        for atom_id in atom_ids
+    } - {""})
+    return {
+        # Identity is the current target itself: a viewer item can never point
+        # at something the effective synthesis no longer publishes.
+        "evidence_id": target_id,
+        "target_id": target_id,
+        "target_kind": target_kind,
+        "target_review_status": review_status,
+        "atom_ids": list(atom_ids),
+        "title": _title(before, after),
+        "before": before,
+        "after": after,
+        "outcome": str(item.get("outcome") or ""),
+        "review_required": review_status == "REVIEW_REQUIRED",
+        "review_status": review_status,
+        # Provenance only: what the automatic producer said before review.
+        "source_review_status": source_status[0] if len(source_status) == 1 else None,
+        "coordinates_available": any(
+            location["coordinates_available"]
+            for side in ("LEFT", "RIGHT")
+            for location in sides[side]
+        ),
+        "sides": {"LEFT": sides["LEFT"], "RIGHT": sides["RIGHT"]},
+    }
+
+
+def _changes(
+    synthesis: Mapping[str, Any],
+    snapshot_atoms: Mapping[str, Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Project the current effective changes, never the frozen snapshot.
+
+    A rejected, replaced or unselected atom simply has no current target, so
+    it cannot appear here at all; a corrected value is read from the target
+    the human resolution actually produced.
+    """
+    output = []
+    for change in synthesis.get("changes") or []:
+        if not isinstance(change, Mapping):
+            raise ProductionTextEvidenceConflictError(
+                "published synthesis change is malformed"
+            )
+        atom_ids = _text_atom_ids(change)
+        if not atom_ids:
+            continue  # GRAPHIC-only change: not TEXT viewer evidence.
+        change_id = str(change.get("change_id") or "")
+        if not change_id:
+            raise ProductionTextEvidenceConflictError(
+                "published synthesis change has no identity"
+            )
+        provenance = change.get("provenance")
+        inline: dict[str, Mapping[str, Any]] = {}
+        for entry in (provenance or {}).get("source_atoms") or []:
+            if not isinstance(entry, Mapping) or entry.get("source") != "TEXT":
+                continue
+            locations = _provenance_locations(entry.get("provenance"))
+            atom_id = str(entry.get("atom_id") or "")
+            if atom_id and locations is not None:
+                inline[atom_id] = locations
+        output.append(_change_item(
+            target_id=change_id,
+            target_kind="CHANGE",
+            item=change,
+            review_status=str(change.get("review_status") or ""),
+            atom_ids=atom_ids,
+            sides=_sides_for(atom_ids, inline, snapshot_atoms),
+            snapshot_atoms=snapshot_atoms,
+        ))
+    for review in synthesis.get("review_items") or []:
+        if not isinstance(review, Mapping):
+            raise ProductionTextEvidenceConflictError(
+                "published synthesis review item is malformed"
+            )
+        if review.get("source") != "TEXT":
+            continue
+        review_id = str(review.get("review_evidence_id") or "")
+        atom_id = str(review.get("atom_id") or "")
+        if not review_id or not atom_id:
+            raise ProductionTextEvidenceConflictError(
+                "published synthesis review item has no identity"
+            )
+        locations = _provenance_locations(
+            (review.get("provenance") or {}).get("source_atom")
+        )
+        inline = {atom_id: locations} if locations is not None else {}
+        output.append(_change_item(
+            target_id=review_id,
+            target_kind="REVIEW_EVIDENCE",
+            item=review,
+            review_status=str(review.get("review_status") or "REVIEW_REQUIRED"),
+            atom_ids=[atom_id],
+            sides=_sides_for([atom_id], inline, snapshot_atoms),
+            snapshot_atoms=snapshot_atoms,
+        ))
+    output.sort(key=lambda item: item["evidence_id"])
+    if len({item["evidence_id"] for item in output}) != len(output):
+        raise ProductionTextEvidenceConflictError(
+            "published synthesis target identity is duplicated"
+        )
+    return output
+
+
+def _same_evidence_state(text_artifact: Mapping[str, Any]) -> str:
+    provenance = text_artifact.get("provenance")
+    provenance = provenance if isinstance(provenance, Mapping) else {}
+    version = provenance.get("stage3_full_signature_version")
+    signature = provenance.get("stage3_full_signature")
+    if version is None and signature is None:
+        # Published before ``deterministic_same`` entered any signature.  The
+        # old digest is honoured for what it did cover and is never re-read as
+        # if it also covered the exact same-text pairs.
+        return MATCH_EVIDENCE_LEGACY
+    if version != STAGE3_FULL_DIGEST_VERSION or not isinstance(signature, str):
+        raise ProductionTextEvidenceConflictError(
+            "production Stage 3 content signature has unsupported version"
+        )
+    return MATCH_EVIDENCE_VERIFIED
 
 
 def _validate_generation(
     state: Mapping[str, Any],
     source_snapshot: Mapping[str, Any],
     text_differences: Mapping[str, Any],
-) -> Mapping[str, Any]:
+) -> tuple[Mapping[str, Any], str]:
     if (
         source_snapshot.get("run_id") != state.get("run_id")
         or source_snapshot.get("generation_input_signature")
@@ -466,7 +658,19 @@ def _validate_generation(
         raise ProductionTextEvidenceConflictError(
             "production Stage 3 signature does not match published TEXT atoms"
         )
-    return text_artifact
+    same_state = _same_evidence_state(text_artifact)
+    if same_state == MATCH_EVIDENCE_VERIFIED:
+        try:
+            actual_full = stage3_full_content_signature(text_differences)
+        except (TypeError, ValueError) as exc:
+            raise ProductionTextEvidenceConflictError(
+                "production Stage 3 text differences are malformed"
+            ) from exc
+        if provenance.get("stage3_full_signature") != actual_full:
+            raise ProductionTextEvidenceConflictError(
+                "production Stage 3 exact pairs do not match published TEXT atoms"
+            )
+    return text_artifact, same_state
 
 
 def build_production_text_evidence(
@@ -487,11 +691,15 @@ def build_production_text_evidence(
             "published synthesis signature is missing"
         )
     try:
-        text_artifact = _validate_generation(
+        text_artifact, same_state = _validate_generation(
             state, source_snapshot, text_differences
         )
-        matches = _matches(text_differences)
-        changes = _changes(text_artifact, synthesis)
+        matches = (
+            _matches(text_differences)
+            if same_state == MATCH_EVIDENCE_VERIFIED
+            else []
+        )
+        changes = _changes(synthesis, _snapshot_atoms(text_artifact))
     except ProductionTextEvidenceConflictError:
         raise
     except (TypeError, ValueError) as exc:
@@ -502,7 +710,16 @@ def build_production_text_evidence(
         **_base_payload(state),
         "available": True,
         "synthesis_input_signature": synthesis_input_signature,
-        "available_match_pairs": len(matches),
+        "match_evidence_state": same_state,
+        # Unknown while the exact pairs carry no covering signature; a hard 0
+        # would claim the generation was checked and holds no matches.
+        "available_match_pairs": (
+            len(matches) if same_state == MATCH_EVIDENCE_VERIFIED else None
+        ),
+        "change_items": len(changes),
+        "available_change_items": sum(
+            1 for item in changes if item["coordinates_available"]
+        ),
         "matches": matches,
         "changes": changes,
     }
@@ -510,9 +727,16 @@ def build_production_text_evidence(
 
 __all__ = [
     "KIND",
+    "MATCH_EVIDENCE_LEGACY",
+    "MATCH_EVIDENCE_UNKNOWN",
+    "MATCH_EVIDENCE_VERIFIED",
     "SCHEMA_VERSION",
+    "TEXT_RESULT_BLOCKED",
+    "TEXT_RESULT_NOT_PRODUCED",
+    "TEXT_RESULT_PUBLISHED",
     "ProductionTextEvidenceConflictError",
     "build_production_text_evidence",
     "empty_production_text_evidence",
     "evidence_is_publishable",
+    "text_result_state",
 ]
