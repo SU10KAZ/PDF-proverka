@@ -232,6 +232,11 @@ class AiResolutionLayer:
         self.failures = 0
         self.timeouts = 0
         self.vision_calls = 0
+        # Отказ верификатора, за которым последовал успешный повтор, не виден
+        # в итоговых причинах — а именно он показывает, сколько стоит первый
+        # проход на низком уровне рассуждения.
+        self.verifier_failed_first_pass = 0
+        self.retries_used = 0
 
     # ── Обращения к модели ────────────────────────────────────────────────
 
@@ -385,6 +390,9 @@ class AiResolutionLayer:
         retried: bool,
     ) -> dict[str, Any]:
         if not check.ok:
+            if not retried:
+                with self._counters:
+                    self.verifier_failed_first_pass += 1
             if not retried and settings.max_retries() > 0:
                 retry = self._retry_item(item, budget)
                 if retry is not None:
@@ -452,6 +460,8 @@ class AiResolutionLayer:
         """
         if budget.out_of_time() or self.cancel.cancelled:
             return None
+        with self._counters:
+            self.retries_used += 1
         package = evidence_module.EvidencePackage(items=[item])
         digest = package.digest() + ":retry"
         model = settings.analyst_model()
@@ -774,6 +784,8 @@ class AiResolutionLayer:
                 "vision_items": budget.vision_items,
                 "vision_calls": self.vision_calls,
                 "model_calls": self.model_calls,
+                "verifier_failed_first_pass": self.verifier_failed_first_pass,
+                "retries_used": self.retries_used,
                 "model_failures": self.failures,
                 "model_timeouts": self.timeouts,
                 "cache": self.cache.statistics(),

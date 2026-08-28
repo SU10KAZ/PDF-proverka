@@ -103,6 +103,10 @@ def metrics(directory: Path) -> dict[str, Any]:
             "осталось_человеку": ai_diagnostics.get("human_required", 0),
             "почему_осталось": ai_diagnostics.get("human_reasons") or {},
             "отклонено_верификатором": ai_diagnostics.get("verifier_rejected", 0),
+            "не_прошло_верификатор_с_первого_раза": ai_diagnostics.get(
+                "verifier_failed_first_pass", 0
+            ),
+            "повторов_на_высоком_уровне": ai_diagnostics.get("retries_used", 0),
             "отклонено_критиком": ai_diagnostics.get("critic_rejected", 0),
             "отказов_модели": ai_diagnostics.get("model_failed", 0),
             "таймаутов": ai_diagnostics.get("model_timeout", 0),

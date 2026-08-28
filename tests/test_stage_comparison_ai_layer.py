@@ -769,3 +769,29 @@ def test_orphan_recovery_never_kills_the_current_run(monkeypatch):
 def test_a_run_that_dies_mid_flight_leaves_no_live_processes():
     assert gateway.live_process_count() == 0
     assert gateway.kill_live_processes() == 0
+
+
+def test_a_verifier_failure_is_counted_even_when_the_retry_saves_it(monkeypatch):
+    """Успешный повтор не имеет права спрятать цену первого прохода."""
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MAX_RETRIES", "1")
+    attempts: list[str] = []
+
+    def call(provider_family, prompt, **kwargs):
+        attempts.append(kwargs.get("reasoning_level") or "")
+        if len(attempts) == 1:
+            bad = _good_resolution() | {"after_value": "24.5 | Кладовая | 9,99"}
+            return gateway.CallResult(
+                provider_family, "m", "low", True, parsed={"resolutions": [bad]}
+            )
+        return gateway.CallResult(
+            provider_family, "m", "high", True,
+            parsed={"resolutions": [_good_resolution()]},
+        )
+
+    artifact = _resolve(call)
+
+    assert artifact["diagnostics"]["verifier_failed_first_pass"] == 1
+    assert artifact["diagnostics"]["retries_used"] == 1
+    assert artifact["diagnostics"]["verifier_rejected"] == 0
+    assert artifact["diagnostics"]["ai_resolved"] == 1
+    assert attempts == ["low", "high"]
