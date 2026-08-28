@@ -1076,3 +1076,300 @@ def test_review_question_and_decision_ids_are_order_independent():
     assert [item["decision_id"] for item in decisions_first["decisions"]] == [
         item["decision_id"] for item in decisions_second["decisions"]
     ]
+
+
+def test_sheet_queue_asks_only_substantive_possible_components():
+    relations = {
+        "kind": "stage_comparison_sheet_relations",
+        "input_signature": "sheet-filtering",
+        "relations": [
+            {
+                "relation_id": "high-split",
+                "left_pages": [1],
+                "right_pages": [10, 11],
+                "relation_type": "SPLIT",
+                "status": "HIGH",
+            },
+            {
+                "relation_id": "no-match",
+                "left_pages": [2],
+                "right_pages": [],
+                "relation_type": "NO_MATCH",
+                "status": "NO_MATCH",
+            },
+            {
+                "relation_id": "empty-unknown",
+                "left_pages": [3],
+                "right_pages": [],
+                "relation_type": "UNCERTAIN",
+                "status": "UNKNOWN",
+                "candidate_edges": [{
+                    "left_page": 3,
+                    "right_page": 12,
+                    "status": "UNKNOWN",
+                    "substantive_signals": [],
+                }],
+            },
+            {
+                "relation_id": "possible",
+                "left_pages": [4],
+                "right_pages": [13],
+                "relation_type": "MATCHED",
+                "status": "POSSIBLE",
+            },
+        ],
+    }
+
+    queue = build_review_queue(sheet_relations=relations, generated_at="fixed")
+
+    assert queue["counts"]["SHEET"] == 1
+    assert queue["questions"][0]["context"]["candidate_relation_ids"] == [
+        "possible"
+    ]
+
+
+def test_sheet_candidate_component_is_one_question_and_one_materialized_relation():
+    relations = {
+        "kind": "stage_comparison_sheet_relations",
+        "input_signature": "sheet-components",
+        "relations": [
+            {
+                "relation_id": "canonical",
+                "left_pages": [1],
+                "right_pages": [10],
+                "relation_type": "MATCHED",
+                "status": "POSSIBLE",
+                "automatic_scope": True,
+                "confidence": 0.4,
+                "candidate_edges": [{
+                    "left_page": 1,
+                    "right_page": 10,
+                    "status": "POSSIBLE",
+                    "substantive_signals": ["functional"],
+                }],
+            },
+            {
+                "relation_id": "alternative",
+                "left_pages": [],
+                "right_pages": [11],
+                "relation_type": "UNCERTAIN",
+                "status": "POSSIBLE",
+                "candidate_edges": [{
+                    "left_page": 1,
+                    "right_page": 11,
+                    "status": "POSSIBLE",
+                    "substantive_signals": ["functional"],
+                }],
+            },
+        ],
+    }
+    queue = build_review_queue(sheet_relations=relations, generated_at="fixed")
+
+    assert queue["counts"]["SHEET"] == 1
+    question = queue["questions"][0]
+    assert question["question_type"] == "SHEET_SPLIT"
+    assert question["context"]["left_pages"] == [1]
+    assert question["context"]["right_pages"] == [10, 11]
+    assert question["context"]["materialization_relation_id"] == "canonical"
+    assert len(question["dependencies"]) == 2
+
+    decisions = build_human_decisions(
+        queue,
+        {question["question_id"]: "YES"},
+        generated_at="fixed",
+    )
+    effective = apply_human_decisions(
+        queue,
+        decisions,
+        sheet_relations=relations,
+        generated_at="fixed",
+    )["effective_sheet_relations"]["relations"]
+
+    assert sum(item["status"] == "HIGH" for item in effective) == 1
+    canonical = next(item for item in effective if item["relation_id"] == "canonical")
+    alternative = next(
+        item for item in effective if item["relation_id"] == "alternative"
+    )
+    assert canonical["left_pages"] == [1]
+    assert canonical["right_pages"] == [10, 11]
+    assert canonical["relation_type"] == "SPLIT"
+    assert alternative["status"] == "CANDIDATE_SUPERSEDED"
+    assert alternative["superseded_by_relation_id"] == "canonical"
+
+
+def test_many_to_many_sheet_component_remains_one_fail_closed_question():
+    relations = {
+        "kind": "stage_comparison_sheet_relations",
+        "input_signature": "sheet-many-many",
+        "relations": [
+            {
+                "relation_id": "edge-a",
+                "left_pages": [1],
+                "right_pages": [10],
+                "relation_type": "MATCHED",
+                "status": "POSSIBLE",
+                "candidate_edges": [{
+                    "left_page": 1,
+                    "right_page": 10,
+                    "status": "POSSIBLE",
+                    "substantive_signals": ["title"],
+                }, {
+                    "left_page": 2,
+                    "right_page": 10,
+                    "status": "POSSIBLE",
+                    "substantive_signals": ["title"],
+                }],
+            },
+            {
+                "relation_id": "edge-b",
+                "left_pages": [],
+                "right_pages": [11],
+                "relation_type": "UNCERTAIN",
+                "status": "POSSIBLE",
+                "candidate_edges": [{
+                    "left_page": 2,
+                    "right_page": 11,
+                    "status": "POSSIBLE",
+                    "substantive_signals": ["title"],
+                }],
+            },
+        ],
+    }
+
+    queue = build_review_queue(sheet_relations=relations, generated_at="fixed")
+
+    assert queue["counts"]["SHEET"] == 1
+    question = queue["questions"][0]
+    assert question["question_type"] == "SHEET_CANDIDATE_GROUP"
+    assert {option["code"] for option in question["answer_options"]} == {
+        "NO", "OTHER", "UNSURE"
+    }
+
+
+def test_non_actionable_text_fact_reviews_leave_only_the_sheet_question():
+    sheet_relations = {
+        "kind": "stage_comparison_sheet_relations",
+        "input_signature": "sheet-blocker",
+        "relations": [{
+            "relation_id": "possible-sheet",
+            "left_pages": [4],
+            "right_pages": [13],
+            "relation_type": "MATCHED",
+            "status": "POSSIBLE",
+        }],
+    }
+    text_atoms = [
+        _atom(
+            "sheet-blocked",
+            "TEXT",
+            None,
+            subject_ref="text_entity:PANEL_1",
+            project_entity_ref=None,
+            outcome="REVIEW_REQUIRED",
+            provenance={
+                "producer": "deterministic-text-fact-producer-v1",
+                "review_requirement": {
+                    "reason_codes": ["sheet_relation_unconfirmed"],
+                    "only_upstream_relation_blocker": True,
+                    "per_atom_question_actionable": False,
+                },
+            },
+        ),
+        _atom(
+            "coverage-blocked",
+            "TEXT",
+            None,
+            subject_ref="text_entity:PANEL_2",
+            project_entity_ref=None,
+            outcome="REVIEW_REQUIRED",
+            provenance={
+                "producer": "deterministic-text-fact-producer-v1",
+                "review_requirement": {
+                    "reason_codes": [
+                        "sheet_relation_unconfirmed",
+                        "opposite_side_structured_coverage_incomplete",
+                    ],
+                    "only_upstream_relation_blocker": False,
+                    "per_atom_question_actionable": False,
+                },
+            },
+        ),
+    ]
+    synthesis = synthesize_unified_changes(text_atoms=text_atoms)
+    original_review_items = deepcopy(synthesis["review_items"])
+
+    queue = build_review_queue(
+        sheet_relations=sheet_relations,
+        synthesis=synthesis,
+        generated_at="fixed",
+    )
+
+    assert len(synthesis["review_items"]) == 2
+    assert synthesis["review_items"] == original_review_items
+    assert queue["counts"]["by_category"] == {
+        "SHEET": 1,
+        "ENTITY": 0,
+        "CHANGE": 0,
+    }
+    assert [item["category"] for item in queue["questions"]] == ["SHEET"]
+    diagnostics = queue["diagnostics"]
+    assert diagnostics["suppressed_change_questions"] == 2
+    assert diagnostics["suppressed_change_question_reasons"] == {
+        "opposite_side_structured_coverage_incomplete": 1,
+        "sheet_relation_unconfirmed": 2,
+    }
+    assert diagnostics["upstream_sheet_relation_review_items_suppressed"] == 1
+    assert diagnostics["opposite_coverage_gap_review_items_suppressed"] == 1
+    assert diagnostics["suppressed_change_review_item_refs"] == sorted(
+        item["review_evidence_id"] for item in synthesis["review_items"]
+    )
+
+
+def test_change_question_policy_supports_nested_provenance_and_fails_closed():
+    base = {
+        "review_evidence_id": "nested-review",
+        "atom_id": "nested-atom",
+        "dimension": "UNKNOWN_DIMENSION",
+        "project_entity_ref": None,
+        "outcome": "REVIEW_REQUIRED",
+        "reason_codes": ["dimension_unknown"],
+        "provenance": {
+            "source_atom_outcome": "REVIEW_REQUIRED",
+            "source_atom": {
+                "provenance": {
+                    "review_requirement": {
+                        "reason_codes": [
+                            "opposite_side_structured_coverage_incomplete"
+                        ],
+                        "per_atom_question_actionable": False,
+                    }
+                }
+            },
+        },
+    }
+    suppressed = build_review_queue(
+        synthesis={"kind": "synthesis", "review_items": [base]},
+        generated_at="fixed",
+    )
+
+    assert suppressed["counts"]["CHANGE"] == 0
+    assert suppressed["diagnostics"]["suppressed_change_questions"] == 1
+
+    conflicting = deepcopy(base)
+    conflicting["review_evidence_id"] = "conflicting-review"
+    conflicting["provenance"]["review_requirement"] = {
+        "per_atom_question_actionable": True,
+    }
+    actionable = build_review_queue(
+        synthesis={"kind": "synthesis", "review_items": [conflicting]},
+        generated_at="fixed",
+    )
+
+    assert actionable["counts"]["CHANGE"] == 1
+    assert actionable["diagnostics"]["suppressed_change_questions"] == 0
+    contract = actionable["questions"][0]["context"][
+        "typed_resolution_contract"
+    ]
+    assert contract["required_fields"] == [
+        "dimension", "project_entity_ref", "outcome"
+    ]

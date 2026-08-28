@@ -28,8 +28,8 @@ from .unified_change_policy import (
 
 
 KIND = "stage_comparison_human_review_questions"
-SCHEMA_VERSION = "human-review-queue.v2"
-BUILDER_VERSION = "consolidated-human-review-queue-v2"
+SCHEMA_VERSION = "human-review-queue.v3"
+BUILDER_VERSION = "consolidated-human-review-queue-v3"
 DECISIONS_KIND = "stage_comparison_human_decisions"
 DECISIONS_SCHEMA_VERSION = "human-decisions.v2"
 DECISIONS_BUILDER_VERSION = "human-decision-store-v2"
@@ -163,30 +163,142 @@ def _question(
     }
 
 
+def _sheet_candidate_edges(
+    relation: Mapping[str, Any],
+) -> list[tuple[int, int]]:
+    """Return only substantive ambiguous edges, never empty placeholders."""
+    status = str(relation.get("status") or "UNKNOWN").upper()
+    if status in {"HIGH", "NO_MATCH"}:
+        return []
+    output: set[tuple[int, int]] = set()
+    for edge in relation.get("candidate_edges") or []:
+        if not isinstance(edge, Mapping):
+            continue
+        edge_status = str(edge.get("status") or status).upper()
+        substantive = list(edge.get("substantive_signals") or [])
+        if edge_status != "POSSIBLE" or not substantive:
+            continue
+        left_page = int(edge.get("left_page") or 0)
+        right_page = int(edge.get("right_page") or 0)
+        if left_page > 0 and right_page > 0:
+            output.add((left_page, right_page))
+    # Synthetic/imported relations need not carry matcher diagnostics.  A
+    # POSSIBLE relation with two explicit sides is itself actionable evidence.
+    if status == "POSSIBLE" and not output:
+        left_pages = {int(page) for page in relation.get("left_pages") or []}
+        right_pages = {int(page) for page in relation.get("right_pages") or []}
+        output.update(
+            (left_page, right_page)
+            for left_page in left_pages
+            for right_page in right_pages
+            if left_page > 0 and right_page > 0
+        )
+    return sorted(output)
+
+
+def _sheet_candidate_components(
+    relations: Iterable[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Group POSSIBLE edges into stable bipartite candidate components."""
+    records: list[tuple[Mapping[str, Any], str, list[tuple[int, int]]]] = []
+    adjacency: dict[tuple[str, int], set[tuple[str, int]]] = defaultdict(set)
+    for relation in relations:
+        edges = _sheet_candidate_edges(relation)
+        if not edges:
+            continue
+        relation_id = _ref(relation, "relation_id", prefix="srel_")
+        records.append((relation, relation_id, edges))
+        for left_page, right_page in edges:
+            left_node, right_node = ("LEFT", left_page), ("RIGHT", right_page)
+            adjacency[left_node].add(right_node)
+            adjacency[right_node].add(left_node)
+
+    components = []
+    remaining = set(adjacency)
+    while remaining:
+        start = min(remaining)
+        stack = [start]
+        nodes: set[tuple[str, int]] = set()
+        while stack:
+            node = stack.pop()
+            if node in nodes:
+                continue
+            nodes.add(node)
+            remaining.discard(node)
+            stack.extend(sorted(adjacency[node] - nodes, reverse=True))
+        left_pages = sorted(page for side, page in nodes if side == "LEFT")
+        right_pages = sorted(page for side, page in nodes if side == "RIGHT")
+        component_records = [
+            (relation, relation_id, edges)
+            for relation, relation_id, edges in records
+            if any(
+                ("LEFT", left_page) in nodes and ("RIGHT", right_page) in nodes
+                for left_page, right_page in edges
+            )
+        ]
+        # Prefer an already two-sided automatic relation as the one relation
+        # that a human answer may materialize.  Every other relation remains
+        # traceable evidence for the grouped question.
+        ranked = sorted(
+            component_records,
+            key=lambda item: (
+                not bool(item[0].get("left_pages") and item[0].get("right_pages")),
+                not bool(item[0].get("automatic_scope")),
+                -float(item[0].get("confidence") or 0),
+                item[1],
+            ),
+        )
+        components.append({
+            "left_pages": left_pages,
+            "right_pages": right_pages,
+            "records": component_records,
+            "materialization_relation_id": ranked[0][1],
+            "candidate_edges": sorted({
+                edge for _relation, _relation_id, edges in component_records
+                for edge in edges
+            }),
+        })
+    return sorted(
+        components,
+        key=lambda item: (
+            item["left_pages"], item["right_pages"],
+            item["materialization_relation_id"],
+        ),
+    )
+
+
+def _cardinality_relation_type(
+    left_pages: Iterable[int], right_pages: Iterable[int],
+) -> str:
+    left, right = list(left_pages), list(right_pages)
+    if len(left) == len(right) == 1:
+        return "MATCHED"
+    if len(left) == 1 and len(right) > 1:
+        return "SPLIT"
+    if len(left) > 1 and len(right) == 1:
+        return "MERGED"
+    return "UNCERTAIN"
+
+
 def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     if not isinstance(sheet_relations, Mapping):
         return []
+    relations = [
+        relation for relation in sheet_relations.get("relations") or []
+        if isinstance(relation, Mapping)
+    ]
     questions = []
-    for relation in sheet_relations.get("relations") or []:
-        if not isinstance(relation, Mapping):
-            continue
-        relation_type = str(relation.get("relation_type") or "UNCERTAIN")
-        status = str(relation.get("status") or "UNKNOWN")
-        if relation_type not in {"SPLIT", "MERGED", "UNCERTAIN"} and status not in {
-            "POSSIBLE",
-            "UNKNOWN",
-        }:
-            continue
-        relation_id = _ref(relation, "relation_id", prefix="srel_")
-        left_pages = sorted({int(page) for page in relation.get("left_pages") or []})
-        right_pages = sorted({int(page) for page in relation.get("right_pages") or []})
+    for component in _sheet_candidate_components(relations):
+        left_pages = component["left_pages"]
+        right_pages = component["right_pages"]
+        relation_type = _cardinality_relation_type(left_pages, right_pages)
         if relation_type == "SPLIT":
             question_type = "SHEET_SPLIT"
             prompt = (
-                f"LEFT {', '.join(map(str, left_pages))} разделён на RIGHT "
+                f"LEFT {left_pages[0]} соответствует группе RIGHT "
                 f"{', '.join(map(str, right_pages))}?"
             )
-            options = [_option("YES", "Да, 1→N")]
+            options = [_option("YES", "Да, вся группа 1→N")]
             options.extend(
                 _option(
                     f"SELECT_RIGHT:{page}",
@@ -199,10 +311,10 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
         elif relation_type == "MERGED":
             question_type = "SHEET_MERGED"
             prompt = (
-                f"LEFT {', '.join(map(str, left_pages))} объединены в RIGHT "
-                f"{', '.join(map(str, right_pages))}?"
+                f"Группа LEFT {', '.join(map(str, left_pages))} соответствует "
+                f"RIGHT {right_pages[0]}?"
             )
-            options = [_option("YES", "Да, N→1")]
+            options = [_option("YES", "Да, вся группа N→1")]
             options.extend(
                 _option(
                     f"SELECT_LEFT:{page}",
@@ -212,37 +324,65 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
                 for page in left_pages
             )
             options.extend(_base_options()[1:])
-        else:
+        elif relation_type == "MATCHED":
             question_type = "SHEET_RELATION"
             prompt = (
-                f"Листы LEFT {', '.join(map(str, left_pages))} и RIGHT "
-                f"{', '.join(map(str, right_pages))} соответствуют?"
+                f"Листы LEFT {left_pages[0]} и RIGHT {right_pages[0]} "
+                "соответствуют?"
             )
             options = _base_options()
-        questions.append(
-            _question(
-                identity={"relation_id": relation_id},
-                category="SHEET",
-                question_type=question_type,
-                prompt=prompt,
-                options=options,
-                dependencies=[
-                    {
-                        "kind": "SHEET_RELATION",
-                        "artifact_kind": sheet_relations.get("kind"),
-                        "ref": relation_id,
-                    }
-                ],
-                dependency_payload=relation,
-                context={
-                    "relation_id": relation_id,
-                    "relation_type": relation_type,
-                    "left_pages": left_pages,
-                    "right_pages": right_pages,
-                    "automatic_status": status,
-                },
+        else:
+            # Many-to-many evidence is genuinely ambiguous.  It remains one
+            # fail-closed question and can only be resolved by rejecting it or
+            # supplying one explicit valid MATCHED/SPLIT/MERGED candidate.
+            question_type = "SHEET_CANDIDATE_GROUP"
+            prompt = (
+                f"Как сопоставить группу LEFT {', '.join(map(str, left_pages))} "
+                f"с RIGHT {', '.join(map(str, right_pages))}?"
             )
-        )
+            options = [
+                _option("NO", "Нет соответствия"),
+                _option("OTHER", "Указать точное соответствие"),
+                _option("UNSURE", "Не уверен"),
+            ]
+        records = component["records"]
+        relation_ids = sorted(relation_id for _relation, relation_id, _edges in records)
+        dependencies = [
+            {
+                "kind": "SHEET_RELATION",
+                "artifact_kind": sheet_relations.get("kind"),
+                "ref": relation_id,
+            }
+            for relation_id in relation_ids
+        ]
+        questions.append(_question(
+            identity={"left_pages": left_pages, "right_pages": right_pages},
+            category="SHEET",
+            question_type=question_type,
+            prompt=prompt,
+            options=options,
+            dependencies=dependencies,
+            dependency_payload={
+                "relations": [relation for relation, _relation_id, _edges in records],
+                "candidate_edges": component["candidate_edges"],
+            },
+            context={
+                "relation_id": component["materialization_relation_id"],
+                "materialization_relation_id": component[
+                    "materialization_relation_id"
+                ],
+                "candidate_relation_ids": relation_ids,
+                "candidate_edges": [
+                    {"left_page": left, "right_page": right}
+                    for left, right in component["candidate_edges"]
+                ],
+                "grouped_candidate": True,
+                "relation_type": relation_type,
+                "left_pages": left_pages,
+                "right_pages": right_pages,
+                "automatic_status": "POSSIBLE",
+            },
+        ))
     return questions
 
 
@@ -339,12 +479,105 @@ def _entity_questions(entity_relations: Mapping[str, Any] | None) -> list[dict[s
     return questions
 
 
-def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any]]:
+def _nested_review_requirements(value: Any) -> list[dict[str, Any]]:
+    """Find explicit review-question policy through synthesis wrappers.
+
+    A production TEXT fact is wrapped first by Text Atom Builder and then by
+    the synthesizer's review-evidence record.  Imported artifacts can contain
+    one additional ``provenance`` wrapper.  Traverse the JSON-shaped payload
+    instead of binding question policy to one fragile nesting depth.
+    """
+    output: dict[str, dict[str, Any]] = {}
+    pending: list[tuple[Any, int]] = [(value, 0)]
+    seen: set[int] = set()
+    while pending:
+        current, depth = pending.pop()
+        if depth > 8 or not isinstance(current, (Mapping, list, tuple)):
+            continue
+        marker = id(current)
+        if marker in seen:
+            continue
+        seen.add(marker)
+        if isinstance(current, Mapping):
+            requirement = current.get("review_requirement")
+            if isinstance(requirement, Mapping):
+                normalized = dict(requirement)
+                output[content_signature(_stable_payload(normalized))] = normalized
+            pending.extend(
+                (nested, depth + 1)
+                for key, nested in current.items()
+                if key != "review_requirement"
+            )
+        else:
+            pending.extend((nested, depth + 1) for nested in current)
+    return [output[key] for key in sorted(output)]
+
+
+def _non_actionable_change_review(
+    item: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Describe an intentionally non-actionable per-atom review item.
+
+    Suppression is opt-in and fail-closed: an explicit ``True`` at any nested
+    provenance level wins over ``False`` and keeps the engineer question.
+    Missing policy also keeps the historical question behavior.
+    """
+    requirements = _nested_review_requirements(item.get("provenance"))
+    actionable = [
+        value.get("per_atom_question_actionable")
+        for value in requirements
+        if isinstance(value.get("per_atom_question_actionable"), bool)
+    ]
+    if False not in actionable or True in actionable:
+        return None
+    suppressed_requirements = [
+        value
+        for value in requirements
+        if value.get("per_atom_question_actionable") is False
+    ]
+    reason_codes = sorted({
+        str(reason)
+        for requirement in suppressed_requirements
+        for reason in requirement.get("reason_codes") or []
+        if isinstance(reason, str) and reason.strip()
+    })
+    review_ref = _ref(
+        item, "review_evidence_id", "atom_id", prefix="review_evidence_"
+    )
+    only_sheet_relation = bool(suppressed_requirements) and all(
+        requirement.get("only_upstream_relation_blocker") is True
+        or {
+            reason
+            for reason in requirement.get("reason_codes") or []
+            if isinstance(reason, str)
+        }
+        == {"sheet_relation_unconfirmed"}
+        for requirement in suppressed_requirements
+    )
+    return {
+        "review_evidence_id": review_ref,
+        "atom_id": item.get("atom_id"),
+        "reason_codes": reason_codes or ["non_actionable_upstream_review"],
+        "only_upstream_relation_blocker": only_sheet_relation,
+        "opposite_coverage_gap": (
+            "opposite_side_structured_coverage_incomplete" in reason_codes
+        ),
+    }
+
+
+def _change_question_plan(
+    synthesis: Mapping[str, Any] | None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     if not isinstance(synthesis, Mapping):
-        return []
+        return [], []
     questions: list[dict[str, Any]] = []
+    suppressed: list[dict[str, Any]] = []
     for item in synthesis.get("review_items") or []:
         if not isinstance(item, Mapping):
+            continue
+        suppression = _non_actionable_change_review(item)
+        if suppression is not None:
+            suppressed.append(suppression)
             continue
         review_ref = _ref(
             item, "review_evidence_id", "atom_id", prefix="review_evidence_"
@@ -435,7 +668,12 @@ def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any
                 },
             )
         )
-    return questions
+    suppressed.sort(key=lambda value: value["review_evidence_id"])
+    return questions, suppressed
+
+
+def _change_questions(synthesis: Mapping[str, Any] | None) -> list[dict[str, Any]]:
+    return _change_question_plan(synthesis)[0]
 
 
 def _deduplicate(questions: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -661,11 +899,12 @@ def build_review_queue(
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Build one deduplicated queue and suppress unchanged resolved questions."""
+    change_questions, suppressed_change_reviews = _change_question_plan(synthesis)
     all_questions = _deduplicate(
         [
             *_sheet_questions(sheet_relations),
             *_entity_questions(entity_relations),
-            *_change_questions(synthesis),
+            *change_questions,
         ]
     )
     questions_by_id = {item["question_id"]: item for item in all_questions}
@@ -729,6 +968,11 @@ def build_review_queue(
     # Convenience category counters are useful to API/UI clients and retain
     # the explicit A/B/C taxonomy in the persisted artifact.
     counts.update({category: category_counts.get(category, 0) for category in CATEGORIES})
+    suppression_reasons = Counter(
+        reason
+        for item in suppressed_change_reviews
+        for reason in item["reason_codes"]
+    )
     return {
         "kind": KIND,
         "schema_version": SCHEMA_VERSION,
@@ -744,6 +988,21 @@ def build_review_queue(
         "diagnostics": {
             "generated_questions": len(all_questions),
             "deduplicated_questions": len(all_questions),
+            "suppressed_change_questions": len(suppressed_change_reviews),
+            "suppressed_change_question_reasons": dict(
+                sorted(suppression_reasons.items())
+            ),
+            "suppressed_change_review_item_refs": [
+                item["review_evidence_id"] for item in suppressed_change_reviews
+            ],
+            "upstream_sheet_relation_review_items_suppressed": sum(
+                item["only_upstream_relation_blocker"]
+                for item in suppressed_change_reviews
+            ),
+            "opposite_coverage_gap_review_items_suppressed": sum(
+                item["opposite_coverage_gap"]
+                for item in suppressed_change_reviews
+            ),
             "stale_decision_ids": stale_decision_ids,
             "unresolved_decision_ids": unresolved_decision_ids,
             "already_resolved_not_reasked": len(resolved_ids),
@@ -1201,7 +1460,17 @@ def apply_answer_to_relation(
     elif category == "SHEET":
         automatic_status = result.get("status")
         result["automatic_status"] = automatic_status
+        context = question.get("context")
+        context = context if isinstance(context, Mapping) else {}
+        group_left = sorted({int(page) for page in context.get("left_pages") or []})
+        group_right = sorted({int(page) for page in context.get("right_pages") or []})
         if answer == "YES":
+            if group_left and group_right:
+                result["left_pages"] = group_left
+                result["right_pages"] = group_right
+                result["relation_type"] = _cardinality_relation_type(
+                    group_left, group_right
+                )
             result["status"] = "HIGH"
         elif answer == "NO":
             result["status"] = "NO_MATCH"
@@ -1218,12 +1487,16 @@ def apply_answer_to_relation(
                 result["relation_type"] = "UNCERTAIN"
         elif answer.startswith("SELECT_RIGHT:"):
             selected = int(answer.split(":", 1)[1])
+            if len(group_left) == 1:
+                result["left_pages"] = group_left
             result["right_pages"] = [selected]
             result["relation_type"] = "MATCHED"
             result["status"] = "HIGH"
         elif answer.startswith("SELECT_LEFT:"):
             selected = int(answer.split(":", 1)[1])
             result["left_pages"] = [selected]
+            if len(group_right) == 1:
+                result["right_pages"] = group_right
             result["relation_type"] = "MATCHED"
             result["status"] = "HIGH"
         result["review_required"] = answer == "UNSURE" or (
@@ -1302,14 +1575,55 @@ def apply_human_decisions(
                 )
 
     if isinstance(effective_sheet, Mapping):
-        effective_sheet["relations"] = [
-            apply_answer_to_relation(relation, *question_by_dependency[relation_ref][::-1])
-            if relation_ref in question_by_dependency
-            else relation
-            for relation in effective_sheet.get("relations") or []
-            if isinstance(relation, Mapping)
-            for relation_ref in [_ref(relation, "relation_id", prefix="srel_")]
-        ]
+        effective_relations = []
+        for relation in effective_sheet.get("relations") or []:
+            if not isinstance(relation, Mapping):
+                continue
+            relation_ref = _ref(relation, "relation_id", prefix="srel_")
+            dependent = question_by_dependency.get(relation_ref)
+            if dependent is None:
+                effective_relations.append(relation)
+                continue
+            decision, question = dependent
+            context = question.get("context")
+            context = context if isinstance(context, Mapping) else {}
+            materialization_ref = str(
+                context.get("materialization_relation_id") or ""
+            )
+            grouped = bool(context.get("grouped_candidate"))
+            answer = str(decision.get("answer") or "")
+            resolves_group = (
+                answer in {"YES", "NO"}
+                or answer.startswith("SELECT_RIGHT:")
+                or answer.startswith("SELECT_LEFT:")
+                or (
+                    answer == "OTHER"
+                    and _explicit_sheet_candidate_resolves(decision)
+                )
+            )
+            if grouped and relation_ref != materialization_ref:
+                if not resolves_group:
+                    effective_relations.append(relation)
+                    continue
+                superseded = deepcopy(dict(relation))
+                superseded["automatic_status"] = relation.get("status")
+                superseded["status"] = "CANDIDATE_SUPERSEDED"
+                superseded["review_required"] = False
+                superseded["superseded_by_relation_id"] = materialization_ref
+                superseded["human_decision"] = _decision_summary(decision)
+                superseded["effective_relation_id"] = stable_id(
+                    "effective_relation_",
+                    relation_ref,
+                    decision.get("decision_id"),
+                    "CANDIDATE_SUPERSEDED",
+                    length=24,
+                )
+                effective_relations.append(superseded)
+                continue
+            effective_relations.append(
+                apply_answer_to_relation(relation, question, decision)
+            )
+        effective_sheet["relations"] = effective_relations
     if isinstance(effective_entity, Mapping):
         effective_entity["relations"] = [
             apply_answer_to_relation(relation, *question_by_dependency[relation_ref][::-1])
