@@ -229,6 +229,16 @@ def test_verifier_rejects_a_quote_that_is_not_in_the_package():
     assert any("цитата" in error for error in result.errors)
 
 
+def test_verifier_accepts_a_quote_copied_with_the_context_marker():
+    """«»» — наша разметка пакета. Ловить за неё надо себя, а не модель."""
+    resolution = _good_resolution()
+    resolution["evidence_quotes"] = [
+        {"side": "LEFT", "quote": "» 24.5 | Кладовая | 6,02"},
+        {"side": "RIGHT", "quote": "  24.5 | Кладовая | 6,40"},
+    ]
+    assert verifier.verify_resolution(_item_view(), resolution).ok
+
+
 def test_verifier_rejects_an_invented_internal_reference():
     resolution = _good_resolution() | {
         "object_label": "project_text_entity_deadbeef"
@@ -547,3 +557,150 @@ def test_batches_split_by_size_and_stay_inside_one_sheet_relation():
     )
     assert [len(package.items) for package in packages] == [10, 10, 5]
     assert {package.relation_id for package in packages} == {"srel_a"}
+
+
+# ── H. Визуальный резерв ──────────────────────────────────────────────────
+
+
+def _declined(reason: str = "GRAPHIC_EVIDENCE_REQUIRED") -> dict:
+    return _good_resolution() | {
+        "resolution_status": "HUMAN_REQUIRED",
+        "needs_human_review": True,
+        "human_reason": reason,
+        "human_question": "Что показано на чертеже?",
+    }
+
+
+def test_vision_is_needed_only_on_two_explicit_signals():
+    from backend.app.services.stage_comparison.ai import vision
+
+    assert vision.needs_vision(resolution=None, graphic_route="VISION_REQUIRED")
+    assert vision.needs_vision(
+        resolution=_declined(), graphic_route="MODE_1_APPLICABLE"
+    )
+    assert not vision.needs_vision(
+        resolution=_declined("ENTITY_AMBIGUOUS"), graphic_route="MODE_1_APPLICABLE"
+    )
+    assert not vision.needs_vision(
+        resolution=_good_resolution(), graphic_route="VISION_REQUIRED"
+    )
+
+
+def test_vision_is_not_called_in_standard_mode(monkeypatch, tmp_path):
+    seen: list[str] = []
+
+    def call(provider_family, prompt, **kwargs):
+        seen.append("vision" if kwargs.get("images") else "text")
+        return gateway.CallResult(
+            provider_family, "m", None, True, parsed={"resolutions": [_declined()]}
+        )
+
+    layer = resolution_module.AiResolutionLayer(
+        call=call, pdf_paths={"LEFT": str(tmp_path / "a.pdf")}
+    )
+    layer.resolve(
+        review_items=[_review_item()], preparation=_preparation(),
+        sheet_relations=_sheet_relations(), comparison_groups=_groups(),
+    )
+    assert seen == ["text"]
+
+
+def test_a_contradicting_drawing_never_overrides_the_text(monkeypatch, tmp_path):
+    """Модель уже читала «Корпус 1» вместо «Корпус 4». Картинка не главнее."""
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+    pdf = tmp_path / "doc.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+
+    def call(provider_family, prompt, **kwargs):
+        if kwargs.get("images"):
+            return gateway.CallResult(
+                provider_family, "gpt-5.6-sol", "medium", True,
+                parsed={
+                    "item_id": "ureview_1",
+                    "observed_left": "EI 60",
+                    "observed_right": "EI 45",
+                    "verdict": "CONTRADICTS_TEXT",
+                    "confidence": "MEDIUM",
+                    "explanation": "На чертеже другой предел.",
+                },
+            )
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_declined()]},
+        )
+
+    monkeypatch.setattr(
+        "backend.app.services.stage_comparison.ai.vision.render_crops",
+        lambda **kwargs: [
+            __import__(
+                "backend.app.services.stage_comparison.ai.vision",
+                fromlist=["Crop"],
+            ).Crop(side="LEFT", page=29, path=str(pdf)),
+        ],
+    )
+    layer = resolution_module.AiResolutionLayer(
+        call=call, pdf_paths={"LEFT": str(pdf), "RIGHT": str(pdf)}
+    )
+    artifact = layer.resolve(
+        review_items=[_review_item()], preparation=_preparation(),
+        sheet_relations=_sheet_relations(), comparison_groups=_groups(),
+    )
+    entry = artifact["resolutions"][0]
+    assert entry["status"] == "HUMAN_REQUIRED"
+    assert entry["reason_code"] == resolution_module.REASON_VISION_CONTRADICTS
+    assert entry["typed_resolution"] is None
+    assert entry["vision"]["verdict"] == "CONTRADICTS_TEXT"
+
+
+def test_an_unreadable_drawing_is_an_honest_answer(monkeypatch, tmp_path):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "DEEP")
+    pdf = tmp_path / "doc.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+
+    def call(provider_family, prompt, **kwargs):
+        if kwargs.get("images"):
+            return gateway.CallResult(
+                provider_family, "gpt-5.6-sol", "medium", True,
+                parsed={
+                    "item_id": "ureview_1",
+                    "observed_left": None,
+                    "observed_right": None,
+                    "verdict": "INSUFFICIENT_IMAGE",
+                    "confidence": "UNKNOWN",
+                    "explanation": "Фрагмент нечитаем.",
+                },
+            )
+        return gateway.CallResult(
+            provider_family, "gpt-5.6-sol", "low", True,
+            parsed={"resolutions": [_declined()]},
+        )
+
+    monkeypatch.setattr(
+        "backend.app.services.stage_comparison.ai.vision.render_crops",
+        lambda **kwargs: [
+            __import__(
+                "backend.app.services.stage_comparison.ai.vision",
+                fromlist=["Crop"],
+            ).Crop(side="LEFT", page=29, path=str(pdf)),
+        ],
+    )
+    layer = resolution_module.AiResolutionLayer(
+        call=call, pdf_paths={"LEFT": str(pdf), "RIGHT": str(pdf)}
+    )
+    artifact = layer.resolve(
+        review_items=[_review_item()], preparation=_preparation(),
+        sheet_relations=_sheet_relations(), comparison_groups=_groups(),
+    )
+    assert artifact["resolutions"][0]["reason_code"] == (
+        resolution_module.REASON_VISION_INSUFFICIENT
+    )
+
+
+def test_an_observation_enters_the_evidence_with_an_explicit_mark():
+    from backend.app.services.stage_comparison.ai import vision
+
+    observations = vision.observations_to_context({
+        "observed_left": "толщина 200 мм", "observed_right": None,
+    })
+    assert observations["LEFT"] == ["по чертежу: толщина 200 мм"]
+    assert observations["RIGHT"] == []

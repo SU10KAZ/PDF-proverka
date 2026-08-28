@@ -35,7 +35,7 @@ from ..production_artifacts import content_signature, stable_id, utc_now
 from ..unified_change_policy.contract import UNKNOWN_DIMENSION
 from . import cache as cache_module
 from . import evidence as evidence_module
-from . import gateway, prompts, schemas, settings, verifier
+from . import gateway, prompts, schemas, settings, verifier, vision as vision_module
 
 KIND = "stage_comparison_ai_resolutions"
 SCHEMA_VERSION = "ai-resolutions.v1"
@@ -54,6 +54,8 @@ REASON_MODEL_TIMEOUT = "MODEL_TIMEOUT"
 REASON_CANCELLED = "CANCELLED"
 REASON_BUDGET_EXHAUSTED = "BUDGET_EXHAUSTED"
 REASON_MODEL_DECLINED = "MODEL_DECLINED"
+REASON_VISION_CONTRADICTS = "VISION_CONTRADICTS_TEXT"
+REASON_VISION_INSUFFICIENT = "VISION_INSUFFICIENT"
 
 ProgressCallback = Callable[[dict[str, Any]], None]
 
@@ -208,14 +210,21 @@ class AiResolutionLayer:
         cancel: gateway.CancelToken | None = None,
         progress: ProgressCallback | None = None,
         call: Callable[..., gateway.CallResult] | None = None,
+        pdf_paths: Mapping[str, str] | None = None,
+        graphic_route: str | None = None,
     ) -> None:
         self.cache = cache_module.ResponseCache(cache_dir)
         self.cancel = cancel or gateway.CancelToken()
         self.progress = progress
         self._call = call or gateway.call
+        # Пути к PDF нужны только визуальному резерву; без них он выключен —
+        # рисовать нечего, и это честнее, чем звать модель без картинки.
+        self.pdf_paths = dict(pdf_paths or {})
+        self.graphic_route = graphic_route
         self.model_calls = 0
         self.failures = 0
         self.timeouts = 0
+        self.vision_calls = 0
 
     # ── Обращения к модели ────────────────────────────────────────────────
 
@@ -378,6 +387,9 @@ class AiResolutionLayer:
                 audit=audit, verifier_result=check.as_dict(),
             )
         if resolution.get("resolution_status") != "AI_RESOLVED":
+            visual = self._try_vision(item, resolution, check, budget, retried=retried)
+            if visual is not None:
+                return visual
             return _human_entry(
                 item,
                 reason=REASON_MODEL_DECLINED,
@@ -466,6 +478,115 @@ class AiResolutionLayer:
         return self._finish_item(
             item, resolution, check, audit, budget, digest, retried=True,
         )
+
+    def _try_vision(
+        self,
+        item: evidence_module.EvidenceItem,
+        resolution: Mapping[str, Any],
+        check: verifier.VerifyResult,
+        budget: _Budget,
+        *,
+        retried: bool,
+    ) -> dict[str, Any] | None:
+        """Посмотреть на чертёж — и всё равно вернуть вывод текстовому слою.
+
+        Возвращает готовую запись, если резерв реально что-то изменил, и None,
+        если он неприменим: тогда элемент уходит человеку обычным путём.
+        """
+        if retried or not settings.deep() or not self.pdf_paths:
+            # После пересмотра с картинкой второй заход к ней запрещён: иначе
+            # отказ и резерв начнут вызывать друг друга по кругу.
+            return None
+        if not vision_module.needs_vision(
+            resolution=resolution, graphic_route=self.graphic_route
+        ):
+            return None
+        if not budget.take_vision() or budget.out_of_time() or self.cancel.cancelled:
+            return None
+
+        workdir = vision_module.crop_workdir()
+        try:
+            try:
+                crops = vision_module.render_crops(
+                    pdf_paths=self.pdf_paths,
+                    locations=item.locations,
+                    out_dir=workdir,
+                )
+            except Exception:  # noqa: BLE001 — отрисовка не должна ронять прогон
+                return None
+            if not crops:
+                return None
+            digest = f"{item.evidence_digest}:vision"
+            payload, call, cache_hit = self._cached_call(
+                provider_family=settings.CODEX_SESSION,
+                model=settings.vision_model(),
+                reasoning_level=settings.vision_effort(),
+                prompt=prompts.vision_prompt(item.model_view(), dict(resolution)),
+                schema=schemas.VISION_SCHEMA,
+                digest=digest,
+                role="vision",
+                images=[crop.path for crop in crops],
+            )
+        finally:
+            import shutil
+
+            shutil.rmtree(workdir, ignore_errors=True)
+        if payload is None:
+            return None
+        self.vision_calls += 1
+        verdict = str(payload.get("verdict") or "")
+        vision_record = {
+            "verdict": verdict,
+            "observed_left": payload.get("observed_left"),
+            "observed_right": payload.get("observed_right"),
+            "confidence": payload.get("confidence"),
+            "explanation": str(payload.get("explanation") or ""),
+            "crops": [
+                {"side": crop.side, "page": crop.page} for crop in crops
+            ],
+            "audit": _audit(
+                provider_family=settings.CODEX_SESSION,
+                model=settings.vision_model(),
+                reasoning_level=settings.vision_effort(), role="vision",
+                evidence_digest=digest, output=payload, call=call,
+                cache_hit=cache_hit,
+            ),
+        }
+        if verdict == "CONTRADICTS_TEXT":
+            # Чертёж спорит с текстом — это повод показать инженеру оба, а не
+            # повод переписать текст картинкой.
+            entry = _human_entry(
+                item, reason=REASON_VISION_CONTRADICTS,
+                detail=vision_record["explanation"],
+                question=resolution.get("human_question"),
+                verifier_result=check.as_dict(),
+            )
+            entry["vision"] = vision_record
+            return entry
+        if verdict != "CONFIRMS_TEXT":
+            entry = _human_entry(
+                item, reason=REASON_VISION_INSUFFICIENT,
+                detail=vision_record["explanation"],
+                question=resolution.get("human_question"),
+                verifier_result=check.as_dict(),
+            )
+            entry["vision"] = vision_record
+            return entry
+
+        observations = vision_module.observations_to_context(payload)
+        if not any(observations.values()):
+            return None
+        enriched = evidence_module.EvidenceItem(**{
+            **item.as_dict(),
+            "left_context": [*item.left_context, *observations["LEFT"]],
+            "right_context": [*item.right_context, *observations["RIGHT"]],
+        })
+        enriched.evidence_digest = f"{item.evidence_digest}:vision-confirmed"
+        final = self._retry_item(enriched, budget)
+        if final is None:
+            return None
+        final["vision"] = vision_record
+        return final
 
     def _run_critic(
         self,
@@ -641,6 +762,7 @@ class AiResolutionLayer:
                 "batches": budget.batches_started,
                 "critic_passes": budget.critic_passes,
                 "vision_items": budget.vision_items,
+                "vision_calls": self.vision_calls,
                 "model_calls": self.model_calls,
                 "model_failures": self.failures,
                 "model_timeouts": self.timeouts,
