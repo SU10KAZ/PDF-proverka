@@ -40,6 +40,11 @@ _REQUIRED_FACT_FIELDS = {
     "outcome",
     "confidence",
 }
+_NOT_APPLICABLE_FIELDS = {
+    "source_evidence_ref",
+    "reason_code",
+    "provenance",
+}
 
 
 def stage3_evidence_ref(group: Mapping[str, Any], bucket: str, item: Mapping[str, Any]) -> str:
@@ -175,10 +180,37 @@ def _normalize_fact(
     return normalized
 
 
+def _normalize_not_applicable(
+    value: Mapping[str, Any],
+    *,
+    available_evidence: Mapping[str, str],
+) -> dict[str, Any]:
+    if not isinstance(value, Mapping) or set(value) != _NOT_APPLICABLE_FIELDS:
+        raise ValueError("not applicable source evidence: invalid fields")
+    source_ref = _reference(
+        value.get("source_evidence_ref"), "source_evidence_ref"
+    )
+    if source_ref not in available_evidence:
+        raise ValueError(
+            "not applicable source evidence references unknown Stage 3 evidence"
+        )
+    reason_code = _reference(value.get("reason_code"), "reason_code")
+    provenance = value.get("provenance")
+    if not isinstance(provenance, Mapping) or not provenance:
+        raise ValueError("not applicable source evidence.provenance: object required")
+    return {
+        "source_evidence_ref": source_ref,
+        "source_evidence_signature": available_evidence[source_ref],
+        "reason_code": reason_code,
+        "provenance": dict(provenance),
+    }
+
+
 def build_semantic_validation(
     text_differences: Mapping[str, Any],
     facts: Iterable[Mapping[str, Any]] = (),
     *,
+    not_applicable_source_evidence: Iterable[Mapping[str, Any]] = (),
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     evidence = list(iter_stage3_evidence(text_differences))
@@ -195,6 +227,23 @@ def build_semantic_validation(
     ids = [item["fact_id"] for item in normalized]
     if len(ids) != len(set(ids)):
         raise ValueError("semantic facts contain duplicate fact_id")
+    normalized_not_applicable = sorted(
+        (
+            _normalize_not_applicable(value, available_evidence=available)
+            for value in not_applicable_source_evidence
+        ),
+        key=lambda item: item["source_evidence_ref"],
+    )
+    not_applicable_refs = [
+        item["source_evidence_ref"] for item in normalized_not_applicable
+    ]
+    if len(not_applicable_refs) != len(set(not_applicable_refs)):
+        raise ValueError("not applicable source evidence contains duplicate reference")
+    fact_refs = {item["source_evidence_ref"] for item in normalized}
+    if fact_refs & set(not_applicable_refs):
+        raise ValueError(
+            "source evidence cannot be both factual and not applicable"
+        )
     stage3_signature = stage3_content_signature(text_differences)
     return {
         "kind": KIND,
@@ -206,13 +255,23 @@ def build_semantic_validation(
             "stage3_signature": stage3_signature,
             "stage3_source_signature": text_differences.get("source_signature"),
             "facts": normalized,
+            "not_applicable_source_evidence": normalized_not_applicable,
         }),
         "stage3_signature": stage3_signature,
         "stage3_source_signature": text_differences.get("source_signature"),
         "facts": normalized,
+        "not_applicable_source_evidence": normalized_not_applicable,
         "unresolved_source_evidence": sorted(
-            set(available) - {item["source_evidence_ref"] for item in normalized}
+            set(available) - fact_refs - set(not_applicable_refs)
         ),
+        "diagnostics": {
+            "stage3_evidence": len(available),
+            "facts": len(normalized),
+            "not_applicable_source_evidence": len(normalized_not_applicable),
+            "unresolved_source_evidence": len(
+                set(available) - fact_refs - set(not_applicable_refs)
+            ),
+        },
         "provenance": {
             "producer": PRODUCER_VERSION,
             "uses_model": False,

@@ -82,6 +82,19 @@ def test_group_identity_is_order_independent():
     assert first == second
 
 
+def test_normalizing_prepared_group_preserves_relation_status():
+    first = normalize_comparison_groups([{
+        "id": "relation-1",
+        "left_pages": [10],
+        "right_pages": [24],
+        "relation_type": "MATCHED",
+        "status": "POSSIBLE",
+    }])
+
+    assert normalize_comparison_groups(first) == first
+    assert first[0]["relation_status"] == "POSSIBLE"
+
+
 def test_file_identity_detects_same_size_and_mtime_content_rewrite(tmp_path):
     source = tmp_path / "source.md"
     source.write_text("220", encoding="utf-8")

@@ -142,6 +142,7 @@ def build_text_atoms(
         raise ValueError("Stage 3 text differences artifact required")
     stage3_signature = stage3_content_signature(text_differences)
     facts_by_evidence: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
+    not_applicable_by_evidence: dict[str, Mapping[str, Any]] = {}
     if semantic_validation is not None:
         if (
             semantic_validation.get("kind") != STAGE4_KIND
@@ -154,6 +155,17 @@ def build_text_atoms(
             if not isinstance(fact, Mapping):
                 raise ValueError("Stage 4 fact must be an object")
             facts_by_evidence[str(fact.get("source_evidence_ref") or "")].append(fact)
+        for item in semantic_validation.get("not_applicable_source_evidence") or []:
+            if not isinstance(item, Mapping):
+                raise ValueError("Stage 4 not applicable evidence must be an object")
+            source_ref = str(item.get("source_evidence_ref") or "")
+            if not source_ref or source_ref in not_applicable_by_evidence:
+                raise ValueError("Stage 4 not applicable evidence reference invalid")
+            if source_ref in facts_by_evidence:
+                raise ValueError(
+                    "Stage 4 evidence cannot be both factual and not applicable"
+                )
+            not_applicable_by_evidence[source_ref] = item
 
     source_artifact = {
         "kind": STAGE3_KIND,
@@ -162,9 +174,16 @@ def build_text_atoms(
     }
     atoms = []
     unresolved = []
+    not_applicable = []
     source_count = 0
     for source_ref, group, bucket, item in iter_stage3_evidence(text_differences):
         source_count += 1
+        if source_ref in not_applicable_by_evidence:
+            not_applicable.append({
+                "source_evidence_ref": source_ref,
+                "reason_code": not_applicable_by_evidence[source_ref].get("reason_code"),
+            })
+            continue
         facts = sorted(facts_by_evidence.get(source_ref, []), key=lambda fact: str(fact.get("fact_id") or ""))
         if not facts:
             unresolved.append(source_ref)
@@ -203,6 +222,17 @@ def build_text_atoms(
             "stage3_evidence": source_count,
             "atoms": len(atoms),
             "unresolved_source_evidence": sorted(unresolved),
+            "not_applicable_source_evidence": sorted(
+                not_applicable,
+                key=lambda value: value["source_evidence_ref"],
+            ),
+            "not_applicable_count": len(not_applicable),
+            "automatic_atoms": sum(
+                atom.get("review_status") == "CONFIRMED" for atom in atoms
+            ),
+            "review_required_atoms": sum(
+                atom.get("review_status") == "REVIEW_REQUIRED" for atom in atoms
+            ),
             "one_property_per_atom": True,
             "legacy_stage5_used": False,
             "legacy_stage53_used": False,

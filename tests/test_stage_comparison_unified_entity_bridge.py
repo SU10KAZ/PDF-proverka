@@ -96,6 +96,9 @@ def test_normalizer_preserves_original_and_unifies_supported_designations():
     assert {item["canonical"] for item in normalized} == {"VRU_A"}
     assert normalize_entity_name("ЩР-1")["canonical"] == "PANEL_1"
     assert normalize_entity_name("ЩР1")["canonical"] == "PANEL_1"
+    assert normalize_entity_name("ШР-1")["canonical"] == "PANEL_1"
+    assert normalize_entity_name("ШР1")["canonical"] == "PANEL_1"
+    assert normalize_entity_name("SHR-1")["canonical"] == "PANEL_1"
     assert normalize_entity_name("Помещение 101")["canonical"] == "ROOM_101"
     assert normalize_entity_name("ROOM-101")["canonical"] == "ROOM_101"
     assert normalize_entity_name("вручную")["canonical"] == "ВРУЧНУЮ"

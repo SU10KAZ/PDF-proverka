@@ -30,6 +30,7 @@ _PREFIX_ALIASES = (
     ("ВРУ", "VRU"),
     ("VRU", "VRU"),
     ("ЩР", "PANEL"),
+    ("ШР", "PANEL"),
     ("SHR", "PANEL"),
 )
 
