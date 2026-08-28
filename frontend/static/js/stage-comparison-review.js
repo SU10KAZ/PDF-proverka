@@ -7,6 +7,73 @@
 
     const REVIEW_DECISIONS = ['PENDING_REVIEW', 'APPROVED', 'REJECTED'];
     const QUESTION_CATEGORIES = ['SHEET', 'ENTITY', 'CHANGE'];
+    const PIPELINE_STATUSES = [
+        'NOT_STARTED', 'RUNNING', 'NEEDS_REVIEW', 'COMPLETED',
+        'FAILED', 'PARTIAL', 'NOT_APPLICABLE',
+    ];
+
+    const REASON_LABELS = {
+        COMPLEX_SHEET_RELATION_REQUIRES_EXPLICIT_GRAPHIC_SCOPE:
+            'Для части листов графическое сравнение не выполнено: один лист соответствует нескольким. Групповое графическое сравнение пока не поддерживается.',
+        GROUPED_GRAPHIC_COMPARISON_NOT_SUPPORTED:
+            'Связь 1→N или N→1 сохранена для ручной проверки: групповое графическое сравнение пока не поддерживается.',
+        GROUPED_PAGE_CARDINALITY_REQUIRES_NEW_COMPARATOR:
+            'Выбранная группа листов не поддерживается текущим постраничным графическим компаратором.',
+        AMBIGUOUS_PREPARED_GRAPHIC_BLOCKS:
+            'На сопоставленном листе найдено несколько графических блоков. Нужно уточнить пару; первый блок автоматически не выбирается.',
+        MULTIPLE_PREPARED_GRAPHIC_BLOCKS_ON_MATCHED_SHEET:
+            'На сопоставленном листе найдено несколько графических блоков. Нужно уточнить пару; первый блок автоматически не выбирается.',
+        MULTI_BLOCK_CORRESPONDENCE_NOT_IN_G1:
+            'Однозначная пара графических блоков не доказана. Нужно выбрать соответствующие блоки вручную.',
+        NO_PREPARED_GRAPHIC_BLOCK_ON_MATCHED_SHEET:
+            'На сопоставленных листах нет подготовленной графики для сравнения.',
+        NO_CLIENT_GRAPHIC_BLOCK_IN_EFFECTIVE_SHEET_SCOPE:
+            'Выбранные графические блоки не входят в текущую область сопоставленных листов.',
+        PAGE_ACTION_INVALIDATES_EXPLICIT_BLOCK_SCOPE:
+            'Изменение области листов исключило ранее выбранные графические блоки; нужен новый выбор.',
+        VISION_REQUIRED:
+            'Детерминированный маршрутизатор не смог завершить графическое сравнение; требуется visual fallback.',
+        EXTRACTION_COMPLETENESS_INSUFFICIENT:
+            'Извлечённая геометрия не покрывает видимую графику достаточно полно. Нужен visual fallback или ручная проверка.',
+        RASTER_BACKED_SOURCE:
+            'Источник содержит растровую графику, которую нельзя надёжно проверить только по векторной геометрии.',
+        TEXT_AS_CURVES_ASYMMETRY:
+            'На сторонах различается представление текста как текста и кривых; автоматическое сравнение остановлено.',
+        REGISTRATION_FAILED:
+            'Графические области не удалось надёжно совместить; результат оставлен для visual fallback или ручной проверки.',
+        LOW_MATCHED_GRAPHIC_COVERAGE:
+            'После совмещения подтверждена слишком малая доля графики; автоматический вывод запрещён.',
+        GRAPHIC_ROUTE_UNAVAILABLE:
+            'Графический маршрут не определён; результат оставлен для проверки.',
+        NO_GRAPHIC_COMPARISON:
+            'Маршрутизатор подтвердил, что графическое сравнение к этой паре неприменимо.',
+        SHEET_RELATION_REQUIRES_REVIEW:
+            'Связь листов недостаточно уверенна для автоматического графического сравнения; нужно подтверждение инженера.',
+        SHEET_RELATION_UNCONFIRMED:
+            'Структурированные свойства найдены, но соответствие листов ещё не подтверждено.',
+        OPPOSITE_SIDE_STRUCTURED_COVERAGE_INCOMPLETE:
+            'На одной стороне нет полного структурированного покрытия. Свойства показаны для проверки, но не объявлены изменениями.',
+        UNRESOLVED_TEXT_STRUCTURE:
+            'Часть текста не имеет достаточно строгой структуры для автоматической классификации.',
+        TEXT_SOURCE_MISSING:
+            'Не найден один из исходных файлов текстовой подготовки.',
+        TEXT_SOURCE_DECODING_FAILED:
+            'Исходный текст не удалось прочитать в ожидаемой кодировке.',
+        TEXT_SOURCE_READ_FAILED:
+            'Не удалось прочитать исходный PDF или Markdown.',
+        TEXT_PIPELINE_VALIDATION_FAILED:
+            'Текстовый артефакт не прошёл проверку production-контракта.',
+        TEXT_EXTRACTION_UNAVAILABLE:
+            'Текстовую подготовку не удалось завершить; подробности доступны в диагностике.',
+        FileNotFoundError:
+            'Один из нужных файлов подготовки не найден.',
+        UnicodeDecodeError:
+            'Исходный текст не удалось прочитать в ожидаемой кодировке.',
+        ValueError:
+            'Один из артефактов не прошёл проверку формата.',
+        RuntimeError:
+            'Детерминированный этап не смог завершиться.',
+    };
 
     function array(value) {
         return Array.isArray(value) ? value : [];
@@ -133,6 +200,118 @@
         return counts;
     }
 
+    function object(value) {
+        return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+    }
+
+    function finiteNumber(value) {
+        const normalized = Number(value);
+        return Number.isFinite(normalized) && normalized >= 0 ? normalized : null;
+    }
+
+    function firstNumber(sources, keys) {
+        for (const source of array(sources)) {
+            const candidate = object(source);
+            for (const key of array(keys)) {
+                const direct = finiteNumber(candidate[key]);
+                if (direct !== null) return direct;
+                const counted = finiteNumber(object(candidate.counts)[key]);
+                if (counted !== null) return counted;
+                const diagnostics = finiteNumber(object(candidate.diagnostics)[key]);
+                if (diagnostics !== null) return diagnostics;
+            }
+        }
+        return null;
+    }
+
+    function countersFrom(specs) {
+        return array(specs).map(spec => {
+            const value = firstNumber(spec.sources, spec.keys);
+            return value === null ? null : {label: spec.label, value};
+        }).filter(Boolean);
+    }
+
+    function normalizePipelineStatus(value) {
+        const status = String(value || '').toUpperCase();
+        if (['COMPLETED', 'READY', 'VALID', 'ABSENT'].includes(status)) return 'COMPLETED';
+        if (['RUNNING', 'IN_PROGRESS', 'PROCESSING'].includes(status)) return 'RUNNING';
+        if (['NEEDS_REVIEW', 'REVIEW_REQUIRED', 'PENDING_REVIEW'].includes(status)) {
+            return 'NEEDS_REVIEW';
+        }
+        if (['FAILED', 'ERROR'].includes(status)) return 'FAILED';
+        if (['PARTIAL', 'CHECK_BLOCKED', 'NOT_CHECKED', 'BLOCKED'].includes(status)) {
+            return 'PARTIAL';
+        }
+        if (['NOT_APPLICABLE', 'SKIPPED'].includes(status)) return 'NOT_APPLICABLE';
+        return 'NOT_STARTED';
+    }
+
+    function statusOf(source) {
+        const value = object(source);
+        return normalizePipelineStatus(value.status || value.source_state);
+    }
+
+    function aggregatePipelineStatus(values) {
+        const statuses = array(values).map(value => (
+            PIPELINE_STATUSES.includes(value) ? value : normalizePipelineStatus(value)
+        )).filter(Boolean);
+        if (!statuses.length || statuses.every(value => value === 'NOT_STARTED')) return 'NOT_STARTED';
+        if (statuses.includes('FAILED')) return 'FAILED';
+        if (statuses.includes('RUNNING')) return 'RUNNING';
+        if (statuses.includes('NEEDS_REVIEW')) return 'NEEDS_REVIEW';
+        if (statuses.includes('PARTIAL')) return 'PARTIAL';
+        if (statuses.every(value => value === 'NOT_APPLICABLE')) return 'NOT_APPLICABLE';
+        if (statuses.includes('COMPLETED') && statuses.includes('NOT_APPLICABLE')) return 'PARTIAL';
+        if (statuses.includes('COMPLETED')) return 'COMPLETED';
+        return statuses[0] || 'NOT_STARTED';
+    }
+
+    function collectReasonCodes(values) {
+        const found = [];
+        const visited = new Set();
+        function add(value) {
+            const code = String(value || '').trim();
+            if (code && !found.includes(code)) found.push(code);
+        }
+        function visit(value, depth) {
+            if (!value || typeof value !== 'object' || visited.has(value) || depth > 4) return;
+            visited.add(value);
+            if (Array.isArray(value)) {
+                value.forEach(item => visit(item, depth + 1));
+                return;
+            }
+            add(value.reason_code);
+            array(value.reason_codes).forEach(add);
+            Object.entries(value).forEach(([key, item]) => {
+                if (['reason_code', 'reason_codes'].includes(key)) return;
+                if (['diagnostics', 'group_results', 'groups', 'substage_results', 'router'].includes(key)) {
+                    visit(item, depth + 1);
+                }
+            });
+        }
+        array(values).forEach(value => visit(value, 0));
+        return found;
+    }
+
+    function humanizeReasonCode(value) {
+        const code = String(value || '').trim();
+        if (!code) return '';
+        const normalized = code.toUpperCase();
+        return REASON_LABELS[code] || REASON_LABELS[normalized]
+            || 'Этап завершён с диагностикой. Внутренний код доступен в деталях.';
+    }
+
+    function reasonSummary(sources, stale) {
+        if (stale) {
+            return 'Результат относится к прежней версии входных данных; перед решениями нужен повторный запуск.';
+        }
+        const codes = collectReasonCodes(sources);
+        const mapped = codes.find(code => (
+            REASON_LABELS[code] || REASON_LABELS[String(code).toUpperCase()]
+        ));
+        return codes.length ? humanizeReasonCode(mapped || codes[0]) : '';
+    }
+
     function questionsFrom(payload) {
         if (Array.isArray(payload)) return payload;
         return array(payload && payload.questions);
@@ -199,6 +378,394 @@
                 raw: question,
             };
         });
+    }
+
+    function firstStage(values) {
+        return array(values).map(object).find(value => Object.keys(value).length) || {};
+    }
+
+    function substageRecord(id, label, source, fallback, specs, missingNote) {
+        const reported = Object.keys(object(source)).length > 0;
+        const effective = reported ? object(source) : object(fallback);
+        const sources = reported ? [source, fallback] : [fallback];
+        return {
+            id,
+            label,
+            status: Object.keys(effective).length ? statusOf(effective) : 'NOT_STARTED',
+            counters: countersFrom(array(specs).map(spec => ({...spec, sources}))),
+            reason: reasonSummary(sources, Boolean(effective.stale)),
+            reason_codes: collectReasonCodes(sources),
+            note: !reported && Object.keys(effective).length ? missingNote : '',
+            raw: reported ? object(source) : {},
+        };
+    }
+
+    function textPipelineSubstages(stages) {
+        const textStage = object(stages.text);
+        const nested = object(textStage.substages);
+        const components = object(textStage.components);
+        const preparation = firstStage([
+            stages.text_preparation, nested.preparation, components.preparation,
+            textStage.preparation,
+        ]);
+        const differences = firstStage([
+            stages.text_differences, nested.deterministic_diff, nested.differences,
+            components.deterministic_diff, textStage.deterministic_diff,
+        ]);
+        const semantic = firstStage([
+            stages.text_semantic_validation, nested.semantic_validation,
+            components.semantic_validation, textStage.semantic_validation,
+        ]);
+        const atoms = firstStage([
+            stages.text_atoms, nested.text_atoms, nested.atoms,
+            components.text_atoms, textStage.text_atoms,
+        ]);
+        const inheritedNote = 'Этап выполнен внутри TEXT; backend не опубликовал отдельную метрику.';
+        return [
+            substageRecord('text-preparation', 'Preparation', preparation, textStage, [
+                {label: 'Фрагменты', keys: ['fragments', 'fragment_count', 'fragments_total']},
+                {label: 'Группы', keys: ['groups', 'groups_total']},
+            ], inheritedNote),
+            substageRecord('text-diff', 'Deterministic Diff', differences, textStage, [
+                {label: 'Дельты', keys: ['deltas', 'differences', 'difference_count', 'deltas_total']},
+                {label: 'Изменено', keys: ['changed']},
+                {label: 'Добавлено', keys: ['added']},
+                {label: 'Удалено', keys: ['removed']},
+            ], inheritedNote),
+            substageRecord('text-semantic', 'Semantic Validation', semantic, textStage, [
+                {label: 'Факты', keys: ['facts', 'facts_total', 'validated_facts']},
+                {label: 'Автоматически', keys: ['automatic', 'automatic_facts', 'validated']},
+                {label: 'На проверку', keys: ['review_required', 'unresolved']},
+                {label: 'Неприменимо', keys: ['not_applicable']},
+            ], inheritedNote),
+            substageRecord('text-atoms', 'Text Atoms', atoms, textStage, [
+                {label: 'Атомы', keys: ['atoms', 'atom_count', 'atoms_total']},
+                {label: 'Автоматически', keys: ['automatic_atoms', 'automatic']},
+                {label: 'На проверку', keys: ['review_required', 'review_atoms']},
+                {label: 'Неприменимо', keys: ['not_applicable']},
+            ], inheritedNote),
+        ];
+    }
+
+    function graphicPipelineSubstages(stages) {
+        const graphic = object(stages.graphic);
+        const nested = object(graphic.substages);
+        const components = object(graphic.components);
+        const results = array(graphic.group_results);
+        const route = String(graphic.route || '').toUpperCase();
+        const mode = String(graphic.mode || '').toUpperCase();
+        const explicitRouter = firstStage([
+            stages.graphic_router, nested.router, components.router, graphic.router,
+        ]);
+        const router = substageRecord('graphic-router', 'Router', explicitRouter, graphic, [
+            {label: 'Группы', keys: ['groups_total']},
+            {label: 'Готово', keys: ['groups_completed']},
+            {label: 'Заблокировано', keys: ['groups_blocked']},
+        ], 'Маршрутизация опубликована в общем GRAPHIC stage.');
+
+        function derivedBranch(id, label, names, selected) {
+            const explicit = firstStage(names);
+            if (Object.keys(explicit).length) {
+                return substageRecord(id, label, explicit, graphic, [
+                    {label: 'Группы', keys: ['groups', 'groups_total', 'groups_completed']},
+                    {label: 'Изменения', keys: ['changes']},
+                ], '');
+            }
+            const selectedResults = results.filter(selected);
+            if (selectedResults.length) {
+                return {
+                    id,
+                    label,
+                    status: aggregatePipelineStatus(selectedResults.map(statusOf)),
+                    counters: [
+                        {label: 'Группы', value: selectedResults.length},
+                        {label: 'Изменения', value: selectedResults.reduce(
+                            (sum, item) => sum + (finiteNumber(item.changes) || 0), 0,
+                        )},
+                    ],
+                    reason: reasonSummary(selectedResults, Boolean(graphic.stale)),
+                    reason_codes: collectReasonCodes(selectedResults),
+                    note: '',
+                    raw: {group_results: selectedResults},
+                };
+            }
+            const branchSelected = selected({route, mode});
+            return {
+                id,
+                label,
+                status: !Object.keys(graphic).length
+                    ? 'NOT_STARTED'
+                    : branchSelected ? statusOf(graphic) : 'NOT_APPLICABLE',
+                counters: branchSelected ? countersFrom([
+                    {label: 'Изменения', keys: ['changes'], sources: [graphic]},
+                ]) : [],
+                reason: branchSelected ? reasonSummary([graphic], Boolean(graphic.stale)) : '',
+                reason_codes: branchSelected ? collectReasonCodes([graphic]) : [],
+                note: branchSelected ? 'Отдельная метрика ветки backend не опубликована.' : '',
+                raw: {},
+            };
+        }
+
+        const mode1 = derivedBranch(
+            'graphic-mode-1', 'MODE 1',
+            [stages.graphic_mode_1, nested.mode_1, components.mode_1, graphic.mode_1],
+            item => String(item.route || route).toUpperCase() === 'MODE_1_APPLICABLE'
+                || String(item.mode || mode).toUpperCase() === 'MODE_1',
+        );
+        const mode2 = derivedBranch(
+            'graphic-mode-2', 'MODE 2',
+            [stages.graphic_mode_2, nested.mode_2, components.mode_2, graphic.mode_2],
+            item => String(item.route || route).toUpperCase() === 'MODE_2_REQUIRED'
+                || String(item.mode || mode).toUpperCase() === 'MODE_2',
+        );
+        const vision = derivedBranch(
+            'graphic-vision', 'Vision fallback',
+            [stages.graphic_vision, nested.vision, nested.vision_fallback,
+                components.vision, graphic.vision_fallback],
+            item => String(item.route || route).toUpperCase() === 'VISION_REQUIRED'
+                || String(item.mode || mode).toUpperCase() === 'VISION',
+        );
+        if (vision.status === 'PARTIAL' && (route === 'VISION_REQUIRED' || mode === 'VISION')) {
+            vision.status = 'NEEDS_REVIEW';
+        }
+        return [router, mode1, mode2, vision];
+    }
+
+    function pipelineStatusLabel(value) {
+        return ({
+            NOT_STARTED: 'Не начато',
+            RUNNING: 'Выполняется',
+            NEEDS_REVIEW: 'Нужна проверка',
+            COMPLETED: 'Готово',
+            FAILED: 'Ошибка',
+            PARTIAL: 'Частично',
+            NOT_APPLICABLE: 'Неприменимо',
+        })[normalizePipelineStatus(value)] || 'Не начато';
+    }
+
+    function normalizeProductionPipeline(payload) {
+        const wrapper = object(payload);
+        const state = object(wrapper.state);
+        const stages = object(state.stages);
+        const questionsArtifact = wrapper.questions;
+        const changesArtifact = wrapper.changes;
+        const finalReport = object(wrapper.final_report || wrapper.finalReport);
+        const stale = Boolean(state.stale);
+        const selection = object(state.selection);
+        const questionRows = normalizeQuestions(questionsArtifact);
+        const questionCounts = normalizeQuestionCounts(questionsArtifact);
+        const questionsStage = object(stages.review_questions);
+        const explicitQuestionTotal = firstNumber([questionsStage], ['questions', 'total']);
+        const questionTotal = questionRows.length || questionCounts.total
+            || explicitQuestionTotal || 0;
+        const explicitAnswered = firstNumber([questionsStage], ['answered', 'answers']);
+        const answeredKnown = questionRows.length > 0
+            || Boolean(object(questionsArtifact).questions)
+            || explicitAnswered !== null;
+        const answered = questionRows.length
+            ? questionRows.filter(question => Boolean(String(question.answer || '').trim())
+                || ['ANSWERED', 'RESOLVED', 'CLOSED'].includes(question.status)).length
+            : (explicitAnswered === null ? 0 : explicitAnswered);
+        const reviewRows = normalizeRows(changesArtifact);
+        const persistedCounts = reviewCounts(reviewRows);
+        const decisionsStage = object(stages.engineer_decisions);
+        const decisionsCounts = object(decisionsStage.counts);
+        const hasReviewRows = Array.isArray(changesArtifact)
+            || Array.isArray(object(changesArtifact).rows);
+        const stageReviewTotal = firstNumber([decisionsCounts], ['total']);
+        const rowsAreAuthoritative = hasReviewRows
+            && (reviewRows.length > 0 || stageReviewTotal === null || stageReviewTotal === 0);
+        const reviewTotal = rowsAreAuthoritative
+            ? persistedCounts.total
+            : (stageReviewTotal || 0);
+        const reviewApproved = rowsAreAuthoritative
+            ? persistedCounts.APPROVED
+            : (firstNumber([decisionsCounts], ['APPROVED', 'approved']) || 0);
+        const reviewRejected = rowsAreAuthoritative
+            ? persistedCounts.REJECTED
+            : (firstNumber([decisionsCounts], ['REJECTED', 'rejected']) || 0);
+        const reviewPending = rowsAreAuthoritative
+            ? persistedCounts.PENDING_REVIEW
+            : (firstNumber([decisionsCounts], ['PENDING_REVIEW', 'pending']) || 0);
+        const finalStage = object(stages.final_report);
+        const finalApproved = firstNumber([
+            object(finalReport.summary), finalStage,
+        ], ['approved']);
+        const approvedInReport = finalApproved !== null
+            ? finalApproved
+            : array(finalReport.approved_atomic_changes).length;
+
+        function stageRecord(id, number, label, status, counters, sources, destination, extra) {
+            const sourceList = array(sources);
+            return {
+                id, number, label,
+                status,
+                status_label: pipelineStatusLabel(status),
+                counters: array(counters),
+                reason: reasonSummary(sourceList, stale),
+                reason_codes: collectReasonCodes(sourceList),
+                destination,
+                raw: sourceList.reduce((result, source, index) => {
+                    if (source && typeof source === 'object' && Object.keys(source).length) {
+                        result[`source_${index + 1}`] = source;
+                    }
+                    return result;
+                }, {}),
+                ...(extra || {}),
+            };
+        }
+
+        const selectionCounters = [];
+        if (Array.isArray(selection.left_pages) && selection.left_pages.length) {
+            selectionCounters.push({label: 'LEFT листы', value: selection.left_pages.length});
+        }
+        if (Array.isArray(selection.right_pages) && selection.right_pages.length) {
+            selectionCounters.push({label: 'RIGHT листы', value: selection.right_pages.length});
+        }
+        const selectionStatus = Object.keys(selection).length ? 'COMPLETED'
+            : normalizePipelineStatus(state.status);
+        const sheetMatching = object(stages.sheet_matching);
+        const sheetScope = object(stages.sheet_scope);
+        const sheetCounters = countersFrom([
+            {label: 'Связи', keys: ['relations'], sources: [sheetMatching]},
+            {label: 'Группы', keys: ['groups'], sources: [sheetScope]},
+        ]);
+        const relationCounts = firstStage([
+            sheetMatching.relation_counts, sheetMatching.counts,
+            object(sheetMatching.diagnostics).relation_counts,
+        ]);
+        [
+            ['HIGH', 'HIGH'], ['POSSIBLE', 'POSSIBLE'], ['SPLIT', 'SPLIT'],
+            ['MERGED', 'MERGED'], ['NO_MATCH', 'Без пары'],
+        ].forEach(([key, label]) => {
+            const value = finiteNumber(relationCounts[key]);
+            if (value !== null) sheetCounters.push({label, value});
+        });
+
+        const text = object(stages.text);
+        const graphic = object(stages.graphic);
+        const textSubstages = textPipelineSubstages(stages);
+        const graphicSubstages = graphicPipelineSubstages(stages);
+        const contentCounters = countersFrom([
+            {label: 'TEXT дельты', keys: ['deltas', 'differences', 'deltas_total'], sources: [text]},
+            {label: 'TEXT атомы', keys: ['atoms', 'atoms_total'], sources: [text]},
+            {label: 'TEXT авто', keys: ['automatic_atoms', 'automatic'], sources: [text]},
+            {label: 'TEXT на проверку', keys: ['review_required', 'review_atoms'], sources: [text]},
+            {label: 'TEXT неприменимо', keys: ['not_applicable'], sources: [text]},
+            {label: 'GRAPHIC группы', keys: ['groups_total'], sources: [graphic]},
+            {label: 'GRAPHIC готово', keys: ['groups_completed'], sources: [graphic]},
+            {label: 'GRAPHIC неприменимо', keys: ['groups_not_applicable', 'not_applicable'], sources: [graphic]},
+            {label: 'GRAPHIC на проверку', keys: ['groups_review_required', 'review_required'], sources: [graphic]},
+            {label: 'GRAPHIC изменения', keys: ['changes'], sources: [graphic]},
+        ]);
+
+        const entityMatching = object(stages.entity_matching);
+        const entityBinding = object(stages.effective_entity_binding);
+        const rawBinding = object(stages.entity_binding);
+        const reviewApplication = object(stages.review_application);
+        const automaticSynthesis = object(stages.automatic_unified_synthesis);
+        const synthesis = object(stages.unified_synthesis);
+
+        const questionCategoryCounters = questionCounts.total || questionRows.length
+            ? [
+                {label: 'Листы', value: questionCounts.SHEET},
+                {label: 'Объекты', value: questionCounts.ENTITY},
+                {label: 'Изменения', value: questionCounts.CHANGE},
+            ]
+            : [];
+        if (questionTotal || answeredKnown) {
+            questionCategoryCounters.push({
+                label: 'Ответы', value: answeredKnown ? `${answered} / ${questionTotal}` : `— / ${questionTotal}`,
+            });
+        }
+        const categoryDetails = QUESTION_CATEGORIES.map(category => ({
+            category,
+            label: ({SHEET: 'Листы', ENTITY: 'Объекты', CHANGE: 'Изменения'})[category],
+            total: questionCounts[category],
+            answered: questionRows.filter(question => question.category === category
+                && (Boolean(String(question.answer || '').trim())
+                    || ['ANSWERED', 'RESOLVED', 'CLOSED'].includes(question.status))).length,
+        }));
+        const questionStatus = statusOf(questionsStage) === 'FAILED'
+            ? 'FAILED'
+            : questionTotal > answered ? 'NEEDS_REVIEW'
+                : Object.keys(questionsStage).length ? 'COMPLETED' : 'NOT_STARTED';
+        const reviewStatus = statusOf(decisionsStage) === 'FAILED'
+            ? 'FAILED'
+            : reviewPending > 0 ? 'NEEDS_REVIEW'
+                : Object.keys(decisionsStage).length || hasReviewRows ? 'COMPLETED' : 'NOT_STARTED';
+        const reviewCounters = Object.keys(decisionsStage).length || hasReviewRows ? [
+            {label: 'Найдено', value: reviewTotal},
+            {label: 'APPROVED', value: reviewApproved},
+            {label: 'REJECTED', value: reviewRejected},
+            {label: 'PENDING', value: reviewPending},
+        ] : [];
+        const reportCounters = Object.keys(finalStage).length || Object.keys(finalReport).length ? [
+            {label: 'Найдено', value: reviewTotal},
+            {label: 'APPROVED', value: reviewApproved},
+            {label: 'REJECTED', value: reviewRejected},
+            {label: 'PENDING', value: reviewPending},
+            {label: 'Войдёт в отчёт', value: approvedInReport},
+        ] : [];
+
+        return [
+            stageRecord('selection', 1, 'Выбор сравнения', selectionStatus,
+                selectionCounters, [selection], {tab: 'upload'}, {
+                    details: [selection.input_mode || state.input_mode
+                        ? `Режим: ${selection.input_mode || state.input_mode}` : ''],
+                }),
+            stageRecord('sheets', 2, 'Сопоставление листов',
+                aggregatePipelineStatus([statusOf(sheetMatching), statusOf(sheetScope)]),
+                sheetCounters, [sheetMatching, sheetScope], {tab: 'links'}),
+            stageRecord('content', 3, 'Анализ содержимого',
+                aggregatePipelineStatus([statusOf(text), statusOf(graphic)]),
+                contentCounters, [text, graphic], {tab: 'diffs', anchor: 'sc-production-review-stage'}, {
+                    sections: [
+                        {id: 'text', label: 'TEXT', substages: textSubstages},
+                        {id: 'graphic', label: 'GRAPHIC', substages: graphicSubstages},
+                    ],
+                }),
+            stageRecord('objects', 4, 'Сопоставление объектов',
+                aggregatePipelineStatus([
+                    statusOf(entityMatching), statusOf(entityBinding), statusOf(rawBinding),
+                ]), countersFrom([
+                    {label: 'Связи', keys: ['relations'], sources: [entityMatching]},
+                    {label: 'Связано атомов', keys: ['bound_atoms'], sources: [entityBinding, rawBinding]},
+                ]), [entityMatching, entityBinding, rawBinding],
+                {tab: 'diffs', anchor: 'sc-production-review-stage'}),
+            stageRecord('questions', 5, 'Вопросы инженеру', questionStatus,
+                questionCategoryCounters, [questionsStage],
+                {tab: 'diffs', anchor: 'sc-production-questions-stage'}, {
+                    progress: {answered: answeredKnown ? answered : null, total: questionTotal},
+                    categories: categoryDetails,
+                    reason: stale ? reasonSummary([questionsStage], true) : questionTotal > answered
+                        ? `Осталось ответить: ${questionTotal - answered}.`
+                        : '',
+                }),
+            stageRecord('synthesis', 6, 'Синтез изменений',
+                aggregatePipelineStatus([
+                    statusOf(automaticSynthesis), statusOf(reviewApplication), statusOf(synthesis),
+                ]), countersFrom([
+                    {label: 'Авто изменения', keys: ['changes'], sources: [automaticSynthesis]},
+                    {label: 'Авто на проверку', keys: ['review_items'], sources: [automaticSynthesis]},
+                    {label: 'Применено ответов', keys: ['applied_decisions'], sources: [reviewApplication]},
+                    {label: 'Итого изменений', keys: ['changes'], sources: [synthesis]},
+                    {label: 'Итого на проверку', keys: ['review_items'], sources: [synthesis]},
+                ]), [automaticSynthesis, reviewApplication, synthesis],
+                {tab: 'diffs', anchor: 'sc-production-review-stage'}),
+            stageRecord('review', 7, 'Проверка инженером', reviewStatus,
+                reviewCounters, [decisionsStage], {tab: 'diffs', anchor: 'sc-production-review-table'}, {
+                    reason: stale ? reasonSummary([decisionsStage], true) : reviewPending > 0
+                        ? `Без решения инженера: ${reviewPending}.`
+                        : '',
+                }),
+            stageRecord('report', 8, 'Итоговый отчёт',
+                Object.keys(finalStage).length || Object.keys(finalReport).length
+                    ? statusOf(finalStage.status ? finalStage : {status: 'COMPLETED'})
+                    : 'NOT_STARTED', reportCounters, [finalStage], {tab: 'report'}, {
+                    approved_only: object(finalReport.constraints).approved_only === true,
+                }),
+        ];
     }
 
     function point(value) {
@@ -556,18 +1123,23 @@
     }
 
     return {
+        PIPELINE_STATUSES,
         QUESTION_CATEGORIES,
         REVIEW_DECISIONS,
         decision,
         evidenceFocus,
+        humanizeReasonCode,
         normalizeEvidence,
         normalizeFinalRows,
+        normalizePipelineStatus,
+        normalizeProductionPipeline,
         normalizeQuestionCounts,
         normalizeQuestions,
         normalizeRows,
         normalizeSheetSuggestions,
         normalizeSuggestionApplication,
         pagesForSide,
+        pipelineStatusLabel,
         reviewCounts,
         text,
     };

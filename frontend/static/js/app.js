@@ -11943,11 +11943,19 @@ const app = createApp({
         const scProductionEvidenceVisible = ref(false);
         const scProductionEvidenceLoadingId = ref('');
         const scProductionEvidenceError = ref('');
+        const scProductionEvidenceReturn = ref(null);
+        const scProductionReturnTargetId = ref('');
+        const scProductionQuestionFocusCategory = ref('');
+        const scProductionPipelineExpanded = ref('');
         let scProductionEvidenceTimer = 0;
+        let scProductionReturnTimer = 0;
+        let scProductionQuestionFocusTimer = 0;
         let scProductionEvidenceToken = 0;
         onUnmounted(() => {
             scProductionEvidenceToken += 1;
             if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
+            if (scProductionReturnTimer) clearTimeout(scProductionReturnTimer);
+            if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
         });
         const scTextDifferenceFilterOptions = [
             {key: 'all', label: 'Все'},
@@ -12099,6 +12107,15 @@ const app = createApp({
             : {SHEET: 0, ENTITY: 0, CHANGE: 0, total: 0});
         const scProductionFinalRows = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeFinalRows(scProductionFinalReport.value)
+            : []);
+        const scProductionPipeline = computed(() => SC_PRODUCTION_REVIEW
+            && SC_PRODUCTION_REVIEW.normalizeProductionPipeline
+            ? SC_PRODUCTION_REVIEW.normalizeProductionPipeline({
+                state: scProductionState.value,
+                questions: scProductionQuestions.value,
+                changes: scProductionChanges.value,
+                final_report: scProductionFinalReport.value,
+            })
             : []);
         const scProductionSheetSuggestions = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeSheetSuggestions(scProductionState.value)
@@ -13484,6 +13501,10 @@ const app = createApp({
             scProductionEvidenceVisible.value = false;
             scProductionEvidenceLoadingId.value = '';
             scProductionEvidenceError.value = '';
+            scProductionEvidenceReturn.value = null;
+            scProductionReturnTargetId.value = '';
+            scProductionQuestionFocusCategory.value = '';
+            scProductionPipelineExpanded.value = '';
             scProductionLoading.value = false;
             scProductionRunLoading.value = false;
             scProductionDecisionsSaving.value = false;
@@ -13495,6 +13516,10 @@ const app = createApp({
             scProductionEvidenceToken += 1;
             if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
             scProductionEvidenceTimer = 0;
+            if (scProductionReturnTimer) clearTimeout(scProductionReturnTimer);
+            scProductionReturnTimer = 0;
+            if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
+            scProductionQuestionFocusTimer = 0;
         }
 
         function scProductionUrl(suffix) {
@@ -14350,6 +14375,66 @@ const app = createApp({
             })[action] || action;
         }
 
+        function scToggleProductionPipeline(stage) {
+            if (!stage) return;
+            scProductionPipelineExpanded.value = scProductionPipelineExpanded.value === stage.id
+                ? ''
+                : stage.id;
+        }
+
+        function scProductionPipelineStatusLabel(status) {
+            if (SC_PRODUCTION_REVIEW && SC_PRODUCTION_REVIEW.pipelineStatusLabel) {
+                return SC_PRODUCTION_REVIEW.pipelineStatusLabel(status);
+            }
+            return String(status || 'NOT_STARTED');
+        }
+
+        function scProductionPipelineDiagnostics(value) {
+            const raw = value && value.raw && typeof value.raw === 'object' ? value.raw : {};
+            const diagnostic = {
+                reason_codes: Array.isArray(value && value.reason_codes)
+                    ? value.reason_codes
+                    : [],
+                backend: raw,
+            };
+            try { return JSON.stringify(diagnostic, null, 2); } catch (_) { return String(diagnostic); }
+        }
+
+        async function scScrollToProductionElement(elementId) {
+            await nextTick();
+            const element = document.getElementById(elementId);
+            if (!element) return null;
+            element.scrollIntoView({behavior: 'smooth', block: 'center'});
+            return element;
+        }
+
+        async function scOpenProductionPipelineDestination(stage) {
+            if (!stage || !stage.destination) return;
+            const destination = stage.destination;
+            if (destination.tab) scTab.value = destination.tab;
+            if (destination.anchor) await scScrollToProductionElement(destination.anchor);
+        }
+
+        async function scOpenProductionQuestions(category) {
+            scTab.value = 'diffs';
+            const normalized = String(category || '').toUpperCase();
+            const section = await scScrollToProductionElement('sc-production-questions-stage');
+            if (!section || !normalized) return;
+            const question = [...section.querySelectorAll('[data-production-question-category]')]
+                .find(item => item.dataset.productionQuestionCategory === normalized);
+            if (!question) return;
+            question.scrollIntoView({behavior: 'smooth', block: 'center'});
+            const control = question.querySelector('select, input, textarea, button');
+            if (control && typeof control.focus === 'function') control.focus({preventScroll: true});
+            scProductionQuestionFocusCategory.value = normalized;
+            if (scProductionQuestionFocusTimer) clearTimeout(scProductionQuestionFocusTimer);
+            scProductionQuestionFocusTimer = setTimeout(() => {
+                if (scProductionQuestionFocusCategory.value === normalized) {
+                    scProductionQuestionFocusCategory.value = '';
+                }
+            }, 2600);
+        }
+
         function scProductionStateStatusLabel(status) {
             return ({
                 NOT_STARTED: 'не запущен',
@@ -14477,6 +14562,7 @@ const app = createApp({
 
         async function scOpenProductionEvidence(row) {
             if (!row || !scActivePair.value || scProductionEvidenceLoadingId.value) return;
+            const originTab = scTab.value;
             scProductionEvidenceLoadingId.value = row.target_id;
             scProductionEvidenceError.value = '';
             const token = ++scProductionEvidenceToken;
@@ -14488,6 +14574,10 @@ const app = createApp({
                 const evidence = SC_PRODUCTION_REVIEW.normalizeEvidence(data);
                 scProductionEvidence.value = evidence;
                 scProductionEvidenceVisible.value = true;
+                scProductionEvidenceReturn.value = {
+                    tab: originTab === 'links' ? 'diffs' : originTab,
+                    target_id: row.target_id,
+                };
                 scTab.value = 'links';
                 if (scViewMode.value !== 'paged') scSetViewMode('paged');
                 // Set both sides in the same turn. Do not use scFocusLeftPage:
@@ -14528,10 +14618,37 @@ const app = createApp({
             }
         }
 
-        function scCloseProductionEvidence() {
+        async function scReturnToProductionReviewRow() {
+            const destination = scProductionEvidenceReturn.value;
+            if (!destination || !destination.target_id) return;
+            const targetId = String(destination.target_id);
+            scCloseProductionEvidence({preserveReturn: true});
+            scProductionEvidenceReturn.value = null;
+            scTab.value = destination.tab || 'diffs';
+            await nextTick();
+            const row = [...document.querySelectorAll('[data-production-target-id]')]
+                .find(item => item.dataset.productionTargetId === targetId);
+            if (!row) {
+                await scScrollToProductionElement('sc-production-review-table');
+                return;
+            }
+            scProductionReturnTargetId.value = targetId;
+            row.scrollIntoView({behavior: 'smooth', block: 'center'});
+            const link = row.querySelector('.sc-production-evidence-link');
+            if (link && typeof link.focus === 'function') link.focus({preventScroll: true});
+            if (scProductionReturnTimer) clearTimeout(scProductionReturnTimer);
+            scProductionReturnTimer = setTimeout(() => {
+                if (scProductionReturnTargetId.value === targetId) {
+                    scProductionReturnTargetId.value = '';
+                }
+            }, 2800);
+        }
+
+        function scCloseProductionEvidence(options) {
             scProductionEvidenceToken += 1;
             scProductionEvidence.value = null;
             scProductionEvidenceVisible.value = false;
+            if (!options || !options.preserveReturn) scProductionEvidenceReturn.value = null;
             if (scProductionEvidenceTimer) clearTimeout(scProductionEvidenceTimer);
             scProductionEvidenceTimer = 0;
         }
@@ -17342,13 +17459,15 @@ const app = createApp({
             scProductionError, scProductionSaveMessage, scProductionInputMode,
             scProductionRows, scProductionCounts,
             scProductionQuestionRows, scProductionQuestionCounts,
-            scProductionFinalRows, scProductionSheetSuggestions,
+            scProductionFinalRows, scProductionPipeline, scProductionSheetSuggestions,
             scProductionStale, scProductionSuggestionSemantics, scProductionMutating,
             scProductionHasDirtyDecisions, scProductionHasDirtyAnswers,
             scProductionDecisionDrafts, scProductionQuestionDrafts,
             scProductionSuggestionActions, scProductionSuggestionApplications,
             scProductionEvidence, scProductionEvidenceVisible,
             scProductionEvidenceLoadingId, scProductionEvidenceError,
+            scProductionEvidenceReturn, scProductionReturnTargetId,
+            scProductionQuestionFocusCategory, scProductionPipelineExpanded,
             scLoadProductionReview, scDiscardProductionDrafts,
             scRunProductionComparison, scProductionRunBody,
             scProductionDecisionDraft, scProductionDecisionIsDirty,
@@ -17363,9 +17482,13 @@ const app = createApp({
             scProductionQuestionFieldRequired, scSaveProductionAnswers,
             scHandleProductionSheetSuggestion, scProductionSuggestionActionLabel,
             scProductionSuggestionStatus,
+            scToggleProductionPipeline, scProductionPipelineStatusLabel,
+            scProductionPipelineDiagnostics, scOpenProductionPipelineDestination,
+            scOpenProductionQuestions,
             scProductionStateStatusLabel, scProductionQuestionCategoryLabel,
             scProductionChangeStatusLabel, scProductionDecisionLabel,
             scOpenProductionEvidence, scCloseProductionEvidence,
+            scReturnToProductionReviewRow,
             scProductionEvidenceOverlaysFor, scProductionEvidenceOverlayStyle,
             scProductionEvidencePages, scProductionEvidenceSideNotice,
             scShowProductionEvidencePage,

@@ -378,6 +378,111 @@ describe('Stage Comparison production review helpers', () => {
       pipeline_rerun: false, this_update_reran: false,
     });
   });
+
+  it('normalizes the eight production stages from persisted state without invented percentages', () => {
+    const stages = review.normalizeProductionPipeline({
+      state: {
+        status: 'PARTIAL', input_mode: 'DOCUMENT', stale: false,
+        selection: {input_mode: 'DOCUMENT', left_pages: [], right_pages: []},
+        stages: {
+          sheet_matching: {status: 'COMPLETED', relations: 12, relation_counts: {HIGH: 4, SPLIT: 1}},
+          sheet_scope: {status: 'COMPLETED', groups: 5},
+          text: {
+            status: 'COMPLETED', atoms: 31, deltas: 47,
+            automatic_atoms: 31, review_required: 16,
+            substages: {
+              preparation: {status: 'COMPLETED', fragments: 80},
+              deterministic_diff: {status: 'COMPLETED', deltas: 47},
+              semantic_validation: {status: 'COMPLETED', facts: 31, review_required: 16},
+              text_atoms: {status: 'COMPLETED', atoms: 47, automatic_atoms: 31, review_required: 16},
+            },
+          },
+          graphic: {
+            status: 'CHECK_BLOCKED', changes: 4, groups_total: 6,
+            groups_completed: 4, groups_not_applicable: 2,
+            reason_code: 'document_graphic_groups_require_attention',
+            reason_codes: ['grouped_graphic_comparison_not_supported'],
+            group_results: [{
+              status: 'COMPLETED', route: 'MODE_1_APPLICABLE', mode: 'MODE_1', changes: 4,
+            }, {
+              status: 'NOT_APPLICABLE', reason_code: 'grouped_graphic_comparison_not_supported',
+            }],
+          },
+          entity_matching: {status: 'COMPLETED', relations: 9},
+          entity_binding: {status: 'COMPLETED', bound_atoms: 25},
+          effective_entity_binding: {status: 'COMPLETED', bound_atoms: 27},
+          review_questions: {status: 'COMPLETED', questions: 3},
+          review_application: {status: 'COMPLETED', applied_decisions: 1},
+          automatic_unified_synthesis: {status: 'COMPLETED', changes: 20, review_items: 7},
+          unified_synthesis: {status: 'COMPLETED', changes: 21, review_items: 6},
+          engineer_decisions: {status: 'READY', counts: {total: 3, APPROVED: 1, REJECTED: 1, PENDING_REVIEW: 1}},
+          final_report: {status: 'READY', approved: 1},
+        },
+      },
+      questions: {questions: [
+        {question_id: 'qs', category: 'SHEET', answer: 'YES'},
+        {question_id: 'qe', category: 'ENTITY'},
+        {question_id: 'qc', category: 'CHANGE', human_answer: {answer: 'NO'}},
+      ]},
+      changes: {rows: [row('approved', 'APPROVED'), row('rejected', 'REJECTED'), row('pending')]},
+      final_report: {summary: {approved: 1}, approved_atomic_changes: [change({change_id: 'approved'})], constraints: {approved_only: true}},
+    });
+
+    expect(stages).toHaveLength(8);
+    expect(stages.map(stage => stage.label)).toEqual([
+      'Выбор сравнения', 'Сопоставление листов', 'Анализ содержимого',
+      'Сопоставление объектов', 'Вопросы инженеру', 'Синтез изменений',
+      'Проверка инженером', 'Итоговый отчёт',
+    ]);
+    expect(stages[2].status).toBe('PARTIAL');
+    expect(stages[2].sections.map(section => section.label)).toEqual(['TEXT', 'GRAPHIC']);
+    expect(stages[2].sections[0].substages.map(stage => stage.label)).toEqual([
+      'Preparation', 'Deterministic Diff', 'Semantic Validation', 'Text Atoms',
+    ]);
+    expect(stages[2].sections[1].substages.map(stage => stage.label)).toEqual([
+      'Router', 'MODE 1', 'MODE 2', 'Vision fallback',
+    ]);
+    expect(stages[2].reason).toContain('групповое графическое сравнение');
+    expect(stages[2].reason).not.toContain('grouped_graphic_comparison_not_supported');
+    expect(stages[2].reason_codes).toContain('grouped_graphic_comparison_not_supported');
+    expect(stages[4]).toMatchObject({
+      status: 'NEEDS_REVIEW', progress: {answered: 2, total: 3},
+    });
+    expect(stages[4].categories.map(category => category.total)).toEqual([1, 1, 1]);
+    expect(stages[6].counters.map(counter => counter.value)).toEqual([3, 1, 1, 1]);
+    expect(stages[7].counters.map(counter => counter.value)).toEqual([3, 1, 1, 1, 1]);
+    expect(stages[7].approved_only).toBe(true);
+    expect(JSON.stringify(stages)).not.toContain('percentage');
+  });
+
+  it('keeps honest fallback substages when older TEXT state has only aggregate counters', () => {
+    const pipeline = review.normalizeProductionPipeline({
+      state: {selection: {input_mode: 'PAGE'}, stages: {
+        text: {status: 'COMPLETED', atoms: 7},
+        graphic: {status: 'NOT_APPLICABLE', reason_code: 'NO_PREPARED_GRAPHIC_BLOCK_ON_MATCHED_SHEET'},
+      }},
+    });
+
+    const content = pipeline[2];
+    expect(content.sections[0].substages).toHaveLength(4);
+    expect(content.sections[0].substages[0]).toMatchObject({
+      status: 'COMPLETED', counters: [],
+    });
+    expect(content.sections[0].substages[0].note).toContain('backend');
+    expect(content.sections[0].substages[3].counters).toEqual([{label: 'Атомы', value: 7}]);
+    expect(content.reason).toContain('нет подготовленной графики');
+  });
+
+  it('humanizes real document graphic and text coverage reason codes', () => {
+    expect(review.humanizeReasonCode('EXTRACTION_COMPLETENESS_INSUFFICIENT'))
+      .toContain('геометрия');
+    expect(review.humanizeReasonCode('opposite_side_structured_coverage_incomplete'))
+      .toContain('структурированного покрытия');
+    expect(review.humanizeReasonCode('MULTI_BLOCK_CORRESPONDENCE_NOT_IN_G1'))
+      .toContain('пара графических блоков');
+    expect(review.humanizeReasonCode('unknown_internal_code'))
+      .not.toContain('unknown_internal_code');
+  });
 });
 
 describe('Stage Comparison production review integration', () => {
@@ -477,6 +582,30 @@ describe('Stage Comparison production review integration', () => {
     expect(html).toContain('scShowProductionEvidencePage(side, page)');
     expect(app).toContain('scSetViewerEmpty(side, true)');
     expect(css).toContain('.sc-production-evidence-overlay');
+  });
+
+  it('renders the collapsible eight-stage pipeline and direct question/review/report destinations', () => {
+    expect(app).toContain('SC_PRODUCTION_REVIEW.normalizeProductionPipeline');
+    expect(app).toContain('scOpenProductionPipelineDestination');
+    expect(app).toContain('scOpenProductionQuestions');
+    expect(html).toContain('v-for="stage in scProductionPipeline"');
+    expect(html).toContain('scToggleProductionPipeline(stage)');
+    expect(html).toContain('Конвейер сравнения LEFT → RIGHT');
+    expect(html).toContain('v-for="section in stage.sections"');
+    expect(html).toContain('v-for="substage in section.substages"');
+    expect(html).toContain('scOpenProductionQuestions(category.category)');
+    expect(html).toContain('id="sc-production-review-table"');
+    expect(css).toContain('.sc-production-pipeline__rail');
+    expect(css).toContain('.sc-production-pipeline__content-sections');
+  });
+
+  it('offers a return from evidence to the exact atomic review row', () => {
+    expect(html).toContain('Вернуться к той же строке');
+    expect(html).toContain(':data-production-target-id="row.target_id"');
+    expect(app).toContain('scReturnToProductionReviewRow');
+    expect(app).toContain("document.querySelectorAll('[data-production-target-id]')");
+    expect(app).toContain("row.querySelector('.sc-production-evidence-link')");
+    expect(css).toContain('.sc-production-review__table tr.is-return-target');
   });
 
   it('keeps the legacy Stage Comparison tabs and discrepancy ledger intact', () => {

@@ -5429,6 +5429,123 @@
                 </div>
             </div>
 
+            <section v-if="scActivePair" class="sc-production-pipeline"
+                     :class="{'is-tight': scTab === 'links'}"
+                     aria-labelledby="sc-production-pipeline-title">
+                <header class="sc-production-pipeline__head">
+                    <div>
+                        <strong id="sc-production-pipeline-title">Конвейер сравнения LEFT → RIGHT</strong>
+                        <small>Статусы и счётчики из текущего production state</small>
+                    </div>
+                    <span v-if="scProductionStale" class="sc-production-pipeline__stale">устарел</span>
+                </header>
+                <div class="sc-production-pipeline__rail" role="list" aria-label="8 этапов сравнения">
+                    <button v-for="stage in scProductionPipeline" :key="stage.id" type="button"
+                            role="listitem" class="sc-production-pipeline__stage"
+                            :class="[
+                                'is-' + stage.status.toLowerCase(),
+                                {'is-expanded': scProductionPipelineExpanded === stage.id},
+                            ]"
+                            :aria-expanded="String(scProductionPipelineExpanded === stage.id)"
+                            :aria-controls="'sc-production-pipeline-detail-' + stage.id"
+                            @click="scToggleProductionPipeline(stage)">
+                        <span class="sc-production-pipeline__number">{{ stage.number }}</span>
+                        <span class="sc-production-pipeline__stage-copy">
+                            <b>{{ stage.label }}</b>
+                            <small>{{ scProductionPipelineStatusLabel(stage.status) }}</small>
+                        </span>
+                        <span v-if="stage.counters.length" class="sc-production-pipeline__mini-counters">
+                            <span v-for="counter in stage.counters.slice(0, 2)"
+                                  :key="stage.id + '-mini-' + counter.label">
+                                {{ counter.label }} <b>{{ counter.value }}</b>
+                            </span>
+                        </span>
+                        <span class="sc-production-pipeline__chevron" aria-hidden="true">
+                            {{ scProductionPipelineExpanded === stage.id ? '−' : '+' }}
+                        </span>
+                    </button>
+                </div>
+                <article v-for="stage in scProductionPipeline" :key="'pipeline-detail-' + stage.id"
+                         v-show="scProductionPipelineExpanded === stage.id"
+                         :id="'sc-production-pipeline-detail-' + stage.id"
+                         class="sc-production-pipeline__detail"
+                         :class="'is-' + stage.status.toLowerCase()">
+                    <header>
+                        <div>
+                            <span>Этап {{ stage.number }}</span>
+                            <strong>{{ stage.label }}</strong>
+                        </div>
+                        <span class="sc-production-pipeline__status">
+                            {{ scProductionPipelineStatusLabel(stage.status) }}
+                        </span>
+                    </header>
+                    <div v-if="stage.counters.length" class="sc-production-pipeline__counters">
+                        <span v-for="counter in stage.counters" :key="stage.id + '-' + counter.label">
+                            <small>{{ counter.label }}</small><b>{{ counter.value }}</b>
+                        </span>
+                    </div>
+                    <p v-if="stage.reason" class="sc-production-pipeline__reason">{{ stage.reason }}</p>
+
+                    <div v-if="stage.sections" class="sc-production-pipeline__content-sections">
+                        <section v-for="section in stage.sections" :key="stage.id + '-' + section.id">
+                            <h4>{{ section.label }}</h4>
+                            <div class="sc-production-pipeline__substages">
+                                <article v-for="substage in section.substages"
+                                         :key="stage.id + '-' + substage.id"
+                                         :class="'is-' + substage.status.toLowerCase()">
+                                    <header>
+                                        <b>{{ substage.label }}</b>
+                                        <small>{{ scProductionPipelineStatusLabel(substage.status) }}</small>
+                                    </header>
+                                    <div v-if="substage.counters.length">
+                                        <span v-for="counter in substage.counters"
+                                              :key="substage.id + '-' + counter.label">
+                                            {{ counter.label }} <b>{{ counter.value }}</b>
+                                        </span>
+                                    </div>
+                                    <p v-if="substage.reason">{{ substage.reason }}</p>
+                                    <small v-if="substage.note" class="sc-production-pipeline__note">
+                                        {{ substage.note }}
+                                    </small>
+                                    <details v-if="substage.reason_codes.length">
+                                        <summary>Внутренняя диагностика</summary>
+                                        <pre>{{ scProductionPipelineDiagnostics(substage) }}</pre>
+                                    </details>
+                                </article>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div v-if="stage.id === 'questions'" class="sc-production-pipeline__questions">
+                        <strong>Ответов:
+                            {{ stage.progress.answered === null ? '—' : stage.progress.answered }} / {{ stage.progress.total }}
+                        </strong>
+                        <div>
+                            <button v-for="category in stage.categories" :key="category.category"
+                                    type="button" class="btn btn-sm btn-secondary"
+                                    :disabled="!category.total"
+                                    @click="scOpenProductionQuestions(category.category)">
+                                {{ category.label }}: {{ category.total }}
+                                <small v-if="category.total">({{ category.answered }} отв.)</small>
+                            </button>
+                        </div>
+                    </div>
+                    <template v-for="detail in stage.details" :key="stage.id + '-' + detail">
+                        <p v-if="detail" class="sc-production-pipeline__note">{{ detail }}</p>
+                    </template>
+                    <footer>
+                        <button type="button" class="btn btn-sm btn-primary"
+                                @click="scOpenProductionPipelineDestination(stage)">
+                            Перейти к этапу
+                        </button>
+                        <details v-if="stage.reason_codes.length" class="sc-production-pipeline__diagnostics">
+                            <summary>Внутренние reason codes</summary>
+                            <pre>{{ scProductionPipelineDiagnostics(stage) }}</pre>
+                        </details>
+                    </footer>
+                </article>
+            </section>
+
             <div v-if="scTab==='upload'" class="sc-shell">
                 <div v-if="scObjectsError || scSessionError" class="sc-shell-error">
                     {{ scObjectsError || scSessionError }}
@@ -5575,8 +5692,15 @@
                                 Временная подсветка завершена. Нажмите строку изменения повторно, чтобы показать её снова.
                             </small>
                         </div>
-                        <button type="button" class="btn btn-sm btn-secondary"
-                                @click="scCloseProductionEvidence()">Закрыть</button>
+                        <div class="sc-production-evidence-banner__actions">
+                            <button v-if="scProductionEvidenceReturn" type="button"
+                                    class="btn btn-sm btn-primary"
+                                    @click="scReturnToProductionReviewRow()">
+                                ← Вернуться к той же строке
+                            </button>
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                    @click="scCloseProductionEvidence()">Закрыть</button>
+                        </div>
                     </section>
                     <section v-if="scMatchState && scMatchState.suggestions" class="sc-sheet-map">
                         <div class="sc-sheet-map__head">
@@ -6047,7 +6171,8 @@
 
                 <!-- Production LEFT → RIGHT comparison. Legacy summaries and the
                      Stage 3 discrepancy ledger remain below this panel. -->
-                <section v-if="scActivePair" class="sc-production-review" aria-labelledby="sc-production-title">
+                <section v-if="scActivePair" id="sc-production-review-stage"
+                         class="sc-production-review" aria-labelledby="sc-production-title">
                     <header class="sc-production-review__head">
                         <div>
                             <strong id="sc-production-title">Production comparison LEFT → RIGHT</strong>
@@ -6129,6 +6254,7 @@
                     </section>
 
                     <section v-if="scProductionQuestionRows.length || scProductionQuestionCounts.total"
+                             id="sc-production-questions-stage"
                              class="sc-production-questions" aria-labelledby="sc-production-questions-title">
                         <header>
                             <div>
@@ -6142,7 +6268,9 @@
                             </div>
                         </header>
                         <div class="sc-production-questions__list">
-                            <article v-for="question in scProductionQuestionRows" :key="question.question_id">
+                            <article v-for="question in scProductionQuestionRows" :key="question.question_id"
+                                     :data-production-question-category="question.category"
+                                     :class="{'is-pipeline-focus': scProductionQuestionFocusCategory === question.category}">
                                 <div class="sc-production-question__prompt">
                                     <span>{{ scProductionQuestionCategoryLabel(question.category) }}</span>
                                     <b>{{ question.prompt }}</b>
@@ -6284,7 +6412,8 @@
                         </button>
                     </div>
 
-                    <div v-if="scProductionRows.length" class="table-container sc-production-review__table-wrap">
+                    <div v-if="scProductionRows.length" id="sc-production-review-table"
+                         class="table-container sc-production-review__table-wrap">
                         <table class="findings-table sc-production-review__table">
                             <thead>
                                 <tr>
@@ -6302,10 +6431,12 @@
                             </thead>
                             <tbody>
                                 <tr v-for="row in scProductionRows" :key="row.target_id"
+                                    :data-production-target-id="row.target_id"
                                     :class="{
                                         'row-accepted': scProductionDecisionDraft(row).decision === 'APPROVED',
                                         'row-rejected': scProductionDecisionDraft(row).decision === 'REJECTED',
                                         'is-dirty': scProductionDecisionIsDirty(row),
+                                        'is-return-target': scProductionReturnTargetId === row.target_id,
                                     }">
                                     <td class="id-cell">
                                         <button type="button" class="sc-production-evidence-link"
