@@ -70,8 +70,12 @@ def document_name_similarity(left_filename: str, right_filename: str) -> float:
     return round(max(marker_scores), 4)
 
 
-def _maximum_weight_assignment(weights: list[list[float]]) -> list[tuple[int, int]]:
-    """Return a maximum-weight one-to-one assignment using O(n³) Hungarian."""
+def maximum_weight_assignment(weights: list[list[float]]) -> list[tuple[int, int]]:
+    """Return a maximum-weight one-to-one assignment using O(n³) Hungarian.
+
+    Shared with the production Sheet Matcher: a greedy pass down one side
+    lets an early weak pair consume a page that a later strong pair needed.
+    """
     if not weights or not weights[0]:
         return []
     rows = len(weights)
@@ -146,7 +150,7 @@ def suggest_document_pairing(
     ]
     accepted = [
         (left_index, right_index, weights[left_index][right_index])
-        for left_index, right_index in _maximum_weight_assignment(weights)
+        for left_index, right_index in maximum_weight_assignment(weights)
         if weights[left_index][right_index] >= MIN_DOCUMENT_SIMILARITY
     ]
     accepted.sort(key=lambda item: item[0])
@@ -189,5 +193,6 @@ def suggest_document_pairing(
 __all__ = [
     "MIN_DOCUMENT_SIMILARITY",
     "document_name_similarity",
+    "maximum_weight_assignment",
     "suggest_document_pairing",
 ]

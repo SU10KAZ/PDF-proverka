@@ -47,6 +47,7 @@ from .sheet_content_fingerprint import (
     build_sheet_content_fingerprint,
     has_meaningful_content,
 )
+from .sheet_identity import extract_sheet_identities
 from .sheet_matcher import match_sheets, page_selection_suggestions
 from .text_atom_builder import (
     BUILDER_VERSION as TEXT_ATOM_BUILDER_VERSION,
@@ -252,7 +253,11 @@ def _validate_page_bounds(
             raise ValueError(f"{side}_page_out_of_range")
 
 
-def _production_sheet_indexes(pair: Mapping[str, Any]) -> dict[str, list[dict[str, Any]]]:
+def _production_sheet_indexes(
+    pair: Mapping[str, Any],
+    *,
+    with_sheet_identity: bool = True,
+) -> dict[str, list[dict[str, Any]]]:
     """Read compact existing OCR/index facts without running a comparator."""
     indexes: dict[str, list[dict[str, Any]]] = {}
     for side in ("left", "right"):
@@ -286,8 +291,23 @@ def _production_sheet_indexes(pair: Mapping[str, Any]) -> dict[str, list[dict[st
                 )
             except (OSError, UnicodeDecodeError):
                 semantics = {}
+        # The sheet states its own identity in the stamp, and that line is in
+        # the PDF text layer of both sides in directly comparable form.  It is
+        # read here, once per side, from the file already opened for the page
+        # count: ~1.5 s for a whole set, no model, no OCR.  A document whose
+        # text layer cannot be read loses only its identities, not the run.
+        identities = {}
+        if with_sheet_identity:
+            try:
+                identities = extract_sheet_identities(str(pdf_path))
+            except Exception:  # noqa: BLE001 - identity is an optional signal
+                identities = {}
         for record in records:
-            semantic = semantics.get(int(record["pdf_page"]))
+            page = int(record["pdf_page"])
+            identity = identities.get(page)
+            if identity is not None:
+                record["sheet_identity"] = identity.to_dict()
+            semantic = semantics.get(page)
             if not semantic:
                 continue
             fingerprint = build_sheet_content_fingerprint(
@@ -3036,7 +3056,9 @@ def _run_production_comparison_impl(
             stage_started_at=text_started_at,
         )
         try:
-            indexes = _production_sheet_indexes(pair)
+            # PAGE scope is the user's own selection; the matcher is advisory
+            # here and never sees these records, so no stamp is read.
+            indexes = _production_sheet_indexes(pair, with_sheet_identity=False)
             page_index_error = None
         except (FileNotFoundError, OSError, ValueError, RuntimeError) as exc:
             indexes = {"left": [], "right": []}

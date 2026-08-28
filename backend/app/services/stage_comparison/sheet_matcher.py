@@ -1,9 +1,23 @@
-"""Two-pass production Sheet Matcher for literal LEFT -> RIGHT comparison.
+"""Production Sheet Matcher for literal LEFT -> RIGHT comparison.
 
-Pass 1 bounds the candidate set with inexpensive facts.  Pass 2 evaluates
-only those candidates with richer functional, entity, topology and graphic
-facts.  Titles and page numbers remain supporting evidence and can never, on
-their own, create a high-confidence production relation.
+Identity comes first.  A sheet says which sheet it is in its stamp — «Корпуса
+1, 2. План 3 этажа» — and two sheets carrying the same stamp key are the same
+sheet, whatever their PDF page numbers are.  That is the primary evidence, and
+a proven stamp key that *differs* is equally decisive in the other direction:
+«План 3 этажа» is not «План 4 этажа», however similar their contents look.
+
+Where no stamp parses, the two content passes still run: pass 1 bounds the
+candidate set with inexpensive facts, pass 2 evaluates those candidates with
+richer functional, entity, topology and graphic facts.  Titles and page
+numbers remain supporting evidence and can never, on their own, create a
+high-confidence production relation.
+
+The final 1:1 step is a global maximum-weight assignment, not a greedy walk
+down the LEFT page numbers.  Greedy let an early weak pair consume a RIGHT
+page that a later, much stronger pair needed, and the strong pair then
+vanished without a trace.  Nothing strong is allowed to vanish here: a
+displaced high-confidence candidate becomes an explicit conflict and a
+question, never silence.
 """
 from __future__ import annotations
 
@@ -11,20 +25,29 @@ import re
 from difflib import SequenceMatcher
 from typing import Any, Iterable, Mapping
 
+from .document_matching import maximum_weight_assignment
 from .production_artifacts import (
     canonical_strings,
     content_signature,
     stable_id,
     utc_now,
 )
+from .sheet_identity import SheetIdentity, covers_floors, identity_from_dict
 
 
 KIND = "stage_comparison_sheet_relations"
 SCHEMA_VERSION = "sheet-relations.v1"
-ALGORITHM_VERSION = "production-sheet-matcher.v2"
+ALGORITHM_VERSION = "production-sheet-matcher.v3"
 DIRECTION = "LEFT_TO_RIGHT"
 STATUSES = frozenset({"HIGH", "POSSIBLE", "NO_MATCH", "UNKNOWN"})
 RELATION_TYPES = frozenset({"MATCHED", "SPLIT", "MERGED", "UNCERTAIN"})
+#: Which evidence created a relation.  Diagnostics only — never user-facing text.
+PRIMARY_SOURCES = frozenset({
+    "STAMP_EXACT",
+    "STAMP_GROUP",
+    "CONTENT",
+    "USER_SELECTED",
+})
 DEFAULT_TOP_K = 5
 
 _SUBSTANTIVE_FEATURES = (
@@ -93,6 +116,9 @@ def normalize_sheet(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
         or record.get("group_ref")
         or ""
     ).strip() or None
+    identity = identity_from_dict(record.get("sheet_identity"))
+    if identity is not None and identity.page != page:
+        raise ValueError(f"{side} sheet identity page mismatch")
     continuation = bool(title and _CONTINUATION_RE.search(title))
     core_group = None
     explicit_group_key = None
@@ -119,6 +145,17 @@ def normalize_sheet(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
         "explicit_group_key": explicit_group_key,
         "continuation_hint": continuation,
         "source_ref": record.get("source_ref"),
+        "identity": identity,
+        "stamp_key": identity.stamp_key if identity else None,
+    }
+
+
+def _signature_view(sheet: Mapping[str, Any]) -> dict[str, Any]:
+    """JSON-safe projection of a normalized sheet for the input signature."""
+    identity: SheetIdentity | None = sheet.get("identity")
+    return {
+        **{key: value for key, value in sheet.items() if key != "identity"},
+        "sheet_identity": identity.to_dict() if identity else None,
     }
 
 
@@ -173,7 +210,39 @@ def _pass1(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _stamp_relation(
+    left: Mapping[str, Any], right: Mapping[str, Any],
+) -> tuple[str, dict[str, Any]]:
+    """Classify two sheets by their stamps: SAME, COVERS, CONFLICT or UNKNOWN.
+
+    A stamp is only decisive when both sides actually have one.  ``COVERS`` is
+    the «План 3-15 этажей» over «План 7 этажа» case: related sheets, but not
+    the same sheet, so it feeds the 1->N / N->1 machinery instead of a pair.
+    """
+    left_identity: SheetIdentity | None = left.get("identity")
+    right_identity: SheetIdentity | None = right.get("identity")
+    if left_identity is None or right_identity is None:
+        return "UNKNOWN", {
+            "left_stamp_key": left_identity.stamp_key if left_identity else None,
+            "right_stamp_key": right_identity.stamp_key if right_identity else None,
+        }
+    evidence = {
+        "left_stamp_key": left_identity.stamp_key,
+        "right_stamp_key": right_identity.stamp_key,
+        "left_stamp_text": left_identity.raw_stamp_text,
+        "right_stamp_text": right_identity.raw_stamp_text,
+    }
+    if left_identity.matches(right_identity):
+        return "SAME", evidence
+    if covers_floors(right_identity, left_identity):
+        return "COVERS", {**evidence, "container_side": "RIGHT"}
+    if covers_floors(left_identity, right_identity):
+        return "COVERS", {**evidence, "container_side": "LEFT"}
+    return "CONFLICT", evidence
+
+
 def _deep(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
+    stamp_relation, stamp_evidence = _stamp_relation(left, right)
     signals = {
         "functional": _overlap(left["functional"], right["functional"]),
         "entities": _overlap(left["entities"], right["entities"]),
@@ -220,17 +289,35 @@ def _deep(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
         status = "POSSIBLE"
     else:
         status = "NO_MATCH"
+    reason_codes: list[str] = []
+    if stamp_relation == "CONFLICT":
+        # Both sheets state which sheet they are, and they say different
+        # things.  No amount of shared vocabulary makes «План 3 этажа» into
+        # «План 4 этажа», so this pair is refused outright rather than left
+        # to win on room names the two floors happen to share.
+        status = "NO_MATCH"
+        score = 0.0
+        reason_codes.append("stamp_key_conflict")
+    elif stamp_relation == "COVERS":
+        reason_codes.append("stamp_floor_range_covers")
+    elif stamp_relation == "SAME":
+        reason_codes.append("stamp_key_exact")
     evidence = [
         {"feature": key, "score": round(float(value), 6)}
         for key, value in signals.items()
         if value is not None
         and (key in _SUBSTANTIVE_FEATURES or float(value) > 0)
     ]
+    if stamp_relation != "UNKNOWN":
+        evidence.append({"feature": "stamp_identity", "state": stamp_relation, **stamp_evidence})
     return {
         "left_page": left["page"],
         "right_page": right["page"],
         "score": round(score, 6) if score is not None else None,
         "status": status,
+        "stamp_relation": stamp_relation,
+        "stamp_evidence": stamp_evidence,
+        "reason_codes": reason_codes,
         "strong_signals": strong,
         "substantive_observations": observed,
         "substantive_signals": positive,
@@ -238,7 +325,7 @@ def _deep(left: Mapping[str, Any], right: Mapping[str, Any]) -> dict[str, Any]:
             len(strong) >= 2
             and bool(_PRIMARY_FEATURES & set(strong))
             and status in {"HIGH", "POSSIBLE"}
-        ),
+        ) or stamp_relation == "COVERS",
         "signals": signals,
         "evidence": evidence,
     }
@@ -335,6 +422,9 @@ def _missing_candidate(*, left_page: int | None, right_page: int | None) -> dict
         "right_page": right_page,
         "score": None,
         "status": "UNKNOWN",
+        "stamp_relation": "UNKNOWN",
+        "stamp_evidence": {},
+        "reason_codes": [],
         "strong_signals": [],
         "substantive_observations": [],
         "substantive_signals": [],
@@ -352,7 +442,15 @@ def _relation(
     relation_type: str,
     aggregate_evidence: Mapping[str, Any] | None = None,
     automatic_scope: bool = True,
+    primary_source: str = "CONTENT",
+    status_override: str | None = None,
+    confidence_override: float | None = None,
+    reason_codes: Iterable[str] = (),
+    conflicting_evidence: Iterable[Mapping[str, Any]] = (),
+    stamp_identity: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
+    if primary_source not in PRIMARY_SOURCES:
+        raise ValueError("unsupported sheet relation primary source")
     ordered_candidates = sorted(
         (dict(candidate) for candidate in candidates),
         key=_candidate_sort_key,
@@ -364,8 +462,12 @@ def _relation(
         else "UNKNOWN" if "UNKNOWN" in statuses
         else "NO_MATCH"
     )
+    if status_override is not None:
+        status = status_override
     scores = [float(item["score"]) for item in ordered_candidates if item.get("score") is not None]
     confidence = round(min(scores), 6) if scores else None
+    if confidence_override is not None:
+        confidence = round(float(confidence_override), 6)
     identity = {
         "direction": DIRECTION,
         "left_pages": sorted(left_pages),
@@ -400,6 +502,16 @@ def _relation(
                 supported_edges.append(edge)
     if aggregate_evidence is not None:
         evidence.append(dict(aggregate_evidence))
+    if stamp_identity is not None:
+        evidence.append({"kind": "STAMP_IDENTITY", **dict(stamp_identity)})
+    all_reason_codes = sorted({
+        *(str(code) for code in reason_codes),
+        *(
+            str(code)
+            for candidate in ordered_candidates
+            for code in candidate.get("reason_codes") or []
+        ),
+    })
     return {
         "relation_id": stable_id("srel_", identity),
         "left_pages": sorted(left_pages),
@@ -416,9 +528,14 @@ def _relation(
         }),
         "candidate_edges": candidate_edges,
         "supported_edges": supported_edges,
+        "primary_source": primary_source,
+        "reason_codes": all_reason_codes,
+        "conflicting_evidence": [dict(item) for item in conflicting_evidence],
         "provenance": {
             "algorithm": ALGORITHM_VERSION,
             "title_is_primary": False,
+            "page_number_is_primary": False,
+            "primary_source": primary_source,
             "ai_final_decision": False,
         },
     }
@@ -457,16 +574,161 @@ def match_sheets(
             item["right_page"],
         ))
         pass1[left_item["page"]] = quick[:top_k]
-        for candidate in pass1[left_item["page"]]:
-            right_item = right_by_page[candidate["right_page"]]
-            deep_by_pair[(left_item["page"], right_item["page"])] = _deep(
-                left_item, right_item
+        deep_pages = {int(candidate["right_page"]) for candidate in pass1[left_item["page"]]}
+        # Pass 1 ranks by shared vocabulary, which is exactly what fails on
+        # architectural sheets.  A stamp-related page must be evaluated even
+        # when it did not make the cheap top-K cut.
+        if left_item.get("stamp_key"):
+            deep_pages.update(
+                int(right_item["page"])
+                for right_item in right
+                if _stamp_relation(left_item, right_item)[0] in {"SAME", "COVERS"}
+            )
+        for right_page in sorted(deep_pages):
+            deep_by_pair[(left_item["page"], right_page)] = _deep(
+                left_item, right_by_page[right_page]
             )
 
     left_by_page = {item["page"]: item for item in left}
     relations: list[dict[str, Any]] = []
     consumed_left: set[int] = set()
     consumed_right: set[int] = set()
+
+    def _edge(left_page: int, right_page: int) -> dict[str, Any]:
+        return deep_by_pair.get((left_page, right_page)) or _missing_candidate(
+            left_page=left_page, right_page=right_page
+        )
+
+    # ---- Stamp identity, before any content pass -------------------------
+    # A page number is not a sheet identity; the stamp is.  Exactly one sheet
+    # per side carrying one key is a proven pair.  Anything else stays a
+    # question: picking the first candidate is what produced pairs like
+    # «План 3 этажа» opposite «План 4 этажа».
+    left_by_key: dict[str, list[Mapping[str, Any]]] = {}
+    right_by_key: dict[str, list[Mapping[str, Any]]] = {}
+    for item in left:
+        if item.get("stamp_key"):
+            left_by_key.setdefault(str(item["stamp_key"]), []).append(item)
+    for item in right:
+        if item.get("stamp_key"):
+            right_by_key.setdefault(str(item["stamp_key"]), []).append(item)
+    stamp_ambiguous_keys: list[dict[str, Any]] = []
+    for stamp_key in sorted(set(left_by_key) & set(right_by_key)):
+        left_group = left_by_key[stamp_key]
+        right_group = right_by_key[stamp_key]
+        left_pages = sorted(int(item["page"]) for item in left_group)
+        right_pages = sorted(int(item["page"]) for item in right_group)
+        identity_evidence = {
+            "stamp_key": stamp_key,
+            "left_stamp_text": left_group[0]["identity"].raw_stamp_text,
+            "right_stamp_text": right_group[0]["identity"].raw_stamp_text,
+            "sheet_kind": left_group[0]["identity"].sheet_kind,
+            "buildings": list(left_group[0]["identity"].buildings),
+            "floors": list(left_group[0]["identity"].floors),
+            "title_used": False,
+            "page_proximity_used": False,
+        }
+        if len(left_group) == 1 and len(right_group) == 1:
+            relations.append(_relation(
+                left_pages,
+                right_pages,
+                [_edge(left_pages[0], right_pages[0])],
+                relation_type="MATCHED",
+                primary_source="STAMP_EXACT",
+                status_override="HIGH",
+                confidence_override=1.0,
+                reason_codes=["stamp_key_exact"],
+                stamp_identity=identity_evidence,
+            ))
+        else:
+            # Same key on several pages of one side is real ambiguity, and the
+            # cheapest wrong answer is to hand the first candidate the page.
+            stamp_ambiguous_keys.append({"stamp_key": stamp_key, "left_pages": left_pages, "right_pages": right_pages})
+            relations.append(_relation(
+                left_pages,
+                right_pages,
+                [
+                    _edge(left_page, right_page)
+                    for left_page in left_pages
+                    for right_page in right_pages
+                ],
+                relation_type="UNCERTAIN",
+                primary_source="STAMP_EXACT",
+                status_override="UNKNOWN",
+                automatic_scope=False,
+                reason_codes=["stamp_key_ambiguous"],
+                stamp_identity=identity_evidence,
+            ))
+        consumed_left.update(left_pages)
+        consumed_right.update(right_pages)
+
+    # «План 3-15 этажей» genuinely covers «План 7 этажа», but the two are not
+    # the same sheet.  That is a cardinality candidate for the existing
+    # 1->N / N->1 contract, offered at POSSIBLE so a human confirms the scope.
+    stamp_group_relations = 0
+    for container_side in ("RIGHT", "LEFT"):
+        containers = right if container_side == "RIGHT" else left
+        members = left if container_side == "RIGHT" else right
+        consumed_container = consumed_right if container_side == "RIGHT" else consumed_left
+        consumed_member = consumed_left if container_side == "RIGHT" else consumed_right
+        for container in containers:
+            container_identity: SheetIdentity | None = container.get("identity")
+            if container_identity is None or int(container["page"]) in consumed_container:
+                continue
+            covered = [
+                item for item in members
+                if int(item["page"]) not in consumed_member
+                and item.get("identity") is not None
+                and covers_floors(container_identity, item["identity"])
+            ]
+            if len(covered) < 2:
+                continue
+            # Every member must be a distinct floor, and no other container may
+            # claim them, or this is a guess about scope rather than a reading.
+            floor_sets = [item["identity"].floor_set for item in covered]
+            if len({frozenset(value) for value in floor_sets}) != len(floor_sets):
+                continue
+            rival_containers = [
+                other for other in containers
+                if other is not container
+                and int(other["page"]) not in consumed_container
+                and other.get("identity") is not None
+                and any(covers_floors(other["identity"], item["identity"]) for item in covered)
+            ]
+            if rival_containers:
+                continue
+            member_pages = sorted(int(item["page"]) for item in covered)
+            container_page = int(container["page"])
+            if container_side == "RIGHT":
+                relation_left, relation_right = member_pages, [container_page]
+                relation_type = "MERGED"
+                edges = [_edge(page, container_page) for page in member_pages]
+            else:
+                relation_left, relation_right = [container_page], member_pages
+                relation_type = "SPLIT"
+                edges = [_edge(container_page, page) for page in member_pages]
+            relations.append(_relation(
+                relation_left,
+                relation_right,
+                edges,
+                relation_type=relation_type,
+                primary_source="STAMP_GROUP",
+                status_override="POSSIBLE",
+                reason_codes=["stamp_floor_range_covers"],
+                stamp_identity={
+                    "stamp_key": container_identity.stamp_key,
+                    "container_side": container_side,
+                    "container_stamp_text": container_identity.raw_stamp_text,
+                    "member_stamp_texts": [
+                        item["identity"].raw_stamp_text for item in covered
+                    ],
+                    "title_used": False,
+                    "page_proximity_used": False,
+                },
+            ))
+            stamp_group_relations += 1
+            consumed_container.add(container_page)
+            consumed_member.update(member_pages)
 
     supported_by_left: dict[int, dict[int, dict[str, Any]]] = {}
     supported_by_right: dict[int, dict[int, dict[str, Any]]] = {}
@@ -614,32 +876,85 @@ def match_sheets(
         consumed_left.update(proposal["left_pages"])
         consumed_right.update(proposal["right_pages"])
 
-    for left_item in left:
-        left_page = int(left_item["page"])
-        if left_page in consumed_left:
+    # ---- Content pass: one global assignment, never a greedy walk ---------
+    # Walking LEFT pages in order and taking each page's best free candidate
+    # let LEFT 34 -> RIGHT 3 (0.53) consume the page that LEFT 41 -> RIGHT 3
+    # (0.71) needed, and the strongest relation of the whole run disappeared.
+    open_left = [item for item in left if int(item["page"]) not in consumed_left]
+    open_right = [item for item in right if int(item["page"]) not in consumed_right]
+    assignable: dict[tuple[int, int], Mapping[str, Any]] = {
+        (left_page, right_page): candidate
+        for (left_page, right_page), candidate in deep_by_pair.items()
+        if left_page not in consumed_left
+        and right_page not in consumed_right
+        and candidate["status"] in {"HIGH", "POSSIBLE"}
+    }
+    assigned_pairs: list[tuple[int, int]] = []
+    if open_left and open_right and assignable:
+        weights = [
+            [
+                float(assignable[(int(left_item["page"]), int(right_item["page"]))]["score"] or 0.0)
+                if (int(left_item["page"]), int(right_item["page"])) in assignable
+                else 0.0
+                for right_item in open_right
+            ]
+            for left_item in open_left
+        ]
+        for left_index, right_index in maximum_weight_assignment(weights):
+            if weights[left_index][right_index] <= 0.0:
+                continue
+            assigned_pairs.append((
+                int(open_left[left_index]["page"]),
+                int(open_right[right_index]["page"]),
+            ))
+    assigned_pairs.sort()
+    assigned_by_left = {left_page: right_page for left_page, right_page in assigned_pairs}
+    assigned_by_right = {right_page: left_page for left_page, right_page in assigned_pairs}
+
+    # A strong candidate that lost its page to somebody else is not allowed to
+    # disappear: it is attached to the winning relation as conflicting evidence
+    # and, if it lost outright, it becomes its own reviewable relation below.
+    displaced_high: list[dict[str, Any]] = []
+    for (left_page, right_page), candidate in sorted(deep_by_pair.items()):
+        if candidate["status"] != "HIGH":
             continue
-        ranked = sorted(
-            (
-                value for (candidate_left, _right), value in deep_by_pair.items()
-                if candidate_left == left_page and value["status"] in {"HIGH", "POSSIBLE"}
-            ),
-            key=lambda item: (
-                -(item["score"] if item["score"] is not None else -1),
-                item["right_page"],
-            ),
-        )
-        available = [item for item in ranked if int(item["right_page"]) not in consumed_right]
-        chosen = available[0] if available else None
-        if chosen is None:
+        if assigned_by_left.get(left_page) == right_page:
             continue
+        if left_page in consumed_left and right_page in consumed_right:
+            continue
+        displaced_high.append({
+            "kind": "DISPLACED_HIGH_CANDIDATE",
+            "left_page": left_page,
+            "right_page": right_page,
+            "score": candidate.get("score"),
+            "reason_code": "high_candidate_displaced",
+            "left_page_taken_by": assigned_by_left.get(left_page),
+            "right_page_taken_by": assigned_by_right.get(right_page),
+        })
+    displaced_by_left: dict[int, list[dict[str, Any]]] = {}
+    displaced_by_right: dict[int, list[dict[str, Any]]] = {}
+    for item in displaced_high:
+        displaced_by_left.setdefault(int(item["left_page"]), []).append(item)
+        displaced_by_right.setdefault(int(item["right_page"]), []).append(item)
+
+    for left_page, right_page in assigned_pairs:
+        conflicts = [
+            item for item in displaced_high
+            if item["left_page"] == left_page or item["right_page"] == right_page
+        ]
         relations.append(_relation(
             [left_page],
-            [int(chosen["right_page"])],
-            [chosen],
+            [right_page],
+            [deep_by_pair[(left_page, right_page)]],
             relation_type="MATCHED",
+            primary_source="CONTENT",
+            reason_codes=(
+                ["displaced_high_candidate_present"] if conflicts else []
+            ),
+            conflicting_evidence=conflicts,
         ))
         consumed_left.add(left_page)
-        consumed_right.add(int(chosen["right_page"]))
+        consumed_right.add(right_page)
 
     # NO_MATCH and UNKNOWN are persisted as explicit reviewable relations, not
     # merely inferred from summary arrays.  One side is deliberately left out
@@ -659,12 +974,17 @@ def match_sheets(
         chosen = ranked[0] if ranked else _missing_candidate(
             left_page=left_page, right_page=None
         )
+        conflicts = displaced_by_left.get(left_page, [])
         relations.append(_relation(
             [left_page],
             [],
             [chosen],
             relation_type="UNCERTAIN",
             automatic_scope=False,
+            reason_codes=(
+                ["high_candidate_displaced"] if conflicts else []
+            ),
+            conflicting_evidence=conflicts,
         ))
 
     for right_item in right:
@@ -681,18 +1001,23 @@ def match_sheets(
         chosen = ranked[0] if ranked else _missing_candidate(
             left_page=None, right_page=right_page
         )
+        conflicts = displaced_by_right.get(right_page, [])
         relations.append(_relation(
             [],
             [right_page],
             [chosen],
             relation_type="UNCERTAIN",
             automatic_scope=False,
+            reason_codes=(
+                ["high_candidate_displaced"] if conflicts else []
+            ),
+            conflicting_evidence=conflicts,
         ))
 
     input_signature = content_signature({
         "algorithm": ALGORITHM_VERSION,
-        "left": left,
-        "right": right,
+        "left": [_signature_view(item) for item in left],
+        "right": [_signature_view(item) for item in right],
         "top_k": top_k,
     })
     relations.sort(key=lambda item: (
@@ -736,6 +1061,26 @@ def match_sheets(
             "top_k": top_k,
             "uses_model": False,
             "title_is_primary": False,
+            "page_number_is_primary": False,
+            "left_pages_with_stamp_identity": sum(
+                1 for item in left if item.get("stamp_key")
+            ),
+            "right_pages_with_stamp_identity": sum(
+                1 for item in right if item.get("stamp_key")
+            ),
+            "stamp_exact_relations": sum(
+                1 for item in relations if item.get("primary_source") == "STAMP_EXACT"
+                and item["relation_type"] != "UNCERTAIN"
+            ),
+            "stamp_ambiguous_keys": stamp_ambiguous_keys,
+            "stamp_group_relations": stamp_group_relations,
+            "stamp_conflict_pairs": sum(
+                1 for candidate in deep_by_pair.values()
+                if candidate.get("stamp_relation") == "CONFLICT"
+            ),
+            "global_assignment_used": True,
+            "greedy_assignment_used": False,
+            "displaced_high_candidates": displaced_high,
         },
     }
 
@@ -790,6 +1135,7 @@ def page_selection_suggestions(
 __all__ = [
     "ALGORITHM_VERSION",
     "DIRECTION",
+    "PRIMARY_SOURCES",
     "KIND",
     "RELATION_TYPES",
     "SCHEMA_VERSION",
