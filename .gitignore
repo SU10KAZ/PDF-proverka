@@ -269,3 +269,6 @@ experiments/vectograf/*/????-????-*/
 *.before_*
 /scratchpad/
 /scratchpad_*.json
+
+# Стенд изолированных прогонов сравнения (локальный, не для релиза)
+scratch_ai/

@@ -551,12 +551,51 @@ def _entity_name(ref: Any) -> str:
     return value.replace("_", ".") or "объект без обозначения"
 
 
+def _synthesis_entity_refs(
+    synthesis: Mapping[str, Any] | None,
+) -> set[str]:
+    """Every entity designation that some synthesized object actually carries.
+
+    Answering «слева и справа — один объект?» merges two designations into one
+    project entity, which changes the synthesis only if both designations have
+    something to merge.  A designation nothing refers to cannot move a finding
+    in any direction, so its question is unanswerable work.
+    """
+    refs: set[str] = set()
+    if not isinstance(synthesis, Mapping):
+        return refs
+
+    def collect(value: Any, depth: int = 0) -> None:
+        if depth > 6 or not isinstance(value, (Mapping, list, tuple)):
+            return
+        if isinstance(value, Mapping):
+            for key in ("subject_ref", "project_entity_ref", "entity_ref"):
+                candidate = value.get(key)
+                if isinstance(candidate, str) and candidate.strip():
+                    refs.add(candidate.strip())
+            for nested in value.values():
+                collect(nested, depth + 1)
+            return
+        for nested in value:
+            collect(nested, depth + 1)
+
+    for key in ("changes", "review_items", "contested_groups"):
+        collect(synthesis.get(key), 1)
+    return refs
+
+
 def _entity_questions(
     entity_relations: Mapping[str, Any] | None,
+    synthesis: Mapping[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     if not isinstance(entity_relations, Mapping):
         return [], []
     suppressed: list[dict[str, Any]] = []
+    referenced = _synthesis_entity_refs(synthesis)
+    # An empty synthesis means «nothing was synthesized yet», not «nothing
+    # depends on the answer»: the sheet-only pre-pass builds its queue that
+    # way.  Only a synthesis that produced objects can prove independence.
+    dependency_known = bool(referenced)
     by_left: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for relation in entity_relations.get("relations") or []:
         if not isinstance(relation, Mapping):
@@ -579,9 +618,19 @@ def _entity_questions(
                 "reason_codes": ["identical_entity_designation"],
             })
             continue
-        left_ref = str(relation.get("left_entity_ref") or "").strip()
-        if not left_ref:
-            left_ref = stable_id("left_entity_", _stable_payload(relation))
+        if dependency_known and not (
+            left_side in referenced and right_side in referenced
+        ):
+            # One of the two designations carries no synthesized object.
+            # Merging it with the other cannot add, remove or re-value a
+            # single finding, so the answer would change nothing.
+            suppressed.append({
+                "left_entity_ref": left_side,
+                "right_entity_ref": right_side,
+                "reason_codes": ["no_dependent_synthesis_target"],
+            })
+            continue
+        left_ref = left_side or stable_id("left_entity_", _stable_payload(relation))
         by_left[left_ref].append(relation)
 
     questions: list[dict[str, Any]] = []
@@ -1115,7 +1164,9 @@ def build_review_queue(
 ) -> dict[str, Any]:
     """Build one deduplicated queue and suppress unchanged resolved questions."""
     change_questions, suppressed_change_reviews = _change_question_plan(synthesis)
-    entity_questions, suppressed_entity_reviews = _entity_questions(entity_relations)
+    entity_questions, suppressed_entity_reviews = _entity_questions(
+        entity_relations, synthesis
+    )
     all_questions = _deduplicate(
         [
             *_sheet_questions(sheet_relations),

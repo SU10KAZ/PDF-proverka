@@ -326,6 +326,83 @@ def test_an_object_is_not_asked_to_confirm_it_is_itself():
     }
 
 
+def _synthesis_referencing(*refs: str) -> dict:
+    """A synthesis whose objects genuinely carry these entity designations."""
+    atoms = [
+        _atom(f"atom_{index}") | {"subject_ref": ref}
+        for index, ref in enumerate(refs)
+    ]
+    return synthesize_unified_changes(text_atoms=atoms)
+
+
+def test_question_is_dropped_when_neither_side_carries_a_finding():
+    """Merging two designations nothing refers to cannot move any finding."""
+    queue = build_review_queue(
+        entity_relations=_entity_relations(
+            _entity("text_entity:24_5", "text_entity:24_6", "erel_moved"),
+        ),
+        synthesis=_synthesis_referencing("text_entity:99_1"),
+        generated_at="fixed",
+    )
+
+    assert queue["counts"]["ENTITY"] == 0
+    assert queue["diagnostics"]["suppressed_entity_question_reasons"] == {
+        "no_dependent_synthesis_target": 1
+    }
+
+
+def test_question_is_dropped_when_only_one_side_carries_a_finding():
+    queue = build_review_queue(
+        entity_relations=_entity_relations(
+            _entity("text_entity:24_5", "text_entity:24_6", "erel_moved"),
+        ),
+        synthesis=_synthesis_referencing("text_entity:24_5"),
+        generated_at="fixed",
+    )
+
+    assert queue["counts"]["ENTITY"] == 0
+    assert queue["diagnostics"]["suppressed_entity_question_reasons"] == {
+        "no_dependent_synthesis_target": 1
+    }
+
+
+def test_question_survives_when_both_designations_carry_findings():
+    """The dependency is real here: the answer merges two live objects."""
+    queue = build_review_queue(
+        entity_relations=_entity_relations(
+            _entity("text_entity:24_5", "text_entity:24_6", "erel_moved"),
+        ),
+        synthesis=_synthesis_referencing(
+            "text_entity:24_5", "text_entity:24_6"
+        ),
+        generated_at="fixed",
+    )
+
+    assert queue["counts"]["ENTITY"] == 1
+    assert queue["questions"][0]["question_type"] == "ENTITY_IDENTITY"
+
+
+def test_ar_pair_asks_nothing_because_every_candidate_names_itself():
+    """Живая база пары АР pc40736c55d: 327 POSSIBLE_ENTITY, все left == right."""
+    relations = _entity_relations(*[
+        _entity(f"text_entity:30_{index}", f"text_entity:30_{index}",
+                f"erel_{index}")
+        for index in range(327)
+    ])
+
+    queue = build_review_queue(
+        entity_relations=relations,
+        synthesis=_synthesis_referencing("text_entity:30_1"),
+        generated_at="fixed",
+    )
+
+    assert queue["counts"]["ENTITY"] == 0
+    assert queue["diagnostics"]["suppressed_entity_questions"] == 327
+    assert queue["diagnostics"]["suppressed_entity_question_reasons"] == {
+        "identical_entity_designation": 327
+    }
+
+
 def test_two_different_designations_are_still_a_real_question():
     queue = build_review_queue(
         entity_relations=_entity_relations(

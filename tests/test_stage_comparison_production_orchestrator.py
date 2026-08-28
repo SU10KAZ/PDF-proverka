@@ -433,6 +433,36 @@ def test_text_stage_does_not_mark_unresolved_placeholder_as_valid():
     assert stage["reason_counts"] == {"unresolved_text_structure": 1}
 
 
+def _proven_split_sheet_relations() -> dict:
+    """A SPLIT the matcher itself proved: HIGH, and therefore comparable."""
+    return match_sheets(
+        [{
+            "pdf_page": 10,
+            "comparison_group_ref": "panel",
+            "functional_content": ["distribution"],
+            "main_entities": ["panel"],
+            "topology": ["input -> panel"],
+        }],
+        [
+            {
+                "pdf_page": 24,
+                "comparison_group_ref": "panel",
+                "functional_content": ["distribution"],
+                "main_entities": ["panel"],
+                "topology": ["input -> panel"],
+            },
+            {
+                "pdf_page": 25,
+                "comparison_group_ref": "panel",
+                "functional_content": ["distribution"],
+                "main_entities": ["panel"],
+                "topology": ["input -> panel"],
+            },
+        ],
+        generated_at="fixed",
+    )
+
+
 def _split_sheet_relations() -> dict:
     artifact = match_sheets(
         [{
@@ -1118,7 +1148,7 @@ def test_document_uses_production_split_relations_as_scope(tmp_path, monkeypatch
         tmp_path,
         text_atoms=[],
         graphic_atoms=[],
-        sheet_relations=_split_sheet_relations(),
+        sheet_relations=_proven_split_sheet_relations(),
         capture=capture,
     )
 
@@ -1131,6 +1161,39 @@ def test_document_uses_production_split_relations_as_scope(tmp_path, monkeypatch
     assert capture["document_cache_dirs"][0].name == "text_fragment_cache"
     stored = production_store.load_artifact("session-1", "pair-1", "sheet_relations")
     assert stored["kind"] == "stage_comparison_sheet_relations"
+
+
+def test_document_holds_unconfirmed_sheet_relation_out_of_scope(
+    tmp_path, monkeypatch
+):
+    """A pair nobody proved is asked about, not compared.
+
+    Four relations at confidence 0.29-0.34 once produced 814 «added» findings
+    on the ЭОМ pair whose left side had no structured text at all.  Nothing
+    about the project had changed; the matcher had simply guessed.
+    """
+    capture: dict = {}
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[],
+        graphic_atoms=[],
+        sheet_relations=_split_sheet_relations(),
+        capture=capture,
+    )
+
+    state = _run(input_mode="DOCUMENT")
+
+    assert capture["groups"] == []
+    scope_stage = state["stages"]["sheet_scope"]
+    assert scope_stage["groups"] == 0
+    assert scope_stage["pending_confirmation"] == 1
+    pending = scope_stage["pending_confirmation_groups"][0]
+    assert pending["left_pages"] == [10]
+    assert pending["right_pages"] == [24, 25]
+    assert pending["reason_code"] == "sheet_relation_unconfirmed"
+    queue = orchestrator.get_review_questions("session-1", "pair-1")
+    assert [item["category"] for item in queue["questions"]] == ["SHEET"]
 
 
 def test_document_sheet_select_publishes_new_generation_for_effective_subset(
@@ -1190,7 +1253,8 @@ def test_document_sheet_select_publishes_new_generation_for_effective_subset(
     assert updated["state"]["run_id"] != initial_state["run_id"]
     assert len(capture["groups_history"]) == 2
     assert len(capture["graphic_groups_history"]) == 2
-    assert capture["groups_history"][0][0]["right_pages"] == [24, 25]
+    # Nothing was compared before the answer: the relation was only POSSIBLE.
+    assert capture["groups_history"][0] == []
     assert capture["groups_history"][1][0]["right_pages"] == [24]
     snapshot = production_store.load_artifact(
         "session-1", "pair-1", "source_snapshot"
@@ -1297,7 +1361,9 @@ def test_incomplete_sheet_reanswer_restores_automatic_scope(
         expected_revision=reopened["revision"],
     )
 
-    assert capture["groups_history"][-1][0]["right_pages"] == [24, 25]
+    # Rolling back an incomplete answer restores the automatic scope, which
+    # for an unconfirmed relation is empty rather than «both right pages».
+    assert capture["groups_history"][-1] == []
     assert question["question_id"] in {
         item["question_id"] for item in updated["questions"]
     }
@@ -1336,21 +1402,32 @@ def test_document_sheet_no_removes_relation_from_regenerated_scope(
 
     monkeypatch.setattr(orchestrator, "_run_text_branch", scope_sensitive_text)
     _run(input_mode="DOCUMENT")
-    assert len(
-        orchestrator.get_production_changes("session-1", "pair-1")["rows"]
-    ) == 1
+    # The relation is only POSSIBLE, so nothing is compared until confirmed.
+    assert orchestrator.get_production_changes("session-1", "pair-1")["rows"] == []
     queue = orchestrator.get_review_questions("session-1", "pair-1")
     question = next(
         item for item in queue["questions"] if item["category"] == "SHEET"
     )
+    orchestrator.update_review_answers(
+        "session-1",
+        "pair-1",
+        answers=[{"question_id": question["question_id"], "answer": "YES"}],
+        author="server-engineer",
+        expected_input_signature=queue["input_signature"],
+        expected_revision=queue["revision"],
+    )
+    assert len(
+        orchestrator.get_production_changes("session-1", "pair-1")["rows"]
+    ) == 1
+    reopened = orchestrator.get_review_questions("session-1", "pair-1")
 
     updated = orchestrator.update_review_answers(
         "session-1",
         "pair-1",
         answers=[{"question_id": question["question_id"], "answer": "NO"}],
         author="server-engineer",
-        expected_input_signature=queue["input_signature"],
-        expected_revision=queue["revision"],
+        expected_input_signature=reopened["input_signature"],
+        expected_revision=reopened["revision"],
     )
 
     assert capture["groups_history"][-1] == []
@@ -1366,9 +1443,10 @@ def test_document_sheet_no_removes_relation_from_regenerated_scope(
     assert application["diagnostics"]["pipeline_rerun"] is True
 
 
-def test_document_sheet_yes_same_scope_does_not_rerun_producers(
+def test_document_sheet_yes_opens_scope_and_reruns_producers(
     tmp_path, monkeypatch
 ):
+    """Confirming an unproven pair is what puts it into the comparison."""
     capture: dict = {}
     _install_run_fakes(
         monkeypatch,
@@ -1393,10 +1471,46 @@ def test_document_sheet_yes_same_scope_does_not_rerun_producers(
         expected_revision=queue["revision"],
     )
 
+    assert capture["groups_history"][0] == []
+    assert capture["groups_history"][-1][0]["left_pages"] == [10]
+    assert capture["groups_history"][-1][0]["right_pages"] == [24, 25]
+    assert updated["state"]["run_id"] != initial_state["run_id"]
+    assert updated["application"]["diagnostics"]["scope_applied"] is True
+    assert updated["application"]["diagnostics"]["pipeline_rerun"] is True
+
+
+def test_document_sheet_unsure_keeps_scope_and_does_not_rerun_producers(
+    tmp_path, monkeypatch
+):
+    """«Не уверен» is not an answer: the pair stays out and nothing reruns."""
+    capture: dict = {}
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[],
+        graphic_atoms=[],
+        sheet_relations=_split_sheet_relations(),
+        capture=capture,
+    )
+    initial_state = _run(input_mode="DOCUMENT")
+    queue = orchestrator.get_review_questions("session-1", "pair-1")
+    question = next(
+        item for item in queue["questions"] if item["category"] == "SHEET"
+    )
+
+    updated = orchestrator.update_review_answers(
+        "session-1",
+        "pair-1",
+        answers=[{"question_id": question["question_id"], "answer": "UNSURE"}],
+        author="server-engineer",
+        expected_input_signature=queue["input_signature"],
+        expected_revision=queue["revision"],
+    )
+
     assert updated["state"]["run_id"] == initial_state["run_id"]
     assert len(capture["groups_history"]) == 1
     assert len(capture["graphic_groups_history"]) == 1
-    assert updated["application"]["diagnostics"]["scope_applied"] is True
+    assert updated["application"]["diagnostics"]["scope_applied"] is False
     assert updated["application"]["diagnostics"]["pipeline_rerun"] is False
 
 
@@ -1684,7 +1798,8 @@ def test_question_revision_and_effective_application_survive_get_and_reanswer(
 
     assert first["revision"] == 1
     assert reopened["revision"] == 1
-    assert reopened["application"]["diagnostics"]["pipeline_rerun"] is False
+    # YES on a POSSIBLE relation opens the scope, so producers did rerun.
+    assert reopened["application"]["diagnostics"]["pipeline_rerun"] is True
     assert reopened["application"]["applied_decision_ids"]
     assert second["revision"] == 2
     stored = production_store.load_artifact(
@@ -3521,7 +3636,7 @@ def test_pipeline_stage_metadata_is_truthful_and_skips_superseded_candidates():
 
     assert [
         group["id"] for group in orchestrator._sheet_comparison_groups(relations)
-    ] == ["confirmed", "review"]
+    ] == ["confirmed"]
     assert orchestrator._sheet_relation_counts(relations) == {
         "CANDIDATE_SUPERSEDED": 1,
         "HIGH": 1,

@@ -19,7 +19,7 @@ from uuid import uuid4
 
 from backend.app.services.common.blocks_json import load_blocks_json
 
-from . import production_store, sheet_matching, store
+from . import production_store, sheet_matching, sheet_scope_policy, store
 from .engineer_review import build_engineer_decisions, build_final_report, review_rows
 from .evidence_navigation import build_evidence_navigation
 from .graphic_comparison.mode2 import (
@@ -2281,29 +2281,29 @@ def _build_review_questions(
 def _sheet_comparison_groups(
     relations: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
-    """Return the exact DOCUMENT groups that producer branches may consume."""
+    """Return the exact DOCUMENT groups that producer branches may consume.
+
+    Only a proven pair is compared.  A relation the matcher merely proposed
+    (``POSSIBLE``/``UNCERTAIN``) already has its own Stage 5 sheet question;
+    letting it in here would publish hundreds of findings derived from a pair
+    of drawings nobody confirmed — which is what produced 814 «added» rows on
+    the ЭОМ pair from four relations at confidence 0.29-0.34.
+    """
     groups = []
     for relation in (relations or {}).get("relations") or []:
         if not isinstance(relation, Mapping):
             continue
-        status = str(relation.get("status") or "").upper()
-        relation_type = str(relation.get("relation_type") or "MATCHED")
-        if (
-            status in {"NO_MATCH", "CANDIDATE_SUPERSEDED"}
-            or relation_type.upper() == "NO_MATCH"
-        ):
+        if not sheet_scope_policy.is_effective(relation):
             continue
         left_pages = sorted({int(page) for page in relation.get("left_pages") or []})
         right_pages = sorted({
             int(page) for page in relation.get("right_pages") or []
         })
-        if not left_pages or not right_pages:
-            continue
         groups.append({
             "id": relation.get("relation_id"),
             "left_pages": left_pages,
             "right_pages": right_pages,
-            "relation_type": relation_type,
+            "relation_type": str(relation.get("relation_type") or "MATCHED"),
             "status": relation.get("status"),
         })
     groups.sort(key=lambda item: (
@@ -2409,6 +2409,7 @@ def _materialized_sheet_scope(
     effective_groups = _sheet_comparison_groups({"relations": materialized_relations})
     automatic_signature = _sheet_scope_signature(automatic_groups)
     effective_signature = _sheet_scope_signature(effective_groups)
+    pending = sheet_scope_policy.pending_relations(materialized_relations)
     return {
         "groups": effective_groups,
         "automatic_signature": automatic_signature,
@@ -2416,6 +2417,10 @@ def _materialized_sheet_scope(
         "scope_changed": effective_signature != automatic_signature,
         "scope_applied": bool(decision_ids),
         "decision_ids": sorted(set(decision_ids)),
+        # Pairs the matcher proposed but nobody confirmed.  They are not
+        # compared, and the pipeline card says so instead of silently
+        # shrinking the scope.
+        "pending_confirmation": pending,
     }
 
 
@@ -3829,6 +3834,12 @@ def _run_production_comparison_impl(
             "sheet_scope": {
                 "status": "COMPLETED",
                 "groups": len((sheet_scope_projection or {}).get("groups") or []),
+                "pending_confirmation": len(
+                    (sheet_scope_projection or {}).get("pending_confirmation") or []
+                ),
+                "pending_confirmation_groups": copy.deepcopy(
+                    (sheet_scope_projection or {}).get("pending_confirmation") or []
+                ),
                 "input_signature": (sheet_scope_projection or {}).get(
                     "effective_signature"
                 ),
