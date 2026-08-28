@@ -447,7 +447,7 @@ describe('Stage Comparison production review helpers', () => {
     expect(stages[2].sections[1].substages.map(stage => stage.technical_label)).toEqual([
       'Router', 'MODE 1', 'MODE 2', 'Vision fallback',
     ]);
-    expect(stages[2].reason).toContain('групповое графическое сравнение');
+    expect(stages[2].reason).toContain('требуют внимания инженера');
     expect(stages[2].reason).not.toContain('grouped_graphic_comparison_not_supported');
     expect(stages[2].reason_codes).toContain('grouped_graphic_comparison_not_supported');
     expect(stages[4]).toMatchObject({

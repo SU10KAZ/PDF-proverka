@@ -32,15 +32,15 @@
         PAGE_ACTION_INVALIDATES_EXPLICIT_BLOCK_SCOPE:
             'Изменение области листов исключило ранее выбранные графические блоки; нужен новый выбор.',
         VISION_REQUIRED:
-            'Детерминированный маршрутизатор не смог завершить графическое сравнение; требуется visual fallback.',
+            'Детерминированный маршрутизатор не смог завершить графическое сравнение; нужна визуальная резервная проверка.',
         EXTRACTION_COMPLETENESS_INSUFFICIENT:
-            'Извлечённая геометрия не покрывает видимую графику достаточно полно. Нужен visual fallback или ручная проверка.',
+            'Извлечённая геометрия не покрывает видимую графику достаточно полно. Нужна визуальная резервная или ручная проверка.',
         RASTER_BACKED_SOURCE:
             'Источник содержит растровую графику, которую нельзя надёжно проверить только по векторной геометрии.',
         TEXT_AS_CURVES_ASYMMETRY:
             'На сторонах различается представление текста как текста и кривых; автоматическое сравнение остановлено.',
         REGISTRATION_FAILED:
-            'Графические области не удалось надёжно совместить; результат оставлен для visual fallback или ручной проверки.',
+            'Графические области не удалось надёжно совместить; результат оставлен для визуальной резервной или ручной проверки.',
         LOW_MATCHED_GRAPHIC_COVERAGE:
             'После совмещения подтверждена слишком малая доля графики; автоматический вывод запрещён.',
         GRAPHIC_ROUTE_UNAVAILABLE:
@@ -65,6 +65,12 @@
             'Текстовый артефакт не прошёл проверку production-контракта.',
         TEXT_EXTRACTION_UNAVAILABLE:
             'Текстовую подготовку не удалось завершить; подробности доступны в диагностике.',
+        DOCUMENT_GRAPHIC_GROUPS_REQUIRE_ATTENTION:
+            'Некоторые графические группы документа требуют внимания инженера; автоматически подтверждены не все группы.',
+        ProductionStateConflictError:
+            'Состояние анализа изменилось параллельно. Обновите данные и повторите действие.',
+        OSError:
+            'Операционная система не смогла прочитать или записать нужный файл. Проверьте доступность исходных документов и место на диске.',
         FileNotFoundError:
             'Один из нужных файлов подготовки не найден.',
         UnicodeDecodeError:
@@ -299,6 +305,66 @@
         const normalized = code.toUpperCase();
         return REASON_LABELS[code] || REASON_LABELS[normalized]
             || 'Этап завершён с диагностикой. Внутренний код доступен в деталях.';
+    }
+
+    function productionRunActivity(value) {
+        const source = object(value && value.state ? value.state : value);
+        const status = String(source.status || '').toUpperCase();
+        const hasRunningStatus = ['RUNNING', 'UPDATING'].includes(status);
+        const orphaned = hasRunningStatus && (
+            source.orphaned_run === true
+            || (source.runner_active === false && source.run_recoverable === true)
+        );
+        return {
+            status,
+            has_running_status: hasRunningStatus,
+            active: hasRunningStatus && !orphaned,
+            runner_active: source.runner_active === true,
+            is_orphaned: orphaned,
+            run_recoverable: orphaned && source.run_recoverable === true,
+        };
+    }
+
+    function productionPollingDirective(value) {
+        const activity = productionRunActivity(value);
+        if (activity.is_orphaned) return 'STOP_ORPHANED';
+        if (activity.active) return 'POLL_ACTIVE';
+        return 'STOP_TERMINAL';
+    }
+
+    function productionStateResponseAccepted(value, pendingRun) {
+        const pending = object(pendingRun);
+        if (!Object.keys(pending).length) return true;
+        const source = object(value && value.state ? value.state : value);
+        const observedRunId = String(source.run_id || source.generation_run_id || '');
+        const previousRunId = String(pending.previousRunId || '');
+        const acceptedRunId = String(pending.acceptedRunId || '');
+        if (observedRunId && previousRunId && observedRunId === previousRunId) return false;
+        if (observedRunId && acceptedRunId && observedRunId !== acceptedRunId) return false;
+        return true;
+    }
+
+    function productionPollingTransition(runtime, event) {
+        const current = object(runtime);
+        const action = object(event);
+        const type = String(action.type || '').toUpperCase();
+        const token = Number.isFinite(Number(current.token)) ? Number(current.token) : 0;
+        if (type === 'PAIR_CHANGED' || type === 'STOP') {
+            return {polling: false, token: token + 1, pair_id: String(action.pair_id || '')};
+        }
+        if (type === 'STATE_RECEIVED') {
+            const directive = productionPollingDirective(action.state);
+            return {
+                polling: directive === 'POLL_ACTIVE',
+                token: directive === 'POLL_ACTIVE' ? token : token + 1,
+                pair_id: String(current.pair_id || ''),
+                directive,
+            };
+        }
+        return {
+            polling: Boolean(current.polling), token,
+            pair_id: String(current.pair_id || ''),
+        };
     }
 
     function reasonSummary(sources, stale) {
@@ -894,9 +960,13 @@
             ? estimatePipelineEtaMs(source, {processed, total, elapsed_ms: elapsedMs})
             : null;
         const unit = normalizedUnit(source.unit || settings.unit);
+        const counterPrefix = String(settings.counter_prefix || '').trim();
         const counterLabel = determinate
-            ? `${processed} / ${total}${unit ? ` ${unit}` : ''}`
+            ? `${counterPrefix ? `${counterPrefix}: ` : ''}${processed} / ${total}${unit ? ` ${unit}` : ''}`
             : '';
+        const completedAgeMs = !running && completedAtMs !== null
+            ? Math.max(0, now - completedAtMs)
+            : null;
         return {
             status,
             kind,
@@ -921,7 +991,11 @@
             elapsed_ms: elapsedMs,
             elapsed_label: elapsedMs === null ? '' : formatPipelineDuration(elapsedMs),
             heartbeat_age_ms: activityAgeMs,
-            last_activity_label: activityAgeMs === null ? '' : formatActivityAge(activityAgeMs),
+            last_activity_label: running && activityAgeMs !== null
+                ? formatActivityAge(activityAgeMs)
+                : '',
+            completed_age_ms: completedAgeMs,
+            completed_age_label: completedAgeMs === null ? '' : formatActivityAge(completedAgeMs),
             warning_threshold_ms: warningThresholdMs,
             heartbeat_warning: running && activityAgeMs !== null && activityAgeMs > warningThresholdMs,
             heartbeat_warning_text: running && activityAgeMs !== null && activityAgeMs > warningThresholdMs
@@ -1225,9 +1299,40 @@
         });
         const graphicProgress = normalizePipelineProgress(graphic, {
             ...progressOptions, status: graphicStatus, unit: 'groups',
+            counter_prefix: 'Обработано',
         });
         const textSubstages = textPipelineSubstages(stages, progressOptions);
         const graphicSubstages = graphicPipelineSubstages(stages, progressOptions);
+        const graphicResultCounters = countersFrom([
+            {
+                label: 'Готово', keys: ['groups_completed'], sources: [graphic],
+            },
+            {
+                label: 'Требует проверки',
+                keys: ['groups_review_required', 'review_required'], sources: [graphic],
+            },
+            {
+                label: 'Заблокировано', keys: ['groups_blocked', 'blocked'], sources: [graphic],
+            },
+            {
+                label: 'Изменения', keys: ['changes'], sources: [graphic],
+            },
+        ]);
+        const graphicChanges = firstNumber([graphic], ['changes']);
+        const graphicHasRuntime = Object.keys(graphic).length > 0;
+        let graphicSummary = '';
+        if (graphicHasRuntime && graphicProgress.indeterminate) {
+            graphicSummary = graphicProgress.message
+                || 'Выполняется одна графическая операция';
+        } else if (graphicHasRuntime && graphicProgress.is_terminal && !graphicProgress.determinate) {
+            graphicSummary = 'Графическое сравнение завершено'
+                + (graphicChanges === null ? '' : ` · изменений: ${graphicChanges}`);
+        }
+        const graphicMiniCounter = graphicProgress.counter_label
+            || (graphicProgress.is_running ? 'Выполняется'
+                : graphicProgress.is_terminal
+                    ? (graphicChanges === null ? 'Завершено' : `${graphicChanges} изм.`)
+                    : '');
         const contentCounters = countersFrom([
             {label: 'TEXT дельты', keys: ['deltas', 'differences', 'deltas_total'], sources: [text]},
             {label: 'TEXT атомы', keys: ['atoms', 'atoms_total'], sources: [text]},
@@ -1238,6 +1343,7 @@
             {label: 'GRAPHIC готово', keys: ['groups_completed'], sources: [graphic]},
             {label: 'GRAPHIC неприменимо', keys: ['groups_not_applicable', 'not_applicable'], sources: [graphic]},
             {label: 'GRAPHIC на проверку', keys: ['groups_review_required', 'review_required'], sources: [graphic]},
+            {label: 'GRAPHIC заблокировано', keys: ['groups_blocked', 'blocked'], sources: [graphic]},
             {label: 'GRAPHIC изменения', keys: ['changes'], sources: [graphic]},
         ]);
 
@@ -1333,8 +1439,8 @@
                     mini_counters: [
                         textProgress.counter_label
                             ? {label: 'TEXT', value: textProgress.counter_label} : null,
-                        graphicProgress.counter_label
-                            ? {label: 'GRAPHIC', value: graphicProgress.counter_label} : null,
+                        graphicMiniCounter
+                            ? {label: 'GRAPHIC', value: graphicMiniCounter} : null,
                     ].filter(Boolean),
                     sections: [
                         {
@@ -1344,7 +1450,9 @@
                         },
                         {
                             id: 'graphic', label: 'GRAPHIC (графика)', technical_label: 'GRAPHIC',
-                            progress: graphicProgress, mini_counter: graphicProgress.counter_label,
+                            progress: graphicProgress, mini_counter: graphicMiniCounter,
+                            summary: graphicSummary,
+                            result_counters: graphicResultCounters,
                             substages: graphicSubstages,
                         },
                     ],
@@ -1442,7 +1550,11 @@
             ? normalizedStages
             : normalizeProductionPipeline(wrapper);
         const stateStatus = normalizePipelineStatus(state.status);
-        const running = stateStatus === 'RUNNING' || stages.some(stage => stage.status === 'RUNNING');
+        const runActivity = productionRunActivity(state);
+        const running = runActivity.active || (
+            !runActivity.is_orphaned && stages.some(stage => stage.status === 'RUNNING')
+        );
+        const orphaned = runActivity.is_orphaned;
         const failed = stateStatus === 'FAILED';
         const stale = [state, wrapper.questions, wrapper.changes,
             wrapper.final_report || wrapper.finalReport]
@@ -1458,12 +1570,16 @@
         const questionsPending = metricNumber(questionsStage.pending) || 0;
         const findingsPending = metricNumber(reviewStage.pending) || 0;
         const humanPending = questionsPending > 0 || findingsPending > 0;
+        const automaticPartial = stateStatus === 'PARTIAL' || stages.some(stage => (
+            stage.number >= 2 && stage.number <= 6 && stage.status === 'PARTIAL'
+        ));
         let overviewState;
-        if (running) overviewState = 'RUNNING';
+        if (orphaned) overviewState = 'INTERRUPTED';
+        else if (running) overviewState = 'RUNNING';
         else if (failed) overviewState = 'FAILED';
         else if (!runStarted) overviewState = 'NOT_STARTED';
         else if (humanPending) overviewState = 'NEEDS_REVIEW';
-        else if (stateStatus === 'PARTIAL') overviewState = 'PARTIAL';
+        else if (automaticPartial) overviewState = 'PARTIAL';
         else overviewState = 'COMPLETED';
 
         const stateProgress = progressSource(state);
@@ -1474,7 +1590,9 @@
                 || (metricNumber(object(state.constraints).activity_warning_threshold_sec)
                     ? metricNumber(object(state.constraints).activity_warning_threshold_sec) * 1000
                     : null),
-            status: overviewState === 'RUNNING' ? 'RUNNING' : stateStatus,
+            status: overviewState === 'RUNNING'
+                ? 'RUNNING'
+                : overviewState === 'INTERRUPTED' ? 'FAILED' : stateStatus,
         });
         const currentStage = state.current_stage || stateProgress.current_stage;
         const currentSubstage = state.current_substage || stateProgress.current_substage;
@@ -1509,6 +1627,12 @@
             }
             if (progress.heartbeat_warning_text) detailLines.push(progress.heartbeat_warning_text);
             cta = {kind: 'RUNNING', label: 'Анализ выполняется…', disabled: true};
+        } else if (overviewState === 'INTERRUPTED') {
+            headline = '⚠ Предыдущий анализ был прерван';
+            detailLines.push(
+                'Сохранённое состояние показывает выполняющийся анализ, но активного процесса больше нет. Это могло произойти после перезапуска сервера.',
+            );
+            cta = {kind: 'RECOVER', label: '↻ Повторить анализ', disabled: !selectionReady};
         } else if (overviewState === 'FAILED') {
             headline = 'Во время анализа произошла ошибка.';
             if (failedStageLabel) detailLines.push(`Ошибка на этапе: ${failedStageLabel}.`);
@@ -1520,7 +1644,9 @@
             detailLines.push('Исходные документы или область сравнения изменились. Требуется повторный автоматический анализ.');
             cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
         } else if (overviewState === 'NEEDS_REVIEW') {
-            headline = 'Автоматический анализ завершён.';
+            headline = automaticPartial
+                ? 'Автоматический анализ завершён частично.'
+                : 'Автоматический анализ завершён.';
             if (questionsPending) detailLines.push(`Требуется ответить на вопросы: ${questionsPending}.`);
             if (findingsPending) detailLines.push(`Требуется проверить изменения: ${findingsPending}.`);
             cta = {
@@ -1533,6 +1659,9 @@
                 : 'Анализ полностью завершён.';
             cta = {kind: 'RERUN', label: '↻ Запустить анализ заново', disabled: !selectionReady};
         }
+        if (!progress.is_running && progress.kind === 'none' && progress.completed_age_label) {
+            detailLines.push(`Завершено: ${progress.completed_age_label}.`);
+        }
         return {
             state: overviewState,
             headline,
@@ -1544,6 +1673,7 @@
             reason_codes: overviewReasonCodes,
             progress,
             stale,
+            run_activity: runActivity,
             human: {
                 questions_pending: questionsPending,
                 findings_pending: findingsPending,
@@ -1931,6 +2061,10 @@
         normalizeSuggestionApplication,
         pagesForSide,
         pipelineStatusLabel,
+        productionPollingDirective,
+        productionPollingTransition,
+        productionRunActivity,
+        productionStateResponseAccepted,
         reviewCounts,
         text,
     };

@@ -12160,9 +12160,7 @@ const app = createApp({
             });
         const scProductionRunActive = computed(() => Boolean(
             scProductionRunLoading.value
-            || ['RUNNING', 'UPDATING'].includes(String(
-                scProductionState.value && scProductionState.value.status || '',
-            ).toUpperCase())
+            || scProductionStateIsRunning(scProductionState.value)
         ));
         const scProductionSheetSuggestions = computed(() => SC_PRODUCTION_REVIEW
             ? SC_PRODUCTION_REVIEW.normalizeSheetSuggestions(scProductionState.value)
@@ -13673,7 +13671,7 @@ const app = createApp({
         }
 
         function scResetProductionReview() {
-            scStopProductionPolling();
+            scStopProductionPolling('PAIR_CHANGED');
             scProductionRunToken += 1;
             scProductionLoadToken += 1;
             scProductionPendingRun = null;
@@ -13732,6 +13730,9 @@ const app = createApp({
         }
 
         function scProductionStateIsRunning(value) {
+            if (SC_PRODUCTION_REVIEW && SC_PRODUCTION_REVIEW.productionRunActivity) {
+                return SC_PRODUCTION_REVIEW.productionRunActivity(value).active;
+            }
             const payload = value && value.state ? value.state : value;
             return ['RUNNING', 'UPDATING'].includes(String(
                 payload && payload.status || '',
@@ -13746,17 +13747,29 @@ const app = createApp({
 
         function scProductionStatePredatesPendingRun(data, pairId) {
             const pending = scProductionPendingRun;
-            if (!pending || pending.pairId !== pairId || scProductionStateIsRunning(data)) {
-                return false;
+            if (!pending || pending.pairId !== pairId) return false;
+            if (SC_PRODUCTION_REVIEW && SC_PRODUCTION_REVIEW.productionStateResponseAccepted) {
+                return !SC_PRODUCTION_REVIEW.productionStateResponseAccepted(data, pending);
             }
             const payload = data && data.state ? data.state : data;
-            if (!payload || typeof payload !== 'object') return false;
-            const observedRunId = String(payload.run_id || payload.generation_run_id || '');
-            return observedRunId === pending.previousRunId;
+            const observedRunId = String(
+                payload && (payload.run_id || payload.generation_run_id) || '',
+            );
+            return Boolean(observedRunId && observedRunId === pending.previousRunId);
         }
 
         function scStopProductionPolling() {
-            scProductionPollToken += 1;
+            const reason = arguments[0];
+            if (SC_PRODUCTION_REVIEW && SC_PRODUCTION_REVIEW.productionPollingTransition) {
+                const transition = SC_PRODUCTION_REVIEW.productionPollingTransition({
+                    polling: scProductionPolling.value,
+                    token: scProductionPollToken,
+                    pair_id: scActivePair.value && scActivePair.value.id || '',
+                }, {type: reason === 'PAIR_CHANGED' ? 'PAIR_CHANGED' : 'STOP'});
+                scProductionPollToken = transition.token;
+            } else {
+                scProductionPollToken += 1;
+            }
             scProductionPolling.value = false;
             if (scProductionPollTimer) clearTimeout(scProductionPollTimer);
             if (scProductionClockTimer) clearInterval(scProductionClockTimer);
@@ -13803,7 +13816,13 @@ const app = createApp({
                 }
                 if (data) scApplyProductionState(data);
                 scProductionClock.value = Date.now();
-                if (scProductionStateIsRunning(data) || scProductionRunLoading.value) {
+                const pollingDirective = SC_PRODUCTION_REVIEW
+                    && SC_PRODUCTION_REVIEW.productionPollingDirective
+                    ? SC_PRODUCTION_REVIEW.productionPollingDirective(data)
+                    : (scProductionStateIsRunning(data) ? 'POLL_ACTIVE' : 'STOP_TERMINAL');
+                if (pollingDirective === 'POLL_ACTIVE' || (
+                    scProductionRunLoading.value && pollingDirective !== 'STOP_ORPHANED'
+                )) {
                     scScheduleProductionPoll(token, pairId, 2000);
                     return;
                 }
@@ -14354,6 +14373,16 @@ const app = createApp({
                 scStartProductionPolling({immediate: true, restart: true});
                 const data = await runRequest;
                 if (!scProductionRunContextCurrent(runToken, pairId)) return;
+                const returnedState = data && data.state ? data.state : data;
+                const acceptedRunId = String(
+                    returnedState
+                    && (returnedState.run_id || returnedState.generation_run_id)
+                    || '',
+                );
+                if (acceptedRunId && scProductionPendingRun
+                        && scProductionPendingRun.token === runToken) {
+                    scProductionPendingRun.acceptedRunId = acceptedRunId;
+                }
                 if (data && (data.state || data.status)) {
                     scApplyProductionState(data);
                 }

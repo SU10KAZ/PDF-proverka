@@ -5472,13 +5472,17 @@
                                 {{ scProductionOverview.progress.message }}
                             </span>
                             <span v-if="scProductionOverview.progress.elapsed_label">
-                                Прошло: {{ scProductionOverview.progress.elapsed_label }}
+                                {{ scProductionOverview.progress.is_running ? 'Прошло' : 'Выполнено за' }}:
+                                {{ scProductionOverview.progress.elapsed_label }}
                             </span>
                             <span v-if="scProductionOverview.progress.eta_label">
                                 Для текущей операции осталось примерно: {{ scProductionOverview.progress.eta_label }}
                             </span>
                             <span v-if="scProductionOverview.progress.last_activity_label">
                                 Последняя активность: {{ scProductionOverview.progress.last_activity_label }}
+                            </span>
+                            <span v-if="scProductionOverview.progress.completed_age_label">
+                                Завершено: {{ scProductionOverview.progress.completed_age_label }}
                             </span>
                             <em v-if="scProductionOverview.progress.heartbeat_warning">
                                 {{ scProductionOverview.progress.heartbeat_warning_text }}
@@ -5586,12 +5590,25 @@
                         <span v-if="stage.progress.last_activity_label">
                             Последняя активность: {{ stage.progress.last_activity_label }}
                         </span>
+                        <span v-if="stage.progress.completed_age_label">
+                            Завершено: {{ stage.progress.completed_age_label }}
+                        </span>
                         <em v-if="stage.progress.heartbeat_warning">{{ stage.progress.heartbeat_warning_text }}</em>
                     </div>
 
                     <div v-if="stage.sections" class="sc-production-pipeline__content-sections">
                         <section v-for="section in stage.sections" :key="stage.id + '-' + section.id">
                             <h4>{{ section.label }}</h4>
+                            <p v-if="section.summary" class="sc-production-pipeline__reason">
+                                {{ section.summary }}
+                            </p>
+                            <div v-if="section.result_counters && section.result_counters.length"
+                                 class="sc-production-pipeline__counters">
+                                <span v-for="counter in section.result_counters"
+                                      :key="stage.id + '-' + section.id + '-result-' + counter.label">
+                                    <small>{{ counter.label }}</small><b>{{ counter.value }}</b>
+                                </span>
+                            </div>
                             <div v-if="section.progress && section.progress.kind && section.progress.kind !== 'none'"
                                  class="sc-production-progress sc-production-progress--branch"
                                  :class="'is-' + section.progress.kind">
@@ -5614,6 +5631,9 @@
                                 <span v-if="section.progress.eta_label">Осталось примерно: {{ section.progress.eta_label }}</span>
                                 <span v-if="section.progress.last_activity_label">
                                     Последняя активность: {{ section.progress.last_activity_label }}
+                                </span>
+                                <span v-if="section.progress.completed_age_label">
+                                    Завершено: {{ section.progress.completed_age_label }}
                                 </span>
                                 <em v-if="section.progress.heartbeat_warning">
                                     {{ section.progress.heartbeat_warning_text }}

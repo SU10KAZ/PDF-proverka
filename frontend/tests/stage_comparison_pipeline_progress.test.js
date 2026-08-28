@@ -243,11 +243,12 @@ describe('Stage Comparison pipeline state semantics', () => {
       kind: 'determinate', processed: 47, total: 47, counter_label: '47 / 47 различий',
     });
     expect(content.sections[1].progress).toMatchObject({
-      kind: 'determinate', processed: 8, total: 12, counter_label: '8 / 12 групп',
+      kind: 'determinate', processed: 8, total: 12,
+      counter_label: 'Обработано: 8 / 12 групп',
     });
     expect(content.mini_counters).toEqual([
       {label: 'TEXT', value: '47 / 47 различий'},
-      {label: 'GRAPHIC', value: '8 / 12 групп'},
+      {label: 'GRAPHIC', value: 'Обработано: 8 / 12 групп'},
     ]);
 
     expect(review.aggregateConcurrentPipelineStatus(['COMPLETED', 'NOT_APPLICABLE']))
