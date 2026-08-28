@@ -1539,9 +1539,15 @@
             sheetMatching.relation_counts, sheetMatching.counts,
             object(sheetMatching.diagnostics).relation_counts,
         ]);
+        // Счётчики хода конвейера инженер видит наравне с находками, поэтому
+        // здесь тоже не место кодам HIGH/POSSIBLE/SPLIT/MERGED. Подписи
+        // короткие: это плитки счётчиков, а не карточка вопроса.
         [
-            ['HIGH', 'HIGH'], ['POSSIBLE', 'POSSIBLE'], ['SPLIT', 'SPLIT'],
-            ['MERGED', 'MERGED'], ['NO_MATCH', 'Без пары'],
+            ['HIGH', 'Подтверждено'],
+            ['POSSIBLE', 'Ждут подтверждения'],
+            ['SPLIT', 'Разделены'],
+            ['MERGED', 'Объединены'],
+            ['NO_MATCH', 'Без пары'],
         ].forEach(([key, label]) => {
             const value = finiteNumber(relationCounts[key]);
             if (value !== null) sheetCounters.push({label, value});
