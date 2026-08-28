@@ -1092,13 +1092,24 @@ def compute_text_evidence(graph: dict, ocr_index: dict, findings: list) -> dict:
         etr = f.get("evidence_text_refs")
         if etr and isinstance(etr, list):
             for ref in etr:
-                tb_id = ref.get("text_block_id", "")
+                # Ссылка приходит в двух формах: словарём и голой строкой-id
+                # (targeted-находки пишут строки). Остальные потребители поля
+                # (deterministic_critic/corrector, graph_builder, critic_v2,
+                # rejected_audit_service) уже терпимы к обеим — здесь guard
+                # был пропущен, и строка роняла block-map с AttributeError.
+                if isinstance(ref, dict):
+                    tb_id = ref.get("text_block_id") or ref.get("block_id") or ""
+                    role = ref.get("role", "")
+                    used_for = ref.get("used_for", "")
+                else:
+                    tb_id = str(ref or "")
+                    role = used_for = ""
                 if tb_id and tb_id in text_index and tb_id not in seen:
                     seen.add(tb_id)
                     info = text_index[tb_id]
                     text_refs.append({
-                        "text_block_id": tb_id, "role": ref.get("role", ""),
-                        "used_for": ref.get("used_for", ""),
+                        "text_block_id": tb_id, "role": role,
+                        "used_for": used_for,
                         "text": info["text"], "html": info["html"], "page": info["page"]})
 
         ev = f.get("evidence")
