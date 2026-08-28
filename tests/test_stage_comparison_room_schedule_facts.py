@@ -156,7 +156,9 @@ def test_without_a_header_the_same_rows_stay_unresolved():
 
 def test_two_rows_glued_into_one_are_refused_rather_than_misread():
     # «02.1 Рампа 2019,94 B2 02.42а Кладовая 6,18»: taking the last number as
-    # the area of room 02.1 would be wrong by a factor of 327.
+    # the area of room 02.1 would be wrong by a factor of 327.  Резать строку
+    # умеет подготовка текста (split_two_up_table_rows), и только там, где
+    # разложение полное; сам производитель по-прежнему ничего не угадывает.
     glued = ["02.1", "Рампа", "2019,94", "В2", "02.42а", "Кладовая", "6,18"]
     result = _facts(
         [_header("left", width=4), _row("l1", "left", glued, order=2)],
@@ -166,7 +168,8 @@ def test_two_rows_glued_into_one_are_refused_rather_than_misread():
     assert result["facts"] == []
 
 
-def test_a_two_up_header_does_not_prove_a_table():
+def test_a_two_up_header_proves_the_table_it_prints_twice():
+    """Повторённый заголовок — это чтение границы, а не догадка о ней."""
     doubled = [
         "Номер помещения", "Наименование", "Площадь, м2", "Кат. помещения",
         "Номер помещения", "Наименование", "Площадь, м2", "Кат. помещения",
@@ -178,10 +181,12 @@ def test_a_two_up_header_does_not_prove_a_table():
          _row("r1", "right", ["28.1", "Холл", "16,20"], order=2)],
     )
 
-    assert result["facts"] == []
+    assert result["diagnostics"]["recognized_room_schedule_tables"] == 2
+    assert [fact["after_value"] for fact in result["facts"]] == ["16.20 м²"]
 
 
-def test_two_different_header_widths_in_one_table_prove_nothing():
+def test_two_header_widths_in_one_table_are_read_as_the_wider_one():
+    """Четвёртая колонка необязательна и пропадает только с хвоста строки."""
     result = _facts(
         [
             _header("left", order=1, width=3),
@@ -191,7 +196,7 @@ def test_two_different_header_widths_in_one_table_prove_nothing():
         [_header("right"), _row("r1", "right", ["28.1", "Холл", "16,20"], order=2)],
     )
 
-    assert result["facts"] == []
+    assert [fact["after_value"] for fact in result["facts"]] == ["16.20 м²"]
 
 
 def test_a_bare_integer_is_not_a_room_number():

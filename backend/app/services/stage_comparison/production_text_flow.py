@@ -6,6 +6,7 @@ Sheet Matcher approval or a parent relation.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -15,7 +16,7 @@ from .production_artifacts import (
     stable_id,
     utc_now,
 )
-from . import sheet_matching, text_comparison, text_differences
+from . import room_schedule, sheet_matching, text_comparison, text_differences
 from .text_fragment_cache import load_or_extract_document_fragments
 
 
@@ -53,6 +54,68 @@ def normalize_comparison_groups(
     if len({group["id"] for group in groups}) != len(groups):
         raise ValueError("duplicate comparison group id")
     return groups
+
+
+def split_two_up_table_rows(
+    fragments: list[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Разложить сдвоенную строку экспликации на отдельные помещения.
+
+    Лист печатают в две колонки, и одна строка документа несёт два помещения:
+    «02.1 Рампа 185,03 B2 02.42 Коридор 44,10».  Пока эта строка едина, Stage 3
+    сопоставляет её с правой строкой только по первому помещению, а второе —
+    02.42 — уходит на правой стороне в «добавлено», хотя оно там было всегда, и
+    настоящее изменение его площади (44,10 → 44,14) не видит никто.
+
+    Резать можно только там, где документ сам доказал разметку: заголовок
+    таблицы объявил колонки, а строка целиком разложилась на полные помещения.
+    Строка, у которой остался хвост, не режется вовсе.
+
+    У частей остаются рамки и страница исходной строки: факт действительно
+    происходит из неё, и подсветка доказательства обязана вести туда же.
+    """
+    output: list[dict[str, Any]] = []
+    widths: dict[str, int] = {}
+    for fragment in fragments:
+        if fragment.get("source_kind") != "table_row":
+            continue
+        units = room_schedule.header_units(fragment)
+        if units:
+            group = str(fragment.get("source_group") or "")
+            widths[group] = max(widths.get(group, 0), max(units))
+    for fragment in fragments:
+        width = (
+            widths.get(str(fragment.get("source_group") or ""))
+            if fragment.get("source_kind") == "table_row"
+            else None
+        )
+        parts = [
+            text_comparison.canonicalize_text(str(value))
+            for value in fragment.get("location_parts") or []
+        ]
+        units = room_schedule.row_units(parts, width) if width else None
+        if not units or len(units) < 2:
+            output.append(dict(fragment))
+            continue
+        raw = list(fragment.get("location_parts") or [])
+        position = 0
+        for index, unit in enumerate(units):
+            piece = deepcopy(dict(fragment))
+            piece["location_parts"] = raw[position:position + len(unit)]
+            position += len(unit)
+            piece["text"] = " ".join(str(value) for value in piece["location_parts"])
+            piece["canonical_text"] = text_comparison.canonicalize_text(piece["text"])
+            piece["id"] = f"{fragment['id']}#{index}"
+            piece["char_count"] = len(piece["text"])
+            piece["order"] = int(fragment.get("order") or 0) * 100 + index
+            piece["split_from"] = {
+                "fragment_id": str(fragment["id"]),
+                "unit_index": index,
+                "unit_count": len(units),
+                "rule": "two_up_room_schedule_row",
+            }
+            output.append(piece)
+    return output
 
 
 def prepare_text_scope(
@@ -119,7 +182,7 @@ def prepare_text_scope(
                 fitz=fitz,
                 selected_pages=selected[side],
             )
-        fragments[side] = sorted(
+        fragments[side] = split_two_up_table_rows(sorted(
             (
                 fragment for fragment in extracted
                 if int(fragment["pdf_page"]) in selected[side]
@@ -130,7 +193,7 @@ def prepare_text_scope(
                 int(fragment.get("order") or 0),
                 str(fragment["id"]),
             ),
-        )
+        ))
         documents[side.upper()] = {
             "pdf": file_content_identity(pdf_path),
             "markdown": file_content_identity(markdown_path),

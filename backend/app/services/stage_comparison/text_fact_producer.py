@@ -16,6 +16,7 @@ from typing import Any, Iterable, Mapping
 
 from .production_artifacts import content_signature, stable_id, utc_now
 from .production_text_flow import PREPARATION_KIND, PREPARATION_SCHEMA_VERSION
+from . import room_schedule
 from .text_comparison import canonicalize_text
 from .text_semantic_validation import iter_stage3_evidence, stage3_content_signature
 from .unified_entity_bridge.entity_normalizer import canonical_entity_name
@@ -303,19 +304,10 @@ def _is_electrical_units(fragment: Mapping[str, Any]) -> bool:
     )
 
 
-# An architectural room schedule («экспликация помещений») names its own
-# columns, and — unlike the electrical load table — the header has exactly as
-# many cells as its data rows.  So the column→meaning mapping is READ FROM THE
-# DOCUMENT instead of being hardcoded here, which is a stronger proof than the
-# electrical rule has.  Only the fourth column may be missing, and only from
-# the tail: a row whose category cell is empty collapses from four cells to
-# three.
-_ROOM_HEADER_COLUMNS = (
-    re.compile(r"^номер(\s+помещения)?$"),
-    re.compile(r"^наименование"),
-    re.compile(r"^площад"),
-    re.compile(r"^кат"),
-)
+# Разметку экспликации («номер | наименование | площадь | категория») читает
+# room_schedule: она нужна и подготовке текста, которая режет сдвоенные строки
+# ДО сравнения, и этому производителю.
+_ROOM_HEADER_COLUMNS = room_schedule.HEADER_COLUMNS
 _ROOM_SCHEDULE_COLUMNS = (
     ("room_name", "TYPE", None),
     # «м²», not «m2»: the unit is appended to the value, and a unit carrying an
@@ -324,51 +316,22 @@ _ROOM_SCHEDULE_COLUMNS = (
     ("room_area_m2", "PARAMETER", "м²"),
     ("room_fire_category", "TYPE", None),
 )
-# «28.1», «01.62г», «Б2.14» — a room number, never a bare integer: a bare
-# integer is indistinguishable from an area, and the third column holds areas.
-_ROOM_CODE_RE = re.compile(r"^[а-яa-z]?\d{1,3}(?:\.\d{1,3}){1,3}[а-яa-z]?$", re.I)
-_ROOM_AREA_RE = re.compile(r"^\d{1,6}(?:[.,]\d{1,3})?(?:\s*(?:м2|м²|m2))?$", re.I)
-# One side writes «288.62 м2» and the other «185,03» for the same column.  The
-# unit is stripped here and reattached once by ``_normalized_value``, so the
-# two sides of an unchanged area compare equal instead of inventing a change.
-_ROOM_AREA_UNIT_RE = re.compile(r"\s*(?:м2|м²|m2)\s*$", re.I)
-_ROOM_CATEGORY_RE = re.compile(r"^[абвгдabvgd]\s*[1-4]?$", re.I)
+_ROOM_CODE_RE = room_schedule.ROOM_CODE_RE
+_ROOM_AREA_RE = room_schedule.ROOM_AREA_RE
+_ROOM_AREA_UNIT_RE = room_schedule.ROOM_AREA_UNIT_RE
+_ROOM_CATEGORY_RE = room_schedule.ROOM_CATEGORY_RE
+
+_looks_like_room_header = room_schedule.looks_like_header
 
 
-def _looks_like_room_header(fragment: Mapping[str, Any]) -> bool:
-    parts = [canonicalize_text(str(value)) for value in fragment.get("location_parts") or []]
-    return bool(parts) and _ROOM_HEADER_COLUMNS[0].match(parts[0]) is not None
+room_schedule_header_units = room_schedule.header_units
+room_row_units = room_schedule.row_units
+_room_unit_is_valid = room_schedule.unit_is_valid
 
 
 def _room_schedule_header_width(fragment: Mapping[str, Any]) -> int | None:
-    """Return the proven column count of a room-schedule header, or None.
-
-    Only a header that parses as exactly one «номер | наименование | площадь
-    [| категория]» unit counts.  Two units glued side by side is a two-up
-    sheet whose column boundary is not recoverable from the cells alone, and
-    guessing where the second table starts is exactly what this producer
-    refuses to do.
-    """
-    parts = [canonicalize_text(str(value)) for value in fragment.get("location_parts") or []]
-    if len(parts) < 3:
-        return None
-    index = 0
-    units: list[int] = []
-    while index < len(parts):
-        if not _ROOM_HEADER_COLUMNS[0].match(parts[index]):
-            return None
-        if index + 2 >= len(parts):
-            return None
-        if not _ROOM_HEADER_COLUMNS[1].match(parts[index + 1]):
-            return None
-        if not _ROOM_HEADER_COLUMNS[2].match(parts[index + 2]):
-            return None
-        width = 3
-        if index + 3 < len(parts) and _ROOM_HEADER_COLUMNS[3].match(parts[index + 3]):
-            width = 4
-        units.append(width)
-        index += width
-    return units[0] if len(units) == 1 else None
+    """The widest unit this header proves, or None when it is not a header."""
+    return room_schedule.header_width(fragment)
 
 
 def _is_section_row(fragment: Mapping[str, Any]) -> bool:
@@ -393,6 +356,7 @@ def _table_contexts(
     dict[tuple[str, str], int],
     dict[str, str | None],
     dict[str, str],
+    dict[str, dict[str, str]],
 ]:
     grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     for _fragment_id, (side, fragment) in fragments.items():
@@ -425,12 +389,14 @@ def _table_contexts(
             room_header_seen = True
             room_header_ids.add(str(value["id"]))
             room_widths.add(width)
-        # One header shape per table, or the table is not proven.  A group with
-        # two different widths, or with a glued two-up header, stays unresolved.
-        # Room tables are tracked separately from ``valid_tables``: that set
-        # means «proven electrical load table» and nothing else.
-        if len(room_widths) == 1 and key not in valid_tables:
-            room_schedule_widths[key] = next(iter(room_widths))
+        # Every header in the group declares its own column count, and a row is
+        # then validated against the widest one — the fourth column is optional
+        # and only ever missing from the tail, so accepting the wider shape
+        # cannot mis-read the narrower one.  Room tables are tracked separately
+        # from ``valid_tables``: that set means «proven electrical load table»
+        # and nothing else.
+        if room_widths and key not in valid_tables:
+            room_schedule_widths[key] = max(room_widths)
         elif room_header_seen:
             # An unproven table still has header rows, and a header row is
             # never a fact whether or not its table was proven.
@@ -451,7 +417,18 @@ def _table_contexts(
                 current_context = canonicalize_text(str(fragment.get("text") or ""))
                 metadata_reason[fragment_id] = "table_section_label_not_a_fact"
             context_by_fragment[fragment_id] = current_context
-    return valid_tables, room_schedule_widths, context_by_fragment, metadata_reason
+    assembly_rows = _assembly_rows(fragments)
+    for fragment_id in assembly_rows:
+        # Строка состава — факт, а не метаданные, даже если её раньше приняли
+        # за подпись раздела.
+        metadata_reason.pop(fragment_id, None)
+    return (
+        valid_tables,
+        room_schedule_widths,
+        context_by_fragment,
+        metadata_reason,
+        assembly_rows,
+    )
 
 
 def _table_row_properties(
@@ -555,6 +532,194 @@ def _room_row_properties(
     }
 
 
+# ── Состав конструкции: «пирог» кровли, пола, покрытия ─────────────────────
+#
+# Такая таблица не подписывает свои колонки — она подписывает саму себя:
+# перед каждым составом стоит абзац «Кровля тип К3 (толщ. 350-550мм)».  Этот
+# заголовок и есть доказательство: он задаёт объект (К3) и границу состава,
+# внутри которой строка «минераловатный утеплитель ... | -150 мм» читается как
+# толщина слоя, а не как случайная пара ячеек.
+#
+# Один блок документа обычно содержит несколько составов подряд, и материалы в
+# них повторяются с разной толщиной.  Поэтому идентичность слоя действует
+# только внутри своего состава, а материал, встретившийся в составе дважды,
+# отбрасывается целиком: два разных значения под одним именем — не факт.
+# Обозначение состава пишут чертёжным шрифтом, и «К3» регулярно приходит из
+# OCR как «КЗ», а «ПТ3» — как «ПТЗ». Кириллическая «з» на месте цифры внутри
+# обозначения — это одна и та же марка, поэтому она приводится к цифре: иначе
+# левый лист говорит про «КЗ», правый про «К3», и один состав раздваивается.
+_ASSEMBLY_HEADING_RE = re.compile(
+    r"^\s*(?P<kind>кровл\w*|покрыти\w*|пол\w*|пирог\w*|состав\w*)\s+"
+    r"тип\s+(?P<head>[а-яa-z]{0,3}\s?-?)"
+    r"(?P<number>[0-9зо]{1,3}(?:\.[0-9зо]{1,2})?)"
+    r"(?![а-яa-z])",
+    re.I,
+)
+_ASSEMBLY_CODE_DIGITS = str.maketrans({"з": "3", "о": "0"})
+_ASSEMBLY_THICKNESS_RE = re.compile(
+    r"^-?\d{1,4}(?:[.,]\d{1,2})?"
+    r"(?:\s*\.{2,3}\s*-?\d{1,4}(?:[.,]\d{1,2})?)?\s*мм$",
+    re.I,
+)
+_ASSEMBLY_THICKNESS_LEAD_RE = re.compile(r"^-\s*")
+_ASSEMBLY_UNIT_RE = re.compile(r"\s*мм\s*$", re.I)
+#: Сколько строк «материал | толщина» обязана иметь таблица, чтобы считаться
+#: составом конструкции.  Меньше — это не таблица слоёв, а совпадение формы.
+_ASSEMBLY_MIN_THICKNESS_ROWS = 4
+_ASSEMBLY_MIN_THICKNESS_SHARE = 0.4
+_ASSEMBLY_MIN_MATERIAL_CHARS = 4
+
+
+def _assembly_heading(fragment: Mapping[str, Any]) -> str | None:
+    """«Кровля тип К3 (толщ. 350-550мм)» → «кровля тип к3»."""
+    if fragment.get("source_kind") not in {"paragraph", "heading"}:
+        return None
+    text = canonicalize_text(str(fragment.get("text") or ""))
+    match = _ASSEMBLY_HEADING_RE.match(text)
+    if not match:
+        return None
+    # Буквенная часть марки остаётся буквенной; цифровая — цифровой.
+    code = match.group("head").replace(" ", "") + match.group("number").translate(
+        _ASSEMBLY_CODE_DIGITS
+    )
+    return " ".join(f"{match.group('kind')} тип {code}".split())
+
+
+def _assembly_thickness_row(parts: list[str]) -> tuple[str, str] | None:
+    if len(parts) != 2 or not _ASSEMBLY_THICKNESS_RE.match(parts[1]):
+        return None
+    material = parts[0].strip()
+    if len(material) < _ASSEMBLY_MIN_MATERIAL_CHARS or _NUMBER_RE.match(material):
+        return None
+    thickness = _ASSEMBLY_UNIT_RE.sub("", _ASSEMBLY_THICKNESS_LEAD_RE.sub("", parts[1])).strip()
+    return material, thickness
+
+
+def _assembly_material_only_row(parts: list[str]) -> str | None:
+    if len(parts) != 1:
+        return None
+    material = parts[0].strip()
+    if len(material) <= 6 or _NUMBER_RE.match(material):
+        return None
+    return material
+
+
+def _assembly_rows(
+    fragments: Mapping[str, tuple[str, dict[str, Any]]],
+) -> dict[str, dict[str, str]]:
+    """fragment_id → {assembly, material} для строк доказанных составов.
+
+    Заголовок состава — это абзац, а не строка таблицы, поэтому группировка
+    здесь своя: она обязана видеть и абзацы, иначе границу состава читать
+    нечем.
+    """
+    # Группируем по БЛОКУ, а не по source_group: заголовок состава — абзац с
+    # ключом «blk_…», а его строки — таблица с ключом «blk_…:table». Общий у
+    # них только идентификатор блока, и именно он держит состав вместе.
+    grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for _fragment_id, (side, fragment) in fragments.items():
+        block_id = str(
+            fragment.get("source_block_id")
+            or str(fragment.get("source_group") or "").split(":", 1)[0]
+        )
+        if block_id:
+            grouped[(side, block_id)].append(fragment)
+    output: dict[str, dict[str, str]] = {}
+    for _key, values in grouped.items():
+        ordered = sorted(values, key=lambda value: (
+            int(value.get("pdf_page") or 0),
+            int(value.get("order") or 0),
+            str(value.get("id") or ""),
+        ))
+        rows = [
+            [canonicalize_text(str(cell)) for cell in value.get("location_parts") or []]
+            for value in ordered
+            if value.get("source_kind") == "table_row"
+        ]
+        populated = [row for row in rows if row]
+        thickness_rows = [row for row in populated if _assembly_thickness_row(row)]
+        if (
+            len(thickness_rows) < _ASSEMBLY_MIN_THICKNESS_ROWS
+            or len(thickness_rows) < _ASSEMBLY_MIN_THICKNESS_SHARE * len(populated)
+        ):
+            continue
+        # Режем блок на составы по собственным заголовкам документа.
+        segments: list[tuple[str | None, list[tuple[str, str]]]] = [(None, [])]
+        for value in ordered:
+            heading = _assembly_heading(value)
+            if heading is not None:
+                segments.append((heading, []))
+                continue
+            if value.get("source_kind") != "table_row":
+                continue
+            parts = [
+                canonicalize_text(str(cell))
+                for cell in value.get("location_parts") or []
+            ]
+            thickness = _assembly_thickness_row(parts)
+            material = thickness[0] if thickness else _assembly_material_only_row(parts)
+            if material is None:
+                continue
+            segments[-1][1].append((str(value["id"]), material))
+        for assembly, members in segments:
+            if assembly is None:
+                # Строки до первого заголовка не принадлежат доказанному
+                # составу: назвать их объект нечем.
+                continue
+            counts = Counter(material for _fragment_id, material in members)
+            for fragment_id, material in members:
+                if counts[material] != 1:
+                    continue
+                output[fragment_id] = {"assembly": assembly, "material": material}
+    return output
+
+
+def _assembly_row_properties(
+    fragment: Mapping[str, Any],
+    *,
+    assembly_rows: Mapping[str, Mapping[str, str]],
+) -> dict[str, Any] | None:
+    record = assembly_rows.get(str(fragment.get("id") or ""))
+    if record is None:
+        return None
+    parts = [canonicalize_text(str(cell)) for cell in fragment.get("location_parts") or []]
+    material = record["material"]
+    facet_key = content_signature(material)[:12]
+    thickness = _assembly_thickness_row(parts)
+    if thickness is not None:
+        values = {
+            f"assembly_layer_thickness_mm_{facet_key}": {
+                "dimension": "PARAMETER",
+                "value": _normalized_value(thickness[1], "мм"),
+                "raw_value": parts[1],
+                "unit": "мм",
+                "cell_index": 1,
+            }
+        }
+    else:
+        # Слой без толщины: доказан сам факт его присутствия в составе.
+        values = {
+            f"assembly_layer_{facet_key}": {
+                "dimension": "STRUCTURE",
+                "value": _normalized_value(material),
+                "raw_value": parts[0],
+                "unit": None,
+                "cell_index": 0,
+            }
+        }
+    return {
+        "subject_original": record["assembly"],
+        "subject_canonical": canonical_entity_name(record["assembly"]),
+        # Объект — сам состав, а слой живёт в facet_ref.  Класть материал в
+        # контекст нельзя: тогда каждый слой станет отдельным объектом проекта
+        # и «Кровля К3» распадётся на четырнадцать сущностей.
+        "context": None,
+        "values": values,
+        "rule": "recognized_assembly_layer_table",
+        "explicit_project_entity": True,
+    }
+
+
 def _strict_expression_properties(text: str) -> dict[str, Any] | None:
     """Parse only when every semicolon-delimited segment is a complete fact."""
     body = " ".join(str(text or "").strip().split())
@@ -641,6 +806,7 @@ def _fragment_properties(
     valid_tables: set[tuple[str, str]],
     room_schedule_widths: Mapping[tuple[str, str], int],
     context_by_fragment: Mapping[str, str | None],
+    assembly_rows: Mapping[str, Mapping[str, str]],
 ) -> dict[str, Any] | None:
     return (
         _table_row_properties(
@@ -655,6 +821,7 @@ def _fragment_properties(
             room_schedule_widths=room_schedule_widths,
             context_by_fragment=context_by_fragment,
         )
+        or _assembly_row_properties(fragment, assembly_rows=assembly_rows)
         or _supply_property(str(fragment.get("text") or ""))
         or _strict_expression_properties(str(fragment.get("text") or ""))
     )
@@ -771,6 +938,7 @@ def _single_side_properties(
     valid_tables: set[tuple[str, str]],
     room_schedule_widths: Mapping[tuple[str, str], int],
     context_by_fragment: Mapping[str, str | None],
+    assembly_rows: Mapping[str, Mapping[str, str]],
 ) -> dict[str, Any] | None:
     if len(values) != 1:
         return None
@@ -780,6 +948,7 @@ def _single_side_properties(
         valid_tables=valid_tables,
         room_schedule_widths=room_schedule_widths,
         context_by_fragment=context_by_fragment,
+        assembly_rows=assembly_rows,
     )
 
 
@@ -818,6 +987,18 @@ def _property_pairs(
         if before["value"] != after["value"]:
             pairs.append({"facet": facet, "before": before, "after": after})
     return right, pairs
+
+
+def _structurally_identical(
+    bucket: str,
+    left: dict[str, Any] | None,
+    right: dict[str, Any] | None,
+) -> bool:
+    """True когда обе стороны разобраны и структурно совпали до последнего поля."""
+    if bucket != "changed" or left is None or right is None:
+        return False
+    descriptor, pairs = _property_pairs(bucket, left, right)
+    return descriptor is not None and not pairs
 
 
 def _facts_for_evidence(
@@ -957,9 +1138,13 @@ def produce_text_facts(
 
     fragments = _fragments_by_id(text_preparation)
     prepared_groups = _preparation_groups(text_preparation)
-    valid_tables, room_schedule_widths, contexts, known_metadata = _table_contexts(
-        fragments
-    )
+    (
+        valid_tables,
+        room_schedule_widths,
+        contexts,
+        known_metadata,
+        assembly_rows,
+    ) = _table_contexts(fragments)
     facts: list[dict[str, Any]] = []
     not_applicable: list[dict[str, Any]] = []
     rule_counts: Counter[str] = Counter()
@@ -978,12 +1163,12 @@ def produce_text_facts(
         left = _single_side_properties(
             referenced["left"], side="left",
             valid_tables=valid_tables, room_schedule_widths=room_schedule_widths,
-            context_by_fragment=contexts,
+            context_by_fragment=contexts, assembly_rows=assembly_rows,
         )
         right = _single_side_properties(
             referenced["right"], side="right",
             valid_tables=valid_tables, room_schedule_widths=room_schedule_widths,
-            context_by_fragment=contexts,
+            context_by_fragment=contexts, assembly_rows=assembly_rows,
         )
         produced = _facts_for_evidence(
             pair_id=text_differences.get("pair_id"),
@@ -1001,6 +1186,26 @@ def produce_text_facts(
             continue
 
         referenced_all = [*referenced["left"], *referenced["right"]]
+        if _structurally_identical(bucket, left, right):
+            # Обе стороны разобраны одним и тем же правилом, объект тот же, и
+            # ни одно значение не разошлось: «185,03» против «185,03 м2» — это
+            # запись единицы, а не изменение проекта.  Такое расхождение
+            # Stage 3 нашёл честно, но фактом оно не является.
+            not_applicable.append({
+                "source_evidence_ref": source_ref,
+                "reason_code": "structured_values_identical",
+                "provenance": {
+                    "producer": PRODUCER_VERSION,
+                    "reason_codes": ["structured_values_identical"],
+                    "parser_rule": str(left["rule"]),
+                    "source_fragment_ids": sorted(
+                        str(fragment.get("id") or "") for fragment in referenced_all
+                    ),
+                    "uses_model": False,
+                },
+            })
+            continue
+
         reasons = [
             _metadata_reason(fragment, known_metadata)
             for fragment in referenced_all
