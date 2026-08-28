@@ -118,8 +118,16 @@ def needs_vision(
     *,
     resolution: Mapping[str, Any] | None,
     graphic_route: str | None,
+    source: str = "TEXT",
 ) -> bool:
-    """Строго два повода: так сказал детерминированный роутер или аналитик."""
+    """Строго два повода: так сказал аналитик или так сказал роутер графики.
+
+    Второй повод действует ТОЛЬКО на графические элементы. `VISION_REQUIRED`
+    означает «геометрию этого блока вектором не сравнить», а не «строку
+    таблицы нельзя прочитать»: на паре АР маршрут графики был VISION_REQUIRED,
+    а все 423 нерешённых элемента — текстовые, и резерв уходил рисовать кропы
+    вокруг строки «203,26», пока не упирался в собственный предел.
+    """
     if isinstance(resolution, Mapping):
         # Разобранный текстом элемент картинке не нужен, какой бы маршрут ни
         # выбрал детерминированный роутер: резерв — это резерв.
@@ -127,7 +135,10 @@ def needs_vision(
             return False
         if str(resolution.get("human_reason") or "") in VISION_REASONS:
             return True
-    return graphic_route == "VISION_REQUIRED"
+    return (
+        graphic_route == "VISION_REQUIRED"
+        and str(source or "TEXT").upper() == "GRAPHIC"
+    )
 
 
 def observations_to_context(payload: Mapping[str, Any]) -> dict[str, list[str]]:

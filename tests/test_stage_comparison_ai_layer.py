@@ -574,7 +574,9 @@ def _declined(reason: str = "GRAPHIC_EVIDENCE_REQUIRED") -> dict:
 def test_vision_is_needed_only_on_two_explicit_signals():
     from backend.app.services.stage_comparison.ai import vision
 
-    assert vision.needs_vision(resolution=None, graphic_route="VISION_REQUIRED")
+    assert vision.needs_vision(
+        resolution=None, graphic_route="VISION_REQUIRED", source="GRAPHIC"
+    )
     assert vision.needs_vision(
         resolution=_declined(), graphic_route="MODE_1_APPLICABLE"
     )
@@ -582,7 +584,24 @@ def test_vision_is_needed_only_on_two_explicit_signals():
         resolution=_declined("ENTITY_AMBIGUOUS"), graphic_route="MODE_1_APPLICABLE"
     )
     assert not vision.needs_vision(
-        resolution=_good_resolution(), graphic_route="VISION_REQUIRED"
+        resolution=_good_resolution(), graphic_route="VISION_REQUIRED",
+        source="GRAPHIC",
+    )
+
+
+def test_a_graphic_route_does_not_send_text_rows_to_the_drawing():
+    """VISION_REQUIRED сказано про геометрию блока, а не про строку таблицы."""
+    from backend.app.services.stage_comparison.ai import vision
+
+    assert not vision.needs_vision(
+        resolution=_declined("ENTITY_AMBIGUOUS"),
+        graphic_route="VISION_REQUIRED",
+        source="TEXT",
+    )
+    assert vision.needs_vision(
+        resolution=_declined("ENTITY_AMBIGUOUS"),
+        graphic_route="VISION_REQUIRED",
+        source="GRAPHIC",
     )
 
 

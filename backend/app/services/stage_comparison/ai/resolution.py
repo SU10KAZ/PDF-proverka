@@ -517,7 +517,9 @@ class AiResolutionLayer:
             # отказ и резерв начнут вызывать друг друга по кругу.
             return None
         if not vision_module.needs_vision(
-            resolution=resolution, graphic_route=self.graphic_route
+            resolution=resolution,
+            graphic_route=self.graphic_route,
+            source=item.source,
         ):
             return None
         if not budget.take_vision() or budget.out_of_time() or self.cancel.cancelled:
