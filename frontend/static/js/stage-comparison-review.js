@@ -1887,12 +1887,14 @@
             evidence_id: evidenceId,
             target_id: source.target_id ? String(source.target_id) : '',
             kind,
+            target_kind: String(source.target_kind || ''),
             title: text(source.title, kind === 'MATCH' ? 'Совпавший текст' : 'Изменение текста'),
             before: source.before === null || source.before === undefined
                 ? '' : text(source.before, ''),
             after: source.after === null || source.after === undefined
                 ? '' : text(source.after, ''),
             review_required: Boolean(source.review_required),
+            review_status: String(source.review_status || ''),
             raw_item: source,
         };
     }
@@ -1921,6 +1923,12 @@
                 ? Number(source.generation_revision) : null,
             input_signature: String(source.input_signature || ''),
             synthesis_input_signature: String(source.synthesis_input_signature || ''),
+            text_result_state: String(source.text_result_state || 'PUBLISHED').toUpperCase(),
+            text_blocked_reason: String(source.text_blocked_reason || ''),
+            text_blocked_error: String(source.text_blocked_error || ''),
+            match_evidence_state: String(source.match_evidence_state || 'UNKNOWN').toUpperCase(),
+            change_items: numberOrNull(source.change_items),
+            available_change_items: numberOrNull(source.available_change_items),
             summary: {
                 available_match_pairs: numberOrNull(
                     source.available_match_pairs !== undefined
@@ -2025,6 +2033,24 @@
         return `${value} ${noun} ${verb} дополнительной проверки.`;
     }
 
+    function textResultState(state, evidence) {
+        const textStage = object(object(state.stages).text);
+        const blocked = ['status', 'source_state'].some(key => (
+            String(textStage[key] || '').toUpperCase() === 'CHECK_BLOCKED'
+        )) || String(evidence.text_result_state || '') === 'BLOCKED';
+        if (blocked) return 'BLOCKED';
+        return String(evidence.text_result_state || '').toUpperCase() || '';
+    }
+
+    function pairPhrase(count) {
+        const value = Math.max(0, Number(count) || 0);
+        const lastTwo = value % 100;
+        const last = value % 10;
+        if (last === 1 && lastTwo !== 11) return 'пара';
+        if ([2, 3, 4].includes(last) && ![12, 13, 14].includes(lastTwo)) return 'пары';
+        return 'пар';
+    }
+
     function normalizeProductionTextPresentation(stateValue, evidenceValue) {
         const state = object(stateValue && stateValue.state ? stateValue.state : stateValue);
         const evidence = object(evidenceValue);
@@ -2034,7 +2060,13 @@
         const runStatus = normalizePipelineStatus(state.status);
         const stale = Boolean(state.stale || evidence.stale);
         const summary = object(evidence.summary);
-        const fallbackReview = firstNumber([textStage], [
+        const resultState = textResultState(state, evidence);
+        const blocked = resultState === 'BLOCKED';
+        const blockedReason = String(evidence.text_blocked_reason || textStage.reason_code || '');
+        const blockedError = String(evidence.text_blocked_error || textStage.error_type || '');
+        // A blocked branch published zeros for an aborted run.  Reading them
+        // as counted results would claim the document was checked.
+        const fallbackReview = blocked ? null : firstNumber([textStage], [
             'review_required', 'review_required_atoms', 'unresolved',
         ]);
         const reviewRequired = finiteNumber(summary.review_required) !== null
@@ -2051,6 +2083,13 @@
             tone = 'running';
             label = 'Выполняется';
             message = 'Текстовый анализ выполняется в составе полного автоматического анализа.';
+        } else if (blocked) {
+            tone = 'warning';
+            label = 'Не завершён';
+            message = 'Текстовый анализ не завершён: результат не построен.'
+                + (blockedReason || blockedError
+                    ? ` ${humanizeReasonCode(blockedReason || blockedError)}`
+                    : ' Причина не опубликована этапом.');
         } else if (stageStatus === 'FAILED' || (!hasTextStage && runStatus === 'FAILED')) {
             tone = 'warning';
             label = 'Не завершён';
@@ -2073,18 +2112,33 @@
                 ? `Детерминированная проверка завершена. ${reviewFragmentPhrase(reviewRequired)}`
                 : 'Детерминированная проверка завершена. Дополнительная семантическая проверка не применялась.';
         }
-        const availableMatchPairs = finiteNumber(summary.available_match_pairs) !== null
-            ? finiteNumber(summary.available_match_pairs)
-            : finiteNumber(summary.matched_fragments);
+        // Unknown is never rendered as a counted zero: an absent value means
+        // the projection could not prove the number, not that it found none.
+        const availableMatchPairs = finiteNumber(summary.available_match_pairs);
+        const totalChangeItems = finiteNumber(evidence.change_items);
+        const availableChangeItems = finiteNumber(evidence.available_change_items);
         const resultCounters = [
-            ['Доступно пар', availableMatchPairs],
-            ['Изменено', summary.changed],
-            ['Удалено', summary.removed],
-            ['Добавлено', summary.added],
-            ['Требуют проверки', reviewRequired],
-        ].filter(([, value]) => finiteNumber(value) !== null)
-            .map(([counterLabel, value]) => ({label: counterLabel, value: Number(value)}));
-        const counters = hasTextStage && !['NOT_STARTED', 'RUNNING'].includes(stageStatus)
+            availableMatchPairs === null ? null : {
+                label: 'Можно показать на листах',
+                value: availableMatchPairs,
+                suffix: `${pairPhrase(availableMatchPairs)} совпадений`,
+            },
+            availableChangeItems === null ? null : {
+                label: 'Изменения на листах',
+                value: availableChangeItems,
+                suffix: totalChangeItems === null ? '' : `из ${totalChangeItems}`,
+            },
+            ...[
+                ['Изменено', summary.changed],
+                ['Удалено', summary.removed],
+                ['Добавлено', summary.added],
+                ['Требуют проверки', reviewRequired],
+            ].map(([counterLabel, value]) => (finiteNumber(value) === null ? null : {
+                label: counterLabel, value: Number(value), suffix: '',
+            })),
+        ].filter(Boolean);
+        const counters = hasTextStage && !blocked
+            && !['NOT_STARTED', 'RUNNING'].includes(stageStatus)
             ? resultCounters : [];
         const itemOverlays = (item, side) => array(
             object(object(object(item).sides)[side]).overlays,
@@ -2095,18 +2149,40 @@
         const changesHaveCoordinates = array(evidence.changes).some(item => (
             ['left', 'right'].some(side => itemOverlays(item, side).length > 0)
         ));
+        const matchEvidenceState = String(evidence.match_evidence_state || '').toUpperCase();
+        const coverageNotes = [];
+        if (matchesHaveCoordinates) {
+            coverageNotes.push(
+                'Показаны только совпадения, для которых есть точные координаты на обеих сторонах.',
+            );
+        }
+        if (changesHaveCoordinates) {
+            coverageNotes.push(
+                'На листах отображаются только изменения с доступными точными координатами.',
+            );
+        }
         return {
             tone,
             label,
             message,
             counters,
+            coverage_notes: coverageNotes,
+            read_only_note: 'Режим просмотра — результаты анализа не изменяются.',
             review_required: reviewRequired,
+            text_result_state: resultState,
+            blocked,
+            blocked_reason: blockedReason,
+            match_evidence_state: matchEvidenceState,
+            matches_unavailable_reason: matchEvidenceState === 'UNVERIFIED_LEGACY_GENERATION'
+                ? 'Совпадения этого расчёта сохранены без подписи, покрывающей точные пары. '
+                    + 'Чтобы показать их на листах, запустите полный анализ заново.'
+                : '',
             available: Boolean(evidence.available) && !stale,
             can_visualize_matches: Boolean(evidence.available) && !stale
                 && matchesHaveCoordinates,
             can_visualize_changes: Boolean(evidence.available) && !stale
                 && changesHaveCoordinates,
-            show_rerun: stale || ['FAILED', 'PARTIAL'].includes(stageStatus)
+            show_rerun: stale || blocked || ['FAILED', 'PARTIAL'].includes(stageStatus)
                 || (!hasTextStage && ['FAILED', 'PARTIAL'].includes(runStatus)),
             generation_run_id: String(evidence.generation_run_id || state.run_id || ''),
             stage_status: stageStatus,

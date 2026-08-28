@@ -6003,22 +6003,27 @@
                                     {{ scProductionTextPresentation.label }}
                                 </span>
                             </div>
-                            <div class="sc-text-evidence-modes" role="group"
-                                 aria-label="Режим подсветки текста">
-                                <button type="button" :class="{'is-active': scTextEvidenceMode === 'all'}"
-                                        :aria-pressed="scTextEvidenceMode === 'all'"
-                                        title="Обычный документ без фильтра"
-                                        @click="scSetTextEvidenceMode('all')">Всё</button>
-                                <button type="button" :class="{'is-active': scTextEvidenceMode === 'matches'}"
-                                        :aria-pressed="scTextEvidenceMode === 'matches'"
-                                        :disabled="!scProductionTextPresentation.can_visualize_matches"
-                                        title="Показать совпавший текст. Только визуализация; результат анализа не меняется"
-                                        @click="scSetTextEvidenceMode('matches')">Показать совпадения</button>
-                                <button type="button" :class="{'is-active': scTextEvidenceMode === 'changes'}"
-                                        :aria-pressed="scTextEvidenceMode === 'changes'"
-                                        :disabled="!scProductionTextPresentation.can_visualize_changes"
-                                        title="Показать evidence изменений текущего production generation"
-                                        @click="scSetTextEvidenceMode('changes')">Показать изменения</button>
+                            <div class="sc-text-evidence-controls">
+                                <div class="sc-text-evidence-modes" role="group"
+                                     aria-label="Режим подсветки текста">
+                                    <button type="button" :class="{'is-active': scTextEvidenceMode === 'all'}"
+                                            :aria-pressed="scTextEvidenceMode === 'all'"
+                                            title="Обычный документ без фильтра"
+                                            @click="scSetTextEvidenceMode('all')">Всё</button>
+                                    <button type="button" :class="{'is-active': scTextEvidenceMode === 'matches'}"
+                                            :aria-pressed="scTextEvidenceMode === 'matches'"
+                                            :disabled="!scProductionTextPresentation.can_visualize_matches"
+                                            title="Показать совпавший текст. Только визуализация; результат анализа не меняется"
+                                            @click="scSetTextEvidenceMode('matches')">Показать совпадения</button>
+                                    <button type="button" :class="{'is-active': scTextEvidenceMode === 'changes'}"
+                                            :aria-pressed="scTextEvidenceMode === 'changes'"
+                                            :disabled="!scProductionTextPresentation.can_visualize_changes"
+                                            title="Показать evidence изменений текущего production generation"
+                                            @click="scSetTextEvidenceMode('changes')">Показать изменения</button>
+                                </div>
+                                <small class="sc-text-evidence-modes__note">
+                                    {{ scProductionTextPresentation.read_only_note }}
+                                </small>
                             </div>
                         </header>
                         <div class="sc-text-evidence-summary__body">
@@ -6027,9 +6032,17 @@
                                  class="sc-text-evidence-summary__counters">
                                 <span v-for="counter in scProductionTextPresentation.counters"
                                       :key="'text-counter-' + counter.label">
-                                    {{ counter.label }} <b>{{ counter.value }}</b>
+                                    {{ counter.label }} <b>{{ counter.value }}</b><template
+                                        v-if="counter.suffix">&nbsp;{{ counter.suffix }}</template>
                                 </span>
                             </div>
+                            <small v-for="note in scProductionTextPresentation.coverage_notes"
+                                   :key="'text-coverage-' + note"
+                                   class="sc-text-evidence-summary__coverage">{{ note }}</small>
+                            <small v-if="scProductionTextPresentation.matches_unavailable_reason"
+                                   class="sc-text-evidence-summary__coverage">
+                                {{ scProductionTextPresentation.matches_unavailable_reason }}
+                            </small>
                         </div>
                         <div v-if="scProductionTextPresentation.show_rerun"
                              class="sc-text-evidence-summary__rerun">

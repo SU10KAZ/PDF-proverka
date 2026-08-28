@@ -20,7 +20,7 @@ function location(page, fragmentId, bbox) {
 function payload(overrides = {}) {
   return {
     kind: 'stage_comparison_production_text_evidence',
-    schema_version: 'production-text-evidence.v1',
+    schema_version: 'production-text-evidence.v2',
     available: true,
     stale: false,
     run_status: 'COMPLETED',
@@ -28,7 +28,11 @@ function payload(overrides = {}) {
     generation_revision: 11,
     input_signature: 'generation-current',
     synthesis_input_signature: 'synthesis-current',
+    text_result_state: 'PUBLISHED',
+    match_evidence_state: 'VERIFIED',
     available_match_pairs: 1,
+    change_items: 1,
+    available_change_items: 1,
     summary: {
       matched_fragments: null, changed_fragments: 1,
       changed: 1, removed: 0, added: 0, review_required: 0,
@@ -41,7 +45,8 @@ function payload(overrides = {}) {
       },
     }],
     changes: [{
-      evidence_id: 'atom-1', target_id: 'change-1', title: '220 В → 380 В',
+      evidence_id: 'change-1', target_id: 'change-1', target_kind: 'CHANGE',
+      title: '220 В → 380 В', review_status: 'CONFIRMED',
       before: '220 В', after: '380 В', review_required: false,
       sides: {
         LEFT: [location(7, 'left-change', [0.2, 0.4, 0.5, 0.46])],
@@ -121,7 +126,7 @@ describe('production TEXT cleanup and visual evidence', () => {
     };
     const changes = {input_signature: 'synthesis-current'};
     const overlays = review.productionTextEvidenceOverlays(
-      normalized, 'changes', 'left', 7, 'atom-1',
+      normalized, 'changes', 'left', 7, 'change-1',
     );
 
     expect(review.productionTextEvidenceMatchesGeneration(state, changes, normalized)).toBe(true);
@@ -130,7 +135,7 @@ describe('production TEXT cleanup and visual evidence', () => {
     expect(normalized.input_signature).toBe('generation-current');
     expect(normalized.synthesis_input_signature).toBe('synthesis-current');
     expect(overlays[0]).toMatchObject({
-      evidence_id: 'atom-1', target_id: 'change-1',
+      evidence_id: 'change-1', target_id: 'change-1',
       evidence_kind: 'CHANGE', active: true,
     });
     expect(app).toContain('await scOpenProductionReviewTarget(item.target_id)');
@@ -230,5 +235,123 @@ describe('production TEXT cleanup and visual evidence', () => {
     expect(app).toContain("if (scViewMode.value === 'continuous') await nextTick()");
     expect(app).toContain('scFocusTextEvidenceSide');
     expect(app).toContain('scSetContinuousAnchor(side, page, {');
+  });
+
+  it('CHECK_BLOCKED reads as an unfinished analysis, not as a checked zero', () => {
+    const blocked = review.normalizeProductionTextPresentation({
+      status: 'PARTIAL',
+      stages: {text: {
+        status: 'CHECK_BLOCKED', source_state: 'CHECK_BLOCKED',
+        atoms: 0, deltas: 0, review_required: 0,
+        reason_code: 'TEXT_SOURCE_MISSING', error_type: 'FileNotFoundError',
+      }},
+    }, review.normalizeProductionTextEvidence({
+      available: false, text_result_state: 'BLOCKED',
+      text_blocked_reason: 'TEXT_SOURCE_MISSING',
+      available_match_pairs: null, change_items: null,
+      available_change_items: null,
+      summary: {
+        matched_fragments: null, changed_fragments: null, changed: null,
+        removed: null, added: null, review_required: null,
+      },
+    }));
+
+    expect(blocked.blocked).toBe(true);
+    expect(blocked.text_result_state).toBe('BLOCKED');
+    expect(blocked.label).toBe('Не завершён');
+    expect(blocked.message).toContain('не завершён');
+    expect(blocked.message).not.toContain('частично');
+    expect(blocked.message).toContain(
+      'Не найден один из исходных файлов текстовой подготовки.',
+    );
+    // Unknown is hidden entirely: no "Доступно пар 0", no zero counters.
+    expect(blocked.counters).toEqual([]);
+    expect(blocked.review_required).toBe(null);
+    expect(blocked.show_rerun).toBe(true);
+  });
+
+  it('labels visualization coverage instead of claiming a total match count', () => {
+    const presentation = review.normalizeProductionTextPresentation({
+      status: 'COMPLETED', stages: {text: {status: 'COMPLETED', review_required: 0}},
+    }, review.normalizeProductionTextEvidence(payload({
+      available_match_pairs: 123, change_items: 390, available_change_items: 250,
+    })));
+
+    expect(presentation.counters).toContainEqual({
+      label: 'Можно показать на листах', value: 123, suffix: 'пары совпадений',
+    });
+    expect(presentation.counters).toContainEqual({
+      label: 'Изменения на листах', value: 250, suffix: 'из 390',
+    });
+    expect(presentation.counters.some(item => item.label === 'Доступно пар')).toBe(false);
+    expect(presentation.coverage_notes).toContain(
+      'Показаны только совпадения, для которых есть точные координаты на обеих сторонах.',
+    );
+    expect(presentation.coverage_notes).toContain(
+      'На листах отображаются только изменения с доступными точными координатами.',
+    );
+    expect(html).toContain('scProductionTextPresentation.coverage_notes');
+  });
+
+  it('shows the read-only mode caption without a warning banner', () => {
+    const presentation = review.normalizeProductionTextPresentation({
+      status: 'COMPLETED', stages: {text: {status: 'COMPLETED'}},
+    }, review.normalizeProductionTextEvidence(payload()));
+
+    expect(presentation.read_only_note).toBe(
+      'Режим просмотра — результаты анализа не изменяются.',
+    );
+    expect(html).toContain('scProductionTextPresentation.read_only_note');
+    expect(css).toContain('.sc-text-evidence-modes__note');
+  });
+
+  it('explains why a legacy generation cannot draw its exact pairs', () => {
+    const legacy = review.normalizeProductionTextPresentation({
+      status: 'COMPLETED', stages: {text: {status: 'COMPLETED', review_required: 0}},
+    }, review.normalizeProductionTextEvidence(payload({
+      match_evidence_state: 'UNVERIFIED_LEGACY_GENERATION',
+      available_match_pairs: null, matches: [],
+    })));
+
+    expect(legacy.match_evidence_state).toBe('UNVERIFIED_LEGACY_GENERATION');
+    expect(legacy.can_visualize_matches).toBe(false);
+    expect(legacy.matches_unavailable_reason).toContain('запустите полный анализ заново');
+    expect(legacy.counters.some(item => (
+      item.label === 'Можно показать на листах'
+    ))).toBe(false);
+    expect(html).toContain('scProductionTextPresentation.matches_unavailable_reason');
+  });
+
+  it('routes a REVIEW_REQUIRED item to its current review row, never to a confirmed style', () => {
+    const normalized = review.normalizeProductionTextEvidence(payload({
+      changes: [{
+        evidence_id: 'ureview-1', target_id: 'ureview-1',
+        target_kind: 'REVIEW_EVIDENCE', review_status: 'REVIEW_REQUIRED',
+        title: 'Добавлено: 40 575x400(h)', before: null, after: '40 575x400(h)',
+        review_required: true,
+        sides: {
+          LEFT: [], RIGHT: [location(16, 'right-added', [0.2, 0.4, 0.5, 0.46])],
+        },
+      }],
+    }));
+    const overlays = review.productionTextEvidenceOverlays(
+      normalized, 'changes', 'right', 16, '',
+    );
+
+    expect(overlays[0]).toMatchObject({
+      evidence_id: 'ureview-1', target_id: 'ureview-1', review_required: true,
+    });
+    expect(review.productionTextEvidenceItem(normalized, 'ureview-1').target_kind)
+      .toBe('REVIEW_EVIDENCE');
+    expect(css).toContain('.sc-text-evidence-overlay.is-review-required');
+  });
+
+  it('never renders a clickable change without a current target', () => {
+    const normalized = review.normalizeProductionTextEvidence(payload());
+    expect(normalized.changes.every(item => item.target_id)).toBe(true);
+    // The backend keys viewer identity on the target itself, so a rejected or
+    // unselected atom simply has no row here.
+    expect(normalized.changes[0].evidence_id).toBe(normalized.changes[0].target_id);
+    expect(app).not.toContain('scTextEvidenceFuzzy');
   });
 });
