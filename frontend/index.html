@@ -6442,7 +6442,40 @@
                                 <div class="sc-production-question__prompt">
                                     <span>{{ scProductionQuestionCategoryLabel(question.category) }}</span>
                                     <b>{{ question.prompt }}</b>
-                                    <small>{{ question.question_id }} · {{ question.status }}</small>
+                                    <div v-if="scProductionQuestionSheets(question, 'LEFT').length"
+                                         class="sc-production-question__sheets">
+                                        <div>
+                                            <em>Слева</em>
+                                            <span v-for="sheet in scProductionQuestionSheets(question, 'LEFT')"
+                                                  :key="'l' + sheet.page">
+                                                {{ sheet.label || ('Стр. ' + sheet.page) }}
+                                                <button type="button" class="btn-link"
+                                                        @click="scOpenProductionSheet('left', sheet.page)">
+                                                    Открыть лист (стр. {{ sheet.page }})
+                                                </button>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <em>Справа</em>
+                                            <span v-for="sheet in scProductionQuestionSheets(question, 'RIGHT')"
+                                                  :key="'r' + sheet.page">
+                                                {{ sheet.label || ('Стр. ' + sheet.page) }}
+                                                <button type="button" class="btn-link"
+                                                        @click="scOpenProductionSheet('right', sheet.page)">
+                                                    Открыть лист (стр. {{ sheet.page }})
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div v-if="scProductionQuestionChange(question)"
+                                         class="sc-production-question__change">
+                                        <span>Было: <b>{{ scProductionQuestionChange(question).before }}</b></span>
+                                        <span>Стало: <b>{{ scProductionQuestionChange(question).after }}</b></span>
+                                    </div>
+                                    <details class="sc-production-question__diagnostics">
+                                        <summary>Диагностика</summary>
+                                        <small>{{ question.question_id }} · {{ question.status }}</small>
+                                    </details>
                                 </div>
                                 <label>
                                     <span>Ответ</span>
@@ -6477,6 +6510,7 @@
                                             <span>
                                                 {{ scProductionQuestionFieldLabel(field) }}
                                                 <b v-if="scProductionQuestionFieldRequired(question, field)">*</b>
+                                                <small v-if="scProductionQuestionFieldHint(field)">{{ scProductionQuestionFieldHint(field) }}</small>
                                             </span>
                                             <select v-if="field === 'dimension'"
                                                     :value="scProductionQuestionDraft(question).typed_resolution[field]"
@@ -6515,30 +6549,31 @@
                                     <strong>Точный вариант инженера</strong>
                                     <div v-if="question.category === 'ENTITY'">
                                         <label>
-                                            <span>RIGHT entity ref *</span>
-                                            <input type="text"
+                                            <span>Объект справа *</span>
+                                            <select v-if="scProductionEntityCandidates(question).length"
+                                                    :value="scProductionQuestionDraft(question).explicit_candidate.right_entity_ref"
+                                                    :disabled="scProductionMutating || scProductionStale"
+                                                    @change="scSetProductionQuestionExplicitField(question, 'right_entity_ref', $event.target.value)">
+                                                <option value="">Выберите объект</option>
+                                                <option v-for="candidate in scProductionEntityCandidates(question)"
+                                                        :key="candidate.ref" :value="candidate.ref">{{ candidate.label }}</option>
+                                            </select>
+                                            <input v-else type="text"
                                                    :value="scProductionQuestionDraft(question).explicit_candidate.right_entity_ref"
                                                    :disabled="scProductionMutating || scProductionStale"
                                                    @input="scSetProductionQuestionExplicitField(question, 'right_entity_ref', $event.target.value)">
                                         </label>
-                                        <label>
-                                            <span>Project entity ref</span>
-                                            <input type="text"
-                                                   :value="scProductionQuestionDraft(question).explicit_candidate.project_entity_ref"
-                                                   :disabled="scProductionMutating || scProductionStale"
-                                                   @input="scSetProductionQuestionExplicitField(question, 'project_entity_ref', $event.target.value)">
-                                        </label>
                                     </div>
                                     <div v-else>
                                         <label>
-                                            <span>LEFT листы *</span>
+                                            <span>Листы слева *</span>
                                             <input type="text" placeholder="Например: 1, 2"
                                                    :value="scProductionQuestionDraft(question).explicit_candidate.left_pages"
                                                    :disabled="scProductionMutating || scProductionStale"
                                                    @input="scSetProductionQuestionExplicitField(question, 'left_pages', $event.target.value)">
                                         </label>
                                         <label>
-                                            <span>RIGHT листы *</span>
+                                            <span>Листы справа *</span>
                                             <input type="text" placeholder="Например: 3, 4"
                                                    :value="scProductionQuestionDraft(question).explicit_candidate.right_pages"
                                                    :disabled="scProductionMutating || scProductionStale"
@@ -6611,22 +6646,26 @@
                                                 :disabled="Boolean(scProductionEvidenceLoadingId)"
                                                 :title="'Открыть точное доказательство ' + row.target_id"
                                                 @click="scOpenProductionEvidence(row)">
-                                            {{ scProductionEvidenceLoadingId === row.target_id ? '…' : row.target_id }}
+                                            {{ scProductionEvidenceLoadingId === row.target_id ? '…' : 'Доказательство' }}
                                         </button>
                                         <span v-if="row.presentation_group_id" class="sc-production-group-marker"
                                               title="Визуальная группа; решение сохраняется только для этой строки">
                                             {{ row.presentation_group_label }}
                                         </span>
-                                        <span v-if="row.target_kind === 'REVIEW_EVIDENCE'"
+                                        <span v-if="!row.decidable"
                                               class="sc-production-review-evidence-marker">
-                                            REVIEW_EVIDENCE: сначала разрешите CHANGE-вопрос
+                                            Нечего показать: нет значения или расположения
                                         </span>
+                                        <details class="sc-production-row__diagnostics">
+                                            <summary>Диагностика</summary>
+                                            <small>{{ row.target_id }} · {{ row.target_kind }}</small>
+                                        </details>
                                     </td>
                                     <td>{{ row.object_ref }}</td>
                                     <td class="sc-production-sheets-cell">
                                         <button type="button" @click="scOpenProductionEvidence(row)">
-                                            <span>LEFT {{ row.left_pages.join(', ') || '—' }}</span>
-                                            <span>RIGHT {{ row.right_pages.join(', ') || '—' }}</span>
+                                            <span>Слева: {{ row.left_pages.join(', ') || '—' }}</span>
+                                            <span>Справа: {{ row.right_pages.join(', ') || '—' }}</span>
                                         </button>
                                     </td>
                                     <td>
@@ -6650,10 +6689,10 @@
                                             <button type="button" class="btn-decision btn-accept"
                                                     :class="{active: scProductionDecisionDraft(row).decision === 'APPROVED'}"
                                                     :aria-pressed="String(scProductionDecisionDraft(row).decision === 'APPROVED')"
-                                                    :disabled="scProductionStale || scProductionMutating || row.target_kind === 'REVIEW_EVIDENCE'"
-                                                    :title="row.target_kind === 'REVIEW_EVIDENCE'
-                                                        ? 'Сначала создайте атомарное изменение через типизированный CHANGE-ответ'
-                                                        : 'Подтвердить'"
+                                                    :disabled="scProductionStale || scProductionMutating || !row.decidable"
+                                                    :title="row.decidable
+                                                        ? 'Подтвердить'
+                                                        : 'Показывать нечего: у находки нет значения или расположения'"
                                                     @click="scSetProductionDecision(row, 'APPROVED')">
                                                 <span class="decision-glyph">✓</span>
                                             </button>

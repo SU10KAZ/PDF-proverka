@@ -150,6 +150,22 @@ def normalize_sheet(record: Mapping[str, Any], *, side: str) -> dict[str, Any]:
     }
 
 
+def sheet_label(sheet: Mapping[str, Any]) -> str:
+    """What to call this page on a question card, in the project's own words."""
+    identity: SheetIdentity | None = sheet.get("identity")
+    if identity is not None and identity.raw_stamp_text:
+        return identity.raw_stamp_text
+    number = sheet.get("sheet_number")
+    title = sheet.get("title")
+    if number and title:
+        return f"Лист {number} — {title}"
+    if number:
+        return f"Лист {number}"
+    if title:
+        return str(title)
+    return f"Стр. {int(sheet['page'])}"
+
+
 def _signature_view(sheet: Mapping[str, Any]) -> dict[str, Any]:
     """JSON-safe projection of a normalized sheet for the input signature."""
     identity: SheetIdentity | None = sheet.get("identity")
@@ -1035,6 +1051,12 @@ def match_sheets(
         "input_signature": input_signature,
         "generated_at": generated_at or utc_now(),
         "relations": relations,
+        # Human-readable page labels travel with the relations so a question
+        # card can say «Корпуса 1, 2. План 3 этажа» instead of «LEFT 29».
+        "sheet_labels": {
+            "LEFT": {str(item["page"]): sheet_label(item) for item in left},
+            "RIGHT": {str(item["page"]): sheet_label(item) for item in right},
+        },
         "unmatched_left_pages": sorted(set(left_by_page) - consumed_left),
         "unmatched_right_pages": sorted(set(right_by_page) - consumed_right),
         "candidate_search": [
@@ -1142,5 +1164,6 @@ __all__ = [
     "STATUSES",
     "match_sheets",
     "normalize_sheet",
+    "sheet_label",
     "page_selection_suggestions",
 ]

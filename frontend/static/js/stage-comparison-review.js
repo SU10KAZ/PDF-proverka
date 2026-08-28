@@ -147,7 +147,11 @@
     function changeLabel(change) {
         const parts = [change.facet_ref, change.dimension, change.direction]
             .filter(value => value !== null && value !== undefined && value !== '')
-            .map(String);
+            .map(String)
+            // A finding whose dimension the deterministic layer could not name
+            // is still reviewable; it says so in words rather than shouting an
+            // internal enum at the engineer.
+            .map(value => (value === 'UNKNOWN_DIMENSION' ? 'классификация не определена' : value));
         return [...new Set(parts)].join(' · ') || text(change.outcome || change.type);
     }
 
@@ -166,10 +170,22 @@
             const leftPages = pagesForSide(change, 'LEFT');
             const rightPages = pagesForSide(change, 'RIGHT');
             const groupId = source.presentation_group_id || null;
+            const presentation = source && typeof source.presentation === 'object'
+                ? source.presentation
+                : null;
+            const targetKind = String(
+                source.target_kind || (change.review_evidence_id ? 'REVIEW_EVIDENCE' : 'CHANGE')
+            );
             return {
                 target_id: targetId,
-                target_kind: String(source.target_kind || (change.review_evidence_id ? 'REVIEW_EVIDENCE' : 'CHANGE')),
-                object_ref: text(change.project_entity_ref || change.subject_ref || change.scope_ref),
+                target_kind: targetKind,
+                // Whether the engineer can decide on this row at all: a CHANGE
+                // always, a review finding once it has a value and a page.
+                decidable: targetKind !== 'REVIEW_EVIDENCE'
+                    || Boolean(presentation && presentation.presentable),
+                object_ref: change.project_entity_ref || change.subject_ref || change.scope_ref
+                    ? text(change.project_entity_ref || change.subject_ref || change.scope_ref)
+                    : 'Объект не определён',
                 left_pages: leftPages,
                 right_pages: rightPages,
                 sheets_label: `LEFT ${leftPages.join(', ') || '—'} → RIGHT ${rightPages.join(', ') || '—'}`,

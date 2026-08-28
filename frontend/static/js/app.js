@@ -13930,10 +13930,10 @@ const app = createApp({
         function scSetProductionDecision(row, value) {
             const draft = scProductionDecisionDrafts[row.target_id];
             if (!draft || scProductionMutating.value || scProductionStale.value) return;
-            // REVIEW_EVIDENCE is a prompt for a typed CHANGE resolution, not a
-            // final atomic change. It may be rejected, but it cannot become an
-            // approved final-report row by clicking this table.
-            if (row.target_kind === 'REVIEW_EVIDENCE' && value === 'APPROVED') return;
+            // A finding with a value and a page is reviewable as it stands,
+            // even when its dimension stayed unknown. Only a row with nothing
+            // to show cannot be approved here: there is nothing to approve.
+            if (!row.decidable && value === 'APPROVED') return;
             // A second click clears the choice: an unselected row is explicitly
             // PENDING_REVIEW, never an implicit approval/rejection.
             draft.decision = draft.decision === value ? 'PENDING_REVIEW' : value;
@@ -14102,19 +14102,27 @@ const app = createApp({
                 && ['ENTITY', 'SHEET'].includes(row.category);
         }
 
+        // subject_ref and project_entity_ref are stable_id hashes minted by the
+        // backend from the object name below.  A free-text field for an id that
+        // is checked against nothing produced fiction wearing an id's clothes,
+        // so neither is offered to a human any more.
+        const SC_INTERNAL_REF_FIELDS = ['subject_ref', 'project_entity_ref'];
+
         function scProductionQuestionTypedFields(row) {
             const contract = row.context && row.context.typed_resolution_contract || {};
             const accepted = Array.isArray(contract.accepted_fields) ? contract.accepted_fields : [];
+            const required = Array.isArray(contract.required_fields) ? contract.required_fields : [];
             const order = [
-                'dimension', 'subject_ref', 'project_entity_ref', 'facet_ref', 'direction',
+                'dimension', 'object_label', 'facet_ref', 'direction',
                 'outcome', 'before_value', 'after_value', 'selected_change_ids',
             ];
-            return order.filter(field => accepted.includes(field));
+            return order.filter(field => accepted.includes(field) || required.includes(field));
         }
 
         function scProductionQuestionFieldLabel(field) {
             return ({
                 dimension: 'Измерение',
+                object_label: 'Объект (как он называется в проекте)',
                 subject_ref: 'Субъект',
                 project_entity_ref: 'Объект проекта',
                 facet_ref: 'Аспект',
@@ -14124,6 +14132,52 @@ const app = createApp({
                 after_value: 'Стало',
                 selected_change_ids: 'ID выбранных изменений',
             })[field] || field;
+        }
+
+        function scProductionQuestionFieldHint(field) {
+            return ({
+                object_label: 'Например: «помещение 24.5», «кровля К5». Внутренний идентификатор построит система.',
+            })[field] || '';
+        }
+
+        function scProductionQuestionSheets(row, side) {
+            const context = row && row.context || {};
+            const values = context[side === 'LEFT' ? 'left_sheets' : 'right_sheets'];
+            return Array.isArray(values) ? values : [];
+        }
+
+        function scOpenProductionSheet(side, page) {
+            const number = Number(page);
+            if (!Number.isFinite(number) || number < 1) return;
+            scOpenTextSearchPage(side, number);
+        }
+
+        function scProductionEntityCandidates(row) {
+            const relations = row && row.context && row.context.relations;
+            if (!Array.isArray(relations)) return [];
+            return relations
+                .map(relation => {
+                    const ref = relation && relation.right_entity_ref;
+                    if (typeof ref !== 'string' || !ref) return null;
+                    // «text_entity:щр-1» reads as «щр-1» on the card; the full
+                    // ref is what gets stored.
+                    const label = ref.includes(':') ? ref.slice(ref.indexOf(':') + 1) : ref;
+                    return { ref, label: label || ref };
+                })
+                .filter(Boolean);
+        }
+
+        function scProductionQuestionChange(row) {
+            const context = row && row.context || {};
+            const before = context.before_value;
+            const after = context.after_value;
+            if (!before && !after) return null;
+            return {
+                before: before || '—',
+                after: after || '—',
+                leftPages: Array.isArray(context.left_pages) ? context.left_pages : [],
+                rightPages: Array.isArray(context.right_pages) ? context.right_pages : [],
+            };
         }
 
         function scProductionQuestionFieldRequired(row, field) {
@@ -18247,6 +18301,9 @@ const app = createApp({
             scProductionQuestionNeedsTypedResolution,
             scProductionQuestionNeedsExplicitCandidate,
             scProductionQuestionTypedFields, scProductionQuestionFieldLabel,
+            scProductionQuestionFieldHint, scProductionQuestionSheets,
+            scProductionQuestionChange, scOpenProductionSheet,
+            scProductionEntityCandidates,
             scProductionQuestionFieldRequired, scSaveProductionAnswers,
             scHandleProductionSheetSuggestion, scProductionSuggestionActionLabel,
             scProductionSuggestionStatus,

@@ -573,8 +573,11 @@ describe('Stage Comparison production review integration', () => {
     expect(html).toContain("['MATERIAL_CHANGE', 'DETAIL_ONLY']");
     expect(html).not.toContain("['MATERIAL_CHANGE', 'DETAIL_ONLY', 'REVIEW_REQUIRED']");
     expect(html).toContain('scProductionStale');
-    expect(html).toContain("row.target_kind === 'REVIEW_EVIDENCE'");
-    expect(html).toContain('сначала разрешите CHANGE-вопрос');
+    // A review finding is approvable once it has a value and a page; only a
+    // row with nothing to show stays blocked.
+    expect(html).toContain('!row.decidable');
+    expect(html).toContain('Нечего показать: нет значения или расположения');
+    expect(html).not.toContain('сначала разрешите CHANGE-вопрос');
   });
 
   it('opens exact LEFT and RIGHT evidence pages and paints transient overlays', () => {
@@ -621,5 +624,78 @@ describe('Stage Comparison production review integration', () => {
     expect(html).toContain('v-for="group in scTextDifferenceGroups"');
     expect(app).toContain('scRunTextComparison');
     expect(app).toContain('scRunTextAiReview');
+  });
+});
+
+describe('Stage Comparison: exception questions vs engineer review', () => {
+  it('marks a review finding decidable once it has a value and a page', () => {
+    const [decidable, blind] = review.normalizeRows({rows: [
+      {
+        target_id: 'ureview_1',
+        target_kind: 'REVIEW_EVIDENCE',
+        presentation: {presentable: true, left_pages: [29], right_pages: [8]},
+        change: {
+          review_evidence_id: 'ureview_1',
+          dimension: 'UNKNOWN_DIMENSION',
+          before_value: 'EI 60',
+          after_value: 'EI 90',
+        },
+      },
+      {
+        target_id: 'ureview_2',
+        target_kind: 'REVIEW_EVIDENCE',
+        presentation: {presentable: false, left_pages: [], right_pages: []},
+        change: {review_evidence_id: 'ureview_2', dimension: 'UNKNOWN_DIMENSION'},
+      },
+    ]});
+
+    expect(decidable.decidable).toBe(true);
+    expect(blind.decidable).toBe(false);
+    // A CHANGE row is always decidable, presentation or not.
+    expect(review.normalizeRows({rows: [{target_id: 'uchg_1', target_kind: 'CHANGE', change: {}}]})[0].decidable)
+      .toBe(true);
+  });
+
+  it('never prints an internal enum where the engineer reads the change', () => {
+    const [row] = review.normalizeRows({rows: [{
+      target_id: 'ureview_1',
+      target_kind: 'REVIEW_EVIDENCE',
+      presentation: {presentable: true, left_pages: [29], right_pages: [8]},
+      change: {
+        review_evidence_id: 'ureview_1',
+        dimension: 'UNKNOWN_DIMENSION',
+        direction: 'ALTERED',
+        before_value: 'EI 60',
+        after_value: 'EI 90',
+      },
+    }]});
+
+    expect(row.change_label).not.toContain('UNKNOWN_DIMENSION');
+    expect(row.change_label).toContain('классификация не определена');
+    expect(row.object_ref).toBe('Объект не определён');
+  });
+
+  it('asks for an object name and never for an internal ref', () => {
+    expect(app).toContain("const SC_INTERNAL_REF_FIELDS = ['subject_ref', 'project_entity_ref']");
+    expect(app).toContain("'dimension', 'object_label', 'facet_ref', 'direction'");
+    expect(app).toContain('object_label: \'Объект (как он называется в проекте)\'');
+    // The free-text stable-id boxes are gone from the question card.
+    expect(html).not.toContain('Project entity ref');
+    expect(html).not.toContain("scSetProductionQuestionExplicitField(question, 'project_entity_ref'");
+  });
+
+  it('shows the sheets a sheet question is about, by name', () => {
+    expect(app).toContain('function scProductionQuestionSheets(row, side)');
+    expect(app).toContain('function scOpenProductionSheet(side, page)');
+    expect(html).toContain("scProductionQuestionSheets(question, 'LEFT')");
+    expect(html).toContain("scProductionQuestionSheets(question, 'RIGHT')");
+    expect(html).toContain('Открыть лист (стр. {{ sheet.page }})');
+    expect(html).toContain('Было: <b>{{ scProductionQuestionChange(question).before }}</b>');
+  });
+
+  it('keeps raw identifiers in diagnostics rather than in the prompt line', () => {
+    expect(html).toContain('<summary>Диагностика</summary>');
+    expect(html).toContain('sc-production-question__diagnostics');
+    expect(html).toContain('sc-production-row__diagnostics');
   });
 });

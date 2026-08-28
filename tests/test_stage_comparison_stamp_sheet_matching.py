@@ -229,3 +229,33 @@ def test_page_mode_selection_is_never_gated_by_the_stamp_matcher():
     # The proven pair is offered as advice, not imposed.
     assert [item["suggested_right_pages"] for item in result["suggestions"]] == [[8]]
     assert all(item["applied"] is False for item in result["suggestions"])
+
+
+def test_a_sheet_question_names_the_sheets_it_asks_about():
+    from backend.app.services.stage_comparison.review_queue import build_review_queue
+
+    relations = match_sheets(
+        [
+            _sheet(28, "Корпуса 1, 2. План 2 этажа",
+                   functional_content=["холл", "спальня"]),
+            _sheet(42, "Корпус 4. План 3-15 этажей",
+                   functional_content=["холл", "спальня"]),
+        ],
+        [_sheet(9, functional_content=["холл", "спальня"])],
+    )
+    queue = build_review_queue(sheet_relations=relations, generated_at="fixed")
+    question = next(
+        item for item in queue["questions"] if item["category"] == "SHEET"
+    )
+
+    assert "Корпуса 1, 2. План 2 этажа" in question["prompt"]
+    assert "стр. 28" in question["prompt"]
+    assert "LEFT" not in question["prompt"] and "RIGHT" not in question["prompt"]
+    assert "srel_" not in question["prompt"]
+    assert question["context"]["left_sheets"] == [
+        {"page": 28, "label": "Корпуса 1, 2. План 2 этажа"},
+        {"page": 42, "label": "Корпус 4. План 3-15 этажей"},
+    ]
+    assert question["context"]["right_sheets"] == [{"page": 9, "label": "Часть 1. Архитектурные решения. Планы"}]
+    labels = [option["label"] for option in question["answer_options"]]
+    assert not any("N→1" in label or "1→N" in label for label in labels)

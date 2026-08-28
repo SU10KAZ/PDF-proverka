@@ -336,9 +336,54 @@ def _cardinality_relation_type(
     return "UNCERTAIN"
 
 
+def _sheet_label_map(sheet_relations: Mapping[str, Any]) -> dict[str, dict[int, str]]:
+    raw = sheet_relations.get("sheet_labels")
+    output: dict[str, dict[int, str]] = {"LEFT": {}, "RIGHT": {}}
+    if not isinstance(raw, Mapping):
+        return output
+    for side in ("LEFT", "RIGHT"):
+        values = raw.get(side)
+        if not isinstance(values, Mapping):
+            continue
+        for page, label in values.items():
+            try:
+                output[side][int(page)] = str(label)
+            except (TypeError, ValueError):
+                continue
+    return output
+
+
+def _named_sheet(labels: Mapping[int, str], page: int) -> str:
+    """«Корпуса 1, 2. План 3 этажа (стр. 29)» — a name first, a number after."""
+    label = labels.get(page)
+    return f"{label} (стр. {page})" if label else f"стр. {page}"
+
+
+def _named_sheets(labels: Mapping[int, str], pages: Iterable[int]) -> str:
+    return "; ".join(_named_sheet(labels, page) for page in pages)
+
+
+def _sheet_question_context(
+    sheet_relations: Mapping[str, Any],
+    left_pages: list[int],
+    right_pages: list[int],
+) -> dict[str, Any]:
+    """Everything the card needs to be answerable without opening the JSON."""
+    labels = _sheet_label_map(sheet_relations)
+    return {
+        "left_sheets": [
+            {"page": page, "label": labels["LEFT"].get(page)} for page in left_pages
+        ],
+        "right_sheets": [
+            {"page": page, "label": labels["RIGHT"].get(page)} for page in right_pages
+        ],
+    }
+
+
 def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     if not isinstance(sheet_relations, Mapping):
         return []
+    labels = _sheet_label_map(sheet_relations)
     relations = [
         relation for relation in sheet_relations.get("relations") or []
         if isinstance(relation, Mapping)
@@ -351,14 +396,19 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
         if relation_type == "SPLIT":
             question_type = "SHEET_SPLIT"
             prompt = (
-                f"LEFT {left_pages[0]} соответствует группе RIGHT "
-                f"{', '.join(map(str, right_pages))}?"
+                f"Лист «{_named_sheet(labels['LEFT'], left_pages[0])}» слева "
+                f"разделён справа на: {_named_sheets(labels['RIGHT'], right_pages)}?"
             )
-            options = [_option("YES", "Да, вся группа 1→N")]
+            options = [
+                _option(
+                    "YES",
+                    "Да, ему соответствуют все перечисленные листы справа",
+                )
+            ]
             options.extend(
                 _option(
                     f"SELECT_RIGHT:{page}",
-                    f"Только RIGHT {page}",
+                    f"Только «{_named_sheet(labels['RIGHT'], page)}»",
                     selected_right_pages=[page],
                 )
                 for page in right_pages
@@ -367,14 +417,19 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
         elif relation_type == "MERGED":
             question_type = "SHEET_MERGED"
             prompt = (
-                f"Группа LEFT {', '.join(map(str, left_pages))} соответствует "
-                f"RIGHT {right_pages[0]}?"
+                f"Листы слева {_named_sheets(labels['LEFT'], left_pages)} "
+                f"объединены справа в «{_named_sheet(labels['RIGHT'], right_pages[0])}»?"
             )
-            options = [_option("YES", "Да, вся группа N→1")]
+            options = [
+                _option(
+                    "YES",
+                    "Да, ему соответствуют все перечисленные листы слева",
+                )
+            ]
             options.extend(
                 _option(
                     f"SELECT_LEFT:{page}",
-                    f"Только LEFT {page}",
+                    f"Только «{_named_sheet(labels['LEFT'], page)}»",
                     selected_left_pages=[page],
                 )
                 for page in left_pages
@@ -383,8 +438,9 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
         elif relation_type == "MATCHED":
             question_type = "SHEET_RELATION"
             prompt = (
-                f"Листы LEFT {left_pages[0]} и RIGHT {right_pages[0]} "
-                "соответствуют?"
+                f"Лист «{_named_sheet(labels['LEFT'], left_pages[0])}» слева и "
+                f"«{_named_sheet(labels['RIGHT'], right_pages[0])}» справа — "
+                "это один и тот же лист?"
             )
             options = _base_options()
         else:
@@ -393,8 +449,8 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
             # supplying one explicit valid MATCHED/SPLIT/MERGED candidate.
             question_type = "SHEET_CANDIDATE_GROUP"
             prompt = (
-                f"Как сопоставить группу LEFT {', '.join(map(str, left_pages))} "
-                f"с RIGHT {', '.join(map(str, right_pages))}?"
+                f"Как сопоставить листы слева {_named_sheets(labels['LEFT'], left_pages)} "
+                f"с листами справа {_named_sheets(labels['RIGHT'], right_pages)}?"
             )
             options = [
                 _option("NO", "Нет соответствия"),
@@ -423,6 +479,7 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
                 "candidate_edges": component["candidate_edges"],
             },
             context={
+                **_sheet_question_context(sheet_relations, left_pages, right_pages),
                 "relation_id": component["materialization_relation_id"],
                 "materialization_relation_id": component[
                     "materialization_relation_id"
@@ -483,7 +540,7 @@ def _entity_questions(entity_relations: Mapping[str, Any] | None) -> list[dict[s
             options = [
                 _option(
                     f"SELECT_RIGHT:{right_ref}",
-                    f"RIGHT {right_ref}",
+                    f"«{right_ref.split(':', 1)[-1]}» справа",
                     selected_right_entity_ref=right_ref,
                 )
                 for right_ref in right_refs
