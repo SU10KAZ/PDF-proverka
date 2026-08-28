@@ -4063,3 +4063,99 @@ def test_failed_run_preserves_failed_location_and_clears_current_operation(
     assert failed["reason_code"] == "RuntimeError"
     assert failed["stages"]["text"]["status"] == "FAILED"
     assert failed["stages"]["text"]["progress"]["status"] == "FAILED"
+
+
+# ── ИИ-слой внутри прогона ────────────────────────────────────────────────
+
+
+def test_ai_layer_is_silent_and_writes_an_empty_artifact_when_switched_off(
+    tmp_path, monkeypatch
+):
+    """Режим OFF — это сборка без ИИ, а не сборка с выключенным ИИ."""
+    from backend.app.services.stage_comparison.ai import gateway as ai_gateway
+
+    monkeypatch.delenv("STAGE_COMPARISON_AI_MODE", raising=False)
+    calls: list[str] = []
+    monkeypatch.setattr(
+        ai_gateway, "call",
+        lambda *args, **kwargs: calls.append("called") or None,
+    )
+    _install_run_fakes(
+        monkeypatch, tmp_path,
+        text_atoms=[_unlocated_atom("text-unresolved", "TEXT")],
+        graphic_atoms=[],
+    )
+
+    state = _run()
+
+    assert calls == []
+    artifact = production_store.load_artifact("session-1", "pair-1", "ai_resolutions")
+    assert artifact["resolutions"] == []
+    assert artifact["diagnostics"]["uses_model"] is False
+    assert state["stages"]["ai_resolution"]["status"] == "NOT_APPLICABLE"
+
+
+def test_ai_layer_runs_in_page_mode_and_materializes_its_resolution(
+    tmp_path, monkeypatch
+):
+    """PAGE-режим не обходит слой: он работает от области, а не от режима."""
+    from backend.app.services.stage_comparison.ai import (
+        gateway as ai_gateway,
+        resolution as ai_resolution,
+    )
+
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "STANDARD")
+    monkeypatch.setenv("STAGE_COMPARISON_AI_CACHE_ENABLED", "false")
+    unresolved = _unlocated_atom("text-unresolved", "TEXT")
+    _install_run_fakes(
+        monkeypatch, tmp_path, text_atoms=[unresolved], graphic_atoms=[],
+    )
+
+    seen: list[dict] = []
+
+    def fake_resolve(self, **kwargs):
+        seen.append(dict(kwargs))
+        artifact = ai_resolution.empty_artifact(generated_at="fixed")
+        artifact["mode"] = "STANDARD"
+        artifact["diagnostics"]["input_items"] = len(kwargs["review_items"])
+        return artifact
+
+    monkeypatch.setattr(ai_resolution.AiResolutionLayer, "resolve", fake_resolve)
+    monkeypatch.setattr(ai_gateway, "reap_orphaned_processes", lambda **_: 0)
+
+    state = _run(input_mode="PAGE")
+
+    assert len(seen) == 1
+    assert seen[0]["review_items"], "слой обязан получить нерешённые элементы"
+    assert state["stages"]["ai_resolution"]["mode"] == "STANDARD"
+
+
+def test_a_failing_ai_layer_never_fails_the_run(tmp_path, monkeypatch):
+    """Отказ слоя — это отсутствие разрешений, а не отсутствие результата."""
+    from backend.app.services.stage_comparison.ai import (
+        gateway as ai_gateway,
+        resolution as ai_resolution,
+    )
+
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "STANDARD")
+    _install_run_fakes(
+        monkeypatch, tmp_path,
+        text_atoms=[_unlocated_atom("text-unresolved", "TEXT")],
+        graphic_atoms=[],
+    )
+
+    def explode(self, **kwargs):
+        raise RuntimeError("провайдер недоступен")
+
+    monkeypatch.setattr(ai_resolution.AiResolutionLayer, "resolve", explode)
+    monkeypatch.setattr(ai_gateway, "reap_orphaned_processes", lambda **_: 0)
+
+    state = _run()
+
+    assert state["status"] in {"COMPLETED", "PARTIAL"}
+    artifact = production_store.load_artifact("session-1", "pair-1", "ai_resolutions")
+    assert artifact["diagnostics"]["layer_error"] == "RuntimeError"
+    assert artifact["resolutions"] == []
+    # Находка осталась у человека, а не исчезла вместе с отказом слоя.
+    changes = orchestrator.get_production_changes("session-1", "pair-1")
+    assert changes["rows"]
