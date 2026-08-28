@@ -5495,8 +5495,13 @@
                             <span>{{ scProductionAiProgress.resolved_label }}</span>
                             <span>{{ scProductionAiProgress.human_label }}</span>
                             <span v-if="scProductionAiProgress.vision_label">
+                                <strong>{{ scProductionAiProgress.vision_title }}</strong>
                                 {{ scProductionAiProgress.vision_label }}
                             </span>
+                            <em v-if="scProductionAiProgress.budget_labels.length"
+                                class="sc-production-pipeline__ai-budget">
+                                {{ scProductionAiProgress.budget_labels.join('; ') }}
+                            </em>
                             <details v-if="scProductionAiProgress.reasons.length">
                                 <summary>Почему часть осталась инженеру</summary>
                                 <ul>

@@ -180,3 +180,43 @@ describe('шаблон раздела не печатает внутренние
         expect(app).not.toContain("APPROVED: 'APPROVED'");
     });
 });
+
+describe('прогресс ИИ в панели хода', () => {
+    const stage = {
+        status: 'COMPLETED', mode: 'DEEP',
+        total: 423, processed: 423, ai_resolved: 5, human_required: 418,
+        model_calls: 18, cache_hits: 92, duration_ms: 84209,
+        vision_items: 15, vision_calls: 15,
+        human_reasons: {MODEL_DECLINED: 395, VISION_CONTRADICTS_TEXT: 12,
+                        CRITIC_REJECTED: 11},
+        budgets_hit: ['max_vision_items'],
+    };
+
+    it('показывает разбор по чертежу отдельной строкой «сделано / взято»', () => {
+        const progress = review.normalizeAiProgress({state: {stages: {ai_resolution: stage}}});
+        expect(progress.vision_title).toBe('ИИ-анализ графики');
+        expect(progress.vision_label).toBe('15 / 15');
+        expect(progress.progress_label).toBe('423 / 423');
+    });
+
+    it('объясняет исчерпанный предел по-русски, а не кодом', () => {
+        const progress = review.normalizeAiProgress({state: {stages: {ai_resolution: stage}}});
+        expect(progress.budget_labels).toEqual(['достигнут предел разборов по чертежу']);
+        expect(progress.budget_labels.join(' ')).not.toContain('max_');
+    });
+
+    it('называет причины возврата человеку по-русски', () => {
+        const progress = review.normalizeAiProgress({state: {stages: {ai_resolution: stage}}});
+        const labels = progress.reasons.map(item => item.label).join(' ');
+        expect(labels).not.toContain('MODEL_DECLINED');
+        expect(labels).toContain('Чертёж расходится с текстом');
+        expect(progress.reasons[0].count).toBe(395);
+    });
+
+    it('без разбора по чертежу строки графики нет вовсе', () => {
+        const progress = review.normalizeAiProgress({
+            state: {stages: {ai_resolution: {...stage, vision_items: 0, vision_calls: 0}}},
+        });
+        expect(progress.vision_label).toBe('');
+    });
+});

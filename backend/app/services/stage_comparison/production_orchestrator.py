@@ -2303,6 +2303,11 @@ def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
         "model_failures": int(diagnostics.get("model_failures") or 0),
         "model_timeouts": int(diagnostics.get("model_timeouts") or 0),
         "cache_hits": int(((diagnostics.get("cache") or {}).get("hits")) or 0),
+        # Разбор по чертежу инженер видит отдельной строкой прогресса, поэтому
+        # его счётчики обязаны доехать до карточки этапа, а не остаться только
+        # в артефакте.
+        "vision_items": int(diagnostics.get("vision_items") or 0),
+        "vision_calls": int(diagnostics.get("vision_calls") or 0),
         "duration_ms": int(diagnostics.get("duration_ms") or 0),
         "human_reasons": dict(diagnostics.get("human_reasons") or {}),
         "budgets_hit": list(diagnostics.get("budgets_hit") or []),

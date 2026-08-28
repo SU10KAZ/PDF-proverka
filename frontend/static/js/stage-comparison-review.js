@@ -157,6 +157,14 @@
         NO_MATCH: 'соответствия нет',
         CANDIDATE_SUPERSEDED: 'заменено другим вариантом',
     };
+    // Пределы, которые ИИ-слой может упереть в одном прогоне.
+    const AI_BUDGET_LABELS = {
+        max_items: 'достигнут предел числа расхождений на прогон',
+        max_batches: 'достигнут предел числа партий на прогон',
+        max_critic_passes: 'достигнут предел контрольных проверок',
+        max_vision_items: 'достигнут предел разборов по чертежу',
+        max_session_seconds: 'закончилось отведённое на ИИ время',
+    };
     const QUESTION_CATEGORY_LABELS = {
         SHEET: 'Лист',
         ENTITY: 'Объект',
@@ -1839,8 +1847,13 @@
             resolved_label: `Автоматически разрешено: ${resolved}`,
             human_label: `Осталось человеку: ${human}`,
             vision_calls: metricNumber(stage.vision_calls) || 0,
+            vision_items: metricNumber(stage.vision_items) || 0,
+            vision_title: 'ИИ-анализ графики',
+            // «сделано / взято в работу» — та же форма, что и у текста, иначе
+            // одно число рядом с «423 / 423» читается как «всего 15 листов».
             vision_label: metricNumber(stage.vision_items)
-                ? `ИИ-анализ графики: ${metricNumber(stage.vision_items)}`
+                ? `${metricNumber(stage.vision_calls) || 0} / `
+                  + `${metricNumber(stage.vision_items)}`
                 : '',
             model_calls: metricNumber(stage.model_calls) || 0,
             cache_hits: metricNumber(stage.cache_hits) || 0,
@@ -1855,6 +1868,10 @@
                 .filter(item => item.count > 0)
                 .sort((left, right) => right.count - left.count),
             budgets_hit: array(stage.budgets_hit).map(String),
+            // Исчерпанный предел — не ошибка, но инженер должен понимать, что
+            // часть работы не делалась вовсе, а не «ИИ не справился».
+            budget_labels: array(stage.budgets_hit)
+                .map(code => AI_BUDGET_LABELS[String(code)] || String(code)),
         };
     }
 
