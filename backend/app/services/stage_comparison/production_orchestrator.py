@@ -80,6 +80,7 @@ ANSWERS_KIND = "stage_comparison_review_answers"
 ANSWERS_SCHEMA_VERSION = "review-answers.v1"
 INPUT_MODES = frozenset({"PAGE", "DOCUMENT"})
 PUBLISHED_STATUSES = frozenset({"COMPLETED", "PARTIAL"})
+ACTIVE_RUN_STATUSES = frozenset({"RUNNING", "UPDATING"})
 PAGE_MATERIALIZING_ACTIONS = frozenset({
     "REPLACE",
     "COMPARE_ADDITIONALLY",
@@ -2825,6 +2826,7 @@ def _run_production_comparison_impl(
     page_groups_override: Iterable[Mapping[str, Any]] | None = None,
     page_scope_rerun: bool = False,
     page_rerun_question_ids: Iterable[str] = (),
+    interrupted_run: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run the complete additive flow; TEXT and GRAPHIC fail independently."""
     pair = store.get_pair_for_production(session_id, pair_id)
@@ -2937,6 +2939,16 @@ def _run_production_comparison_impl(
             ),
         },
     }
+    if isinstance(interrupted_run, Mapping) and interrupted_run.get("run_id"):
+        base_state["recovered_from_interrupted_run"] = {
+            "run_id": interrupted_run.get("run_id"),
+            "status": "INTERRUPTED",
+            "previous_status": interrupted_run.get("status"),
+            "started_at": interrupted_run.get("started_at"),
+            "last_activity_at": interrupted_run.get("last_activity_at"),
+            "input_signature": interrupted_run.get("input_signature"),
+            "interrupted_at": started_at,
+        }
     _write_state(session_id, pair_id, base_state)
 
     progress_snapshots: dict[str, dict[str, Any]] = {}
@@ -3090,7 +3102,8 @@ def _run_production_comparison_impl(
     existing_semantic = production_store.load_artifact(
         session_id, pair_id, "text_semantic_validation"
     )
-    assert text_started_at is not None and text_started_perf is not None
+    if text_started_at is None or text_started_perf is None:
+        raise RuntimeError("TEXT progress invariant was not initialized")
 
     def report_text_boundary(*, substage: str, message: str) -> None:
         try:
@@ -3410,6 +3423,7 @@ def _run_production_comparison_impl(
                 review_answers_override=answers,
                 page_groups_override=page_projection["groups"],
                 page_scope_rerun=True,
+                interrupted_run=interrupted_run,
             )
         sheet_scope_projection = page_projection
 
@@ -3935,6 +3949,7 @@ def _run_production_comparison_locked(
     page_groups_override: Iterable[Mapping[str, Any]] | None = None,
     page_scope_rerun: bool = False,
     page_rerun_question_ids: Iterable[str] = (),
+    interrupted_run: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run under an already-held pair lock and fail the generation closed."""
     try:
@@ -3950,6 +3965,7 @@ def _run_production_comparison_locked(
             page_groups_override=page_groups_override,
             page_scope_rerun=page_scope_rerun,
             page_rerun_question_ids=page_rerun_question_ids,
+            interrupted_run=interrupted_run,
         )
     except Exception as exc:
         current = production_store.load_artifact(session_id, pair_id, "state")
@@ -4020,6 +4036,15 @@ def run_production_comparison(
 ) -> dict[str, Any]:
     """Run production comparison and never leave a failed run as RUNNING."""
     with production_store.production_pair_lock(session_id, pair_id):
+        previous = production_store.load_artifact(
+            session_id, pair_id, "state"
+        )
+        interrupted_run = (
+            copy.deepcopy(previous)
+            if isinstance(previous, Mapping)
+            and str(previous.get("status") or "") in ACTIVE_RUN_STATUSES
+            else None
+        )
         return _run_production_comparison_locked(
             session_id,
             pair_id,
@@ -4028,6 +4053,7 @@ def run_production_comparison(
             right_pages=right_pages,
             left_block_ids=left_block_ids,
             right_block_ids=right_block_ids,
+            interrupted_run=interrupted_run,
         )
 
 
@@ -4057,6 +4083,9 @@ def _empty_state(session_id: str, pair_id: str) -> dict[str, Any]:
         "current_item": None,
         "recent_unit_durations_ms": [],
         "duration_ms": None,
+        "runner_active": False,
+        "orphaned_run": False,
+        "run_recoverable": False,
         "stages": {},
         "constraints": {
             "new_flow": True,
@@ -4077,7 +4106,38 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     state = production_store.load_artifact(session_id, pair_id, "state")
     if not state:
         return _empty_state(session_id, pair_id)
+    state_status = str(state.get("status") or "")
+    runner_active = False
+    if state_status in ACTIVE_RUN_STATUSES:
+        runner_active = production_store.production_pair_runner_active(
+            session_id, pair_id
+        )
+        if not runner_active:
+            # Close the narrow race where a producer publishes terminal state
+            # or acquires the pair lock between our first state read and the
+            # non-blocking lock probe.
+            latest = production_store.load_artifact(
+                session_id, pair_id, "state"
+            )
+            if isinstance(latest, Mapping) and (
+                latest.get("run_id") != state.get("run_id")
+                or latest.get("revision") != state.get("revision")
+                or latest.get("status") != state.get("status")
+            ):
+                state = dict(latest)
+                state_status = str(state.get("status") or "")
+            runner_active = (
+                production_store.production_pair_runner_active(
+                    session_id, pair_id
+                )
+                if state_status in ACTIVE_RUN_STATUSES
+                else False
+            )
+    orphaned_run = state_status in ACTIVE_RUN_STATUSES and not runner_active
     public = copy.deepcopy(state)
+    public["runner_active"] = runner_active
+    public["orphaned_run"] = orphaned_run
+    public["run_recoverable"] = orphaned_run
     for key, default in {
         "current_stage": None,
         "current_substage": None,

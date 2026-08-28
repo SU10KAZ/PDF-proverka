@@ -3282,6 +3282,130 @@ def test_pair_lock_rejects_overlapping_run_without_changing_state(tmp_path, monk
     assert production_store.load_artifact("session-1", "pair-1", "state") is None
 
 
+def test_running_state_reports_active_runner_only_while_pair_lock_is_held(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    terminal = _run()
+    running = {
+        **terminal,
+        "status": "RUNNING",
+        "current_stage": "content_analysis",
+        "current_substage": "graphic_structural_comparison",
+    }
+    production_store.save_artifact(
+        "session-1", "pair-1", "state", running
+    )
+
+    with production_store.production_pair_lock("session-1", "pair-1"):
+        public = orchestrator.get_production_state(
+            "session-1", "pair-1"
+        )
+
+    assert public["status"] == "RUNNING"
+    assert public["runner_active"] is True
+    assert public["orphaned_run"] is False
+    assert public["run_recoverable"] is False
+
+
+def test_running_state_without_pair_lock_is_orphaned_and_recoverable(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    terminal = _run()
+    production_store.save_artifact(
+        "session-1",
+        "pair-1",
+        "state",
+        {
+            **terminal,
+            "status": "RUNNING",
+            "current_stage": "content_analysis",
+            "current_substage": "graphic_structural_comparison",
+        },
+    )
+
+    public = orchestrator.get_production_state("session-1", "pair-1")
+
+    assert public["status"] == "RUNNING"
+    assert public["runner_active"] is False
+    assert public["orphaned_run"] is True
+    assert public["run_recoverable"] is True
+
+
+def test_new_run_recovers_orphan_without_accepting_old_progress_or_artifacts(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    first = _run()
+    old_run_id = first["run_id"]
+    production_store.save_artifact(
+        "session-1",
+        "pair-1",
+        "state",
+        {
+            **first,
+            "status": "RUNNING",
+            "current_stage": "content_analysis",
+            "current_substage": "graphic_structural_comparison",
+        },
+    )
+
+    recovered = _run()
+
+    assert recovered["run_id"] != old_run_id
+    assert recovered["status"] in {"COMPLETED", "PARTIAL"}
+    assert recovered["recovered_from_interrupted_run"] == {
+        "run_id": old_run_id,
+        "status": "INTERRUPTED",
+        "previous_status": "RUNNING",
+        "started_at": first["started_at"],
+        "last_activity_at": first["last_activity_at"],
+        "input_signature": first["input_signature"],
+        "interrupted_at": recovered["started_at"],
+    }
+    snapshot = production_store.load_artifact(
+        "session-1", "pair-1", "source_snapshot"
+    )
+    assert snapshot["run_id"] == recovered["run_id"]
+    assert snapshot["generation_input_signature"] == recovered[
+        "input_signature"
+    ]
+
+    before_late_event = production_store.load_artifact(
+        "session-1", "pair-1", "state"
+    )
+    rejected = orchestrator._publish_progress_event(
+        "session-1",
+        "pair-1",
+        old_run_id,
+        current_stage="content_analysis",
+        current_substage="late_old_callback",
+        message="late",
+        stage_key="graphic",
+        stage_status="RUNNING",
+    )
+    assert rejected == before_late_event
+    assert production_store.load_artifact(
+        "session-1", "pair-1", "state"
+    ) == before_late_event
+
+
 def test_exact_entity_binding_reaches_g246_and_merges_both_sources():
     text = _type_atom("text-device-type", "TEXT")
     text["subject_ref"] = "panel:exact"

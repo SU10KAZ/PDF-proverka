@@ -105,6 +105,42 @@ def production_pair_lock(session_id: str, pair_id: str) -> Iterator[None]:
         local.release()
 
 
+def production_pair_runner_active(session_id: str, pair_id: str) -> bool:
+    """Return whether the pair lock is held by a real local/remote runner.
+
+    This is deliberately a lock probe, not a heartbeat heuristic.  The local
+    lock covers threads in this process; ``flock`` covers other worker
+    processes and is automatically released if their process exits.
+    """
+    root = paths.production_dir(session_id, pair_id)
+    lock_path = root / ".pair.lock"
+    local = _local_pair_lock(lock_path)
+    if not local.acquire(blocking=False):
+        return True
+    stream = None
+    acquired_file_lock = False
+    try:
+        if not root.exists() or not lock_path.exists():
+            return False
+        stream = lock_path.open("a+", encoding="utf-8")
+        if _fcntl is None:
+            return False
+        try:
+            _fcntl.flock(stream.fileno(), _fcntl.LOCK_EX | _fcntl.LOCK_NB)
+            acquired_file_lock = True
+            return False
+        except BlockingIOError:
+            return True
+    finally:
+        if stream is not None:
+            try:
+                if _fcntl is not None and acquired_file_lock:
+                    _fcntl.flock(stream.fileno(), _fcntl.LOCK_UN)
+            finally:
+                stream.close()
+        local.release()
+
+
 def artifact_path(session_id: str, pair_id: str, name: str) -> Path:
     try:
         factory = ARTIFACT_PATHS[name]
@@ -247,6 +283,7 @@ __all__ = [
     "load_graphic_ledger",
     "mutate_artifact",
     "production_pair_lock",
+    "production_pair_runner_active",
     "save_artifact",
     "save_graphic_ledger",
     "save_unified_synthesis",
