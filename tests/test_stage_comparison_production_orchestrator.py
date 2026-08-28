@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 
@@ -3402,3 +3403,408 @@ def test_pipeline_stage_metadata_is_truthful_and_skips_superseded_candidates():
     assert orchestrator._initial_pipeline_stages("PAGE")["sheet_matching"][
         "status"
     ] == "PENDING_ADVISORY"
+
+
+def test_progress_event_is_atomic_and_rejects_a_stale_run(tmp_path, monkeypatch):
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison"))
+    initial = {
+        "run_id": "run-current",
+        "status": "RUNNING",
+        "revision": 4,
+        "last_activity_at": "2026-01-01T00:00:00+00:00",
+        "stages": {"text": {"status": "RUNNING"}},
+    }
+    production_store.save_artifact(
+        "session-1", "pair-1", "state", initial
+    )
+
+    stale = orchestrator._publish_progress_event(
+        "session-1",
+        "pair-1",
+        "run-stale",
+        current_stage="content_analysis",
+        current_substage="text_preparation",
+        message="stale",
+        stage_key="text",
+        stage_status="RUNNING",
+    )
+
+    assert stale == initial
+    current = orchestrator._publish_progress_event(
+        "session-1",
+        "pair-1",
+        "run-current",
+        current_stage="content_analysis",
+        current_substage="text_difference_search",
+        message="Поиск различий в тексте…",
+        processed=2,
+        total=5,
+        unit="differences",
+        duration_ms=17,
+        run_duration_ms=99,
+        stage_key="text",
+        stage_status="RUNNING",
+        stage_started_at="2026-01-01T00:00:00+00:00",
+    )
+
+    assert current["revision"] == 5
+    assert current["current_stage"] == "content_analysis"
+    assert current["processed"] == 2
+    assert current["total"] == 5
+    assert current["duration_ms"] == 99
+    assert current["last_activity_at"] != initial["last_activity_at"]
+    assert current["stages"]["text"]["progress"] == {
+        "status": "RUNNING",
+        "started_at": "2026-01-01T00:00:00+00:00",
+        "last_activity_at": current["last_activity_at"],
+        "current_stage": "content_analysis",
+        "current_substage": "text_difference_search",
+        "message": "Поиск различий в тексте…",
+        "processed": 2,
+        "total": 5,
+        "unit": "differences",
+        "current_item": None,
+        "recent_unit_durations_ms": [],
+        "duration_ms": 17,
+    }
+
+
+def test_sheet_stage_is_not_completed_before_its_artifact_is_saved(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    original_save = production_store.save_artifact
+
+    def fail_sheet_save(session_id, pair_id, artifact, value):
+        if artifact == "sheet_relations":
+            raise OSError("simulated artifact failure")
+        return original_save(session_id, pair_id, artifact, value)
+
+    monkeypatch.setattr(production_store, "save_artifact", fail_sheet_save)
+
+    with pytest.raises(OSError, match="simulated artifact failure"):
+        _run(input_mode="DOCUMENT")
+
+    failed = production_store.load_artifact("session-1", "pair-1", "state")
+    assert failed["status"] == "FAILED"
+    assert failed["stages"]["sheet_matching"]["status"] == "FAILED"
+
+
+def test_progress_callback_failure_fails_generation_not_text_evidence(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    base_text_branch = orchestrator._run_text_branch
+
+    def reporting_text_branch(*args, **kwargs):
+        callback = orchestrator._TEXT_PROGRESS_CALLBACK.get()
+        assert callback is not None
+        callback(
+            substage="text_difference_search",
+            message="Поиск различий в тексте…",
+        )
+        return base_text_branch(*args, **kwargs)
+
+    original_publish = orchestrator._publish_progress_event
+
+    def fail_text_progress(*args, **kwargs):
+        if kwargs.get("current_substage") == "text_difference_search":
+            raise OSError("simulated progress failure")
+        return original_publish(*args, **kwargs)
+
+    monkeypatch.setattr(orchestrator, "_run_text_branch", reporting_text_branch)
+    monkeypatch.setattr(orchestrator, "_publish_progress_event", fail_text_progress)
+
+    with pytest.raises(orchestrator.ProductionProgressPublicationError):
+        _run()
+
+    failed = production_store.load_artifact("session-1", "pair-1", "state")
+    assert failed["status"] == "FAILED"
+    assert failed["reason_code"] == "ProductionProgressPublicationError"
+
+
+def test_sequential_question_and_synthesis_progress_never_both_run(
+    tmp_path, monkeypatch
+):
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+    original_publish = orchestrator._publish_progress_event
+    snapshots = []
+
+    def record_progress(*args, **kwargs):
+        state = original_publish(*args, **kwargs)
+        snapshots.append(copy.deepcopy(state.get("stages") or {}))
+        return state
+
+    monkeypatch.setattr(orchestrator, "_publish_progress_event", record_progress)
+
+    _run()
+
+    assert snapshots
+    assert not any(
+        (stages.get("review_questions") or {}).get("status") == "RUNNING"
+        and (stages.get("unified_synthesis") or {}).get("status") == "RUNNING"
+        for stages in snapshots
+    )
+
+
+def test_text_progress_reports_real_algorithm_boundaries(monkeypatch):
+    preparation = {"input_signature": "preparation"}
+    differences = {"source_signature": "differences"}
+    fact_production = {
+        "input_signature": "facts",
+        "facts": [],
+        "not_applicable_source_evidence": [],
+    }
+    semantic = {
+        "kind": orchestrator.SEMANTIC_KIND,
+        "schema_version": orchestrator.SEMANTIC_SCHEMA_VERSION,
+        "stage3_signature": "differences",
+        "text_fact_production_signature": "facts",
+        "input_signature": "semantic",
+        "facts": [],
+    }
+    monkeypatch.setattr(
+        orchestrator, "prepare_text_scope", lambda *_args, **_kwargs: preparation
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "build_text_differences_from_preparation",
+        lambda _preparation: differences,
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "produce_text_facts",
+        lambda _differences, _preparation: fact_production,
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "stage3_content_signature",
+        lambda _differences: "differences",
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "build_semantic_validation",
+        lambda *_args, **_kwargs: semantic,
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "build_text_atoms",
+        lambda *_args, **_kwargs: {"atoms": []},
+    )
+    events = []
+    token = orchestrator._TEXT_PROGRESS_CALLBACK.set(
+        lambda **event: events.append(event)
+    )
+    try:
+        orchestrator._run_text_branch({}, "pair-1", [], {}, None)
+    finally:
+        orchestrator._TEXT_PROGRESS_CALLBACK.reset(token)
+
+    assert [event["substage"] for event in events] == [
+        "text_preparation",
+        "text_difference_search",
+        "text_difference_validation",
+        "text_change_formation",
+    ]
+    assert all("processed" not in event and "total" not in event for event in events)
+
+
+@pytest.mark.parametrize(
+    ("group_count", "determinate"),
+    [(1, False), (3, True)],
+)
+def test_graphic_group_progress_is_determinate_only_for_multiple_units(
+    monkeypatch, group_count, determinate
+):
+    groups = [
+        {
+            "id": f"group-{index}",
+            "left_pages": [index + 1],
+            "right_pages": [index + 11],
+        }
+        for index in range(group_count)
+    ]
+    monkeypatch.setattr(
+        orchestrator,
+        "_document_graphic_entry",
+        lambda *_args, **_kwargs: {"status": "NOT_APPLICABLE"},
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_build_document_graphic_bundle",
+        lambda entries: {"entries": list(entries)},
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_validate_document_graphic_bundle",
+        lambda bundle: bundle,
+    )
+    monkeypatch.setattr(
+        orchestrator.production_store,
+        "save_artifact",
+        lambda *_args, **_kwargs: None,
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_document_graphic_stage",
+        lambda _bundle: {
+            "status": "NOT_APPLICABLE",
+            "source_state": "NOT_APPLICABLE",
+        },
+    )
+    events = []
+    token = orchestrator._GRAPHIC_PROGRESS_CALLBACK.set(
+        lambda **event: events.append(event)
+    )
+    try:
+        orchestrator._run_graphic_branch(
+            "session-1",
+            "pair-1",
+            {},
+            {
+                "input_mode": "DOCUMENT",
+                "left_block_ids": [],
+                "right_block_ids": [],
+            },
+            groups,
+        )
+    finally:
+        orchestrator._GRAPHIC_PROGRESS_CALLBACK.reset(token)
+
+    assert len(events) == group_count * 2
+    assert all(event["current_item"]["group_id"] for event in events)
+    if determinate:
+        assert all(event["total"] == group_count for event in events)
+        assert events[-1]["processed"] == group_count
+        assert len(events[-1]["recent_unit_durations_ms"]) == group_count
+    else:
+        assert all(
+            event["processed"] is None and event["total"] is None
+            for event in events
+        )
+
+
+def test_terminal_state_clears_current_operation_and_preserves_stage_progress(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setenv(
+        orchestrator.PROGRESS_ACTIVITY_WARNING_ENV,
+        "37",
+    )
+    _install_run_fakes(
+        monkeypatch,
+        tmp_path,
+        text_atoms=[_atom("text-voltage", "TEXT")],
+        graphic_atoms=[],
+    )
+
+    state = _run()
+
+    assert state["progress"] == 100
+    assert isinstance(state["progress"], int)
+    assert state["last_activity_at"] == state["completed_at"]
+    assert state["duration_ms"] >= 0
+    for field in (
+        "current_stage",
+        "current_substage",
+        "message",
+        "processed",
+        "total",
+        "unit",
+        "current_item",
+    ):
+        assert state[field] is None
+    assert state["recent_unit_durations_ms"] == []
+    assert state["constraints"]["activity_warning_threshold_sec"] == 37
+    for stage_key in (
+        "sheet_matching",
+        "text",
+        "graphic",
+        "entity_matching",
+        "review_questions",
+        "unified_synthesis",
+        "final_report",
+    ):
+        progress = state["stages"][stage_key]["progress"]
+        assert progress["started_at"]
+        assert progress["last_activity_at"]
+        assert progress["duration_ms"] >= 0
+    questions = state["stages"]["review_questions"]
+    assert questions["total"] == questions["pending"] + questions["answered"]
+
+
+def test_failed_run_preserves_failed_location_and_clears_current_operation(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison"))
+    production_store.save_artifact(
+        "session-1",
+        "pair-1",
+        "state",
+        {
+            "run_id": "run-1",
+            "status": "RUNNING",
+            "revision": 2,
+            "started_at": "2026-01-01T00:00:00+00:00",
+            "current_stage": "content_analysis",
+            "current_substage": "text_difference_search",
+            "message": "Поиск различий в тексте…",
+            "processed": None,
+            "total": None,
+            "unit": None,
+            "current_item": None,
+            "recent_unit_durations_ms": [],
+            "stages": {
+                "text": {
+                    "status": "RUNNING",
+                    "progress": {
+                        "status": "RUNNING",
+                        "started_at": "2026-01-01T00:00:00+00:00",
+                    },
+                }
+            },
+        },
+    )
+    monkeypatch.setattr(
+        orchestrator,
+        "_run_production_comparison_impl",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(RuntimeError("private")),
+    )
+
+    with pytest.raises(RuntimeError, match="private"):
+        orchestrator._run_production_comparison_locked(
+            "session-1",
+            "pair-1",
+            input_mode="PAGE",
+            left_pages=[1],
+            right_pages=[1],
+        )
+
+    failed = production_store.load_artifact(
+        "session-1", "pair-1", "state"
+    )
+    assert failed["status"] == "FAILED"
+    assert failed["progress"] == 100
+    assert failed["failed_stage"] == "content_analysis"
+    assert failed["failed_substage"] == "text_difference_search"
+    assert failed["current_stage"] is None
+    assert failed["current_substage"] is None
+    assert failed["message"] is None
+    assert failed["reason_code"] == "RuntimeError"
+    assert failed["stages"]["text"]["status"] == "FAILED"
+    assert failed["stages"]["text"]["progress"]["status"] == "FAILED"

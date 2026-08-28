@@ -9,8 +9,12 @@ from __future__ import annotations
 
 import copy
 import importlib
+import os
+import time
+from contextvars import ContextVar
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping
 from uuid import uuid4
 
 from backend.app.services.common.blocks_json import load_blocks_json
@@ -93,10 +97,26 @@ DOCUMENT_GRAPHIC_GROUP_STATUSES = frozenset({
     "REVIEW_REQUIRED",
     "CHECK_BLOCKED",
 })
+PROGRESS_ACTIVITY_WARNING_ENV = (
+    "STAGE_COMPARISON_ACTIVITY_WARNING_THRESHOLD_SEC"
+)
+DEFAULT_PROGRESS_ACTIVITY_WARNING_SEC = 120
+_TEXT_PROGRESS_CALLBACK: ContextVar[Callable[..., None] | None] = ContextVar(
+    "stage_comparison_text_progress_callback",
+    default=None,
+)
+_GRAPHIC_PROGRESS_CALLBACK: ContextVar[Callable[..., None] | None] = ContextVar(
+    "stage_comparison_graphic_progress_callback",
+    default=None,
+)
 
 
 class ProductionStateConflictError(production_store.ProductionConflictError):
     """A human write targets stale comparison sources or a stale revision."""
+
+
+class ProductionProgressPublicationError(Exception):
+    """Progress persistence failed; never classify it as branch evidence."""
 
 
 def _fitz():
@@ -295,6 +315,12 @@ def _run_text_branch(
     dict[str, Any],
     dict[str, Any],
 ]:
+    progress_callback = _TEXT_PROGRESS_CALLBACK.get()
+    if progress_callback is not None:
+        progress_callback(
+            substage="text_preparation",
+            message="Подготовка текста…",
+        )
     preparation = prepare_text_scope(
         pair,
         groups,
@@ -302,7 +328,17 @@ def _run_text_branch(
         fitz=_fitz(),
         document_cache_dir=document_cache_dir,
     )
+    if progress_callback is not None:
+        progress_callback(
+            substage="text_difference_search",
+            message="Поиск различий в тексте…",
+        )
     differences = build_text_differences_from_preparation(preparation)
+    if progress_callback is not None:
+        progress_callback(
+            substage="text_difference_validation",
+            message="Проверка найденных различий…",
+        )
     fact_production = produce_text_facts(differences, preparation)
     stage3_signature = stage3_content_signature(differences)
     fact_production_signature = fact_production.get("input_signature")
@@ -332,6 +368,11 @@ def _run_text_branch(
             "fact_source": TEXT_FACT_PRODUCER_VERSION,
             "text_fact_production_signature": fact_production_signature,
         }
+    if progress_callback is not None:
+        progress_callback(
+            substage="text_change_formation",
+            message="Формирование текстовых изменений…",
+        )
     atoms = build_text_atoms(
         differences,
         semantic,
@@ -1343,6 +1384,31 @@ def _run_graphic_branch(
     request: Mapping[str, Any],
     comparison_groups: list[Mapping[str, Any]],
 ) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    progress_callback = _GRAPHIC_PROGRESS_CALLBACK.get()
+    recent_durations_ms: list[int] = []
+
+    def report_group(
+        *,
+        processed: int | None,
+        total: int | None,
+        group: Mapping[str, Any],
+        message: str,
+    ) -> None:
+        if progress_callback is None:
+            return
+        progress_callback(
+            processed=processed,
+            total=total,
+            unit="groups" if total is not None else None,
+            current_item={
+                "group_id": group.get("id") or group.get("relation_id"),
+                "left_pages": list(group.get("left_pages") or []),
+                "right_pages": list(group.get("right_pages") or []),
+            },
+            recent_unit_durations_ms=list(recent_durations_ms),
+            message=message,
+        )
+
     if request["input_mode"] == "PAGE":
         # Direct MODE 2 has a calibrated one-page-per-side contract.  A PAGE
         # review action may create several groups or a grouped 1:N/N:1 scope;
@@ -1378,7 +1444,18 @@ def _run_graphic_branch(
             }
         if len(comparison_groups) > 1:
             entries = []
-            for group in comparison_groups:
+            group_total = len(comparison_groups)
+            for index, group in enumerate(comparison_groups):
+                report_group(
+                    processed=index,
+                    total=group_total,
+                    group=group,
+                    message=(
+                        "Структурное сравнение графической группы "
+                        f"{index + 1} из {group_total}…"
+                    ),
+                )
+                unit_started = time.perf_counter()
                 direct_request = copy.deepcopy(dict(request))
                 direct_request["left_pages"] = list(
                     group.get("left_pages") or []
@@ -1415,6 +1492,19 @@ def _run_graphic_branch(
                         "reason_code": type(exc).__name__,
                         "ledger": None,
                     })
+                recent_durations_ms.append(
+                    max(0, int((time.perf_counter() - unit_started) * 1000))
+                )
+                recent_durations_ms[:] = recent_durations_ms[-5:]
+                report_group(
+                    processed=index + 1,
+                    total=group_total,
+                    group=group,
+                    message=(
+                        "Обработано графических групп: "
+                        f"{index + 1} из {group_total}."
+                    ),
+                )
             bundle = _validate_page_graphic_bundle(
                 _build_page_graphic_bundle(entries)
             )
@@ -1463,6 +1553,12 @@ def _run_graphic_branch(
                 "parent_relation_required": False,
             }
         group = comparison_groups[0]
+        report_group(
+            processed=None,
+            total=None,
+            group=group,
+            message="Выполняется одно структурное сравнение страниц…",
+        )
         direct_request = copy.deepcopy(dict(request))
         direct_request["left_pages"] = list(group.get("left_pages") or [])
         direct_request["right_pages"] = list(group.get("right_pages") or [])
@@ -1500,17 +1596,43 @@ def _run_graphic_branch(
     right_ids = list(request["right_block_ids"])
     if bool(left_ids) != bool(right_ids):
         raise ValueError("DOCUMENT graphic block ids are required on both sides")
-    entries = [
-        _document_graphic_entry(
+    entries = []
+    group_total = len(comparison_groups)
+    determinate = group_total > 1
+    for index, group in enumerate(comparison_groups):
+        report_group(
+            processed=index if determinate else None,
+            total=group_total if determinate else None,
+            group=group,
+            message=(
+                f"Сравнение графической группы {index + 1} из {group_total}…"
+                if determinate
+                else "Выполняется одно графическое сравнение…"
+            ),
+        )
+        unit_started = time.perf_counter()
+        entries.append(_document_graphic_entry(
             session_id,
             pair_id,
             pair,
             group,
             explicit_left_ids=left_ids,
             explicit_right_ids=right_ids,
+        ))
+        recent_durations_ms.append(
+            max(0, int((time.perf_counter() - unit_started) * 1000))
         )
-        for group in comparison_groups
-    ]
+        recent_durations_ms[:] = recent_durations_ms[-5:]
+        report_group(
+            processed=index + 1 if determinate else None,
+            total=group_total if determinate else None,
+            group=group,
+            message=(
+                f"Обработано графических групп: {index + 1} из {group_total}."
+                if determinate
+                else "Графическое сравнение завершено."
+            ),
+        )
     bundle = _validate_document_graphic_bundle(
         _build_document_graphic_bundle(entries)
     )
@@ -2383,6 +2505,162 @@ def _artifact_state(payload: Mapping[str, Any] | None) -> dict[str, Any]:
     }
 
 
+def _progress_activity_warning_sec() -> int:
+    """Return the soft no-activity warning threshold for a new generation."""
+    raw = os.environ.get(PROGRESS_ACTIVITY_WARNING_ENV, "").strip()
+    if not raw:
+        return DEFAULT_PROGRESS_ACTIVITY_WARNING_SEC
+    try:
+        value = int(raw)
+    except ValueError:
+        return DEFAULT_PROGRESS_ACTIVITY_WARNING_SEC
+    return (
+        value
+        if 1 <= value <= 86_400
+        else DEFAULT_PROGRESS_ACTIVITY_WARNING_SEC
+    )
+
+
+def _duration_ms_since(started_at: Any) -> int | None:
+    """Best-effort persisted elapsed time; never makes a run fail."""
+    if not isinstance(started_at, str) or not started_at:
+        return None
+    try:
+        started = datetime.fromisoformat(started_at)
+        if started.tzinfo is None:
+            started = started.replace(tzinfo=timezone.utc)
+        elapsed = datetime.now(timezone.utc) - started.astimezone(timezone.utc)
+    except (TypeError, ValueError):
+        return None
+    return max(0, int(elapsed.total_seconds() * 1000))
+
+
+def _review_question_stage(
+    questions: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Publish pending/answered/all counts without changing queue semantics."""
+    counts = dict(questions.get("counts") or {})
+    pending = int(counts.get("pending", len(questions.get("questions") or [])) or 0)
+    answered = int(counts.get("resolved_unchanged") or 0)
+    return {
+        "status": "NEEDS_REVIEW" if pending else "COMPLETED",
+        # Historical field: it has always meant the current pending projection.
+        "questions": pending,
+        "pending": pending,
+        "answered": answered,
+        "total": pending + answered,
+        "counts": counts,
+        **_artifact_state(questions),
+    }
+
+
+def _publish_progress_event(
+    session_id: str,
+    pair_id: str,
+    run_id: str,
+    *,
+    current_stage: str | None,
+    current_substage: str | None,
+    message: str | None,
+    processed: int | None = None,
+    total: int | None = None,
+    unit: str | None = None,
+    duration_ms: int | None = None,
+    run_duration_ms: int | None = None,
+    current_item: Mapping[str, Any] | None = None,
+    recent_unit_durations_ms: Iterable[int] = (),
+    stage_key: str | None = None,
+    stage_status: str | None = None,
+    stage_started_at: str | None = None,
+    stage_completed_at: str | None = None,
+    stage_update: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Persist one real progress event for exactly one active generation.
+
+    The pair-level lock serializes normal writers.  The run-id check is still
+    required so a delayed callback can never overwrite a newer generation.
+    A rejected event returns the current state byte-for-byte (including its
+    revision and activity timestamp).
+    """
+    observed_at = utc_now()
+    recent_durations = [
+        max(0, int(value)) for value in recent_unit_durations_ms
+    ][-5:]
+
+    def update(existing: Any) -> Any:
+        if not isinstance(existing, Mapping):
+            return existing
+        if (
+            existing.get("run_id") != run_id
+            or existing.get("status") != "RUNNING"
+        ):
+            return existing
+        state = copy.deepcopy(dict(existing))
+        state.update({
+            "current_stage": current_stage,
+            "current_substage": current_substage,
+            "message": message,
+            "processed": processed,
+            "total": total,
+            "unit": unit,
+            "current_item": copy.deepcopy(dict(current_item))
+            if isinstance(current_item, Mapping)
+            else None,
+            "recent_unit_durations_ms": recent_durations,
+            "last_activity_at": observed_at,
+            "duration_ms": max(0, int(
+                run_duration_ms
+                if run_duration_ms is not None
+                else duration_ms
+            ))
+            if run_duration_ms is not None or duration_ms is not None
+            else None,
+            "updated_at": observed_at,
+            "revision": int(existing.get("revision") or 0) + 1,
+        })
+        if stage_key:
+            stages = copy.deepcopy(state.get("stages") or {})
+            stage = dict(stages.get(stage_key) or {})
+            if isinstance(stage_update, Mapping):
+                stage.update(copy.deepcopy(dict(stage_update)))
+            if stage_status:
+                stage["status"] = stage_status
+            progress = dict(stage.get("progress") or {})
+            progress.update({
+                "status": stage_status or progress.get("status") or "RUNNING",
+                "started_at": stage_started_at or progress.get("started_at"),
+                "last_activity_at": observed_at,
+                "current_stage": current_stage,
+                "current_substage": current_substage,
+                "message": message,
+                "processed": processed,
+                "total": total,
+                "unit": unit,
+                "current_item": copy.deepcopy(dict(current_item))
+                if isinstance(current_item, Mapping)
+                else None,
+                "recent_unit_durations_ms": recent_durations,
+                "duration_ms": max(0, int(duration_ms))
+                if duration_ms is not None
+                else None,
+            })
+            if stage_completed_at:
+                progress["completed_at"] = stage_completed_at
+            stage["progress"] = progress
+            stages[stage_key] = stage
+            state["stages"] = stages
+        return state
+
+    value = production_store.mutate_artifact(
+        session_id,
+        pair_id,
+        "state",
+        update,
+        default={},
+    )
+    return dict(value) if isinstance(value, Mapping) else {}
+
+
 def _empty_text_atoms(
     *, run_id: str, generation_input_signature: str, source_state: str
 ) -> dict[str, Any]:
@@ -2615,6 +2893,7 @@ def _run_production_comparison_impl(
     _validate_page_bounds(pair, request, page_groups)
     signature = _input_signature(pair, request, page_groups=page_groups)
     started_at = utc_now()
+    run_started_perf = time.perf_counter()
     run_id = stable_id(
         "prun_", pair_id, signature, started_at, uuid4().hex, length=24
     )
@@ -2636,6 +2915,16 @@ def _run_production_comparison_impl(
         "progress": 0,
         "stale": False,
         "started_at": started_at,
+        "last_activity_at": started_at,
+        "current_stage": None,
+        "current_substage": None,
+        "message": "Production-анализ запущен.",
+        "processed": None,
+        "total": None,
+        "unit": None,
+        "current_item": None,
+        "recent_unit_durations_ms": [],
+        "duration_ms": 0,
         "stages": _initial_pipeline_stages(request["input_mode"]),
         "constraints": {
             "new_flow": True,
@@ -2643,19 +2932,89 @@ def _run_production_comparison_impl(
             "legacy_stage53_used": False,
             "parent_relation_required": False,
             "sheet_matcher_is_page_gate": False,
+            "activity_warning_threshold_sec": (
+                _progress_activity_warning_sec()
+            ),
         },
     }
     _write_state(session_id, pair_id, base_state)
+
+    progress_snapshots: dict[str, dict[str, Any]] = {}
+
+    def publish_progress(
+        *,
+        current_stage: str | None,
+        current_substage: str | None,
+        message: str | None,
+        processed: int | None = None,
+        total: int | None = None,
+        unit: str | None = None,
+        duration_ms: int | None = None,
+        current_item: Mapping[str, Any] | None = None,
+        recent_unit_durations_ms: Iterable[int] = (),
+        stage_key: str | None = None,
+        stage_status: str | None = None,
+        stage_started_at: str | None = None,
+        stage_completed_at: str | None = None,
+        stage_update: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        run_duration_ms = max(
+            0, int((time.perf_counter() - run_started_perf) * 1000)
+        )
+        stage_duration_ms = duration_ms
+        if stage_duration_ms is None and stage_started_at:
+            # A just-started stage must not inherit elapsed time from all
+            # earlier stages. Later callbacks pass their real stage elapsed.
+            stage_duration_ms = 0
+        state = _publish_progress_event(
+            session_id,
+            pair_id,
+            run_id,
+            current_stage=current_stage,
+            current_substage=current_substage,
+            message=message,
+            processed=processed,
+            total=total,
+            unit=unit,
+            duration_ms=stage_duration_ms,
+            run_duration_ms=run_duration_ms,
+            current_item=current_item,
+            recent_unit_durations_ms=recent_unit_durations_ms,
+            stage_key=stage_key,
+            stage_status=stage_status,
+            stage_started_at=stage_started_at,
+            stage_completed_at=stage_completed_at,
+            stage_update=stage_update,
+        )
+        if stage_key and state.get("run_id") == run_id:
+            stage = (state.get("stages") or {}).get(stage_key) or {}
+            if isinstance(stage.get("progress"), Mapping):
+                progress_snapshots[stage_key] = copy.deepcopy(
+                    dict(stage["progress"])
+                )
+        return state
 
     review_module = importlib.import_module(
         "backend.app.services.stage_comparison.review_queue"
     )
     sheet_suggestions = None
     sheet_scope_projection: dict[str, Any] | None = None
+    text_started_at: str | None = None
+    text_started_perf: float | None = None
     if request["input_mode"] == "PAGE":
         # The user-selected PAGE scope exists before Sheet Matcher.  Load only
         # the text index needed by Stage 2 here; candidate matching itself runs
         # after both main branches and is advisory.
+        text_started_at = utc_now()
+        text_started_perf = time.perf_counter()
+        publish_progress(
+            current_stage="content_analysis",
+            current_substage="text_preparation",
+            message="Подготовка данных выбранных страниц…",
+            stage_key="text",
+            stage_status="RUNNING",
+            stage_started_at=text_started_at,
+        )
         try:
             indexes = _production_sheet_indexes(pair)
             page_index_error = None
@@ -2666,10 +3025,41 @@ def _run_production_comparison_impl(
         sheet_status = "PENDING_ADVISORY"
         groups = copy.deepcopy(page_groups or [])
     else:
+        sheet_started_at = utc_now()
+        sheet_started_perf = time.perf_counter()
+        publish_progress(
+            current_stage="sheet_matching",
+            current_substage="sheet_candidate_matching",
+            message="Сопоставление листов документов…",
+            stage_key="sheet_matching",
+            stage_status="RUNNING",
+            stage_started_at=sheet_started_at,
+        )
         sheet_relations, indexes = _run_sheet_matcher(pair)
         sheet_status = "COMPLETED"
+        sheet_completed_at = utc_now()
+        sheet_units = len(indexes.get("left") or [])
         production_store.save_artifact(
             session_id, pair_id, "sheet_relations", sheet_relations
+        )
+        publish_progress(
+            current_stage="sheet_matching",
+            current_substage="sheet_scope",
+            message="Сопоставление листов завершено.",
+            processed=sheet_units,
+            total=sheet_units,
+            unit="left_sheets",
+            duration_ms=max(
+                0, int((time.perf_counter() - sheet_started_perf) * 1000)
+            ),
+            stage_key="sheet_matching",
+            stage_status="COMPLETED",
+            stage_started_at=sheet_started_at,
+            stage_completed_at=sheet_completed_at,
+            stage_update={
+                "relations": len(sheet_relations.get("relations") or []),
+                "relation_counts": _sheet_relation_counts(sheet_relations),
+            },
         )
         sheet_only_questions = _build_review_questions(
             sheet_relations=sheet_relations,
@@ -2687,6 +3077,8 @@ def _run_production_comparison_impl(
             sheet_relations, sheet_only_application
         )
         groups = list(sheet_scope_projection["groups"])
+        text_started_at = utc_now()
+        text_started_perf = time.perf_counter()
 
     text_atoms: list[dict[str, Any]] = []
     text_stage: dict[str, Any]
@@ -2698,6 +3090,26 @@ def _run_production_comparison_impl(
     existing_semantic = production_store.load_artifact(
         session_id, pair_id, "text_semantic_validation"
     )
+    assert text_started_at is not None and text_started_perf is not None
+
+    def report_text_boundary(*, substage: str, message: str) -> None:
+        try:
+            publish_progress(
+                current_stage="content_analysis",
+                current_substage=substage,
+                message=message,
+                duration_ms=max(
+                    0, int((time.perf_counter() - text_started_perf) * 1000)
+                ),
+                stage_key="text",
+                stage_status="RUNNING",
+                stage_started_at=text_started_at,
+            )
+        except Exception as exc:
+            raise ProductionProgressPublicationError(
+                "TEXT progress publication failed"
+            ) from exc
+
     try:
         document_cache_dir = (
             production_store.artifact_path(
@@ -2707,20 +3119,26 @@ def _run_production_comparison_impl(
             if request["input_mode"] == "DOCUMENT"
             else None
         )
-        (
-            preparation,
-            differences,
-            fact_production,
-            semantic,
-            atom_artifact,
-        ) = _run_text_branch(
-            pair,
-            pair_id,
-            groups,
-            indexes,
-            existing_semantic,
-            document_cache_dir=document_cache_dir,
+        text_progress_token = _TEXT_PROGRESS_CALLBACK.set(
+            report_text_boundary
         )
+        try:
+            (
+                preparation,
+                differences,
+                fact_production,
+                semantic,
+                atom_artifact,
+            ) = _run_text_branch(
+                pair,
+                pair_id,
+                groups,
+                indexes,
+                existing_semantic,
+                document_cache_dir=document_cache_dir,
+            )
+        finally:
+            _TEXT_PROGRESS_CALLBACK.reset(text_progress_token)
         production_store.save_artifact(
             session_id, pair_id, "text_preparation", preparation
         )
@@ -2768,11 +3186,103 @@ def _run_production_comparison_impl(
             "error_type": type(exc).__name__,
         }
 
-    graphic_ledger = None
-    try:
-        graphic_ledger, graphic_stage = _run_graphic_branch(
-            session_id, pair_id, pair, request, groups
+    text_completed_at = utc_now()
+    text_duration_ms = max(
+        0, int((time.perf_counter() - text_started_perf) * 1000)
+    )
+    text_terminal_count = (
+        int(text_stage.get("deltas") or 0)
+        if text_stage.get("status") == "COMPLETED"
+        else None
+    )
+    text_progress_state = publish_progress(
+        current_stage="content_analysis",
+        current_substage="text_change_formation",
+        message=(
+            "Текстовый анализ завершён."
+            if text_stage.get("status") == "COMPLETED"
+            else "Текстовый анализ завершён с ограничениями."
+        ),
+        processed=text_terminal_count,
+        total=text_terminal_count,
+        unit="differences" if text_terminal_count is not None else None,
+        duration_ms=text_duration_ms,
+        stage_key="text",
+        stage_status=str(text_stage.get("status") or "CHECK_BLOCKED"),
+        stage_started_at=text_started_at,
+        stage_completed_at=text_completed_at,
+        stage_update=text_stage,
+    )
+    persisted_text_stage = (
+        (text_progress_state.get("stages") or {}).get("text") or {}
+    )
+    if isinstance(persisted_text_stage.get("progress"), Mapping):
+        text_stage["progress"] = copy.deepcopy(
+            dict(persisted_text_stage["progress"])
         )
+
+    graphic_ledger = None
+    graphic_started_at = utc_now()
+    graphic_started_perf = time.perf_counter()
+    graphic_group_count = len(groups)
+    graphic_determinate = graphic_group_count > 1
+    publish_progress(
+        current_stage="content_analysis",
+        current_substage="graphic_method_selection",
+        message="Выбор метода графического сравнения…",
+        processed=0 if graphic_determinate else None,
+        total=graphic_group_count if graphic_determinate else None,
+        unit="groups" if graphic_determinate else None,
+        stage_key="graphic",
+        stage_status="RUNNING",
+        stage_started_at=graphic_started_at,
+    )
+
+    def report_graphic_progress(
+        *,
+        processed: int | None,
+        total: int | None,
+        unit: str | None,
+        current_item: Mapping[str, Any] | None,
+        recent_unit_durations_ms: Iterable[int],
+        message: str,
+    ) -> None:
+        try:
+            publish_progress(
+                current_stage="content_analysis",
+                current_substage=(
+                    "graphic_structural_comparison"
+                    if request["input_mode"] == "PAGE"
+                    else "graphic_group_comparison"
+                ),
+                message=message,
+                processed=processed,
+                total=total,
+                unit=unit,
+                duration_ms=max(
+                    0, int((time.perf_counter() - graphic_started_perf) * 1000)
+                ),
+                current_item=current_item,
+                recent_unit_durations_ms=recent_unit_durations_ms,
+                stage_key="graphic",
+                stage_status="RUNNING",
+                stage_started_at=graphic_started_at,
+            )
+        except Exception as exc:
+            raise ProductionProgressPublicationError(
+                "GRAPHIC progress publication failed"
+            ) from exc
+
+    try:
+        graphic_progress_token = _GRAPHIC_PROGRESS_CALLBACK.set(
+            report_graphic_progress
+        )
+        try:
+            graphic_ledger, graphic_stage = _run_graphic_branch(
+                session_id, pair_id, pair, request, groups
+            )
+        finally:
+            _GRAPHIC_PROGRESS_CALLBACK.reset(graphic_progress_token)
     except (FileNotFoundError, OSError, UnicodeDecodeError, ValueError, RuntimeError) as exc:
         graphic_stage = {
             "status": "CHECK_BLOCKED",
@@ -2781,7 +3291,55 @@ def _run_production_comparison_impl(
             "reason_code": type(exc).__name__,
         }
 
+    graphic_completed_at = utc_now()
+    graphic_duration_ms = max(
+        0, int((time.perf_counter() - graphic_started_perf) * 1000)
+    )
+    latest_graphic_progress = progress_snapshots.get("graphic") or {}
+    graphic_progress_state = publish_progress(
+        current_stage="content_analysis",
+        current_substage=(
+            "graphic_structural_comparison"
+            if request["input_mode"] == "PAGE"
+            else "graphic_group_comparison"
+        ),
+        message=(
+            "Графический анализ завершён."
+            if graphic_stage.get("status") == "COMPLETED"
+            else "Графический анализ завершён с ограничениями."
+        ),
+        processed=graphic_group_count if graphic_determinate else None,
+        total=graphic_group_count if graphic_determinate else None,
+        unit="groups" if graphic_determinate else None,
+        duration_ms=graphic_duration_ms,
+        recent_unit_durations_ms=(
+            latest_graphic_progress.get("recent_unit_durations_ms") or []
+        ),
+        stage_key="graphic",
+        stage_status=str(graphic_stage.get("status") or "CHECK_BLOCKED"),
+        stage_started_at=graphic_started_at,
+        stage_completed_at=graphic_completed_at,
+        stage_update=graphic_stage,
+    )
+    persisted_graphic_stage = (
+        (graphic_progress_state.get("stages") or {}).get("graphic") or {}
+    )
+    if isinstance(persisted_graphic_stage.get("progress"), Mapping):
+        graphic_stage["progress"] = copy.deepcopy(
+            dict(persisted_graphic_stage["progress"])
+        )
+
     if request["input_mode"] == "PAGE":
+        sheet_started_at = utc_now()
+        sheet_started_perf = time.perf_counter()
+        publish_progress(
+            current_stage="sheet_matching",
+            current_substage="page_sheet_advisory",
+            message="Проверка рекомендаций сопоставления листов…",
+            stage_key="sheet_matching",
+            stage_status="RUNNING",
+            stage_started_at=sheet_started_at,
+        )
         try:
             if indexes.get("left") or indexes.get("right"):
                 sheet_relations = match_sheets(
@@ -2799,8 +3357,33 @@ def _run_production_comparison_impl(
             sheet_relations.setdefault("diagnostics", {})["reason_code"] = (
                 type(reason).__name__
             )
+        sheet_completed_at = utc_now()
+        sheet_units = len(indexes.get("left") or [])
         production_store.save_artifact(
             session_id, pair_id, "sheet_relations", sheet_relations
+        )
+        publish_progress(
+            current_stage="sheet_matching",
+            current_substage="page_sheet_advisory",
+            message=(
+                "Рекомендации сопоставления листов готовы."
+                if sheet_status == "COMPLETED"
+                else "Рекомендации сопоставления листов недоступны."
+            ),
+            processed=sheet_units if sheet_status == "COMPLETED" else None,
+            total=sheet_units if sheet_status == "COMPLETED" else None,
+            unit="left_sheets" if sheet_status == "COMPLETED" else None,
+            duration_ms=max(
+                0, int((time.perf_counter() - sheet_started_perf) * 1000)
+            ),
+            stage_key="sheet_matching",
+            stage_status=sheet_status,
+            stage_started_at=sheet_started_at,
+            stage_completed_at=sheet_completed_at,
+            stage_update={
+                "relations": len(sheet_relations.get("relations") or []),
+                "relation_counts": _sheet_relation_counts(sheet_relations),
+            },
         )
         sheet_suggestions = _filter_page_suggestions(
             page_selection_suggestions(
@@ -2845,6 +3428,16 @@ def _run_production_comparison_impl(
         session_id, pair_id, "source_snapshot", source_snapshot
     )
 
+    entity_started_at = utc_now()
+    entity_started_perf = time.perf_counter()
+    publish_progress(
+        current_stage="entity_matching",
+        current_substage="entity_matching",
+        message="Сопоставление объектов…",
+        stage_key="entity_matching",
+        stage_status="RUNNING",
+        stage_started_at=entity_started_at,
+    )
     entity_relations = _run_entity_matcher(text_atoms, graphic_atoms)
     production_store.save_artifact(
         session_id, pair_id, "entity_relations", entity_relations
@@ -2854,6 +3447,27 @@ def _run_production_comparison_impl(
     )
     production_store.save_artifact(
         session_id, pair_id, "bound_atoms", bound_atoms
+    )
+    entity_completed_at = utc_now()
+    entity_relation_count = len(entity_relations.get("relations") or [])
+    publish_progress(
+        current_stage="entity_matching",
+        current_substage="entity_binding",
+        message="Сопоставление объектов завершено.",
+        processed=entity_relation_count,
+        total=entity_relation_count,
+        unit="relations",
+        duration_ms=max(
+            0, int((time.perf_counter() - entity_started_perf) * 1000)
+        ),
+        stage_key="entity_matching",
+        stage_status="COMPLETED",
+        stage_started_at=entity_started_at,
+        stage_completed_at=entity_completed_at,
+        stage_update={
+            "relations": entity_relation_count,
+            **_artifact_state(entity_relations),
+        },
     )
     synthesis_text_atoms = list(bound_atoms.get("text_atoms") or [])
     synthesis_graphic_atoms = list(bound_atoms.get("graphic_atoms") or [])
@@ -2865,6 +3479,16 @@ def _run_production_comparison_impl(
     semantic_mode2_checked = (
         graphic_stage.get("status") == "COMPLETED"
         and graphic_stage.get("mode") == "MODE_2"
+    )
+    synthesis_started_at = utc_now()
+    synthesis_started_perf = time.perf_counter()
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="automatic_synthesis",
+        message="Синтез автоматических изменений…",
+        stage_key="unified_synthesis",
+        stage_status="RUNNING",
+        stage_started_at=synthesis_started_at,
     )
     candidates = _build_synthesis_candidates(
         synthesis_text_atoms,
@@ -2900,6 +3524,17 @@ def _run_production_comparison_impl(
         pair_id,
         "automatic_unified_synthesis",
         automatic_synthesis,
+    )
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="review_application",
+        message="Применение актуальных ответов перед синтезом…",
+        duration_ms=max(
+            0, int((time.perf_counter() - synthesis_started_perf) * 1000)
+        ),
+        stage_key="unified_synthesis",
+        stage_status="RUNNING",
+        stage_started_at=synthesis_started_at,
     )
     base_questions = _build_review_questions(
         sheet_relations=sheet_relations,
@@ -2938,6 +3573,17 @@ def _run_production_comparison_impl(
             this_update_reran=page_scope_rerun,
             rerun_question_ids=page_rerun_question_ids,
         )
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="effective_synthesis",
+        message="Синтез изменений с учётом актуальных ответов…",
+        duration_ms=max(
+            0, int((time.perf_counter() - synthesis_started_perf) * 1000)
+        ),
+        stage_key="unified_synthesis",
+        stage_status="RUNNING",
+        stage_started_at=synthesis_started_at,
+    )
     projection_state = {
         **base_state,
         "stages": {
@@ -2968,7 +3614,43 @@ def _run_production_comparison_impl(
     synthesis = production_store.save_unified_synthesis(
         session_id, pair_id, synthesis
     )
+    synthesis_completed_at = utc_now()
+    synthesis_target_count = (
+        len(synthesis.get("changes") or [])
+        + len(synthesis.get("review_items") or [])
+    )
+    publish_progress(
+        current_stage="unified_synthesis",
+        current_substage="effective_synthesis",
+        message="Синтез изменений завершён.",
+        processed=synthesis_target_count,
+        total=synthesis_target_count,
+        unit="atomic_targets",
+        duration_ms=max(
+            0, int((time.perf_counter() - synthesis_started_perf) * 1000)
+        ),
+        stage_key="unified_synthesis",
+        stage_status="COMPLETED",
+        stage_started_at=synthesis_started_at,
+        stage_completed_at=synthesis_completed_at,
+        stage_update={
+            "changes": len(synthesis.get("changes") or []),
+            "review_items": len(synthesis.get("review_items") or []),
+            "input_signature": canonical_synthesis_digest(synthesis),
+            "present": True,
+        },
+    )
     decisions = _refresh_decisions(session_id, pair_id, synthesis)
+    questions_started_at = utc_now()
+    questions_started_perf = time.perf_counter()
+    publish_progress(
+        current_stage="review_questions",
+        current_substage="question_generation",
+        message="Публикация вопросов инженеру…",
+        stage_key="review_questions",
+        stage_status="RUNNING",
+        stage_started_at=questions_started_at,
+    )
     questions = _build_review_questions(
         sheet_relations=sheet_relations,
         sheet_suggestions=sheet_suggestions,
@@ -2989,19 +3671,104 @@ def _run_production_comparison_impl(
     production_store.save_artifact(
         session_id, pair_id, "review_questions", questions
     )
+    questions_completed_at = utc_now()
+    question_stage = _review_question_stage(questions)
+    question_progress_state = publish_progress(
+        current_stage="review_questions",
+        current_substage="question_generation",
+        message=(
+            "Вопросы инженеру сформированы."
+            if question_stage["pending"]
+            else "Вопросов, требующих ответа, нет."
+        ),
+        processed=question_stage["answered"],
+        total=question_stage["total"],
+        unit="questions",
+        duration_ms=max(
+            0, int((time.perf_counter() - questions_started_perf) * 1000)
+        ),
+        stage_key="review_questions",
+        stage_status=question_stage["status"],
+        stage_started_at=questions_started_at,
+        stage_completed_at=questions_completed_at,
+        stage_update=question_stage,
+    )
+    persisted_question_stage = (
+        (question_progress_state.get("stages") or {}).get("review_questions")
+        or {}
+    )
+    if isinstance(persisted_question_stage.get("progress"), Mapping):
+        question_stage["progress"] = copy.deepcopy(
+            dict(persisted_question_stage["progress"])
+        )
+    final_report_started_at = utc_now()
+    final_report_started_perf = time.perf_counter()
+    publish_progress(
+        current_stage="final_report",
+        current_substage="approved_report_projection",
+        message="Обновление итогового отчёта…",
+        stage_key="final_report",
+        stage_status="RUNNING",
+        stage_started_at=final_report_started_at,
+    )
     final_report = _persist_latest_final_report(
         session_id, pair_id, synthesis, decisions
+    )
+    final_report_completed_at = utc_now()
+    approved_count = len(final_report.get("approved_atomic_changes") or [])
+    final_report_progress_state = publish_progress(
+        current_stage="final_report",
+        current_substage="approved_report_projection",
+        message="Итоговый отчёт обновлён.",
+        processed=approved_count,
+        total=approved_count,
+        unit="approved_changes",
+        duration_ms=max(
+            0, int((time.perf_counter() - final_report_started_perf) * 1000)
+        ),
+        stage_key="final_report",
+        stage_status="COMPLETED",
+        stage_started_at=final_report_started_at,
+        stage_completed_at=final_report_completed_at,
+        stage_update={
+            "approved": approved_count,
+            "content_digest": content_signature(final_report),
+            **_artifact_state(final_report),
+        },
+    )
+    persisted_final_report_stage = (
+        (final_report_progress_state.get("stages") or {}).get("final_report")
+        or {}
+    )
+    final_report_progress = (
+        copy.deepcopy(dict(persisted_final_report_stage["progress"]))
+        if isinstance(persisted_final_report_stage.get("progress"), Mapping)
+        else None
     )
 
     partial = any(
         stage.get("status") in {"CHECK_BLOCKED", "NOT_APPLICABLE", "NOT_CHECKED"}
         for stage in (text_stage, graphic_stage)
     )
+    completed_at = utc_now()
+    run_duration_ms = max(
+        0, int((time.perf_counter() - run_started_perf) * 1000)
+    )
     final_state = {
         **base_state,
         "status": "PARTIAL" if partial else "COMPLETED",
         "progress": 100,
-        "completed_at": utc_now(),
+        "completed_at": completed_at,
+        "last_activity_at": completed_at,
+        "current_stage": None,
+        "current_substage": None,
+        "message": None,
+        "processed": None,
+        "total": None,
+        "unit": None,
+        "current_item": None,
+        "recent_unit_durations_ms": [],
+        "duration_ms": run_duration_ms,
         "sheet_suggestions": sheet_suggestions,
         "stages": {
             "sheet_matching": {
@@ -3009,6 +3776,11 @@ def _run_production_comparison_impl(
                 "relations": len(sheet_relations.get("relations") or []),
                 "relation_counts": _sheet_relation_counts(sheet_relations),
                 **_artifact_state(sheet_relations),
+                **(
+                    {"progress": progress_snapshots["sheet_matching"]}
+                    if "sheet_matching" in progress_snapshots
+                    else {}
+                ),
             },
             "sheet_scope": {
                 "status": "COMPLETED",
@@ -3059,6 +3831,11 @@ def _run_production_comparison_impl(
                 "status": "COMPLETED",
                 "relations": len(entity_relations.get("relations") or []),
                 **_artifact_state(entity_relations),
+                **(
+                    {"progress": progress_snapshots["entity_matching"]}
+                    if "entity_matching" in progress_snapshots
+                    else {}
+                ),
             },
             "entity_binding": {
                 "status": "COMPLETED",
@@ -3077,11 +3854,7 @@ def _run_production_comparison_impl(
                 ),
                 **_artifact_state(effective_bound_atoms),
             },
-            "review_questions": {
-                "status": "COMPLETED",
-                "questions": len(questions.get("questions") or []),
-                **_artifact_state(questions),
-            },
+            "review_questions": question_stage,
             "review_application": {
                 "status": "COMPLETED",
                 "applied_decisions": len(
@@ -3106,6 +3879,11 @@ def _run_production_comparison_impl(
                 "review_items": len(synthesis.get("review_items") or []),
                 "input_signature": canonical_synthesis_digest(synthesis),
                 "present": True,
+                **(
+                    {"progress": progress_snapshots["unified_synthesis"]}
+                    if "unified_synthesis" in progress_snapshots
+                    else {}
+                ),
             },
             "engineer_decisions": {
                 "status": "READY",
@@ -3119,6 +3897,11 @@ def _run_production_comparison_impl(
                 "approved": len(final_report.get("approved_atomic_changes") or []),
                 "content_digest": content_signature(final_report),
                 **_artifact_state(final_report),
+                **(
+                    {"progress": final_report_progress}
+                    if final_report_progress is not None
+                    else {}
+                ),
             },
         },
     }
@@ -3174,11 +3957,49 @@ def _run_production_comparison_locked(
             "RUNNING",
             "UPDATING",
         }:
+            failed_at = utc_now()
+            failed_stage = current.get("current_stage")
+            failed_substage = current.get("current_substage")
+            stages = copy.deepcopy(current.get("stages") or {})
+            for stage in stages.values():
+                if not isinstance(stage, dict):
+                    continue
+                stage_progress = stage.get("progress")
+                if not isinstance(stage_progress, Mapping):
+                    continue
+                if stage_progress.get("status") != "RUNNING":
+                    continue
+                progress = copy.deepcopy(dict(stage_progress))
+                progress.update({
+                    "status": "FAILED",
+                    "completed_at": failed_at,
+                    "last_activity_at": failed_at,
+                    "message": "Этап завершён ошибкой.",
+                    "duration_ms": _duration_ms_since(
+                        progress.get("started_at")
+                    ),
+                })
+                stage["progress"] = progress
+                if stage.get("status") == "RUNNING":
+                    stage["status"] = "FAILED"
             failed = {
                 **current,
                 "status": "FAILED",
                 "progress": 100,
-                "failed_at": utc_now(),
+                "failed_at": failed_at,
+                "failed_stage": failed_stage,
+                "failed_substage": failed_substage,
+                "last_activity_at": failed_at,
+                "current_stage": None,
+                "current_substage": None,
+                "message": None,
+                "processed": None,
+                "total": None,
+                "unit": None,
+                "current_item": None,
+                "recent_unit_durations_ms": [],
+                "duration_ms": _duration_ms_since(current.get("started_at")),
+                "stages": stages,
                 # Never persist an exception message here: file locators are
                 # private and some dependency errors include absolute paths.
                 "reason_code": type(exc).__name__,
@@ -3225,6 +4046,17 @@ def _empty_state(session_id: str, pair_id: str) -> dict[str, Any]:
         "status": "NOT_STARTED",
         "progress": 0,
         "stale": False,
+        "started_at": None,
+        "last_activity_at": None,
+        "current_stage": None,
+        "current_substage": None,
+        "message": None,
+        "processed": None,
+        "total": None,
+        "unit": None,
+        "current_item": None,
+        "recent_unit_durations_ms": [],
+        "duration_ms": None,
         "stages": {},
         "constraints": {
             "new_flow": True,
@@ -3232,6 +4064,9 @@ def _empty_state(session_id: str, pair_id: str) -> dict[str, Any]:
             "legacy_stage53_used": False,
             "parent_relation_required": False,
             "sheet_matcher_is_page_gate": False,
+            "activity_warning_threshold_sec": (
+                _progress_activity_warning_sec()
+            ),
         },
     }
 
@@ -3243,6 +4078,25 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     if not state:
         return _empty_state(session_id, pair_id)
     public = copy.deepcopy(state)
+    for key, default in {
+        "current_stage": None,
+        "current_substage": None,
+        "message": None,
+        "processed": None,
+        "total": None,
+        "unit": None,
+        "current_item": None,
+        "recent_unit_durations_ms": [],
+        "last_activity_at": None,
+        "duration_ms": None,
+    }.items():
+        public.setdefault(key, copy.deepcopy(default))
+    constraints = dict(public.get("constraints") or {})
+    constraints.setdefault(
+        "activity_warning_threshold_sec",
+        _progress_activity_warning_sec(),
+    )
+    public["constraints"] = constraints
     request = public.get("selection")
     stale = True
     if isinstance(request, Mapping):
@@ -3714,6 +4568,7 @@ def _publish_derived_state(
 ) -> dict[str, Any]:
     stages = copy.deepcopy(state.get("stages") or {})
     stages["unified_synthesis"] = {
+        **dict(stages.get("unified_synthesis") or {}),
         "status": "COMPLETED",
         "changes": len(synthesis.get("changes") or []),
         "review_items": len(synthesis.get("review_items") or []),
@@ -3721,6 +4576,7 @@ def _publish_derived_state(
         "present": True,
     }
     stages["engineer_decisions"] = {
+        **dict(stages.get("engineer_decisions") or {}),
         "status": "READY",
         "counts": decisions.get("counts") or {},
         "revision": int(decisions.get("revision") or 0),
@@ -3728,6 +4584,7 @@ def _publish_derived_state(
         **_artifact_state(decisions),
     }
     stages["final_report"] = {
+        **dict(stages.get("final_report") or {}),
         "status": "READY",
         "approved": len(report.get("approved_atomic_changes") or []),
         "content_digest": content_signature(report),
@@ -4372,11 +5229,25 @@ def _update_review_answers_locked(
         ),
         **_artifact_state(effective_bound_atoms),
     }
-    publication_stages["review_questions"] = {
-        "status": "COMPLETED",
-        "questions": len(updated_questions.get("questions") or []),
-        **_artifact_state(updated_questions),
-    }
+    updated_question_stage = _review_question_stage(updated_questions)
+    existing_question_progress = (
+        publication_stages.get("review_questions") or {}
+    ).get("progress")
+    if isinstance(existing_question_progress, Mapping):
+        question_progress = copy.deepcopy(dict(existing_question_progress))
+        question_progress.update({
+            "status": updated_question_stage["status"],
+            "processed": updated_question_stage["answered"],
+            "total": updated_question_stage["total"],
+            "unit": "questions",
+            "message": (
+                "Ожидаются ответы инженера."
+                if updated_question_stage["pending"]
+                else "Все вопросы инженеру обработаны."
+            ),
+        })
+        updated_question_stage["progress"] = question_progress
+    publication_stages["review_questions"] = updated_question_stage
     publication_stages["review_application"] = {
         "status": "COMPLETED",
         "applied_decisions": len(application.get("applied_decision_ids") or []),
