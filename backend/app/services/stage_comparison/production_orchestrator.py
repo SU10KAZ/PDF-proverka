@@ -1562,6 +1562,11 @@ def _entity_records(
             continue
         for side, value_key in (("LEFT", "before_value"), ("RIGHT", "after_value")):
             value = atom.get(value_key)
+            if value is None:
+                # ADDED/REMOVED evidence proves an entity on only one side.
+                # Creating the absent counterpart fabricates an identity
+                # candidate and produces a needless engineer question.
+                continue
             merge_record(
                 side,
                 subject,

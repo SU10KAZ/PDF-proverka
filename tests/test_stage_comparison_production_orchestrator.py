@@ -3324,6 +3324,26 @@ def test_exact_entity_binding_reaches_g246_and_merges_both_sources():
     assert synthesis["changes"][0]["source_mode"] == "BOTH"
 
 
+def test_entity_records_do_not_invent_counterparts_for_added_or_removed_atoms():
+    added = _atom("added", "TEXT")
+    added.update({
+        "subject_ref": "panel:new",
+        "before_value": None,
+        "after_value": "380 V",
+    })
+    removed = _atom("removed", "TEXT")
+    removed.update({
+        "subject_ref": "panel:old",
+        "before_value": "220 V",
+        "after_value": None,
+    })
+
+    left, right = orchestrator._entity_records([added, removed], [])
+
+    assert [item["entity_ref"] for item in left] == ["panel:old"]
+    assert [item["entity_ref"] for item in right] == ["panel:new"]
+
+
 def test_pipeline_stage_metadata_is_truthful_and_skips_superseded_candidates():
     relations = {
         "relations": [
