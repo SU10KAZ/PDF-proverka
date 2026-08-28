@@ -25,6 +25,7 @@
 """
 from __future__ import annotations
 
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -62,7 +63,12 @@ ProgressCallback = Callable[[dict[str, Any]], None]
 
 @dataclass
 class _Budget:
-    """Живой счётчик пределов прогона. Исчерпание — не ошибка, а остановка."""
+    """Живой счётчик пределов прогона. Исчерпание — не ошибка, а остановка.
+
+    Партии идут параллельно, поэтому «проверить и занять» обязано быть одной
+    операцией: иначе четыре потока одновременно увидят последний свободный
+    слот и займут его вчетвером.
+    """
 
     max_items: int
     max_batches: int
@@ -73,33 +79,33 @@ class _Budget:
     critic_passes: int = 0
     vision_items: int = 0
     exhausted_reasons: set[str] = field(default_factory=set)
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def out_of_time(self) -> bool:
         if time.monotonic() > self.deadline:
-            self.exhausted_reasons.add("max_session_seconds")
+            with self._lock:
+                self.exhausted_reasons.add("max_session_seconds")
             return True
         return False
 
+    def _take(self, field_name: str, limit: int, reason: str) -> bool:
+        with self._lock:
+            if getattr(self, field_name) >= limit:
+                self.exhausted_reasons.add(reason)
+                return False
+            setattr(self, field_name, getattr(self, field_name) + 1)
+            return True
+
     def take_batch(self) -> bool:
-        if self.batches_started >= self.max_batches:
-            self.exhausted_reasons.add("max_batches")
-            return False
-        self.batches_started += 1
-        return True
+        return self._take("batches_started", self.max_batches, "max_batches")
 
     def take_critic(self) -> bool:
-        if self.critic_passes >= self.max_critic_passes:
-            self.exhausted_reasons.add("max_critic_passes")
-            return False
-        self.critic_passes += 1
-        return True
+        return self._take(
+            "critic_passes", self.max_critic_passes, "max_critic_passes"
+        )
 
     def take_vision(self) -> bool:
-        if self.vision_items >= self.max_vision_items:
-            self.exhausted_reasons.add("max_vision_items")
-            return False
-        self.vision_items += 1
-        return True
+        return self._take("vision_items", self.max_vision_items, "max_vision_items")
 
 
 def _audit(
@@ -221,6 +227,7 @@ class AiResolutionLayer:
         # рисовать нечего, и это честнее, чем звать модель без картинки.
         self.pdf_paths = dict(pdf_paths or {})
         self.graphic_route = graphic_route
+        self._counters = threading.Lock()
         self.model_calls = 0
         self.failures = 0
         self.timeouts = 0
@@ -263,12 +270,14 @@ class AiResolutionLayer:
             system_prompt=system_prompt,
             images=list(images),
         )
-        self.model_calls += 1
+        with self._counters:
+            self.model_calls += 1
+            if not result.ok:
+                if result.error_kind == "TIMEOUT":
+                    self.timeouts += 1
+                else:
+                    self.failures += 1
         if not result.ok:
-            if result.error_kind == "TIMEOUT":
-                self.timeouts += 1
-            else:
-                self.failures += 1
             return None, result, False
         self.cache.store(
             key,
@@ -533,7 +542,8 @@ class AiResolutionLayer:
             shutil.rmtree(workdir, ignore_errors=True)
         if payload is None:
             return None
-        self.vision_calls += 1
+        with self._counters:
+            self.vision_calls += 1
         verdict = str(payload.get("verdict") or "")
         vision_record = {
             "verdict": verdict,

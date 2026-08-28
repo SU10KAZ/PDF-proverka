@@ -1893,7 +1893,7 @@ def _ai_change_resolutions(
     ai_resolutions: Mapping[str, Any] | None,
     synthesis: Mapping[str, Any] | None,
     human_targets: set[str],
-) -> tuple[list[dict[str, Any]], list[str]]:
+) -> tuple[list[dict[str, Any]], list[str], list[str]]:
     """Machine resolutions as change resolutions — never as human answers.
 
     Only items the AI layer marked resolved and typed reach this point, and
@@ -1902,7 +1902,7 @@ def _ai_change_resolutions(
     fail the downstream guard.
     """
     if not isinstance(ai_resolutions, Mapping):
-        return [], []
+        return [], [], []
     scope_by_review: dict[str, Any] = {}
     for item in (synthesis or {}).get("review_items") or []:
         if isinstance(item, Mapping):
@@ -1912,6 +1912,7 @@ def _ai_change_resolutions(
     published = set(scope_by_review)
     applied: list[dict[str, Any]] = []
     overridden: list[str] = []
+    rejected: list[str] = []
     for value in ai_resolutions.get("resolutions") or []:
         if not isinstance(value, Mapping) or value.get("status") != "AI_RESOLVED":
             continue
@@ -1935,9 +1936,15 @@ def _ai_change_resolutions(
                 "scope_ref": scope_by_review.get(review_ref),
             },
         }
-        normalized = _normalize_typed_resolution(
-            question, {"typed_resolution": dict(typed)}
-        )
+        try:
+            normalized = _normalize_typed_resolution(
+                question, {"typed_resolution": dict(typed)}
+            )
+        except ValueError:
+            # Кривой машинный ответ не имеет права остановить работу инженера:
+            # он просто не применяется, а элемент остаётся человеку.
+            rejected.append(review_ref)
+            continue
         applied.append({
             "question_id": question["question_id"],
             "dependency_refs": [review_ref],
@@ -1956,7 +1963,7 @@ def _ai_change_resolutions(
             },
         })
     applied.sort(key=lambda item: str(item["question_id"]))
-    return applied, sorted(set(overridden))
+    return applied, sorted(set(overridden)), sorted(set(rejected))
 
 
 def apply_human_decisions(
@@ -2222,7 +2229,7 @@ def apply_human_decisions(
         for item in change_resolutions
         for ref in item.get("dependency_refs") or []
     }
-    ai_applied, ai_overridden = _ai_change_resolutions(
+    ai_applied, ai_overridden, ai_malformed = _ai_change_resolutions(
         ai_resolutions, synthesis, human_change_targets
     )
     change_resolutions.extend(ai_applied)
@@ -2273,6 +2280,7 @@ def apply_human_decisions(
             "ai_resolutions_applied": len(ai_applied),
             "ai_resolutions_overridden_by_human": len(ai_overridden),
             "ai_overridden_review_evidence_ids": ai_overridden,
+            "ai_resolutions_malformed": len(ai_malformed),
             "uses_model": bool(ai_applied),
         },
     }

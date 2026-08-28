@@ -251,3 +251,25 @@ def test_the_machine_never_marks_a_finding_approved():
     assert final["approved_atomic_changes"][0]["engineer_decision"]["author"] == (
         "Андрей Иванович"
     )
+
+
+def test_a_malformed_machine_answer_cannot_stop_the_engineer():
+    """Кривое разрешение не применяется — и не роняет применение остальных."""
+    synthesis = _synthesis()
+    review_id = _review_id(synthesis)
+    broken = _ai_artifact(review_id)
+    # outcome=REVIEW_REQUIRED в типизированном ответе запрещён контрактом:
+    # он не разрешает вопрос, а сохраняет его.
+    broken["resolutions"][0]["typed_resolution"]["outcome"] = "REVIEW_REQUIRED"
+
+    application = apply_human_decisions(
+        _queue(synthesis, broken),
+        {"decisions": [], "input_signature": None},
+        synthesis=synthesis,
+        ai_resolutions=broken,
+        generated_at="fixed",
+    )
+
+    assert application["change_resolutions"] == []
+    assert application["diagnostics"]["ai_resolutions_malformed"] == 1
+    assert application["diagnostics"]["ai_resolutions_applied"] == 0

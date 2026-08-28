@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import threading
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -47,6 +48,8 @@ class ResponseCache:
 
     def __init__(self, directory: Path | str | None) -> None:
         self.directory = Path(directory) if directory else None
+        # Партии читают и пишут кэш параллельно; счётчики без замка врут.
+        self._lock = threading.Lock()
         self.hits = 0
         self.misses = 0
         self.writes = 0
@@ -66,7 +69,8 @@ class ResponseCache:
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
-            self.misses += 1
+            with self._lock:
+                self.misses += 1
             return None
         if (
             not isinstance(payload, Mapping)
@@ -74,9 +78,11 @@ class ResponseCache:
             or payload.get("schema_version") != CACHE_SCHEMA_VERSION
             or payload.get("cache_key") != key
         ):
-            self.misses += 1
+            with self._lock:
+                self.misses += 1
             return None
-        self.hits += 1
+        with self._lock:
+            self.hits += 1
         value = payload.get("response")
         return dict(value) if isinstance(value, Mapping) else None
 
@@ -100,7 +106,8 @@ class ResponseCache:
             with os.fdopen(handle, "w", encoding="utf-8") as stream:
                 json.dump(payload, stream, ensure_ascii=False)
             os.replace(temporary, self._path(key))
-            self.writes += 1
+            with self._lock:
+                self.writes += 1
         except OSError:
             return
 
