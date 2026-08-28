@@ -89,12 +89,30 @@ def _split_long_paragraph(text: str, maximum: int = 520) -> list[str]:
     return result
 
 
-def parse_markdown_fragments(markdown: str, stage: str) -> list[dict[str, Any]]:
-    """Read only real TEXT blocks and retain rows/paragraphs as separate units."""
+def parse_markdown_fragments(
+    markdown: str,
+    stage: str,
+    *,
+    selected_pages: Iterable[int] | None = None,
+) -> list[dict[str, Any]]:
+    """Read real TEXT blocks and retain rows/paragraphs as separate units.
+
+    ``selected_pages`` is deliberately applied before block parsing.  PAGE
+    production runs therefore do not build (and, later, do not locate) text
+    fragments for unrelated sheets.  Omitting it preserves the document-wide
+    extraction used by legacy callers and the DOCUMENT cache.
+    """
+    page_filter = (
+        {int(page) for page in selected_pages}
+        if selected_pages is not None
+        else None
+    )
     pages = list(_PAGE_RE.finditer(markdown or ""))
     raw_fragments: list[dict[str, Any]] = []
     for page_index, page_match in enumerate(pages):
         pdf_page = int(page_match.group(1))
+        if page_filter is not None and pdf_page not in page_filter:
+            continue
         page_end = pages[page_index + 1].start() if page_index + 1 < len(pages) else len(markdown)
         page_body = markdown[page_match.end():page_end]
         blocks = list(_BLOCK_RE.finditer(page_body))
@@ -496,9 +514,14 @@ def attach_pdf_locations(
 def extract_document_fragments(
     *, stage: str, markdown_path: Path, pdf_path: Path,
     sheet_index: list[dict[str, Any]], fitz: Any,
+    selected_pages: Iterable[int] | None = None,
 ) -> list[dict[str, Any]]:
     markdown = markdown_path.read_text(encoding="utf-8")
-    fragments = parse_markdown_fragments(markdown, stage)
+    fragments = parse_markdown_fragments(
+        markdown,
+        stage,
+        selected_pages=selected_pages,
+    )
     sheet_numbers = {
         int(item["pdf_page"]): item.get("sheet_number")
         for item in sheet_index if item.get("pdf_page") is not None

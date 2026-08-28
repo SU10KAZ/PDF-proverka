@@ -16,11 +16,12 @@ from .production_artifacts import (
     utc_now,
 )
 from . import sheet_matching, text_comparison, text_differences
+from .text_fragment_cache import load_or_extract_document_fragments
 
 
 PREPARATION_KIND = "stage_comparison_text_preparation"
-PREPARATION_SCHEMA_VERSION = "text-preparation.v1"
-PREPARATION_VERSION = "production-text-preparation-v1"
+PREPARATION_SCHEMA_VERSION = "text-preparation.v2"
+PREPARATION_VERSION = "production-text-preparation-v2"
 
 
 def normalize_comparison_groups(
@@ -41,7 +42,12 @@ def normalize_comparison_groups(
             "left_pages": left,
             "right_pages": right,
             "relation_type": relation_type,
-            "relation_status": value.get("status"),
+            # ``normalize_comparison_groups`` is intentionally idempotent:
+            # Stage 3 receives the already-normalized Stage 2 preparation
+            # groups.  Do not erase the confidence recorded on that first
+            # pass merely because the source field is now named
+            # ``relation_status``.
+            "relation_status": value.get("relation_status", value.get("status")),
         })
     groups.sort(key=lambda group: (group["left_pages"], group["right_pages"], group["id"]))
     if len({group["id"] for group in groups}) != len(groups):
@@ -56,8 +62,15 @@ def prepare_text_scope(
     sheet_indexes: Mapping[str, list[dict[str, Any]]] | None = None,
     fitz: Any,
     generated_at: str | None = None,
+    document_cache_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Extract located text fragments only for pages in the explicit scope."""
+    """Extract located text fragments only for pages in the explicit scope.
+
+    When ``document_cache_dir`` is supplied, a content-addressed complete
+    document extraction is reused and then projected onto the requested
+    groups.  Production passes it only for DOCUMENT runs.  PAGE runs leave it
+    unset and the PDF extractor is invoked for selected pages alone.
+    """
     groups = normalize_comparison_groups(comparison_groups)
     selected = {
         "left": {page for group in groups for page in group["left_pages"]},
@@ -65,6 +78,7 @@ def prepare_text_scope(
     }
     fragments: dict[str, list[dict[str, Any]]] = {}
     documents: dict[str, Any] = {}
+    document_cache_signatures: dict[str, str] = {}
     for side, stage in (("left", "stage_1"), ("right", "stage_2")):
         document = pair.get(side)
         if not isinstance(document, Mapping):
@@ -84,13 +98,27 @@ def prepare_text_scope(
         index = list((sheet_indexes or {}).get(side) or [])
         if not index:
             index = sheet_matching.placeholder_sheet_index(page_count)
-        extracted = text_comparison.extract_document_fragments(
-            stage=stage,
-            markdown_path=markdown_path,
-            pdf_path=pdf_path,
-            sheet_index=index,
-            fitz=fitz,
-        )
+        if document_cache_dir is not None:
+            extracted, cache_signature = load_or_extract_document_fragments(
+                stage=stage,
+                document=document,
+                markdown_path=markdown_path,
+                pdf_path=pdf_path,
+                sheet_index=index,
+                fitz=fitz,
+                cache_dir=Path(document_cache_dir),
+                generated_at=generated_at,
+            )
+            document_cache_signatures[side.upper()] = cache_signature
+        else:
+            extracted = text_comparison.extract_document_fragments(
+                stage=stage,
+                markdown_path=markdown_path,
+                pdf_path=pdf_path,
+                sheet_index=index,
+                fitz=fitz,
+                selected_pages=selected[side],
+            )
         fragments[side] = sorted(
             (
                 fragment for fragment in extracted
@@ -125,6 +153,17 @@ def prepare_text_scope(
         "comparison_groups": groups,
         "fragments": fragments,
         "documents": documents,
+        "extraction": {
+            "mode": (
+                "DOCUMENT_CACHE"
+                if document_cache_dir is not None
+                else "SCOPED_PAGES"
+            ),
+            "selected_pages": {
+                side.upper(): sorted(pages) for side, pages in selected.items()
+            },
+            "document_cache_signatures": document_cache_signatures,
+        },
         "constraints": {
             "uses_model": False,
             "parent_relation_required": False,
