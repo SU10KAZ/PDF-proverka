@@ -571,18 +571,21 @@ def test_generic_yes_cannot_resolve_unknown_change_without_typed_identity():
     resolution = application["change_resolutions"][0]
     assert resolution["resolution"] == "REVIEW_REQUIRED"
     assert resolution["resolution_complete"] is False
+    # The engineer is asked for an object name, never for a stable id: the
+    # backend mints project_entity_ref from the label.
     assert resolution["missing_typed_fields"] == [
         "dimension",
+        "object_label",
         "outcome",
-        "project_entity_ref",
     ]
     assert question["context"]["typed_resolution_contract"] == {
         "version": "change-typed-resolution.v1",
         "generic_yes_allowed": False,
-        "required_fields": ["dimension", "project_entity_ref", "outcome"],
+        "required_fields": ["dimension", "object_label", "outcome"],
         "accepted_fields": sorted(
             {
                 "dimension",
+                "object_label",
                 "subject_ref",
                 "project_entity_ref",
                 "facet_ref",
@@ -1371,5 +1374,5 @@ def test_change_question_policy_supports_nested_provenance_and_fails_closed():
         "typed_resolution_contract"
     ]
     assert contract["required_fields"] == [
-        "dimension", "project_entity_ref", "outcome"
+        "dimension", "object_label", "outcome"
     ]

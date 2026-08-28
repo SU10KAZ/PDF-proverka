@@ -65,6 +65,21 @@ def _atom(atom_id: str, source: str, *, project_ref: str = "project:panel") -> d
     }
 
 
+def _unlocated_atom(atom_id: str, source: str, *, project_ref: str | None = None) -> dict:
+    """A review item with nothing to open: values but no place on a sheet.
+
+    This is the only kind of TEXT review item that still owes the engineer a
+    Stage 5 question.  An item that does have a location is shown in Stage 7
+    as a finding and confirmed there, once.
+    """
+    atom = _atom(atom_id, source, project_ref=project_ref)
+    atom["provenance"] = {
+        **atom["provenance"],
+        "locations": {"LEFT": [], "RIGHT": []},
+    }
+    return atom
+
+
 def _type_atom(atom_id: str, source: str) -> dict:
     atom = _atom(atom_id, source)
     atom.update({
@@ -1680,7 +1695,7 @@ def test_question_revision_and_effective_application_survive_get_and_reanswer(
 
 
 def test_typed_change_answer_rebuilds_only_dependent_synthesis(tmp_path, monkeypatch):
-    unresolved = _atom("text-unresolved", "TEXT", project_ref=None)
+    unresolved = _unlocated_atom("text-unresolved", "TEXT")
     _install_run_fakes(
         monkeypatch,
         tmp_path,
@@ -1736,7 +1751,7 @@ def test_typed_change_answer_rebuilds_only_dependent_synthesis(tmp_path, monkeyp
 def test_incomplete_reanswer_rolls_effective_synthesis_back_to_automatic(
     tmp_path, monkeypatch
 ):
-    unresolved = _atom("text-reanswer", "TEXT", project_ref=None)
+    unresolved = _unlocated_atom("text-reanswer", "TEXT")
     _install_run_fakes(
         monkeypatch,
         tmp_path,
@@ -1802,7 +1817,7 @@ def test_incomplete_reanswer_rolls_effective_synthesis_back_to_automatic(
 
 
 def test_same_generation_answer_is_reapplied_on_full_rerun(tmp_path, monkeypatch):
-    unresolved = _atom("text-rerun", "TEXT", project_ref=None)
+    unresolved = _unlocated_atom("text-rerun", "TEXT")
     _install_run_fakes(
         monkeypatch,
         tmp_path,
@@ -1894,7 +1909,7 @@ def test_contested_yes_materializes_only_selected_change(tmp_path, monkeypatch):
 def test_materialization_failure_does_not_publish_or_persist_answer(
     tmp_path, monkeypatch
 ):
-    unresolved = _atom("text-failed-answer", "TEXT", project_ref=None)
+    unresolved = _unlocated_atom("text-failed-answer", "TEXT")
     unresolved["outcome"] = "REVIEW_REQUIRED"
     unresolved["review_status"] = "REVIEW_REQUIRED"
     _install_run_fakes(
@@ -2053,6 +2068,7 @@ def test_rebuild_and_evidence_ignore_mutated_legacy_graphic_ledger(
 ):
     text = _type_atom("text-snapshot", "TEXT")
     text["project_entity_ref"] = None
+    text["provenance"] = {**text["provenance"], "locations": {"LEFT": [], "RIGHT": []}}
     graphic = _type_atom("graphic-snapshot", "GRAPHIC")
     snapshot_ledger = {
         "marker": "snapshot",
@@ -3172,7 +3188,7 @@ def test_tampered_decisions_fail_closed_against_published_state(tmp_path, monkey
 
 
 def test_tampered_source_snapshot_blocks_evidence_and_reanswer(tmp_path, monkeypatch):
-    unresolved = _atom("text-unresolved", "TEXT", project_ref=None)
+    unresolved = _unlocated_atom("text-unresolved", "TEXT")
     _install_run_fakes(
         monkeypatch,
         tmp_path,

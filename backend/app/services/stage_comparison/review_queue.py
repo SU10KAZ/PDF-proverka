@@ -19,6 +19,7 @@ from .production_artifacts import (
     stable_id,
     utc_now,
 )
+from .review_presentation import review_finding_presentation
 from .unified_change_policy import (
     DIRECTIONS,
     DIMENSIONS,
@@ -46,6 +47,11 @@ _VOLATILE_KEYS = frozenset(
 _TYPED_CHANGE_RESOLUTION_FIELDS = frozenset(
     {
         "dimension",
+        # What the engineer names in the project's own words («помещение 24.5»,
+        # «кровля К5»).  The internal refs below are minted from it here, in
+        # the backend, and are never typed by a human: a free-text stable id
+        # checked against nothing is a fiction with an id-shaped mask.
+        "object_label",
         "subject_ref",
         "project_entity_ref",
         "facet_ref",
@@ -98,6 +104,56 @@ def _ref(item: Mapping[str, Any], *keys: str, prefix: str) -> str:
         if isinstance(value, str) and value.strip():
             return value.strip()
     return stable_id(prefix, _stable_payload(item))
+
+
+def _canonical_object_label(label: str) -> str:
+    return " ".join(str(label or "").casefold().replace("ё", "е").split())
+
+
+def mint_project_entity_ref(
+    label: str, *, question: Mapping[str, Any] | None = None,
+) -> dict[str, str]:
+    """Turn a human object name into the internal refs, deterministically.
+
+    The engineer types «помещение 24.5»; ``project_entity_ref`` is a
+    ``stable_id`` hash and belongs to the backend.  Minting it here — from the
+    same prefix family the Text Fact Producer uses — keeps the id trustworthy
+    and keeps the human out of a field they cannot possibly get right.
+    """
+    canonical = _canonical_object_label(label)
+    if not canonical:
+        raise ValueError("object label must not be empty")
+    context = question.get("context") if isinstance(question, Mapping) else None
+    scope_ref = None
+    if isinstance(context, Mapping):
+        scope_ref = context.get("scope_ref") or context.get("review_evidence_id")
+    return {
+        "project_entity_ref": stable_id(
+            "project_text_entity_",
+            {"scope_ref": scope_ref, "entity": canonical},
+        ),
+        "subject_ref": "text_entity:" + canonical,
+    }
+
+
+def _readable_change_prompt(
+    presentation: Mapping[str, Any], review_ref: str,
+) -> str:
+    """Describe the change in words, never as an internal identifier."""
+    before = presentation.get("before_value")
+    after = presentation.get("after_value")
+    pages = presentation.get("left_pages") or presentation.get("right_pages") or []
+    where = f" (стр. {', '.join(str(page) for page in pages)})" if pages else ""
+    if before and after:
+        return f"Что изменилось: «{before}» → «{after}»{where}?"
+    if after:
+        return f"Что за объект добавлен: «{after}»{where}?"
+    if before:
+        return f"Что за объект удалён: «{before}»{where}?"
+    return (
+        "Нет ни значения, ни расположения — что это за изменение"
+        f"{where or ' (место не определено)'}?"
+    )
 
 
 def _option(code: str, label: str, **extra: Any) -> dict[str, Any]:
@@ -579,6 +635,26 @@ def _change_question_plan(
         if suppression is not None:
             suppressed.append(suppression)
             continue
+        # A review item that can be read as a finding is not an exception.  It
+        # is shown in Stage 7 with its own values and pages, and the engineer
+        # confirms it there — one change, one human action.  Asking «подтвердить
+        # изменение ureview_… (UNKNOWN_DIMENSION)?» first made the same object
+        # cost two actions, and the question could not be answered from what it
+        # displayed.
+        presentation = review_finding_presentation(item)
+        if presentation["presentable"]:
+            suppressed.append({
+                "review_evidence_id": _ref(
+                    item, "review_evidence_id", "atom_id",
+                    prefix="review_evidence_",
+                ),
+                "atom_id": item.get("atom_id"),
+                "reason_codes": ["presentable_in_engineer_review"],
+                "only_upstream_relation_blocker": False,
+                "opposite_coverage_gap": False,
+                "engineer_review_target": True,
+            })
+            continue
         review_ref = _ref(
             item, "review_evidence_id", "atom_id", prefix="review_evidence_"
         )
@@ -588,7 +664,7 @@ def _change_question_plan(
             required_fields.append("dimension")
         project_ref = item.get("project_entity_ref")
         if not isinstance(project_ref, str) or not project_ref.strip():
-            required_fields.append("project_entity_ref")
+            required_fields.append("object_label")
         provenance = item.get("provenance")
         source_outcome = (
             provenance.get("source_atom_outcome")
@@ -602,7 +678,7 @@ def _change_question_plan(
                 identity={"review_evidence_id": review_ref},
                 category="CHANGE",
                 question_type="CHANGE_REVIEW_EVIDENCE",
-                prompt=f"Подтвердить изменение {review_ref} ({dimension})?",
+                prompt=_readable_change_prompt(presentation, review_ref),
                 options=_base_options(),
                 dependencies=[
                     {
@@ -615,6 +691,12 @@ def _change_question_plan(
                 context={
                     "review_evidence_id": review_ref,
                     "atom_id": item.get("atom_id"),
+                    "scope_ref": item.get("scope_ref"),
+                    "presentation": dict(presentation),
+                    "before_value": presentation.get("before_value"),
+                    "after_value": presentation.get("after_value"),
+                    "left_pages": presentation.get("left_pages"),
+                    "right_pages": presentation.get("right_pages"),
                     "dimension": dimension,
                     "subject_ref": item.get("subject_ref"),
                     "project_entity_ref": item.get("project_entity_ref"),
@@ -846,7 +928,9 @@ def _change_resolution_requirements(
     if not isinstance(project_ref, str) or not project_ref.strip():
         resolved_project = typed.get("project_entity_ref")
         if not isinstance(resolved_project, str) or not resolved_project.strip():
-            missing.append("project_entity_ref")
+            # The engineer owes a name, not an id.  ``object_label`` is minted
+            # into both refs by ``_normalize_typed_resolution``.
+            missing.append("object_label")
     if context.get("source_atom_outcome") == "REVIEW_REQUIRED":
         resolved_outcome = typed.get("outcome")
         if resolved_outcome not in OUTCOMES or resolved_outcome == "REVIEW_REQUIRED":
@@ -855,7 +939,7 @@ def _change_resolution_requirements(
     if not isinstance(subject_ref, str) or not subject_ref.strip():
         resolved_subject = typed.get("subject_ref") or resolved_project
         if (
-            "project_entity_ref" not in missing
+            "object_label" not in missing
             and (
                 not isinstance(resolved_subject, str)
                 or not resolved_subject.strip()
@@ -1001,6 +1085,11 @@ def build_review_queue(
             ),
             "opposite_coverage_gap_review_items_suppressed": sum(
                 item["opposite_coverage_gap"]
+                for item in suppressed_change_reviews
+            ),
+            # Findings that need no question because Stage 7 shows them whole.
+            "engineer_review_targets_suppressed": sum(
+                bool(item.get("engineer_review_target"))
                 for item in suppressed_change_reviews
             ),
             "stale_decision_ids": stale_decision_ids,
@@ -1162,6 +1251,16 @@ def _normalize_typed_resolution(
         raise ValueError(
             "typed_resolution.outcome must resolve rather than preserve review"
         )
+    label = result.get("object_label")
+    if label is not None:
+        if not isinstance(label, str) or not label.strip():
+            raise ValueError("typed_resolution.object_label must be non-empty")
+        result["object_label"] = " ".join(label.split())
+        minted = mint_project_entity_ref(
+            result["object_label"], question=question,
+        )
+        result.setdefault("project_entity_ref", minted["project_entity_ref"])
+        result.setdefault("subject_ref", minted["subject_ref"])
     if "selected_change_ids" in result:
         result["selected_change_ids"] = _normalized_selected_refs(
             result["selected_change_ids"]

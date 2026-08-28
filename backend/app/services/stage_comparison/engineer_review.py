@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Iterable, Mapping
 
 from .production_artifacts import content_signature, stable_id, utc_now
+from .review_presentation import review_finding_presentation
 from .unified_change_synthesizer import canonical_synthesis_digest, validate_synthesis
 
 
@@ -56,8 +57,16 @@ def _targets(synthesis: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
                     synthesis, "REVIEW_EVIDENCE", item,
                 ),
                 "finding": dict(item),
+                "presentation": review_finding_presentation(item),
             }
     return targets
+
+
+def _presentable(target: Mapping[str, Any]) -> bool:
+    if target["target_kind"] == "CHANGE":
+        return True
+    presentation = target.get("presentation")
+    return bool(isinstance(presentation, Mapping) and presentation.get("presentable"))
 
 
 def _empty_decision(target: Mapping[str, Any], now: str) -> dict[str, Any]:
@@ -65,6 +74,8 @@ def _empty_decision(target: Mapping[str, Any], now: str) -> dict[str, Any]:
         "decision_id": stable_id("edec_", target["target_kind"], target["target_id"]),
         "target_id": target["target_id"],
         "target_kind": target["target_kind"],
+        "presentable": _presentable(target),
+        "presentation": dict(target.get("presentation") or {}) or None,
         "decision": "PENDING_REVIEW",
         "author": None,
         "comment": None,
@@ -128,7 +139,13 @@ def build_engineer_decisions(
     for target_id, target in targets.items():
         previous = existing_rows.get(target_id)
         if previous and previous.get("input_signature") == target["input_signature"]:
-            row = {**previous, "stale": False, "finding_snapshot": target["finding"]}
+            row = {
+                **previous,
+                "stale": False,
+                "finding_snapshot": target["finding"],
+                "presentable": _presentable(target),
+                "presentation": dict(target.get("presentation") or {}) or None,
+            }
         else:
             if previous:
                 history.append({**previous, "stale": True, "stale_at": now})
@@ -150,7 +167,12 @@ def build_engineer_decisions(
         if (
             previous.get("target_kind") == "REVIEW_EVIDENCE"
             and update["decision"] == "APPROVED"
+            and not previous.get("presentable")
         ):
+            # A finding with a value and a page is reviewable as it stands, even
+            # when its dimension stayed unknown: «EI 60 → EI 90, классификация
+            # не определена» is a decision an engineer can make.  Only a row
+            # with nothing to show still has to be resolved upstream first.
             raise ValueError(
                 "review evidence must be resolved into an atomic change before approval"
             )
@@ -224,6 +246,7 @@ def review_rows(
             "target_id": target_id,
             "target_kind": "REVIEW_EVIDENCE",
             "change": dict(item),
+            "presentation": review_finding_presentation(item),
             "presentation_group_id": None,
             "engineer_decision": by_target[target_id],
         })
@@ -275,6 +298,41 @@ def build_final_report(
             },
         })
     approved.sort(key=lambda change: change["change_id"])
+    # A finding the engineer approved in Stage 7 must reach the report, or the
+    # approval means nothing.  Kept in its own list so the atomic-change
+    # contract above is untouched: this report is still approved-only.
+    approved_review_findings = []
+    for item in validated.get("review_items") or []:
+        target_id = str(item["review_evidence_id"])
+        decision = decision_rows.get(target_id)
+        target = target_map[target_id]
+        if not decision or decision.get("decision") != "APPROVED":
+            continue
+        if decision.get("stale") or decision.get("input_signature") != target["input_signature"]:
+            continue
+        presentation = target.get("presentation") or {}
+        approved_review_findings.append({
+            "review_evidence_id": target_id,
+            "scope_ref": item.get("scope_ref"),
+            "subject_ref": item.get("subject_ref"),
+            "project_entity_ref": item.get("project_entity_ref"),
+            "dimension": item.get("dimension"),
+            "direction": item.get("direction"),
+            "before_value": item.get("before_value"),
+            "after_value": item.get("after_value"),
+            "left_pages": presentation.get("left_pages") or [],
+            "right_pages": presentation.get("right_pages") or [],
+            "reason_codes": sorted(item.get("reason_codes") or []),
+            "evidence_refs": item.get("evidence_refs"),
+            "engineer_decision": {
+                "decision_id": decision.get("decision_id"),
+                "author": decision.get("author"),
+                "comment": decision.get("comment"),
+                "reason_code": decision.get("reason_code"),
+                "updated_at": decision.get("updated_at"),
+            },
+        })
+    approved_review_findings.sort(key=lambda item: item["review_evidence_id"])
     report_input = {
         "synthesis": _synthesis_signature(validated),
         "decisions": [
@@ -296,7 +354,11 @@ def build_final_report(
         "input_signature": content_signature(report_input),
         "generated_at": generated_at or utc_now(),
         "approved_atomic_changes": approved,
-        "summary": {"approved": len(approved)},
+        "approved_review_findings": approved_review_findings,
+        "summary": {
+            "approved": len(approved),
+            "approved_review_findings": len(approved_review_findings),
+        },
         "constraints": {
             "approved_only": True,
             "pending_included": False,
