@@ -34,11 +34,14 @@ STRATA = (
     ("ai_critic_accepted", "ИИ разрешил, критик принял", 0.10),
     # Самая информативная группа: верификатор вывод принял, а критик
     # отклонил. Кто из них прав, без разметки не скажет никто.
-    ("ai_critic_rejected", "Верификатор принял, критик отклонил", 0.20),
-    ("verifier_rejected", "Верификатор отклонил вывод ИИ", 0.10),
-    ("model_declined", "ИИ отказался сам", 0.15),
+    ("ai_critic_rejected", "Верификатор принял, критик отклонил", 0.17),
+    # Чертёж прямо спорит с текстовым разбором. Кто прав — вопрос к инженеру,
+    # и ответ на него настраивает доверие сразу к обоим слоям.
+    ("vision_contradicts", "Чертёж противоречит текстовому разбору", 0.13),
+    ("verifier_rejected", "Верификатор отклонил вывод ИИ", 0.08),
+    ("model_declined", "ИИ отказался сам", 0.13),
     ("deterministic_change", "Находка без участия ИИ", 0.12),
-    ("engineer_question", "Вопрос инженеру", 0.08),
+    ("engineer_question", "Вопрос инженеру", 0.07),
 )
 
 #: Что инженер отвечает по каждому случаю. Три вопроса, не больше.
@@ -114,6 +117,15 @@ def collect(directory: Path) -> dict[str, list[dict[str, Any]]]:
                         for problem in critic.get("problems") or []
                         if isinstance(problem, Mapping)
                     ),
+                },
+            ))
+        elif reason == "VISION_CONTRADICTS_TEXT":
+            seen = item.get("vision") or {}
+            buckets["vision_contradicts"].append(_case(
+                "vision_contradicts", identifier, {
+                    **payload,
+                    "видно_слева": seen.get("observed_left"),
+                    "видно_справа": seen.get("observed_right"),
                 },
             ))
         elif reason == "VERIFIER_REJECTED":
