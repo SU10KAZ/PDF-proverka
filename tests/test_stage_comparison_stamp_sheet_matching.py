@@ -259,3 +259,25 @@ def test_a_sheet_question_names_the_sheets_it_asks_about():
     assert question["context"]["right_sheets"] == [{"page": 9, "label": "Часть 1. Архитектурные решения. Планы"}]
     labels = [option["label"] for option in question["answer_options"]]
     assert not any("N→1" in label or "1→N" in label for label in labels)
+
+
+def test_a_sheet_question_says_why_the_link_was_proposed():
+    from backend.app.services.stage_comparison.review_queue import build_review_queue
+
+    shared = {"functional_content": ["план этажа", "экспликация помещений"]}
+    relations = match_sheets(
+        [
+            _sheet(28, "Корпуса 1, 2. План 2 этажа", **shared),
+            _sheet(42, "Корпус 4. План 3-15 этажей", **shared),
+        ],
+        [_sheet(9, None, **shared)],
+    )
+    queue = build_review_queue(sheet_relations=relations, generated_at="fixed")
+    question = next(item for item in queue["questions"] if item["category"] == "SHEET")
+
+    why = question["context"]["why_proposed"]
+    assert why
+    assert all(isinstance(item, str) and item for item in why)
+    # Reasons are sentences, not codes.
+    assert not any("_" in item for item in why)
+    assert "совпадает назначение листа" in why

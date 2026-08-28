@@ -6467,6 +6467,10 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <p v-if="scProductionQuestionWhy(question).length"
+                                       class="sc-production-question__why">
+                                        Почему предложено: {{ scProductionQuestionWhy(question).join('; ') }}
+                                    </p>
                                     <div v-if="scProductionQuestionChange(question)"
                                          class="sc-production-question__change">
                                         <span>Было: <b>{{ scProductionQuestionChange(question).before }}</b></span>

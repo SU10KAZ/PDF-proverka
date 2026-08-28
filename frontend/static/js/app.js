@@ -14167,6 +14167,11 @@ const app = createApp({
                 .filter(Boolean);
         }
 
+        function scProductionQuestionWhy(row) {
+            const why = row && row.context && row.context.why_proposed;
+            return Array.isArray(why) ? why.filter(item => typeof item === 'string' && item) : [];
+        }
+
         function scProductionQuestionChange(row) {
             const context = row && row.context || {};
             const before = context.before_value;
@@ -18302,7 +18307,7 @@ const app = createApp({
             scProductionQuestionNeedsExplicitCandidate,
             scProductionQuestionTypedFields, scProductionQuestionFieldLabel,
             scProductionQuestionFieldHint, scProductionQuestionSheets,
-            scProductionQuestionChange, scOpenProductionSheet,
+            scProductionQuestionChange, scProductionQuestionWhy, scOpenProductionSheet,
             scProductionEntityCandidates,
             scProductionQuestionFieldRequired, scSaveProductionAnswers,
             scHandleProductionSheetSuggestion, scProductionSuggestionActionLabel,

@@ -363,10 +363,53 @@ def _named_sheets(labels: Mapping[int, str], pages: Iterable[int]) -> str:
     return "; ".join(_named_sheet(labels, page) for page in pages)
 
 
+#: Why the system proposed a link, in the engineer's language.  Question cards
+#: show these; the codes themselves stay in diagnostics.
+_SHEET_REASON_TEXT = {
+    "stamp_key_exact": "совпала строка идентификации в штампе",
+    "stamp_key_ambiguous": "одна и та же строка штампа стоит на нескольких листах",
+    "stamp_floor_range_covers": "лист с диапазоном этажей покрывает этажи другой стороны",
+    "stamp_key_conflict": "строки штампа противоречат друг другу",
+    "high_candidate_displaced": "сильный кандидат уступил лист другой паре",
+    "displaced_high_candidate_present": "на эти листы претендовала ещё одна сильная пара",
+}
+_SHEET_SIGNAL_TEXT = {
+    "functional": "совпадает назначение листа",
+    "entities": "совпадают обозначения оборудования и помещений",
+    "topology": "совпадают связи между элементами",
+    "graphic": "совпадают графические признаки",
+    "sheet_type": "совпадает тип листа",
+}
+
+
+def _sheet_reason_summary(records: Iterable[tuple[Any, Any, Any]]) -> list[str]:
+    codes: set[str] = set()
+    signals: set[str] = set()
+    for relation, _relation_id, _edges in records:
+        codes.update(
+            str(code) for code in relation.get("reason_codes") or []
+        )
+        for edge in relation.get("candidate_edges") or []:
+            if isinstance(edge, Mapping):
+                signals.update(
+                    str(value) for value in edge.get("substantive_signals") or []
+                )
+    reasons = [
+        _SHEET_REASON_TEXT[code] for code in sorted(codes)
+        if code in _SHEET_REASON_TEXT
+    ]
+    reasons.extend(
+        _SHEET_SIGNAL_TEXT[signal] for signal in sorted(signals)
+        if signal in _SHEET_SIGNAL_TEXT
+    )
+    return reasons or ["надёжных совпадений не нашлось — система не уверена"]
+
+
 def _sheet_question_context(
     sheet_relations: Mapping[str, Any],
     left_pages: list[int],
     right_pages: list[int],
+    records: Iterable[tuple[Any, Any, Any]] = (),
 ) -> dict[str, Any]:
     """Everything the card needs to be answerable without opening the JSON."""
     labels = _sheet_label_map(sheet_relations)
@@ -377,6 +420,7 @@ def _sheet_question_context(
         "right_sheets": [
             {"page": page, "label": labels["RIGHT"].get(page)} for page in right_pages
         ],
+        "why_proposed": _sheet_reason_summary(records),
     }
 
 
@@ -479,7 +523,9 @@ def _sheet_questions(sheet_relations: Mapping[str, Any] | None) -> list[dict[str
                 "candidate_edges": component["candidate_edges"],
             },
             context={
-                **_sheet_question_context(sheet_relations, left_pages, right_pages),
+                **_sheet_question_context(
+                    sheet_relations, left_pages, right_pages, records,
+                ),
                 "relation_id": component["materialization_relation_id"],
                 "materialization_relation_id": component[
                     "materialization_relation_id"

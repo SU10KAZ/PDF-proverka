@@ -691,6 +691,8 @@ describe('Stage Comparison: exception questions vs engineer review', () => {
     expect(html).toContain("scProductionQuestionSheets(question, 'RIGHT')");
     expect(html).toContain('Открыть лист (стр. {{ sheet.page }})');
     expect(html).toContain('Было: <b>{{ scProductionQuestionChange(question).before }}</b>');
+    expect(app).toContain('function scProductionQuestionWhy(row)');
+    expect(html).toContain('Почему предложено:');
   });
 
   it('keeps raw identifiers in diagnostics rather than in the prompt line', () => {
