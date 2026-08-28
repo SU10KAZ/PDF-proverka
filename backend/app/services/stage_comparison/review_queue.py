@@ -336,8 +336,10 @@ def _cardinality_relation_type(
     return "UNCERTAIN"
 
 
-def _sheet_label_map(sheet_relations: Mapping[str, Any]) -> dict[str, dict[int, str]]:
-    raw = sheet_relations.get("sheet_labels")
+def _page_map(
+    sheet_relations: Mapping[str, Any], key: str,
+) -> dict[str, dict[int, str]]:
+    raw = sheet_relations.get(key)
     output: dict[str, dict[int, str]] = {"LEFT": {}, "RIGHT": {}}
     if not isinstance(raw, Mapping):
         return output
@@ -351,6 +353,30 @@ def _sheet_label_map(sheet_relations: Mapping[str, Any]) -> dict[str, dict[int, 
             except (TypeError, ValueError):
                 continue
     return output
+
+
+def _sheet_label_map(sheet_relations: Mapping[str, Any]) -> dict[str, dict[int, str]]:
+    return _page_map(sheet_relations, "sheet_labels")
+
+
+def _sheet_number_map(sheet_relations: Mapping[str, Any]) -> dict[str, dict[int, str]]:
+    """Номер листа из штампа. Это НЕ номер страницы PDF."""
+    return _page_map(sheet_relations, "sheet_numbers")
+
+
+def sheet_reference(
+    sheet_relations: Mapping[str, Any] | None, side: str, page: int,
+) -> dict[str, Any]:
+    """Как назвать одну страницу инженеру: название, лист и страница PDF."""
+    relations = sheet_relations if isinstance(sheet_relations, Mapping) else {}
+    labels = _sheet_label_map(relations)
+    numbers = _sheet_number_map(relations)
+    key = str(side).upper()
+    return {
+        "page": int(page),
+        "title": labels.get(key, {}).get(int(page)),
+        "sheet_no": numbers.get(key, {}).get(int(page)),
+    }
 
 
 def _named_sheet(labels: Mapping[int, str], page: int) -> str:
@@ -413,12 +439,25 @@ def _sheet_question_context(
 ) -> dict[str, Any]:
     """Everything the card needs to be answerable without opening the JSON."""
     labels = _sheet_label_map(sheet_relations)
+    numbers = _sheet_number_map(sheet_relations)
     return {
         "left_sheets": [
-            {"page": page, "label": labels["LEFT"].get(page)} for page in left_pages
+            {
+                "page": page,
+                "label": labels["LEFT"].get(page),
+                "title": labels["LEFT"].get(page),
+                "sheet_no": numbers["LEFT"].get(page),
+            }
+            for page in left_pages
         ],
         "right_sheets": [
-            {"page": page, "label": labels["RIGHT"].get(page)} for page in right_pages
+            {
+                "page": page,
+                "label": labels["RIGHT"].get(page),
+                "title": labels["RIGHT"].get(page),
+                "sheet_no": numbers["RIGHT"].get(page),
+            }
+            for page in right_pages
         ],
         "why_proposed": _sheet_reason_summary(records),
     }

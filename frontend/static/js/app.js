@@ -12175,6 +12175,11 @@ const app = createApp({
                 detail_lines: [],
                 cta: {kind: 'RUN', label: '▶ Запустить полный анализ', disabled: false},
             });
+        const scProductionAiProgress = computed(() => (
+            SC_PRODUCTION_REVIEW && SC_PRODUCTION_REVIEW.normalizeAiProgress
+                ? SC_PRODUCTION_REVIEW.normalizeAiProgress(scProductionState.value)
+                : {available: false, mode: 'OFF', mode_label: 'без ИИ', reasons: []}
+        ));
         const scProductionRunActive = computed(() => Boolean(
             scProductionRunLoading.value
             || scProductionStateIsRunning(scProductionState.value)
@@ -15116,26 +15121,35 @@ const app = createApp({
             })[String(status || '').toUpperCase()] || status;
         }
 
+        // Единый словарь живёт в StageComparisonReview: два перевода одного
+        // кода расходятся быстрее, чем их успевают заметить.
         function scProductionQuestionCategoryLabel(category) {
-            return ({SHEET: 'Лист', ENTITY: 'Объект', CHANGE: 'Изменение'})[
-                String(category || '').toUpperCase()
-            ] || category;
+            return StageComparisonReview.questionCategoryLabel(category);
         }
 
         function scProductionChangeStatusLabel(status) {
-            return ({
-                CONFIRMED: 'подтверждено системой',
-                REVIEW_REQUIRED: 'требует проверки',
-                MATERIAL_CHANGE: 'изменение',
-            })[String(status || '').toUpperCase()] || status;
+            return StageComparisonReview.reviewStatusLabel(status);
         }
 
         function scProductionDecisionLabel(value) {
-            return ({
-                APPROVED: 'APPROVED',
-                REJECTED: 'REJECTED',
-                PENDING_REVIEW: 'PENDING_REVIEW',
-            })[String(value || '').toUpperCase()] || 'PENDING_REVIEW';
+            return StageComparisonReview.decisionLabel(value);
+        }
+
+        // «Лист 7» — номер из штампа проекта; «стр. PDF 29» — страница файла.
+        function scSheetReference(sheet) {
+            return StageComparisonReview.sheetReference(sheet) || '—';
+        }
+
+        function scProductionSheetRef(row, side) {
+            const key = String(side).toUpperCase() === 'RIGHT'
+                ? 'right_sheets' : 'left_sheets';
+            const sheets = Array.isArray(row && row[key]) ? row[key] : [];
+            if (sheets.length) {
+                return sheets.map(StageComparisonReview.sheetReference).join('; ');
+            }
+            const pages = String(side).toUpperCase() === 'RIGHT'
+                ? row.right_pages : row.left_pages;
+            return StageComparisonReview.pagesReference(pages);
         }
 
         function scSetTextEvidenceMode(mode) {
@@ -18315,8 +18329,10 @@ const app = createApp({
             scToggleProductionPipeline, scProductionPipelineStatusLabel,
             scProductionPipelineDiagnostics, scOpenProductionPipelineDestination,
             scOpenProductionQuestions, scOpenFirstPendingProductionRow,
+            scProductionAiProgress,
             scProductionStateStatusLabel, scProductionQuestionCategoryLabel,
             scProductionChangeStatusLabel, scProductionDecisionLabel,
+            scSheetReference, scProductionSheetRef,
             scOpenProductionEvidence, scCloseProductionEvidence,
             scReturnToProductionReviewRow,
             scProductionEvidenceOverlaysFor, scProductionEvidenceOverlayStyle,

@@ -2318,6 +2318,8 @@ def _run_ai_resolution(
     sheet_relations: Mapping[str, Any],
     comparison_groups: Iterable[Mapping[str, Any]],
     publish_progress: Any,
+    pair: Mapping[str, Any] | None = None,
+    graphic_route: str | None = None,
 ) -> dict[str, Any]:
     """Разрешить неоднозначные расхождения моделью — или честно не разрешить.
 
@@ -2378,7 +2380,23 @@ def _run_ai_resolution(
     cache_dir = production_store.artifact_path(
         session_id, pair_id, "ai_resolutions"
     ).parent / "ai_response_cache"
-    layer = ai_resolution.AiResolutionLayer(cache_dir=cache_dir, progress=report)
+    pdf_paths: dict[str, str] = {}
+    if isinstance(pair, Mapping):
+        for side, key in (("LEFT", "left"), ("RIGHT", "right")):
+            document = pair.get(key)
+            path = (
+                str(document.get("pdf_path") or "")
+                if isinstance(document, Mapping)
+                else ""
+            )
+            if path and Path(path).is_file():
+                pdf_paths[side] = path
+    layer = ai_resolution.AiResolutionLayer(
+        cache_dir=cache_dir,
+        progress=report,
+        pdf_paths=pdf_paths,
+        graphic_route=graphic_route,
+    )
     try:
         artifact = layer.resolve(
             review_items=review_items,
@@ -3734,6 +3752,12 @@ def _run_production_comparison_impl(
         sheet_relations=sheet_relations,
         comparison_groups=groups,
         publish_progress=publish_progress,
+        pair=pair,
+        graphic_route=(
+            "VISION_REQUIRED"
+            if "VISION_REQUIRED" in (graphic_stage.get("routes") or [])
+            else str(graphic_stage.get("route") or "") or None
+        ),
     )
     base_questions = _build_review_questions(
         sheet_relations=sheet_relations,
@@ -4907,6 +4931,63 @@ def _published_decisions(
     return payload
 
 
+def _enrich_rows_with_sheet_references(
+    session_id: str,
+    pair_id: str,
+    rows: list[dict[str, Any]],
+) -> None:
+    """Дать каждой находке название и номер листа, а не только страницу PDF.
+
+    Инженер ищет «лист 7», а не «страницу 29»: номер из штампа и номер
+    страницы в файле совпадают редко, и таблица, показывающая только второе,
+    заставляет держать это соответствие в голове.
+    """
+    review_module = importlib.import_module(
+        "backend.app.services.stage_comparison.review_queue"
+    )
+    sheet_relations = production_store.load_artifact(
+        session_id, pair_id, "sheet_relations"
+    )
+    if not isinstance(sheet_relations, Mapping):
+        return
+    for row in rows:
+        change = row.get("change")
+        change = change if isinstance(change, Mapping) else {}
+        provenance = change.get("provenance")
+        source_atom = (
+            provenance.get("source_atom") if isinstance(provenance, Mapping) else None
+        )
+        locations = (
+            source_atom.get("locations") if isinstance(source_atom, Mapping) else None
+        )
+        pages = {"LEFT": set(), "RIGHT": set()}
+        if isinstance(locations, Mapping):
+            for side in ("LEFT", "RIGHT"):
+                for value in locations.get(side) or []:
+                    if isinstance(value, Mapping) and isinstance(value.get("page"), int):
+                        pages[side].add(int(value["page"]))
+        if isinstance(provenance, Mapping):
+            for atom in provenance.get("source_atoms") or []:
+                nested = atom.get("provenance") if isinstance(atom, Mapping) else None
+                nested_locations = (
+                    nested.get("locations") if isinstance(nested, Mapping) else None
+                )
+                if not isinstance(nested_locations, Mapping):
+                    continue
+                for side in ("LEFT", "RIGHT"):
+                    for value in nested_locations.get(side) or []:
+                        if (
+                            isinstance(value, Mapping)
+                            and isinstance(value.get("page"), int)
+                        ):
+                            pages[side].add(int(value["page"]))
+        for side, key in (("LEFT", "left_sheets"), ("RIGHT", "right_sheets")):
+            row[key] = [
+                review_module.sheet_reference(sheet_relations, side, page)
+                for page in sorted(pages[side])
+            ]
+
+
 def get_production_changes(session_id: str, pair_id: str) -> dict[str, Any]:
     """Read review rows; no producer artifact is written by this GET."""
     state = get_production_state(session_id, pair_id)
@@ -4933,6 +5014,7 @@ def get_production_changes(session_id: str, pair_id: str) -> dict[str, Any]:
         session_id, pair_id, state, synthesis
     )
     rows = review_rows(synthesis, decisions)
+    _enrich_rows_with_sheet_references(session_id, pair_id, rows)
     counts = {"APPROVED": 0, "PENDING_REVIEW": 0, "REJECTED": 0}
     for row in rows:
         decision = (row.get("engineer_decision") or {}).get("decision")

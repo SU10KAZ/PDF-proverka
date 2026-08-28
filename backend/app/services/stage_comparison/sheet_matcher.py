@@ -1057,6 +1057,19 @@ def match_sheets(
             "LEFT": {str(item["page"]): sheet_label(item) for item in left},
             "RIGHT": {str(item["page"]): sheet_label(item) for item in right},
         },
+        # Номер листа из штампа и страница PDF — разные числа: лист 7 может
+        # лежать на 29-й странице файла. Номер публикуется отдельно, чтобы
+        # интерфейсу не приходилось выковыривать его из названия.
+        "sheet_numbers": {
+            "LEFT": {
+                str(item["page"]): item["sheet_number"]
+                for item in left if item.get("sheet_number")
+            },
+            "RIGHT": {
+                str(item["page"]): item["sheet_number"]
+                for item in right if item.get("sheet_number")
+            },
+        },
         "unmatched_left_pages": sorted(set(left_by_page) - consumed_left),
         "unmatched_right_pages": sorted(set(right_by_page) - consumed_right),
         "candidate_search": [

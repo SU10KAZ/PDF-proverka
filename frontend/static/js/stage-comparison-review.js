@@ -81,6 +81,185 @@
             'Детерминированный этап не смог завершиться.',
     };
 
+    // ── Русский словарь инженера ──────────────────────────────────────────
+    //
+    // Инженер видит проект, а не внутренности алгоритма. Всё, что попадает в
+    // вопрос, кнопку, статус, предупреждение, ошибку, причину или
+    // рекомендацию, обязано быть по-русски и на языке проекта. Внутренний код
+    // остаётся — но в «Диагностике», куда за ним идут осознанно.
+    //
+    // Словарь один на весь раздел: два разошедшихся перевода одного кода
+    // хуже, чем сырой код, потому что сырой код хотя бы честен.
+
+    const DIMENSION_LABELS = {
+        PRINCIPLE: 'проектное решение',
+        METHOD: 'способ выполнения',
+        OPERATION: 'порядок работы',
+        STRUCTURE: 'состав',
+        CONNECTION: 'связь',
+        TYPE: 'тип или марка',
+        PARAMETER: 'числовое значение',
+        QUANTITY: 'количество',
+        SPACE: 'расположение',
+        UNKNOWN_DIMENSION: 'тип изменения не определён',
+    };
+    const DIRECTION_LABELS = {
+        ADDED: 'добавлено',
+        REMOVED: 'удалено',
+        REPLACED: 'заменено',
+        INCREASED: 'увеличено',
+        DECREASED: 'уменьшено',
+        ALTERED: 'изменено',
+    };
+    const OUTCOME_LABELS = {
+        MATERIAL_CHANGE: 'существенное изменение',
+        DETAIL_ONLY: 'уточнение без последствий',
+        REVIEW_REQUIRED: 'требуется проверка инженера',
+    };
+    const REVIEW_STATUS_LABELS = {
+        REVIEW_REQUIRED: 'требуется проверка инженера',
+        CONFIRMED: 'подтверждено',
+        CHECK_BLOCKED: 'автоматическая проверка не выполнена',
+        NOT_CHECKED: 'проверка не проводилась',
+        NOT_APPLICABLE: 'неприменимо',
+    };
+    const CONFIDENCE_LABELS = {
+        HIGH: 'высокая',
+        MEDIUM: 'средняя',
+        LOW: 'низкая',
+        UNKNOWN: 'не определена',
+        HUMAN: 'решение инженера',
+    };
+    const SOURCE_LABELS = {
+        TEXT: 'текст',
+        GRAPHIC: 'чертёж',
+        BOTH: 'текст и чертёж',
+        UNKNOWN: 'источник не определён',
+    };
+    const DECISION_LABELS = {
+        PENDING_REVIEW: 'не рассмотрено',
+        APPROVED: 'подтверждено',
+        REJECTED: 'отклонено',
+    };
+    const RELATION_TYPE_LABELS = {
+        MATCHED: 'один лист слева соответствует одному листу справа',
+        SPLIT: 'один лист слева разделён на несколько листов справа',
+        MERGED: 'несколько листов слева объединены в один лист справа',
+        UNCERTAIN: 'соответствие листов не установлено',
+        NO_MATCH: 'соответствия нет',
+    };
+    const SHEET_STATUS_LABELS = {
+        HIGH: 'подтверждено',
+        USER_CONFIRMED: 'подтверждено инженером',
+        CONFIRMED: 'подтверждено',
+        POSSIBLE: 'предложено, ждёт подтверждения',
+        UNKNOWN: 'не установлено',
+        NO_MATCH: 'соответствия нет',
+        CANDIDATE_SUPERSEDED: 'заменено другим вариантом',
+    };
+    const QUESTION_CATEGORY_LABELS = {
+        SHEET: 'Лист',
+        ENTITY: 'Объект',
+        CHANGE: 'Изменение',
+    };
+    // Почему элемент вернулся человеку после ИИ-анализа.
+    const AI_REASON_LABELS = {
+        VERIFIER_REJECTED: 'Автоматическая проверка не подтвердила вывод — нужен инженер.',
+        CRITIC_REJECTED: 'Контрольная проверка отклонила вывод — нужен инженер.',
+        MODEL_FAILED: 'ИИ-анализ не выполнен, изменение оставлено инженеру.',
+        MODEL_TIMEOUT: 'ИИ-анализ не уложился во время, изменение оставлено инженеру.',
+        MODEL_DECLINED: 'ИИ не смог решить по имеющимся данным.',
+        BUDGET_EXHAUSTED: 'Достигнут предел ИИ-анализа, остаток оставлен инженеру.',
+        CANCELLED: 'Анализ был остановлен.',
+        VISION_CONTRADICTS_TEXT: 'Чертёж расходится с текстом — нужен инженер.',
+        VISION_INSUFFICIENT: 'На чертеже не видно достаточно, чтобы решить.',
+    };
+    const AI_MODE_LABELS = {
+        OFF: 'без ИИ',
+        STANDARD: 'стандартный',
+        DEEP: 'глубокий',
+    };
+
+    function labelFrom(dictionary, value, fallback) {
+        const key = String(value === null || value === undefined ? '' : value)
+            .toUpperCase();
+        if (!key) return fallback === undefined ? '' : fallback;
+        if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
+            return dictionary[key];
+        }
+        return fallback === undefined ? '' : fallback;
+    }
+
+    function dimensionLabel(value) {
+        return labelFrom(DIMENSION_LABELS, value, 'тип изменения не определён');
+    }
+
+    function directionLabel(value) {
+        return labelFrom(DIRECTION_LABELS, value, 'изменено');
+    }
+
+    function outcomeLabel(value) {
+        return labelFrom(OUTCOME_LABELS, value, '');
+    }
+
+    function reviewStatusLabel(value) {
+        return labelFrom(REVIEW_STATUS_LABELS, value, 'требуется проверка инженера');
+    }
+
+    function confidenceLabel(value) {
+        return labelFrom(CONFIDENCE_LABELS, confidence(value), 'не определена');
+    }
+
+    function sourceLabel(value) {
+        return labelFrom(SOURCE_LABELS, value, 'источник не определён');
+    }
+
+    function decisionLabel(value) {
+        return labelFrom(DECISION_LABELS, decision(value), 'не рассмотрено');
+    }
+
+    function relationTypeLabel(value) {
+        return labelFrom(RELATION_TYPE_LABELS, value, 'соответствие листов не установлено');
+    }
+
+    function sheetStatusLabel(value) {
+        return labelFrom(SHEET_STATUS_LABELS, value, 'не установлено');
+    }
+
+    function questionCategoryLabel(value) {
+        return labelFrom(QUESTION_CATEGORY_LABELS, value, 'Вопрос');
+    }
+
+    function aiReasonLabel(value) {
+        return labelFrom(AI_REASON_LABELS, value, 'Оставлено инженеру.');
+    }
+
+    function aiModeLabel(value) {
+        return labelFrom(AI_MODE_LABELS, value, 'без ИИ');
+    }
+
+    // «Лист 7» — номер из штампа проекта. «стр. PDF 29» — физическая страница
+    // файла. Это разные числа, и на одной паре они расходятся почти всегда.
+    function sheetReference(sheet) {
+        if (!sheet || typeof sheet !== 'object') return '';
+        const page = Number(sheet.page);
+        const number = sheet.sheet_no === null || sheet.sheet_no === undefined
+            ? '' : String(sheet.sheet_no).trim();
+        const title = sheet.title || sheet.label || '';
+        const head = [];
+        if (title) head.push(`«${title}»`);
+        if (number) head.push(`лист ${number}`);
+        const tail = Number.isInteger(page) && page > 0 ? `стр. PDF ${page}` : '';
+        if (!head.length) return tail || '—';
+        return tail ? `${head.join(', ')} (${tail})` : head.join(', ');
+    }
+
+    function pagesReference(pages) {
+        const list = uniqueNumbers(pages);
+        if (!list.length) return '—';
+        return `стр. PDF ${list.join(', ')}`;
+    }
+
     function array(value) {
         return Array.isArray(value) ? value : [];
     }
@@ -145,14 +324,60 @@
     }
 
     function changeLabel(change) {
-        const parts = [change.facet_ref, change.dimension, change.direction]
-            .filter(value => value !== null && value !== undefined && value !== '')
-            .map(String)
-            // A finding whose dimension the deterministic layer could not name
-            // is still reviewable; it says so in words rather than shouting an
-            // internal enum at the engineer.
-            .map(value => (value === 'UNKNOWN_DIMENSION' ? 'классификация не определена' : value));
-        return [...new Set(parts)].join(' · ') || text(change.outcome || change.type);
+        // «PARAMETER · INCREASED» ничего не говорит инженеру. «числовое
+        // значение · увеличено» говорит. Внутренний код остаётся доступен
+        // в диагностике строки.
+        const parts = [];
+        if (change.dimension) parts.push(dimensionLabel(change.dimension));
+        if (change.direction) parts.push(directionLabel(change.direction));
+        const unique = [...new Set(parts.filter(Boolean))];
+        if (unique.length) return unique.join(' · ');
+        return outcomeLabel(change.outcome) || text(change.outcome || change.type);
+    }
+
+    function objectLabel(change) {
+        // Хеш project_entity_ref — не имя объекта. Имя приходит из названия,
+        // которое дал инженер или производитель фактов; хеш идёт в диагностику.
+        const explicit = change.object_label
+            || (change.provenance
+                && change.provenance.entity
+                && change.provenance.entity.original);
+        if (explicit) return String(explicit);
+        const subject = String(change.subject_ref || '');
+        if (subject.startsWith('text_entity:')) {
+            const name = subject.slice('text_entity:'.length).split(':')[0];
+            if (name) return name.replace(/_/g, ' ');
+        }
+        return 'Объект не назван';
+    }
+
+    function aiExplanation(change) {
+        // «Почему система так решила» — краткое обоснование по доказательствам.
+        // Внутренних рассуждений модели здесь нет и быть не должно.
+        const provenance = change && typeof change.provenance === 'object'
+            ? change.provenance : {};
+        const atoms = array(provenance.source_atoms);
+        const sources = [provenance, ...atoms.map(item => (
+            item && typeof item.provenance === 'object' ? item.provenance : {}
+        ))];
+        for (const source of sources) {
+            const record = source && source.ai_change_resolution;
+            if (record && record.engineering_summary) {
+                return {
+                    summary: String(record.engineering_summary),
+                    quotes: array(record.evidence_quotes)
+                        .filter(item => item && item.quote)
+                        .map(item => ({
+                            side: String(item.side || '').toUpperCase() === 'RIGHT'
+                                ? 'справа' : 'слева',
+                            quote: String(item.quote),
+                        })),
+                    confidence: confidenceLabel(record.confidence),
+                    by_ai: true,
+                };
+            }
+        }
+        return null;
     }
 
     function normalizeRows(payload) {
@@ -183,19 +408,28 @@
                 // always, a review finding once it has a value and a page.
                 decidable: targetKind !== 'REVIEW_EVIDENCE'
                     || Boolean(presentation && presentation.presentable),
-                object_ref: change.project_entity_ref || change.subject_ref || change.scope_ref
-                    ? text(change.project_entity_ref || change.subject_ref || change.scope_ref)
-                    : 'Объект не определён',
+                object_ref: objectLabel(change),
+                object_diagnostic: text(
+                    change.project_entity_ref || change.subject_ref || change.scope_ref,
+                    '',
+                ),
                 left_pages: leftPages,
                 right_pages: rightPages,
-                sheets_label: `LEFT ${leftPages.join(', ') || '—'} → RIGHT ${rightPages.join(', ') || '—'}`,
+                sheets_label: `Было — ${pagesReference(leftPages)}; стало — ${pagesReference(rightPages)}`,
+                left_sheets: array(source.left_sheets),
+                right_sheets: array(source.right_sheets),
                 change_label: changeLabel(change),
                 before: text(change.before_value),
                 after: text(change.after_value),
                 source: String(change.source_mode || change.source || 'UNKNOWN').toUpperCase(),
+                source_label: sourceLabel(change.source_mode || change.source),
                 status: String(change.review_status || change.outcome || 'CONFIRMED').toUpperCase(),
+                status_label: reviewStatusLabel(change.review_status || change.outcome),
                 confidence: confidence(change.confidence),
+                confidence_label: confidenceLabel(change.confidence),
+                explanation: aiExplanation(change),
                 decision: decision(engineer.decision),
+                decision_label: decisionLabel(engineer.decision),
                 author: engineer.author || '',
                 comment: engineer.comment || '',
                 reason_code: engineer.reason_code || '',
@@ -734,6 +968,9 @@
         content_analysis: '3. Анализ содержимого',
         text: '3. Анализ содержимого',
         graphic: '3. Анализ содержимого',
+        // ИИ-анализ не заводит девятый этап: он живёт внутри синтеза, где и
+        // происходит — между разбором содержимого и вопросами инженеру.
+        ai_resolution: '6. Синтез изменений',
         objects: '4. Сопоставление объектов',
         entity_matching: '4. Сопоставление объектов',
         entity_binding: '4. Сопоставление объектов',
@@ -774,6 +1011,8 @@
         entity_binding: 'Привязка изменений к объектам',
         automatic_synthesis: 'Синтез автоматических изменений',
         review_application: 'Применение ответов инженера',
+        ai_resolution: 'ИИ-анализ текста',
+        ai_vision: 'ИИ-анализ графики',
         effective_synthesis: 'Синтез с учётом ответов',
         question_generation: 'Формирование вопросов инженеру',
         approved_report_projection: 'Обновление итогового отчёта',
@@ -1562,6 +1801,55 @@
         if (direct) return direct;
         const suffix = Object.keys(SUBSTAGE_LABELS).find(key => normalized.endsWith(`_${key}`));
         return suffix ? SUBSTAGE_LABELS[suffix] : raw;
+    }
+
+    // Прогресс ИИ-анализа на карточке конвейера. Инженеру нужны три числа:
+    // сколько разобрано, сколько закрыто автоматически и сколько осталось ему.
+    function normalizeAiProgress(payload) {
+        const wrapper = object(payload);
+        const state = object(wrapper.state || wrapper);
+        const stage = object(object(state.stages).ai_resolution);
+        const mode = String(stage.mode || 'OFF').toUpperCase();
+        if (!Object.keys(stage).length || mode === 'OFF') {
+            return {available: false, mode: 'OFF', mode_label: aiModeLabel('OFF')};
+        }
+        const total = metricNumber(stage.total) || 0;
+        const processed = metricNumber(stage.processed) || 0;
+        const resolved = metricNumber(stage.ai_resolved) || 0;
+        const human = metricNumber(stage.human_required) || 0;
+        const reasons = object(stage.human_reasons);
+        return {
+            available: true,
+            mode,
+            mode_label: aiModeLabel(mode),
+            status: normalizePipelineStatus(stage.status),
+            status_label: pipelineStatusLabel(stage.status),
+            title: 'ИИ-анализ текста',
+            total,
+            processed,
+            resolved,
+            human,
+            progress_label: `${processed} / ${total}`,
+            resolved_label: `Автоматически разрешено: ${resolved}`,
+            human_label: `Осталось человеку: ${human}`,
+            vision_calls: metricNumber(stage.vision_calls) || 0,
+            vision_label: metricNumber(stage.vision_items)
+                ? `ИИ-анализ графики: ${metricNumber(stage.vision_items)}`
+                : '',
+            model_calls: metricNumber(stage.model_calls) || 0,
+            cache_hits: metricNumber(stage.cache_hits) || 0,
+            duration_ms: metricNumber(stage.duration_ms) || 0,
+            // Причины показываем по-русски; коды остаются в диагностике.
+            reasons: Object.keys(reasons)
+                .map(code => ({
+                    code,
+                    label: aiReasonLabel(code),
+                    count: metricNumber(reasons[code]) || 0,
+                }))
+                .filter(item => item.count > 0)
+                .sort((left, right) => right.count - left.count),
+            budgets_hit: array(stage.budgets_hit).map(String),
+        };
     }
 
     function normalizeProductionOverview(payload, normalizedStages) {
@@ -2382,7 +2670,24 @@
         QUESTION_CATEGORIES,
         REVIEW_DECISIONS,
         aggregateConcurrentPipelineStatus,
+        aiExplanation,
+        aiModeLabel,
+        aiReasonLabel,
+        changeLabel,
+        confidenceLabel,
         decision,
+        decisionLabel,
+        dimensionLabel,
+        directionLabel,
+        objectLabel,
+        outcomeLabel,
+        pagesReference,
+        questionCategoryLabel,
+        relationTypeLabel,
+        reviewStatusLabel,
+        sheetReference,
+        sheetStatusLabel,
+        sourceLabel,
         estimatePipelineEtaMs,
         evidenceFocus,
         formatActivityAge,
@@ -2395,6 +2700,7 @@
         normalizePipelineProgress,
         normalizeProductionTextEvidence,
         normalizeProductionTextPresentation,
+        normalizeAiProgress,
         normalizeProductionOverview,
         normalizeProductionPipeline,
         normalizeQuestionCounts,

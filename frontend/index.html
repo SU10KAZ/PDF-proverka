@@ -5488,6 +5488,25 @@
                                 {{ scProductionOverview.progress.heartbeat_warning_text }}
                             </em>
                         </div>
+                        <div v-if="scProductionAiProgress.available"
+                             class="sc-production-pipeline__ai" aria-live="polite">
+                            <strong>{{ scProductionAiProgress.title }}</strong>
+                            <span>{{ scProductionAiProgress.progress_label }}</span>
+                            <span>{{ scProductionAiProgress.resolved_label }}</span>
+                            <span>{{ scProductionAiProgress.human_label }}</span>
+                            <span v-if="scProductionAiProgress.vision_label">
+                                {{ scProductionAiProgress.vision_label }}
+                            </span>
+                            <details v-if="scProductionAiProgress.reasons.length">
+                                <summary>Почему часть осталась инженеру</summary>
+                                <ul>
+                                    <li v-for="reason in scProductionAiProgress.reasons"
+                                        :key="reason.code">
+                                        {{ reason.label }} — {{ reason.count }}
+                                    </li>
+                                </ul>
+                            </details>
+                        </div>
                         <details v-if="scProductionOverview.reason_codes && scProductionOverview.reason_codes.length"
                                  class="sc-production-pipeline__diagnostics">
                             <summary>Внутренняя диагностика ошибки</summary>
@@ -6448,10 +6467,10 @@
                                             <em>Слева</em>
                                             <span v-for="sheet in scProductionQuestionSheets(question, 'LEFT')"
                                                   :key="'l' + sheet.page">
-                                                {{ sheet.label || ('Стр. ' + sheet.page) }}
+                                                {{ scSheetReference(sheet) }}
                                                 <button type="button" class="btn-link"
                                                         @click="scOpenProductionSheet('left', sheet.page)">
-                                                    Открыть лист (стр. {{ sheet.page }})
+                                                    Открыть доказательство
                                                 </button>
                                             </span>
                                         </div>
@@ -6459,10 +6478,10 @@
                                             <em>Справа</em>
                                             <span v-for="sheet in scProductionQuestionSheets(question, 'RIGHT')"
                                                   :key="'r' + sheet.page">
-                                                {{ sheet.label || ('Стр. ' + sheet.page) }}
+                                                {{ scSheetReference(sheet) }}
                                                 <button type="button" class="btn-link"
                                                         @click="scOpenProductionSheet('right', sheet.page)">
-                                                    Открыть лист (стр. {{ sheet.page }})
+                                                    Открыть доказательство
                                                 </button>
                                             </span>
                                         </div>
@@ -6665,28 +6684,42 @@
                                             <small>{{ row.target_id }} · {{ row.target_kind }}</small>
                                         </details>
                                     </td>
-                                    <td>{{ row.object_ref }}</td>
+                                    <td>
+                                        {{ row.object_ref }}
+                                        <details v-if="row.object_diagnostic"
+                                                 class="sc-production-row__diagnostics">
+                                            <summary>Подробнее</summary>
+                                            <small>{{ row.object_diagnostic }}</small>
+                                        </details>
+                                    </td>
                                     <td class="sc-production-sheets-cell">
                                         <button type="button" @click="scOpenProductionEvidence(row)">
-                                            <span>Слева: {{ row.left_pages.join(', ') || '—' }}</span>
-                                            <span>Справа: {{ row.right_pages.join(', ') || '—' }}</span>
+                                            <span>Было — {{ scProductionSheetRef(row, 'LEFT') }}</span>
+                                            <span>Стало — {{ scProductionSheetRef(row, 'RIGHT') }}</span>
                                         </button>
                                     </td>
                                     <td>
                                         <button type="button" class="sc-production-change-link"
                                                 @click="scOpenProductionEvidence(row)">{{ row.change_label }}</button>
-                                        <small v-if="row.reason_codes.length">{{ row.reason_codes.join(', ') }}</small>
+                                        <p v-if="row.explanation" class="sc-production-row__why">
+                                            {{ row.explanation.summary }}
+                                        </p>
+                                        <details v-if="row.reason_codes.length"
+                                                 class="sc-production-row__diagnostics">
+                                            <summary>Диагностика</summary>
+                                            <small>{{ row.reason_codes.join(', ') }}</small>
+                                        </details>
                                     </td>
                                     <td class="sc-production-value"><pre>{{ row.before }}</pre></td>
                                     <td class="sc-production-value"><pre>{{ row.after }}</pre></td>
                                     <td><span class="sc-production-source" :class="'is-' + row.source.toLowerCase()">
-                                        {{ row.source }}
+                                        {{ row.source_label }}
                                     </span></td>
                                     <td>
                                         <span class="sc-production-status" :class="'is-' + row.status.toLowerCase()">
-                                            {{ scProductionChangeStatusLabel(row.status) }}
+                                            {{ row.status_label }}
                                         </span>
-                                        <small>{{ row.confidence }}</small>
+                                        <small>Уверенность: {{ row.confidence_label }}</small>
                                     </td>
                                     <td class="decision-cell">
                                         <div class="decision-toggle" :aria-label="'Решение по ' + row.target_id">
@@ -6715,7 +6748,7 @@
                                     </td>
                                     <td class="reason-cell sc-production-reason-cell">
                                         <input type="text" :value="scProductionDecisionDraft(row).reason_code"
-                                               placeholder="Код причины (необязательно)"
+                                               placeholder="Причина решения (необязательно)"
                                                :disabled="scProductionStale || scProductionMutating"
                                                @input="scSetProductionDecisionField(row, 'reason_code', $event.target.value)">
                                         <textarea rows="2" :value="scProductionDecisionDraft(row).comment"

@@ -72,7 +72,9 @@ describe('Stage Comparison production review helpers', () => {
     expect(rows[0].presentation_group_id).toBe('pgroup_parameters');
     expect(rows[0].left_pages).toEqual([10]);
     expect(rows[0].right_pages).toEqual([24]);
-    expect(rows[0].sheets_label).toBe('LEFT 10 → RIGHT 24');
+    // Инженер читает «стр. PDF», а не LEFT/RIGHT: сторон в проекте нет,
+    // есть «было» и «стало».
+    expect(rows[0].sheets_label).toBe('Было — стр. PDF 10; стало — стр. PDF 24');
     expect(rows[1].decision).toBe('APPROVED');
     expect(rows[1].target_input_signature).toBe('target-signature-uchg_temperature');
     expect(rows[1].decision_revision).toBe(2);
@@ -671,8 +673,8 @@ describe('Stage Comparison: exception questions vs engineer review', () => {
     }]});
 
     expect(row.change_label).not.toContain('UNKNOWN_DIMENSION');
-    expect(row.change_label).toContain('классификация не определена');
-    expect(row.object_ref).toBe('Объект не определён');
+    expect(row.change_label).toContain('тип изменения не определён');
+    expect(row.object_ref).toBe('Объект не назван');
   });
 
   it('asks for an object name and never for an internal ref', () => {
@@ -689,7 +691,8 @@ describe('Stage Comparison: exception questions vs engineer review', () => {
     expect(app).toContain('function scOpenProductionSheet(side, page)');
     expect(html).toContain("scProductionQuestionSheets(question, 'LEFT')");
     expect(html).toContain("scProductionQuestionSheets(question, 'RIGHT')");
-    expect(html).toContain('Открыть лист (стр. {{ sheet.page }})');
+    expect(html).toContain('{{ scSheetReference(sheet) }}');
+    expect(html).toContain('Открыть доказательство');
     expect(html).toContain('Было: <b>{{ scProductionQuestionChange(question).before }}</b>');
     expect(app).toContain('function scProductionQuestionWhy(row)');
     expect(html).toContain('Почему предложено:');

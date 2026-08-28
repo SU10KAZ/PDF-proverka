@@ -253,10 +253,25 @@ def test_a_sheet_question_names_the_sheets_it_asks_about():
     assert "LEFT" not in question["prompt"] and "RIGHT" not in question["prompt"]
     assert "srel_" not in question["prompt"]
     assert question["context"]["left_sheets"] == [
-        {"page": 28, "label": "Корпуса 1, 2. План 2 этажа"},
-        {"page": 42, "label": "Корпус 4. План 3-15 этажей"},
+        {
+            "page": 28,
+            "label": "Корпуса 1, 2. План 2 этажа",
+            "title": "Корпуса 1, 2. План 2 этажа",
+            "sheet_no": None,
+        },
+        {
+            "page": 42,
+            "label": "Корпус 4. План 3-15 этажей",
+            "title": "Корпус 4. План 3-15 этажей",
+            "sheet_no": None,
+        },
     ]
-    assert question["context"]["right_sheets"] == [{"page": 9, "label": "Часть 1. Архитектурные решения. Планы"}]
+    assert question["context"]["right_sheets"] == [{
+        "page": 9,
+        "label": "Часть 1. Архитектурные решения. Планы",
+        "title": "Часть 1. Архитектурные решения. Планы",
+        "sheet_no": None,
+    }]
     labels = [option["label"] for option in question["answer_options"]]
     assert not any("N→1" in label or "1→N" in label for label in labels)
 
