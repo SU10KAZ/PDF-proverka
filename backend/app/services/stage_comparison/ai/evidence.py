@@ -74,6 +74,13 @@ class EvidenceItem:
     right_pages: list[int] = field(default_factory=list)
     locations: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
 
+    # страницы всей пары листов — нужны только визуальному резерву, когда у
+    # элемента есть координаты лишь с одной стороны: чтобы ответить «строки
+    # там действительно нет», надо посмотреть на противоположный лист целиком.
+    # В `model_view()` это НЕ входит: текстовому аналитику лист целиком не
+    # показывают, и отпечаток доказательств от этого поля не зависит.
+    sheet_pages: dict[str, list[int]] = field(default_factory=dict)
+
     # окно соседних строк документа; текущая строка помечена «»»
     left_context: list[str] = field(default_factory=list)
     right_context: list[str] = field(default_factory=list)
@@ -341,6 +348,14 @@ def build_packages(
         relation = relations_by_id.get(relation_id) or {}
         view = _relation_view(relation, labels) if relation else {}
         items = sorted(grouped[relation_id], key=lambda value: value.item_id)
+        relation_pages = {
+            "LEFT": sorted({int(page) for page in relation.get("left_pages") or []}),
+            "RIGHT": sorted({int(page) for page in relation.get("right_pages") or []}),
+        }
+        for item_view in items:
+            item_view.sheet_pages = {
+                side: list(pages) for side, pages in relation_pages.items() if pages
+            }
         for start in range(0, len(items), max(1, batch_size)):
             packages.append(EvidencePackage(
                 relation_id=relation_id,

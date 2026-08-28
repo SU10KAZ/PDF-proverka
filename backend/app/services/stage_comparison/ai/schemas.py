@@ -23,7 +23,7 @@ from ..unified_change_policy.contract import (
 SCHEMA_VERSION = "stage-comparison-ai.v1"
 PROMPT_VERSION = "stage-comparison-ai-analyst.v1"
 CRITIC_PROMPT_VERSION = "stage-comparison-ai-critic.v1"
-VISION_PROMPT_VERSION = "stage-comparison-ai-vision.v1"
+VISION_PROMPT_VERSION = "stage-comparison-ai-vision.v2"
 
 RESOLUTION_STATUSES = (
     "AI_RESOLVED",

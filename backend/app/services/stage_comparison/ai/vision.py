@@ -24,6 +24,10 @@ CROP_MARGIN = 0.06
 #: Разрешение рендера. Выше — дороже и медленнее без выигрыша в читаемости
 #: чертёжного шрифта.
 CROP_DPI = 200
+#: Разрешение листа целиком. Лист А2 при 200 dpi — это 4700 пикселей по
+#: длинной стороне, которые провайдер всё равно ужмёт; 150 достаточно, чтобы
+#: увидеть, есть ли на листе искомая строка.
+SHEET_DPI = 150
 #: Пометка, с которой наблюдение попадает в пакет доказательств.
 OBSERVATION_PREFIX = "по чертежу:"
 
@@ -35,6 +39,14 @@ class Crop:
     side: str
     page: int
     path: str
+    #: Лист целиком, а не место находки. Крайний случай: применяется, когда у
+    #: элемента с этой стороны нет координат вообще.
+    whole_sheet: bool = False
+
+    def caption(self) -> str:
+        side = "левая (старая) редакция" if self.side == "LEFT" else "правая (новая) редакция"
+        what = "ЛИСТ ЦЕЛИКОМ" if self.whole_sheet else "фрагмент вокруг места находки"
+        return f"{side}, стр. PDF {self.page}, {what}"
 
 
 def _fitz():
@@ -73,22 +85,33 @@ def render_crops(
     locations: Mapping[str, Sequence[Mapping[str, Any]]],
     out_dir: Path,
     dpi: int = CROP_DPI,
+    sheet_pages: Mapping[str, Sequence[int]] | None = None,
 ) -> list[Crop]:
-    """Отрисовать по одному фрагменту на сторону: сначала место находки.
+    """Отрисовать по одному изображению на сторону: сначала место находки.
 
-    Полная страница — крайний случай: на листе формата А1 находка занимает
-    доли процента площади, и целая страница в разрешении, где её видно, весит
-    столько, что смысл резерва теряется.
+    Если с одной стороны координат нет вовсе — а это ровно случай «строка
+    добавлена» или «строка удалена», — то на месте находки рисовать нечего, и
+    без противоположной стороны вопрос принципиально неразрешим: на первом же
+    боевом прогоне все 15 обращений к резерву вернули INSUFFICIENT_IMAGE
+    именно потому, что модели показывали одну сторону из двух. Поэтому для
+    пустой стороны берётся лист целиком из пары листов: увидеть, что искомой
+    строки на листе нет, можно только глядя на весь лист.
     """
     fitz = _fitz()
     out_dir.mkdir(parents=True, exist_ok=True)
+    sheet_pages = sheet_pages or {}
     crops: list[Crop] = []
     for side in ("LEFT", "RIGHT"):
         path = pdf_paths.get(side)
-        side_locations = list(locations.get(side) or [])
-        if not path or not side_locations:
+        if not path:
             continue
-        page_number = int(side_locations[0].get("page") or 0)
+        side_locations = list(locations.get(side) or [])
+        whole_sheet = not side_locations
+        if whole_sheet:
+            pages = [int(page) for page in sheet_pages.get(side) or ()]
+            page_number = pages[0] if pages else 0
+        else:
+            page_number = int(side_locations[0].get("page") or 0)
         if page_number < 1:
             continue
         with fitz.open(path) as document:
@@ -96,21 +119,27 @@ def render_crops(
                 continue
             page = document[page_number - 1]
             rect = page.rect
-            box = _bounds(side_locations)
             clip = None
-            if box is not None:
-                clip = fitz.Rect(
-                    rect.x0 + box[0] * rect.width,
-                    rect.y0 + box[1] * rect.height,
-                    rect.x0 + box[2] * rect.width,
-                    rect.y0 + box[3] * rect.height,
-                )
-                if clip.is_empty or clip.width < 4 or clip.height < 4:
-                    clip = None
-            pixmap = page.get_pixmap(dpi=dpi, clip=clip)
-            target = out_dir / f"{side.lower()}_p{page_number}.png"
+            if not whole_sheet:
+                box = _bounds(side_locations)
+                if box is not None:
+                    clip = fitz.Rect(
+                        rect.x0 + box[0] * rect.width,
+                        rect.y0 + box[1] * rect.height,
+                        rect.x0 + box[2] * rect.width,
+                        rect.y0 + box[3] * rect.height,
+                    )
+                    if clip.is_empty or clip.width < 4 or clip.height < 4:
+                        clip = None
+            pixmap = page.get_pixmap(
+                dpi=SHEET_DPI if whole_sheet else dpi, clip=clip
+            )
+            suffix = "_sheet" if whole_sheet else ""
+            target = out_dir / f"{side.lower()}_p{page_number}{suffix}.png"
             pixmap.save(str(target))
-        crops.append(Crop(side=side, page=page_number, path=str(target)))
+        crops.append(Crop(
+            side=side, page=page_number, path=str(target), whole_sheet=whole_sheet,
+        ))
     return crops
 
 
@@ -162,6 +191,7 @@ def crop_workdir() -> Path:
 __all__ = [
     "CROP_DPI",
     "CROP_MARGIN",
+    "SHEET_DPI",
     "Crop",
     "OBSERVATION_PREFIX",
     "VISION_REASONS",

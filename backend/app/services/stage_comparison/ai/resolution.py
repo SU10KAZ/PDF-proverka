@@ -532,6 +532,7 @@ class AiResolutionLayer:
                     pdf_paths=self.pdf_paths,
                     locations=item.locations,
                     out_dir=workdir,
+                    sheet_pages=item.sheet_pages,
                 )
             except Exception:  # noqa: BLE001 — отрисовка не должна ронять прогон
                 return None
@@ -542,7 +543,10 @@ class AiResolutionLayer:
                 provider_family=settings.CODEX_SESSION,
                 model=settings.vision_model(),
                 reasoning_level=settings.vision_effort(),
-                prompt=prompts.vision_prompt(item.model_view(), dict(resolution)),
+                prompt=prompts.vision_prompt(
+                    item.model_view(), dict(resolution),
+                    captions=[crop.caption() for crop in crops],
+                ),
                 schema=schemas.VISION_SCHEMA,
                 digest=digest,
                 role="vision",
@@ -564,7 +568,12 @@ class AiResolutionLayer:
             "confidence": payload.get("confidence"),
             "explanation": str(payload.get("explanation") or ""),
             "crops": [
-                {"side": crop.side, "page": crop.page} for crop in crops
+                {
+                    "side": crop.side,
+                    "page": crop.page,
+                    "whole_sheet": crop.whole_sheet,
+                }
+                for crop in crops
             ],
             "audit": _audit(
                 provider_family=settings.CODEX_SESSION,

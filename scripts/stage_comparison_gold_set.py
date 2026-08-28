@@ -29,13 +29,16 @@ from typing import Any, Mapping
 
 #: Доля выборки на каждую группу. Сумма — единица.
 STRATA = (
-    ("ai_resolved_high", "ИИ разрешил, уверенность высокая", 0.20),
-    ("ai_resolved_low", "ИИ разрешил, уверенность средняя или низкая", 0.15),
+    ("ai_resolved_high", "ИИ разрешил, уверенность высокая", 0.15),
+    ("ai_resolved_low", "ИИ разрешил, уверенность средняя или низкая", 0.10),
     ("ai_critic_accepted", "ИИ разрешил, критик принял", 0.10),
-    ("verifier_rejected", "Верификатор отклонил вывод ИИ", 0.15),
+    # Самая информативная группа: верификатор вывод принял, а критик
+    # отклонил. Кто из них прав, без разметки не скажет никто.
+    ("ai_critic_rejected", "Верификатор принял, критик отклонил", 0.20),
+    ("verifier_rejected", "Верификатор отклонил вывод ИИ", 0.10),
     ("model_declined", "ИИ отказался сам", 0.15),
-    ("deterministic_change", "Находка без участия ИИ", 0.15),
-    ("engineer_question", "Вопрос инженеру", 0.10),
+    ("deterministic_change", "Находка без участия ИИ", 0.12),
+    ("engineer_question", "Вопрос инженеру", 0.08),
 )
 
 #: Что инженер отвечает по каждому случаю. Три вопроса, не больше.
@@ -99,7 +102,21 @@ def collect(directory: Path) -> dict[str, list[dict[str, Any]]]:
             "detail": item.get("reason_detail"),
             "question": item.get("human_question"),
         }
-        if reason == "VERIFIER_REJECTED":
+        if reason == "CRITIC_REJECTED":
+            critic = item.get("critic") or {}
+            buckets["ai_critic_rejected"].append(_case(
+                "ai_critic_rejected", identifier, {
+                    **payload,
+                    "critic_verdict": critic.get("verdict"),
+                    "critic_explanation": critic.get("explanation"),
+                    "critic_problems": ", ".join(
+                        str(problem.get("code"))
+                        for problem in critic.get("problems") or []
+                        if isinstance(problem, Mapping)
+                    ),
+                },
+            ))
+        elif reason == "VERIFIER_REJECTED":
             buckets["verifier_rejected"].append(
                 _case("verifier_rejected", identifier, payload)
             )

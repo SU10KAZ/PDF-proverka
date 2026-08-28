@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+from pathlib import Path
 import json
 import time
 
@@ -814,3 +815,100 @@ def test_a_verifier_failure_is_counted_even_when_the_retry_saves_it(monkeypatch)
     assert artifact["diagnostics"]["verifier_rejected"] == 0
     assert artifact["diagnostics"]["ai_resolved"] == 1
     assert attempts == ["low", "high"]
+
+
+# ── Резерв: пустая сторона показывается листом целиком ─────────────────────
+
+def _one_page_pdf(path, text):
+    import fitz
+
+    document = fitz.open()
+    page = document.new_page(width=595, height=842)
+    page.insert_text((72, 200), text, fontsize=14)
+    document.save(str(path))
+    document.close()
+    return str(path)
+
+
+def test_a_side_without_coordinates_is_shown_as_the_whole_sheet(tmp_path):
+    """Строка «добавлена» — значит слева координат нет вовсе.
+
+    Первый боевой прогон отдал 15 обращений из 15 с вердиктом
+    INSUFFICIENT_IMAGE ровно потому, что модели показывали одну сторону из
+    двух. Ответить «этой строки на листе нет» можно только по листу целиком.
+    """
+    from backend.app.services.stage_comparison.ai import vision
+
+    left = _one_page_pdf(tmp_path / "left.pdf", "left sheet")
+    right = _one_page_pdf(tmp_path / "right.pdf", "right sheet")
+    crops = vision.render_crops(
+        pdf_paths={"LEFT": left, "RIGHT": right},
+        locations={
+            "LEFT": [],
+            "RIGHT": [{
+                "page": 1,
+                "bboxes": [{"x": 0.2, "y": 0.2, "width": 0.3, "height": 0.1}],
+            }],
+        },
+        out_dir=tmp_path / "crops",
+        sheet_pages={"LEFT": [1], "RIGHT": [1]},
+    )
+    by_side = {crop.side: crop for crop in crops}
+    assert set(by_side) == {"LEFT", "RIGHT"}
+    assert by_side["LEFT"].whole_sheet is True
+    assert by_side["RIGHT"].whole_sheet is False
+    assert "ЛИСТ ЦЕЛИКОМ" in by_side["LEFT"].caption()
+    assert "фрагмент" in by_side["RIGHT"].caption()
+    # лист целиком крупнее вырезанного места находки
+    assert Path(by_side["LEFT"].path).stat().st_size > 0
+
+
+def test_without_a_sheet_page_an_empty_side_stays_empty(tmp_path):
+    """Догадываться о номере страницы нельзя: нет пары листов — нет картинки."""
+    from backend.app.services.stage_comparison.ai import vision
+
+    left = _one_page_pdf(tmp_path / "left.pdf", "left sheet")
+    right = _one_page_pdf(tmp_path / "right.pdf", "right sheet")
+    crops = vision.render_crops(
+        pdf_paths={"LEFT": left, "RIGHT": right},
+        locations={
+            "LEFT": [],
+            "RIGHT": [{
+                "page": 1,
+                "bboxes": [{"x": 0.2, "y": 0.2, "width": 0.3, "height": 0.1}],
+            }],
+        },
+        out_dir=tmp_path / "crops",
+        sheet_pages={"RIGHT": [1]},
+    )
+    assert [crop.side for crop in crops] == ["RIGHT"]
+
+
+def test_the_prompt_names_every_image_it_actually_sends():
+    """Промпт обещал «два фрагмента» даже когда картинка одна."""
+    from backend.app.services.stage_comparison.ai import prompts
+
+    text = prompts.vision_prompt(
+        {"item_id": "ureview_1"}, None,
+        captions=[
+            "левая (старая) редакция, стр. PDF 37, ЛИСТ ЦЕЛИКОМ",
+            "правая (новая) редакция, стр. PDF 45, фрагмент вокруг места находки",
+        ],
+    )
+    assert "1. левая (старая) редакция, стр. PDF 37, ЛИСТ ЦЕЛИКОМ" in text
+    assert "2. правая (новая) редакция, стр. PDF 45," in text
+    assert "Отсутствие искомого значения на листе" in text
+
+
+def test_sheet_pages_reach_the_item_but_not_the_analyst():
+    """Лист целиком — дело резерва; отпечаток доказательств от него не зависит."""
+    from backend.app.services.stage_comparison.ai import evidence as evidence_module
+
+    packages = evidence_module.build_packages(
+        review_items=[_review_item()], preparation=_preparation(),
+        sheet_relations=_sheet_relations(), comparison_groups=_groups(),
+        batch_size=10,
+    )
+    item = packages[0].items[0]
+    assert item.sheet_pages == {"LEFT": [29], "RIGHT": [8]}
+    assert "sheet_pages" not in item.model_view()
