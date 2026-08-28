@@ -2697,6 +2697,8 @@ def _empty_text_atoms(
         "provenance": {
             "producer": TEXT_ATOM_BUILDER_VERSION,
             "stage3_signature": None,
+            "stage3_full_signature": None,
+            "stage3_full_signature_version": None,
             "stage4_signature": None,
             "generation_input_signature": generation_input_signature,
         },

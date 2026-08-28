@@ -9,8 +9,10 @@ from .text_differences import KIND as STAGE3_KIND, VERSION as STAGE3_VERSION
 from .text_semantic_validation import (
     KIND as STAGE4_KIND,
     SCHEMA_VERSION as STAGE4_SCHEMA_VERSION,
+    STAGE3_FULL_DIGEST_VERSION,
     iter_stage3_evidence,
     stage3_content_signature,
+    stage3_full_content_signature,
 )
 from .unified_change_policy import UNKNOWN_DIMENSION
 from .unified_change_synthesizer import normalize_synthesis_atom
@@ -141,6 +143,10 @@ def build_text_atoms(
     ):
         raise ValueError("Stage 3 text differences artifact required")
     stage3_signature = stage3_content_signature(text_differences)
+    # Published next to the Stage 4 binding, not merged into it: the atom
+    # ``input_signature`` must keep tracking the semantic surface only, while
+    # viewer evidence needs proof over the exact same-text pairs as well.
+    stage3_full_signature = stage3_full_content_signature(text_differences)
     facts_by_evidence: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     not_applicable_by_evidence: dict[str, Mapping[str, Any]] = {}
     if semantic_validation is not None:
@@ -240,6 +246,8 @@ def build_text_atoms(
         "provenance": {
             "producer": BUILDER_VERSION,
             "stage3_signature": stage3_signature,
+            "stage3_full_signature": stage3_full_signature,
+            "stage3_full_signature_version": STAGE3_FULL_DIGEST_VERSION,
             "stage4_signature": semantic_signature,
         },
     }

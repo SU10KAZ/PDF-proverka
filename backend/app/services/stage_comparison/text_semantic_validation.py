@@ -22,6 +22,12 @@ KIND = "stage_comparison_text_semantic_validation"
 SCHEMA_VERSION = "text-semantic-validation.v1"
 PRODUCER_VERSION = "text-semantic-validation-v1"
 STAGE3_DIGEST_VERSION = "stage3-semantic-content-v1"
+# ``deterministic_same`` carries no semantic fact, so the Stage 4 binding
+# above deliberately ignores it.  Viewer evidence does read those exact
+# pairs, and they therefore need their own covering content signature.
+STAGE3_FULL_DIGEST_VERSION = "stage3-content-v2"
+STAGE3_SEMANTIC_BUCKETS = ("changed", "removed", "added")
+STAGE3_FULL_BUCKETS = ("changed", "removed", "added", "deterministic_same")
 
 _OPTIONAL_FACT_FIELDS = {
     "fact_id",
@@ -66,16 +72,27 @@ def stage3_evidence_ref(group: Mapping[str, Any], bucket: str, item: Mapping[str
     return stable_id("tde_", identity)
 
 
-def iter_stage3_evidence(text_differences: Mapping[str, Any]):
+def iter_stage3_evidence(
+    text_differences: Mapping[str, Any],
+    *,
+    buckets: Iterable[str] = STAGE3_SEMANTIC_BUCKETS,
+):
+    """Yield canonical Stage 3 evidence for the requested buckets.
+
+    The default bucket set is the semantic delta surface Stage 4/5 consume.
+    Callers that need the complete persisted content (viewer evidence) pass
+    ``STAGE3_FULL_BUCKETS`` instead of re-deriving anything themselves.
+    """
     if (
         text_differences.get("kind") != STAGE3_KIND
         or text_differences.get("version") != STAGE3_VERSION
     ):
         raise ValueError("Stage 3 text differences artifact required")
+    selected = tuple(buckets)
     for group in text_differences.get("sheet_groups") or []:
         if not isinstance(group, Mapping):
             raise ValueError("Stage 3 sheet group must be an object")
-        for bucket in ("changed", "removed", "added"):
+        for bucket in selected:
             values = group.get(bucket) or []
             if not isinstance(values, list):
                 raise ValueError(f"Stage 3 {bucket} must be an array")
@@ -85,11 +102,17 @@ def iter_stage3_evidence(text_differences: Mapping[str, Any]):
                 yield stage3_evidence_ref(group, bucket, item), group, bucket, item
 
 
-def stage3_content_signature(text_differences: Mapping[str, Any]) -> str:
-    """Bind Stage 4 to canonical Stage 3 evidence, not a caller-owned label."""
+def _stage3_content_signature(
+    text_differences: Mapping[str, Any],
+    *,
+    buckets: Iterable[str],
+    digest_version: str,
+) -> str:
     evidence = []
     references = []
-    for evidence_ref, group, bucket, item in iter_stage3_evidence(text_differences):
+    for evidence_ref, group, bucket, item in iter_stage3_evidence(
+        text_differences, buckets=buckets
+    ):
         references.append(evidence_ref)
         evidence.append({
             "evidence_ref": evidence_ref,
@@ -105,9 +128,12 @@ def stage3_content_signature(text_differences: Mapping[str, Any]) -> str:
         })
     if len(references) != len(set(references)):
         raise ValueError("Stage 3 contains duplicate evidence identity")
+    # ``content_signature`` serializes with sorted keys, so neither dict
+    # insertion order, JSON field order nor PYTHONHASHSEED can move the
+    # digest.  Sorting the evidence list removes array-order dependence too.
     evidence.sort(key=lambda value: (value["evidence_ref"], content_signature(value)))
     return content_signature({
-        "digest_version": STAGE3_DIGEST_VERSION,
+        "digest_version": digest_version,
         "kind": text_differences.get("kind"),
         "version": text_differences.get("version"),
         "pair_id": text_differences.get("pair_id"),
@@ -115,6 +141,30 @@ def stage3_content_signature(text_differences: Mapping[str, Any]) -> str:
         "source_signature": text_differences.get("source_signature"),
         "evidence": evidence,
     })
+
+
+def stage3_content_signature(text_differences: Mapping[str, Any]) -> str:
+    """Bind Stage 4 to canonical Stage 3 evidence, not a caller-owned label."""
+    return _stage3_content_signature(
+        text_differences,
+        buckets=STAGE3_SEMANTIC_BUCKETS,
+        digest_version=STAGE3_DIGEST_VERSION,
+    )
+
+
+def stage3_full_content_signature(text_differences: Mapping[str, Any]) -> str:
+    """Cover every persisted Stage 3 pair, ``deterministic_same`` included.
+
+    Stage 4 only ever needed the delta buckets, which left exact same-text
+    pairs — real viewer evidence — outside every published signature.  This
+    is the versioned superset; it is stored next to its version so an older
+    v1-only artifact is never silently reinterpreted as covering more.
+    """
+    return _stage3_content_signature(
+        text_differences,
+        buckets=STAGE3_FULL_BUCKETS,
+        digest_version=STAGE3_FULL_DIGEST_VERSION,
+    )
 
 
 def _reference(value: Any, where: str, *, nullable: bool = False) -> str | None:
@@ -285,8 +335,12 @@ __all__ = [
     "PRODUCER_VERSION",
     "SCHEMA_VERSION",
     "STAGE3_DIGEST_VERSION",
+    "STAGE3_FULL_BUCKETS",
+    "STAGE3_FULL_DIGEST_VERSION",
+    "STAGE3_SEMANTIC_BUCKETS",
     "build_semantic_validation",
     "iter_stage3_evidence",
     "stage3_content_signature",
     "stage3_evidence_ref",
+    "stage3_full_content_signature",
 ]
