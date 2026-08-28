@@ -166,6 +166,17 @@ def _graphic_ledger(change_id: str, left_page: int, right_page: int) -> dict:
     }
 
 
+def _empty_routed_ledger(route: str, mode: str | None = None) -> dict:
+    ledger = _graphic_ledger("unused", 10, 24)
+    ledger.update({
+        "route": route,
+        "mode": mode,
+        "changes": [],
+        "diagnostics": {"routing": {"reason_code": f"reason-{route}"}},
+    })
+    return ledger
+
+
 def _install_run_fakes(
     monkeypatch,
     tmp_path: Path,
@@ -262,7 +273,7 @@ def _run(pair_id: str = "pair-1", *, input_mode: str = "PAGE") -> dict:
 
 
 def _split_sheet_relations() -> dict:
-    return match_sheets(
+    artifact = match_sheets(
         [{
             "pdf_page": 10,
             "comparison_group_ref": "panel",
@@ -288,6 +299,16 @@ def _split_sheet_relations() -> dict:
         ],
         generated_at="fixed",
     )
+    # Scope-answer tests exercise a genuinely ambiguous grouped relation.
+    # HIGH grouped relations are already proven and must not be asked again.
+    relation = artifact["relations"][0]
+    relation["status"] = "POSSIBLE"
+    relation["confidence"] = 0.5
+    relation["supported_edges"] = []
+    for edge in relation.get("candidate_edges") or []:
+        edge["status"] = "POSSIBLE"
+        edge["cardinality_edge_supported"] = False
+    return artifact
 
 
 def test_page_runs_without_sheet_gate_and_persists_stage3(tmp_path, monkeypatch):
@@ -1430,6 +1451,13 @@ def test_question_revision_and_effective_application_survive_get_and_reanswer(
         ],
         generated_at="fixed",
     )
+    relation = relations["relations"][0]
+    relation["status"] = "POSSIBLE"
+    relation["confidence"] = 0.5
+    relation["supported_edges"] = []
+    for edge in relation.get("candidate_edges") or []:
+        edge["status"] = "POSSIBLE"
+        edge["cardinality_edge_supported"] = False
     _install_run_fakes(
         monkeypatch,
         tmp_path,
@@ -1984,12 +2012,7 @@ def test_document_one_to_one_resolves_blocks_server_side_and_calls_router(
         "run_graphic_comparison",
         lambda session, pair_id, left, right, **options: calls.append(
             (session, pair_id, left, right, options)
-        ) or {
-            "changes": [],
-            "mode": "MODE_1",
-            "route": "MODE_1_APPLICABLE",
-            "diagnostics": {"routing": {"reason_code": "LOCAL_DIFF_WITHIN_GATES"}},
-        },
+        ) or _empty_routed_ledger("MODE_1_APPLICABLE", "MODE_1"),
     )
 
     _ledger, stage = orchestrator._run_graphic_branch(
@@ -1997,7 +2020,12 @@ def test_document_one_to_one_resolves_blocks_server_side_and_calls_router(
         "pair-1",
         pair,
         request,
-        [{"left_pages": [10], "right_pages": [24], "relation_type": "MATCHED"}],
+        [{
+            "left_pages": [10],
+            "right_pages": [24],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        }],
     )
 
     assert calls == [(
@@ -2008,6 +2036,8 @@ def test_document_one_to_one_resolves_blocks_server_side_and_calls_router(
         {"persist": False},
     )]
     assert stage["selection_source"] == "SERVER_MATCHED_PAGES"
+    assert stage["router_runs"] == 1
+    assert stage["mode1_groups"] == 1
 
 
 def test_document_explicit_graphic_scope_rejects_non_graphic_block_ids(
@@ -2032,17 +2062,13 @@ def test_document_explicit_graphic_scope_rejects_non_graphic_block_ids(
         "run_graphic_comparison",
         lambda _session, _pair_id, left, right, **_options: calls.append(
             (left, right)
-        ) or {
-            "changes": [],
-            "mode": "MODE_1",
-            "route": "MODE_1_APPLICABLE",
-            "diagnostics": {"routing": {"reason_code": "LOCAL_DIFF_WITHIN_GATES"}},
-        },
+        ) or _empty_routed_ledger("MODE_1_APPLICABLE", "MODE_1"),
     )
     groups = [{
         "left_pages": [10],
         "right_pages": [24],
         "relation_type": "MATCHED",
+        "status": "HIGH",
     }]
 
     _ledger, mixed_stage = orchestrator._run_graphic_branch(
@@ -2070,7 +2096,7 @@ def test_document_explicit_graphic_scope_rejects_non_graphic_block_ids(
 
     assert calls == [(["left-image"], ["right-graphic"])]
     assert mixed_stage["selection_source"] == "CLIENT_BLOCK_IDS"
-    assert empty_ledger is None
+    assert empty_ledger["kind"] == orchestrator.DOCUMENT_GRAPHIC_BUNDLE_KIND
     assert non_graphic_stage["status"] == "NOT_APPLICABLE"
     assert non_graphic_stage["reason_code"] == (
         "NO_CLIENT_GRAPHIC_BLOCK_IN_EFFECTIVE_SHEET_SCOPE"
@@ -2083,13 +2109,20 @@ def test_document_split_graphics_fail_safe_without_new_comparator(tmp_path):
         "pair-1",
         _pair(tmp_path),
         orchestrator.normalize_run_request(input_mode="DOCUMENT"),
-        [{"left_pages": [10], "right_pages": [24, 25], "relation_type": "SPLIT"}],
+        [{
+            "left_pages": [10],
+            "right_pages": [24, 25],
+            "relation_type": "SPLIT",
+            "status": "HIGH",
+        }],
     )
 
-    assert ledger is None
+    assert ledger["kind"] == orchestrator.DOCUMENT_GRAPHIC_BUNDLE_KIND
     assert stage["status"] == "NOT_APPLICABLE"
-    assert stage["mode"] == "MODE_2_REQUIRED"
-    assert stage["required_action"] == "SELECT_PREPARED_BLOCK_IDS"
+    assert stage["reason_code"] == "grouped_graphic_comparison_not_supported"
+    assert stage["group_results"][0]["required_action"] == (
+        "CONFIRM_GROUPED_SHEET_WITHOUT_GRAPHIC_COMPARISON"
+    )
 
 
 @pytest.mark.parametrize(
@@ -2116,12 +2149,7 @@ def test_document_graphic_stage_follows_validated_router_route(
         "_prepared_graphic_block_ids",
         lambda _document, _pages, side: [f"{side}-graphic"],
     )
-    ledger = {
-        "route": route,
-        "mode": mode,
-        "changes": [],
-        "diagnostics": {"routing": {"reason_code": f"reason-{route}"}},
-    }
+    ledger = _empty_routed_ledger(route, mode)
     monkeypatch.setattr(
         orchestrator.store,
         "run_graphic_comparison",
@@ -2133,10 +2161,16 @@ def test_document_graphic_stage_follows_validated_router_route(
         "pair-1",
         pair,
         request,
-        [{"left_pages": [10], "right_pages": [24], "relation_type": "MATCHED"}],
+        [{
+            "left_pages": [10],
+            "right_pages": [24],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        }],
     )
 
-    assert actual_ledger is ledger
+    assert actual_ledger["kind"] == orchestrator.DOCUMENT_GRAPHIC_BUNDLE_KIND
+    assert actual_ledger["groups"][0]["ledger"] == ledger
     assert stage["route"] == route
     assert stage["status"] == expected_status
     assert stage["source_state"] == expected_source_state
@@ -2149,8 +2183,269 @@ def test_document_graphic_stage_follows_validated_router_route(
         graphic_ledger=actual_ledger,
         graphic_source_state=stage["source_state"],
     )
-    assert snapshot["graphic"]["ledger"] == ledger
+    assert snapshot["graphic"]["ledger"] == actual_ledger
     assert snapshot["graphic"]["source_state"] == expected_source_state
+
+
+def test_document_graphic_bundle_routes_every_high_one_to_one_and_namespaces_evidence(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setenv("COMPARISON_ROOT", str(tmp_path / "comparison"))
+    calls = []
+
+    def prepared(_document, pages, side):
+        return [f"{side}-{pages[0]}"]
+
+    def compare(_session, _pair_id, left, right, **options):
+        calls.append((left, right, options))
+        left_page = int(left[0].rsplit("-", 1)[1])
+        right_page = int(right[0].rsplit("-", 1)[1])
+        # Deliberately reuse the source change id.  The document bundle must
+        # produce collision-free atom and evidence identities per sheet.
+        return _graphic_ledger("same-source-change", left_page, right_page)
+
+    monkeypatch.setattr(orchestrator, "_prepared_graphic_block_ids", prepared)
+    monkeypatch.setattr(orchestrator.store, "run_graphic_comparison", compare)
+    groups = [
+        {
+            "id": "sheet-a",
+            "left_pages": [10],
+            "right_pages": [24],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        },
+        {
+            "id": "sheet-b",
+            "left_pages": [11],
+            "right_pages": [25],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        },
+    ]
+
+    bundle, stage = orchestrator._run_graphic_branch(
+        "session-1",
+        "pair-1",
+        _pair(tmp_path),
+        orchestrator.normalize_run_request(input_mode="DOCUMENT"),
+        groups,
+    )
+
+    assert calls == [
+        (["left-10"], ["right-24"], {"persist": False}),
+        (["left-11"], ["right-25"], {"persist": False}),
+    ]
+    assert bundle["kind"] == orchestrator.DOCUMENT_GRAPHIC_BUNDLE_KIND
+    assert stage["status"] == "COMPLETED"
+    assert stage["groups_completed"] == 2
+    assert stage["router_runs"] == 2
+    assert stage["mode1_groups"] == 2
+    assert stage["changes"] == 2
+    assert production_store.load_artifact(
+        "session-1", "pair-1", "document_graphic_bundle"
+    )["input_signature"] == bundle["input_signature"]
+
+    atoms = orchestrator._graphic_atoms_from_source(bundle)
+    assert len(atoms) == 2
+    assert len({atom["atom_id"] for atom in atoms}) == 2
+    assert len({atom["evidence_ref"] for atom in atoms}) == 2
+    assert {
+        atom["source_artifact"]["kind"] for atom in atoms
+    } == {orchestrator.DOCUMENT_GRAPHIC_BUNDLE_KIND}
+    synthesis = {
+        "changes": [{
+            "change_id": "document-graphic-change",
+            "source_mode": "GRAPHIC",
+            "evidence_refs": [
+                {
+                    "source": "GRAPHIC",
+                    "atom_id": atom["atom_id"],
+                    "evidence_ref": atom["evidence_ref"],
+                    "source_artifact": atom["source_artifact"],
+                }
+                for atom in atoms
+            ],
+        }],
+        "review_items": [],
+    }
+    evidence = orchestrator.build_evidence_navigation(
+        "document-graphic-change",
+        synthesis=synthesis,
+        graphic_ledger=bundle,
+    )
+    assert {item["page"] for item in evidence["sides"]["LEFT"]} == {10, 11}
+    assert {item["page"] for item in evidence["sides"]["RIGHT"]} == {24, 25}
+
+    snapshot = orchestrator._build_source_snapshot(
+        run_id="document-bundle-run",
+        generation_input_signature="document-bundle-generation",
+        text_artifact={"atoms": []},
+        text_source_state="ABSENT",
+        graphic_ledger=bundle,
+        graphic_source_state="VALID",
+    )
+    state = {
+        "run_id": "document-bundle-run",
+        "input_signature": "document-bundle-generation",
+        "stages": {
+            "source_snapshot": {"input_signature": snapshot["input_signature"]}
+        },
+    }
+    assert orchestrator._validate_source_snapshot(snapshot, state)["graphic"][
+        "ledger"
+    ]["input_signature"] == bundle["input_signature"]
+
+
+def test_document_graphic_groups_fail_closed_independently(tmp_path, monkeypatch):
+    prepared_calls = []
+    router_calls = []
+
+    def prepared(_document, pages, side):
+        page = pages[0]
+        prepared_calls.append((side, page))
+        if page in {10, 24}:
+            return [f"{side}-{page}-a", f"{side}-{page}-b"]
+        return [f"{side}-{page}"]
+
+    def compare(_session, _pair_id, left, right, **_options):
+        router_calls.append((left, right))
+        left_page = int(left[0].rsplit("-", 1)[1])
+        right_page = int(right[0].rsplit("-", 1)[1])
+        if left_page == 12:
+            raise RuntimeError("one isolated router failure")
+        return _graphic_ledger("surviving-change", left_page, right_page)
+
+    monkeypatch.setattr(orchestrator, "_prepared_graphic_block_ids", prepared)
+    monkeypatch.setattr(orchestrator.store, "run_graphic_comparison", compare)
+    groups = [
+        {
+            "id": "ambiguous-blocks",
+            "left_pages": [10],
+            "right_pages": [24],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        },
+        {
+            "id": "possible-sheet",
+            "left_pages": [11],
+            "right_pages": [25],
+            "relation_type": "MATCHED",
+            "status": "POSSIBLE",
+        },
+        {
+            "id": "failed-router",
+            "left_pages": [12],
+            "right_pages": [26],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        },
+        {
+            "id": "surviving-router",
+            "left_pages": [13],
+            "right_pages": [27],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        },
+        {
+            "id": "grouped-sheet",
+            "left_pages": [14],
+            "right_pages": [28, 29],
+            "relation_type": "SPLIT",
+            "status": "HIGH",
+        },
+    ]
+
+    bundle, stage = orchestrator._run_graphic_branch(
+        "session-1",
+        "pair-1",
+        _pair(tmp_path),
+        orchestrator.normalize_run_request(input_mode="DOCUMENT"),
+        groups,
+    )
+
+    # POSSIBLE and grouped relations never inspect or route graphic blocks.
+    assert not any(page in {11, 25, 14, 28, 29} for _side, page in prepared_calls)
+    assert router_calls == [
+        (["left-12"], ["right-26"]),
+        (["left-13"], ["right-27"]),
+    ]
+    results = {
+        item["group"]["id"]: item for item in bundle["groups"]
+    }
+    assert results["ambiguous-blocks"]["status"] == "REVIEW_REQUIRED"
+    assert results["ambiguous-blocks"]["reason_code"] == (
+        "ambiguous_prepared_graphic_blocks"
+    )
+    assert results["possible-sheet"]["status"] == "REVIEW_REQUIRED"
+    assert results["possible-sheet"]["reason_code"] == (
+        "sheet_relation_requires_review"
+    )
+    assert results["failed-router"]["status"] == "CHECK_BLOCKED"
+    assert results["surviving-router"]["status"] == "COMPLETED"
+    assert results["grouped-sheet"]["status"] == "NOT_APPLICABLE"
+    assert results["grouped-sheet"]["reason_code"] == (
+        "grouped_graphic_comparison_not_supported"
+    )
+    assert stage["status"] == "CHECK_BLOCKED"
+    assert stage["coverage"] == "PARTIAL"
+    assert stage["groups_completed"] == 1
+    assert stage["groups_review_required"] == 2
+    assert stage["groups_blocked"] == 1
+    assert stage["groups_not_applicable"] == 1
+    assert stage["router_runs"] == 2
+    assert stage["router_failed_groups"] == 1
+    assert stage["mode1_groups"] == 1
+    assert stage["changes"] == 1
+    block_question = next(
+        item for item in stage["engineer_questions"]
+        if item["question_type"] == "GRAPHIC_BLOCK_SELECTION"
+    )
+    assert block_question["left_block_ids"] == ["left-10-a", "left-10-b"]
+    assert block_question["right_block_ids"] == ["right-24-a", "right-24-b"]
+    assert len(orchestrator._graphic_atoms_from_source(bundle)) == 1
+
+
+def test_document_graphic_bundle_signature_and_diagnostics_are_fail_closed(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(
+        orchestrator,
+        "_prepared_graphic_block_ids",
+        lambda _document, pages, side: [f"{side}-{pages[0]}"],
+    )
+    monkeypatch.setattr(
+        orchestrator.store,
+        "run_graphic_comparison",
+        lambda *_args, **_kwargs: _graphic_ledger("change", 10, 24),
+    )
+    bundle, _stage = orchestrator._run_graphic_branch(
+        "session-1",
+        "pair-1",
+        _pair(tmp_path),
+        orchestrator.normalize_run_request(input_mode="DOCUMENT"),
+        [{
+            "id": "sheet-a",
+            "left_pages": [10],
+            "right_pages": [24],
+            "relation_type": "MATCHED",
+            "status": "HIGH",
+        }],
+    )
+
+    damaged = json.loads(json.dumps(bundle))
+    damaged["groups"][0]["change_refs"][0]["evidence_ref"] = "rewritten"
+    with pytest.raises(orchestrator.ProductionStateConflictError):
+        orchestrator._validate_document_graphic_bundle(damaged)
+
+    lying = json.loads(json.dumps(bundle))
+    lying["diagnostics"]["groups_completed"] = 0
+    core = {key: value for key, value in lying.items() if key != "input_signature"}
+    lying["input_signature"] = orchestrator.content_signature(core)
+    with pytest.raises(
+        orchestrator.ProductionStateConflictError,
+        match="diagnostics changed",
+    ):
+        orchestrator._validate_document_graphic_bundle(lying)
 
 
 def test_grouped_page_graphic_scope_never_compares_only_first_pages(

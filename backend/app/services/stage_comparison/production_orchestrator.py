@@ -81,6 +81,14 @@ SOURCE_SNAPSHOT_KIND = "stage_comparison_production_source_snapshot"
 SOURCE_SNAPSHOT_SCHEMA_VERSION = "production-source-snapshot.v1"
 PAGE_GRAPHIC_BUNDLE_KIND = "stage_comparison_page_graphic_bundle"
 PAGE_GRAPHIC_BUNDLE_SCHEMA_VERSION = "page-graphic-bundle.v1"
+DOCUMENT_GRAPHIC_BUNDLE_KIND = "stage_comparison_document_graphic_bundle"
+DOCUMENT_GRAPHIC_BUNDLE_SCHEMA_VERSION = "document-graphic-bundle.v1"
+DOCUMENT_GRAPHIC_GROUP_STATUSES = frozenset({
+    "COMPLETED",
+    "NOT_APPLICABLE",
+    "REVIEW_REQUIRED",
+    "CHECK_BLOCKED",
+})
 
 
 class ProductionStateConflictError(production_store.ProductionConflictError):
@@ -529,12 +537,272 @@ def _validate_page_graphic_bundle(payload: Mapping[str, Any]) -> dict[str, Any]:
     return copy.deepcopy(dict(payload))
 
 
+def _normalize_document_graphic_group(
+    value: Mapping[str, Any],
+) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ValueError("DOCUMENT graphic group must be an object")
+    left_pages = _positive_pages(value.get("left_pages") or [], "left")
+    right_pages = _positive_pages(value.get("right_pages") or [], "right")
+    if not left_pages or not right_pages:
+        raise ValueError("DOCUMENT graphic group requires both sides")
+    relation_type = str(value.get("relation_type") or "MATCHED").upper()
+    relation_status = str(
+        value.get("status", value.get("relation_status")) or "UNKNOWN"
+    ).upper()
+    return {
+        "id": str(value.get("id") or value.get("relation_id") or ""),
+        "left_pages": left_pages,
+        "right_pages": right_pages,
+        "relation_type": relation_type,
+        "relation_status": relation_status,
+    }
+
+
+def _document_graphic_group_id(group: Mapping[str, Any]) -> str:
+    normalized = _normalize_document_graphic_group(group)
+    return stable_id(
+        "dgraphic_group_",
+        normalized["left_pages"],
+        normalized["right_pages"],
+        normalized["relation_type"],
+        normalized["id"],
+        length=28,
+    )
+
+
+def _document_graphic_evidence_ref(group_id: str, change_id: str) -> str:
+    return stable_id("dgraphic_evidence_", group_id, change_id, length=30)
+
+
+def _document_bundle_diagnostics(
+    groups: Iterable[Mapping[str, Any]],
+) -> dict[str, Any]:
+    records = list(groups)
+    router_counts = {
+        route: sum(str(item.get("route") or "") == route for item in records)
+        for route in (
+            "MODE_1_APPLICABLE",
+            "MODE_2_REQUIRED",
+            "VISION_REQUIRED",
+            "NO_GRAPHIC_COMPARISON",
+        )
+    }
+    return {
+        "groups_total": len(records),
+        "confident_1to1_groups": sum(
+            item.get("eligible_confident_1to1") is True for item in records
+        ),
+        "groups_completed": sum(
+            item.get("status") == "COMPLETED" for item in records
+        ),
+        "groups_not_applicable": sum(
+            item.get("status") == "NOT_APPLICABLE" for item in records
+        ),
+        "groups_review_required": sum(
+            item.get("status") == "REVIEW_REQUIRED" for item in records
+        ),
+        "groups_blocked": sum(
+            item.get("status") == "CHECK_BLOCKED" for item in records
+        ),
+        "changes": sum(len(item.get("change_refs") or []) for item in records),
+        "router": {
+            "runs": sum(item.get("router_called") is True for item in records),
+            **router_counts,
+            "FAILED": sum(
+                item.get("router_called") is True
+                and item.get("status") == "CHECK_BLOCKED"
+                and not item.get("route")
+                for item in records
+            ),
+        },
+        "uses_model": False,
+        "legacy_first_match_used": False,
+    }
+
+
+def _build_document_graphic_bundle(
+    entries: Iterable[Mapping[str, Any]],
+) -> dict[str, Any]:
+    groups = []
+    for entry in entries:
+        group = _normalize_document_graphic_group(entry.get("group") or {})
+        group_id = _document_graphic_group_id(group)
+        ledger = entry.get("ledger")
+        change_refs = []
+        if isinstance(ledger, Mapping):
+            # Validate every independently routed result before it can enter
+            # the signed aggregate.  One invalid group is represented by its
+            # fail-closed entry by the caller; it never weakens another group.
+            ledger_to_graphic_atoms(ledger)
+            change_refs = [
+                {
+                    "source_change_id": str(change.get("change_id") or ""),
+                    "evidence_ref": _document_graphic_evidence_ref(
+                        group_id, str(change.get("change_id") or "")
+                    ),
+                }
+                for change in sorted(
+                    ledger.get("changes") or [],
+                    key=lambda item: str((item or {}).get("change_id") or ""),
+                )
+                if isinstance(change, Mapping) and change.get("change_id")
+            ]
+        groups.append({
+            "group_id": group_id,
+            "group": group,
+            "eligible_confident_1to1": bool(
+                entry.get("eligible_confident_1to1")
+            ),
+            "status": str(entry.get("status") or "CHECK_BLOCKED"),
+            "source_state": str(entry.get("source_state") or "CHECK_BLOCKED"),
+            "reason_code": entry.get("reason_code"),
+            "review_required": bool(entry.get("review_required")),
+            "required_action": entry.get("required_action"),
+            "selection_source": entry.get("selection_source"),
+            "left_block_ids": sorted({
+                str(value) for value in entry.get("left_block_ids") or []
+                if str(value)
+            }),
+            "right_block_ids": sorted({
+                str(value) for value in entry.get("right_block_ids") or []
+                if str(value)
+            }),
+            "router_called": bool(entry.get("router_called")),
+            "route": entry.get("route"),
+            "mode": entry.get("mode"),
+            "ledger": copy.deepcopy(dict(ledger))
+            if isinstance(ledger, Mapping)
+            else None,
+            "change_refs": change_refs,
+        })
+    groups.sort(key=lambda item: (
+        item["group"]["left_pages"],
+        item["group"]["right_pages"],
+        item["group_id"],
+    ))
+    core = {
+        "kind": DOCUMENT_GRAPHIC_BUNDLE_KIND,
+        "schema_version": DOCUMENT_GRAPHIC_BUNDLE_SCHEMA_VERSION,
+        "version": 1,
+        "direction": "LEFT_TO_RIGHT",
+        "scope": "DOCUMENT",
+        "groups": groups,
+        "diagnostics": _document_bundle_diagnostics(groups),
+    }
+    return {**core, "input_signature": content_signature(core)}
+
+
+def _validate_document_graphic_bundle(
+    payload: Mapping[str, Any],
+) -> dict[str, Any]:
+    if (
+        payload.get("kind") != DOCUMENT_GRAPHIC_BUNDLE_KIND
+        or payload.get("schema_version") != DOCUMENT_GRAPHIC_BUNDLE_SCHEMA_VERSION
+        or payload.get("version") != 1
+        or payload.get("direction") != "LEFT_TO_RIGHT"
+        or payload.get("scope") != "DOCUMENT"
+        or not isinstance(payload.get("groups"), list)
+    ):
+        raise ProductionStateConflictError("DOCUMENT graphic bundle is malformed")
+    core = {
+        key: copy.deepcopy(value)
+        for key, value in payload.items()
+        if key != "input_signature"
+    }
+    if payload.get("input_signature") != content_signature(core):
+        raise ProductionStateConflictError("DOCUMENT graphic bundle digest changed")
+    seen_groups: set[str] = set()
+    seen_evidence: set[str] = set()
+    for record in payload.get("groups") or []:
+        if not isinstance(record, Mapping):
+            raise ProductionStateConflictError(
+                "DOCUMENT graphic bundle group is malformed"
+            )
+        try:
+            group = _normalize_document_graphic_group(record.get("group") or {})
+        except (TypeError, ValueError) as exc:
+            raise ProductionStateConflictError(
+                "DOCUMENT graphic bundle group scope is malformed"
+            ) from exc
+        group_id = str(record.get("group_id") or "")
+        if not group_id or group_id != _document_graphic_group_id(group):
+            raise ProductionStateConflictError(
+                "DOCUMENT graphic bundle group id changed"
+            )
+        if group_id in seen_groups:
+            raise ProductionStateConflictError(
+                "DOCUMENT graphic bundle group is duplicated"
+            )
+        seen_groups.add(group_id)
+        status = str(record.get("status") or "")
+        if status not in DOCUMENT_GRAPHIC_GROUP_STATUSES:
+            raise ProductionStateConflictError(
+                "DOCUMENT graphic bundle group status is unsupported"
+            )
+        ledger = record.get("ledger")
+        if status == "COMPLETED" and not isinstance(ledger, Mapping):
+            raise ProductionStateConflictError(
+                "completed DOCUMENT graphic bundle group has no ledger"
+            )
+        if ledger is not None and not isinstance(ledger, Mapping):
+            raise ProductionStateConflictError(
+                "DOCUMENT graphic bundle ledger is malformed"
+            )
+        source_change_ids = []
+        if isinstance(ledger, Mapping):
+            try:
+                ledger_to_graphic_atoms(ledger)
+            except (TypeError, ValueError) as exc:
+                raise ProductionStateConflictError(
+                    "DOCUMENT graphic bundle ledger failed validation"
+                ) from exc
+            source_change_ids = sorted(
+                str(change.get("change_id") or "")
+                for change in ledger.get("changes") or []
+                if isinstance(change, Mapping) and change.get("change_id")
+            )
+        expected_refs = [
+            {
+                "source_change_id": change_id,
+                "evidence_ref": _document_graphic_evidence_ref(
+                    group_id, change_id
+                ),
+            }
+            for change_id in source_change_ids
+        ]
+        if record.get("change_refs") != expected_refs:
+            raise ProductionStateConflictError(
+                "DOCUMENT graphic bundle evidence index changed"
+            )
+        for ref in expected_refs:
+            evidence_ref = ref["evidence_ref"]
+            if evidence_ref in seen_evidence:
+                raise ProductionStateConflictError(
+                    "DOCUMENT graphic bundle evidence ref is duplicated"
+                )
+            seen_evidence.add(evidence_ref)
+    if payload.get("diagnostics") != _document_bundle_diagnostics(
+        payload.get("groups") or []
+    ):
+        raise ProductionStateConflictError(
+            "DOCUMENT graphic bundle diagnostics changed"
+        )
+    return copy.deepcopy(dict(payload))
+
+
 def _graphic_atoms_from_source(payload: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     if payload is None:
         return []
-    if payload.get("kind") != PAGE_GRAPHIC_BUNDLE_KIND:
+    kind = payload.get("kind")
+    if kind not in {PAGE_GRAPHIC_BUNDLE_KIND, DOCUMENT_GRAPHIC_BUNDLE_KIND}:
         return list(ledger_to_graphic_atoms(payload).get("atoms") or [])
-    bundle = _validate_page_graphic_bundle(payload)
+    if kind == PAGE_GRAPHIC_BUNDLE_KIND:
+        bundle = _validate_page_graphic_bundle(payload)
+        provenance_group_key = "page_graphic_group_id"
+    else:
+        bundle = _validate_document_graphic_bundle(payload)
+        provenance_group_key = "document_graphic_group_id"
     atoms = []
     for record in bundle["groups"]:
         ledger = record.get("ledger")
@@ -555,16 +823,326 @@ def _graphic_atoms_from_source(payload: Mapping[str, Any] | None) -> list[dict[s
             atom["evidence_ref"] = refs[original_evidence_ref]
             provenance = dict(atom.get("provenance") or {})
             provenance.update({
-                "page_graphic_group_id": group_id,
+                provenance_group_key: group_id,
                 "source_atom_id": original_atom_id,
                 "source_evidence_ref": original_evidence_ref,
             })
             atom["provenance"] = provenance
+            if kind == DOCUMENT_GRAPHIC_BUNDLE_KIND:
+                atom["source_artifact"] = {
+                    "kind": DOCUMENT_GRAPHIC_BUNDLE_KIND,
+                    "schema_version": DOCUMENT_GRAPHIC_BUNDLE_SCHEMA_VERSION,
+                    "artifact_ref": f"sha256:{bundle['input_signature']}",
+                }
             atoms.append(atom)
     atoms.sort(key=lambda item: str(item.get("atom_id") or ""))
     if len({item["atom_id"] for item in atoms}) != len(atoms):
-        raise ProductionStateConflictError("PAGE graphic bundle atom is duplicated")
+        raise ProductionStateConflictError("graphic bundle atom is duplicated")
     return atoms
+
+
+def _document_graphic_entry(
+    session_id: str,
+    pair_id: str,
+    pair: Mapping[str, Any],
+    group_value: Mapping[str, Any],
+    *,
+    explicit_left_ids: Iterable[str] = (),
+    explicit_right_ids: Iterable[str] = (),
+) -> dict[str, Any]:
+    """Route one confident 1:1 sheet without borrowing another group's blocks."""
+    group = _normalize_document_graphic_group(group_value)
+    base = {
+        "group": group,
+        "eligible_confident_1to1": False,
+        "status": "CHECK_BLOCKED",
+        "source_state": "CHECK_BLOCKED",
+        "reason_code": None,
+        "review_required": False,
+        "required_action": None,
+        "selection_source": (
+            "CLIENT_BLOCK_IDS"
+            if list(explicit_left_ids) or list(explicit_right_ids)
+            else "SERVER_MATCHED_PAGES"
+        ),
+        "left_block_ids": [],
+        "right_block_ids": [],
+        "router_called": False,
+        "route": None,
+        "mode": None,
+        "ledger": None,
+    }
+    if len(group["left_pages"]) != 1 or len(group["right_pages"]) != 1:
+        return {
+            **base,
+            "status": "NOT_APPLICABLE",
+            "source_state": "NOT_APPLICABLE",
+            "reason_code": "grouped_graphic_comparison_not_supported",
+            "review_required": True,
+            "required_action": "CONFIRM_GROUPED_SHEET_WITHOUT_GRAPHIC_COMPARISON",
+        }
+    if group["relation_status"] != "HIGH":
+        return {
+            **base,
+            "status": "REVIEW_REQUIRED",
+            "source_state": "REVIEW_REQUIRED",
+            "reason_code": "sheet_relation_requires_review",
+            "review_required": True,
+            "required_action": "CONFIRM_SHEET_RELATION",
+        }
+
+    base["eligible_confident_1to1"] = True
+    try:
+        if base["selection_source"] == "CLIENT_BLOCK_IDS":
+            left_ids = _graphic_block_ids_in_sheet_scope(
+                pair.get("left") or {},
+                explicit_left_ids,
+                group["left_pages"],
+                "LEFT",
+            )
+            right_ids = _graphic_block_ids_in_sheet_scope(
+                pair.get("right") or {},
+                explicit_right_ids,
+                group["right_pages"],
+                "RIGHT",
+            )
+        else:
+            left_ids = _prepared_graphic_block_ids(
+                pair.get("left") or {}, group["left_pages"], "left"
+            )
+            right_ids = _prepared_graphic_block_ids(
+                pair.get("right") or {}, group["right_pages"], "right"
+            )
+    except (FileNotFoundError, OSError, UnicodeDecodeError, ValueError) as exc:
+        return {
+            **base,
+            "reason_code": type(exc).__name__,
+            "review_required": True,
+            "required_action": "VERIFY_PREPARED_GRAPHIC_INPUT",
+        }
+    base["left_block_ids"] = list(left_ids)
+    base["right_block_ids"] = list(right_ids)
+    if len(left_ids) > 1 or len(right_ids) > 1:
+        return {
+            **base,
+            "status": "REVIEW_REQUIRED",
+            "source_state": "REVIEW_REQUIRED",
+            "reason_code": "ambiguous_prepared_graphic_blocks",
+            "review_required": True,
+            "required_action": "SELECT_PREPARED_BLOCK_IDS",
+        }
+    if len(left_ids) != 1 or len(right_ids) != 1:
+        return {
+            **base,
+            "status": "NOT_APPLICABLE",
+            "source_state": "NOT_APPLICABLE",
+            "reason_code": (
+                "NO_CLIENT_GRAPHIC_BLOCK_IN_EFFECTIVE_SHEET_SCOPE"
+                if base["selection_source"] == "CLIENT_BLOCK_IDS"
+                else "no_prepared_graphic_block_on_matched_sheet"
+            ),
+        }
+
+    try:
+        ledger = store.run_graphic_comparison(
+            session_id,
+            pair_id,
+            list(left_ids),
+            list(right_ids),
+            persist=False,
+        )
+        # Reject a malformed Router result inside this group.  The aggregate
+        # caller keeps routing the remaining independent sheets.
+        ledger_to_graphic_atoms(ledger)
+    except (
+        FileNotFoundError,
+        KeyError,
+        OSError,
+        RuntimeError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        return {
+            **base,
+            "router_called": True,
+            "reason_code": type(exc).__name__,
+            "review_required": True,
+            "required_action": "RETRY_OR_REVIEW_GRAPHIC_GROUP",
+        }
+
+    route = str(ledger.get("route") or "")
+    routing = (ledger.get("diagnostics") or {}).get("routing") or {}
+    common = {
+        **base,
+        "router_called": True,
+        "route": route or None,
+        "mode": ledger.get("mode"),
+        "ledger": ledger,
+        "reason_code": routing.get("reason_code") or "GRAPHIC_ROUTE_UNAVAILABLE",
+    }
+    if route == "MODE_1_APPLICABLE":
+        return {
+            **common,
+            "status": "COMPLETED",
+            "source_state": "VALID" if ledger.get("changes") else "ABSENT",
+        }
+    if route == "MODE_2_REQUIRED":
+        return {
+            **common,
+            "status": "NOT_APPLICABLE",
+            "source_state": "NOT_APPLICABLE",
+            "review_required": True,
+            "required_action": "RUN_MODE_2_OR_REVIEW",
+        }
+    if route == "VISION_REQUIRED":
+        return {
+            **common,
+            "status": "CHECK_BLOCKED",
+            "source_state": "CHECK_BLOCKED",
+            "review_required": True,
+            "required_action": "RUN_VISION_OR_REVIEW",
+        }
+    if route == "NO_GRAPHIC_COMPARISON":
+        return {
+            **common,
+            "status": "NOT_APPLICABLE",
+            "source_state": "NOT_APPLICABLE",
+        }
+    return {
+        **common,
+        "review_required": True,
+        "required_action": "REVIEW_GRAPHIC_ROUTE",
+    }
+
+
+def _document_graphic_stage(bundle: Mapping[str, Any]) -> dict[str, Any]:
+    validated = _validate_document_graphic_bundle(bundle)
+    groups = validated["groups"]
+    diagnostics = validated["diagnostics"]
+    has_results = diagnostics["groups_completed"] > 0
+    has_unresolved = (
+        diagnostics["groups_review_required"] > 0
+        or diagnostics["groups_blocked"] > 0
+    )
+    changes = diagnostics["changes"]
+    if has_unresolved:
+        status = "CHECK_BLOCKED"
+        source_state = "CHECK_BLOCKED"
+    elif has_results:
+        status = "COMPLETED"
+        source_state = "VALID" if changes else "ABSENT"
+    else:
+        status = "NOT_APPLICABLE"
+        source_state = "NOT_APPLICABLE"
+    routes = sorted({
+        str(item.get("route")) for item in groups if item.get("route")
+    })
+    reasons = sorted({
+        str(item.get("reason_code"))
+        for item in groups
+        if item.get("reason_code")
+    })
+    selections = sorted({
+        str(item.get("selection_source"))
+        for item in groups
+        if item.get("selection_source")
+    })
+    not_checked = (
+        diagnostics["groups_not_applicable"]
+        + diagnostics["groups_review_required"]
+        + diagnostics["groups_blocked"]
+    )
+    engineer_questions = [
+        {
+            "question_id": stable_id(
+                "gquestion_",
+                item["group_id"],
+                item.get("reason_code"),
+                item.get("required_action"),
+                item.get("left_block_ids") or [],
+                item.get("right_block_ids") or [],
+                length=28,
+            ),
+            "category": "GRAPHIC",
+            "question_type": (
+                "GRAPHIC_BLOCK_SELECTION"
+                if item.get("required_action") == "SELECT_PREPARED_BLOCK_IDS"
+                else "GRAPHIC_GROUP_REVIEW"
+            ),
+            "group_id": item["group_id"],
+            "reason_code": item.get("reason_code"),
+            "required_action": item.get("required_action"),
+            "left_block_ids": list(item.get("left_block_ids") or []),
+            "right_block_ids": list(item.get("right_block_ids") or []),
+        }
+        for item in groups
+        if item.get("review_required")
+    ]
+    return {
+        "status": status,
+        "source_state": source_state,
+        "mode": "DOCUMENT_GRAPHIC_BUNDLE",
+        "route": routes[0] if len(routes) == 1 else "MULTI_ROUTE" if routes else None,
+        "routes": routes,
+        "changes": changes,
+        "selection_source": (
+            selections[0] if len(selections) == 1 else "MIXED" if selections else None
+        ),
+        "reason_code": reasons[0] if len(reasons) == 1 else (
+            "document_graphic_groups_require_attention" if reasons else None
+        ),
+        "reason_codes": reasons,
+        "groups_total": diagnostics["groups_total"],
+        "groups_confident_1to1": diagnostics["confident_1to1_groups"],
+        "groups_completed": diagnostics["groups_completed"],
+        "groups_not_applicable": diagnostics["groups_not_applicable"],
+        "groups_review_required": diagnostics["groups_review_required"],
+        "groups_blocked": diagnostics["groups_blocked"],
+        "router_runs": diagnostics["router"]["runs"],
+        "mode1_groups": diagnostics["router"]["MODE_1_APPLICABLE"],
+        "mode2_groups": diagnostics["router"]["MODE_2_REQUIRED"],
+        "vision_groups": diagnostics["router"]["VISION_REQUIRED"],
+        "no_graphic_comparison_groups": diagnostics["router"][
+            "NO_GRAPHIC_COMPARISON"
+        ],
+        "router_failed_groups": diagnostics["router"]["FAILED"],
+        "coverage": (
+            "PARTIAL" if has_results and not_checked
+            else "CHECKED" if has_results and not not_checked
+            else "NOT_CHECKED"
+        ),
+        "review_required": sum(
+            item.get("review_required") is True for item in groups
+        ),
+        "engineer_questions": engineer_questions,
+        "engineer_question_count": len(engineer_questions),
+        "group_results": [
+            {
+                "group_id": item["group_id"],
+                "group": copy.deepcopy(item["group"]),
+                "status": item["status"],
+                "source_state": item["source_state"],
+                "reason_code": item.get("reason_code"),
+                "review_required": item.get("review_required"),
+                "required_action": item.get("required_action"),
+                "selection_source": item.get("selection_source"),
+                "left_block_count": len(item.get("left_block_ids") or []),
+                "right_block_count": len(item.get("right_block_ids") or []),
+                "left_block_ids": list(item.get("left_block_ids") or [])
+                if item.get("review_required") else [],
+                "right_block_ids": list(item.get("right_block_ids") or [])
+                if item.get("review_required") else [],
+                "router_called": item.get("router_called"),
+                "route": item.get("route"),
+                "mode": item.get("mode"),
+                "changes": len(item.get("change_refs") or []),
+            }
+            for item in groups
+        ],
+        "artifact_kind": DOCUMENT_GRAPHIC_BUNDLE_KIND,
+        "bundle_input_signature": validated["input_signature"],
+        "parent_relation_required": False,
+    }
 
 
 def _run_graphic_branch(
@@ -727,121 +1305,28 @@ def _run_graphic_branch(
                 "reason_code": type(exc).__name__,
                 "parent_relation_required": False,
             }
-    left_ids, right_ids = request["left_block_ids"], request["right_block_ids"]
-    selection_source = "CLIENT_BLOCK_IDS"
+    left_ids = list(request["left_block_ids"])
+    right_ids = list(request["right_block_ids"])
     if bool(left_ids) != bool(right_ids):
         raise ValueError("DOCUMENT graphic block ids are required on both sides")
-    if left_ids:
-        left_ids = _graphic_block_ids_in_sheet_scope(
-            pair.get("left") or {},
-            left_ids,
-            {
-                page
-                for group in comparison_groups
-                for page in group.get("left_pages") or []
-            },
-            "LEFT",
+    entries = [
+        _document_graphic_entry(
+            session_id,
+            pair_id,
+            pair,
+            group,
+            explicit_left_ids=left_ids,
+            explicit_right_ids=right_ids,
         )
-        right_ids = _graphic_block_ids_in_sheet_scope(
-            pair.get("right") or {},
-            right_ids,
-            {
-                page
-                for group in comparison_groups
-                for page in group.get("right_pages") or []
-            },
-            "RIGHT",
-        )
-        if not left_ids or not right_ids:
-            return None, {
-                "status": "NOT_APPLICABLE",
-                "source_state": "NOT_APPLICABLE",
-                "mode": None,
-                "changes": 0,
-                "reason_code": "NO_CLIENT_GRAPHIC_BLOCK_IN_EFFECTIVE_SHEET_SCOPE",
-                "selection_source": selection_source,
-            }
-    if not left_ids:
-        # One canonical 1:1 sheet scope can be handed to the existing Router
-        # without inventing cross-group pairing.  SPLIT/MERGED or several
-        # groups need an explicit prepared-block scope (future grouped MODE 2).
-        if (
-            len(comparison_groups) != 1
-            or len(comparison_groups[0].get("left_pages") or []) != 1
-            or len(comparison_groups[0].get("right_pages") or []) != 1
-        ):
-            return None, {
-                "status": "NOT_APPLICABLE",
-                "source_state": "NOT_APPLICABLE",
-                "mode": "MODE_2_REQUIRED",
-                "changes": 0,
-                "reason_code": "COMPLEX_SHEET_RELATION_REQUIRES_EXPLICIT_GRAPHIC_SCOPE",
-                "required_action": "SELECT_PREPARED_BLOCK_IDS",
-            }
-        group = comparison_groups[0]
-        left_ids = _prepared_graphic_block_ids(
-            pair.get("left") or {}, group["left_pages"], "left"
-        )
-        right_ids = _prepared_graphic_block_ids(
-            pair.get("right") or {}, group["right_pages"], "right"
-        )
-        if not left_ids or not right_ids:
-            return None, {
-                "status": "NOT_APPLICABLE",
-                "source_state": "NOT_APPLICABLE",
-                "mode": None,
-                "changes": 0,
-                "reason_code": "NO_PREPARED_GRAPHIC_BLOCK_ON_MATCHED_SHEET",
-            }
-        selection_source = "SERVER_MATCHED_PAGES"
-    ledger = store.run_graphic_comparison(
-        session_id,
-        pair_id,
-        list(left_ids),
-        list(right_ids),
-        persist=False,
+        for group in comparison_groups
+    ]
+    bundle = _validate_document_graphic_bundle(
+        _build_document_graphic_bundle(entries)
     )
-    route = str(ledger.get("route") or "")
-    routing = (ledger.get("diagnostics") or {}).get("routing") or {}
-    common = {
-        "route": route or None,
-        "mode": ledger.get("mode"),
-        "changes": len(ledger.get("changes") or []),
-        "selection_source": selection_source,
-        "reason_code": routing.get("reason_code") or "GRAPHIC_ROUTE_UNAVAILABLE",
-    }
-    if route == "MODE_1_APPLICABLE":
-        return ledger, {
-            **common,
-            "status": "COMPLETED",
-            "source_state": "VALID" if ledger.get("changes") else "ABSENT",
-        }
-    if route == "MODE_2_REQUIRED":
-        return ledger, {
-            **common,
-            "status": "NOT_APPLICABLE",
-            "source_state": "NOT_APPLICABLE",
-        }
-    if route == "VISION_REQUIRED":
-        return ledger, {
-            **common,
-            "status": "CHECK_BLOCKED",
-            "source_state": "CHECK_BLOCKED",
-        }
-    if route == "NO_GRAPHIC_COMPARISON":
-        return ledger, {
-            **common,
-            "status": "NOT_APPLICABLE",
-            "source_state": "NOT_APPLICABLE",
-        }
-    # A malformed/older result cannot establish absence.  Keep the raw ledger
-    # in the generation snapshot for audit, while failing the source state
-    # closed instead of publishing a completed zero-change check.
-    return ledger, {
-        **common,
-        "status": "CHECK_BLOCKED",
-        "source_state": "CHECK_BLOCKED",
-    }
+    production_store.save_artifact(
+        session_id, pair_id, "document_graphic_bundle", bundle
+    )
+    return bundle, _document_graphic_stage(bundle)
 
 
 def _entity_records(
@@ -1777,6 +2262,11 @@ def _validate_source_snapshot(
         and graphic_ledger.get("kind") == PAGE_GRAPHIC_BUNDLE_KIND
     ):
         _validate_page_graphic_bundle(graphic_ledger)
+    if (
+        isinstance(graphic_ledger, Mapping)
+        and graphic_ledger.get("kind") == DOCUMENT_GRAPHIC_BUNDLE_KIND
+    ):
+        _validate_document_graphic_bundle(graphic_ledger)
     core = {key: copy.deepcopy(value) for key, value in payload.items() if key != "input_signature"}
     actual = content_signature(core)
     expected = (

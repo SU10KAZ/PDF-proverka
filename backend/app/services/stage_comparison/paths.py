@@ -190,6 +190,10 @@ def production_page_graphic_bundle_path(session_id: str, pair_id: str) -> Path:
     return production_dir(session_id, pair_id) / "page_graphic_bundle.json"
 
 
+def production_document_graphic_bundle_path(session_id: str, pair_id: str) -> Path:
+    return production_dir(session_id, pair_id) / "document_graphic_bundle.json"
+
+
 def index_json_path() -> Path:
     return comparison_root_path() / "index.json"
 
@@ -238,5 +242,6 @@ __all__ = [
     "production_final_report_path",
     "production_direct_page_mode2_path",
     "production_page_graphic_bundle_path",
+    "production_document_graphic_bundle_path",
     "index_json_path",
 ]

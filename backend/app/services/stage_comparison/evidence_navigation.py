@@ -147,7 +147,10 @@ def _graphic_locations(
 def _graphic_change_index(payload: Mapping[str, Any] | None) -> dict[str, Any]:
     if not isinstance(payload, Mapping):
         return {}
-    if payload.get("kind") != "stage_comparison_page_graphic_bundle":
+    if payload.get("kind") not in {
+        "stage_comparison_page_graphic_bundle",
+        "stage_comparison_document_graphic_bundle",
+    }:
         return {
             str(change.get("change_id")): change
             for change in payload.get("changes") or []
