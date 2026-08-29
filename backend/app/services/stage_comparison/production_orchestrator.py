@@ -2341,10 +2341,21 @@ def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
     total = int(diagnostics.get("input_items") or 0)
     resolved = int(diagnostics.get("ai_resolved") or 0)
     mode = str((artifact or {}).get("mode") or ai_settings.MODE_OFF)
+    runtime_ready = diagnostics.get("runtime_ready")
+    if mode == ai_settings.MODE_OFF:
+        status = "NOT_APPLICABLE"
+    elif runtime_ready is False:
+        # Слой обещал разбор и не смог его начать. «Готово» здесь было бы
+        # неправдой: ни один элемент не разобран, и инженер должен это видеть.
+        status = "PARTIAL"
+    else:
+        status = "COMPLETED"
     return {
-        "status": "NOT_APPLICABLE" if mode == ai_settings.MODE_OFF else "COMPLETED",
+        "status": status,
         "mode": mode,
         "run_mode": ai_settings.run_mode_label(mode),
+        "runtime_ready": True if runtime_ready is None else bool(runtime_ready),
+        "runtime_problems": list(diagnostics.get("runtime_problems") or []),
         "total": total,
         "processed": total,
         "ai_resolved": resolved,

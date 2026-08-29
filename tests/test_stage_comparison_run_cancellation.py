@@ -260,3 +260,32 @@ def test_a_forbidden_run_mode_is_refused_at_the_request_boundary(monkeypatch):
 
     with pytest.raises(ValueError):
         production.normalize_run_request(input_mode="DOCUMENT", ai_mode="DEEP")
+
+
+def test_the_stage_card_says_partial_when_the_layer_could_not_start():
+    artifact = resolution_module.unavailable_artifact(
+        [{"review_evidence_id": "ureview_1", "atom_id": "tatom_1"}],
+        runtime={"ok": False, "problems": ["codex CLI не найден"]},
+        mode="STANDARD",
+        generated_at="fixed",
+    )
+
+    stage = production._ai_resolution_stage(artifact)
+
+    # «Готово» здесь было бы неправдой: ни один элемент не разобран.
+    assert stage["status"] == "PARTIAL"
+    assert stage["runtime_ready"] is False
+    assert stage["runtime_problems"] == ["codex CLI не найден"]
+    assert stage["ai_resolved"] == 0
+    assert stage["human_required"] == 1
+    assert stage["mode_completeness"] == "PARTIAL"
+
+
+def test_the_stage_card_of_a_normal_run_stays_completed():
+    artifact = resolution_module.empty_artifact(generated_at="fixed")
+
+    stage = production._ai_resolution_stage(artifact)
+
+    assert stage["status"] == "NOT_APPLICABLE"
+    assert stage["runtime_ready"] is True
+    assert stage["run_mode"] == "FAST"
