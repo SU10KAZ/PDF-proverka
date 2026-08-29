@@ -6633,7 +6633,8 @@
                                                     :disabled="scProductionMutating || scProductionStale"
                                                     @change="scSetProductionQuestionExplicitField(question, 'relation_type', $event.target.value)">
                                                 <option v-for="relationType in ['MATCHED', 'SPLIT', 'MERGED']"
-                                                        :key="relationType" :value="relationType">{{ relationType }}</option>
+                                                        :key="relationType"
+                                                        :value="relationType">{{ scRelationTypeShortLabel(relationType) }}</option>
                                             </select>
                                         </label>
                                     </div>
@@ -6692,7 +6693,7 @@
                                     <td class="id-cell">
                                         <button type="button" class="sc-production-evidence-link"
                                                 :disabled="Boolean(scProductionEvidenceLoadingId)"
-                                                :title="'Открыть точное доказательство ' + row.target_id"
+                                                :title="'Открыть точное доказательство: ' + row.object_ref"
                                                 @click="scOpenProductionEvidence(row)">
                                             {{ scProductionEvidenceLoadingId === row.target_id ? '…' : 'Доказательство' }}
                                         </button>
@@ -6747,7 +6748,7 @@
                                         <small>Уверенность: {{ row.confidence_label }}</small>
                                     </td>
                                     <td class="decision-cell">
-                                        <div class="decision-toggle" :aria-label="'Решение по ' + row.target_id">
+                                        <div class="decision-toggle" :aria-label="'Решение по объекту: ' + row.object_ref">
                                             <button type="button" class="btn-decision btn-accept"
                                                     :class="{active: scProductionDecisionDraft(row).decision === 'APPROVED'}"
                                                     :aria-pressed="String(scProductionDecisionDraft(row).decision === 'APPROVED')"
@@ -7249,7 +7250,7 @@
                 <section class="sc-shell-card sc-production-report__head">
                     <div>
                         <strong>Итоговый отчёт: слева → справа</strong>
-                        <p>Только подтверждённые экспертом атомарные изменения.</p>
+                        <p>В итоговый отчёт включаются только изменения, подтверждённые инженером.</p>
                     </div>
                     <button type="button" class="btn btn-secondary"
                             :disabled="!scActivePair || scProductionLoading"

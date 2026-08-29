@@ -14686,14 +14686,21 @@ const app = createApp({
                     ? 'MERGED'
                         : 'UNCERTAIN';
             const selected = relationType || inferred;
+            // Сообщение об ошибке — такой же интерфейс, как подпись поля:
+            // код связи в нём инженеру не поможет, потому что он этих кодов
+            // нигде больше не видит.
             if (inferred === 'UNCERTAIN' || selected === 'UNCERTAIN') {
                 throw new Error(
-                    'Точная связь должна иметь cardinality 1→1, 1→N или N→1; UNCERTAIN не закрывает вопрос.',
+                    'Точная связь возможна только когда листы соответствуют один к одному, '
+                    + 'один к нескольким или несколько к одному. '
+                    + 'Уточните списки листов слева и справа.',
                 );
             }
             if (selected !== 'UNCERTAIN' && selected !== inferred) {
                 throw new Error(
-                    `Тип связи ${selected} не соответствует cardinality; ожидается ${inferred}.`,
+                    `Выбранная связь — «${scRelationTypeShortLabel(selected)}» — `
+                    + `не сходится с числом листов; по спискам получается: `
+                    + `«${scRelationTypeShortLabel(inferred)}».`,
                 );
             }
             return selected;
@@ -15234,6 +15241,14 @@ const app = createApp({
 
         function scOutcomeLabel(value) {
             return StageComparisonReview.outcomeLabel(value);
+        }
+
+        function scRelationTypeLabel(value) {
+            return StageComparisonReview.relationTypeLabel(value);
+        }
+
+        function scRelationTypeShortLabel(value) {
+            return StageComparisonReview.relationTypeShortLabel(value);
         }
 
         function scSourceLabel(value) {
@@ -18441,6 +18456,7 @@ const app = createApp({
             scProductionChangeStatusLabel, scProductionDecisionLabel,
             scSideLabel, scInputModeLabel, scAiRunModeLabel, scConfidenceLabel,
             scDimensionLabel, scDirectionLabel, scOutcomeLabel, scSourceLabel,
+            scRelationTypeLabel, scRelationTypeShortLabel,
             scSheetReference, scProductionSheetRef,
             scOpenProductionEvidence, scCloseProductionEvidence,
             scReturnToProductionReviewRow,

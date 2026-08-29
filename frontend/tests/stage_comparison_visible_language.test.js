@@ -284,3 +284,139 @@ describe('слой Б: видимый текст раздела', () => {
         expect(SECTION.length).toBeGreaterThan(WITHOUT_DIAGNOSTICS.length);
     });
 });
+
+
+// ── Слой В: перечисления, отрисованные в выпадающих списках ───────────────
+//
+// Именно здесь прошлые проверки слепли. Санитайзер вырезал и v-for со
+// списком кодов, и мустач с подписью, поэтому строка «MATCHED / SPLIT /
+// MERGED», которую инженер читал глазами, для теста не существовала вовсе.
+//
+// Поэтому тут ничего не вырезается: список значений и выражение подписи
+// берутся из шаблона как есть, а подпись ВЫЧИСЛЯЕТСЯ настоящей функцией
+// словаря — ровно так, как её вычислит Vue. Ошибка «печатаем код вместо
+// подписи» становится видна как текст «MATCHED», а не как отсутствие строки.
+
+/** Все `<option v-for="X in [...]">` видимой части: значения и выражение подписи. */
+function optionEnumerations(markup) {
+    const found = [];
+    const re = /<option\s+v-for="(\w+) in \[([^\]]*)\]"([\s\S]*?)<\/option>/g;
+    let match;
+    while ((match = re.exec(markup)) !== null) {
+        const body = match[3];
+        const label = /\{\{([^}]*)\}\}/.exec(body);
+        const bound = /:value="([^"]*)"/.exec(body);
+        found.push({
+            variable: match[1],
+            values: match[2].split(',')
+                .map(value => value.trim().replace(/^'|'$/g, ''))
+                .filter(Boolean),
+            labelExpression: label ? label[1].trim() : '',
+            valueExpression: bound ? bound[1].trim() : '',
+        });
+    }
+    return found;
+}
+
+/** Подписи шаблона считаются теми же функциями, что и в браузере. */
+const TEMPLATE_HELPERS = {
+    scRelationTypeLabel: review.relationTypeLabel,
+    scRelationTypeShortLabel: review.relationTypeShortLabel,
+    scDimensionLabel: review.dimensionLabel,
+    scDirectionLabel: review.directionLabel,
+    scOutcomeLabel: review.outcomeLabel,
+    scSourceLabel: review.sourceLabel,
+    scProductionQuestionCategoryLabel: review.questionCategoryLabel,
+};
+
+/** Вычислить выражение подписи для одного значения перечисления. */
+function renderLabel(expression, variable, value) {
+    const call = /^(\w+)\(\s*(\w+)\s*\)$/.exec(expression);
+    if (!call) return {rendered: null, raw: expression};
+    const helper = TEMPLATE_HELPERS[call[1]];
+    if (!helper) return {rendered: null, raw: expression};
+    if (call[2] !== variable) return {rendered: null, raw: expression};
+    return {rendered: helper(value), raw: expression};
+}
+
+describe('слой В: выпадающие списки печатают подписи, а не коды', () => {
+    const ENUMERATIONS = optionEnumerations(WITHOUT_DIAGNOSTICS);
+
+    it('находит перечисления в шаблоне вообще', () => {
+        expect(ENUMERATIONS.length).toBeGreaterThan(0);
+        const variables = ENUMERATIONS.map(item => item.variable);
+        expect(variables).toContain('relationType');
+    });
+
+    it('ни один список не печатает переменную перечисления как есть', () => {
+        // Ровно этот дефект: `{{ relationType }}` вместо подписи.
+        const raw = ENUMERATIONS
+            .filter(item => item.labelExpression === item.variable)
+            .map(item => `${item.variable}: ${item.values.join('/')}`);
+        expect(raw).toEqual([]);
+    });
+
+    it('каждое значение каждого списка отрисовывается по-русски', () => {
+        const printed = [];
+        ENUMERATIONS.forEach(item => {
+            item.values.forEach(value => {
+                const {rendered, raw} = renderLabel(
+                    item.labelExpression, item.variable, value,
+                );
+                // Подпись обязана вычисляться известной функцией словаря:
+                // неизвестное выражение — это либо новый хелпер, который
+                // забыли сюда добавить, либо печать кода в обход словаря.
+                expect(rendered, `${item.variable} → ${raw}`).not.toBeNull();
+                printed.push({value, rendered});
+            });
+        });
+        printed.forEach(({value, rendered}) => {
+            expect(rendered, value).toBeTruthy();
+            expect(rendered, value).not.toContain(value);
+            expect(/[A-Z]{3,}/.test(rendered), `${value} → ${rendered}`).toBe(false);
+            expect(/[а-яё]/i.test(rendered), `${value} → ${rendered}`).toBe(true);
+        });
+    });
+
+    it('значением списка остаётся код контракта, а не перевод', () => {
+        // Наружу в API уезжает MATCHED, инженер читает «Листы соответствуют».
+        ENUMERATIONS.forEach(item => {
+            expect(item.valueExpression, item.variable).toBe(item.variable);
+        });
+    });
+
+    it.each([
+        ['MATCHED', 'соответств'],
+        ['SPLIT', 'нескольким справа'],
+        ['MERGED', 'одному справа'],
+        ['POSSIBLE', 'ждёт подтверждения'],
+        ['NO_MATCH', 'нет'],
+        ['UNCERTAIN', 'не установлен'],
+    ])('объясняет связь листов %s словами', (code, fragment) => {
+        const long = review.relationTypeLabel(code);
+        const short = review.relationTypeShortLabel(code);
+        const status = review.sheetStatusLabel(code);
+        // Хотя бы один из словарей обязан знать код и объяснить его словами.
+        const spoken = [long, short, status].filter(label => label.includes(fragment));
+        expect(spoken.length, `${code}: ${long} | ${short} | ${status}`)
+            .toBeGreaterThan(0);
+        [long, short, status].forEach(label => {
+            expect(/[A-Z]{3,}/.test(label), `${code} → ${label}`).toBe(false);
+        });
+    });
+
+    it('короткая и полная подписи связи говорят одно и то же', () => {
+        // Два расходящихся перевода одного кода хуже сырого кода.
+        ['MATCHED', 'SPLIT', 'MERGED', 'UNCERTAIN', 'NO_MATCH'].forEach(code => {
+            const short = review.relationTypeShortLabel(code);
+            const long = review.relationTypeLabel(code);
+            expect(short, code).toBeTruthy();
+            expect(long, code).toBeTruthy();
+            expect(short.toLowerCase(), code).not.toBe(code.toLowerCase());
+        });
+        // Разные коды — разные подписи: иначе инженеру не из чего выбирать.
+        const labels = ['MATCHED', 'SPLIT', 'MERGED']
+            .map(review.relationTypeShortLabel);
+        expect(new Set(labels).size).toBe(3);
+    });
+});

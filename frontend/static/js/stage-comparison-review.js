@@ -176,6 +176,16 @@
         UNCERTAIN: 'соответствие листов не установлено',
         NO_MATCH: 'соответствия нет',
     };
+    // Короткая форма той же связи — для выпадающего списка, где предложение
+    // целиком не помещается. Смысл обязан совпадать с RELATION_TYPE_LABELS:
+    // два разошедшихся перевода одного кода хуже сырого кода.
+    const RELATION_TYPE_SHORT_LABELS = {
+        MATCHED: 'Листы соответствуют друг другу',
+        SPLIT: 'Один лист слева соответствует нескольким справа',
+        MERGED: 'Несколько листов слева соответствуют одному справа',
+        UNCERTAIN: 'Соответствие не установлено',
+        NO_MATCH: 'Соответствия нет',
+    };
     const SHEET_STATUS_LABELS = {
         HIGH: 'подтверждено',
         USER_CONFIRMED: 'подтверждено инженером',
@@ -298,6 +308,12 @@
 
     function relationTypeLabel(value) {
         return labelFrom(RELATION_TYPE_LABELS, value, 'соответствие листов не установлено');
+    }
+
+    function relationTypeShortLabel(value) {
+        return labelFrom(
+            RELATION_TYPE_SHORT_LABELS, value, 'Соответствие не установлено',
+        );
     }
 
     function sheetStatusLabel(value) {
@@ -2877,6 +2893,7 @@
         pagesReference,
         questionCategoryLabel,
         relationTypeLabel,
+        relationTypeShortLabel,
         reviewStatusLabel,
         sheetReference,
         sheetStatusLabel,
