@@ -1068,7 +1068,14 @@ def empty_artifact(
         "settings": settings.snapshot(effective),
         "prompt_versions": prompts.prompt_versions(),
         "verifier_version": verifier.VERIFIER_VERSION,
-        "input_signature": content_signature({"layer": LAYER_VERSION, "items": []}),
+        # Режим входит в идентичность артефакта: пустой результат «глубокой
+        # проверки» и пустой результат «Быстро» — это разные результаты, и
+        # склеивать их по одной подписи нельзя.
+        "input_signature": content_signature({
+            "layer": LAYER_VERSION,
+            "items": [],
+            "settings": settings.snapshot(effective),
+        }),
         "resolutions": [],
         "diagnostics": {
             "input_items": 0,
@@ -1137,6 +1144,7 @@ def unavailable_artifact(
                 str(item.get("review_evidence_id") or "")
                 for item in review_items or ()
             ],
+            "settings": settings.snapshot(mode or settings.mode()),
             "runtime_ok": False,
         }),
         "resolutions": resolutions,

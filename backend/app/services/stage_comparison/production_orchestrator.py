@@ -169,6 +169,23 @@ def _block_ids(values: Iterable[Any], side: str) -> list[str]:
     return sorted(output)
 
 
+#: Ключи запроса, описывающие ИСХОДНЫЕ ДАННЫЕ прогона: какие документы, какие
+#: страницы, какая область сравнения. Только они отвечают на вопрос «изменился
+#: ли вход» — и только они входят в подпись источников.
+SOURCE_REQUEST_KEYS = (
+    "input_mode",
+    "left_pages",
+    "right_pages",
+    "left_block_ids",
+    "right_block_ids",
+)
+#: Ключи запроса, описывающие КОНФИГУРАЦИЮ АНАЛИЗА: в каком режиме посчитан
+#: результат. Это отдельная ось: смена режима по умолчанию не меняет ни PDF, ни
+#: версии документов, ни выбор листов, — а значит не имеет права объявить
+#: прежние прогоны устаревшими.
+ANALYSIS_CONFIG_KEYS = ("ai_mode",)
+
+
 def normalize_run_request(
     *,
     input_mode: str,
@@ -200,6 +217,64 @@ def normalize_run_request(
     elif request["left_pages"] or request["right_pages"]:
         raise ValueError("DOCUMENT mode resolves pages through Sheet Matcher")
     return request
+
+
+def source_request(request: Mapping[str, Any]) -> dict[str, Any]:
+    """Часть запроса, отвечающая на вопрос «изменился ли вход?».
+
+    Ровно те ключи, что были в запросе до появления режимов глубины, — поэтому
+    подпись прогона, сделанного тогда, пересчитывается в прежнее значение, а не
+    объявляется устаревшей из-за нового поля.
+    """
+    return {
+        key: copy.deepcopy(request[key])
+        for key in SOURCE_REQUEST_KEYS
+        if key in request
+    }
+
+
+def analysis_config(request: Mapping[str, Any]) -> dict[str, Any]:
+    """Часть запроса, отвечающая на вопрос «в каком режиме это посчитано?».
+
+    Отсутствие режима сохраняется как отсутствие: прогон, выполненный до
+    появления режимов глубины, обязан читаться как «режим не записан», а не как
+    «Быстро». Придуманный задним числом режим — неверный аудитный след.
+    """
+    stored = request.get("ai_mode") if isinstance(request, Mapping) else None
+    return {
+        "ai_mode": ai_settings.run_mode_label(stored) if stored else None,
+        "recorded": bool(stored),
+    }
+
+
+def analysis_config_signature(request: Mapping[str, Any]) -> str:
+    """Подпись конфигурации анализа — отдельная от подписи исходных данных."""
+    return content_signature({
+        "flow": "stage-comparison-analysis-config-v1",
+        "config": analysis_config(request),
+    })
+
+
+def restore_selection(selection: Mapping[str, Any]) -> dict[str, Any]:
+    """Прочитать сохранённый выбор прогона, не применяя сегодняшнюю политику.
+
+    Прогон уже состоялся. Если установке позже запретили «глубокую проверку»,
+    прежний результат не перестаёт относиться к своим документам: политика
+    сервера ограничивает ЗАПУСК анализа, а не чтение уже посчитанного.
+    """
+    normalized = normalize_run_request(
+        input_mode=selection.get("input_mode"),
+        left_pages=selection.get("left_pages") or (),
+        right_pages=selection.get("right_pages") or (),
+        left_block_ids=selection.get("left_block_ids") or (),
+        right_block_ids=selection.get("right_block_ids") or (),
+    )
+    stored = selection.get("ai_mode")
+    if stored:
+        normalized["ai_mode"] = ai_settings.run_mode_label(stored)
+    else:
+        normalized.pop("ai_mode", None)
+    return normalized
 
 
 def _resolved_document_paths(document: Mapping[str, Any]) -> dict[str, Path]:
@@ -239,7 +314,11 @@ def _input_signature(
     signature_payload = {
         "flow": "stage-comparison-production-v1",
         "pair_id": pair.get("id"),
-        "request": dict(request),
+        # ТОЛЬКО исходные данные. Конфигурация анализа (глубина ИИ) живёт в
+        # отдельной подписи: иначе смена режима по умолчанию объявляла бы
+        # устаревшими прогоны, у которых не изменились ни PDF, ни версии
+        # документов, ни выбор сторон, ни область сравнения.
+        "request": source_request(request),
         "documents": documents,
     }
     if page_groups is not None:
@@ -2412,7 +2491,10 @@ def _run_ai_resolution(
     ]
     mode = ai_settings.normalize_mode(ai_mode) if ai_mode else ai_settings.mode()
     if mode == ai_settings.MODE_OFF or not review_items or not preparation:
-        artifact = ai_resolution.empty_artifact()
+        # Режим обязан доехать до артефакта даже когда разбирать было нечего:
+        # «глубокая проверка» без единого неоднозначного элемента — это всё
+        # ещё глубокая проверка, а не прогон в режиме «Быстро».
+        artifact = ai_resolution.empty_artifact(mode=mode)
         production_store.save_artifact(
             session_id, pair_id, "ai_resolutions", artifact
         )
@@ -3179,7 +3261,12 @@ def _run_production_comparison_impl(
                 previous_state.get("generation_scope")
                 if isinstance(previous_state, Mapping)
                 and previous_state.get("status") in PUBLISHED_STATUSES
-                and previous_state.get("selection") == request
+                # Сравнивается ИСТОЧНИК, а не конфигурация анализа: область
+                # страниц прошлого прогона относится к тем же документам
+                # независимо от того, в каком режиме его считали (и был ли
+                # режим записан вообще).
+                and source_request(previous_state.get("selection") or {})
+                == source_request(request)
                 else None
             )
             previous_groups = (
@@ -3237,6 +3324,9 @@ def _run_production_comparison_impl(
             "page_groups": copy.deepcopy(page_groups or []),
         },
         "input_signature": signature,
+        # Две оси, а не одна: «изменился ли вход» и «в каком режиме считали».
+        "analysis_config": analysis_config(request),
+        "analysis_config_signature": analysis_config_signature(request),
         "status": "RUNNING",
         "progress": 0,
         "stale": False,
@@ -4583,6 +4673,8 @@ def _empty_state(session_id: str, pair_id: str) -> dict[str, Any]:
         "input_mode": None,
         "selection": None,
         "input_signature": None,
+        "analysis_config": analysis_config({}),
+        "analysis_config_signature": analysis_config_signature({}),
         "status": "NOT_STARTED",
         "progress": 0,
         "stale": False,
@@ -4672,10 +4764,16 @@ def get_production_state(session_id: str, pair_id: str) -> dict[str, Any]:
     )
     public["constraints"] = constraints
     request = public.get("selection")
+    public.setdefault("analysis_config", analysis_config(
+        request if isinstance(request, Mapping) else {}
+    ))
+    public.setdefault("analysis_config_signature", analysis_config_signature(
+        request if isinstance(request, Mapping) else {}
+    ))
     stale = True
     if isinstance(request, Mapping):
         try:
-            normalized = normalize_run_request(**dict(request))
+            normalized = restore_selection(request)
             generation_scope = public.get("generation_scope")
             page_groups = (
                 generation_scope.get("page_groups")
@@ -6129,13 +6227,17 @@ def get_change_evidence(
 
 
 __all__ = [
+    "ANALYSIS_CONFIG_KEYS",
     "ANSWERS_KIND",
     "ANSWERS_SCHEMA_VERSION",
     "CHANGES_KIND",
     "CHANGES_SCHEMA_VERSION",
     "ProductionStateConflictError",
+    "SOURCE_REQUEST_KEYS",
     "STATE_KIND",
     "STATE_SCHEMA_VERSION",
+    "analysis_config",
+    "analysis_config_signature",
     "get_change_evidence",
     "get_final_report",
     "get_production_changes",
@@ -6143,7 +6245,9 @@ __all__ = [
     "get_production_text_evidence",
     "get_review_questions",
     "normalize_run_request",
+    "restore_selection",
     "run_production_comparison",
+    "source_request",
     "update_engineer_decisions",
     "update_review_answers",
 ]
