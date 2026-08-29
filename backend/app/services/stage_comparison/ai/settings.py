@@ -11,14 +11,67 @@ STAGE_COMPARISON_AI_MODE=OFF ничего не запускает и ничег�
 from __future__ import annotations
 
 import os
+from typing import Any
 
 #: Только детерминированный конвейер. Модели не вызываются.
 MODE_OFF = "OFF"
+#: То же самое на языке инженера: «Быстро». Инженеру не показывают «выключено»
+#: как режим работы — он выбирает глубину анализа, а не состояние подсистемы.
+MODE_FAST = "FAST"
 #: Детерминированный конвейер + массовый аналитик Codex по неоднозначным.
 MODE_STANDARD = "STANDARD"
 #: STANDARD + выборочный критик Claude + визуальный резерв.
 MODE_DEEP = "DEEP"
 MODES = (MODE_OFF, MODE_STANDARD, MODE_DEEP)
+
+#: Что может выбрать инженер при запуске прогона.
+RUN_MODES = (MODE_FAST, MODE_STANDARD, MODE_DEEP)
+
+_RUN_MODE_ALIASES = {
+    MODE_FAST: MODE_OFF,
+    MODE_OFF: MODE_OFF,
+    MODE_STANDARD: MODE_STANDARD,
+    MODE_DEEP: MODE_DEEP,
+}
+
+
+def normalize_mode(value: Any) -> str:
+    """Привести режим к внутреннему имени. Неизвестное читается как OFF."""
+    return _RUN_MODE_ALIASES.get(str(value or "").strip().upper(), MODE_OFF)
+
+
+def run_mode_label(value: Any) -> str:
+    """Внутреннее имя → то, что видит инженер."""
+    return MODE_FAST if normalize_mode(value) == MODE_OFF else normalize_mode(value)
+
+
+def allowed_run_modes() -> tuple[str, ...]:
+    """Что этой установке разрешено запускать. Политика сервера, не клиента.
+
+    Клиент присылает пожелание; разрешает его сервер. Иначе «глубокая
+    проверка» на машине без Claude означала бы тихую деградацию критика.
+    """
+    raw = _env("STAGE_COMPARISON_AI_ALLOWED_MODES", ",".join(RUN_MODES))
+    allowed = [
+        value.strip().upper() for value in raw.split(",") if value.strip()
+    ]
+    ordered = tuple(mode for mode in RUN_MODES if mode in allowed)
+    # «Быстро» отключить нельзя: это работа без моделей вообще.
+    return ordered if MODE_FAST in ordered else (MODE_FAST, *ordered)
+
+
+def resolve_run_mode(requested: Any = None) -> str:
+    """Режим конкретного прогона: пожелание клиента в рамках политики сервера.
+
+    Без пожелания действует прежний путь — переменная окружения, — чтобы
+    установки, которые ею пользуются, не поменяли поведение молча.
+    """
+    if requested in (None, ""):
+        return mode()
+    label = run_mode_label(requested)
+    if label not in allowed_run_modes():
+        raise ValueError(f"режим анализа {label!r} на этой установке запрещён")
+    return normalize_mode(requested)
 
 CLAUDE_SESSION = "CLAUDE_SESSION"
 CODEX_SESSION = "CODEX_SESSION"
@@ -159,10 +212,13 @@ def claude_binary() -> str:
     return _env("STAGE_COMPARISON_AI_CLAUDE_BIN", "claude")
 
 
-def snapshot() -> dict:
+def snapshot(run_mode: str | None = None) -> dict:
     """Полный слепок настроек для аудитного следа прогона."""
+    effective = normalize_mode(run_mode) if run_mode else mode()
     return {
-        "mode": mode(),
+        "mode": effective,
+        "run_mode": run_mode_label(effective),
+        "allowed_run_modes": list(allowed_run_modes()),
         "analyst": {"model": analyst_model(), "reasoning_level": analyst_effort()},
         "retry": {"reasoning_level": retry_effort()},
         "critic": {"model": critic_model()},
@@ -188,8 +244,14 @@ __all__ = [
     "CODEX_SESSION",
     "MODES",
     "MODE_DEEP",
+    "MODE_FAST",
     "MODE_OFF",
     "MODE_STANDARD",
+    "RUN_MODES",
+    "allowed_run_modes",
+    "normalize_mode",
+    "resolve_run_mode",
+    "run_mode_label",
     "PROVIDER_FAMILIES",
     "analyst_effort",
     "analyst_model",

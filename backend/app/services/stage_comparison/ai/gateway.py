@@ -797,7 +797,9 @@ def _codex_feature_states(binary: str) -> dict[str, str]:
     return states
 
 
-def validate_runtime(*, require_vision: bool = False) -> dict[str, Any]:
+def validate_runtime(
+    *, require_vision: bool = False, deep: bool | None = None,
+) -> dict[str, Any]:
     """Проверить среду ДО прогона: транспорт, изоляция, структурный вывод.
 
     Модель не хардкодится: если CLI на этой машине её не знает, честнее узнать
@@ -872,7 +874,8 @@ def validate_runtime(*, require_vision: bool = False) -> dict[str, Any]:
                 )
         report["checks"]["codex_isolation_features"] = observed
 
-    if settings.deep():
+    needs_critic = settings.deep() if deep is None else bool(deep)
+    if needs_critic:
         claude_binary = ""
         try:
             claude_binary = _resolve_claude_binary()

@@ -77,6 +77,10 @@ class ProductionRunRequest(BaseModel):
     right_pages: list[int] = Field(default_factory=list)
     left_block_ids: list[str] = Field(default_factory=list)
     right_block_ids: list[str] = Field(default_factory=list)
+    #: Глубина анализа этого прогона. Пожелание клиента; что из него
+    #: действительно разрешено, решает сервер. Без значения действует
+    #: настройка установки, чтобы поведение не менялось молча.
+    ai_mode: Literal["FAST", "STANDARD", "DEEP"] | None = None
 
 
 class ProductionDecisionUpdate(BaseModel):
@@ -342,6 +346,21 @@ async def run_production_comparison(
     except Exception as exc:  # noqa: BLE001
         logger.exception("production stage comparison failed")
         raise HTTPException(500, "Ошибка production-сравнения") from exc
+
+
+@router.get("/production/ai-modes")
+async def get_production_ai_modes():
+    """Какие режимы анализа разрешает эта установка и что выбрано по умолчанию."""
+    settings = production.ai_settings
+    return {
+        "modes": [
+            {"code": "FAST", "label": "Быстро"},
+            {"code": "STANDARD", "label": "Стандартно"},
+            {"code": "DEEP", "label": "Глубокая проверка"},
+        ],
+        "allowed": list(settings.allowed_run_modes()),
+        "default": settings.run_mode_label(settings.mode()),
+    }
 
 
 @router.post("/sessions/{session_id}/pairs/{pair_id}/production/cancel")

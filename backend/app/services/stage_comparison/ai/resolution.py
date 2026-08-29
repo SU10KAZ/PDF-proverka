@@ -271,7 +271,13 @@ class AiResolutionLayer:
         graphic_route: str | None = None,
         stamp_identity_by_side: Mapping[str, Mapping[str, Any]] | None = None,
         run_id: str = "",
+        mode: str | None = None,
     ) -> None:
+        # Режим фиксируется на прогон, а не читается из окружения на каждом
+        # элементе: партии идут в пуле потоков, и переменная окружения,
+        # изменённая посреди прогона, дала бы разную глубину у соседних партий.
+        self.mode = settings.normalize_mode(mode) if mode else settings.mode()
+        self.deep = self.mode == settings.MODE_DEEP
         self.cache = cache_module.ResponseCache(cache_dir)
         self.cancel = cancel or gateway.CancelToken()
         # Метка прогона на каждом дочернем процессе: отмена одной пары не
@@ -492,7 +498,7 @@ class AiResolutionLayer:
         triggers = critic_triggers(
             item, resolution, check, retried=retried, vision_used=vision_used,
         )
-        if settings.deep() and triggers:
+        if self.deep and triggers:
             with self._counters:
                 self.critic_required += 1
             critic_result = self._run_critic(item, resolution, budget)
@@ -608,7 +614,7 @@ class AiResolutionLayer:
         Возвращает готовую запись, если резерв реально что-то изменил, и None,
         если он неприменим: тогда элемент уходит человеку обычным путём.
         """
-        if retried or not settings.deep() or not self.pdf_paths:
+        if retried or not self.deep or not self.pdf_paths:
             # После пересмотра с картинкой второй заход к ней запрещён: иначе
             # отказ и резерв начнут вызывать друг друга по кругу.
             return None
@@ -932,8 +938,9 @@ class AiResolutionLayer:
             "layer_version": LAYER_VERSION,
             "version": 1,
             "generated_at": generated_at or utc_now(),
-            "mode": settings.mode(),
-            "settings": settings.snapshot(),
+            "mode": self.mode,
+            "run_mode": settings.run_mode_label(self.mode),
+            "settings": settings.snapshot(self.mode),
             "prompt_versions": prompts.prompt_versions(),
             "verifier_version": verifier.VERIFIER_VERSION,
             "input_signature": content_signature({
@@ -941,7 +948,7 @@ class AiResolutionLayer:
                 "items": [
                     str(value.get("review_evidence_id") or "") for value in ordered
                 ],
-                "settings": settings.snapshot(),
+                "settings": settings.snapshot(self.mode),
             }),
             "resolutions": results,
             "diagnostics": {
@@ -973,7 +980,7 @@ class AiResolutionLayer:
                 # честнее, чем «завершён»: заявленной проверки не было.
                 "mode_completeness": (
                     "PARTIAL"
-                    if settings.deep() and self.critic_unavailable
+                    if self.deep and self.critic_unavailable
                     else "COMPLETE"
                 ),
                 "model_failures": self.failures,
@@ -1005,7 +1012,8 @@ def empty_artifact(*, generated_at: str | None = None) -> dict[str, Any]:
         "version": 1,
         "generated_at": generated_at or utc_now(),
         "mode": settings.MODE_OFF,
-        "settings": settings.snapshot(),
+        "run_mode": settings.MODE_FAST,
+        "settings": settings.snapshot(settings.MODE_OFF),
         "prompt_versions": prompts.prompt_versions(),
         "verifier_version": verifier.VERIFIER_VERSION,
         "input_signature": content_signature({"layer": LAYER_VERSION, "items": []}),
@@ -1028,6 +1036,7 @@ def unavailable_artifact(
     review_items: Sequence[Mapping[str, Any]],
     *,
     runtime: Mapping[str, Any] | None = None,
+    mode: str | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Слой не запущен: среда не готова. Все элементы честно уезжают человеку.
@@ -1064,8 +1073,9 @@ def unavailable_artifact(
         "layer_version": LAYER_VERSION,
         "version": 1,
         "generated_at": generated_at or utc_now(),
-        "mode": settings.mode(),
-        "settings": settings.snapshot(),
+        "mode": settings.normalize_mode(mode) if mode else settings.mode(),
+        "run_mode": settings.run_mode_label(mode or settings.mode()),
+        "settings": settings.snapshot(mode or settings.mode()),
         "prompt_versions": prompts.prompt_versions(),
         "verifier_version": verifier.VERIFIER_VERSION,
         "runtime": dict(runtime or {}),

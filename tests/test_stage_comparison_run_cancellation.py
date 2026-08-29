@@ -187,3 +187,76 @@ def test_an_unready_runtime_is_not_the_same_as_the_off_mode():
     assert off["diagnostics"]["mode_completeness"] == "COMPLETE"
     assert len(unready["resolutions"]) == 1
     assert unready["diagnostics"]["mode_completeness"] == "PARTIAL"
+
+
+# ── Режим анализа как параметр прогона ────────────────────────────────────
+
+def test_the_run_mode_is_chosen_per_run_not_by_a_machine_wide_variable():
+    from backend.app.services.stage_comparison.ai import settings as ai_settings
+
+    assert ai_settings.resolve_run_mode("FAST") == ai_settings.MODE_OFF
+    assert ai_settings.resolve_run_mode("STANDARD") == ai_settings.MODE_STANDARD
+    assert ai_settings.resolve_run_mode("DEEP") == ai_settings.MODE_DEEP
+
+
+def test_without_a_choice_the_installation_setting_still_decides(monkeypatch):
+    from backend.app.services.stage_comparison.ai import settings as ai_settings
+
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "STANDARD")
+
+    assert ai_settings.resolve_run_mode(None) == ai_settings.MODE_STANDARD
+
+
+def test_the_server_and_not_the_client_decides_which_modes_are_allowed(monkeypatch):
+    from backend.app.services.stage_comparison.ai import settings as ai_settings
+
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ALLOWED_MODES", "FAST,STANDARD")
+
+    assert ai_settings.allowed_run_modes() == ("FAST", "STANDARD")
+    with pytest.raises(ValueError):
+        ai_settings.resolve_run_mode("DEEP")
+
+
+def test_fast_can_never_be_forbidden(monkeypatch):
+    from backend.app.services.stage_comparison.ai import settings as ai_settings
+
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ALLOWED_MODES", "DEEP")
+
+    # Работа без моделей вообще — не режим, который можно запретить.
+    assert "FAST" in ai_settings.allowed_run_modes()
+
+
+def test_off_is_never_shown_as_a_user_mode():
+    from backend.app.services.stage_comparison.ai import settings as ai_settings
+
+    assert "OFF" not in ai_settings.RUN_MODES
+    assert ai_settings.run_mode_label(ai_settings.MODE_OFF) == "FAST"
+
+
+def test_the_layer_keeps_its_mode_for_the_whole_run(monkeypatch):
+    from backend.app.services.stage_comparison.ai import settings as ai_settings
+
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "STANDARD")
+    layer = resolution_module.AiResolutionLayer(mode="DEEP")
+
+    # Переменная окружения, изменённая посреди прогона, не имеет права
+    # поменять глубину у соседних партий одного и того же анализа.
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "OFF")
+
+    assert layer.mode == ai_settings.MODE_DEEP
+    assert layer.deep is True
+
+
+def test_a_normalized_request_carries_the_run_mode():
+    request = production.normalize_run_request(
+        input_mode="DOCUMENT", ai_mode="DEEP",
+    )
+
+    assert request["ai_mode"] == "DEEP"
+
+
+def test_a_forbidden_run_mode_is_refused_at_the_request_boundary(monkeypatch):
+    monkeypatch.setenv("STAGE_COMPARISON_AI_ALLOWED_MODES", "FAST")
+
+    with pytest.raises(ValueError):
+        production.normalize_run_request(input_mode="DOCUMENT", ai_mode="DEEP")

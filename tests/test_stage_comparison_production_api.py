@@ -48,6 +48,8 @@ def test_run_endpoint_is_thin_and_rejects_client_paths_geometry(monkeypatch):
             "right_pages": [24],
             "left_block_ids": ["left-block"],
             "right_block_ids": ["right-block"],
+            # Глубина анализа — параметр прогона. Не выбрана — решает сервер.
+            "ai_mode": None,
         },
     }
     for forbidden in (

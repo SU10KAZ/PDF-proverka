@@ -176,6 +176,7 @@ def normalize_run_request(
     right_pages: Iterable[Any] = (),
     left_block_ids: Iterable[Any] = (),
     right_block_ids: Iterable[Any] = (),
+    ai_mode: str | None = None,
 ) -> dict[str, Any]:
     mode = str(input_mode or "").upper()
     if mode not in INPUT_MODES:
@@ -186,6 +187,12 @@ def normalize_run_request(
         "right_pages": _positive_pages(right_pages, "right"),
         "left_block_ids": _block_ids(left_block_ids, "left"),
         "right_block_ids": _block_ids(right_block_ids, "right"),
+        # Глубина анализа — параметр ЭТОГО прогона, а не состояние машины.
+        # Клиент присылает пожелание, разрешает его сервер: «глубокая проверка»
+        # на установке без критика означала бы тихую деградацию.
+        "ai_mode": ai_settings.run_mode_label(
+            ai_settings.resolve_run_mode(ai_mode)
+        ),
     }
     if mode == "PAGE":
         if len(request["left_pages"]) != 1 or len(request["right_pages"]) != 1:
@@ -2337,6 +2344,7 @@ def _ai_resolution_stage(artifact: Mapping[str, Any] | None) -> dict[str, Any]:
     return {
         "status": "NOT_APPLICABLE" if mode == ai_settings.MODE_OFF else "COMPLETED",
         "mode": mode,
+        "run_mode": ai_settings.run_mode_label(mode),
         "total": total,
         "processed": total,
         "ai_resolved": resolved,
@@ -2376,6 +2384,7 @@ def _run_ai_resolution(
     publish_progress: Any,
     pair: Mapping[str, Any] | None = None,
     graphic_route: str | None = None,
+    ai_mode: str | None = None,
 ) -> dict[str, Any]:
     """Разрешить неоднозначные расхождения моделью — или честно не разрешить.
 
@@ -2390,7 +2399,8 @@ def _run_ai_resolution(
         item for item in synthesis.get("review_items") or []
         if isinstance(item, Mapping)
     ]
-    if not ai_settings.enabled() or not review_items or not preparation:
+    mode = ai_settings.normalize_mode(ai_mode) if ai_mode else ai_settings.mode()
+    if mode == ai_settings.MODE_OFF or not review_items or not preparation:
         artifact = ai_resolution.empty_artifact()
         production_store.save_artifact(
             session_id, pair_id, "ai_resolutions", artifact
@@ -2402,12 +2412,15 @@ def _run_ai_resolution(
     # остановить слой честно, а не превратиться в четыреста отказов модели на
     # четырёхстах элементах.
     try:
-        runtime = ai_gateway.validate_runtime(require_vision=ai_settings.deep())
+        deep = mode == ai_settings.MODE_DEEP
+        runtime = ai_gateway.validate_runtime(
+            require_vision=deep, deep=deep,
+        )
     except Exception as exc:  # noqa: BLE001 — проверка не роняет прогон
         runtime = {"ok": False, "problems": [type(exc).__name__], "checks": {}}
     if not runtime.get("ok"):
         artifact = ai_resolution.unavailable_artifact(
-            review_items, runtime=runtime,
+            review_items, runtime=runtime, mode=mode,
         )
         production_store.save_artifact(
             session_id, pair_id, "ai_resolutions", artifact
@@ -2439,7 +2452,11 @@ def _run_ai_resolution(
         stage_key="ai_resolution",
         stage_status="RUNNING",
         stage_started_at=started_at,
-        stage_update={"mode": ai_settings.mode(), "total": len(review_items)},
+        stage_update={
+            "mode": mode,
+            "run_mode": ai_settings.run_mode_label(mode),
+            "total": len(review_items),
+        },
     )
 
     def report(payload: Mapping[str, Any]) -> None:
@@ -2455,7 +2472,8 @@ def _run_ai_resolution(
             stage_status="RUNNING",
             stage_started_at=started_at,
             stage_update={
-                "mode": ai_settings.mode(),
+                "mode": mode,
+                "run_mode": ai_settings.run_mode_label(mode),
                 "total": int(payload.get("total") or 0),
                 "processed": int(payload.get("processed") or 0),
                 "ai_resolved": int(payload.get("resolved") or 0),
@@ -2488,6 +2506,7 @@ def _run_ai_resolution(
         # продолжали бы жечь лимит подписки.
         cancel=control.cancel_token if control is not None else None,
         run_id=control.run_id if control is not None else "",
+        mode=mode,
     )
     try:
         artifact = layer.resolve(
@@ -2500,7 +2519,7 @@ def _run_ai_resolution(
         ai_gateway.kill_live_processes(layer.run_id)
         artifact = ai_resolution.empty_artifact()
         artifact["diagnostics"]["layer_error"] = type(exc).__name__
-        artifact["mode"] = ai_settings.mode()
+        artifact["mode"] = mode
     production_store.save_artifact(
         session_id, pair_id, "ai_resolutions", artifact
     )
@@ -3108,6 +3127,7 @@ def _run_production_comparison_impl(
     right_pages: Iterable[Any] = (),
     left_block_ids: Iterable[Any] = (),
     right_block_ids: Iterable[Any] = (),
+    ai_mode: str | None = None,
     review_answers_override: Mapping[str, Any] | None = None,
     page_groups_override: Iterable[Mapping[str, Any]] | None = None,
     page_scope_rerun: bool = False,
@@ -3120,6 +3140,7 @@ def _run_production_comparison_impl(
         input_mode=input_mode,
         left_pages=left_pages,
         right_pages=right_pages,
+        ai_mode=ai_mode,
         left_block_ids=left_block_ids,
         right_block_ids=right_block_ids,
     )
@@ -3865,6 +3886,7 @@ def _run_production_comparison_impl(
             if "VISION_REQUIRED" in (graphic_stage.get("routes") or [])
             else str(graphic_stage.get("route") or "") or None
         ),
+        ai_mode=request.get("ai_mode"),
     )
     base_questions = _build_review_questions(
         sheet_relations=sheet_relations,
@@ -4281,6 +4303,7 @@ def _run_production_comparison_locked(
     right_pages: Iterable[Any] = (),
     left_block_ids: Iterable[Any] = (),
     right_block_ids: Iterable[Any] = (),
+    ai_mode: str | None = None,
     review_answers_override: Mapping[str, Any] | None = None,
     page_groups_override: Iterable[Mapping[str, Any]] | None = None,
     page_scope_rerun: bool = False,
@@ -4504,6 +4527,7 @@ def run_production_comparison(
     right_pages: Iterable[Any] = (),
     left_block_ids: Iterable[Any] = (),
     right_block_ids: Iterable[Any] = (),
+    ai_mode: str | None = None,
 ) -> dict[str, Any]:
     """Run production comparison and never leave a failed run as RUNNING."""
     with production_store.production_pair_lock(session_id, pair_id):
@@ -4524,6 +4548,7 @@ def run_production_comparison(
             right_pages=right_pages,
             left_block_ids=left_block_ids,
             right_block_ids=right_block_ids,
+            ai_mode=ai_mode,
             interrupted_run=interrupted_run,
         )
 
