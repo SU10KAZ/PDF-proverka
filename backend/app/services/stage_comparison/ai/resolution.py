@@ -1047,17 +1047,25 @@ class AiResolutionLayer:
             return
 
 
-def empty_artifact(*, generated_at: str | None = None) -> dict[str, Any]:
-    """Артефакт выключенного слоя: он существует, но ничего не утверждает."""
+def empty_artifact(
+    *, generated_at: str | None = None, mode: str | None = None,
+) -> dict[str, Any]:
+    """Артефакт слоя без разрешений: он существует, но ничего не утверждает.
+
+    Режим передаётся, когда слой обещал разбор и не смог его дать: артефакт
+    упавшего «глубокого» прогона, записанный как «Быстро», — это неверный
+    аудитный след, а разбирать по нему потом нечего.
+    """
+    effective = settings.normalize_mode(mode) if mode else settings.MODE_OFF
     return {
         "kind": KIND,
         "schema_version": SCHEMA_VERSION,
         "layer_version": LAYER_VERSION,
         "version": 1,
         "generated_at": generated_at or utc_now(),
-        "mode": settings.MODE_OFF,
-        "run_mode": settings.MODE_FAST,
-        "settings": settings.snapshot(settings.MODE_OFF),
+        "mode": effective,
+        "run_mode": settings.run_mode_label(effective),
+        "settings": settings.snapshot(effective),
         "prompt_versions": prompts.prompt_versions(),
         "verifier_version": verifier.VERIFIER_VERSION,
         "input_signature": content_signature({"layer": LAYER_VERSION, "items": []}),

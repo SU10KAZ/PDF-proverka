@@ -185,6 +185,38 @@ def test_the_runtime_check_is_audited_with_the_mode_of_this_run(
     assert observed["runtime_modes"] == [ai_settings.MODE_DEEP]
 
 
+def test_a_failing_layer_still_records_the_mode_it_was_running(
+    run_pair, monkeypatch
+):
+    """Отказ слоя не имеет права переписать глубину прогона на «Быстро».
+
+    Артефакт упавшей «глубокой проверки», записанный как режим без моделей,
+    объясняет не тот прогон, к которому приложен: разбирать инцидент потом
+    не по чему.
+    """
+    from backend.app.services.stage_comparison import production_store
+    from backend.app.services.stage_comparison.ai import (
+        resolution as ai_resolution,
+    )
+
+    monkeypatch.setenv("STAGE_COMPARISON_AI_MODE", "OFF")
+
+    def explode(self, **kwargs):
+        raise RuntimeError("провайдер недоступен")
+
+    monkeypatch.setattr(ai_resolution.AiResolutionLayer, "resolve", explode)
+
+    run_pair("DEEP")
+
+    artifact = production_store.load_artifact(
+        "session-1", "pair-1", "ai_resolutions"
+    )
+    assert artifact["diagnostics"]["layer_error"] == "RuntimeError"
+    assert artifact["mode"] == ai_settings.MODE_DEEP
+    assert artifact["run_mode"] == ai_settings.MODE_DEEP
+    assert artifact["settings"]["mode"] == ai_settings.MODE_DEEP
+
+
 # ── Путь HTTP ─────────────────────────────────────────────────────────────
 
 def test_the_http_endpoint_hands_the_mode_to_the_run_service():

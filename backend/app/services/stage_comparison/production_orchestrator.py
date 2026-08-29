@@ -2528,9 +2528,11 @@ def _run_ai_resolution(
         )
     except Exception as exc:  # noqa: BLE001 — слой не имеет права ронять прогон
         ai_gateway.kill_live_processes(layer.run_id)
-        artifact = ai_resolution.empty_artifact()
+        # Режим прогона обязан пережить отказ слоя: артефакт упавшей
+        # «глубокой проверки», записанный как «Быстро», объясняет не тот
+        # прогон, к которому приложен.
+        artifact = ai_resolution.empty_artifact(mode=mode)
         artifact["diagnostics"]["layer_error"] = type(exc).__name__
-        artifact["mode"] = mode
     production_store.save_artifact(
         session_id, pair_id, "ai_resolutions", artifact
     )
