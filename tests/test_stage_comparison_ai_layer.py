@@ -7,7 +7,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest import mock
 import json
+import tempfile
 import time
 
 import pytest
@@ -504,6 +506,205 @@ def test_the_gateway_strips_provider_keys_from_the_session(monkeypatch):
     assert "OPENAI_API_KEY" not in env
     assert "CLAUDECODE" not in env
     assert env[gateway.RUN_MARKER_ENV] == "run-1"
+
+
+def test_the_session_environment_is_an_allowlist_not_a_blacklist(monkeypatch):
+    # Чёрный список защищает ровно от тех имён, которые кто-то успел в него
+    # внести. Каждое из этих появилось бы в проде позже правки — и проехало бы.
+    for name in (
+        "DATABASE_URL", "POSTGRES_PASSWORD", "REDIS_PASSWORD", "JWT_SECRET",
+        "PORTAL_AUTH_PASSWORD", "SOME_VENDOR_TOKEN", "APP_SIGNING_KEY",
+        "GITHUB_TOKEN", "AWS_SECRET_ACCESS_KEY", "OPENROUTER_API_KEY",
+        "MY_COMPLETELY_UNKNOWN_VARIABLE",
+    ):
+        monkeypatch.setenv(name, "secret")
+
+    env = gateway._clean_env("run-1")
+
+    assert "DATABASE_URL" not in env
+    assert "MY_COMPLETELY_UNKNOWN_VARIABLE" not in env
+    assert not [name for name in env if "SECRET" in name or "TOKEN" in name]
+    assert not [name for name in env if "PASSWORD" in name]
+    assert env[gateway.RUN_MARKER_ENV] == "run-1"
+
+
+def test_the_allowlist_extension_can_never_be_used_to_smuggle_a_secret(monkeypatch):
+    monkeypatch.setenv("SAFE_EXTRA", "value")
+    monkeypatch.setenv("VENDOR_API_KEY", "secret")
+    monkeypatch.setenv(
+        gateway.ENV_ALLOWLIST_EXTENSION, "SAFE_EXTRA,VENDOR_API_KEY"
+    )
+
+    env = gateway._clean_env("run-1")
+
+    assert env.get("SAFE_EXTRA") == "value"
+    assert "VENDOR_API_KEY" not in env
+
+
+def test_a_proxy_carrying_credentials_is_dropped_rather_than_forwarded(monkeypatch):
+    monkeypatch.setenv("HTTPS_PROXY", "http://proxy.local:3128")
+    monkeypatch.setenv("HTTP_PROXY", "http://user:pass@proxy.local:3128")
+
+    env = gateway._clean_env("run-1")
+
+    assert env.get("HTTPS_PROXY") == "http://proxy.local:3128"
+    assert "HTTP_PROXY" not in env
+
+
+def test_the_analyst_session_is_started_without_a_shell_or_the_repository():
+    captured: dict[str, object] = {}
+
+    def fake_run(command, *, cwd, env, timeout_s, stdin_text, cancel):
+        captured["command"] = list(command)
+        captured["cwd"] = cwd
+        captured["stdin"] = stdin_text
+        return 0, '{"resolutions": []}', "", ""
+
+    with mock.patch.object(gateway, "_resolve_codex_binary", return_value="/bin/codex"), \
+            mock.patch.object(gateway, "_run_process", side_effect=fake_run):
+        gateway.call_codex("промпт", model="m", schema={"type": "object"})
+
+    command = captured["command"]
+    pairs = {
+        (command[index], command[index + 1])
+        for index in range(len(command) - 1)
+    }
+    for feature in gateway.CODEX_REQUIRED_OFF:
+        assert ("--disable", feature) in pairs
+    assert "--ignore-user-config" in command
+    assert "--ignore-rules" in command
+    assert command[command.index("-s") + 1] == "read-only"
+    # Рабочий каталог — пустой временный, а не репозиторий и не артефакты.
+    assert str(captured["cwd"]).startswith(tempfile.gettempdir())
+    assert "PDF-proverka" not in str(captured["cwd"])
+    # Промпт уходит через stdin: он не виден в `ps` и не упирается в ARG_MAX.
+    assert captured["stdin"] == "промпт"
+    assert "промпт" not in command
+    assert command[-1] == "-"
+
+
+def test_the_critic_session_carries_the_same_security_contract():
+    captured: dict[str, object] = {}
+
+    def fake_run(command, *, cwd, env, timeout_s, stdin_text, cancel):
+        captured["command"] = list(command)
+        captured["cwd"] = cwd
+        captured["stdin"] = stdin_text
+        return 0, '{"result": "{}", "usage": {}}', "", ""
+
+    with mock.patch.object(gateway, "_resolve_claude_binary", return_value="/bin/claude"), \
+            mock.patch.object(gateway, "_run_process", side_effect=fake_run):
+        gateway.call_claude("промпт", model="m", schema={"type": "object"})
+
+    command = captured["command"]
+    assert command[command.index("--tools") + 1] == ""
+    assert command[command.index("--setting-sources") + 1] == ""
+    assert "--strict-mcp-config" in command
+    assert "--no-session-persistence" in command
+    assert "--disable-slash-commands" in command
+    assert str(captured["cwd"]).startswith(tempfile.gettempdir())
+    assert captured["stdin"] == "промпт"
+    assert "промпт" not in command
+
+
+_CODEX_HELP = (
+    "--output-schema --sandbox --ignore-user-config --disable --config --image"
+)
+
+
+def _features(states: dict[str, str]) -> str:
+    return "\n".join(f"{name} stable {value}" for name, value in states.items())
+
+
+def _all_off() -> dict[str, str]:
+    states = {name: "false" for name in gateway.CODEX_REQUIRED_OFF}
+    states.update({name: "true" for name in gateway.CODEX_MUST_BE_KNOWN})
+    return states
+
+
+def test_runtime_validation_confirms_isolation_by_state_not_by_flag(monkeypatch):
+    monkeypatch.setattr(gateway, "_resolve_codex_binary", lambda: "/bin/codex")
+    monkeypatch.setattr(
+        gateway, "_cli_probe",
+        lambda command, timeout_s=30: (
+            _features(_all_off()) if "features" in command else _CODEX_HELP
+        ),
+    )
+
+    report = gateway.validate_runtime(require_vision=True)
+
+    assert report["ok"] is True
+    assert report["checks"]["codex_isolation_features"]["shell_tool"] == "false"
+
+
+def test_runtime_validation_fails_when_the_shell_stays_enabled(monkeypatch):
+    states = _all_off()
+    states["shell_tool"] = "true"
+    monkeypatch.setattr(gateway, "_resolve_codex_binary", lambda: "/bin/codex")
+    monkeypatch.setattr(
+        gateway, "_cli_probe",
+        lambda command, timeout_s=30: (
+            _features(states) if "features" in command else _CODEX_HELP
+        ),
+    )
+
+    report = gateway.validate_runtime()
+
+    assert report["ok"] is False
+    assert any("shell_tool" in problem for problem in report["problems"])
+
+
+def test_runtime_validation_fails_when_a_feature_was_renamed_away(monkeypatch):
+    # Переименованная возможность превращает `--disable` в неиспользуемый ключ
+    # конфигурации: флаг передан, изоляции нет, и молчать об этом нельзя.
+    states = {
+        name: "false" for name in gateway.CODEX_REQUIRED_OFF if name != "shell_tool"
+    }
+    states.update({name: "true" for name in gateway.CODEX_MUST_BE_KNOWN})
+    monkeypatch.setattr(gateway, "_resolve_codex_binary", lambda: "/bin/codex")
+    monkeypatch.setattr(
+        gateway, "_cli_probe",
+        lambda command, timeout_s=30: (
+            _features(states) if "features" in command else _CODEX_HELP
+        ),
+    )
+
+    report = gateway.validate_runtime()
+
+    assert report["ok"] is False
+    assert any("shell_tool" in problem for problem in report["problems"])
+
+
+def test_runtime_validation_fails_when_structured_output_is_unsupported(monkeypatch):
+    monkeypatch.setattr(gateway, "_resolve_codex_binary", lambda: "/bin/codex")
+    monkeypatch.setattr(
+        gateway, "_cli_probe",
+        lambda command, timeout_s=30: (
+            _features(_all_off()) if "features" in command
+            else "--sandbox --ignore-user-config --disable --config"
+        ),
+    )
+
+    report = gateway.validate_runtime()
+
+    assert report["ok"] is False
+    assert any("--output-schema" in problem for problem in report["problems"])
+
+
+def test_runtime_validation_reports_no_secret_in_the_child_environment(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgres://user:pass@host/db")
+    monkeypatch.setattr(gateway, "_resolve_codex_binary", lambda: "/bin/codex")
+    monkeypatch.setattr(
+        gateway, "_cli_probe",
+        lambda command, timeout_s=30: (
+            _features(_all_off()) if "features" in command else _CODEX_HELP
+        ),
+    )
+
+    report = gateway.validate_runtime()
+
+    assert report["checks"]["environment_leaked_secrets"] == []
+    assert "DATABASE_URL" not in report["checks"]["environment_names"]
 
 
 def test_the_gateway_refuses_an_unknown_provider_family():

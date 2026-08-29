@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -43,15 +44,106 @@ from . import settings
 #: Помечает каждый порождённый процесс, чтобы осиротевшие можно было найти.
 RUN_MARKER_ENV = "STAGE_COMPARISON_AI_RUN"
 
-#: Переменные окружения, которым нечего делать в сессии модели.
-_STRIP_ENV_PREFIXES = (
-    "ANTHROPIC_", "OPENAI_", "OPENROUTER_", "AWS_", "GOOGLE_", "GEMINI_",
-    "AZURE_", "HF_", "HUGGINGFACE_",
+#: Окружение сессии модели собирается по БЕЛОМУ списку, а не вычищается по
+#: чёрному. Чёрный список защищает ровно от тех имён, которые кто-то успел в
+#: него внести: `DATABASE_URL`, `JWT_SECRET`, пароль Redis и любой ключ,
+#: появившийся в проде на неделю позже правки этого файла, проезжали в дочерний
+#: процесс без единого предупреждения. Белый список ошибается в обратную
+#: сторону: незнакомая переменная просто не доедет.
+#:
+#: Здесь только то, без чего CLI не запустится или не найдёт свою подписку.
+_ENV_ALLOWLIST = frozenset({
+    "PATH",            # без него не найдётся ни node, ни сам CLI
+    "HOME",            # ~/.claude.json, ~/.codex — там лежит подписка
+    "USER", "LOGNAME",
+    "LANG", "LC_ALL", "LC_CTYPE",
+    "TMPDIR",
+    "TZ",
+    "TERM", "NO_COLOR",
+    "CODEX_HOME",      # каталог авторизации Codex, если он переопределён
+    # Корпоративные корневые сертификаты: без них TLS до провайдера не встанет.
+    "SSL_CERT_FILE", "SSL_CERT_DIR", "NODE_EXTRA_CA_CERTS",
+    "REQUESTS_CA_BUNDLE", "CURL_CA_BUNDLE",
+})
+
+#: Прокси — это инфраструктура, а не секрет, но ровно до тех пор, пока в URL
+#: нет `логин:пароль@`. С учётными данными переменная не едет вовсе: молча
+#: отдать их в чужой процесс хуже, чем не достучаться до провайдера.
+_PROXY_ENV = (
+    "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+    "http_proxy", "https_proxy", "no_proxy",
 )
-_STRIP_ENV_EXACT = (
-    "CLAUDE_CODE_SSE_PORT", "CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT",
-    "CLAUDE_CODE_SESSION_ID",
+
+#: Имена, которые не попадут в окружение НИКОГДА, даже если оператор явно
+#: перечислил их в расширении белого списка. Расширение существует для
+#: «не хватило переменной среды», а не для «протащить ключ».
+_SECRET_NAME_RE = re.compile(
+    r"(TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_?KEY|PRIVATE_KEY|"
+    r"DATABASE_URL|_DSN|AUTH|SESSION_KEY|COOKIE|SALT|SIGNING)",
+    re.I,
 )
+
+#: Расширение белого списка для конкретной машины: имена через запятую.
+ENV_ALLOWLIST_EXTENSION = "STAGE_COMPARISON_AI_ENV_ALLOWLIST"
+
+#: Возможности Codex, которых у аналитика сравнения быть не должно. Песочница
+#: `-s read-only` ограничивает то, ЧТО команда может сделать, но не отменяет
+#: саму возможность её выполнить: с включённым `shell_tool` модель по-прежнему
+#: читает репозиторий, `.env`, чужие артефакты прогона и историю git. Аналитику
+#: не нужен ни один инструмент: он получает пакет доказательств и отвечает по
+#: схеме. Картинки визуального резерва передаются явно через `-i`, поэтому
+#: `view_image` (чтение файла с диска по решению модели) тоже снимается.
+CODEX_DISABLED_FEATURES = (
+    "shell_tool",
+    "unified_exec",
+    "view_image",
+    "browser_use",
+    "browser_use_external",
+    "browser_use_full_cdp_access",
+    "computer_use",
+    "code_mode_host",
+    "hooks",
+    "plugins",
+    "plugin_sharing",
+    "remote_plugin",
+    "apps",
+    "multi_agent",
+    "skill_search",
+    "skill_mcp_dependency_install",
+    "image_generation",
+    "in_app_local_automation",
+    "shell_snapshot",
+    "standalone_web_search",
+    "tool_suggest",
+    "workspace_dependencies",
+)
+
+#: Возможности, которые обязаны быть ВЫКЛЮЧЕНЫ, иначе прогон не стартует.
+#: Проверка среды смотрит не на то, передали ли мы флаг, а на состояние после
+#: его применения: переименованная в новой версии возможность иначе осталась бы
+#: включённой, а `--disable` молча создал бы неиспользуемый ключ конфигурации.
+CODEX_REQUIRED_OFF = (
+    "shell_tool",
+    "view_image",
+    "browser_use",
+    "computer_use",
+    "hooks",
+    "plugins",
+)
+
+#: Возможности, которые CLI обязан ЗНАТЬ, но чьё состояние гейтом не является.
+#:
+#: `unified_exec` на этой версии CLI не выключается ни `--disable`, ни
+#: `-c features.unified_exec=false` — он остаётся `true` всегда. Он выбирает
+#: РЕАЛИЗАЦИЮ выполнения команд, а не факт её наличия: при `shell_tool=false`
+#: инструмента выполнения не предлагается вовсе. Проверено поведением, а не
+#: чтением флага — на реальном вызове с этим набором ключей модель на прямую
+#: просьбу выполнить `ls` ответила «инструмента нет».
+#:
+#: Имя всё равно проверяется на существование: если оно исчезнет из CLI,
+#: значит устройство выполнения команд поменялось, и вывод выше надо
+#: перепроверять, а не наследовать.
+CODEX_MUST_BE_KNOWN = ("unified_exec",)
 
 #: Отказы провайдера, которые проходят сами. Повторять их можно.
 _TRANSIENT_MARKERS = (
@@ -189,12 +281,38 @@ def classify_failure(text: str) -> str:
 
 # ── Окружение и процессы ───────────────────────────────────────────────────
 
+def _proxy_carries_credentials(value: str) -> bool:
+    """True, когда в URL прокси есть `логин:пароль@`."""
+    head = (value or "").split("/")[-1] if "//" not in value else value.split("//", 1)[1]
+    return "@" in head.split("/")[0]
+
+
+def allowed_env_names() -> frozenset[str]:
+    """Белый список этой машины: фиксированный плюс разрешённое расширение."""
+    extra = {
+        name.strip()
+        for name in (os.environ.get(ENV_ALLOWLIST_EXTENSION) or "").split(",")
+        if name.strip() and not _SECRET_NAME_RE.search(name.strip())
+    }
+    return frozenset(_ENV_ALLOWLIST | extra)
+
+
 def _clean_env(run_id: str) -> dict[str, str]:
+    """Окружение дочернего процесса: только разрешённое, ничего лишнего."""
+    allowed = allowed_env_names()
     env = {
         key: value for key, value in os.environ.items()
-        if not key.startswith(_STRIP_ENV_PREFIXES) and key not in _STRIP_ENV_EXACT
+        if key in allowed and not _SECRET_NAME_RE.search(key)
     }
+    for name in _PROXY_ENV:
+        value = os.environ.get(name)
+        if value and not _proxy_carries_credentials(value):
+            env[name] = value
     env.setdefault("LANG", "ru_RU.UTF-8")
+    # CLI в неинтерактивном режиме не должен рисовать рамки и цвета: их
+    # управляющие последовательности попадают в разбираемый поток.
+    env.setdefault("TERM", "dumb")
+    env.setdefault("NO_COLOR", "1")
     env[RUN_MARKER_ENV] = run_id
     return env
 
@@ -421,12 +539,16 @@ def call_codex(
         command = [
             binary, "exec",
             "-m", model,
-            "-s", "read-only",
+            "-s", "read-only",           # даже без инструментов — второй рубеж
             "--skip-git-repo-check",
             "--ephemeral",
-            "-C", str(workdir),
+            "--ignore-user-config",      # без ~/.codex/config.toml и его MCP
+            "--ignore-rules",            # без пользовательских execpolicy
+            "-C", str(workdir),          # пустой временный каталог, не репозиторий
             "-o", str(out_file),
         ]
+        for feature in CODEX_DISABLED_FEATURES:
+            command += ["--disable", feature]
         if reasoning_level:
             command += ["-c", f"model_reasoning_effort={reasoning_level}"]
         if schema is not None:
@@ -435,16 +557,16 @@ def call_codex(
                 json.dumps(schema, ensure_ascii=False), encoding="utf-8"
             )
             command += ["--output-schema", str(schema_file)]
-        # `-i/--image` объявлен как <FILE>..., то есть переменной длины:
-        # позиционный промпт после него будет проглочен как ещё один файл.
-        # Поэтому при картинках промпт всегда уходит через stdin, а вместо
-        # него ставится «-».
-        stdin_text: str | None = None
+        # Промпт всегда уходит через stdin, а на месте позиционного аргумента
+        # стоит «-». Две причины. Пакет доказательств на партию из десяти
+        # элементов — это десятки килобайт: в argv он рискует упереться в
+        # ARG_MAX и виден любому в `ps`. И `-i/--image` объявлен как <FILE>...,
+        # то есть переменной длины: позиционный промпт после него был бы
+        # проглочен как ещё один файл.
         if image_paths:
-            command += ["-i", *image_paths, "-"]
-            stdin_text = prompt
-        else:
-            command.append(prompt)
+            command += ["-i", *image_paths]
+        command.append("-")
+        stdin_text: str | None = prompt
 
         last: CallResult | None = None
         for attempt in range(retries + 1):
@@ -515,8 +637,12 @@ def call_claude(
     run_id = run_id or uuid.uuid4().hex
     workdir = Path(tempfile.mkdtemp(prefix="sc_ai_claude_"))
     try:
+        # Промпт уходит через stdin — по тем же причинам, что и у Codex:
+        # ARG_MAX и `ps`. Симметрия здесь не косметика: контракт безопасности
+        # у двух семейств моделей обязан быть одинаковым, иначе «изолировано»
+        # означает «изолировано у одного из двух».
         command = [
-            binary, "-p", prompt,
+            binary, "-p",
             "--model", model,
             "--output-format", "json",
             "--tools", "",              # инструментов физически нет
@@ -542,7 +668,7 @@ def call_claude(
             started = time.perf_counter()
             code, stdout, stderr, failure = _run_process(
                 command, cwd=str(workdir), env=_clean_env(run_id),
-                timeout_s=timeout_s, stdin_text="", cancel=cancel,
+                timeout_s=timeout_s, stdin_text=prompt, cancel=cancel,
             )
             duration_ms = int((time.perf_counter() - started) * 1000)
             if failure:
@@ -622,24 +748,149 @@ def call(
     raise GatewayError(f"неизвестное семейство провайдера: {provider_family}")
 
 
-def validate_runtime() -> dict[str, Any]:
-    """Проверить, что заявленные в настройках транспорты вообще существуют.
+def _cli_probe(command: Sequence[str], *, timeout_s: int = 30) -> str:
+    """Спросить у CLI его собственную справку/состояние. Без сети и без модели."""
+    try:
+        finished = subprocess.run(  # noqa: S603 — команда собрана здесь же
+            list(command),
+            capture_output=True,
+            text=True,
+            timeout=timeout_s,
+            cwd=tempfile.gettempdir(),
+            env=_clean_env("validate"),
+            start_new_session=True,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return f"{finished.stdout}\n{finished.stderr}"
+
+
+def _codex_feature_states(binary: str) -> dict[str, str]:
+    """Состояние флагов возможностей ПОСЛЕ применения наших `--disable`.
+
+    `codex features list` принимает те же `--disable`, что и `codex exec`,
+    поэтому проверка отвечает не на вопрос «передали ли мы флаг», а на вопрос
+    «выключено ли оно на самом деле».
+    """
+    command = [binary, "features", "list"]
+    for feature in CODEX_DISABLED_FEATURES:
+        command += ["--disable", feature]
+    states: dict[str, str] = {}
+    for line in _cli_probe(command).splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[-1] in {"true", "false"}:
+            states[parts[0]] = parts[-1]
+    return states
+
+
+def validate_runtime(*, require_vision: bool = False) -> dict[str, Any]:
+    """Проверить среду ДО прогона: транспорт, изоляция, структурный вывод.
 
     Модель не хардкодится: если CLI на этой машине её не знает, честнее узнать
-    об этом при старте этапа, чем на четырёхсотом элементе.
+    об этом при старте этапа, чем на четырёхсотом элементе. То же и с
+    изоляцией: `--disable shell_tool` на переименованной в новой версии
+    возможности молча превращается в неиспользуемый ключ конфигурации, и
+    аналитик получает shell обратно, ничем этого не показав.
+
+    Проверка офлайн: ни одного обращения к провайдеру, ни одного токена.
     """
-    report: dict[str, Any] = {"ok": True, "problems": [], "binaries": {}}
-    try:
-        report["binaries"]["CODEX_SESSION"] = _resolve_codex_binary()
-    except GatewayError as exc:
+    report: dict[str, Any] = {
+        "ok": True,
+        "problems": [],
+        "binaries": {},
+        "checks": {},
+        "mode": settings.mode(),
+    }
+
+    def fail(problem: str) -> None:
         report["ok"] = False
-        report["problems"].append(str(exc))
+        report["problems"].append(problem)
+
+    codex_binary = ""
+    try:
+        codex_binary = _resolve_codex_binary()
+        report["binaries"]["CODEX_SESSION"] = codex_binary
+    except GatewayError as exc:
+        fail(str(exc))
+
+    if codex_binary:
+        help_text = _cli_probe([codex_binary, "exec", "--help"])
+        report["checks"]["codex_help_readable"] = bool(help_text.strip())
+        if not help_text.strip():
+            fail("codex CLI не отвечает на `exec --help`")
+        else:
+            required_flags = {
+                "structured_output": "--output-schema",
+                "sandbox": "--sandbox",
+                "ignore_user_config": "--ignore-user-config",
+                "feature_switch": "--disable",
+                "reasoning_level": "--config",
+            }
+            if require_vision:
+                required_flags["vision"] = "--image"
+            for name, flag in required_flags.items():
+                present = flag in help_text
+                report["checks"][f"codex_{name}"] = present
+                if not present:
+                    fail(f"codex CLI не поддерживает {flag} ({name})")
+        states = _codex_feature_states(codex_binary) if help_text.strip() else {}
+        report["checks"]["codex_features_probed"] = bool(states)
+        if help_text.strip() and not states:
+            fail("codex CLI не отвечает на `features list`: изоляция не проверена")
+        observed: dict[str, str] = {}
+        for feature in CODEX_REQUIRED_OFF:
+            state = states.get(feature)
+            observed[feature] = state or "UNKNOWN"
+            if state is None:
+                fail(
+                    f"codex CLI не знает возможности {feature!r}: "
+                    "изоляция сессии не подтверждена"
+                )
+            elif state != "false":
+                fail(f"codex CLI оставляет {feature!r} включённой")
+        for feature in CODEX_MUST_BE_KNOWN:
+            state = states.get(feature)
+            observed[feature] = state or "UNKNOWN"
+            if state is None:
+                fail(
+                    f"codex CLI больше не знает {feature!r}: устройство "
+                    "выполнения команд изменилось, изоляцию надо перепроверить"
+                )
+        report["checks"]["codex_isolation_features"] = observed
+
     if settings.deep():
+        claude_binary = ""
         try:
-            report["binaries"]["CLAUDE_SESSION"] = _resolve_claude_binary()
+            claude_binary = _resolve_claude_binary()
+            report["binaries"]["CLAUDE_SESSION"] = claude_binary
         except GatewayError as exc:
-            report["ok"] = False
-            report["problems"].append(str(exc))
+            fail(str(exc))
+        if claude_binary:
+            help_text = _cli_probe([claude_binary, "--help"])
+            report["checks"]["claude_help_readable"] = bool(help_text.strip())
+            if not help_text.strip():
+                fail("claude CLI не отвечает на `--help`")
+            else:
+                for name, flag in (
+                    ("structured_output", "--json-schema"),
+                    ("tools_switch", "--tools"),
+                    ("setting_sources", "--setting-sources"),
+                    ("strict_mcp", "--strict-mcp-config"),
+                    ("system_prompt", "--system-prompt"),
+                ):
+                    present = flag in help_text
+                    report["checks"][f"claude_{name}"] = present
+                    if not present:
+                        fail(f"claude CLI не поддерживает {flag} ({name})")
+
+    leaked = sorted(
+        name for name in _clean_env("validate")
+        if _SECRET_NAME_RE.search(name)
+    )
+    report["checks"]["environment_names"] = sorted(_clean_env("validate"))
+    report["checks"]["environment_leaked_secrets"] = leaked
+    if leaked:
+        fail(f"в окружение сессии попали секреты: {', '.join(leaked)}")
     return report
 
 
