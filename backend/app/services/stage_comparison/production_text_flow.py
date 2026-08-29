@@ -16,7 +16,13 @@ from .production_artifacts import (
     stable_id,
     utc_now,
 )
-from . import room_schedule, sheet_matching, text_comparison, text_differences
+from . import (
+    recognition_coverage,
+    room_schedule,
+    sheet_matching,
+    text_comparison,
+    text_differences,
+)
 from .text_fragment_cache import load_or_extract_document_fragments
 
 
@@ -142,6 +148,12 @@ def prepare_text_scope(
     fragments: dict[str, list[dict[str, Any]]] = {}
     documents: dict[str, Any] = {}
     document_cache_signatures: dict[str, str] = {}
+    # Нативный текстовый слой выбранных страниц — независимый от Markdown
+    # контроль полноты распознавания. Он НЕ становится вторым источником
+    # фактов: сравнение по-прежнему идёт только по Markdown, а этот индекс
+    # отвечает ровно на один вопрос — «а есть ли это в документе на самом
+    # деле». Без него «строки справа нет» означает лишь «мы её не прочитали».
+    recognition_index: dict[str, dict[str, Any]] = {}
     for side, stage in (("left", "stage_1"), ("right", "stage_2")):
         document = pair.get(side)
         if not isinstance(document, Mapping):
@@ -199,6 +211,9 @@ def prepare_text_scope(
             "markdown": file_content_identity(markdown_path),
             "version_id": document.get("version_id"),
         }
+        recognition_index[side.upper()] = recognition_coverage.build_native_index(
+            str(pdf_path), selected[side], fitz=fitz,
+        )
     input_signature = content_signature({
         "producer": PREPARATION_VERSION,
         "pair_id": pair.get("id"),
@@ -216,6 +231,12 @@ def prepare_text_scope(
         "comparison_groups": groups,
         "fragments": fragments,
         "documents": documents,
+        # Индекс не входит в input_signature подготовки намеренно: подпись
+        # описывает, ЧТО сравнивается (пара, области, документы), а не чем это
+        # проверяется. Иначе появление проверки протухило бы каждый уже
+        # сохранённый прогон, не изменив ни одного сравниваемого текста.
+        "recognition_index": recognition_index,
+        "recognition_contract_version": recognition_coverage.CONTRACT_VERSION,
         "extraction": {
             "mode": (
                 "DOCUMENT_CACHE"
@@ -287,7 +308,7 @@ def build_text_differences_from_preparation(
         for bucket in ("changed", "removed", "added"):
             totals[bucket] += len(result[bucket])
         totals["model_ambiguity"] += int(result["ambiguity_count"])
-    return {
+    artifact = {
         "version": text_differences.VERSION,
         "kind": text_differences.KIND,
         "pair_id": preparation.get("pair_id"),
@@ -310,6 +331,15 @@ def build_text_differences_from_preparation(
             "sheet_matcher_is_gate": False,
         },
     }
+    # Полнота считается ПОСЛЕ корзин, потому что вердикт по расхождению
+    # зависит от того, что именно объявлено удалённым или добавленным.
+    # Ключ верхнего уровня: stage3_content_signature покрывает элементы
+    # доказательств, а не оболочку артефакта, поэтому добавление проверки не
+    # объявляет протухшей ни одну сохранённую валидацию Stage 4.
+    artifact["recognition_coverage"] = (
+        recognition_coverage.build_recognition_coverage(preparation, artifact)
+    )
+    return artifact
 
 
 __all__ = [

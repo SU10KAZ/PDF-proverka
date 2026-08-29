@@ -13,6 +13,8 @@ from backend.app.services.stage_comparison.text_semantic_validation import (
     build_semantic_validation,
 )
 
+from stage_comparison_recognition_fixtures import native_layer_index
+
 
 def _fragment(
     fragment_id: str,
@@ -39,6 +41,10 @@ def _fragment(
         "location_parts": list(parts or []),
         "order": order,
         "bboxes": [{"x": .1, "y": .2, "width": .3, "height": .04}],
+        # Нативный текст PDF под теми же рамками совпадает с прочитанным: эти
+        # фикстуры описывают лист, распознанный верно. Расхождение MD и слоя —
+        # предмет отдельных тестов полноты распознавания.
+        "pdf_canonical_text": text.casefold(),
     }
 
 
@@ -57,6 +63,7 @@ def _preparation(left: list[dict], right: list[dict], *, status: str = "HIGH") -
             "relation_status": status,
         }],
         "fragments": {"left": left, "right": right},
+        "recognition_index": native_layer_index(left, right),
     }
 
 
@@ -191,8 +198,14 @@ def test_added_possible_table_row_is_structured_but_requires_review():
         tuple(fact["provenance"]["review_requirement"]["reason_codes"])
         for fact in production["facts"]
     } == {(
-        "sheet_relation_unconfirmed",
+        # У левой стороны нет ни одного фрагмента, поэтому независимого
+        # сигнала о ней нет вовсе: полнота распознавания UNKNOWN, и это
+        # самостоятельная причина не называть строку добавленной.
+        "native_text_layer_unusable",
         "opposite_side_structured_coverage_incomplete",
+        "recognition_coverage_not_proven",
+        "recognition_coverage_unknown",
+        "sheet_relation_unconfirmed",
     )}
     assert not any(
         fact["provenance"]["review_requirement"]
@@ -227,7 +240,13 @@ def test_high_relation_with_zero_opposite_coverage_never_claims_addition():
     assert {
         tuple(fact["provenance"]["review_requirement"]["reason_codes"])
         for fact in production["facts"]
-    } == {("opposite_side_structured_coverage_incomplete",)}
+    } == {(
+        "native_text_layer_unusable",
+        "opposite_side_structured_coverage_incomplete",
+        "recognition_coverage_not_proven",
+        "recognition_coverage_unknown",
+    )}
+    assert production["diagnostics"]["recognition_coverage_blocked_facts"] == 12
     assert all(fact["outcome"] == "REVIEW_REQUIRED" for fact in production["facts"])
     assert all(fact["confidence"] == "UNKNOWN" for fact in production["facts"])
     assert not any(

@@ -16,7 +16,7 @@ from typing import Any, Iterable, Mapping
 
 from .production_artifacts import content_signature, stable_id, utc_now
 from .production_text_flow import PREPARATION_KIND, PREPARATION_SCHEMA_VERSION
-from . import room_schedule
+from . import recognition_coverage, room_schedule
 from .text_comparison import canonicalize_text
 from .text_semantic_validation import iter_stage3_evidence, stage3_content_signature
 from .unified_entity_bridge.entity_normalizer import canonical_entity_name
@@ -198,11 +198,16 @@ def _relation_assessment(
     group: Mapping[str, Any],
     *,
     opposite_coverage_incomplete: bool,
+    recognition: Mapping[str, Any] | None = None,
 ) -> tuple[str, str, dict[str, Any]]:
     status = str(group.get("relation_status") or "").upper()
     relation_type = str(group.get("relation_type") or "").upper()
     reasons: list[str] = []
     missing_fields: list[str] = []
+    recognition_status = str(
+        (recognition or {}).get("status") or recognition_coverage.UNKNOWN
+    )
+    recognition_proven = recognition_status == recognition_coverage.SUFFICIENT
     if status == "POSSIBLE":
         # The property itself is structured and grounded.  What remains
         # unproven is the upstream sheet pairing, which is resolved by the
@@ -220,22 +225,39 @@ def _relation_assessment(
         # its anchor, but do not promote it after a SHEET answer.
         reasons.append("opposite_side_structured_coverage_incomplete")
         missing_fields.append("opposite_side_structured_coverage")
+    if not recognition_proven:
+        # Главный инвариант: отсутствие распознанного доказательства не есть
+        # доказательство отсутствия.  Пока не доказано, что лист прочитан,
+        # «удалено»/«добавлено»/«изменено» остаётся расхождением записей, а не
+        # изменением проекта.  В отличие от счётчика фрагментов выше эта
+        # проверка действует и на CHANGED: сравнить два значения, одно из
+        # которых прочитано неверно, — тот же вымысел, только в профиль.
+        reasons.extend(
+            str(code) for code in (recognition or {}).get("reason_codes") or ()
+        )
+        reasons.append("recognition_coverage_" + recognition_status.lower())
+        missing_fields.append("recognition_coverage")
     if not reasons:
         return "MATERIAL_CHANGE", "HIGH", {
             "reason_codes": [],
             "missing_fields": [],
             "only_upstream_relation_blocker": False,
             "per_atom_question_actionable": True,
+            "recognition_coverage": dict(recognition or {}),
         }
+    reasons = sorted(set(reasons))
     return "REVIEW_REQUIRED", (
-        "UNKNOWN" if opposite_coverage_incomplete else "MEDIUM"
+        "UNKNOWN"
+        if opposite_coverage_incomplete or not recognition_proven
+        else "MEDIUM"
     ), {
         "reason_codes": reasons,
-        "missing_fields": missing_fields,
+        "missing_fields": sorted(set(missing_fields)),
         "only_upstream_relation_blocker": reasons == ["sheet_relation_unconfirmed"],
         # Both blockers belong to upstream scope/coverage, not to 320
         # independent engineering judgements about otherwise parsed cells.
         "per_atom_question_actionable": False,
+        "recognition_coverage": dict(recognition or {}),
     }
 
 
@@ -1011,6 +1033,7 @@ def _facts_for_evidence(
     left: dict[str, Any] | None,
     right: dict[str, Any] | None,
     structured_coverage: Mapping[str, int],
+    recognition: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     descriptor, pairs = _property_pairs(bucket, left, right)
     if descriptor is None or not pairs:
@@ -1060,6 +1083,7 @@ def _facts_for_evidence(
     outcome, confidence, review_requirement = _relation_assessment(
         group,
         opposite_coverage_incomplete=opposite_coverage_incomplete,
+        recognition=recognition,
     )
     output = []
     for pair in pairs:
@@ -1115,6 +1139,7 @@ def _facts_for_evidence(
                     "required_opposite_side": opposite_side,
                     "opposite_side_complete": not opposite_coverage_incomplete,
                 },
+                "recognition_coverage": dict(recognition or {}),
                 "uses_model": False,
             },
         })
@@ -1179,6 +1204,9 @@ def produce_text_facts(
             left=left,
             right=right,
             structured_coverage=structured_coverage,
+            recognition=recognition_coverage.coverage_of(
+                text_differences, source_ref
+            ),
         )
         if produced:
             facts.extend(produced)
@@ -1253,6 +1281,19 @@ def produce_text_facts(
         in value["provenance"]["review_requirement"]["reason_codes"]
         for value in facts
     )
+    recognition_blocked = sum(
+        recognition_coverage.REASON_COVERAGE_NOT_PROVEN
+        in value["provenance"]["review_requirement"]["reason_codes"]
+        for value in facts
+    )
+    recognition_status_counts: Counter[str] = Counter(
+        str(
+            (value["provenance"]["review_requirement"].get("recognition_coverage") or {})
+            .get("status")
+            or recognition_coverage.UNKNOWN
+        )
+        for value in facts
+    )
     stage3_signature = stage3_content_signature(text_differences)
     signature_payload = {
         "producer": PRODUCER_VERSION,
@@ -1281,6 +1322,10 @@ def produce_text_facts(
             "review_required_facts": review_required,
             "sheet_relation_blocked_facts": sheet_relation_blocked,
             "opposite_coverage_blocked_facts": coverage_blocked,
+            "recognition_coverage_blocked_facts": recognition_blocked,
+            "recognition_coverage_status_counts": dict(
+                sorted(recognition_status_counts.items())
+            ),
             "not_applicable_source_evidence": len(not_applicable),
             "unresolved_source_evidence": len(unresolved),
             "facts_by_rule": dict(sorted(rule_counts.items())),

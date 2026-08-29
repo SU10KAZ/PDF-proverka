@@ -14,6 +14,8 @@ from backend.app.services.stage_comparison.production_text_flow import (
 )
 from backend.app.services.stage_comparison.text_fact_producer import produce_text_facts
 
+from stage_comparison_recognition_fixtures import native_layer_index
+
 
 def _row(fragment_id: str, side: str, parts: list[str], *, order: int) -> dict:
     return {
@@ -28,6 +30,9 @@ def _row(fragment_id: str, side: str, parts: list[str], *, order: int) -> dict:
         "location_parts": list(parts),
         "order": order,
         "bboxes": [{"x": .1, "y": .2, "width": .3, "height": .04}],
+        # Нативный слой PDF под теми же рамками читается так же: эти тесты про
+        # разбор экспликации, а не про ошибки распознавания.
+        "pdf_canonical_text": " ".join(parts).casefold(),
     }
 
 
@@ -53,6 +58,7 @@ def _preparation(left: list[dict], right: list[dict]) -> dict:
             "relation_status": "HIGH",
         }],
         "fragments": {"left": left, "right": right},
+        "recognition_index": native_layer_index(left, right),
     }
 
 
