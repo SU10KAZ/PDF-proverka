@@ -14,6 +14,7 @@ from collections.abc import Iterable, Mapping
 from copy import deepcopy
 from typing import Any
 
+from . import object_identity
 from .production_artifacts import (
     canonical_json,
     content_signature,
@@ -108,7 +109,7 @@ def _ref(item: Mapping[str, Any], *keys: str, prefix: str) -> str:
 
 
 def _canonical_object_label(label: str) -> str:
-    return " ".join(str(label or "").casefold().replace("ё", "е").split())
+    return object_identity.canonical(label)
 
 
 def _ai_resolution_evidence(
@@ -127,6 +128,11 @@ def _ai_resolution_evidence(
             text = quote.get("quote")
             if isinstance(text, str) and text.strip():
                 values.append(text)
+    # Строки пакета, которыми верификатор подтвердил название объекта. Без них
+    # здесь видны только значения, а вид объекта живёт в заголовке таблицы.
+    for text in resolution.get("object_evidence") or ():
+        if isinstance(text, str) and text.strip():
+            values.append(text)
     typed = resolution.get("typed_resolution")
     if isinstance(typed, Mapping):
         for key in ("before_value", "after_value"):
@@ -140,50 +146,20 @@ class UngroundedObjectLabelError(ValueError):
     """Название объекта ничем не подтверждено — ссылку чеканить нельзя."""
 
 
-_LABEL_TOKEN_RE = re.compile(r"[\w./\-]+", re.UNICODE)
-_LABEL_DIGIT_RE = re.compile(r"\d")
-
-
-def object_label_identity_tokens(label: str) -> set[str]:
-    """Чем этот объект отличается от соседнего объекта того же вида.
-
-    Для «помещение 24.5» это «24.5»: слово «помещение» стоит в каждой строке
-    экспликации и не отличает ничего. Если различающих цифр нет вовсе
-    («кровля К5»), берутся длинные слова названия.
-    """
-    tokens = {
-        token.strip("./-")
-        for token in _LABEL_TOKEN_RE.findall(_canonical_object_label(label))
-    }
-    numeric = {
-        token for token in tokens
-        if len(token) >= 2 and _LABEL_DIGIT_RE.search(token)
-    }
-    if numeric:
-        return numeric
-    return {token for token in tokens if len(token) >= 4}
+#: Разбор названия объекта живёт в одном месте на всю подсистему. Пока копий
+#: было две, обе одинаково считали объект доказанным по совпадению одного
+#: числа: «вымышленный агрегат 24.5» проходил по строке «24.5 | Кладовая».
+object_label_identity_tokens = object_identity.identity_tokens
 
 
 def object_label_is_grounded(label: str, evidence: Iterable[Any]) -> bool:
-    """Назван ли этот объект хоть в одном из доказательств элемента.
+    """Назван ли этот объект в доказательствах — и как объект, и по номеру.
 
     Сравнение по токенам, а не по подстроке: «24.5» не должно находиться
-    внутри «124.55» и объявлять обоснованным объект, которого в
-    доказательствах нет.
+    внутри «124.55». И не только по номеру: вид объекта обязан встречаться в
+    доказательствах, иначе рядом с настоящим помещением заводится двойник.
     """
-    tokens = object_label_identity_tokens(label)
-    if not tokens:
-        return False
-    haystack: set[str] = set()
-    for value in evidence or ():
-        haystack |= {
-            token.strip("./-")
-            for token in _LABEL_TOKEN_RE.findall(
-                _canonical_object_label(str(value or ""))
-            )
-            if token.strip("./-")
-        }
-    return bool(tokens & haystack)
+    return object_identity.is_grounded(label, evidence)
 
 
 def mint_project_entity_ref(

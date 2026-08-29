@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
+from .. import facet_taxonomy, object_identity
 from ..production_artifacts import content_signature, stable_id, utc_now
 from ..unified_change_policy.contract import UNKNOWN_DIMENSION
 from . import cache as cache_module
@@ -173,13 +174,37 @@ def _human_entry(
     }
 
 
-def _typed_resolution_from(resolution: Mapping[str, Any]) -> dict[str, Any]:
+def _grounding_corpus(item: evidence_module.EvidenceItem) -> list[str]:
+    """Всё, что модель видела по этому элементу, — как плоские строки."""
+    view = item.model_view()
+    lines: list[str] = []
+    for key in ("left_context", "right_context"):
+        for line in view.get(key) or ():
+            text = line.get("text") if isinstance(line, Mapping) else line
+            if str(text or "").strip():
+                lines.append(str(text))
+    for key in ("before_value", "after_value"):
+        value = view.get(key)
+        if str(value or "").strip():
+            lines.append(str(value))
+    return lines
+
+
+def _typed_resolution_from(
+    resolution: Mapping[str, Any],
+    item: evidence_module.EvidenceItem | None = None,
+) -> dict[str, Any]:
     """Ответ модели → тот же типизированный контракт, что заполняет человек.
 
     Внутренние ссылки здесь НЕ ставятся: их детерминированно чеканит
     review_queue.mint_project_entity_ref из object_label — тем же кодом и тем
     же семейством префиксов, что и для ответа инженера. Иначе ИИ породил бы
     объект-двойник рядом с настоящим.
+
+    Свойство — тот же случай. Распознанное детерминированным слоем свойство
+    берётся как есть; предложенное моделью принимается, только если справочник
+    его узнал. Чеканить `facet_ai_<что угодно>` из свободной строки значит
+    выдавать за ссылку то, за чем не стоит ничего, кроме формулировки модели.
     """
     typed: dict[str, Any] = {
         "dimension": resolution.get("dimension"),
@@ -191,9 +216,15 @@ def _typed_resolution_from(resolution: Mapping[str, Any]) -> dict[str, Any]:
         value = resolution.get(name)
         if value is not None:
             typed[name] = value
-    facet = str(resolution.get("facet_label") or "").strip()
-    if facet:
-        typed["facet_ref"] = stable_id("facet_ai_", facet.casefold())
+    known_facet = ""
+    if item is not None:
+        known_facet = str(item.deterministic_state.get("facet_ref") or "").strip()
+    if known_facet:
+        typed["facet_ref"] = known_facet
+    else:
+        proposed = facet_taxonomy.facet_from_label(resolution.get("facet_label"))
+        if proposed:
+            typed["facet_ref"] = stable_id("facet_ai_", proposed)
     return {key: value for key, value in typed.items() if value is not None}
 
 
@@ -532,13 +563,21 @@ class AiResolutionLayer:
             "reason_code": None,
             "reason_detail": "",
             "human_question": None,
-            "typed_resolution": _typed_resolution_from(resolution),
+            "typed_resolution": _typed_resolution_from(resolution, item),
             "confidence": resolution.get("confidence"),
             "engineering_summary": resolution.get("engineering_summary"),
             "evidence_quotes": [
                 dict(value) for value in resolution.get("evidence_quotes") or []
                 if isinstance(value, Mapping)
             ],
+            # Доказательство названия объекта едет вместе с ответом: чеканка
+            # внутренних ссылок обязана проверять то же самое, что проверил
+            # верификатор. Без него второй рубеж видит только значения, в
+            # которых вид объекта («помещение») не встречается никогда, и
+            # проверять ему нечем.
+            "object_evidence": object_identity.supporting_evidence(
+                resolution.get("object_label"), _grounding_corpus(item),
+            ),
             "verifier": check.as_dict(),
             "critic": critic_result,
             "critic_triggers": triggers,

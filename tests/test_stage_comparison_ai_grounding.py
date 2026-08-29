@@ -73,6 +73,7 @@ def _review_item(
     after: str | None = "24.5 | Кладовая | 6,40",
     coverage: str = "SUFFICIENT",
     dimension: str = "UNKNOWN_DIMENSION",
+    facet_ref: str | None = None,
 ) -> dict:
     locations = {
         "LEFT": [{"page": 29, "fragment_id": "l1"}] if before is not None else [],
@@ -84,6 +85,7 @@ def _review_item(
         "source": "TEXT",
         "scope_ref": evidence_module.scope_ref_for_group(_groups()[0]),
         "dimension": dimension,
+        "facet_ref": facet_ref,
         "direction": "ALTERED",
         "outcome": "REVIEW_REQUIRED",
         "before_value": before,
@@ -195,7 +197,13 @@ def test_a_fabricated_object_label_is_refused_by_the_verifier():
 
 
 def test_a_fabricated_object_label_never_receives_a_project_reference():
-    evidence = ["24.5 | Кладовая | 6,02", "24.5 | Кладовая | 6,40"]
+    # Заголовок таблицы входит в доказательства так же, как её строки: вид
+    # объекта живёт именно в нём, а номер — в строке.
+    evidence = [
+        "Экспликация помещений",
+        "24.5 | Кладовая | 6,02",
+        "24.5 | Кладовая | 6,40",
+    ]
 
     assert object_label_is_grounded("помещение 24.5", evidence) is True
     assert object_label_is_grounded("помещение 99.9", evidence) is False
@@ -203,8 +211,22 @@ def test_a_fabricated_object_label_never_receives_a_project_reference():
         mint_project_entity_ref("помещение 99.9", evidence=evidence)
 
 
+def test_a_fabricated_object_kind_never_receives_a_project_reference():
+    """Совпал номер — это ещё не тот же объект.
+
+    «Вымышленный агрегат 24.5» опирается ровно на то же число, что и
+    «помещение 24.5». Если вид объекта не проверять, рядом с настоящим
+    помещением молча заводится объект, которого в проекте нет.
+    """
+    evidence = ["Экспликация помещений", "24.5 | Кладовая | 6,02"]
+
+    assert object_label_is_grounded("вымышленный агрегат 24.5", evidence) is False
+    with pytest.raises(UngroundedObjectLabelError):
+        mint_project_entity_ref("вымышленный агрегат 24.5", evidence=evidence)
+
+
 def test_a_grounded_label_still_receives_the_same_reference_as_before():
-    evidence = ["24.5 | Кладовая | 6,02"]
+    evidence = ["Экспликация помещений", "24.5 | Кладовая | 6,02"]
 
     assert (
         mint_project_entity_ref("помещение 24.5", evidence=evidence)
@@ -335,3 +357,157 @@ def test_a_quote_pointing_at_a_line_that_does_not_contain_it_is_refused():
     ]))
 
     assert any("привязка" in error for error in errors)
+
+
+# ── Свойство объекта ──────────────────────────────────────────────────────
+
+def test_a_facet_that_contradicts_the_recognised_property_is_refused():
+    """Доказана площадь — «высота потолка» это другое свойство, не формулировка.
+
+    Свойство распознал детерминированный слой: колонка экспликации, из которой
+    взято число. Разрешить модели переименовать его значит опубликовать
+    правильное число под неправильным смыслом — и никаким доказательством
+    этого потом не поймать, потому что число-то настоящее.
+    """
+    view = _view(facet_ref="room_area_m2")
+
+    errors = _errors(view, _resolution(facet_label="высота потолка"))
+
+    assert any("свойство" in error for error in errors)
+
+
+def test_a_facet_the_catalogue_does_not_know_is_refused_on_a_proven_property():
+    view = _view(facet_ref="room_area_m2")
+
+    errors = _errors(view, _resolution(facet_label="класс энергоэффективности"))
+
+    assert any("свойство" in error for error in errors)
+
+
+def test_the_recognised_property_still_accepts_its_own_name():
+    view = _view(facet_ref="room_area_m2")
+
+    assert verifier.verify_resolution(view, _resolution(facet_label="площадь")).ok
+    assert verifier.verify_resolution(
+        view, _resolution(facet_label="площадь помещения")
+    ).ok
+
+
+def test_a_disputed_property_may_still_be_handed_to_a_human():
+    """Модель имеет право не согласиться — но вопросом, а не публикацией."""
+    view = _view(facet_ref="room_area_m2")
+    refusal = _resolution(
+        resolution_status="HUMAN_REQUIRED",
+        needs_human_review=True,
+        human_reason="CONTRADICTORY_EVIDENCE",
+        human_question="Это площадь или высота? Колонка распозналась неоднозначно.",
+        facet_label="площадь",
+    )
+
+    assert verifier.verify_resolution(view, refusal).ok
+
+
+# ── Полная негативная матрица ─────────────────────────────────────────────
+#
+# Девять способов ошибиться, каждый из которых выглядит правдоподобно. Ни один
+# не имеет права быть опубликован. Матрица держится списком целиком: частичное
+# прохождение — это дыра, а не прогресс.
+
+_NEGATIVE_MATRIX = [
+    (
+        "A. число другого помещения",
+        {},
+        {"after_value": "24.6 | Холл | 15,71", "after_evidence_ref": "R3"},
+        "объект",
+    ),
+    (
+        "B. правильное значение при подменённом свойстве",
+        {"facet_ref": "room_area_m2"},
+        {"facet_label": "высота потолка"},
+        "свойство",
+    ),
+    (
+        "C. неправильный тип изменения",
+        {"dimension": "PARAMETER"},
+        {"dimension": "QUANTITY"},
+        "тип изменения",
+    ),
+    (
+        "D. «добавлено» там, где Stage 3 нашёл удаление",
+        {"bucket": "removed", "after": None},
+        {
+            "direction": "ADDED",
+            "after_value": None,
+            "after_evidence_ref": None,
+            "evidence_quotes": [
+                {"side": "LEFT", "evidence_ref": "L2",
+                 "quote": "24.5 | Кладовая | 6,02"},
+            ],
+        },
+        "направление",
+    ),
+    (
+        "E. «удалено» там, где Stage 3 нашёл добавление",
+        {"bucket": "added", "before": None},
+        {
+            "direction": "REMOVED",
+            "before_value": None,
+            "before_evidence_ref": None,
+            "evidence_quotes": [
+                {"side": "RIGHT", "evidence_ref": "R2",
+                 "quote": "24.5 | Кладовая | 6,40"},
+            ],
+        },
+        "направление",
+    ),
+    (
+        "F. стороны переставлены местами",
+        {},
+        {
+            "before_value": "24.5 | Кладовая | 6,40",
+            "before_evidence_ref": "R2",
+            "after_value": "24.5 | Кладовая | 6,02",
+            "after_evidence_ref": "L2",
+        },
+        "",
+    ),
+    (
+        "G. выдуманный вид объекта при совпавшем номере",
+        {},
+        {"object_label": "вымышленный агрегат 24.5"},
+        "объект",
+    ),
+    (
+        "H. ссылка на строку другого объекта",
+        {},
+        {"object_evidence_ref": "L3"},
+        "объект",
+    ),
+    (
+        "I. распознавание не подтверждено",
+        {"coverage": "INSUFFICIENT"},
+        {},
+        "полнота",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name, item, resolution, expected",
+    _NEGATIVE_MATRIX,
+    ids=[case[0].split(".")[0] for case in _NEGATIVE_MATRIX],
+)
+def test_the_negative_matrix_is_rejected_in_full(name, item, resolution, expected):
+    result = verifier.verify_resolution(_view(**item), _resolution(**resolution))
+
+    assert not result.ok, f"{name}: заведомо неверный разбор прошёл проверку"
+    if expected:
+        assert any(expected in error for error in result.errors), (
+            f"{name}: отклонено, но не по названной причине: {result.errors}"
+        )
+
+
+def test_the_negative_matrix_covers_every_probe_the_audit_named():
+    """Матрица держится целиком: девять из девяти, не восемь."""
+    assert len(_NEGATIVE_MATRIX) == 9
+    assert [case[0][0] for case in _NEGATIVE_MATRIX] == list("ABCDEFGHI")

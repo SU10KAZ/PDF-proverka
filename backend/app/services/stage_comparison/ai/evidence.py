@@ -371,6 +371,11 @@ def build_packages(
             right_context=right_context,
             deterministic_state={
                 "dimension": item.get("dimension"),
+                # Свойство, которое детерминированный слой уже РАСПОЗНАЛ.
+                # Без него верификатору нечем поймать подмену: «высота
+                # потолка» на доказанной площади выглядит таким же свободным
+                # текстом, как и «площадь».
+                "facet_ref": item.get("facet_ref"),
                 "outcome": item.get("outcome"),
                 "reason_codes": sorted(
                     str(value) for value in item.get("reason_codes") or []

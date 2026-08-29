@@ -287,3 +287,54 @@ def test_a_malformed_machine_answer_cannot_stop_the_engineer():
     assert application["change_resolutions"] == []
     assert application["diagnostics"]["ai_resolutions_malformed"] == 1
     assert application["diagnostics"]["ai_resolutions_applied"] == 0
+
+
+# ── Свойство объекта: чеканить можно только узнанное ──────────────────────
+
+def _typed(resolution, item=None):
+    from backend.app.services.stage_comparison.ai.resolution import (
+        _typed_resolution_from,
+    )
+
+    return _typed_resolution_from(resolution, item)
+
+
+class _Item:
+    """Элемент пакета ровно в той части, которую читает материализация."""
+
+    def __init__(self, facet_ref=None):
+        self.deterministic_state = {"facet_ref": facet_ref}
+
+
+def test_a_recognised_property_is_used_as_is_and_never_reminted():
+    """Распознанное свойство принадлежит детерминированному слою.
+
+    Своя ссылка рядом с настоящей — это второй идентификатор того же свойства,
+    и связать их потом нечем.
+    """
+    typed = _typed({"facet_label": "площадь"}, _Item("room_area_m2"))
+
+    assert typed["facet_ref"] == "room_area_m2"
+
+
+def test_a_property_the_catalogue_knows_is_minted_from_its_canonical_name():
+    typed = _typed({"facet_label": "площадь помещения"}, _Item(None))
+
+    assert typed["facet_ref"].startswith("facet_ai_")
+    # Формулировка модели меняется от прогона к прогону, ссылка — нет.
+    assert typed["facet_ref"] == _typed({"facet_label": "площадь"}, _Item(None))[
+        "facet_ref"
+    ]
+
+
+def test_a_property_nobody_recognises_is_left_unknown_rather_than_invented():
+    """`facet_ai_<что угодно>` — это ссылка, за которой не стоит ничего."""
+    typed = _typed(
+        {"facet_label": "класс энергоэффективности"}, _Item(None)
+    )
+
+    assert "facet_ref" not in typed
+
+
+def test_an_absent_property_mints_nothing():
+    assert "facet_ref" not in _typed({"facet_label": None}, _Item(None))

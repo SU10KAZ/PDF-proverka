@@ -15,6 +15,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
+from .. import facet_taxonomy, object_identity
 from ..unified_change_policy.contract import (
     CONFIDENCE_LEVELS,
     DIRECTIONS,
@@ -24,7 +25,7 @@ from ..unified_change_policy.contract import (
 )
 from . import schemas
 
-VERIFIER_VERSION = "stage-comparison-ai-verifier.v2"
+VERIFIER_VERSION = "stage-comparison-ai-verifier.v3"
 
 _REQUIRED_FIELDS = (
     "item_id", "resolution_status", "dimension", "direction", "outcome",
@@ -149,37 +150,11 @@ def _corpus(item: Mapping[str, Any]) -> tuple[str, str]:
     return normalize("  ".join(left)), normalize("  ".join(right))
 
 
-_IDENTITY_TOKEN_RE = re.compile(r"[\w./\-]+", re.UNICODE)
-_DIGIT_RE = re.compile(r"\d")
-
-
-def line_tokens(value: Any) -> set[str]:
-    """Слова и числа строки как множество, без склейки в одну подстроку."""
-    return {
-        token.strip("./-")
-        for token in _IDENTITY_TOKEN_RE.findall(normalize(value))
-        if token.strip("./-")
-    }
-
-
-def identity_tokens(label: Any) -> set[str]:
-    """Чем объект отличается от соседнего объекта того же вида.
-
-    Для «помещение 315.1» это «315.1»: слово «помещение» стоит в каждой строке
-    экспликации и не отличает ничего. Если различающих цифр нет вовсе
-    («кровля К5»), берутся длинные слова названия.
-    """
-    tokens = {
-        token.strip("./-")
-        for token in _IDENTITY_TOKEN_RE.findall(normalize(label))
-    }
-    numeric = {
-        token for token in tokens
-        if len(token) >= 2 and _DIGIT_RE.search(token)
-    }
-    if numeric:
-        return numeric
-    return {token for token in tokens if len(token) >= 4}
+#: Разбор названия объекта — общий с чеканкой внутренних ссылок. Две копии
+#: одной логики уже разошлись однажды: верификатор пропускал выдуманный вид
+#: объекта, и второй рубеж пропускал его ровно так же.
+line_tokens = object_identity.tokens
+identity_tokens = object_identity.identity_tokens
 
 
 def verify_resolution(
@@ -340,6 +315,20 @@ def verify_resolution(
                         " не назван"
                     )
 
+    # 4b'. Вид объекта обязан подтверждаться доказательствами, а не только его
+    #      номер. «Вымышленный агрегат 24.5» и «помещение 24.5» отличаются не
+    #      цифрой: одна и та же строка «24.5 | Кладовая | 6,02» подтверждает
+    #      идентификатор обоим, и без проверки вида модель заводит рядом с
+    #      настоящим помещением объект, которого в проекте нет.
+    if object_label:
+        problem = object_identity.grounding_problem(
+            object_label,
+            [line["text"] for line in lines.values()]
+            + [str(item.get("before_value") or ""), str(item.get("after_value") or "")],
+        )
+        if problem:
+            errors.append(f"объект: {problem}")
+
     # 4c. Хотя бы одна названная строка обязана быть той, вокруг которой
     #     собран элемент. Ответ, опирающийся только на соседние строки,
     #     разбирает другое расхождение.
@@ -374,6 +363,16 @@ def verify_resolution(
             f"тип изменения: детерминированный слой установил {known_dimension},"
             f" модель вернула {resolution.get('dimension')}"
         )
+
+    # 5b. Свойство, распознанное детерминированным слоем, не обсуждается.
+    #     Доказана площадь — «высота потолка» это не другая формулировка, а
+    #     другое свойство того же объекта, и опубликовать его нельзя. Модель,
+    #     считающая распознавание ошибочным, обязана вернуть HUMAN_REQUIRED.
+    facet_problem = facet_taxonomy.contradiction(
+        state.get("facet_ref"), resolution.get("facet_label")
+    )
+    if facet_problem:
+        errors.append(f"свойство: {facet_problem}")
 
     # 6. Согласованность статуса разрешения.
     status = resolution.get("resolution_status")
